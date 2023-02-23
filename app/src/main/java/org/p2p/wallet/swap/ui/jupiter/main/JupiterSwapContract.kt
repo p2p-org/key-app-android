@@ -11,12 +11,14 @@ interface JupiterSwapContract {
         fun setSecondTokenWidgetState(state: SwapWidgetModel)
         fun setButtonState(buttonState: SwapButtonState)
         fun setRatioState(state: TextViewCellModel)
+        fun closeScreen()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun switchTokens()
         fun onTokenAmountChange(amount: String)
         fun onSwapTokenClick()
+        fun onBackPressed()
         fun finishFeature(stateManagerHolderKey: String)
     }
 }

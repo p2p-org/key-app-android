@@ -45,6 +45,10 @@ class JupiterSwapPresenter(
         stateManager.onNewAction(SwapStateAction.SwapSuccess)
     }
 
+    override fun onBackPressed() {
+        view?.closeScreen()
+    }
+
     override fun finishFeature(stateManagerHolderKey: String) {
         managerHolder.clear(stateManagerHolderKey)
     }
