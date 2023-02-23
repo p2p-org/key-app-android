@@ -64,6 +64,9 @@ class JupiterSwapFragment :
             imageViewSwapTokens.setOnClickListener {
                 presenter.switchTokens()
             }
+
+            sliderSend.onSlideCompleteListener = { sliderSend.showCompleteAnimation() }
+            sliderSend.onSlideCollapseCompleted = { presenter.onSwapTokenClick() }
         }
     }
 
