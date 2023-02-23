@@ -141,7 +141,6 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             showAmount(total, usdTotal)
             showFee(transaction.fees)
             showTransferView(transaction.iconUrl, R.drawable.ic_transaction_create)
-            hideSendReceiveTitleAndValue()
             showStateTitleValue(
                 resources.getString(R.string.transaction_details_signature),
                 transaction.signature.cutMiddle()
