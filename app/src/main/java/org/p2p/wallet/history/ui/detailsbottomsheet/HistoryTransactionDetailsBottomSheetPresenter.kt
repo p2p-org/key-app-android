@@ -120,7 +120,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
     private fun parseBurnOrMint(transaction: RpcHistoryTransaction.BurnOrMint) {
         view?.apply {
             val usdTotal = transaction.getFormattedAmount()
-            val total = transaction.getFormattedTotal()
+            val total = transaction.getFormattedAbsTotal()
             showAmount(total, usdTotal)
             showFee(transaction.fees)
             showTransferView(transaction.iconUrl, transaction.getIcon())
@@ -197,10 +197,13 @@ class HistoryTransactionDetailsBottomSheetPresenter(
         val titleRes: Int
         when (status) {
             HistoryTransactionStatus.COMPLETED -> {
-                val isSend = transaction is RpcHistoryTransaction.Transfer && transaction.isSend
-                val notGreen = transaction is RpcHistoryTransaction.Swap || isSend
                 titleRes = R.string.transaction_details_title_succeeded
-                colorRes = if (notGreen) R.color.text_night else R.color.text_mint
+                colorRes = when {
+                    transaction is RpcHistoryTransaction.Transfer && transaction.isSend ||
+                        transaction is RpcHistoryTransaction.BurnOrMint && transaction.isBurn ||
+                        transaction is RpcHistoryTransaction.Swap -> R.color.text_night
+                    else -> R.color.text_mint
+                }
             }
             HistoryTransactionStatus.PENDING -> {
                 titleRes = R.string.transaction_details_title_submitted

@@ -60,12 +60,11 @@ sealed class RpcHistoryTransaction(
         fun getTitle(): Int = if (isBurn) R.string.common_burn else R.string.common_mint
 
         @DrawableRes
-        fun getIcon(): Int = if (isBurn) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
+        fun getIcon(): Int = R.drawable.ic_renbtc
 
-        fun getValue(): String = "${getSymbol(isBurn)} ${getFormattedAmount()} ${Constants.USD_SYMBOL}"
+        fun getUsdAmount(): String = "${getFormattedAmount()} ${Constants.USD_SYMBOL}"
 
-        fun getTotal(): String =
-            "${getSymbol(isBurn)} ${amount.total.scaleMedium().formatToken()} ${Constants.REN_BTC_SYMBOL}"
+        fun getTotal(): String = "${amount.total.scaleMedium().formatToken()} ${Constants.REN_BTC_SYMBOL}"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
@@ -73,6 +72,23 @@ sealed class RpcHistoryTransaction(
             } else {
                 "${amount.total.scaleLong().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
             }
+
+        fun getFormattedAbsTotal(): String {
+            return "${amount.total.abs().scaleLong().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
+        }
+
+        @ColorRes
+        fun getTextColor() = when {
+            !status.isCompleted() -> {
+                R.color.text_rose
+            }
+            isBurn -> {
+                R.color.text_night
+            }
+            else -> {
+                R.color.text_mint
+            }
+        }
 
         fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isBurn))
     }
