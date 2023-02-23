@@ -1,6 +1,6 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-object SwapStateManagerHolder {
+class SwapStateManagerHolder {
 
     private val swapStateManagerHolder = mutableMapOf<String, SwapStateManager>()
 

@@ -19,6 +19,7 @@ import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 
 class JupiterSwapPresenter(
+    private val managerHolder: SwapStateManagerHolder,
     private val stateManager: SwapStateManager,
     private val widgetMapper: SwapWidgetMapper,
     private val buttonMapper: SwapButtonMapper,
@@ -60,7 +61,7 @@ class JupiterSwapPresenter(
     }
 
     override fun finishFeature(stateManagerHolderKey: String) {
-        SwapStateManagerHolder.clear(stateManagerHolderKey)
+        managerHolder.clear(stateManagerHolderKey)
     }
 
     private fun handleFeatureState(state: SwapState) {
@@ -163,6 +164,6 @@ class JupiterSwapPresenter(
 
     private fun updateWidgets() {
         view?.setFirstTokenWidgetState(state = widgetAState)
-        view?.setSecondTokenWidgetState(state = widgetAState)
+        view?.setSecondTokenWidgetState(state = widgetBState)
     }
 }
