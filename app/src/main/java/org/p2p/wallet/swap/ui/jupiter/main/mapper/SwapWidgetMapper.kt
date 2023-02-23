@@ -11,18 +11,19 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
+import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenType
+import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 
 class SwapWidgetMapper {
 
-    fun mapWidgetLoading(isTokenA: Boolean): SwapWidgetModel {
-        return if (isTokenA) {
-            SwapWidgetModel.Loading(
+    fun mapWidgetLoading(tokenType: SwapTokenType): SwapWidgetModel {
+        return when (tokenType) {
+            SwapTokenType.TOKEN_A -> SwapWidgetModel.Loading(
                 isStatic = false,
                 widgetTitle = TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_you_pay)),
             )
-        } else {
-            SwapWidgetModel.Loading(
+            SwapTokenType.TOKEN_B -> SwapWidgetModel.Loading(
                 isStatic = true,
                 widgetTitle = TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_you_receive)),
             )
@@ -37,7 +38,7 @@ class SwapWidgetMapper {
         return when (state) {
             SwapRateLoaderState.Empty,
             SwapRateLoaderState.Error,
-            is SwapRateLoaderState.HaveNotRate -> widgetModel.copy(fiatAmount = null)
+            is SwapRateLoaderState.NoRateAvailable -> widgetModel.copy(fiatAmount = null)
             is SwapRateLoaderState.Loaded -> widgetModel.copy(
                 fiatAmount = fiatAmount(
                     fiatAmount = tokenAmount.multiply(state.rate)
@@ -111,9 +112,7 @@ class SwapWidgetMapper {
     }
 
     private fun tokenName(token: SwapTokenModel): TextViewCellModel.Raw =
-        TextViewCellModel.Raw(
-            TextContainer(token.tokenSymbol)
-        )
+        TextViewCellModel.Raw(TextContainer(token.tokenSymbol))
 
     private fun balance(token: SwapTokenModel): TextViewCellModel.Raw? =
         when (token) {
@@ -138,7 +137,7 @@ class SwapWidgetMapper {
         )
 
     private fun tokenAmount(token: SwapTokenModel.UserToken): String =
-        token.details.total.formatToken(token.details.decimals)
+        token.details.getFormattedTotal()
 
     private fun swapWidgetFromTitle(): TextViewCellModel.Raw =
         TextViewCellModel.Raw(TextContainer(R.string.swap_main_you_pay))

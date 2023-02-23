@@ -95,7 +95,7 @@ class UserInMemoryRepository : UserLocalRepository {
     override fun findTokenData(mintAddress: String): TokenData? {
         val resultToken = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
         if (resultToken == null) {
-            Timber.tag(TAG).i("No token found for mint $mintAddress")
+            Timber.tag(TAG).i("No user token found for mint $mintAddress")
         }
 
         return resultToken

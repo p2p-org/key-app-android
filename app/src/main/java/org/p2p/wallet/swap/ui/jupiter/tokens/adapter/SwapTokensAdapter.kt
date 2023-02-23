@@ -7,9 +7,12 @@ import org.p2p.uikit.components.finance_block.FinanceBlockViewHolder
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderViewHolder
+import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-class SwapTokensAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SwapTokensAdapter(
+    private val onTokenClicked: (SwapTokenModel) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<AnyCellItem>()
 
@@ -30,7 +33,12 @@ class SwapTokensAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             SectionHeaderViewHolder(parent.inflateViewBinding(attachToRoot = false))
         }
         FinanceBlockViewHolder.DEFAULT_VIEW_TYPE -> {
-            FinanceBlockViewHolder(parent.inflateViewBinding(attachToRoot = false))
+            FinanceBlockViewHolder(
+                binding = parent.inflateViewBinding(attachToRoot = false),
+                inflateListener = {
+                    it.setOnClickAction { _, item -> onTokenClicked.invoke(item.payload as SwapTokenModel) }
+                }
+            )
         }
         else -> error("Not supported viewType: $viewType")
     }
