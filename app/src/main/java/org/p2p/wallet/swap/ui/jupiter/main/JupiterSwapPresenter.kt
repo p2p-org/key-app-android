@@ -163,6 +163,6 @@ class JupiterSwapPresenter(
 
     private fun updateWidgets() {
         view?.setFirstTokenWidgetState(state = widgetAState)
-        view?.setSecondTokenWidgetState(state = widgetAState)
+        view?.setSecondTokenWidgetState(state = widgetBState)
     }
 }
