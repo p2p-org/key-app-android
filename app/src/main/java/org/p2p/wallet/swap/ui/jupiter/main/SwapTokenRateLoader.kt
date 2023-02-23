@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
 import timber.log.Timber
-import java.math.BigDecimal
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
@@ -30,9 +29,11 @@ class SwapTokenRateLoader(
         }
     }
 
-    private suspend fun FlowCollector<SwapRateLoaderState>.updateToken(newToken: SwapTokenModel) = when (newToken) {
-        is SwapTokenModel.JupiterToken -> updateJupiterTokenRate(newToken)
-        is SwapTokenModel.UserToken -> updateUserTokenRate(newToken)
+    private suspend fun FlowCollector<SwapRateLoaderState>.updateToken(newToken: SwapTokenModel) {
+        return when (newToken) {
+            is SwapTokenModel.JupiterToken -> updateJupiterTokenRate(newToken)
+            is SwapTokenModel.UserToken -> updateUserTokenRate(newToken)
+        }
     }
 
     private suspend fun FlowCollector<SwapRateLoaderState>.updateUserTokenRate(token: SwapTokenModel.UserToken) {
@@ -40,7 +41,7 @@ class SwapTokenRateLoader(
         val newState = if (rate != null) {
             SwapRateLoaderState.Loaded(token = token, rate = rate)
         } else {
-            SwapRateLoaderState.HaveNotRate(token = token)
+            SwapRateLoaderState.NoRateAvailable(token = token)
         }
         emitAndSaveState(newState)
     }
@@ -48,7 +49,7 @@ class SwapTokenRateLoader(
     private suspend fun FlowCollector<SwapRateLoaderState>.updateJupiterTokenRate(token: SwapTokenModel.JupiterToken) {
         val coingeckoId = token.coingeckoId
         if (coingeckoId == null) {
-            emitAndSaveState(SwapRateLoaderState.HaveNotRate(token))
+            emitAndSaveState(SwapRateLoaderState.NoRateAvailable(token))
             return
         }
 
@@ -70,7 +71,7 @@ class SwapTokenRateLoader(
         SwapRateLoaderState.Error,
         SwapRateLoaderState.Loading,
         SwapRateLoaderState.Empty -> null
-        is SwapRateLoaderState.HaveNotRate -> this.token
+        is SwapRateLoaderState.NoRateAvailable -> this.token
         is SwapRateLoaderState.Loaded -> this.token
     }
 
@@ -78,19 +79,4 @@ class SwapTokenRateLoader(
         state.set(newState)
         emit(newState)
     }
-}
-
-sealed interface SwapRateLoaderState {
-    object Empty : SwapRateLoaderState
-    object Loading : SwapRateLoaderState
-    object Error : SwapRateLoaderState
-
-    data class Loaded(
-        val token: SwapTokenModel,
-        val rate: BigDecimal,
-    ) : SwapRateLoaderState
-
-    data class HaveNotRate(
-        val token: SwapTokenModel,
-    ) : SwapRateLoaderState
 }
