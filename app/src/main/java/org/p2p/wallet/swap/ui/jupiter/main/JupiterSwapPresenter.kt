@@ -76,7 +76,7 @@ class JupiterSwapPresenter(
         }
     }
 
-    private fun canselRateJobs(){
+    private fun canselRateJobs() {
         rateTokenAJob?.cancel()
         rateTokenBJob?.cancel()
     }

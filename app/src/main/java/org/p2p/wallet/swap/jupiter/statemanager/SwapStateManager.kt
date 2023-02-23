@@ -45,7 +45,7 @@ class SwapStateManager(
     fun onNewAction(action: SwapStateAction) {
         refreshJob?.cancel()
         activeActionHandleJob?.cancel()
-        if (action is SwapStateAction.CancelJobs){
+        if (action is SwapStateAction.CancelJobs) {
             return
         }
         activeActionHandleJob = launch {
