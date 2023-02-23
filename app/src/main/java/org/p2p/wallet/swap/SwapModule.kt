@@ -65,6 +65,7 @@ import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensToCellItemsMapper
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
+import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
 
 object SwapModule : InjectionModule {
@@ -197,7 +198,7 @@ object SwapModule : InjectionModule {
                 get<SwapStateTokenAZeroHandler>(),
             )
         }
-
+        factoryOf(::SwapTokenRateLoader)
         singleOf(::SwapStateManagerHolder)
 
         factory { (token: Token.Active?, stateManagerHolderKey: String) ->
@@ -212,7 +213,10 @@ object SwapModule : InjectionModule {
                 managerHolder = managerHolder,
                 widgetMapper = get(),
                 buttonMapper = get(),
-                stateManager = stateManager
+                stateManager = stateManager,
+                rateLoaderTokenA = get(),
+                rateLoaderTokenB = get(),
+                dispatchers = get(),
             )
         } bind JupiterSwapContract.Presenter::class
 
