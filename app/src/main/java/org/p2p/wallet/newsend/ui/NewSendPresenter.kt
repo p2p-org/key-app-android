@@ -448,6 +448,7 @@ class NewSendPresenter(
             senderAddress = tokenKeyProvider.publicKey,
             amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
             destination = recipientAddress.addressState.address,
+            counterPartyUsername = recipientAddress.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
             iconUrl = emptyString(),

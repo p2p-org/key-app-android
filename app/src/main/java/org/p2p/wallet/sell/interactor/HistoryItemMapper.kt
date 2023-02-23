@@ -66,7 +66,7 @@ class HistoryItemMapper(private val resources: Resources) {
                 tokenIconUrl = getTokenIconUrl()
                 iconRes = getIcon()
 
-                startTitle = getAddress()
+                startTitle = getUsernameOrAddress()
                 startSubtitle = resources.getString(getTypeName())
                 endTopValue = getValue()
                 endTopValueTextColor = getTextColor()
