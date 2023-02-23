@@ -1,11 +1,11 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import org.p2p.core.utils.isZero
 import java.math.BigDecimal
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -28,6 +28,7 @@ class JupiterSwapPresenter(
     private val dispatchers: CoroutineDispatchers,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
+    private var featureState: SwapState? = null
     private var rateTokenAJob: Job? = null
     private var rateTokenBJob: Job? = null
     private var debounceInputJob: Job? = null
@@ -58,6 +59,60 @@ class JupiterSwapPresenter(
 
     override fun onSwapTokenClick() {
         stateManager.onNewAction(SwapStateAction.SwapSuccess)
+    }
+
+    override fun onAllAmountClick() {
+        val allTokenAAmount = when (val featureState = featureState) {
+            SwapState.InitialLoading,
+            is SwapState.SwapLoaded,
+            is SwapState.TokenAZero,
+            is SwapState.LoadingRoutes,
+            is SwapState.LoadingTransaction -> getTokenAAmount(featureState)
+            is SwapState.SwapException.FeatureExceptionWrapper -> getTokenAAmount(featureState.previousFeatureState)
+            is SwapState.SwapException.OtherException -> getTokenAAmount(featureState.previousFeatureState)
+            null -> null
+        }
+        if (allTokenAAmount != null) {
+            stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(allTokenAAmount))
+        }
+    }
+
+    private fun getTokenAAmount(state: SwapState): BigDecimal? {
+        val tokenA = when (state) {
+            is SwapState.LoadingRoutes -> state.tokenA
+            is SwapState.LoadingTransaction -> state.tokenA
+            is SwapState.SwapLoaded -> state.tokenA
+            is SwapState.TokenAZero -> state.tokenA
+            SwapState.InitialLoading,
+            is SwapState.SwapException.FeatureExceptionWrapper,
+            is SwapState.SwapException.OtherException -> null
+        }
+        return (tokenA as? SwapTokenModel.UserToken)?.details?.total
+    }
+
+    override fun onChangeTokenAClick() {
+        if (isPossibleOpenChangTokenScreen(featureState))
+            view?.openChangeTokenAScreen()
+    }
+
+    override fun onChangeTokenBClick() {
+        if (isPossibleOpenChangTokenScreen(featureState))
+            view?.openChangeTokenBScreen()
+    }
+
+    private fun isPossibleOpenChangTokenScreen(featureState: SwapState?): Boolean {
+        return when (featureState) {
+            null,
+            SwapState.InitialLoading -> false
+            is SwapState.LoadingRoutes,
+            is SwapState.LoadingTransaction,
+            is SwapState.SwapLoaded,
+            is SwapState.TokenAZero -> true
+            is SwapState.SwapException.FeatureExceptionWrapper ->
+                isPossibleOpenChangTokenScreen(featureState.previousFeatureState)
+            is SwapState.SwapException.OtherException ->
+                isPossibleOpenChangTokenScreen(featureState.previousFeatureState)
+        }
     }
 
     override fun finishFeature(stateManagerHolderKey: String) {

@@ -55,6 +55,9 @@ class JupiterSwapFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             swapWidgetFrom.onAmountChanged = { presenter.onTokenAmountChange(it) }
+            swapWidgetFrom.onAllAmountClick = { presenter.onAllAmountClick() }
+            swapWidgetFrom.onChangeTokenClick = { presenter.onChangeTokenAClick() }
+            swapWidgetTo.onChangeTokenClick = { presenter.onChangeTokenBClick() }
             imageViewSwapTokens.background = shapeDrawable(shapeCircle())
             imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
             imageViewSwapTokens.rippleForeground(shapeCircle())
@@ -103,6 +106,14 @@ class JupiterSwapFragment :
 
     override fun setRatioState(state: TextViewCellModel) {
         binding.textViewRate.bind(state)
+    }
+
+    override fun openChangeTokenAScreen() {
+        TODO("Not yet implemented")
+    }
+
+    override fun openChangeTokenBScreen() {
+        TODO("Not yet implemented")
     }
 
     private fun setYellowAlert() {
