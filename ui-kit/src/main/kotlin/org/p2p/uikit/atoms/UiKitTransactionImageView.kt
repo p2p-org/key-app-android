@@ -5,11 +5,11 @@ import androidx.core.content.res.use
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import android.widget.ImageView
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTransactionImageBinding
 import org.p2p.uikit.utils.inflateViewBinding
-import org.p2p.uikit.utils.toPx
 import org.p2p.uikit.utils.withImageOrGone
 
 private const val IMAGE_SIZE = 48
@@ -22,7 +22,6 @@ class UiKitTransactionImageView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val binding = inflateViewBinding<WidgetTransactionImageBinding>()
-    private val defaultIconPadding = 12.toPx()
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitTransactionImageView).use { typedArray ->
@@ -40,8 +39,8 @@ class UiKitTransactionImageView @JvmOverloads constructor(
         }
     }
 
-    fun setTransactionIcon(@DrawableRes iconRes: Int, iconPadding: Int = defaultIconPadding) = with(binding) {
-        frameToken.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+    fun setTransactionIcon(@DrawableRes iconRes: Int) = with(binding) {
+        imageViewToken.scaleType = ImageView.ScaleType.CENTER
         imageViewToken.setImageResource(iconRes)
     }
 
@@ -49,7 +48,7 @@ class UiKitTransactionImageView @JvmOverloads constructor(
         glideManager: GlideManager,
         tokenIconUrl: String
     ) = with(binding) {
-        frameToken.setPadding(0, 0, 0, 0)
+        imageViewToken.scaleType = ImageView.ScaleType.FIT_CENTER
         glideManager.load(imageViewToken, tokenIconUrl, IMAGE_SIZE, circleCrop = true)
     }
 
