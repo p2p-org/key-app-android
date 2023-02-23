@@ -197,11 +197,13 @@ class HistoryTransactionDetailsBottomSheetPresenter(
         when (status) {
             HistoryTransactionStatus.COMPLETED -> {
                 titleRes = R.string.transaction_details_title_succeeded
-                colorRes = when {
-                    transaction is RpcHistoryTransaction.Transfer && transaction.isSend ||
-                        transaction is RpcHistoryTransaction.BurnOrMint && transaction.isBurn ||
-                        transaction is RpcHistoryTransaction.Swap -> R.color.text_night
-                    else -> R.color.text_mint
+                val isTransactionTransfer = transaction is RpcHistoryTransaction.Transfer && transaction.isSend
+                val isTransactionBurn = transaction is RpcHistoryTransaction.BurnOrMint && transaction.isBurn
+                val isTransactionSwap = transaction is RpcHistoryTransaction.Swap
+                colorRes = if (isTransactionTransfer || isTransactionBurn || isTransactionSwap) {
+                    R.color.text_night
+                } else {
+                    R.color.text_mint
                 }
             }
             HistoryTransactionStatus.PENDING -> {

@@ -78,16 +78,10 @@ sealed class RpcHistoryTransaction(
         }
 
         @ColorRes
-        fun getTextColor() = when {
-            !status.isCompleted() -> {
-                R.color.text_rose
-            }
-            isBurn -> {
-                R.color.text_night
-            }
-            else -> {
-                R.color.text_mint
-            }
+        fun getTextColor(): Int = when {
+            !status.isCompleted() -> R.color.text_rose
+            isBurn -> R.color.text_night
+            else -> R.color.text_mint
         }
 
         fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isBurn))
