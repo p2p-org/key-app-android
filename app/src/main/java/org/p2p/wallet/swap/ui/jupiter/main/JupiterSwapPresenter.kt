@@ -114,6 +114,10 @@ class JupiterSwapPresenter(
         }
     }
 
+    override fun onBackPressed() {
+        view?.closeScreen()
+    }
+
     override fun finishFeature(stateManagerHolderKey: String) {
         managerHolder.clear(stateManagerHolderKey)
     }
