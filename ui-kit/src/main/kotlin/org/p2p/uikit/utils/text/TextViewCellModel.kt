@@ -21,6 +21,7 @@ import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
+import org.p2p.uikit.utils.skeleton.SkeletonDrawable
 import org.p2p.uikit.utils.skeleton.bindSkeleton
 import org.p2p.uikit.utils.toPx
 
@@ -114,9 +115,9 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
             backgroundTintList = initialTextStyle.backgroundTint
         }
     setHintTextColor(initialTextStyle.hintTextColors)
-//    if (foreground is SkeletonDrawable) {
-//        foreground = null
-//    }
+    if (foreground is SkeletonDrawable) {
+        foreground = null
+    }
 
     val autoSize = model.autoSizeConfiguration
     val initialAutoSize = initialTextStyle.textViewAutoSizeConfiguration
