@@ -191,14 +191,18 @@ object SwapModule : InjectionModule {
             )
         }
 
+        singleOf(::SwapStateManagerHolder)
+
         factory { (token: Token.Active?, stateManagerHolderKey: String) ->
-            val stateManager = SwapStateManagerHolder.getOrCreate(stateManagerHolderKey) {
+            val managerHolder: SwapStateManagerHolder = get()
+            val stateManager = managerHolder.getOrCreate(stateManagerHolderKey) {
                 SwapStateManager(
                     dispatchers = get(),
                     handlers = get(parameters = { parametersOf(token) }),
                 )
             }
             JupiterSwapPresenter(
+                managerHolder = managerHolder,
                 widgetMapper = get(),
                 buttonMapper = get(),
                 stateManager = stateManager
