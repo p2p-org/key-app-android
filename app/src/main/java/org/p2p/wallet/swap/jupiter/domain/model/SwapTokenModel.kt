@@ -29,6 +29,7 @@ sealed interface SwapTokenModel {
     data class JupiterToken(
         val details: JupiterSwapToken,
     ) : SwapTokenModel {
+        val coingeckoId: String? = details.coingeckoId
         override val decimals: Int = details.decimals
         override val mintAddress: Base58String = details.tokenMint
         override val tokenName: String = details.tokenName
