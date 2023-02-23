@@ -52,6 +52,7 @@ private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 class MainFragment :
     BaseFragment(R.layout.fragment_main),
     MainTabsSwitcher,
+    MainTabsScreen,
     CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
@@ -195,7 +196,7 @@ class MainFragment :
         val itemId = clickedTab.itemId
 
         // fixme: https://p2pvalidator.atlassian.net/browse/PWN-7051 Refreshing swap every time
-        if (clickedTab == ScreenTab.SWAP_SCREEN) {
+        if (clickedTab == ScreenTab.SWAP_SCREEN && tabCachedFragments.get(itemId) is OrcaSwapFragment) {
             tabCachedFragments.remove(itemId)
         }
 

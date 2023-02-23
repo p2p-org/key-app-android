@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
+import androidx.activity.addCallback
 import androidx.core.view.isInvisible
 import android.os.Bundle
 import android.view.View
@@ -25,8 +26,10 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
+import org.p2p.wallet.home.isInMainTabsScreen
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -60,6 +63,14 @@ class JupiterSwapFragment :
             imageViewSwapTokens.rippleForeground(shapeCircle())
             imageViewSwapTokens.setOnClickListener {
                 presenter.switchTokens()
+            }
+            val onBackPressed = { presenter.onBackPressed() }
+            toolbar.setNavigationOnClickListener { onBackPressed() }
+            if (isInMainTabsScreen()) {
+                toolbar.navigationIcon = null
+            } else {
+                requireActivity().onBackPressedDispatcher
+                    .addCallback(viewLifecycleOwner) { onBackPressed() }
             }
 
             sliderSend.onSlideCompleteListener = { sliderSend.showCompleteAnimation() }
@@ -150,5 +161,9 @@ class JupiterSwapFragment :
     override fun onDestroy() {
         super.onDestroy()
         presenter.finishFeature(stateManagerHolderKey)
+    }
+
+    override fun closeScreen() {
+        popBackStack()
     }
 }
