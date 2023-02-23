@@ -44,9 +44,11 @@ class SwapStateTokenAZeroHandler(
             }
 
             SwapStateAction.SwitchTokens -> {
+                val oldStateA = oldState.tokenA
+                val oldStateB = oldState.tokenB
                 stateFlow.value = oldState.copy(
-                    tokenA = oldState.tokenB,
-                    tokenB = oldState.tokenA,
+                    tokenA = oldStateB,
+                    tokenB = oldStateA,
                 )
             }
             SwapStateAction.RefreshRoutes,
