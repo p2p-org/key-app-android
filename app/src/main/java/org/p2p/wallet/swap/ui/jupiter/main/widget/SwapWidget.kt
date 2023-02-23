@@ -33,6 +33,8 @@ class SwapWidget @JvmOverloads constructor(
     private val initInputType: Int
     private var internalOnAmountChanged: ((newAmount: String) -> Unit)? = null
     var onAmountChanged: (newAmount: String) -> Unit = {}
+    var onAllAmountClick: () -> Unit = {}
+    var onChangeTokenClick: () -> Unit = {}
 
     init {
         minHeight = 120.toPx()
@@ -61,6 +63,8 @@ class SwapWidget @JvmOverloads constructor(
         textViewAvailableAmountTitle.isVisible = false
         textViewAvailableAmountValue.isVisible = false
         textViewCurrencyName.bindOrGone(model.currencySkeleton)
+        textViewCurrencyName.setOnClickListener(null)
+        textViewChangeCurrency.setOnClickListener(null)
         bindInput(model, model.amountSkeleton)
         textViewBalance.bindOrGone(model.balanceSkeleton)
         textViewFiatAmount.isVisible = false
@@ -71,6 +75,10 @@ class SwapWidget @JvmOverloads constructor(
         textViewWidgetTitle.bindOrGone(model.widgetTitle)
         textViewAvailableAmountTitle.isVisible = model.availableAmount != null
         textViewAvailableAmountValue.bindOrGone(model.availableAmount)
+        textViewAvailableAmountTitle.setOnClickListener { onAllAmountClick() }
+        textViewAvailableAmountValue.setOnClickListener { onAllAmountClick() }
+        textViewCurrencyName.setOnClickListener { onChangeTokenClick() }
+        textViewChangeCurrency.setOnClickListener { onChangeTokenClick() }
         textViewCurrencyName.bindOrGone(model.currencyName)
         bindInput(model, model.amount)
         textViewBalance.bindOrGone(model.balance)
