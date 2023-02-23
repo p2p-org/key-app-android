@@ -4,6 +4,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -42,8 +43,22 @@ import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionMapper
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRemoteRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateInitialLoadingHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingRoutesHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingTransactionHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateSwapLoadedHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
+import org.p2p.wallet.swap.jupiter.statemanager.token_selector.CommonSwapTokenSelector
+import org.p2p.wallet.swap.jupiter.statemanager.token_selector.PreinstallTokenASelector
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapContract
+import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapPresenter
+import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
+import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensContract
 import org.p2p.wallet.swap.ui.jupiter.tokens.interactor.SwapTokensInteractor
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
@@ -138,6 +153,65 @@ object SwapModule : InjectionModule {
         singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
 
         factoryOf(::JupiterSwapInteractor)
+
+        factoryOf(::SwapStateRoutesRefresher)
+        factoryOf(::SwapWidgetMapper)
+        factoryOf(::SwapButtonMapper)
+
+        factory { (token: Token.Active?) ->
+            if (token == null) {
+                CommonSwapTokenSelector(
+                    jupiterTokensRepository = get(),
+                    homeLocalRepository = get(),
+                    dispatchers = get(),
+                )
+            } else {
+                PreinstallTokenASelector(
+                    jupiterTokensRepository = get(),
+                    dispatchers = get(),
+                    homeLocalRepository = get(),
+                    preinstallTokenA = token,
+                )
+            }
+        }
+        factory { (token: Token.Active?) ->
+            SwapStateInitialLoadingHandler(
+                dispatchers = get(),
+                initialTokenSelector = get(parameters = { parametersOf(token) })
+            )
+        }
+        factoryOf(::SwapStateLoadingRoutesHandler)
+        factoryOf(::SwapStateLoadingTransactionHandler)
+        factoryOf(::SwapStateSwapLoadedHandler)
+        factoryOf(::SwapStateTokenAZeroHandler)
+
+        factory { (token: Token.Active?) ->
+            setOf(
+                get<SwapStateInitialLoadingHandler>(parameters = { parametersOf(token) }),
+                get<SwapStateLoadingRoutesHandler>(),
+                get<SwapStateLoadingTransactionHandler>(),
+                get<SwapStateSwapLoadedHandler>(),
+                get<SwapStateTokenAZeroHandler>(),
+            )
+        }
+
+        singleOf(::SwapStateManagerHolder)
+
+        factory { (token: Token.Active?, stateManagerHolderKey: String) ->
+            val managerHolder: SwapStateManagerHolder = get()
+            val stateManager = managerHolder.getOrCreate(stateManagerHolderKey) {
+                SwapStateManager(
+                    dispatchers = get(),
+                    handlers = get(parameters = { parametersOf(token) }),
+                )
+            }
+            JupiterSwapPresenter(
+                managerHolder = managerHolder,
+                widgetMapper = get(),
+                buttonMapper = get(),
+                stateManager = stateManager
+            )
+        } bind JupiterSwapContract.Presenter::class
 
         factoryOf(::SwapTokensInteractor)
         factoryOf(::SwapTokensToCellItemsMapper)

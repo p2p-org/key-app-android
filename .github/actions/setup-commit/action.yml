@@ -22,6 +22,16 @@ runs:
       run: |
         git config user.name '${{ inputs.github-author-name }}'
         git config user.email '${{ inputs.github-author-email }}'
+        
+        # Stash any local changes, i.e. LocalCommit.kt/AppVersions.kt
+        git stash
+
+        # Pull changes from the remote repository and merge them into the current branch
         git pull
+
+        # Apply the stashed changes on top of the merged changes
+        git stash apply
+        
+        # Commit and push changes
         git commit -am "${{ inputs.github-commit-message }}"
         git push

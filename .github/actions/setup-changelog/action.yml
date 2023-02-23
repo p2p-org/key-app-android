@@ -7,8 +7,11 @@ runs:
     - name: "Find last commit hash and current one"
       shell: bash
       run: |
-        # Get the latest commit hash was saved in last_commit_hash.txt
-        last_commit_hash=$(cat last_commit_hash.txt)
+        # Pull changes from the remote repository and merge them into the current branch
+        git pull
+        
+        # Get the latest commit hash was saved in LastCommit.kt
+        last_commit_hash=$(cd $GITHUB_WORKSPACE && sed -n 's/^ *const *val *COMMIT_HASH *= *"\(.*\)".*$/\1/p' buildSrc/src/main/java/LastCommit.kt)
         
         # Fetch the latest changes from the remote repository
         git fetch origin

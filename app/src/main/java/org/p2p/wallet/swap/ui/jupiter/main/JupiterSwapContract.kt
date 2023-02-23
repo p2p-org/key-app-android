@@ -17,5 +17,6 @@ interface JupiterSwapContract {
         fun switchTokens()
         fun onTokenAmountChange(amount: String)
         fun onSwapTokenClick()
+        fun finishFeature(stateManagerHolderKey: String)
     }
 }
