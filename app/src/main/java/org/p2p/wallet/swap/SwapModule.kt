@@ -8,6 +8,8 @@ import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.create
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
@@ -42,6 +44,7 @@ import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransaction
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRemoteRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateInitialLoadingHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingRoutesHandler
@@ -56,11 +59,12 @@ import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapContract
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapPresenter
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
+import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensContract
+import org.p2p.wallet.swap.ui.jupiter.tokens.interactor.SwapTokensInteractor
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensToCellItemsMapper
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
-import retrofit2.Retrofit
-import retrofit2.create
-import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 
 object SwapModule : InjectionModule {
@@ -212,5 +216,9 @@ object SwapModule : InjectionModule {
                 dispatchers = get(),
             )
         } bind JupiterSwapContract.Presenter::class
+
+        factoryOf(::SwapTokensInteractor)
+        factoryOf(::SwapTokensToCellItemsMapper)
+        factoryOf(::SwapTokensPresenter) bind SwapTokensContract.Presenter::class
     }
 }

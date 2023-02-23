@@ -32,8 +32,8 @@ class JupiterSwapPresenter(
     private var rateTokenAJob: Job? = null
     private var rateTokenBJob: Job? = null
     private var debounceInputJob: Job? = null
-    private var widgetAState: SwapWidgetModel = widgetMapper.mapWidgetLoading(isTokenA = true)
-    private var widgetBState: SwapWidgetModel = widgetMapper.mapWidgetLoading(isTokenA = false)
+    private var widgetAState: SwapWidgetModel = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A)
+    private var widgetBState: SwapWidgetModel = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_B)
 
     override fun attach(view: JupiterSwapContract.View) {
         super.attach(view)
@@ -172,8 +172,8 @@ class JupiterSwapPresenter(
     }
 
     private fun handleInitialLoading() {
-        widgetAState = widgetMapper.mapWidgetLoading(isTokenA = true)
-        widgetBState = widgetMapper.mapWidgetLoading(isTokenA = false)
+        widgetAState = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A)
+        widgetBState = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_B)
         updateWidgets()
         view?.setButtonState(buttonState = SwapButtonState.Hide)
     }
@@ -182,7 +182,7 @@ class JupiterSwapPresenter(
         rateTokenAJob?.cancel()
         rateTokenAJob = rateLoaderTokenA.getRate(tokenA)
             .flowOn(dispatchers.io)
-            .onEach { handleRateLoader(state = it, isTokenA = true, tokenAmount = tokenAmount) }
+            .onEach { handleRateLoader(state = it, tokenType = SwapTokenType.TOKEN_A, tokenAmount = tokenAmount) }
             .launchIn(this)
     }
 
@@ -190,30 +190,34 @@ class JupiterSwapPresenter(
         rateTokenBJob?.cancel()
         rateTokenBJob = rateLoaderTokenB.getRate(tokenB)
             .flowOn(dispatchers.io)
-            .onEach { handleRateLoader(state = it, isTokenA = false, tokenAmount = tokenAmount) }
+            .onEach { handleRateLoader(state = it, tokenType = SwapTokenType.TOKEN_B, tokenAmount = tokenAmount) }
             .launchIn(this)
     }
 
     private fun handleRateLoader(
         state: SwapRateLoaderState,
-        isTokenA: Boolean,
+        tokenType: SwapTokenType,
         tokenAmount: BigDecimal,
     ) {
-        val widgetModel = (if (isTokenA) widgetAState else widgetBState) as? SwapWidgetModel.Content ?: return
+        val widgetModel = when (tokenType) {
+            SwapTokenType.TOKEN_A -> widgetAState
+            SwapTokenType.TOKEN_B -> widgetBState
+        } as? SwapWidgetModel.Content ?: return
         val newWidgetModel = widgetMapper.mapFiatAmount(
             state = state,
             widgetModel = widgetModel,
             tokenAmount = tokenAmount
         )
-        if (isTokenA) {
-            widgetAState = newWidgetModel
-        } else {
-            // todo price impact
-            /*var fiatAmount = fiatAmount(token, tokenAmount)
-            if (true) {
-                fiatAmount = fiatAmount?.copy(textColor = R.color.text_night)
-            }*/
-            widgetBState = newWidgetModel
+        when (tokenType) {
+            SwapTokenType.TOKEN_A -> widgetAState = newWidgetModel
+            SwapTokenType.TOKEN_B -> {
+                // todo price impact
+                /*var fiatAmount = fiatAmount(token, tokenAmount)
+                if (true) {
+                    fiatAmount = fiatAmount?.copy(textColor = R.color.text_night)
+                }*/
+                widgetBState = newWidgetModel
+            }
         }
         updateWidgets()
     }
