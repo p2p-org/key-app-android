@@ -133,6 +133,7 @@ class JupiterSwapPresenter(
                 // todo
             }
         }
+        featureState = state
     }
 
     private fun handleSwapLoaded(state: SwapState.SwapLoaded) {
