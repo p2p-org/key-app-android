@@ -68,8 +68,7 @@ class JupiterSwapPresenter(
             is SwapState.TokenAZero,
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction -> getTokenAAmount(featureState)
-            is SwapState.SwapException.FeatureExceptionWrapper -> getTokenAAmount(featureState.previousFeatureState)
-            is SwapState.SwapException.OtherException -> getTokenAAmount(featureState.previousFeatureState)
+            is SwapState.SwapException -> getTokenAAmount(featureState.previousFeatureState)
             null -> null
         }
         if (allTokenAAmount != null) {
@@ -91,16 +90,18 @@ class JupiterSwapPresenter(
     }
 
     override fun onChangeTokenAClick() {
-        if (isPossibleOpenChangTokenScreen(featureState))
+        if (isChangeTokenScreenAvailable(featureState)) {
             view?.openChangeTokenAScreen()
+        }
     }
 
     override fun onChangeTokenBClick() {
-        if (isPossibleOpenChangTokenScreen(featureState))
+        if (isChangeTokenScreenAvailable(featureState)) {
             view?.openChangeTokenBScreen()
+        }
     }
 
-    private fun isPossibleOpenChangTokenScreen(featureState: SwapState?): Boolean {
+    private fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
         return when (featureState) {
             null,
             SwapState.InitialLoading -> false
@@ -109,9 +110,9 @@ class JupiterSwapPresenter(
             is SwapState.SwapLoaded,
             is SwapState.TokenAZero -> true
             is SwapState.SwapException.FeatureExceptionWrapper ->
-                isPossibleOpenChangTokenScreen(featureState.previousFeatureState)
+                isChangeTokenScreenAvailable(featureState.previousFeatureState)
             is SwapState.SwapException.OtherException ->
-                isPossibleOpenChangTokenScreen(featureState.previousFeatureState)
+                isChangeTokenScreenAvailable(featureState.previousFeatureState)
         }
     }
 

@@ -54,10 +54,7 @@ class JupiterSwapFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            swapWidgetFrom.onAmountChanged = { presenter.onTokenAmountChange(it) }
-            swapWidgetFrom.onAllAmountClick = { presenter.onAllAmountClick() }
-            swapWidgetFrom.onChangeTokenClick = { presenter.onChangeTokenAClick() }
-            swapWidgetTo.onChangeTokenClick = { presenter.onChangeTokenBClick() }
+            setupWidgetsActionCallbacks()
             imageViewSwapTokens.background = shapeDrawable(shapeCircle())
             imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
             imageViewSwapTokens.rippleForeground(shapeCircle())
@@ -68,6 +65,13 @@ class JupiterSwapFragment :
             sliderSend.onSlideCompleteListener = { sliderSend.showCompleteAnimation() }
             sliderSend.onSlideCollapseCompleted = { presenter.onSwapTokenClick() }
         }
+    }
+
+    private fun setupWidgetsActionCallbacks() = with(binding) {
+        swapWidgetFrom.onAmountChanged = { presenter.onTokenAmountChange(it) }
+        swapWidgetFrom.onAllAmountClick = { presenter.onAllAmountClick() }
+        swapWidgetFrom.onChangeTokenClick = { presenter.onChangeTokenAClick() }
+        swapWidgetTo.onChangeTokenClick = { presenter.onChangeTokenBClick() }
     }
 
     override fun applyWindowInsets(rootView: View) {
