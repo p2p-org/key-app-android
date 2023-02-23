@@ -189,6 +189,7 @@ sealed class RpcHistoryTransaction(
         val amount: RpcHistoryAmount,
         val symbol: String,
         val destination: String,
+        val counterPartyUsername: String?,
         val fees: List<RpcFee>?,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
@@ -207,7 +208,11 @@ sealed class RpcHistoryTransaction(
             resources.getString(R.string.details_transfer_format, destination.cutMiddle(), symbol)
         }
 
-        fun getAddress(): String = if (isSend) "To ${destination.cutStart()}" else "From ${senderAddress.cutStart()}"
+        fun getUsernameOrAddress(): String = counterPartyUsername ?: getAddress()
+
+        private fun getAddress(): String {
+            return if (isSend) "To ${destination.cutStart()}" else "From ${senderAddress.cutStart()}"
+        }
 
         fun getValue(): String? = amount.totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isSend))
 
