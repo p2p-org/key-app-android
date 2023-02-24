@@ -13,7 +13,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MILLIS = 20_000L
@@ -45,6 +44,9 @@ class SwapStateManager(
     fun onNewAction(action: SwapStateAction) {
         refreshJob?.cancel()
         activeActionHandleJob?.cancel()
+        if (action is SwapStateAction.CancelSwapLoading) {
+            return
+        }
         activeActionHandleJob = launch {
             try {
                 handleNewAction(action)
@@ -83,7 +85,7 @@ class SwapStateManager(
                     delay(DELAY_IN_MILLIS)
                     handleNewAction(SwapStateAction.RefreshRoutes)
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Timber.e(e)
                 // todo ignore?
             }
