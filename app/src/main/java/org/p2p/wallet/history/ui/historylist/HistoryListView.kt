@@ -45,8 +45,6 @@ class HistoryListView @JvmOverloads constructor(
         historyListViewPresenter: HistoryListViewContract.Presenter,
         onTransactionClicked: (String) -> Unit,
         onSellTransactionClicked: (String) -> Unit,
-        onBuyClicked: () -> Unit,
-        onReceiveClicked: () -> Unit,
         token: Token.Active? = null
     ) {
         presenter = historyListViewPresenter
@@ -58,14 +56,11 @@ class HistoryListView @JvmOverloads constructor(
             onHistoryItemClicked = presenter::onItemClicked,
             onRetryClicked = presenter::loadNextHistoryPage,
         )
-        bindView(onBuyClicked, onReceiveClicked)
+        bindView()
         presenter.attach(this)
     }
 
-    private fun bindView(
-        onBuyClicked: () -> Unit,
-        onReceiveClicked: () -> Unit,
-    ) {
+    private fun bindView() {
         with(binding) {
             errorStateLayout.buttonRetry.setOnClickListener {
                 presenter.refreshHistory()
@@ -81,13 +76,6 @@ class HistoryListView @JvmOverloads constructor(
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
                 scrollListener.reset()
-            }
-
-            emptyStateLayout.buttonBuy.setOnClickListener {
-                onBuyClicked.invoke()
-            }
-            emptyStateLayout.buttonReceive.setOnClickListener {
-                onReceiveClicked.invoke()
             }
         }
     }
