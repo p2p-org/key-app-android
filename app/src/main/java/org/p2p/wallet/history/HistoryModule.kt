@@ -79,7 +79,8 @@ object HistoryModule : InjectionModule {
                 MoonpayHistoryRemoteRepository(
                     sellEnabledFeatureToggle = get(),
                     repository = get(),
-                    tokenKeyProvider = get()
+                    tokenKeyProvider = get(),
+                    hiddenSellTransactionsStorageContract = get()
                 )
             )
             HistoryRepository(remotes)
