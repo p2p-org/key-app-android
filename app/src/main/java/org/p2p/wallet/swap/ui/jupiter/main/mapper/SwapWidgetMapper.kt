@@ -41,7 +41,8 @@ class SwapWidgetMapper {
             is SwapRateLoaderState.Loaded -> widgetModel.copy(
                 fiatAmount = fiatAmount(
                     fiatAmount = tokenAmount.multiply(state.rate)
-                )
+                ),
+                amount = tokenAmount(state.token, tokenAmount)
             )
             SwapRateLoaderState.Loading -> widgetModel.copy(
                 fiatAmount = textCellSkeleton(
@@ -53,10 +54,22 @@ class SwapWidgetMapper {
         }
     }
 
-    fun mapTokenA(
+    fun mapTokenAAndSaveOldFiatAmount(
+        oldWidgetModel: SwapWidgetModel,
         token: SwapTokenModel,
         tokenAmount: BigDecimal? = null,
     ): SwapWidgetModel {
+        var result = mapTokenA(token, tokenAmount)
+        if (oldWidgetModel is SwapWidgetModel.Content && oldWidgetModel.fiatAmount != null) {
+            result = result.copy(fiatAmount = oldWidgetModel.fiatAmount)
+        }
+        return result
+    }
+
+    fun mapTokenA(
+        token: SwapTokenModel,
+        tokenAmount: BigDecimal? = null,
+    ): SwapWidgetModel.Content {
         return SwapWidgetModel.Content(
             isStatic = false,
             widgetTitle = swapWidgetFromTitle(),
@@ -69,7 +82,19 @@ class SwapWidgetMapper {
         )
     }
 
-    fun mapTokenB(token: SwapTokenModel, tokenAmount: BigDecimal?): SwapWidgetModel {
+    fun mapTokenBAndSaveOldFiatAmount(
+        oldWidgetModel: SwapWidgetModel,
+        token: SwapTokenModel,
+        tokenAmount: BigDecimal? = null,
+    ): SwapWidgetModel {
+        var result = mapTokenB(token, tokenAmount)
+        if (oldWidgetModel is SwapWidgetModel.Content && oldWidgetModel.fiatAmount != null) {
+            result = result.copy(fiatAmount = oldWidgetModel.fiatAmount)
+        }
+        return result
+    }
+
+    fun mapTokenB(token: SwapTokenModel, tokenAmount: BigDecimal?): SwapWidgetModel.Content {
         return SwapWidgetModel.Content(
             isStatic = true,
             widgetTitle = swapWidgetToTitle(),
