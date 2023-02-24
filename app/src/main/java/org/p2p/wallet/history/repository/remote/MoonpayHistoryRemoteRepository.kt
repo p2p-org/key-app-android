@@ -41,9 +41,7 @@ class MoonpayHistoryRemoteRepository(
             historyPagingState = HistoryPagingState.INACTIVE
             HistoryPagingResult.Success(
                 newTransactions.filter {
-                    !hiddenSellTransactionsStorageContract.isTransactionHidden(
-                        it.transactionId
-                    )
+                    !hiddenSellTransactionsStorageContract.isTransactionHidden(it.transactionId)
                 }
             )
         } catch (e: Throwable) {

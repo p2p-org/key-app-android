@@ -53,18 +53,10 @@ class SellTransactionDetailsPresenter(
 
                 val transaction = currentTransaction ?: return@launch
                 val viewState = when (transaction.status) {
-                    SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
-                        buildWaitingForDepositViewState(transaction)
-                    }
-                    SellTransactionStatus.PENDING -> {
-                        buildPendingViewState(transaction)
-                    }
-                    SellTransactionStatus.COMPLETED -> {
-                        buildCompletedViewState(transaction)
-                    }
-                    SellTransactionStatus.FAILED -> {
-                        buildFailedViewState(transaction)
-                    }
+                    SellTransactionStatus.WAITING_FOR_DEPOSIT -> buildWaitingForDepositViewState(transaction)
+                    SellTransactionStatus.PENDING -> buildPendingViewState(transaction)
+                    SellTransactionStatus.COMPLETED -> buildCompletedViewState(transaction)
+                    SellTransactionStatus.FAILED -> buildFailedViewState(transaction)
                 }
                 historyAnalytics.logSellTransactionClicked(transaction)
                 view?.renderViewState(viewState)
