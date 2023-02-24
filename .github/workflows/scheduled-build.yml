@@ -67,9 +67,9 @@ jobs:
           artifact-type: "apk"
       - name: "Upload APK to BrowserStack (Feature)"
         uses: ./.github/actions/setup-browser-stack
-          with:
-            browserstack-credentials: ${{ secrets.BROWSER_STACK_CREDENTIALS }}
-            build-type: "feature"
+        with:
+          browserstack-credentials: ${{ secrets.BROWSER_STACK_CREDENTIALS }}
+          build-type: "feature"
       - name: "Upload changelog, and Jira ticket to slack channel"
         run: bash bash_scripts/slack_upload_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} CHANGELOG.txt
       - name: "Send finish deploy message to slack"
