@@ -366,33 +366,6 @@ class JupiterSwapPresenter(
         }
     }
 
-    private fun handleRateTokenALoader(
-        widgetAModel: SwapWidgetModel,
-        state: SwapRateLoaderState,
-        tokenAmount: BigDecimal,
-    ) {
-        val newWidgetModel = widgetMapper.mapFiatAmount(
-            state = state,
-            oldWidgetModel = widgetAModel,
-            tokenAmount = tokenAmount
-        )
-        when (tokenType) {
-            SwapTokenType.TOKEN_A -> {
-                widgetAState = newWidgetModel
-                view?.setFirstTokenWidgetState(state = widgetAState)
-            }
-            SwapTokenType.TOKEN_B -> {
-                // todo price impact
-                /*var fiatAmount = fiatAmount(token, tokenAmount)
-                if (true) {
-                    fiatAmount = fiatAmount?.copy(textColor = R.color.text_night)
-                }*/
-                widgetBState = newWidgetModel
-                view?.setSecondTokenWidgetState(state = widgetBState)
-            }
-        }
-    }
-
     private fun updateWidgets() {
         view?.setFirstTokenWidgetState(state = widgetAState)
         view?.setSecondTokenWidgetState(state = widgetBState)
