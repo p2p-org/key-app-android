@@ -6,13 +6,15 @@ import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
 
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRemoteRepository
 import org.p2p.wallet.utils.toBase58Instance
 
 class MoonpayHistoryRemoteRepository(
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val repository: MoonpaySellRemoteRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val hiddenSellTransactionsStorageContract: HiddenSellTransactionsStorageContract
 ) : HistoryRemoteRepository {
 
     private val allTransactions = mutableListOf<HistoryTransaction>()
@@ -37,7 +39,11 @@ class MoonpayHistoryRemoteRepository(
                 allTransactions.addAll(newTransactions)
             }
             historyPagingState = HistoryPagingState.INACTIVE
-            HistoryPagingResult.Success(newTransactions)
+            HistoryPagingResult.Success(
+                newTransactions.filter {
+                    !hiddenSellTransactionsStorageContract.isTransactionHidden(it.transactionId)
+                }
+            )
         } catch (e: Throwable) {
             HistoryPagingResult.Error(e)
         }

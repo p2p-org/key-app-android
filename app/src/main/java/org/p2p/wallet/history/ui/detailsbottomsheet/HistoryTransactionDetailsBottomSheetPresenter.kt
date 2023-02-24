@@ -123,7 +123,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             val total = transaction.getFormattedAbsTotal()
             showAmount(total, usdTotal)
             showFee(transaction.fees)
-            showTransferView(transaction.iconUrl, transaction.getIcon())
+            showTransferView(transaction.iconUrl, R.drawable.ic_placeholder_image)
             showStateTitleValue(
                 resources.getString(
                     if (transaction.isBurn) R.string.transaction_details_burn

@@ -8,7 +8,6 @@ import android.os.Parcelable
 import org.threeten.bp.ZonedDateTime
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.p2p.core.utils.Constants
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.asUsdTransaction
@@ -45,8 +44,7 @@ sealed class RpcHistoryTransaction(
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
         val amount: RpcHistoryAmount,
-        val destination: String,
-        val senderAddress: String,
+        val tokenSymbol: String,
         val iconUrl: String?,
         override val type: RpcHistoryTransactionType,
         val fees: List<RpcFee>?,
@@ -62,19 +60,19 @@ sealed class RpcHistoryTransaction(
         @DrawableRes
         fun getIcon(): Int = R.drawable.ic_renbtc
 
-        fun getUsdAmount(): String = "${getFormattedAmount()} ${Constants.USD_SYMBOL}"
+        fun getUsdAmount(): String = "${getFormattedAmount()}"
 
-        fun getTotal(): String = "${amount.total.scaleMedium().formatToken()} ${Constants.REN_BTC_SYMBOL}"
+        fun getTotal(): String = "${amount.total.scaleMedium().formatToken()} $tokenSymbol"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
-                "${amount.total.scaleMedium().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
+                "${amount.total.scaleMedium().toPlainString()} $tokenSymbol"
             } else {
-                "${amount.total.scaleLong().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
+                "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
             }
 
         fun getFormattedAbsTotal(): String {
-            return "${amount.total.abs().scaleLong().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
+            return "${amount.total.abs().scaleLong().toPlainString()} $tokenSymbol"
         }
 
         @ColorRes
