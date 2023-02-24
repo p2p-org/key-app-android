@@ -72,6 +72,7 @@ class HistoryListViewPresenter(
                 val newHistoryTransactions = handlePagingResult(result)
                 val adapterItems = historyItemMapper.toAdapterItem(newHistoryTransactions)
                 view?.showHistory(adapterItems)
+                view?.showPagingState(PagingState.Idle)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading history: $e")
                 view?.showPagingState(PagingState.Error(e))
