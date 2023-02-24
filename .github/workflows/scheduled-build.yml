@@ -40,7 +40,7 @@ jobs:
       - name: "Generate changelog"
         run: |
           touch CHANGELOG.txt
-          echo "daily build \n branch - develop" >> CHANGELOG.txt"
+          echo "daily build \n branch - develop" >> CHANGELOG.txt
           echo "changelog.txt created"
       - name: "Send start deploy message to slack"
         run: bash bash_scripts/slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}

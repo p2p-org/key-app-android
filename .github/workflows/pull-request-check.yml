@@ -4,6 +4,7 @@ on:
     branches:
       - develop
       - release/*
+      - feature/*
 
 jobs:
   android-lint:
