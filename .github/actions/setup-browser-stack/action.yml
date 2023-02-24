@@ -1,0 +1,32 @@
+name: "Upload APK to BrowserStack"
+description: "Upload the build to BrowserStack for UI tests"
+inputs:
+  browserstack-credentials:
+    required: true
+    description: "Authorization credentials for BrowserStack"
+  build-type:
+    required: true
+    description: "feature,release"
+
+runs:
+  using: composite
+  steps:
+    - name: POST request to upload
+      shell: bash
+      run: |
+        ls -R app/build/outputs/apk/${{ inputs.build-type }}
+        if [ "${{ inputs.build-type }}" == "feature" ]; then
+          custom_id="KeyApp_dev.apk"
+        elif [ "${{ inputs.build-type }}" == "release" ]; then
+          custom_id="KeyApp_rc.apk"
+        else
+          echo "Invalid build-type specified"
+          exit 1
+        fi
+        
+        credentials=${{ inputs.browserstack-credentials }}
+        
+        curl -u "${credentials}" \
+        -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+        -F "file=@$(find app/build/outputs/apk/${{ inputs.build-type }} -name 'key-app*')" \
+        -F "custom_id=${custom_id}"
