@@ -4,9 +4,9 @@
 #    - cron: '0 5 * * *'
 
 on:
-  push:
+  pull_request:
     branches:
-    - feature/*
+      - develop
 
 jobs:
   android-build-artifacts:
