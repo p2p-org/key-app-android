@@ -10,12 +10,14 @@ import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwap
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.utils.toBase58Instance
 
 class SwapStateRoutesRefresher(
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapRoutesRepository: JupiterSwapRoutesRepository,
-    private val swapTransactionRepository: JupiterSwapTransactionRepository
+    private val swapTransactionRepository: JupiterSwapTransactionRepository,
+    private val swapValidator: SwapValidator,
 ) {
     suspend fun refreshRoutes(
         state: MutableStateFlow<SwapState>,
@@ -25,6 +27,8 @@ class SwapStateRoutesRefresher(
         slippage: Double,
         activeRouteOrdinal: Int
     ) {
+        swapValidator.validateInputAmount(tokenA = tokenA, amountTokenA = amountTokenA)
+        swapValidator.validateIsSameTokens(tokenA = tokenA, tokenB = tokenB)
         state.value = SwapState.LoadingRoutes(
             tokenA = tokenA,
             tokenB = tokenB,

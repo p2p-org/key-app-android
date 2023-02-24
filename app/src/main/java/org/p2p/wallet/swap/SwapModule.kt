@@ -53,6 +53,7 @@ import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateSwapLoadedHandl
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.CommonSwapTokenSelector
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.PreinstallTokenASelector
+import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapContract
@@ -158,6 +159,7 @@ object SwapModule : InjectionModule {
 
         factoryOf(::JupiterSwapInteractor)
 
+        factoryOf(::SwapValidator)
         factoryOf(::SwapStateRoutesRefresher)
         factoryOf(::SwapWidgetMapper)
         factoryOf(::SwapButtonMapper)

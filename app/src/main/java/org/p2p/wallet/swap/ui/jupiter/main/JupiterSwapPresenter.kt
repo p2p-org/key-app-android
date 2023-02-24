@@ -6,16 +6,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.statemanager.SwapFeatureException
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
+import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.jupiter.statemanager.price_impact.toPriceImpactType
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
@@ -32,6 +36,7 @@ class JupiterSwapPresenter(
     private val dispatchers: CoroutineDispatchers,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
+    private var needToScrollPriceImpact = true
     private var featureState: SwapState? = null
     private var rateTokenAJob: Job? = null
     private var rateTokenBJob: Job? = null
@@ -66,7 +71,7 @@ class JupiterSwapPresenter(
                     view?.setSecondTokenWidgetState(widgetMapper.mapTokenBLoading(token = tokenB))
                 }
                 if (tokenA != null) {
-                    getRateTokenA(tokenA, newAmount)
+                    getRateTokenA(widgetAModel = widgetAState, tokenA = tokenA, tokenAmount = newAmount)
                 }
                 stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                 delay(AMOUNT_INPUT_DELAY)
@@ -160,128 +165,204 @@ class JupiterSwapPresenter(
 
     private fun handleFeatureState(state: SwapState) {
         cancelRateJobs()
+        featureState = state
         when (state) {
-            SwapState.InitialLoading -> handleInitialLoading()
+            is SwapState.InitialLoading -> handleInitialLoading(state)
             is SwapState.TokenAZero -> handleTokenAZero(state)
             is SwapState.LoadingRoutes -> handleLoadingRoutes(state)
             is SwapState.LoadingTransaction -> handleLoadingTransaction(state)
             is SwapState.SwapLoaded -> handleSwapLoaded(state)
-            is SwapState.SwapException.FeatureExceptionWrapper -> {
-                // todo
-            }
+            is SwapState.SwapException.FeatureExceptionWrapper -> handleFeatureException(state)
             is SwapState.SwapException.OtherException -> {
                 // todo
             }
         }
-        featureState = state
+    }
+
+    private fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
+        val (widgetAState, widgetBState) = mapWidgetStates(state.previousFeatureState)
+        when (val featureException = state.featureException) {
+            is SwapFeatureException.SameTokens ->
+                view?.setButtonState(buttonState = buttonMapper.mapSameToken())
+            is SwapFeatureException.RoutesNotFound ->
+                view?.setButtonState(buttonState = buttonMapper.mapRouteNotFound())
+            is SwapFeatureException.NotValidTokenA -> {
+                val tokenA = state.previousFeatureState.getTokensPair().first
+                this.widgetAState = widgetMapper.mapErrorTokenAAmount(
+                    tokenA = tokenA,
+                    oldWidgetAState = widgetAState,
+                    notValidAmount = featureException.notValidAmount
+                )
+                if (tokenA != null) getRateTokenA(
+                    widgetAModel = this.widgetAState,
+                    tokenA = tokenA,
+                    tokenAmount = featureException.notValidAmount
+                )
+                view?.setButtonState(buttonState = buttonMapper.mapTokenAmountNotEnough(tokenA))
+            }
+        }
+        updateWidgets()
     }
 
     private fun handleSwapLoaded(state: SwapState.SwapLoaded) {
-        widgetAState = widgetMapper.mapTokenAAndSaveOldFiatAmount(
-            oldWidgetModel = widgetAState,
-            token = state.tokenA,
-            tokenAmount = state.amountTokenA
-        )
-        widgetBState = widgetMapper.mapTokenBAndSaveOldFiatAmount(
-            oldWidgetModel = widgetBState,
-            token = state.tokenB,
-            tokenAmount = state.amountTokenB,
-        )
+        mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(
             buttonState = buttonMapper.mapReadyToSwap(tokenA = state.tokenA, tokenB = state.tokenB)
         )
-        getRateTokenA(tokenA = state.tokenA, tokenAmount = state.amountTokenA)
-        getRateTokenB(tokenB = state.tokenB, tokenAmount = state.amountTokenB)
+        getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
+        getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
 
     private fun handleLoadingTransaction(state: SwapState.LoadingTransaction) {
-        widgetAState = widgetMapper.mapTokenAAndSaveOldFiatAmount(
-            oldWidgetModel = widgetAState,
-            token = state.tokenA,
-            tokenAmount = state.amountTokenA
-        )
-        widgetBState = widgetMapper.mapTokenBAndSaveOldFiatAmount(
-            oldWidgetModel = widgetBState,
-            token = state.tokenB,
-            tokenAmount = state.amountTokenB,
-        )
+        mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = buttonMapper.mapLoading())
-        getRateTokenA(tokenA = state.tokenA, tokenAmount = state.amountTokenA)
-        getRateTokenB(tokenB = state.tokenB, tokenAmount = state.amountTokenB)
+        getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
+        getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
 
     private fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
-        widgetAState = widgetMapper.mapTokenAAndSaveOldFiatAmount(
-            oldWidgetModel = widgetAState,
-            token = state.tokenA,
-            tokenAmount = state.amountTokenA
-        )
-        widgetBState = widgetMapper.mapTokenBLoading(token = state.tokenB)
+        mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = buttonMapper.mapLoading())
-        getRateTokenA(tokenA = state.tokenA, tokenAmount = state.amountTokenA)
+        getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
     }
 
     private fun handleTokenAZero(state: SwapState.TokenAZero) {
-        widgetAState = widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = null)
-        widgetBState = widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
+        mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonMapper.mapEnterAmount())
     }
 
-    private fun handleInitialLoading() {
-        widgetAState = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A)
-        widgetBState = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_B)
+    private fun handleInitialLoading(state: SwapState.InitialLoading) {
+        mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = SwapButtonState.Hide)
     }
 
-    private fun getRateTokenA(tokenA: SwapTokenModel, tokenAmount: BigDecimal) {
+    private fun mapWidgetStates(state: SwapState): Pair<SwapWidgetModel, SwapWidgetModel> {
+        val result = when (state) {
+            SwapState.InitialLoading ->
+                widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A) to
+                    widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_B)
+            is SwapState.LoadingRoutes ->
+                widgetMapper.mapTokenAAndSaveOldFiatAmount(
+                    oldWidgetModel = widgetAState,
+                    token = state.tokenA,
+                    tokenAmount = state.amountTokenA
+                ) to widgetMapper.mapTokenBLoading(token = state.tokenB)
+            is SwapState.LoadingTransaction ->
+                widgetMapper.mapTokenAAndSaveOldFiatAmount(
+                    oldWidgetModel = widgetAState,
+                    token = state.tokenA,
+                    tokenAmount = state.amountTokenA
+                ) to widgetMapper.mapTokenBAndSaveOldFiatAmount(
+                    oldWidgetModel = widgetBState,
+                    token = state.tokenB,
+                    tokenAmount = state.amountTokenB,
+                )
+            is SwapState.SwapLoaded ->
+                widgetMapper.mapTokenAAndSaveOldFiatAmount(
+                    oldWidgetModel = widgetAState,
+                    token = state.tokenA,
+                    tokenAmount = state.amountTokenA
+                ) to widgetMapper.mapTokenBAndSaveOldFiatAmount(
+                    oldWidgetModel = widgetBState,
+                    token = state.tokenB,
+                    tokenAmount = state.amountTokenB,
+                )
+            is SwapState.TokenAZero ->
+                widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = null) to
+                    widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
+
+            is SwapState.SwapException -> mapWidgetStates(state.previousFeatureState)
+        }
+        widgetAState = result.first
+        widgetBState = result.second
+        return result
+    }
+
+    private fun getRateTokenA(widgetAModel: SwapWidgetModel, tokenA: SwapTokenModel, tokenAmount: BigDecimal) {
         rateTokenAJob?.cancel()
         rateTokenAJob = rateLoaderTokenA.getRate(tokenA)
             .flowOn(dispatchers.io)
-            .onEach { handleRateLoader(state = it, tokenType = SwapTokenType.TOKEN_A, tokenAmount = tokenAmount) }
+            .onEach {
+                if (isActive) handleRateTokenALoader(
+                    widgetAModel = widgetAModel,
+                    state = it,
+                    tokenAmount = tokenAmount,
+                )
+            }
             .launchIn(this)
     }
 
-    private fun getRateTokenB(tokenB: SwapTokenModel, tokenAmount: BigDecimal) {
+    private fun getRateTokenB(widgetBModel: SwapWidgetModel, tokenB: SwapTokenModel, tokenAmount: BigDecimal) {
         rateTokenBJob?.cancel()
         rateTokenBJob = rateLoaderTokenB.getRate(tokenB)
             .flowOn(dispatchers.io)
-            .onEach { handleRateLoader(state = it, tokenType = SwapTokenType.TOKEN_B, tokenAmount = tokenAmount) }
+            .onEach {
+                if (isActive) handleRateTokenBLoader(
+                    widgetBModel = widgetBModel,
+                    state = it,
+                    tokenAmount = tokenAmount,
+                )
+            }
             .launchIn(this)
     }
 
-    private fun handleRateLoader(
+    private fun handleRateTokenALoader(
+        widgetAModel: SwapWidgetModel,
         state: SwapRateLoaderState,
-        tokenType: SwapTokenType,
         tokenAmount: BigDecimal,
     ) {
-        val widgetModel = when (tokenType) {
-            SwapTokenType.TOKEN_A -> widgetAState
-            SwapTokenType.TOKEN_B -> widgetBState
-        } as? SwapWidgetModel.Content ?: return
         val newWidgetModel = widgetMapper.mapFiatAmount(
             state = state,
-            widgetModel = widgetModel,
+            oldWidgetModel = widgetAModel,
             tokenAmount = tokenAmount
         )
-        when (tokenType) {
-            SwapTokenType.TOKEN_A -> {
-                widgetAState = newWidgetModel
-                view?.setFirstTokenWidgetState(state = widgetAState)
+        widgetAState = newWidgetModel
+        view?.setFirstTokenWidgetState(state = widgetAState)
+    }
+
+    private fun handleRateTokenBLoader(
+        widgetBModel: SwapWidgetModel,
+        state: SwapRateLoaderState,
+        tokenAmount: BigDecimal,
+    ) {
+
+        var newWidgetModel = widgetMapper.mapFiatAmount(
+            state = state,
+            oldWidgetModel = widgetBModel,
+            tokenAmount = tokenAmount
+        )
+        when (val priceImpact = getPriceImpact(featureState)?.toPriceImpactType()) {
+            null,
+            SwapPriceImpact.NORMAL -> view?.showPriceImpact(SwapPriceImpact.NORMAL)
+            SwapPriceImpact.YELLOW,
+            SwapPriceImpact.RED -> {
+                newWidgetModel = widgetMapper.mapPriceImpact(newWidgetModel, priceImpact)
+                view?.showPriceImpact(priceImpact)
+                if (needToScrollPriceImpact) {
+                    view?.scrollToPriceImpact()
+                    needToScrollPriceImpact = false
+                }
             }
-            SwapTokenType.TOKEN_B -> {
-                // todo price impact
-                /*var fiatAmount = fiatAmount(token, tokenAmount)
-                if (true) {
-                    fiatAmount = fiatAmount?.copy(textColor = R.color.text_night)
-                }*/
-                widgetBState = newWidgetModel
-                view?.setSecondTokenWidgetState(state = widgetBState)
-            }
+        }
+        widgetBState = newWidgetModel
+        view?.setSecondTokenWidgetState(state = widgetBState)
+    }
+
+    private fun getPriceImpact(state: SwapState?): BigDecimal? {
+        return when (state) {
+            null,
+            SwapState.InitialLoading,
+            is SwapState.LoadingRoutes,
+            is SwapState.TokenAZero -> null
+            is SwapState.SwapException -> getPriceImpact(state.previousFeatureState)
+
+            is SwapState.LoadingTransaction -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
+            is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
         }
     }
 
