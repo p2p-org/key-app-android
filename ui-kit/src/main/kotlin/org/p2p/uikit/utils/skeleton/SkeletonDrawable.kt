@@ -1,233 +1,210 @@
-package org.p2p.uikit.utils.skeleton;
+package org.p2p.uikit.utils.skeleton
 
-import android.animation.ValueAnimator;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.LinearGradient;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RadialGradient;
-import android.graphics.Rect;
-import android.graphics.Shader;
-import android.graphics.drawable.PaintDrawable;
-import android.graphics.drawable.shapes.Shape;
+import android.animation.ValueAnimator
+import android.animation.ValueAnimator.AnimatorUpdateListener
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.LinearGradient
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.RadialGradient
+import android.graphics.Rect
+import android.graphics.Shader
+import android.graphics.drawable.PaintDrawable
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class SkeletonDrawable : PaintDrawable() {
+    private val mUpdateListener = AnimatorUpdateListener { invalidateSelf() }
+    private val mShimmerPaint = Paint()
+    private val mDrawRect = Rect()
+    private val mShaderMatrix = Matrix()
+    private var mValueAnimator: ValueAnimator? = null
+    private var mShimmer: Shimmer? = null
 
-public class SkeletonDrawable extends PaintDrawable {
-    private final ValueAnimator.AnimatorUpdateListener mUpdateListener =
-            new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    invalidateSelf();
-                }
-            };
-
-    private final Paint mShimmerPaint = new Paint();
-    private final Rect mDrawRect = new Rect();
-    private final Matrix mShaderMatrix = new Matrix();
-
-    private @Nullable ValueAnimator mValueAnimator;
-
-    private @Nullable Shimmer mShimmer;
-
-    public SkeletonDrawable() {
-        mShimmerPaint.setAntiAlias(true);
+    init {
+        mShimmerPaint.isAntiAlias = true
     }
 
-    public void setShimmer(@Nullable Shimmer shimmer) {
-        mShimmer = shimmer;
+    fun setShimmer(shimmer: Shimmer?) {
+        mShimmer = shimmer
         if (mShimmer != null) {
-            mShimmerPaint.setXfermode(
-                    new PorterDuffXfermode(
-                            mShimmer.alphaShimmer ? PorterDuff.Mode.DST_IN : PorterDuff.Mode.SRC_IN));
+            mShimmerPaint.xfermode = PorterDuffXfermode(
+                if (mShimmer!!.alphaShimmer) PorterDuff.Mode.DST_IN else PorterDuff.Mode.SRC_IN
+            )
         }
-        updateShader();
-        updateValueAnimator();
-        invalidateSelf();
+        updateShader()
+        updateValueAnimator()
+        invalidateSelf()
     }
 
     /**
      * Starts the shimmer animation.
      */
-    public void startShimmer() {
-        if (mValueAnimator != null && !isShimmerStarted() && getCallback() != null) {
-            mValueAnimator.start();
+    fun startShimmer() {
+        if (mValueAnimator != null && !isShimmerStarted && callback != null) {
+            mValueAnimator!!.start()
         }
     }
 
     /**
      * Stops the shimmer animation.
      */
-    public void stopShimmer() {
-        if (mValueAnimator != null && isShimmerStarted()) {
-            mValueAnimator.cancel();
+    fun stopShimmer() {
+        if (mValueAnimator != null && isShimmerStarted) {
+            mValueAnimator!!.cancel()
         }
     }
 
     /**
      * Return whether the shimmer animation has been started.
      */
-    public boolean isShimmerStarted() {
-        return mValueAnimator != null && mValueAnimator.isStarted();
+    val isShimmerStarted: Boolean
+        get() = mValueAnimator != null && mValueAnimator!!.isStarted
+
+    public override fun onBoundsChange(bounds: Rect) {
+        super.onBoundsChange(bounds)
+        val width = bounds.width()
+        val height = bounds.height()
+        mDrawRect[0, 0, width] = height
+        updateShader()
+        maybeStartShimmer()
     }
 
-    @Override
-    public void onBoundsChange(Rect bounds) {
-        super.onBoundsChange(bounds);
-        final int width = bounds.width();
-        final int height = bounds.height();
-        mDrawRect.set(0, 0, width, height);
-        updateShader();
-        maybeStartShimmer();
-    }
-
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-        if (mShimmer == null || mShimmerPaint.getShader() == null) {
-            return;
+    override fun draw(canvas: Canvas) {
+        if (mShimmer == null || mShimmerPaint.shader == null) {
+            return
         }
-
-        final float tiltTan = (float) Math.tan(Math.toRadians(mShimmer.tilt));
-        final float translateHeight = mDrawRect.height() + tiltTan * mDrawRect.width();
-        final float translateWidth = mDrawRect.width() + tiltTan * mDrawRect.height();
-        final float dx;
-        final float dy;
-        final float animatedValue = mValueAnimator != null ? mValueAnimator.getAnimatedFraction() : 0f;
-        switch (mShimmer.direction) {
-            default:
-            case Shimmer.Direction.LEFT_TO_RIGHT:
-                dx = offset(-translateWidth, translateWidth, animatedValue);
-                dy = 0;
-                break;
-            case Shimmer.Direction.RIGHT_TO_LEFT:
-                dx = offset(translateWidth, -translateWidth, animatedValue);
-                dy = 0f;
-                break;
-            case Shimmer.Direction.TOP_TO_BOTTOM:
-                dx = 0f;
-                dy = offset(-translateHeight, translateHeight, animatedValue);
-                break;
-            case Shimmer.Direction.BOTTOM_TO_TOP:
-                dx = 0f;
-                dy = offset(translateHeight, -translateHeight, animatedValue);
-                break;
+        val tiltTan = Math.tan(Math.toRadians(mShimmer!!.tilt.toDouble())).toFloat()
+        val translateHeight = mDrawRect.height() + tiltTan * mDrawRect.width()
+        val translateWidth = mDrawRect.width() + tiltTan * mDrawRect.height()
+        val dx: Float
+        val dy: Float
+        val animatedValue = if (mValueAnimator != null) mValueAnimator!!.animatedFraction else 0f
+        when (mShimmer!!.direction) {
+            Shimmer.Direction.LEFT_TO_RIGHT -> {
+                dx = offset(-translateWidth, translateWidth, animatedValue)
+                dy = 0f
+            }
+            Shimmer.Direction.RIGHT_TO_LEFT -> {
+                dx = offset(translateWidth, -translateWidth, animatedValue)
+                dy = 0f
+            }
+            Shimmer.Direction.TOP_TO_BOTTOM -> {
+                dx = 0f
+                dy = offset(-translateHeight, translateHeight, animatedValue)
+            }
+            Shimmer.Direction.BOTTOM_TO_TOP -> {
+                dx = 0f
+                dy = offset(translateHeight, -translateHeight, animatedValue)
+            }
+            else -> {
+                dx = offset(-translateWidth, translateWidth, animatedValue)
+                dy = 0f
+            }
         }
-
-        mShaderMatrix.reset();
-        mShaderMatrix.setRotate(mShimmer.tilt, mDrawRect.width() / 2f, mDrawRect.height() / 2f);
-        mShaderMatrix.postTranslate(dx, dy);
-        mShimmerPaint.getShader().setLocalMatrix(mShaderMatrix);
-        final Rect r = getBounds();
-        final Shape shape = getShape();
+        mShaderMatrix.reset()
+        mShaderMatrix.setRotate(mShimmer!!.tilt, mDrawRect.width() / 2f, mDrawRect.height() / 2f)
+        mShaderMatrix.postTranslate(dx, dy)
+        mShimmerPaint.shader.setLocalMatrix(mShaderMatrix)
+        val r = bounds
+        val shape = shape
 
         // copied part of parent super.draw
         if (shape != null) {
-            final int count = canvas.save();
-            canvas.translate(r.left, r.top);
-            onDraw(shape, canvas, mShimmerPaint);
-            canvas.restoreToCount(count);
+            val count = canvas.save()
+            canvas.translate(r.left.toFloat(), r.top.toFloat())
+            onDraw(shape, canvas, mShimmerPaint)
+            canvas.restoreToCount(count)
         } else {
-            canvas.drawRect(r, mShimmerPaint);
+            canvas.drawRect(r, mShimmerPaint)
         }
     }
 
-    @Override
-    public void setAlpha(int alpha) {
+    override fun setAlpha(alpha: Int) {
         // No-op, modify the Shimmer object you pass in instead
     }
 
-    @Override
-    public void setColorFilter(@Nullable ColorFilter colorFilter) {
+    override fun setColorFilter(colorFilter: ColorFilter?) {
         // No-op, modify the Shimmer object you pass in instead
     }
 
-    @Override
-    public int getOpacity() {
-        return mShimmer != null && (mShimmer.clipToChildren || mShimmer.alphaShimmer)
-                ? PixelFormat.TRANSLUCENT
-                : PixelFormat.OPAQUE;
+    override fun getOpacity(): Int {
+        return if (mShimmer != null && (mShimmer!!.clipToChildren || mShimmer!!.alphaShimmer)) PixelFormat.TRANSLUCENT else PixelFormat.OPAQUE
     }
 
-    private float offset(float start, float end, float percent) {
-        return start + (end - start) * percent;
+    private fun offset(start: Float, end: Float, percent: Float): Float {
+        return start + (end - start) * percent
     }
 
-    private void updateValueAnimator() {
+    private fun updateValueAnimator() {
         if (mShimmer == null) {
-            return;
+            return
         }
-
-        final boolean started;
+        val started: Boolean
         if (mValueAnimator != null) {
-            started = mValueAnimator.isStarted();
-            mValueAnimator.cancel();
-            mValueAnimator.removeAllUpdateListeners();
+            started = mValueAnimator!!.isStarted
+            mValueAnimator!!.cancel()
+            mValueAnimator!!.removeAllUpdateListeners()
         } else {
-            started = false;
+            started = false
         }
+        mValueAnimator = ValueAnimator.ofFloat(0f, 1f + (mShimmer!!.repeatDelay / mShimmer!!.animationDuration).toFloat())
+            .apply {
+                setRepeatMode(mShimmer!!.repeatMode)
+                setRepeatCount(mShimmer!!.repeatCount)
+                setDuration(mShimmer!!.animationDuration + mShimmer!!.repeatDelay)
+                addUpdateListener(mUpdateListener)
+                if (started) {
+                    start()
+                }
+            }
+    }
 
-        mValueAnimator =
-                ValueAnimator.ofFloat(0f, 1f + (float) (mShimmer.repeatDelay / mShimmer.animationDuration));
-        mValueAnimator.setRepeatMode(mShimmer.repeatMode);
-        mValueAnimator.setRepeatCount(mShimmer.repeatCount);
-        mValueAnimator.setDuration(mShimmer.animationDuration + mShimmer.repeatDelay);
-        mValueAnimator.addUpdateListener(mUpdateListener);
-        if (started) {
-            mValueAnimator.start();
+    fun maybeStartShimmer() {
+        if (mValueAnimator != null && !mValueAnimator!!.isStarted && mShimmer != null && mShimmer!!.autoStart && callback != null) {
+            mValueAnimator!!.start()
         }
     }
 
-    void maybeStartShimmer() {
-        if (mValueAnimator != null
-                && !mValueAnimator.isStarted()
-                && mShimmer != null
-                && mShimmer.autoStart
-                && getCallback() != null) {
-            mValueAnimator.start();
-        }
-    }
-
-    private void updateShader() {
-        final Rect bounds = getBounds();
-        final int boundsWidth = bounds.width();
-        final int boundsHeight = bounds.height();
+    private fun updateShader() {
+        val bounds = bounds
+        val boundsWidth = bounds.width()
+        val boundsHeight = bounds.height()
         if (boundsWidth == 0 || boundsHeight == 0 || mShimmer == null) {
-            return;
+            return
         }
-        final int width = mShimmer.width(boundsWidth);
-        final int height = mShimmer.height(boundsHeight);
-
-        final Shader shader;
-        switch (mShimmer.shape) {
-            default:
-            case Shimmer.Shape.LINEAR:
-                boolean vertical =
-                        mShimmer.direction == Shimmer.Direction.TOP_TO_BOTTOM
-                                || mShimmer.direction == Shimmer.Direction.BOTTOM_TO_TOP;
-                int endX = vertical ? 0 : width;
-                int endY = vertical ? height : 0;
-                shader =
-                        new LinearGradient(
-                                0, 0, endX, endY, mShimmer.colors, mShimmer.positions, Shader.TileMode.CLAMP);
-                break;
-            case Shimmer.Shape.RADIAL:
-                shader =
-                        new RadialGradient(
-                                width / 2f,
-                                height / 2f,
-                                (float) (Math.max(width, height) / Math.sqrt(2)),
-                                mShimmer.colors,
-                                mShimmer.positions,
-                                Shader.TileMode.CLAMP
-                        );
-                break;
+        val width = mShimmer!!.width(boundsWidth)
+        val height = mShimmer!!.height(boundsHeight)
+        val shader: Shader
+        shader = when (mShimmer!!.shape) {
+            Shimmer.Shape.LINEAR -> {
+                val vertical = (mShimmer!!.direction == Shimmer.Direction.TOP_TO_BOTTOM
+                    || mShimmer!!.direction == Shimmer.Direction.BOTTOM_TO_TOP)
+                val endX = if (vertical) 0 else width
+                val endY = if (vertical) height else 0
+                LinearGradient(
+                    0f, 0f, endX.toFloat(), endY.toFloat(), mShimmer!!.colors, mShimmer!!.positions, Shader.TileMode.CLAMP
+                )
+            }
+            Shimmer.Shape.RADIAL -> RadialGradient(
+                width / 2f,
+                height / 2f, (Math.max(width, height) / Math.sqrt(2.0)).toFloat(),
+                mShimmer!!.colors,
+                mShimmer!!.positions,
+                Shader.TileMode.CLAMP
+            )
+            else -> {
+                val vertical = (mShimmer!!.direction == Shimmer.Direction.TOP_TO_BOTTOM
+                    || mShimmer!!.direction == Shimmer.Direction.BOTTOM_TO_TOP)
+                val endX = if (vertical) 0 else width
+                val endY = if (vertical) height else 0
+                LinearGradient(
+                    0f, 0f, endX.toFloat(), endY.toFloat(), mShimmer!!.colors, mShimmer!!.positions, Shader.TileMode.CLAMP
+                )
+            }
         }
-
-        mShimmerPaint.setShader(shader);
+        mShimmerPaint.shader = shader
     }
 }

@@ -1,344 +1,335 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
  *
- * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
+ *
+ * This source code is licensed under the BSD-style license found in the LICENSE file in the root
  * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
  * file in the same directory.
  */
-package org.p2p.uikit.utils.skeleton;
+package org.p2p.uikit.utils.skeleton
 
-import android.animation.ValueAnimator;
-import android.graphics.Color;
-import android.graphics.RectF;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.FloatRange;
-import androidx.annotation.IntDef;
-import androidx.annotation.Px;
+import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
+import androidx.annotation.IntDef
+import androidx.annotation.Px
+import android.animation.ValueAnimator
+import android.graphics.Color
+import android.graphics.RectF
 
 class Shimmer {
-  private static final int COMPONENT_COUNT = 4;
+    /** The shape of the shimmer's highlight. By default LINEAR is used.  */
+    @Retention(AnnotationRetention.SOURCE)
+    @IntDef(Shape.LINEAR, Shape.RADIAL)
+    annotation class Shape {
+        companion object {
+            /** Linear gives a ray reflection effect.  */
+            const val LINEAR = 0
 
-  /** The shape of the shimmer's highlight. By default LINEAR is used. */
-  @Retention(RetentionPolicy.SOURCE)
-  @IntDef({Shape.LINEAR, Shape.RADIAL})
-  public @interface Shape {
-    /** Linear gives a ray reflection effect. */
-    int LINEAR = 0;
-    /** Radial gives a spotlight effect. */
-    int RADIAL = 1;
-  }
-
-  /** Direction of the shimmer's sweep. */
-  @Retention(RetentionPolicy.SOURCE)
-  @IntDef({
-    Direction.LEFT_TO_RIGHT,
-    Direction.TOP_TO_BOTTOM,
-    Direction.RIGHT_TO_LEFT,
-    Direction.BOTTOM_TO_TOP
-  })
-  public @interface Direction {
-    int LEFT_TO_RIGHT = 0;
-    int TOP_TO_BOTTOM = 1;
-    int RIGHT_TO_LEFT = 2;
-    int BOTTOM_TO_TOP = 3;
-  }
-
-  final float[] positions = new float[COMPONENT_COUNT];
-  final int[] colors = new int[COMPONENT_COUNT];
-  final RectF bounds = new RectF();
-
-  @Direction int direction = Direction.LEFT_TO_RIGHT;
-  @ColorInt int highlightColor = Color.WHITE;
-  @ColorInt int baseColor = 0x4cffffff;
-  @Shape int shape = Shape.LINEAR;
-  int fixedWidth = 0;
-  int fixedHeight = 0;
-
-  float widthRatio = 1f;
-  float heightRatio = 1f;
-  float intensity = 0f;
-  float dropoff = 0.5f;
-  float tilt = 20f;
-
-  boolean clipToChildren = true;
-  boolean autoStart = true;
-  boolean alphaShimmer = true;
-
-  int repeatCount = ValueAnimator.INFINITE;
-  int repeatMode = ValueAnimator.RESTART;
-  long animationDuration = 1000L;
-  long repeatDelay;
-
-  Shimmer() {}
-
-  int width(int width) {
-    return fixedWidth > 0 ? fixedWidth : Math.round(widthRatio * width);
-  }
-
-  int height(int height) {
-    return fixedHeight > 0 ? fixedHeight : Math.round(heightRatio * height);
-  }
-
-  void updateColors() {
-    switch (shape) {
-      default:
-      case Shape.LINEAR:
-        colors[0] = baseColor;
-        colors[1] = highlightColor;
-        colors[2] = highlightColor;
-        colors[3] = baseColor;
-        break;
-      case Shape.RADIAL:
-        colors[0] = highlightColor;
-        colors[1] = highlightColor;
-        colors[2] = baseColor;
-        colors[3] = baseColor;
-        break;
-    }
-  }
-
-  void updatePositions() {
-    switch (shape) {
-      default:
-      case Shape.LINEAR:
-        positions[0] = Math.max((1f - intensity - dropoff) / 2f, 0f);
-        positions[1] = Math.max((1f - intensity - 0.001f) / 2f, 0f);
-        positions[2] = Math.min((1f + intensity + 0.001f) / 2f, 1f);
-        positions[3] = Math.min((1f + intensity + dropoff) / 2f, 1f);
-        break;
-      case Shape.RADIAL:
-        positions[0] = 0f;
-        positions[1] = Math.min(intensity, 1f);
-        positions[2] = Math.min(intensity + dropoff, 1f);
-        positions[3] = 1f;
-        break;
-    }
-  }
-
-  void updateBounds(int viewWidth, int viewHeight) {
-    int magnitude = Math.max(viewWidth, viewHeight);
-    double rad = Math.PI / 2f - Math.toRadians(tilt % 90f);
-    double hyp = magnitude / Math.sin(rad);
-    int padding = 3 * Math.round((float) (hyp - magnitude) / 2f);
-    bounds.set(-padding, -padding, width(viewWidth) + padding, height(viewHeight) + padding);
-  }
-
-  public abstract static class Builder<T extends Builder<T>> {
-    final Shimmer mShimmer = new Shimmer();
-
-    // Gets around unchecked cast
-    protected abstract T getThis();
-
-    /** Copies the configuration of an already built Shimmer to this builder */
-    public T copyFrom(Shimmer other) {
-      setDirection(other.direction);
-      setShape(other.shape);
-      setFixedWidth(other.fixedWidth);
-      setFixedHeight(other.fixedHeight);
-      setWidthRatio(other.widthRatio);
-      setHeightRatio(other.heightRatio);
-      setIntensity(other.intensity);
-      setDropoff(other.dropoff);
-      setTilt(other.tilt);
-      setClipToChildren(other.clipToChildren);
-      setAutoStart(other.autoStart);
-      setRepeatCount(other.repeatCount);
-      setRepeatMode(other.repeatMode);
-      setRepeatDelay(other.repeatDelay);
-      setDuration(other.animationDuration);
-      mShimmer.baseColor = other.baseColor;
-      mShimmer.highlightColor = other.highlightColor;
-      return getThis();
+            /** Radial gives a spotlight effect.  */
+            const val RADIAL = 1
+        }
     }
 
-    /** Sets the direction of the shimmer's sweep. See {@link Direction}. */
-    public T setDirection(@Direction int direction) {
-      mShimmer.direction = direction;
-      return getThis();
+    /** Direction of the shimmer's sweep.  */
+    @Retention(AnnotationRetention.SOURCE)
+    @IntDef(Direction.LEFT_TO_RIGHT, Direction.TOP_TO_BOTTOM, Direction.RIGHT_TO_LEFT, Direction.BOTTOM_TO_TOP)
+    annotation class Direction {
+        companion object {
+            const val LEFT_TO_RIGHT = 0
+            const val TOP_TO_BOTTOM = 1
+            const val RIGHT_TO_LEFT = 2
+            const val BOTTOM_TO_TOP = 3
+        }
     }
 
-    /** Sets the shape of the shimmer. See {@link Shape}. */
-    public T setShape(@Shape int shape) {
-      mShimmer.shape = shape;
-      return getThis();
+    val positions = FloatArray(COMPONENT_COUNT)
+    val colors = IntArray(COMPONENT_COUNT)
+    val bounds = RectF()
+
+    @Direction
+    var direction = Direction.LEFT_TO_RIGHT
+
+    @ColorInt
+    var highlightColor = Color.WHITE
+
+    @ColorInt
+    var baseColor = 0x4cffffff
+
+    @Shape
+    var shape = Shape.LINEAR
+    var fixedWidth = 0
+    var fixedHeight = 0
+    var widthRatio = 1f
+    var heightRatio = 1f
+    var intensity = 0f
+    var dropoff = 0.5f
+    var tilt = 20f
+    var clipToChildren = true
+    var autoStart = true
+    var alphaShimmer = true
+    var repeatCount = ValueAnimator.INFINITE
+    var repeatMode = ValueAnimator.RESTART
+    var animationDuration = 1000L
+    var repeatDelay: Long = 0
+    fun width(width: Int): Int {
+        return if (fixedWidth > 0) fixedWidth else Math.round(widthRatio * width)
     }
 
-    /** Sets the fixed width of the shimmer, in pixels. */
-    public T setFixedWidth(@Px int fixedWidth) {
-      if (fixedWidth < 0) {
-        throw new IllegalArgumentException("Given invalid width: " + fixedWidth);
-      }
-      mShimmer.fixedWidth = fixedWidth;
-      return getThis();
+    fun height(height: Int): Int {
+        return if (fixedHeight > 0) fixedHeight else Math.round(heightRatio * height)
     }
 
-    /** Sets the fixed height of the shimmer, in pixels. */
-    public T setFixedHeight(@Px int fixedHeight) {
-      if (fixedHeight < 0) {
-        throw new IllegalArgumentException("Given invalid height: " + fixedHeight);
-      }
-      mShimmer.fixedHeight = fixedHeight;
-      return getThis();
+    fun updateColors() {
+        when (shape) {
+            Shape.LINEAR -> {
+                colors[0] = baseColor
+                colors[1] = highlightColor
+                colors[2] = highlightColor
+                colors[3] = baseColor
+            }
+            Shape.RADIAL -> {
+                colors[0] = highlightColor
+                colors[1] = highlightColor
+                colors[2] = baseColor
+                colors[3] = baseColor
+            }
+            else -> {
+                colors[0] = baseColor
+                colors[1] = highlightColor
+                colors[2] = highlightColor
+                colors[3] = baseColor
+            }
+        }
     }
 
-    /** Sets the width ratio of the shimmer, multiplied against the total width of the layout. */
-    public T setWidthRatio(float widthRatio) {
-      if (widthRatio < 0f) {
-        throw new IllegalArgumentException("Given invalid width ratio: " + widthRatio);
-      }
-      mShimmer.widthRatio = widthRatio;
-      return getThis();
+    fun updatePositions() {
+        when (shape) {
+            Shape.LINEAR -> {
+                positions[0] = Math.max((1f - intensity - dropoff) / 2f, 0f)
+                positions[1] = Math.max((1f - intensity - 0.001f) / 2f, 0f)
+                positions[2] = Math.min((1f + intensity + 0.001f) / 2f, 1f)
+                positions[3] = Math.min((1f + intensity + dropoff) / 2f, 1f)
+            }
+            Shape.RADIAL -> {
+                positions[0] = 0f
+                positions[1] = Math.min(intensity, 1f)
+                positions[2] = Math.min(intensity + dropoff, 1f)
+                positions[3] = 1f
+            }
+            else -> {
+                positions[0] = Math.max((1f - intensity - dropoff) / 2f, 0f)
+                positions[1] = Math.max((1f - intensity - 0.001f) / 2f, 0f)
+                positions[2] = Math.min((1f + intensity + 0.001f) / 2f, 1f)
+                positions[3] = Math.min((1f + intensity + dropoff) / 2f, 1f)
+            }
+        }
     }
 
-    /** Sets the height ratio of the shimmer, multiplied against the total height of the layout. */
-    public T setHeightRatio(float heightRatio) {
-      if (heightRatio < 0f) {
-        throw new IllegalArgumentException("Given invalid height ratio: " + heightRatio);
-      }
-      mShimmer.heightRatio = heightRatio;
-      return getThis();
+    fun updateBounds(viewWidth: Int, viewHeight: Int) {
+        val magnitude = Math.max(viewWidth, viewHeight)
+        val rad = Math.PI / 2f - Math.toRadians((tilt % 90f).toDouble())
+        val hyp = magnitude / Math.sin(rad)
+        val padding = 3 * Math.round((hyp - magnitude).toFloat() / 2f)
+        bounds[-padding.toFloat(), -padding.toFloat(), (width(viewWidth) + padding).toFloat()] =
+            (height(viewHeight) + padding).toFloat()
     }
 
-    /** Sets the intensity of the shimmer. A larger value causes the shimmer to be larger. */
-    public T setIntensity(float intensity) {
-      if (intensity < 0f) {
-        throw new IllegalArgumentException("Given invalid intensity value: " + intensity);
-      }
-      mShimmer.intensity = intensity;
-      return getThis();
+    abstract class Builder<T : Builder<T>?> {
+        val mShimmer = Shimmer()
+
+        // Gets around unchecked cast
+        protected abstract val builder: T
+
+        /** Copies the configuration of an already built Shimmer to this builder  */
+        fun copyFrom(other: Shimmer): T {
+            setDirection(other.direction)
+            setShape(other.shape)
+            setFixedWidth(other.fixedWidth)
+            setFixedHeight(other.fixedHeight)
+            setWidthRatio(other.widthRatio)
+            setHeightRatio(other.heightRatio)
+            setIntensity(other.intensity)
+            setDropoff(other.dropoff)
+            setTilt(other.tilt)
+            setClipToChildren(other.clipToChildren)
+            setAutoStart(other.autoStart)
+            setRepeatCount(other.repeatCount)
+            setRepeatMode(other.repeatMode)
+            setRepeatDelay(other.repeatDelay)
+            setDuration(other.animationDuration)
+            mShimmer.baseColor = other.baseColor
+            mShimmer.highlightColor = other.highlightColor
+            return builder
+        }
+
+        /** Sets the direction of the shimmer's sweep. See [Direction].  */
+        fun setDirection(@Direction direction: Int): T {
+            mShimmer.direction = direction
+            return builder
+        }
+
+        /** Sets the shape of the shimmer. See [Shape].  */
+        fun setShape(@Shape shape: Int): T {
+            mShimmer.shape = shape
+            return builder
+        }
+
+        /** Sets the fixed width of the shimmer, in pixels.  */
+        fun setFixedWidth(@Px fixedWidth: Int): T {
+            require(fixedWidth >= 0) { "Given invalid width: $fixedWidth" }
+            mShimmer.fixedWidth = fixedWidth
+            return builder
+        }
+
+        /** Sets the fixed height of the shimmer, in pixels.  */
+        fun setFixedHeight(@Px fixedHeight: Int): T {
+            require(fixedHeight >= 0) { "Given invalid height: $fixedHeight" }
+            mShimmer.fixedHeight = fixedHeight
+            return builder
+        }
+
+        /** Sets the width ratio of the shimmer, multiplied against the total width of the layout.  */
+        fun setWidthRatio(widthRatio: Float): T {
+            require(widthRatio >= 0f) { "Given invalid width ratio: $widthRatio" }
+            mShimmer.widthRatio = widthRatio
+            return builder
+        }
+
+        /** Sets the height ratio of the shimmer, multiplied against the total height of the layout.  */
+        fun setHeightRatio(heightRatio: Float): T {
+            require(heightRatio >= 0f) { "Given invalid height ratio: $heightRatio" }
+            mShimmer.heightRatio = heightRatio
+            return builder
+        }
+
+        /** Sets the intensity of the shimmer. A larger value causes the shimmer to be larger.  */
+        fun setIntensity(intensity: Float): T {
+            require(intensity >= 0f) { "Given invalid intensity value: $intensity" }
+            mShimmer.intensity = intensity
+            return builder
+        }
+
+        /**
+         * Sets how quickly the shimmer's gradient drops-off. A larger value causes a sharper drop-off.
+         */
+        fun setDropoff(dropoff: Float): T {
+            require(dropoff >= 0f) { "Given invalid dropoff value: $dropoff" }
+            mShimmer.dropoff = dropoff
+            return builder
+        }
+
+        /** Sets the tilt angle of the shimmer in degrees.  */
+        fun setTilt(tilt: Float): T {
+            mShimmer.tilt = tilt
+            return builder
+        }
+
+        /**
+         * Sets the base alpha, which is the alpha of the underlying children, amount in the range [0,
+         * 1].
+         */
+        fun setBaseAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float): T {
+            val intAlpha = (clamp(0f, 1f, alpha) * 255f).toInt()
+            mShimmer.baseColor = intAlpha shl 24 or (mShimmer.baseColor and 0x00FFFFFF)
+            return builder
+        }
+
+        /** Sets the shimmer alpha amount in the range [0, 1].  */
+        fun setHighlightAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float): T {
+            val intAlpha = (clamp(0f, 1f, alpha) * 255f).toInt()
+            mShimmer.highlightColor = intAlpha shl 24 or (mShimmer.highlightColor and 0x00FFFFFF)
+            return builder
+        }
+
+        /**
+         * Sets whether the shimmer will clip to the childrens' contents, or if it will opaquely draw on
+         * top of the children.
+         */
+        fun setClipToChildren(status: Boolean): T {
+            mShimmer.clipToChildren = status
+            return builder
+        }
+
+        /** Sets whether the shimmering animation will start automatically.  */
+        fun setAutoStart(status: Boolean): T {
+            mShimmer.autoStart = status
+            return builder
+        }
+
+        /**
+         * Sets how often the shimmering animation will repeat. See [ ][ValueAnimator.setRepeatCount].
+         */
+        fun setRepeatCount(repeatCount: Int): T {
+            mShimmer.repeatCount = repeatCount
+            return builder
+        }
+
+        /**
+         * Sets how the shimmering animation will repeat. See [ ][ValueAnimator.setRepeatMode].
+         */
+        fun setRepeatMode(mode: Int): T {
+            mShimmer.repeatMode = mode
+            return builder
+        }
+
+        /** Sets how long to wait in between repeats of the shimmering animation.  */
+        fun setRepeatDelay(millis: Long): T {
+            require(millis >= 0) { "Given a negative repeat delay: $millis" }
+            mShimmer.repeatDelay = millis
+            return builder
+        }
+
+        /** Sets how long the shimmering animation takes to do one full sweep.  */
+        fun setDuration(millis: Long): T {
+            require(millis >= 0) { "Given a negative duration: $millis" }
+            mShimmer.animationDuration = millis
+            return builder
+        }
+
+        fun build(): Shimmer {
+            mShimmer.updateColors()
+            mShimmer.updatePositions()
+            return mShimmer
+        }
+
+        companion object {
+            private fun clamp(min: Float, max: Float, value: Float): Float {
+                return Math.min(max, Math.max(min, value))
+            }
+        }
     }
 
-    /**
-     * Sets how quickly the shimmer's gradient drops-off. A larger value causes a sharper drop-off.
-     */
-    public T setDropoff(float dropoff) {
-      if (dropoff < 0f) {
-        throw new IllegalArgumentException("Given invalid dropoff value: " + dropoff);
-      }
-      mShimmer.dropoff = dropoff;
-      return getThis();
+    class AlphaHighlightBuilder : Builder<AlphaHighlightBuilder>() {
+        init {
+            mShimmer.alphaShimmer = true
+        }
+
+        override val builder: AlphaHighlightBuilder
+            protected get() = this
     }
 
-    /** Sets the tilt angle of the shimmer in degrees. */
-    public T setTilt(float tilt) {
-      mShimmer.tilt = tilt;
-      return getThis();
+    class ColorHighlightBuilder : Builder<ColorHighlightBuilder>() {
+        init {
+            mShimmer.alphaShimmer = false
+        }
+
+        /** Sets the highlight color for the shimmer.  */
+        fun setHighlightColor(@ColorInt color: Int): ColorHighlightBuilder {
+            mShimmer.highlightColor = color
+            return builder
+        }
+
+        /** Sets the base color for the shimmer.  */
+        fun setBaseColor(@ColorInt color: Int): ColorHighlightBuilder {
+            mShimmer.baseColor = mShimmer.baseColor and -0x1000000 or (color and 0x00FFFFFF)
+            return builder
+        }
+
+        override val builder: ColorHighlightBuilder
+            protected get() = this
     }
 
-    /**
-     * Sets the base alpha, which is the alpha of the underlying children, amount in the range [0,
-     * 1].
-     */
-    public T setBaseAlpha(@FloatRange(from = 0, to = 1) float alpha) {
-      int intAlpha = (int) (clamp(0f, 1f, alpha) * 255f);
-      mShimmer.baseColor = intAlpha << 24 | (mShimmer.baseColor & 0x00FFFFFF);
-      return getThis();
+    companion object {
+        private const val COMPONENT_COUNT = 4
     }
-
-    /** Sets the shimmer alpha amount in the range [0, 1]. */
-    public T setHighlightAlpha(@FloatRange(from = 0, to = 1) float alpha) {
-      int intAlpha = (int) (clamp(0f, 1f, alpha) * 255f);
-      mShimmer.highlightColor = intAlpha << 24 | (mShimmer.highlightColor & 0x00FFFFFF);
-      return getThis();
-    }
-
-    /**
-     * Sets whether the shimmer will clip to the childrens' contents, or if it will opaquely draw on
-     * top of the children.
-     */
-    public T setClipToChildren(boolean status) {
-      mShimmer.clipToChildren = status;
-      return getThis();
-    }
-
-    /** Sets whether the shimmering animation will start automatically. */
-    public T setAutoStart(boolean status) {
-      mShimmer.autoStart = status;
-      return getThis();
-    }
-
-    /**
-     * Sets how often the shimmering animation will repeat. See {@link
-     * ValueAnimator#setRepeatCount(int)}.
-     */
-    public T setRepeatCount(int repeatCount) {
-      mShimmer.repeatCount = repeatCount;
-      return getThis();
-    }
-
-    /**
-     * Sets how the shimmering animation will repeat. See {@link
-     * ValueAnimator#setRepeatMode(int)}.
-     */
-    public T setRepeatMode(int mode) {
-      mShimmer.repeatMode = mode;
-      return getThis();
-    }
-
-    /** Sets how long to wait in between repeats of the shimmering animation. */
-    public T setRepeatDelay(long millis) {
-      if (millis < 0) {
-        throw new IllegalArgumentException("Given a negative repeat delay: " + millis);
-      }
-      mShimmer.repeatDelay = millis;
-      return getThis();
-    }
-
-    /** Sets how long the shimmering animation takes to do one full sweep. */
-    public T setDuration(long millis) {
-      if (millis < 0) {
-        throw new IllegalArgumentException("Given a negative duration: " + millis);
-      }
-      mShimmer.animationDuration = millis;
-      return getThis();
-    }
-
-    public Shimmer build() {
-      mShimmer.updateColors();
-      mShimmer.updatePositions();
-      return mShimmer;
-    }
-
-    private static float clamp(float min, float max, float value) {
-      return Math.min(max, Math.max(min, value));
-    }
-  }
-
-  public static class AlphaHighlightBuilder extends Builder<AlphaHighlightBuilder> {
-    public AlphaHighlightBuilder() {
-      mShimmer.alphaShimmer = true;
-    }
-
-    @Override
-    protected AlphaHighlightBuilder getThis() {
-      return this;
-    }
-  }
-
-  public static class ColorHighlightBuilder extends Builder<ColorHighlightBuilder> {
-    public ColorHighlightBuilder() {
-      mShimmer.alphaShimmer = false;
-    }
-
-    /** Sets the highlight color for the shimmer. */
-    public ColorHighlightBuilder setHighlightColor(@ColorInt int color) {
-      mShimmer.highlightColor = color;
-      return getThis();
-    }
-
-    /** Sets the base color for the shimmer. */
-    public ColorHighlightBuilder setBaseColor(@ColorInt int color) {
-      mShimmer.baseColor = (mShimmer.baseColor & 0xFF000000) | (color & 0x00FFFFFF);
-      return getThis();
-    }
-
-    @Override
-    protected ColorHighlightBuilder getThis() {
-      return this;
-    }
-  }
 }
