@@ -10,6 +10,7 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 
+private const val HISTORY_OPENED = "History_Opened"
 private const val HISTORY_SEND_CLICKED = "History_Send_Clicked"
 
 class HistoryAnalytics(
@@ -19,6 +20,10 @@ class HistoryAnalytics(
     private val swapAnalytics: SwapAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
 ) {
+
+    fun onScreenOpened() {
+        tracker.logEvent(event = HISTORY_OPENED)
+    }
 
     fun logSwapTransactionClicked(transaction: RpcHistoryTransaction.Swap) {
         swapAnalytics.logSwapShowingDetails(

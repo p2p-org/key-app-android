@@ -10,6 +10,11 @@ class HistoryPresenter(
     private val historyAnalytics: HistoryAnalytics
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
+    override fun attach(view: HistoryContract.View) {
+        super.attach(view)
+        historyAnalytics.onScreenOpened()
+    }
+
     override fun onBuyClicked() {
         launch {
             val tokensForBuy = userInteractor.getTokensForBuy()
