@@ -6,6 +6,6 @@ enum class RpcHistoryStatusResponse {
     @SerializedName("success")
     SUCCESS,
 
-    @SerializedName("fail")
+    @SerializedName("failed")
     FAIL
 }
