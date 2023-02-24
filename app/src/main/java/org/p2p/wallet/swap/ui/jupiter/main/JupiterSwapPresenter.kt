@@ -6,8 +6,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.isActive
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -363,6 +363,33 @@ class JupiterSwapPresenter(
 
             is SwapState.LoadingTransaction -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
             is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
+        }
+    }
+
+    private fun handleRateTokenALoader(
+        widgetAModel: SwapWidgetModel,
+        state: SwapRateLoaderState,
+        tokenAmount: BigDecimal,
+    ) {
+        val newWidgetModel = widgetMapper.mapFiatAmount(
+            state = state,
+            oldWidgetModel = widgetAModel,
+            tokenAmount = tokenAmount
+        )
+        when (tokenType) {
+            SwapTokenType.TOKEN_A -> {
+                widgetAState = newWidgetModel
+                view?.setFirstTokenWidgetState(state = widgetAState)
+            }
+            SwapTokenType.TOKEN_B -> {
+                // todo price impact
+                /*var fiatAmount = fiatAmount(token, tokenAmount)
+                if (true) {
+                    fiatAmount = fiatAmount?.copy(textColor = R.color.text_night)
+                }*/
+                widgetBState = newWidgetModel
+                view?.setSecondTokenWidgetState(state = widgetBState)
+            }
         }
     }
 

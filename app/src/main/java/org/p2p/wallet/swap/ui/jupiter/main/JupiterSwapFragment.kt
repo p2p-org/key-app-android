@@ -30,8 +30,11 @@ import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.home.isInMainTabsScreen
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
+import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensChangeToken
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -129,11 +132,13 @@ class JupiterSwapFragment :
     }
 
     override fun openChangeTokenAScreen() {
-        TODO("Not yet implemented")
+        val fragment = SwapTokensFragment.create(SwapTokensChangeToken.TOKEN_A, stateManagerHolderKey)
+        replaceFragment(fragment)
     }
 
     override fun openChangeTokenBScreen() {
-        TODO("Not yet implemented")
+        val fragment = SwapTokensFragment.create(SwapTokensChangeToken.TOKEN_B, stateManagerHolderKey)
+        replaceFragment(fragment)
     }
 
     override fun showPriceImpact(priceImpact: SwapPriceImpact) {
