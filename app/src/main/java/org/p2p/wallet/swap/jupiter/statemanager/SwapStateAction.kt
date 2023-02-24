@@ -23,5 +23,5 @@ sealed interface SwapStateAction {
 
     object SwitchTokens : SwapStateAction
     object SwapSuccess : SwapStateAction
-    object CancelJobs : SwapStateAction
+    object CancelSwapLoading : SwapStateAction
 }

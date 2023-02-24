@@ -53,7 +53,7 @@ class JupiterSwapPresenter(
 
     override fun onTokenAmountChange(amount: String) {
         debounceInputJob?.cancel()
-        canselRateJobs()
+        cancelRateJobs()
         debounceInputJob = launch {
             val newAmount = amount.toBigDecimalOrZero()
             val action = if (newAmount.isZero()) {
@@ -68,7 +68,7 @@ class JupiterSwapPresenter(
                 if (tokenA != null) {
                     getRateTokenA(tokenA, newAmount)
                 }
-                stateManager.onNewAction(SwapStateAction.CancelJobs)
+                stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                 delay(AMOUNT_INPUT_DELAY)
                 SwapStateAction.TokenAAmountChanged(newAmount)
             }
@@ -76,7 +76,7 @@ class JupiterSwapPresenter(
         }
     }
 
-    private fun canselRateJobs() {
+    private fun cancelRateJobs() {
         rateTokenAJob?.cancel()
         rateTokenBJob?.cancel()
     }
@@ -107,7 +107,7 @@ class JupiterSwapPresenter(
             null -> null
         }
         if (allTokenAAmount != null) {
-            canselRateJobs()
+            cancelRateJobs()
             stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(allTokenAAmount))
         }
     }
@@ -159,6 +159,7 @@ class JupiterSwapPresenter(
     }
 
     private fun handleFeatureState(state: SwapState) {
+        cancelRateJobs()
         when (state) {
             SwapState.InitialLoading -> handleInitialLoading()
             is SwapState.TokenAZero -> handleTokenAZero(state)
