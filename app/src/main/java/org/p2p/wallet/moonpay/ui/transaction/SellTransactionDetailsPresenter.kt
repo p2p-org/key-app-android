@@ -47,26 +47,27 @@ class SellTransactionDetailsPresenter(
     override fun load(transactionId: String) {
         launch {
             try {
-                val sellTransaction = historyInteractor.findTransactionById(transactionId)
-                if (sellTransaction is SellTransaction) {
-                    val currentTransaction = mapper.toSellDetailsModel(sellTransaction)
-                    val viewState = when (currentTransaction.status) {
-                        SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
-                            buildWaitingForDepositViewState(currentTransaction)
-                        }
-                        SellTransactionStatus.PENDING -> {
-                            buildPendingViewState(currentTransaction)
-                        }
-                        SellTransactionStatus.COMPLETED -> {
-                            buildCompletedViewState(currentTransaction)
-                        }
-                        SellTransactionStatus.FAILED -> {
-                            buildFailedViewState(currentTransaction)
-                        }
+                currentTransaction = historyInteractor.findTransactionById(transactionId)
+                    ?.takeIf { it is SellTransaction }
+                    ?.let { mapper.toSellDetailsModel(it as SellTransaction) }
+
+                val transaction = currentTransaction ?: return@launch
+                val viewState = when (transaction.status) {
+                    SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+                        buildWaitingForDepositViewState(transaction)
                     }
-                    historyAnalytics.logSellTransactionClicked(currentTransaction)
-                    view?.renderViewState(viewState)
+                    SellTransactionStatus.PENDING -> {
+                        buildPendingViewState(transaction)
+                    }
+                    SellTransactionStatus.COMPLETED -> {
+                        buildCompletedViewState(transaction)
+                    }
+                    SellTransactionStatus.FAILED -> {
+                        buildFailedViewState(transaction)
+                    }
                 }
+                historyAnalytics.logSellTransactionClicked(transaction)
+                view?.renderViewState(viewState)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading moonpay transaction details: $e")
                 view?.showErrorMessage(e)
@@ -233,7 +234,7 @@ class SellTransactionDetailsPresenter(
     override fun onSendClicked() {
         launch {
             val solToken = userInteractor.getUserSolToken() ?: return@launch
-            val transaction = currentTransaction ?: return@launch
+            val transaction = (currentTransaction as? SellTransactionViewDetails) ?: return@launch
             view?.navigateToSendScreen(
                 tokenToSend = solToken,
                 sendAmount = transaction.formattedSolAmount.toBigDecimal(),
