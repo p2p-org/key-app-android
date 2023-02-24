@@ -78,8 +78,6 @@ class TokenHistoryFragment :
         binding.layoutHistoryList.apply {
             bind(
                 historyListViewPresenter = historyListViewPresenter,
-                onBuyClicked = { onActionButtonClicked(ActionButton.BUY_BUTTON) },
-                onReceiveClicked = { onActionButtonClicked(ActionButton.RECEIVE_BUTTON) },
                 onTransactionClicked = presenter::onTransactionClicked,
                 onSellTransactionClicked = presenter::onSellTransactionClicked,
                 token = tokenForHistory
