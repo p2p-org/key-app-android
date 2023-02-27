@@ -56,3 +56,10 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "release"
           artifact-type: "bundle"
+      - name: "Upload APK to BrowserStack (Release)"
+        run: |
+          credentials=${{ secrets.BROWSER_STACK_CREDENTIALS }}
+          curl -u "${credentials}" \
+          -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+          -F "file=@$(find app/build/outputs/apk/release -name 'key-app*')" \
+          -F "custom_id=KeyApp_rc.apk"
