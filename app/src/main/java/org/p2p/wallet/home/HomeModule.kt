@@ -73,7 +73,7 @@ object HomeModule : InjectionModule {
                 usernameInteractor = get(),
                 environmentManager = get(),
                 tokenKeyProvider = get(),
-                homeElementItemMapper = HomeElementItemMapper(),
+                homeElementItemMapper = HomeElementItemMapper(get()),
                 resourcesProvider = get(),
                 newBuyFeatureToggle = get(),
                 networkObserver = get(),

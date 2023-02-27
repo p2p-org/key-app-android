@@ -14,7 +14,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
-import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
@@ -54,13 +53,10 @@ class TokenHistoryFragment :
 
     private val swapFragmentFactory: SwapFragmentFactory by inject()
 
-    private val historyListViewPresenter: HistoryListViewContract.Presenter by inject { parametersOf(tokenForHistory) }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.setupView()
         listenForSellTransactionDialogDismiss()
-        lifecycle.addObserver(presenter)
     }
 
     private fun listenForSellTransactionDialogDismiss() {
@@ -77,12 +73,10 @@ class TokenHistoryFragment :
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
         binding.layoutHistoryList.apply {
             bind(
-                historyListViewPresenter = historyListViewPresenter,
                 onTransactionClicked = presenter::onTransactionClicked,
                 onSellTransactionClicked = presenter::onSellTransactionClicked,
-                token = tokenForHistory
+                mintAddress = tokenForHistory.mintAddress
             )
-            addObserver(lifecycle)
         }
     }
 

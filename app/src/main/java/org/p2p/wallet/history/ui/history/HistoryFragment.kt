@@ -3,13 +3,11 @@ package org.p2p.wallet.history.ui.history
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
-import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.utils.replaceFragment
@@ -26,21 +24,15 @@ class HistoryFragment :
     override val presenter: HistoryContract.Presenter by inject()
     private val binding: FragmentHistoryBinding by viewBinding()
 
-    private val historyListViewPresenter: HistoryListViewContract.Presenter by inject { parametersOf(null) }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.layoutHistoryList.apply {
             bind(
-                historyListViewPresenter = historyListViewPresenter,
                 onTransactionClicked = presenter::onTransactionClicked,
                 onSellTransactionClicked = presenter::onSellTransactionClicked
             )
-            addObserver(lifecycle)
         }
-
         listenForSellTransactionDialogDismiss()
-        lifecycle.addObserver(presenter)
     }
 
     private fun listenForSellTransactionDialogDismiss() {

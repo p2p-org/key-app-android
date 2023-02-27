@@ -33,7 +33,7 @@ sealed class RpcHistoryTransaction(
         return signature
     }
 
-    protected fun getSymbol(isNegativeOperation: Boolean): String = if (isNegativeOperation) "-" else "+"
+    protected open fun getSymbol(isNegativeOperation: Boolean): String = if (isNegativeOperation) "-" else "+"
 
     fun getBlockNumber(): String = blockNumber.let { "#$it" }
 
@@ -59,7 +59,7 @@ sealed class RpcHistoryTransaction(
 
         fun getUsdAmount(): String = "${getFormattedAmount()}"
 
-        fun getTotal(): String = "${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+        fun getTotal(): String = "${getSymbol(isBurn)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
@@ -70,6 +70,10 @@ sealed class RpcHistoryTransaction(
 
         fun getFormattedAbsTotal(): String {
             return "${amount.total.abs().scaleLong().toPlainString()} $tokenSymbol"
+        }
+
+        override fun getSymbol(isNegativeOperation: Boolean): String {
+            return if (isNegativeOperation) "" else "+"
         }
 
         @ColorRes

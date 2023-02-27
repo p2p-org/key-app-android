@@ -19,11 +19,11 @@ class HistorySellTransactionViewHolder(
             setBackgroundResource(item.statusBackgroundRes)
             imageTintList = ColorStateList.valueOf(getColor(item.statusIconColor))
         }
-        layoutTransactionDetails.startAmountView.apply {
+        startAmountView.apply {
             title = item.titleStatus
             subtitle = item.subtitleReceiver
         }
-        binding.layoutTransactionDetails.endAmountView.apply {
+        endAmountView.apply {
             topValue = item.endTopValue
             bottomValue = null // hide SOL amount
         }
