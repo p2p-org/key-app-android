@@ -115,10 +115,9 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
             backgroundTintList = initialTextStyle.backgroundTint
         }
     setHintTextColor(initialTextStyle.hintTextColors)
-    // todo java.lang.NoClassDefFoundError
-//    if (foreground is SkeletonDrawable) {
+    if (foreground is SkeletonDrawable) {
         foreground = null
-//    }
+    }
 
     val autoSize = model.autoSizeConfiguration
     val initialAutoSize = initialTextStyle.textViewAutoSizeConfiguration
