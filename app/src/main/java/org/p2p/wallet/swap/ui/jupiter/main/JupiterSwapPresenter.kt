@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.isActive
-    import org.p2p.core.utils.isLessThan
+import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
