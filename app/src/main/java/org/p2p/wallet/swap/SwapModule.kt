@@ -31,6 +31,7 @@ import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.swap.jupiter.interactor.JupiterSwapInteractor
+import org.p2p.wallet.swap.jupiter.interactor.SwapTokensInteractor
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesInMemoryRepository
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesLocalRepository
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesMapper
@@ -62,7 +63,6 @@ import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensContract
-import org.p2p.wallet.swap.ui.jupiter.tokens.interactor.SwapTokensInteractor
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SearchSwapTokensMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter

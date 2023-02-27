@@ -16,7 +16,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapTokensBinding
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensAdapter
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensListMode
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.unsafeLazy

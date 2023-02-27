@@ -1,4 +1,4 @@
-package org.p2p.wallet.swap.ui.jupiter.tokens.interactor
+package org.p2p.wallet.swap.jupiter.interactor
 
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
@@ -6,7 +6,7 @@ import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensListMode
+import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
 import org.p2p.wallet.utils.Base58String
 
 class SwapTokensInteractor(

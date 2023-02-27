@@ -3,9 +3,10 @@ package org.p2p.wallet.swap.ui.jupiter.tokens.presenter
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.swap.jupiter.interactor.SwapTokensInteractor
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensContract
-import org.p2p.wallet.swap.ui.jupiter.tokens.interactor.SwapTokensInteractor
+import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
 
 class SwapTokensPresenter(
     private val tokenToChange: SwapTokensListMode,
