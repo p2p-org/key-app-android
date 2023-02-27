@@ -1,5 +1,6 @@
 name: "Upload APK to BrowserStack"
 description: "Upload the build to BrowserStack for UI tests"
+
 inputs:
   browserstack-credentials:
     required: true
