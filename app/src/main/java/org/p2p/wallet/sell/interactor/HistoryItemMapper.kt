@@ -96,7 +96,7 @@ class HistoryItemMapper(
             }
             is RpcHistoryTransaction.BurnOrMint -> with(transaction) {
                 tokenIconUrl = iconUrl
-                iconRes = getIcon()
+                iconRes = R.drawable.ic_placeholder_image
 
                 startTitle = resources.getString(getTitle())
                 startSubtitle =

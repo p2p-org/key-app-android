@@ -22,11 +22,10 @@ fun View.bindSkeleton(model: SkeletonCellModel) {
         setCornerRadius(model.radius)
         intrinsicWidth = model.width
         intrinsicHeight = model.height
-        setTintList(context.getColorStateList(R.color.bg_rain))
+        setTintList(context.getColorStateList(android.R.color.transparent))
     }
 
-    // todo java.lang.NoClassDefFoundError
-    /*val shimmer = Shimmer.ColorHighlightBuilder()
+    val shimmer = Shimmer.ColorHighlightBuilder()
         .setHighlightAlpha(0f)
         .setHighlightColor(getColor(R.color.bg_snow))
         .setBaseAlpha(1f)
@@ -34,10 +33,10 @@ fun View.bindSkeleton(model: SkeletonCellModel) {
         .setAutoStart(true)
         .build()
     val skeletonDrawable = SkeletonDrawable()
-    skeletonDrawable.setShimmer(shimmer)*/
+    skeletonDrawable.setShimmer(shimmer)
 
     val shadowBackground = setupSkeleton(PaintDrawable())
-    val skeleton = setupSkeleton(PaintDrawable())
+    val skeleton = setupSkeleton(skeletonDrawable)
 
     background = shadowBackground
     backgroundTintList = getColorStateList(android.R.color.transparent)
