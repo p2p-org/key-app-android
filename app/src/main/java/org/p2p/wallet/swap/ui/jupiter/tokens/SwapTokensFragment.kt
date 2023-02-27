@@ -24,6 +24,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val ARG_CHANGE_TOKEN = "ARG_CHANGE_TOKEN"
+private const val ARG_STATE_MANAGE_KEY = "ARG_STATE_MANAGE_KEY"
 
 class SwapTokensFragment :
     BaseMvpFragment<SwapTokensContract.View, SwapTokensContract.Presenter>(R.layout.fragment_jupiter_swap_tokens),
@@ -31,16 +32,20 @@ class SwapTokensFragment :
     SearchView.OnQueryTextListener {
 
     companion object {
-        fun create(tokenToChange: SwapTokensListMode): SwapTokensFragment =
+        fun create(tokenToChange: SwapTokensListMode, stateManagerKey: String): SwapTokensFragment =
             SwapTokensFragment()
-                .withArgs(ARG_CHANGE_TOKEN to tokenToChange)
+                .withArgs(
+                    ARG_CHANGE_TOKEN to tokenToChange,
+                    ARG_STATE_MANAGE_KEY to stateManagerKey,
+                )
     }
 
     private val binding: FragmentJupiterSwapTokensBinding by viewBinding()
 
     private val tokenToChange: SwapTokensListMode by args(ARG_CHANGE_TOKEN)
+    private val stateManagerKey: String by args(ARG_STATE_MANAGE_KEY)
 
-    override val presenter: SwapTokensContract.Presenter by inject { parametersOf(tokenToChange) }
+    override val presenter: SwapTokensContract.Presenter by inject { parametersOf(tokenToChange, stateManagerKey) }
 
     private val adapter: SwapTokensAdapter by unsafeLazy {
         SwapTokensAdapter(

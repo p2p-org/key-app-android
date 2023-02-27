@@ -7,24 +7,17 @@
     android:layout_height="match_parent"
     tools:parentTag="android.widget.FrameLayout">
 
-    <FrameLayout
-        android:id="@+id/frameToken"
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
+        android:id="@+id/imageViewToken"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:background="@drawable/bg_rounded_solid_rain_24"
-        android:padding="12dp"
+        android:src="@drawable/ic_transaction_send"
+        app:cornerRadius="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <org.p2p.uikit.atoms.UiKitRoundedImageView
-            android:id="@+id/imageViewToken"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_transaction_send" />
-
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageViewStatus"

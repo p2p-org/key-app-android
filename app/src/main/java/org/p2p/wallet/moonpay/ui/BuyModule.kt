@@ -55,7 +55,7 @@ object BuyModule : InjectionModule {
                 buyAnalytics = get(),
                 userInteractor = get(),
                 paymentMethodsInteractor = get(),
-                resourcesProvider = get(),
+                resources = get(),
                 bankTransferFeatureToggle = get(),
                 buyInteractor = get(),
                 analyticsInteractor = get()

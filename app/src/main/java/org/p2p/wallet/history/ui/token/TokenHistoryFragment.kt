@@ -22,7 +22,7 @@ import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
+import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -52,6 +52,8 @@ class TokenHistoryFragment :
 
     private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
 
+    private val swapFragmentFactory: SwapFragmentFactory by inject()
+
     private val historyListViewPresenter: HistoryListViewContract.Presenter by inject { parametersOf(tokenForHistory) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,8 +78,6 @@ class TokenHistoryFragment :
         binding.layoutHistoryList.apply {
             bind(
                 historyListViewPresenter = historyListViewPresenter,
-                onBuyClicked = { onActionButtonClicked(ActionButton.BUY_BUTTON) },
-                onReceiveClicked = { onActionButtonClicked(ActionButton.RECEIVE_BUTTON) },
                 onTransactionClicked = presenter::onTransactionClicked,
                 onSellTransactionClicked = presenter::onSellTransactionClicked,
                 token = tokenForHistory
@@ -122,7 +122,7 @@ class TokenHistoryFragment :
                 replaceFragment(NewSearchFragment.create(tokenForHistory))
             }
             ActionButton.SWAP_BUTTON -> {
-                replaceFragment(OrcaSwapFragment.create(tokenForHistory))
+                replaceFragment(swapFragmentFactory.swapFragment(tokenForHistory))
             }
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())

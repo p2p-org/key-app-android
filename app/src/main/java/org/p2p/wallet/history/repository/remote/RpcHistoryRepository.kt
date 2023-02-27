@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.repository.remote
 
+import java.util.Optional
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.wallet.history.api.RpcHistoryServiceApi
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionResponse
@@ -10,7 +11,6 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import java.util.Optional
 
 private const val REQUEST_PARAMS_USER_ID = "user_id"
 private const val REQUEST_PARAMS_LIMIT = "limit"
@@ -100,7 +100,7 @@ class RpcHistoryRepository(
             token = tokenAddress
         )
         return try {
-            val result = historyApi.getTransactionHistory(rpcRequest).result
+            val result = historyApi.getTransactionHistory(rpcRequest).result.transactions
             if (result.isEmpty() || result.size < limit) {
                 tokenPagingState[tokenAddress] = HistoryPagingState.INACTIVE
             }

@@ -12,7 +12,6 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBot
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
-import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -34,8 +33,6 @@ class HistoryFragment :
         binding.layoutHistoryList.apply {
             bind(
                 historyListViewPresenter = historyListViewPresenter,
-                onBuyClicked = presenter::onBuyClicked,
-                onReceiveClicked = { replaceFragment(ReceiveSolanaFragment.create(token = null)) },
                 onTransactionClicked = presenter::onTransactionClicked,
                 onSellTransactionClicked = presenter::onSellTransactionClicked
             )

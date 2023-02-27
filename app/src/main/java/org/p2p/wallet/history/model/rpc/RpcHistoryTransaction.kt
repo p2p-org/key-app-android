@@ -8,7 +8,6 @@ import android.os.Parcelable
 import org.threeten.bp.ZonedDateTime
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.p2p.core.utils.Constants
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.asUsdTransaction
@@ -45,8 +44,7 @@ sealed class RpcHistoryTransaction(
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
         val amount: RpcHistoryAmount,
-        val destination: String,
-        val senderAddress: String,
+        val tokenSymbol: String,
         val iconUrl: String?,
         override val type: RpcHistoryTransactionType,
         val fees: List<RpcFee>?,
@@ -59,20 +57,27 @@ sealed class RpcHistoryTransaction(
         @StringRes
         fun getTitle(): Int = if (isBurn) R.string.common_burn else R.string.common_mint
 
-        @DrawableRes
-        fun getIcon(): Int = if (isBurn) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
+        fun getUsdAmount(): String = "${getFormattedAmount()}"
 
-        fun getValue(): String = "${getSymbol(isBurn)} ${getFormattedAmount()} ${Constants.USD_SYMBOL}"
-
-        fun getTotal(): String =
-            "${getSymbol(isBurn)} ${amount.total.scaleMedium().formatToken()} ${Constants.REN_BTC_SYMBOL}"
+        fun getTotal(): String = "${amount.total.scaleMedium().formatToken()} $tokenSymbol"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
-                "${amount.total.scaleMedium().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
+                "${amount.total.scaleMedium().toPlainString()} $tokenSymbol"
             } else {
-                "${amount.total.scaleLong().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
+                "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
             }
+
+        fun getFormattedAbsTotal(): String {
+            return "${amount.total.abs().scaleLong().toPlainString()} $tokenSymbol"
+        }
+
+        @ColorRes
+        fun getTextColor(): Int = when {
+            !status.isCompleted() -> R.color.text_rose
+            isBurn -> R.color.text_night
+            else -> R.color.text_mint
+        }
 
         fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isBurn))
     }
@@ -179,6 +184,7 @@ sealed class RpcHistoryTransaction(
         val amount: RpcHistoryAmount,
         val symbol: String,
         val destination: String,
+        val counterPartyUsername: String?,
         val fees: List<RpcFee>?,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
@@ -197,7 +203,11 @@ sealed class RpcHistoryTransaction(
             resources.getString(R.string.details_transfer_format, destination.cutMiddle(), symbol)
         }
 
-        fun getAddress(): String = if (isSend) "To ${destination.cutStart()}" else "From ${senderAddress.cutStart()}"
+        fun getUsernameOrAddress(): String = counterPartyUsername ?: getAddress()
+
+        private fun getAddress(): String {
+            return if (isSend) "To ${destination.cutStart()}" else "From ${senderAddress.cutStart()}"
+        }
 
         fun getValue(): String? = amount.totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isSend))
 

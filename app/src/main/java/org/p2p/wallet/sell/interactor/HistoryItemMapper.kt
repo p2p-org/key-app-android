@@ -12,7 +12,6 @@ import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
 
@@ -67,7 +66,7 @@ class HistoryItemMapper(private val resources: Resources) {
                 tokenIconUrl = getTokenIconUrl()
                 iconRes = getIcon()
 
-                startTitle = getAddress()
+                startTitle = getUsernameOrAddress()
                 startSubtitle = resources.getString(getTypeName())
                 endTopValue = getValue()
                 endTopValueTextColor = getTextColor()
@@ -85,12 +84,13 @@ class HistoryItemMapper(private val resources: Resources) {
             }
             is RpcHistoryTransaction.BurnOrMint -> with(transaction) {
                 tokenIconUrl = iconUrl
-                iconRes = getIcon()
+                iconRes = R.drawable.ic_placeholder_image
 
                 startTitle = resources.getString(getTitle())
-                startSubtitle = signature.cutMiddle()
-                endTopValue = getTotal()
-                endBottomValue = getValue()
+                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                endTopValue = getUsdAmount()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.CreateAccount -> with(transaction) {
                 tokenIconUrl = iconUrl

@@ -1,4 +1,4 @@
-<FrameLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -41,30 +41,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageViewPlaceholder" />
 
-        <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonBuy"
-            style="@style/UiKit.Components.Button.Large"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:backgroundTint="@color/bg_night"
-            android:text="@string/history_empty_option_buy"
-            android:textColor="@color/text_lime"
-            app:layout_constraintTop_toBottomOf="@+id/textViewEmptyMessage" />
-
-        <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonReceive"
-            style="@style/UiKit.Components.Button.Large"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="@color/bg_rain"
-            android:text="@string/history_empty_option_receive"
-            android:textColor="@color/text_night"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonBuy" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
+</androidx.core.widget.NestedScrollView>

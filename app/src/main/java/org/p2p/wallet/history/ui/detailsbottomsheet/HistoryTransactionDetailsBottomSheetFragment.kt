@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
@@ -110,8 +111,10 @@ class HistoryTransactionDetailsBottomSheetFragment :
     override fun showTransferView(tokenIconUrl: String?, placeholderIcon: Int) = with(binding) {
         imageViewSecondToken.isVisible = false
         if (tokenIconUrl.isNullOrEmpty()) {
+            imageViewFirstToken.scaleType = ImageView.ScaleType.CENTER
             imageViewFirstToken.setImageResource(placeholderIcon)
         } else {
+            imageViewFirstToken.scaleType = ImageView.ScaleType.FIT_CENTER
             glideManager.load(
                 imageView = imageViewFirstToken,
                 url = tokenIconUrl,
