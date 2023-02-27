@@ -1,7 +1,6 @@
 package org.p2p.wallet.history.ui.historylist
 
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -34,7 +33,6 @@ class HistoryListViewPresenter(
                 val result = historyInteractor.loadNextPage(PAGE_SIZE, mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)
                 historyItemMapper.toAdapterItem(newHistoryTransactions)
-                view?.showPagingState(PagingState.Idle)
             } catch (e: Throwable) {
                 Timber.e("Error on loading next history page: $e")
                 view?.showPagingState(PagingState.Error(e))
@@ -46,7 +44,6 @@ class HistoryListViewPresenter(
         launch {
             try {
                 view?.showPagingState(PagingState.InitialLoading)
-                Timber.tag("_____start").d("LoadHistory")
                 val result = historyInteractor.loadHistory(PAGE_SIZE, mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)
                 historyItemMapper.toAdapterItem(newHistoryTransactions)
@@ -93,8 +90,8 @@ class HistoryListViewPresenter(
     private fun attachToHistoryFlow() {
         launch {
             historyItemMapper.getHistoryAdapterItemFlow()
-                .distinctUntilChanged()
-                .collectLatest { items ->
+                .filterNotNull()
+                .collect { items ->
                     view?.showHistory(items)
                     view?.showPagingState(PagingState.Idle)
                 }

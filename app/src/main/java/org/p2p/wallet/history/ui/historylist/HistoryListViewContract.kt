@@ -10,7 +10,7 @@ interface HistoryListViewContract {
         fun showPagingState(state: PagingState)
         fun showRefreshing(isRefreshing: Boolean)
         fun scrollToTop()
-        suspend fun showHistory(history: List<HistoryItem>)
+        fun showHistory(history: List<HistoryItem>)
 
         fun onTransactionClicked(transactionId: String)
 
