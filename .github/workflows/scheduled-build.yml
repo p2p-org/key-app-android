@@ -60,6 +60,13 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "feature"
           artifact-type: "apk"
+      - name: "Upload APK to BrowserStack (Feature)"
+        run: |
+          credentials=${{ secrets.BROWSER_STACK_CREDENTIALS }}
+          curl -u "${credentials}" \
+          -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+          -F "file=@$(find app/build/outputs/apk/feature -name 'key-app*')" \
+          -F "custom_id=KeyApp_dev.apk"
       - name: "Upload changelog, and Jira ticket to slack channel"
         run: bash bash_scripts/slack_upload_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} CHANGELOG.txt
       - name: "Send finish deploy message to slack"
