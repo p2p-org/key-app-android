@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.isActive
+    import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -19,7 +20,6 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
-import org.p2p.wallet.swap.jupiter.statemanager.price_impact.toPriceImpactType
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
@@ -369,5 +369,19 @@ class JupiterSwapPresenter(
     private fun updateWidgets() {
         view?.setFirstTokenWidgetState(state = widgetAState)
         view?.setSecondTokenWidgetState(state = widgetBState)
+    }
+
+    private val threePercent
+        get() = BigDecimal.valueOf(0.3)
+
+    private val onePercent
+        get() = BigDecimal.valueOf(0.1)
+
+    private fun BigDecimal.toPriceImpactType(): SwapPriceImpact {
+        return when {
+            isLessThan(onePercent) -> SwapPriceImpact.NORMAL
+            isLessThan(threePercent) -> SwapPriceImpact.YELLOW
+            else -> SwapPriceImpact.RED
+        }
     }
 }
