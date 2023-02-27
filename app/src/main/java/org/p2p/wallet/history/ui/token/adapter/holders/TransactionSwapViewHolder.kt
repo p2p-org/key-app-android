@@ -22,14 +22,12 @@ class TransactionSwapViewHolder(
                 item.sourceIconUrl,
                 item.destinationIconUrl
             )
-            with(transactionData) {
-                startAmountView.title = item.startTitle
-                startAmountView.subtitle = item.startSubtitle
-                endAmountView.topValue = item.endTopValue
-                item.endTopValueTextColor?.let { endAmountView.setTopValueTextColor(getColor(it)) }
-                endAmountView.bottomValue = item.endBottomValue
-            }
-            transactionData.startAmountView.setSubtitleDrawable(left = item.statusIcon ?: 0)
+            startAmountView.title = item.startTitle
+            startAmountView.subtitle = item.startSubtitle
+            endAmountView.topValue = item.endTopValue
+            item.endTopValueTextColor?.let { endAmountView.setTopValueTextColor(getColor(it)) }
+            endAmountView.bottomValue = item.endBottomValue
+            startAmountView.setSubtitleDrawable(left = item.statusIcon ?: 0)
         }
     }
 }

@@ -1,17 +1,17 @@
 package org.p2p.wallet.history.ui.historylist
 
 import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
 import com.google.android.material.snackbar.Snackbar
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.core.common.TextContainer
 import org.p2p.core.glide.GlideManager
-import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.recycler.RoundedDecoration
@@ -26,67 +26,68 @@ class HistoryListView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), KoinComponent, HistoryListViewContract.View {
+) : ConstraintLayout(context, attrs, defStyleAttr), KoinComponent, HistoryListViewContract.View {
 
     private val binding = inflateViewBinding<LayoutHistoryListBinding>()
 
-    private var tokenForHistory: Token.Active? = null
+    private var tokenMintAddress: String? = null
 
     private val glideManager: GlideManager by inject()
 
-    private lateinit var historyAdapter: HistoryAdapter
-
-    private lateinit var presenter: HistoryListViewContract.Presenter
-
-    private var onTransactionClickListener: (String) -> Unit = {}
-    private var onSellTransactionClickListener: (String) -> Unit = {}
-
-    fun bind(
-        historyListViewPresenter: HistoryListViewContract.Presenter,
-        onTransactionClicked: (String) -> Unit,
-        onSellTransactionClicked: (String) -> Unit,
-        token: Token.Active? = null
-    ) {
-        presenter = historyListViewPresenter
-        tokenForHistory = token
-        onTransactionClickListener = onTransactionClicked
-        onSellTransactionClickListener = onSellTransactionClicked
-        historyAdapter = HistoryAdapter(
+    private val historyAdapter: HistoryAdapter by lazy {
+        HistoryAdapter(
             glideManager = glideManager,
             onHistoryItemClicked = presenter::onItemClicked,
             onRetryClicked = presenter::loadNextHistoryPage,
         )
+    }
+
+    private val presenter: HistoryListViewContract.Presenter by inject()
+
+    private var onTransactionClickListener: (String) -> Unit = {}
+    private var onSellTransactionClickListener: (String) -> Unit = {}
+
+    init {
+        doOnAttach { presenter.attach(this) }
+        doOnDetach { presenter.detach() }
+    }
+
+    fun bind(
+        onTransactionClicked: (String) -> Unit,
+        onSellTransactionClicked: (String) -> Unit,
+        mintAddress: String? = null
+    ) {
+        tokenMintAddress = mintAddress
+        onTransactionClickListener = onTransactionClicked
+        onSellTransactionClickListener = onSellTransactionClicked
         bindView()
-        presenter.attach(this)
     }
 
     private fun bindView() {
+        presenter.attach(this)
         with(binding) {
             errorStateLayout.buttonRetry.setOnClickListener {
-                presenter.refreshHistory()
+                presenter.refreshHistory(tokenMintAddress)
             }
             val scrollListener = EndlessScrollListener(
                 layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
-                loadNextPage = { presenter.loadNextHistoryPage() }
+                loadNextPage = { presenter.loadNextHistoryPage(tokenMintAddress) }
             )
-
-            historyRecyclerView.addOnScrollListener(scrollListener)
-            historyRecyclerView.attachAdapter(historyAdapter)
-            historyRecyclerView.addItemDecoration(RoundedDecoration(16f.toPx()))
+            with(historyRecyclerView) {
+                addOnScrollListener(scrollListener)
+                attachAdapter(historyAdapter)
+                addItemDecoration(RoundedDecoration(16f.toPx()))
+            }
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
                 scrollListener.reset()
             }
         }
-    }
-
-    override fun onDetachedFromWindow() {
-        presenter.detach()
-        super.onDetachedFromWindow()
+        presenter.loadHistory(tokenMintAddress)
     }
 
     fun loadHistory() {
-        presenter.loadHistory()
+        presenter.loadHistory(tokenMintAddress)
     }
 
     override fun showPagingState(state: PagingState) {
@@ -123,14 +124,15 @@ class HistoryListView @JvmOverloads constructor(
         }
     }
 
-    override fun showHistory(history: List<HistoryItem>) {
+    override suspend fun showHistory(history: List<HistoryItem>) {
         with(binding) {
-            historyAdapter.setTransactions(history)
-            historyRecyclerView.invalidateItemDecorations()
-
-            val isHistoryEmpty = historyAdapter.isEmpty()
-            emptyStateLayout.root.isVisible = isHistoryEmpty
-            historyRecyclerView.isVisible = !isHistoryEmpty
+            historyAdapter.submitList(history) {
+                historyRecyclerView.invalidateItemDecorations()
+                val isHistoryEmpty = historyAdapter.isEmpty()
+                emptyStateLayout.root.isVisible = isHistoryEmpty
+                historyRecyclerView.isVisible = !isHistoryEmpty
+                historyAdapter.setPagingState(PagingState.Idle)
+            }
         }
     }
 
@@ -149,10 +151,6 @@ class HistoryListView @JvmOverloads constructor(
 
     override fun scrollToTop() {
         binding.historyRecyclerView.smoothScrollToPosition(0)
-    }
-
-    fun addObserver(lifecycle: Lifecycle) {
-        lifecycle.addObserver(presenter)
     }
 
     //region Not Needed Base Methods

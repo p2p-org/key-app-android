@@ -2,12 +2,16 @@ package org.p2p.wallet.common.feature_toggles.remote_config
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.common.di.AppScope
 
 private const val NO_VALUE = ""
 
-class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
+class AppFirebaseRemoteConfig(
+    private val appScope: AppScope
+) : RemoteConfigValuesProvider {
 
     private class RemoteConfigError(
         override val message: String,
@@ -20,28 +24,30 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
         get() = FirebaseRemoteConfig.getInstance()
 
     fun loadRemoteConfig(onConfigLoaded: (featureToggles: Map<String, String>) -> Unit) {
-        // do not put it in release - we don't need to change fetch interval there
-        if (BuildConfig.DEBUG) {
-            remoteConfig.setConfigSettingsAsync(createRemoteConfigSettings())
-                .addOnSuccessListener { Timber.d("Remote config for debug is set") }
-                .addOnFailureListener { Timber.e("Remote config for debug is not set", it) }
+        appScope.launch {
+            // do not put it in release - we don't need to change fetch interval there
+            if (BuildConfig.DEBUG) {
+                remoteConfig.setConfigSettingsAsync(createRemoteConfigSettings())
+                    .addOnSuccessListener { Timber.d("Remote config for debug is set") }
+                    .addOnFailureListener { Timber.e("Remote config for debug is not set", it) }
+            }
+
+            // maybe add loading screen in the start for remoteConfig to finish the job?
+            remoteConfig.fetchAndActivate()
+                .addOnSuccessListener {
+                    isFetchFailed = false
+                    Timber.d("Remote config fetched and activated")
+                    Timber.i("Remote config fetched toggles: ${allFeatureTogglesRaw()}")
+
+                    onConfigLoaded.invoke(allFeatureTogglesRaw())
+                }
+                .addOnFailureListener { error ->
+                    isFetchFailed = true
+                    Timber.e(RemoteConfigError("Remote config is not fetched and activated", error))
+
+                    onConfigLoaded.invoke(emptyMap())
+                }
         }
-
-        // maybe add loading screen in the start for remoteConfig to finish the job?
-        remoteConfig.fetchAndActivate()
-            .addOnSuccessListener {
-                isFetchFailed = false
-                Timber.d("Remote config fetched and activated")
-                Timber.i("Remote config fetched toggles: ${allFeatureTogglesRaw()}")
-
-                onConfigLoaded.invoke(allFeatureTogglesRaw())
-            }
-            .addOnFailureListener { error ->
-                isFetchFailed = true
-                Timber.e(RemoteConfigError("Remote config is not fetched and activated", error))
-
-                onConfigLoaded.invoke(emptyMap())
-            }
     }
 
     fun allFeatureTogglesRaw(): Map<String, String> = remoteConfig.all.mapValues { it.value.asString() }
