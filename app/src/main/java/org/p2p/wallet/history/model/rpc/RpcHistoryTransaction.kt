@@ -57,9 +57,6 @@ sealed class RpcHistoryTransaction(
         @StringRes
         fun getTitle(): Int = if (isBurn) R.string.common_burn else R.string.common_mint
 
-        @DrawableRes
-        fun getIcon(): Int = R.drawable.ic_renbtc
-
         fun getUsdAmount(): String = "${getFormattedAmount()}"
 
         fun getTotal(): String = "${getSymbol(isBurn)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
