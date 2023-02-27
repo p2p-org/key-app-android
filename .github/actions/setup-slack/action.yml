@@ -1,5 +1,6 @@
 name: "Publish APK/AAB to slack channel"
 description: "Publish release, firebase, local or feature artifact to slack channel"
+
 inputs:
   channel-id:
     required: true
