@@ -1,12 +1,7 @@
 # Daily build for testers at 5 AM UTC (8 AM Moscow Time, 11 AM Bishkek Time)
-#on:
-#  schedule:
-#    - cron: '0 5 * * *'
-
 on:
-  pull_request:
-    branches:
-      - develop
+  schedule:
+    - cron: '0 5 * * *'
 
 jobs:
   android-build-artifacts:
