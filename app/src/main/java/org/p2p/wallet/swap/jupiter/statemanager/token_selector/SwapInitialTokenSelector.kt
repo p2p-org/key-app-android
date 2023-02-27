@@ -2,7 +2,7 @@ package org.p2p.wallet.swap.jupiter.statemanager.token_selector
 
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 
 interface SwapInitialTokenSelector {

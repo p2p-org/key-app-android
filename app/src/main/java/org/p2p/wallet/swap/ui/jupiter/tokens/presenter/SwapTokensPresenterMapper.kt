@@ -5,22 +5,23 @@ import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatFiat
-import org.p2p.core.utils.orZero
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
-import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.utils.image.commonCircleImage
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.wallet.R
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.utils.Base58String
 
-class SwapTokensToCellItemsMapper {
-
-    private val byTokenMintComparator = Comparator<Base58String> { current, next ->
+/**
+ * Contains base logic for mapping Swap domain models to Cell UI models
+ * - sorting logic
+ * - creating finance block cell model
+ */
+abstract class SwapTokensPresenterMapper {
+    protected val byTokenMintComparator = Comparator<Base58String> { current, next ->
         val currentTokenMint = current.base58Value
         val nextTokenMint = next.base58Value
 
@@ -39,99 +40,37 @@ class SwapTokensToCellItemsMapper {
         }
     }
 
-    private val userTokensSorter =
-        compareByDescending(byTokenMintComparator, SwapTokenModel.UserToken::mintAddress)
-            .thenByDescending { it.tokenAmountInUsd.orZero() }
-
-    private val otherTokensSorter =
-        compareByDescending(SwapTokenModel.JupiterToken::tokenName)
-
-    fun toCellItems(
-        chosenToken: SwapTokenModel,
-        swapTokens: List<SwapTokenModel>
-    ): List<AnyCellItem> = buildList {
-        this += chosenTokenGroup(chosenToken)
-
-        this += userTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.UserToken>())
-        this += allOtherTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.JupiterToken>())
-    }
-
-    private fun chosenTokenGroup(
-        chosenToken: SwapTokenModel
-    ): List<AnyCellItem> = buildList {
-        val sectionHeader = createSectionHeader(R.string.swap_tokens_section_chosen_token)
-        val chosenToken = when (chosenToken) {
-            is SwapTokenModel.JupiterToken -> chosenToken.toTokenFinanceCellModel()
-            is SwapTokenModel.UserToken -> chosenToken.toTokenFinanceCellModel()
-        }
-
-        this += sectionHeader
-        this += chosenToken
-    }
-
-    private fun userTokensGroup(userTokens: List<SwapTokenModel.UserToken>): List<AnyCellItem> = buildList {
-        val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)
-        val userTokens = userTokens
-            .sortedWith(userTokensSorter)
-            .map { it.toTokenFinanceCellModel() }
-
-        this += sectionHeader
-        this += userTokens
-    }
-
-    private fun allOtherTokensGroup(otherTokens: List<SwapTokenModel.JupiterToken>): List<AnyCellItem> = buildList {
-        val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)
-        val otherTokens = otherTokens
-            .sortedWith(otherTokensSorter)
-            .map { it.toTokenFinanceCellModel() }
-
-        this += sectionHeader
-        this += otherTokens
-    }
-
-    fun toSearchResultCellModels(
-        foundSwapTokens: List<SwapTokenModel>
-    ): List<AnyCellItem> = foundTokensGroup(foundSwapTokens)
-
-    private fun foundTokensGroup(foundSwapTokens: List<SwapTokenModel>): List<AnyCellItem> = buildList {
-        val sectionHeader = createSectionHeader(R.string.swap_tokens_section_search_result)
-        val searchResultTokens = foundSwapTokens.map {
-            when (it) {
-                is SwapTokenModel.JupiterToken -> it.toTokenFinanceCellModel()
-                is SwapTokenModel.UserToken -> it.toTokenFinanceCellModel()
-            }
-        }
-
-        this += sectionHeader
-        this += searchResultTokens
-    }
-
-    private fun createSectionHeader(@StringRes stringRes: Int): SectionHeaderCellModel {
+    protected fun createSectionHeader(@StringRes stringRes: Int): SectionHeaderCellModel {
         return SectionHeaderCellModel(
             sectionTitle = TextContainer(stringRes),
             isShevronVisible = false
         )
     }
 
-    private fun SwapTokenModel.UserToken.toTokenFinanceCellModel(): FinanceBlockCellModel = with(details) {
+    protected fun SwapTokenModel.toTokenFinanceCellModel(): FinanceBlockCellModel = when (this) {
+        is SwapTokenModel.JupiterToken -> asTokenFinanceCellModel()
+        is SwapTokenModel.UserToken -> asTokenFinanceCellModel()
+    }
+
+    private fun SwapTokenModel.UserToken.asTokenFinanceCellModel(): FinanceBlockCellModel = with(details) {
         createTokenFinanceCellModel(
             tokenIconUrl = iconUrl.orEmpty(),
             tokenName = tokenName,
             tokenSymbol = tokenSymbol,
             totalTokenAmount = getFormattedTotal(),
             totalTokenPriceInUsd = totalInUsd?.formatFiat(),
-            payload = this@toTokenFinanceCellModel
+            payload = this@asTokenFinanceCellModel
         )
     }
 
-    private fun SwapTokenModel.JupiterToken.toTokenFinanceCellModel(): FinanceBlockCellModel = with(details) {
+    private fun SwapTokenModel.JupiterToken.asTokenFinanceCellModel(): FinanceBlockCellModel = with(details) {
         createTokenFinanceCellModel(
             tokenIconUrl = iconUrl.orEmpty(),
             tokenName = tokenName,
             tokenSymbol = tokenSymbol,
             totalTokenAmount = null,
             totalTokenPriceInUsd = null,
-            payload = this@toTokenFinanceCellModel
+            payload = this@asTokenFinanceCellModel
         )
     }
 

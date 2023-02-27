@@ -8,8 +8,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.root.RootActivity
-import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensListMode
 import org.p2p.wallet.utils.replaceFragment
 
 class SplashFragment :

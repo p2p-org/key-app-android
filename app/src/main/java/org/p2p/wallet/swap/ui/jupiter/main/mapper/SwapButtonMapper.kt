@@ -2,7 +2,7 @@ package org.p2p.wallet.swap.ui.jupiter.main.mapper
 
 import org.p2p.core.common.TextContainer
 import org.p2p.wallet.R
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.main.SwapButtonState
 
 class SwapButtonMapper {

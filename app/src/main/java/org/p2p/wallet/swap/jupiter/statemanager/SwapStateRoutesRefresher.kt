@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
