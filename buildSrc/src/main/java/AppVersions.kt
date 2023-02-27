@@ -3,5 +3,5 @@ object AppVersions {
     const val VERSION_MINOR = 4
     const val VERSION_HOTFIX = 1
     const val VERSION_PATCH = 0
-    const val VERSION_BUILD = 1677521290036
+    const val VERSION_BUILD = 1677524254126
 }
