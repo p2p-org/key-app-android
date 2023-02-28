@@ -226,7 +226,7 @@ object SwapModule : InjectionModule {
         factoryOf(::SwapTokensToCellItemsMapper)
         factoryOf(::SwapTokensPresenter) bind SwapTokensContract.Presenter::class
 
-        factory {(stateManagerHolderKey: String)->
+        factory { (stateManagerHolderKey: String) ->
             val managerHolder: SwapStateManagerHolder = get()
             val stateManager = managerHolder.get(stateManagerHolderKey)
             JupiterSwapSettingsPresenter(

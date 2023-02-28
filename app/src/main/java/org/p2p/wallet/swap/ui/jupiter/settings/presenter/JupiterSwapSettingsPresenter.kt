@@ -6,5 +6,4 @@ import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
 
 class JupiterSwapSettingsPresenter(
     private val stateManager: SwapStateManager
-) : BasePresenter<JupiterSwapSettingsContract.View>(), JupiterSwapSettingsContract.Presenter {
-}
+) : BasePresenter<JupiterSwapSettingsContract.View>(), JupiterSwapSettingsContract.Presenter
