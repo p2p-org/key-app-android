@@ -57,3 +57,11 @@ task gitChangelogTask(type: Exec) {
         }
     }
 }
+
+task releaseChangelogTask(type: Exec) {
+    def currentVersionName = Versions.INSTANCE.VERSION_NAME
+
+    doLast {
+        changelogFile.appendLine("Release cut. Version: $currentVersionName")
+    }
+}
