@@ -14,7 +14,7 @@ import org.p2p.uikit.utils.drawable.shape.shapeRectangle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shape.shapeTopRounded
 import org.p2p.uikit.utils.toPx
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 
 class SwapTokenAItemDecoration(
     @Px round: Float = 12f.toPx()
