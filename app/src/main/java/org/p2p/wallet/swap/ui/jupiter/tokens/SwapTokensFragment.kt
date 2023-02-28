@@ -113,4 +113,8 @@ class SwapTokensFragment :
     override fun setTokenItems(items: List<AnyCellItem>) {
         adapter.setTokenItems(items)
     }
+
+    override fun close() {
+        popBackStack()
+    }
 }

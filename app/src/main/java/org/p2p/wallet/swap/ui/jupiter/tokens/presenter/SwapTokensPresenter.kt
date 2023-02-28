@@ -69,6 +69,7 @@ class SwapTokensPresenter(
     }
 
     override fun onTokenClicked(clickedToken: SwapTokenModel) {
-        view?.showUiKitSnackBar(clickedToken.tokenName)
+        interactor.selectToken(tokenToChange, clickedToken)
+        view?.close()
     }
 }
