@@ -114,7 +114,7 @@ jobs:
       - name: "Generate changelog"
         uses: ./.github/actions/setup-changelog
       - name: "Send start deploy message to slack"
-        run: bash bash_scripts/slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+        run: bash bash_scripts/slack_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Generate a unique version build"
         uses: ./.github/actions/setup-version-build
       - name: "Build feature APK"
@@ -136,7 +136,7 @@ jobs:
       - name: "Send finish deploy message to slack"
         run: |
           value=`cat timestamp.txt`
-          bash bash_scripts/slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          bash bash_scripts/slack_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
       - name: "Get last commit hash and save into LastCommit.kt"
         run: ./gradlew setLastCommitHash -Phash=$(git rev-parse HEAD)
       - name: "Commit and Push changes"

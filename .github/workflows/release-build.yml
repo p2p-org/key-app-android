@@ -42,15 +42,12 @@ jobs:
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: Create and fill p2pwallet.jks
         run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2pwallet.jks
-      - name: "Send start deploy message to slack"
-        run: bash bash_scripts/slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Build release AAB&APK artifacts"
         run: ./gradlew bundleRelease assembleRelease
       - name: "Upload AAB to Firebase App Distribution"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        run: ./gradlew appDistributionUploadRelease
       - name: "Upload release AAB to Slack Channel"
         uses: ./.github/actions/setup-slack
         with:
