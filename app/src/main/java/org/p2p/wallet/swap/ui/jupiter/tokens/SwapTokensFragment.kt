@@ -65,8 +65,8 @@ class SwapTokensFragment :
 
         binding.recyclerViewTokens.attachAdapter(adapter)
         when (tokenToChange) {
-            SwapTokensChangeToken.TOKEN_A -> binding.recyclerViewTokens.addItemDecoration(SwapTokenAItemDecoration())
-            SwapTokensChangeToken.TOKEN_B -> {
+            SwapTokensListMode.TOKEN_A -> binding.recyclerViewTokens.addItemDecoration(SwapTokenAItemDecoration())
+            SwapTokensListMode.TOKEN_B -> {
                 // todo
             }
         }
