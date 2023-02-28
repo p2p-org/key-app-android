@@ -1,7 +1,6 @@
 package org.p2p.wallet.sell.interactor
 
 import android.content.res.Resources
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
@@ -23,9 +22,9 @@ class HistoryItemMapper(
     private val dispatchers: CoroutineDispatchers
 ) {
 
-    private val historyItemFlow = MutableStateFlow<List<HistoryItem>>(emptyList())
+    private val historyItemFlow = MutableStateFlow<List<HistoryItem>?>(null)
 
-    fun getHistoryAdapterItemFlow(): Flow<List<HistoryItem>> {
+    fun getHistoryAdapterItemFlow(): MutableStateFlow<List<HistoryItem>?> {
         return historyItemFlow
     }
 
@@ -45,7 +44,7 @@ class HistoryItemMapper(
                 }
             }
         }
-        historyItemFlow.tryEmit(sellHistoryItems + rpcHistoryItems)
+        historyItemFlow.emit(sellHistoryItems + rpcHistoryItems)
     }
 
     suspend fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
