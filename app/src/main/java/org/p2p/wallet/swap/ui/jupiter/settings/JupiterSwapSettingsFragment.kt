@@ -1,12 +1,23 @@
 package org.p2p.wallet.swap.ui.jupiter.settings
 
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
+import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
+import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
+import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapSettingsBinding
+import org.p2p.wallet.swap.ui.jupiter.settings.adapter.SwapSettingsAdapter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -35,8 +46,31 @@ class JupiterSwapSettingsFragment :
 
     override val presenter: JupiterSwapSettingsContract.Presenter by inject { parametersOf(stateManagerKey) }
 
+    private val adapter = SwapSettingsAdapter(
+        sectionHeaderCellDelegate(),
+        financeBlockCellDelegate(inflateListener = { financeBlock ->
+            financeBlock.setOnClickAction { _, item -> presenter.onSettingItemClick(item) }
+        }),
+    )
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.setNavigationOnClickListener { popBackStack() }
+        with(binding) {
+            toolbar.setNavigationOnClickListener { popBackStack() }
+            recyclerViewSettings.layoutManager = LinearLayoutManager(view.context)
+            recyclerViewSettings.itemAnimator = null
+            recyclerViewSettings.attachAdapter(adapter)
+        }
+    }
+
+    override fun bindSettingsList(list: List<AnyCellItem>) {
+        adapter.items = list
+    } override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { view, insets, _ ->
+            insets.systemAndIme().consume {
+                view.appleTopInsets(this)
+                binding.recyclerViewSettings.appleBottomInsets(this)
+            }
+        }
     }
 }

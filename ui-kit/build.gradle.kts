@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     Dependencies.baseAndroidLibraries.forEach { implementation(it) }
+    Dependencies.adapterdelegatesLibraries.forEach { implementation(it) }
 
     implementation(project(":core"))
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")

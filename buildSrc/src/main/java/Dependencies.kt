@@ -6,6 +6,7 @@ object Dependencies {
     private const val recyclerviewVersion = "1.2.1"
     private const val activityKtxVersion = "1.6.0"
     private const val fragmentKtxVersion = "1.4.1"
+    private const val adapterdelegatesVersion = "4.3.2"
 
     private const val androidBuildToolsVersion = "7.4.1"
 
@@ -20,6 +21,8 @@ object Dependencies {
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerviewVersion"
     const val activityKtx = "androidx.activity:activity-ktx:$activityKtxVersion"
     const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
+    const val adapterdelegates = "com.hannesdorfmann:adapterdelegates4-kotlin-dsl:$adapterdelegatesVersion"
+    const val adapterdelegatesBinding = "com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:$adapterdelegatesVersion"
 
     const val androidBuildTools = "com.android.tools.build.gradle:$androidBuildToolsVersion"
 
@@ -30,5 +33,10 @@ object Dependencies {
         recyclerView,
         activityKtx,
         fragmentKtx
+    )
+
+    val adapterdelegatesLibraries = listOf(
+        adapterdelegates,
+        adapterdelegatesBinding,
     )
 }

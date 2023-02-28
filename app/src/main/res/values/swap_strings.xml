@@ -18,4 +18,24 @@
 
     <string name="swap_tokens_section_chosen_token">Chosen token</string>
     <string name="swap_tokens_section_all_tokens">All tokens</string>
+
+    <string name="swap_settings_route_title">Swapping Through</string>
+    <string name="swap_settings_route_best">Best price</string>
+
+    <string name="swap_settings_network_fee_title">Network fee</string>
+    <string name="swap_settings_network_fee_subtitle">Paid by P2P.org</string>
+    <string name="swap_settings_network_fee_free">Free</string>
+
+    <string name="swap_settings_creation_fee_title">Account Creation fee</string>
+    <string name="swap_settings_creation_fee_subtitle">%s %s</string>
+
+    <string name="swap_settings_liquidity_fee_title">Liquidity fee</string>
+
+    <string name="swap_settings_estimated_fee_title">Estimated fees</string>
+
+    <string name="swap_settings_minimum_received_title">Minimum received</string>
+    <string name="swap_settings_minimum_received_subtitle">%s %s</string>
+
+    <string name="swap_settings_slippage_custom">Custom</string>
+    <string name="swap_settings_slippage_title">Slippage</string>
 </resources>
