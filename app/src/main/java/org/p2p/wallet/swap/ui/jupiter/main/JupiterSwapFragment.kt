@@ -28,6 +28,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.home.isInMainTabsScreen
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
+import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensChangeToken
 import org.p2p.wallet.utils.args
@@ -78,6 +79,16 @@ class JupiterSwapFragment :
 
             sliderSend.onSlideCompleteListener = { sliderSend.showCompleteAnimation() }
             sliderSend.onSlideCollapseCompleted = { presenter.onSwapTokenClick() }
+
+            toolbar.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.settingsMenuItem -> {
+                        openSwapSettingsScreen()
+                        true
+                    }
+                    else -> false
+                }
+            }
         }
     }
 
@@ -136,6 +147,11 @@ class JupiterSwapFragment :
 
     override fun openChangeTokenBScreen() {
         val fragment = SwapTokensFragment.create(SwapTokensChangeToken.TOKEN_B, stateManagerHolderKey)
+        replaceFragment(fragment)
+    }
+
+    fun openSwapSettingsScreen() {
+        val fragment = JupiterSwapSettingsFragment.create(stateManagerKey = stateManagerHolderKey)
         replaceFragment(fragment)
     }
 
