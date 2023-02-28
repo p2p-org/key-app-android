@@ -1,4 +1,4 @@
-package org.p2p.wallet.swap.jupiter.domain.model
+package org.p2p.wallet.swap.jupiter.interactor.model
 
 import java.math.BigDecimal
 import org.p2p.core.token.Token
