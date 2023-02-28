@@ -1,6 +1,7 @@
 package org.p2p.uikit.organisms.sectionheader
 
 import androidx.recyclerview.widget.RecyclerView
+import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.ItemSectionHeaderBinding
@@ -18,7 +19,7 @@ class SectionHeaderViewHolder(
     }
 }
 
-fun sectionHeaderCellDelegate() =
+fun sectionHeaderCellDelegate(): AdapterDelegate<List<AnyCellItem>> =
     adapterDelegateViewBinding<SectionHeaderCellModel, AnyCellItem, ItemSectionHeaderBinding>(
         viewBinding = { inflater, parent -> ItemSectionHeaderBinding.inflate(inflater, parent, false) },
     ) {

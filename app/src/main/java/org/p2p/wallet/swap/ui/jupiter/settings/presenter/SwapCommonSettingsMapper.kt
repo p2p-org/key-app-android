@@ -41,7 +41,7 @@ class SwapCommonSettingsMapper {
         )
     }
 
-    fun getSlippageList(slippage: Double): List<AnyCellItem> = mutableListOf<AnyCellItem>().apply {
+    fun getSlippageList(slippage: Double): List<AnyCellItem> = buildList {
         val selectedSlippage = slippage.slippageToEnum()
         addSlippageCell(
             slippage = TextContainer("0,1%"),

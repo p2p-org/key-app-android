@@ -57,7 +57,6 @@ class JupiterSwapSettingsFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            recyclerViewSettings.layoutManager = LinearLayoutManager(view.context)
             recyclerViewSettings.itemAnimator = null
             recyclerViewSettings.attachAdapter(adapter)
         }
