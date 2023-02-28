@@ -1,9 +1,8 @@
 package org.p2p.wallet.history.ui.historylist
 
-import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.flow.filterNotNull
 import timber.log.Timber
 import kotlinx.coroutines.launch
-import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
@@ -18,29 +17,22 @@ private const val PAGE_SIZE = 20
 class HistoryListViewPresenter(
     private val historyInteractor: HistoryInteractor,
     private val environmentManager: NetworkEnvironmentManager,
-    private val historyItemMapper: HistoryItemMapper,
-    private val token: Token.Active?
+    private val historyItemMapper: HistoryItemMapper
 ) : BasePresenter<HistoryListViewContract.View>(), HistoryListViewContract.Presenter {
 
     override fun attach(view: HistoryListViewContract.View) {
         super.attach(view)
         environmentManager.addEnvironmentListener(this::class) { refreshHistory() }
+        attachToHistoryFlow()
     }
 
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
-        loadHistory()
-    }
-
-    override fun loadNextHistoryPage() {
+    override fun loadNextHistoryPage(mintAddress: String?) {
         launch {
             try {
                 view?.showPagingState(PagingState.Loading)
-                val result = historyInteractor.loadNextPage(PAGE_SIZE, token?.mintAddress)
+                val result = historyInteractor.loadNextPage(PAGE_SIZE, mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)
-                val adapterItems = historyItemMapper.toAdapterItem(newHistoryTransactions)
-                view?.showHistory(adapterItems)
-                view?.showPagingState(PagingState.Idle)
+                historyItemMapper.toAdapterItem(newHistoryTransactions)
             } catch (e: Throwable) {
                 Timber.e("Error on loading next history page: $e")
                 view?.showPagingState(PagingState.Error(e))
@@ -48,15 +40,13 @@ class HistoryListViewPresenter(
         }
     }
 
-    override fun loadHistory() {
+    override fun loadHistory(mintAddress: String?) {
         launch {
             try {
                 view?.showPagingState(PagingState.InitialLoading)
-                val result = historyInteractor.loadHistory(PAGE_SIZE, token?.mintAddress)
+                val result = historyInteractor.loadHistory(PAGE_SIZE, mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)
-                val adapterItems = historyItemMapper.toAdapterItem(newHistoryTransactions)
-                view?.showHistory(adapterItems)
-                view?.showPagingState(PagingState.Idle)
+                historyItemMapper.toAdapterItem(newHistoryTransactions)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading history: $e")
                 view?.showPagingState(PagingState.Error(e))
@@ -64,14 +54,13 @@ class HistoryListViewPresenter(
         }
     }
 
-    override fun refreshHistory() {
+    override fun refreshHistory(mintAddress: String?) {
         launch {
             try {
                 view?.showRefreshing(isRefreshing = true)
-                val result = historyInteractor.loadHistory(PAGE_SIZE, token?.mintAddress)
+                val result = historyInteractor.loadHistory(PAGE_SIZE, mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)
-                val adapterItems = historyItemMapper.toAdapterItem(newHistoryTransactions)
-                view?.showHistory(adapterItems)
+                historyItemMapper.toAdapterItem(newHistoryTransactions)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading history: $e")
                 view?.showPagingState(PagingState.Error(e))
@@ -95,6 +84,17 @@ class HistoryListViewPresenter(
                     Timber.e(UnsupportedOperationException(errorMessage))
                 }
             }
+        }
+    }
+
+    private fun attachToHistoryFlow() {
+        launch {
+            historyItemMapper.getHistoryAdapterItemFlow()
+                .filterNotNull()
+                .collect { items ->
+                    view?.showHistory(items)
+                    view?.showPagingState(PagingState.Idle)
+                }
         }
     }
 

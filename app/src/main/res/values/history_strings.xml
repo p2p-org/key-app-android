@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="history_empty_message">Your history will appear here.\nTo get started you can:</string>
+    <string name="history_empty_message">Your history will appear here.\nIt will take some time.</string>
     <string name="history_empty_option_buy">Buy crypto</string>
     <string name="history_empty_option_receive">Receive</string>
 

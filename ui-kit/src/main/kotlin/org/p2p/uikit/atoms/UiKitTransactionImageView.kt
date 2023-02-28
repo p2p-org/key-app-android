@@ -6,9 +6,11 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTransactionImageBinding
+import org.p2p.uikit.utils.dip
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 
@@ -19,7 +21,7 @@ class UiKitTransactionImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val binding = inflateViewBinding<WidgetTransactionImageBinding>()
 

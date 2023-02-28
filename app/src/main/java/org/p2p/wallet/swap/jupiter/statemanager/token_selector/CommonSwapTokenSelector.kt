@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 
 class CommonSwapTokenSelector(
