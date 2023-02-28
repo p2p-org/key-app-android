@@ -9,12 +9,18 @@ import android.widget.EditText
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.utils.hideKeyboard
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapTokensBinding
+import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokenAItemDecoration
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensAdapter
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensChangeToken
 import org.p2p.wallet.utils.args
@@ -59,6 +65,21 @@ class SwapTokensFragment :
         inflateSearchMenu(binding.toolbar)
 
         binding.recyclerViewTokens.attachAdapter(adapter)
+        when (tokenToChange) {
+            SwapTokensChangeToken.TOKEN_A -> binding.recyclerViewTokens.addItemDecoration(SwapTokenAItemDecoration())
+            SwapTokensChangeToken.TOKEN_B -> {
+                // todo
+            }
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { view, insets, _ ->
+            insets.systemAndIme().consume {
+                view.appleTopInsets(this)
+                binding.recyclerViewTokens.appleBottomInsets(this)
+            }
+        }
     }
 
     // todo: extract SearchView to UiKitToolbar
