@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.repository.remote
 
+import kotlinx.coroutines.withContext
 import java.util.Optional
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.wallet.history.api.RpcHistoryServiceApi
@@ -9,6 +10,7 @@ import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
@@ -23,33 +25,36 @@ class RpcHistoryRepository(
     private val historyApi: RpcHistoryServiceApi,
     private val tokenKeyProvider: TokenKeyProvider,
     private val historyServiceSignatureFieldGenerator: HistoryServiceSignatureFieldGenerator,
-    private val converter: RpcHistoryTransactionConverter
+    private val converter: RpcHistoryTransactionConverter,
+    private val coroutineDispatchers: CoroutineDispatchers
 ) : HistoryRemoteRepository {
 
     private val allTransactions = mutableMapOf<String, MutableList<RpcHistoryTransactionResponse>>()
     private val tokenPagingState = mutableMapOf<String, HistoryPagingState>()
 
-    override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
-        allTransactions.clear()
-        tokenPagingState.clear()
-        return try {
-            val response = fetchHistoryTransactions(limit, mintAddress)
-            val domainItems = response.map { converter.toDomain(it) }
-            HistoryPagingResult.Success(domainItems)
-        } catch (e: Throwable) {
-            HistoryPagingResult.Error(e)
+    override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult =
+        withContext(coroutineDispatchers.io) {
+            allTransactions.clear()
+            tokenPagingState.clear()
+            return@withContext try {
+                val response = fetchHistoryTransactions(limit, mintAddress)
+                val domainItems = response.map { converter.toDomain(it) }
+                HistoryPagingResult.Success(domainItems)
+            } catch (e: Throwable) {
+                HistoryPagingResult.Error(e)
+            }
         }
-    }
 
-    override suspend fun loadNextPage(limit: Int, mintAddress: String?): HistoryPagingResult {
-        return try {
-            val response = fetchHistoryTransactions(limit, mintAddress)
-            val domainItems = response.map { converter.toDomain(it) }
-            HistoryPagingResult.Success(domainItems)
-        } catch (e: Throwable) {
-            HistoryPagingResult.Error(e)
+    override suspend fun loadNextPage(limit: Int, mintAddress: String?): HistoryPagingResult =
+        withContext(coroutineDispatchers.io) {
+            return@withContext try {
+                val response = fetchHistoryTransactions(limit, mintAddress)
+                val domainItems = response.map { converter.toDomain(it) }
+                HistoryPagingResult.Success(domainItems)
+            } catch (e: Throwable) {
+                HistoryPagingResult.Error(e)
+            }
         }
-    }
 
     override suspend fun findTransactionById(id: String): HistoryTransaction? {
         return allTransactions.flatMap { it.value }
@@ -68,11 +73,11 @@ class RpcHistoryRepository(
     private suspend fun fetchHistoryTransactions(
         limit: Int,
         mintAddress: String?
-    ): List<RpcHistoryTransactionResponse> {
+    ): List<RpcHistoryTransactionResponse> = withContext(coroutineDispatchers.io) {
         val tokenAddress = mintAddress ?: tokenKeyProvider.publicKey
         val historyPagingState = getPagingState(tokenAddress)
         if (historyPagingState == HistoryPagingState.INACTIVE) {
-            return findTransactionsByTokenAddress(tokenAddress)
+            return@withContext findTransactionsByTokenAddress(tokenAddress)
         }
 
         val offset = findTransactionsByTokenAddress(tokenAddress).size.toLong()
@@ -99,7 +104,7 @@ class RpcHistoryRepository(
         val localTransactions = findTransactionsByTokenAddress(
             token = tokenAddress
         )
-        return try {
+        return@withContext try {
             val result = historyApi.getTransactionHistory(rpcRequest).result.transactions
             if (result.isEmpty() || result.size < limit) {
                 tokenPagingState[tokenAddress] = HistoryPagingState.INACTIVE

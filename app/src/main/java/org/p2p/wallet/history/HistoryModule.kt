@@ -7,7 +7,6 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.api.RpcHistoryServiceApi
 import org.p2p.wallet.history.interactor.HistoryInteractor
@@ -45,12 +44,11 @@ object HistoryModule : InjectionModule {
 
         factoryOf(::HistoryPresenter) bind HistoryContract.Presenter::class
         factoryOf(::TokenHistoryPresenter) bind TokenHistoryContract.Presenter::class
-        factory { (token: Token.Active?) ->
+        factory {
             HistoryListViewPresenter(
                 historyInteractor = get(),
                 environmentManager = get(),
-                historyItemMapper = get(),
-                token = token
+                historyItemMapper = get()
             )
         } bind HistoryListViewContract.Presenter::class
         factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) bind
@@ -74,7 +72,8 @@ object HistoryModule : InjectionModule {
                     historyApi = get(),
                     tokenKeyProvider = get(),
                     historyServiceSignatureFieldGenerator = get(),
-                    converter = get()
+                    converter = get(),
+                    coroutineDispatchers = get()
                 ),
                 MoonpayHistoryRemoteRepository(
                     sellEnabledFeatureToggle = get(),
@@ -83,7 +82,7 @@ object HistoryModule : InjectionModule {
                     hiddenSellTransactionsStorageContract = get()
                 )
             )
-            HistoryRepository(remotes)
+            HistoryRepository(remotes, get())
         }
     }
 }

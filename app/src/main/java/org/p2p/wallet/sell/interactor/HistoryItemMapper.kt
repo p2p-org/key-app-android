@@ -1,6 +1,7 @@
 package org.p2p.wallet.sell.interactor
 
 import android.content.res.Resources
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.wallet.R
@@ -9,15 +10,25 @@ import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.ui.model.HistoryItem
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
 
-class HistoryItemMapper(private val resources: Resources) {
+class HistoryItemMapper(
+    private val resources: Resources,
+    private val dispatchers: CoroutineDispatchers
+) {
 
-    fun toAdapterItem(transactions: List<HistoryTransaction>): List<HistoryItem> {
+    private val historyItemFlow = MutableStateFlow<List<HistoryItem>?>(null)
+
+    fun getHistoryAdapterItemFlow(): MutableStateFlow<List<HistoryItem>?> {
+        return historyItemFlow
+    }
+
+    suspend fun toAdapterItem(transactions: List<HistoryTransaction>) = with(dispatchers.io) {
         val rpcHistoryItems = mutableListOf<HistoryItem>()
         val sellHistoryItems = mutableListOf<HistoryItem>()
         transactions.forEachIndexed { _, item ->
@@ -33,10 +44,10 @@ class HistoryItemMapper(private val resources: Resources) {
                 }
             }
         }
-        return sellHistoryItems + rpcHistoryItems
+        historyItemFlow.emit(sellHistoryItems + rpcHistoryItems)
     }
 
-    fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
+    suspend fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
         val isCurrentAndPreviousTransactionOnSameDay =
             cache.isNotEmpty() && cache.last().date.isSameDayAs(transaction.date)
         var tokenIconUrl: String? = null
@@ -87,7 +98,8 @@ class HistoryItemMapper(private val resources: Resources) {
                 iconRes = R.drawable.ic_placeholder_image
 
                 startTitle = resources.getString(getTitle())
-                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                startSubtitle =
+                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
                 endTopValue = getUsdAmount()
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotal()
@@ -97,14 +109,16 @@ class HistoryItemMapper(private val resources: Resources) {
                 iconRes = R.drawable.ic_transaction_create
 
                 startTitle = resources.getString(R.string.transaction_history_create)
-                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                startSubtitle =
+                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
             }
             is RpcHistoryTransaction.CloseAccount -> with(transaction) {
                 tokenIconUrl = iconUrl
                 iconRes = R.drawable.ic_transaction_closed
 
                 startTitle = resources.getString(R.string.transaction_history_closed)
-                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                startSubtitle =
+                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
             }
             is RpcHistoryTransaction.Unknown -> {
                 iconRes = R.drawable.ic_transaction_unknown
@@ -142,7 +156,7 @@ class HistoryItemMapper(private val resources: Resources) {
         }
     }
 
-    fun parse(
+    suspend fun parse(
         transaction: SellTransaction,
         cache: MutableList<HistoryItem>
     ) {
@@ -219,7 +233,7 @@ class HistoryItemMapper(private val resources: Resources) {
         )
     }
 
-    fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {
+    suspend fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {
         val receiverAddress = if (sellTransaction is SellTransaction.WaitingForDepositTransaction) {
             sellTransaction.moonpayDepositWalletAddress.base58Value
         } else {

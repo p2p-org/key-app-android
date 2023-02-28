@@ -1,12 +1,15 @@
 package org.p2p.wallet.history.repository.remote
 
+import kotlinx.coroutines.withContext
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 
 class HistoryRepository(
-    private val repositories: List<HistoryRemoteRepository>
+    private val repositories: List<HistoryRemoteRepository>,
+    private val dispatchers: CoroutineDispatchers
 ) : HistoryRemoteRepository {
 
     override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
@@ -37,26 +40,27 @@ class HistoryRepository(
         }
     }
 
-    private fun parsePagingResult(pagingResult: List<HistoryPagingResult>): HistoryPagingResult {
-        val newTransactions = mutableListOf<HistoryTransaction>()
-        val errorMessageBuilder = StringBuilder()
-        pagingResult.forEach { result ->
-            when (result) {
-                is HistoryPagingResult.Error -> {
-                    errorMessageBuilder.append(result.cause)
-                    errorMessageBuilder.append("\n")
-                }
-                is HistoryPagingResult.Success -> {
-                    newTransactions.addAll(result.data)
+    private suspend fun parsePagingResult(pagingResult: List<HistoryPagingResult>): HistoryPagingResult =
+        withContext(dispatchers.io) {
+            val newTransactions = mutableListOf<HistoryTransaction>()
+            val errorMessageBuilder = StringBuilder()
+            pagingResult.forEach { result ->
+                when (result) {
+                    is HistoryPagingResult.Error -> {
+                        errorMessageBuilder.append(result.cause)
+                        errorMessageBuilder.append("\n")
+                    }
+                    is HistoryPagingResult.Success -> {
+                        newTransactions.addAll(result.data)
+                    }
                 }
             }
+            val errorMessage = errorMessageBuilder.toString()
+            if (errorMessage.isNotEmpty()) {
+                return@withContext HistoryPagingResult.Error(Throwable(errorMessage))
+            }
+            return@withContext newTransactions.sortedByDescending { transaction ->
+                transaction.date.dateMilli()
+            }.let(HistoryPagingResult::Success)
         }
-        val errorMessage = errorMessageBuilder.toString()
-        if (errorMessage.isNotEmpty()) {
-            return HistoryPagingResult.Error(Throwable(errorMessage))
-        }
-        return newTransactions.sortedByDescending { transaction ->
-            transaction.date.dateMilli()
-        }.let(HistoryPagingResult::Success)
-    }
 }

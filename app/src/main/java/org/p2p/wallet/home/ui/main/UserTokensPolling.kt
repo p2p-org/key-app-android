@@ -7,22 +7,23 @@ import timber.log.Timber
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.di.AppScope
 
 private val POLLING_DELAY = 10.toDuration(DurationUnit.SECONDS)
 
 class UserTokensPolling(
     private val appFeatureFlags: InAppFeatureFlags,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
+    private val appScope: AppScope
 ) {
 
     private val isPollingEnabled: Boolean
         get() = appFeatureFlags.isPollingEnabled.featureValue
 
-    fun startPolling(scope: CoroutineScope, onTokensLoaded: (List<Token.Active>) -> Unit) {
-        scope.launch {
+    fun startPolling(onTokensLoaded: (List<Token.Active>) -> Unit) {
+        appScope.launch {
             try {
                 while (true) {
                     delay(POLLING_DELAY.inWholeMilliseconds)
