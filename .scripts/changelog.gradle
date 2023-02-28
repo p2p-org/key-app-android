@@ -57,26 +57,3 @@ task gitChangelogTask(type: Exec) {
         }
     }
 }
-
-task releaseChangelogTask(type: Exec) {
-    def currentVersionName = Versions.INSTANCE.VERSION_NAME
-    def changelogFile = file('CHANGELOG.txt')
-
-    doFirst {
-        // Create changelog directory if it doesn't exist
-        changelogFile.parentFile.mkdirs()
-
-        // Create CHANGELOG.txt file if it doesn't exist
-        if (!changelogFile.exists()) {
-            changelogFile.createNewFile()
-        }
-    }
-
-    doLast {
-        changelogFile.withWriter('UTF-8') { writer ->
-            writer.writeLine("Release version: $currentVersionName")
-        }
-    }
-
-    commandLine "git", "commit", "-a", "-m", "Updated changelog for version $currentVersionName"
-}
