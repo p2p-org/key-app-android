@@ -43,9 +43,7 @@ jobs:
       - name: Create and fill p2pwallet.jks
         run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2pwallet.jks
       - name: "Generate changelog"
-        run: |
-          touch CHANGELOG.txt
-          ./gradlew releaseChangelogTask
+        run: ./gradlew releaseChangelogTask
       - name: "Build release AAB&APK artifacts"
         run: ./gradlew bundleRelease assembleRelease
       - name: "Upload AAB to Firebase App Distribution"
