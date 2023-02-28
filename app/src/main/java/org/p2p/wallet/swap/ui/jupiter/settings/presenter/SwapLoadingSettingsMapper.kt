@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.ui.jupiter.settings.presenter
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -50,6 +51,7 @@ class SwapLoadingSettingsMapper(
                     )
                 ),
                 payload = SwapSettingsPayload.ROUTE,
+                styleType = FinanceBlockStyle.BASE_CELL,
             )
         )
     }
@@ -72,6 +74,7 @@ class SwapLoadingSettingsMapper(
                     )
                 ),
                 payload = SwapSettingsPayload.MINIMUM_RECEIVED,
+                styleType = FinanceBlockStyle.BASE_CELL,
             )
         )
     }
@@ -97,6 +100,7 @@ class SwapLoadingSettingsMapper(
                     )
                 ),
                 payload = SwapSettingsPayload.CREATION_FEE,
+                styleType = FinanceBlockStyle.BASE_CELL,
             )
         )
     }
@@ -122,6 +126,7 @@ class SwapLoadingSettingsMapper(
                     )
                 ),
                 payload = SwapSettingsPayload.LIQUIDITY_FEE,
+                styleType = FinanceBlockStyle.BASE_CELL,
             )
         )
     }
@@ -141,6 +146,7 @@ class SwapLoadingSettingsMapper(
                     ),
                 ),
                 payload = SwapSettingsPayload.ESTIMATED_FEE,
+                styleType = FinanceBlockStyle.BASE_CELL,
             )
         )
     }

@@ -5,6 +5,7 @@ import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.formatToken
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -49,6 +50,7 @@ class SwapEmptySettingsMapper(
                     )
                 ),
                 payload = SwapSettingsPayload.MINIMUM_RECEIVED,
+                styleType = FinanceBlockStyle.BASE_CELL,
             )
         )
     }

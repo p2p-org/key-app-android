@@ -10,7 +10,7 @@ import org.p2p.core.utils.insets.appleTopInsets
 import org.p2p.core.utils.insets.consume
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
-import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
+import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.uikit.utils.attachAdapter
@@ -48,7 +48,7 @@ class JupiterSwapSettingsFragment :
 
     private val adapter = SwapSettingsAdapter(
         sectionHeaderCellDelegate(),
-        financeBlockCellDelegate(inflateListener = { financeBlock ->
+        baseCellDelegate(inflateListener = { financeBlock ->
             financeBlock.setOnClickAction { _, item -> presenter.onSettingItemClick(item) }
         }),
     )
@@ -65,7 +65,9 @@ class JupiterSwapSettingsFragment :
 
     override fun bindSettingsList(list: List<AnyCellItem>) {
         adapter.items = list
-    } override fun applyWindowInsets(rootView: View) {
+    }
+
+    override fun applyWindowInsets(rootView: View) {
         rootView.doOnApplyWindowInsets { view, insets, _ ->
             insets.systemAndIme().consume {
                 view.appleTopInsets(this)

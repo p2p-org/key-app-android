@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -36,6 +37,7 @@ class SwapCommonSettingsMapper {
                 )
             ),
             payload = SwapSettingsPayload.NETWORK_FEE,
+            styleType = FinanceBlockStyle.BASE_CELL,
         )
     }
 
@@ -86,6 +88,7 @@ class SwapCommonSettingsMapper {
                     }
                 ),
                 payload = payload,
+                styleType = FinanceBlockStyle.BASE_CELL,
             )
         )
     }
