@@ -10,5 +10,6 @@ data class FinanceBlockCellModel(
     val leftSideCellModel: LeftSideCellModel? = null,
     val rightSideCellModel: RightSideCellModel? = null,
     val accessibility: ViewAccessibilityCellModel = ViewAccessibilityCellModel(),
+    val styleType: FinanceBlockStyle = FinanceBlockStyle.FINANCE_BLOCK,
     override val payload: Any? = null,
 ) : CellModelPayload, AnyCellItem
