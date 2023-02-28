@@ -1,8 +1,8 @@
 package org.p2p.wallet.splash
 
+import androidx.core.app.NotificationManagerCompat
 import android.os.Bundle
 import android.view.View
-import androidx.core.app.NotificationManagerCompat
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment

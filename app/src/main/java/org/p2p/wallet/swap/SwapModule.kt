@@ -30,7 +30,8 @@ import org.p2p.wallet.swap.interactor.serum.SerumSwapAmountInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
-import org.p2p.wallet.swap.jupiter.domain.JupiterSwapInteractor
+import org.p2p.wallet.swap.jupiter.interactor.JupiterSwapInteractor
+import org.p2p.wallet.swap.jupiter.interactor.SwapTokensInteractor
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesInMemoryRepository
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesLocalRepository
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesMapper
@@ -55,18 +56,18 @@ import org.p2p.wallet.swap.jupiter.statemanager.token_selector.CommonSwapTokenSe
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.PreinstallTokenASelector
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapContract
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapPresenter
+import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensContract
-import org.p2p.wallet.swap.ui.jupiter.tokens.interactor.SwapTokensInteractor
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SearchSwapTokensMapper
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensToCellItemsMapper
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
-import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
-import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
 import org.p2p.wallet.swap.ui.jupiter.settings.presenter.JupiterSwapSettingsPresenter
 
@@ -223,7 +224,8 @@ object SwapModule : InjectionModule {
         } bind JupiterSwapContract.Presenter::class
 
         factoryOf(::SwapTokensInteractor)
-        factoryOf(::SwapTokensToCellItemsMapper)
+        factoryOf(::SwapTokensMapper)
+        factoryOf(::SearchSwapTokensMapper)
         factoryOf(::SwapTokensPresenter) bind SwapTokensContract.Presenter::class
 
         factory { (stateManagerHolderKey: String) ->
