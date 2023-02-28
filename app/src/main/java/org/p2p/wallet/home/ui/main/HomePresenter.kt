@@ -321,18 +321,20 @@ class HomePresenter(
     }
 
     private fun showTokensAndBalance() {
-        val balance = getUserBalance()
-        view?.showBalance(balance)
+        launch {
+            val balance = getUserBalance()
+            view?.showBalance(balance)
 
-        logBalance(balance)
+            logBalance(balance)
 
-        /* Mapping elements according to visibility settings */
-        val areZerosHidden = settingsInteractor.areZerosHidden()
-        val mappedTokens = homeElementItemMapper.mapToItems(
-            tokens = state.tokens, visibilityState = state.visibilityState, isZerosHidden = areZerosHidden
-        )
+            /* Mapping elements according to visibility settings */
+            val areZerosHidden = settingsInteractor.areZerosHidden()
+            val mappedTokens = homeElementItemMapper.mapToItems(
+                tokens = state.tokens, visibilityState = state.visibilityState, isZerosHidden = areZerosHidden
+            )
 
-        view?.showTokens(mappedTokens, areZerosHidden)
+            view?.showTokens(mappedTokens, areZerosHidden)
+        }
     }
 
     private fun logBalance(balance: BigDecimal) {
@@ -363,7 +365,7 @@ class HomePresenter(
     }
 
     private fun startPollingForTokens() {
-        tokensPolling.startPolling(scope = this, onTokensLoaded = ::handleUserTokensLoaded)
+        tokensPolling.startPolling(onTokensLoaded = ::handleUserTokensLoaded)
     }
 
     private fun getUserBalance(): BigDecimal =

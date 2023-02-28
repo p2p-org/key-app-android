@@ -1,17 +1,21 @@
 package org.p2p.wallet.home.ui.main
 
+import kotlinx.coroutines.withContext
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.VisibilityState
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 
-class HomeElementItemMapper {
+class HomeElementItemMapper(
+    private val dispatchers: CoroutineDispatchers
+) {
 
-    fun mapToItems(
+    suspend fun mapToItems(
         tokens: List<Token.Active>,
         visibilityState: VisibilityState,
         isZerosHidden: Boolean
-    ): List<HomeElementItem> {
+    ): List<HomeElementItem> = withContext(dispatchers.io) {
         val groups: Map<Boolean, List<Token.Active>> = tokens.groupBy { it.isDefinitelyHidden(isZerosHidden) }
 
         val hiddenTokens = groups[true].orEmpty()
@@ -29,6 +33,6 @@ class HomeElementItemMapper {
             result += hiddenTokens.map { HomeElementItem.Hidden(it, visibilityState) }
         }
 
-        return result
+        return@withContext result
     }
 }

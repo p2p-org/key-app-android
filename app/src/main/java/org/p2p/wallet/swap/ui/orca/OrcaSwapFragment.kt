@@ -53,7 +53,7 @@ private const val EXTRA_SETTINGS = "EXTRA_SETTINGS"
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_OPENED_FROM = "EXTRA_SOURCE"
 
-enum class OrcaSwapOpenedFrom {
+enum class SwapOpenedFrom {
     MAIN_SCREEN,
     OTHER
 }
@@ -63,11 +63,11 @@ class OrcaSwapFragment :
     OrcaSwapContract.View {
 
     companion object {
-        fun create(source: OrcaSwapOpenedFrom = OrcaSwapOpenedFrom.OTHER): OrcaSwapFragment =
+        fun create(source: SwapOpenedFrom = SwapOpenedFrom.OTHER): OrcaSwapFragment =
             OrcaSwapFragment()
                 .withArgs(EXTRA_OPENED_FROM to source)
 
-        fun create(token: Token.Active, source: OrcaSwapOpenedFrom = OrcaSwapOpenedFrom.OTHER): OrcaSwapFragment =
+        fun create(token: Token.Active, source: SwapOpenedFrom = SwapOpenedFrom.OTHER): OrcaSwapFragment =
             OrcaSwapFragment()
                 .withArgs(
                     EXTRA_TOKEN to token,
@@ -76,7 +76,7 @@ class OrcaSwapFragment :
     }
 
     private val token: Token? by args(EXTRA_TOKEN)
-    private val openedFrom: OrcaSwapOpenedFrom by args(EXTRA_OPENED_FROM)
+    private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
 
     override val presenter: OrcaSwapContract.Presenter by inject {
         parametersOf(token)
@@ -121,13 +121,13 @@ class OrcaSwapFragment :
     private fun setupViews() = with(binding) {
         // in case of MainFragment, back is handled by MainFragment
         when (openedFrom) {
-            OrcaSwapOpenedFrom.OTHER -> {
+            SwapOpenedFrom.OTHER -> {
                 amountEditText.focusAndShowKeyboard(force = true)
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                     presenter.onBackPressed()
                 }
             }
-            OrcaSwapOpenedFrom.MAIN_SCREEN -> {
+            SwapOpenedFrom.MAIN_SCREEN -> {
                 toolbar.navigationIcon = null
             }
         }
