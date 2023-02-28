@@ -16,30 +16,30 @@ class SwapCommonSettingsMapper {
 
     fun getNetworkFeeCell(): FinanceBlockCellModel {
         return FinanceBlockCellModel(
-                leftSideCellModel = LeftSideCellModel.IconWithText(
-                    firstLineText = TextViewCellModel.Raw(
-                        text = TextContainer(R.string.swap_settings_network_fee_title),
-                    ),
-                    secondLineText = TextViewCellModel.Raw(
-                        text = TextContainer(R.string.swap_settings_network_fee_subtitle),
-                        textColor = R.color.text_mint,
-                    ),
+            leftSideCellModel = LeftSideCellModel.IconWithText(
+                firstLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_settings_network_fee_title),
                 ),
-                rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
-                    text = TextViewCellModel.Raw(
-                        text = TextContainer(R.string.swap_settings_network_fee_free),
-                        textColor = R.color.text_mint,
-                    ),
-                    firstIcon = ImageViewCellModel(
-                        icon = DrawableContainer(R.drawable.ic_info_outline),
-                        iconTint = R.color.icons_mint,
-                    )
+                secondLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_settings_network_fee_subtitle),
+                    textColor = R.color.text_mint,
                 ),
-                payload = SwapSettingsPayload.NETWORK_FEE,
-            )
+            ),
+            rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
+                text = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_settings_network_fee_free),
+                    textColor = R.color.text_mint,
+                ),
+                firstIcon = ImageViewCellModel(
+                    icon = DrawableContainer(R.drawable.ic_info_outline),
+                    iconTint = R.color.icons_mint,
+                )
+            ),
+            payload = SwapSettingsPayload.NETWORK_FEE,
+        )
     }
 
-    fun getSlippageList(slippage: Double):List<AnyCellItem> = mutableListOf<AnyCellItem>().apply {
+    fun getSlippageList(slippage: Double): List<AnyCellItem> = mutableListOf<AnyCellItem>().apply {
         val selectedSlippage = slippage.slippageToEnum()
         addSlippageCell(
             slippage = TextContainer("0,1%"),
