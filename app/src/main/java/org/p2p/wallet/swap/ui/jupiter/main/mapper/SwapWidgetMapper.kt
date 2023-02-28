@@ -9,7 +9,7 @@ import org.p2p.uikit.utils.skeleton.textCellSkeleton
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenType
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel

@@ -56,7 +56,7 @@ class RootPresenter(
         )
         addIf(
             predicate = newSwapEnabledFeatureToggle.isFeatureEnabled,
-            async { swapRoutesRepository.loadAllSwapRoutes() },
+            async { swapRoutesRepository.loadAndCacheAllSwapRoutes() },
             async { swapTokensRepository.getTokens() }
         )
     }
