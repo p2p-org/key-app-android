@@ -48,6 +48,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: ./gradlew appDistributionUploadRelease
       - name: "Upload release AAB to Slack Channel"
         uses: ./.github/actions/setup-slack
         with:
