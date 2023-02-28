@@ -160,11 +160,6 @@ class JupiterSwapFragment :
         replaceFragment(fragment)
     }
 
-    fun openSwapSettingsScreen() {
-        val fragment = JupiterSwapSettingsFragment.create(stateManagerKey = stateManagerHolderKey)
-        replaceFragment(fragment)
-    }
-
     private fun setYellowAlert() {
         val context = binding.root.context
         DrawableCellModel(
