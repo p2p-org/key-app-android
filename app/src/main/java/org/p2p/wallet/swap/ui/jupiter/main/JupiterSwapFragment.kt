@@ -26,10 +26,11 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
-import org.p2p.wallet.home.isInMainTabsScreen
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
+import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensChangeToken
+import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -37,22 +38,25 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+private const val EXTRA_OPENED_FROM = "EXTRA_OPENED_FROM"
 
 class JupiterSwapFragment :
     BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
     JupiterSwapContract.View {
 
     companion object {
-        fun create(token: Token.Active? = null): JupiterSwapFragment =
+        fun create(token: Token.Active? = null, source: SwapOpenedFrom = SwapOpenedFrom.OTHER): JupiterSwapFragment =
             JupiterSwapFragment()
                 .withArgs(
                     EXTRA_TOKEN to token,
+                    EXTRA_OPENED_FROM to source
                 )
     }
 
     private val stateManagerHolderKey: String = UUID.randomUUID().toString()
     private val token: Token.Active? by args(EXTRA_TOKEN)
     private val binding: FragmentJupiterSwapBinding by viewBinding()
+    private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
     override val presenter: JupiterSwapContract.Presenter by inject {
         parametersOf(token, stateManagerHolderKey)
     }
@@ -69,15 +73,27 @@ class JupiterSwapFragment :
             }
             val onBackPressed = { presenter.onBackPressed() }
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            if (isInMainTabsScreen()) {
-                toolbar.navigationIcon = null
-            } else {
-                requireActivity().onBackPressedDispatcher
-                    .addCallback(viewLifecycleOwner) { onBackPressed() }
+            when (openedFrom) {
+                SwapOpenedFrom.MAIN_SCREEN -> {
+                    toolbar.navigationIcon = null
+                }
+                SwapOpenedFrom.OTHER -> {
+                    requireActivity().onBackPressedDispatcher
+                        .addCallback(viewLifecycleOwner) { onBackPressed() }
+                }
             }
 
             sliderSend.onSlideCompleteListener = { sliderSend.showCompleteAnimation() }
             sliderSend.onSlideCollapseCompleted = { presenter.onSwapTokenClick() }
+
+            toolbar.setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.settingsMenuItem) {
+                    openSwapSettingsScreen()
+                    true
+                } else {
+                    false
+                }
+            }
         }
     }
 
@@ -130,12 +146,17 @@ class JupiterSwapFragment :
     }
 
     override fun openChangeTokenAScreen() {
-        val fragment = SwapTokensFragment.create(SwapTokensChangeToken.TOKEN_A, stateManagerHolderKey)
+        val fragment = SwapTokensFragment.create(SwapTokensListMode.TOKEN_A, stateManagerHolderKey)
         replaceFragment(fragment)
     }
 
     override fun openChangeTokenBScreen() {
-        val fragment = SwapTokensFragment.create(SwapTokensChangeToken.TOKEN_B, stateManagerHolderKey)
+        val fragment = SwapTokensFragment.create(SwapTokensListMode.TOKEN_B, stateManagerHolderKey)
+        replaceFragment(fragment)
+    }
+
+    fun openSwapSettingsScreen() {
+        val fragment = JupiterSwapSettingsFragment.create(stateManagerKey = stateManagerHolderKey)
         replaceFragment(fragment)
     }
 

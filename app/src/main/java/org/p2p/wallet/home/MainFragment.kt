@@ -41,7 +41,7 @@ import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.wallet.swap.ui.orca.OrcaSwapOpenedFrom
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -52,7 +52,6 @@ private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 class MainFragment :
     BaseFragment(R.layout.fragment_main),
     MainTabsSwitcher,
-    MainTabsScreen,
     CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
@@ -206,7 +205,7 @@ class MainFragment :
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
-                ScreenTab.SWAP_SCREEN -> swapFragmentFactory.swapFragment(source = OrcaSwapOpenedFrom.MAIN_SCREEN)
+                ScreenTab.SWAP_SCREEN -> swapFragmentFactory.swapFragment(source = SwapOpenedFrom.MAIN_SCREEN)
                 else -> error("Can't create fragment for $clickedTab")
             }
             tabCachedFragments[itemId] = fragment

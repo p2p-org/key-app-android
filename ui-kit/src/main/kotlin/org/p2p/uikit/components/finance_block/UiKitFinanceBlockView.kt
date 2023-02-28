@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import org.p2p.uikit.components.left_side.UiKitLeftSideView
 import org.p2p.uikit.components.right_side.UiKitRightSideView
 import org.p2p.uikit.databinding.WidgetFinanceBlockBinding
+import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.toPx
@@ -51,6 +52,7 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
         _item = model
         isEnabled = model.accessibility.isEnabled
         isClickable = model.accessibility.isClickable
+        model.background?.applyBackground(this.root)
         leftSideView.isVisible = model.leftSideCellModel != null
         model.leftSideCellModel?.let(leftSideView::bind)
         rightSideView.isVisible = model.rightSideCellModel != null

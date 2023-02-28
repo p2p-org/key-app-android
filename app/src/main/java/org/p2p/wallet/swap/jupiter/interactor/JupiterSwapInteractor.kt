@@ -1,4 +1,4 @@
-package org.p2p.wallet.swap.jupiter.domain
+package org.p2p.wallet.swap.jupiter.interactor
 
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding

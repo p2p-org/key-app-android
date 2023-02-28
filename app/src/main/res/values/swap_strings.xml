@@ -14,7 +14,7 @@
     <string name="swap_tokens_token_a_toolbar">Token you pay</string>
     <string name="swap_tokens_token_b_toolbar">Token you receive</string>
     <string name="swap_tokens_toolbar_search_hint">token name</string>
-    <string name="swap_tokens_search_result">Here\'s what we found</string>
+    <string name="swap_tokens_section_search_result">Here\'s what we found</string>
 
     <string name="swap_tokens_section_chosen_token">Chosen token</string>
     <string name="swap_tokens_section_all_tokens">All tokens</string>

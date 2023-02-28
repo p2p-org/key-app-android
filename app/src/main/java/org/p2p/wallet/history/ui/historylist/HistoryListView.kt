@@ -64,7 +64,6 @@ class HistoryListView @JvmOverloads constructor(
     }
 
     private fun bindView() {
-        presenter.attach(this)
         with(binding) {
             errorStateLayout.buttonRetry.setOnClickListener {
                 presenter.refreshHistory(tokenMintAddress)
@@ -124,15 +123,13 @@ class HistoryListView @JvmOverloads constructor(
         }
     }
 
-    override suspend fun showHistory(history: List<HistoryItem>) {
+    override fun showHistory(history: List<HistoryItem>) {
         with(binding) {
-            historyAdapter.submitList(history) {
-                historyRecyclerView.invalidateItemDecorations()
-                val isHistoryEmpty = historyAdapter.isEmpty()
-                emptyStateLayout.root.isVisible = isHistoryEmpty
-                historyRecyclerView.isVisible = !isHistoryEmpty
-                historyAdapter.setPagingState(PagingState.Idle)
-            }
+            historyAdapter.submitList(history)
+            historyRecyclerView.invalidateItemDecorations()
+            val isHistoryEmpty = historyAdapter.isEmpty()
+            emptyStateLayout.root.isVisible = isHistoryEmpty
+            historyRecyclerView.isVisible = !isHistoryEmpty
         }
     }
 

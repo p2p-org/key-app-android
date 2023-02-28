@@ -1,6 +1,8 @@
 package org.p2p.wallet.newsend.model
 
 import android.os.Parcelable
+import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
@@ -19,8 +21,6 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.newsend.model.FeePayerState.ReduceInputAmount
 import org.p2p.wallet.newsend.model.FeePayerState.SwitchToSol
-import java.math.BigDecimal
-import java.math.BigInteger
 
 /**
  * This class contains information about fees for transaction or for a new account creation
@@ -113,14 +113,18 @@ data class SendSolanaFee constructor(
 
     fun isEnoughToCoverExpenses(
         sourceTokenTotal: BigInteger,
-        inputAmount: BigInteger
+        inputAmount: BigInteger,
+        minRentExemption: BigInteger
     ): Boolean = when {
         // if source is SOL, then fee payer is SOL as well
-        sourceTokenSymbol == SOL_SYMBOL ->
-            sourceTokenTotal >= inputAmount + feeRelayerFee.totalInSol
+        sourceTokenSymbol == SOL_SYMBOL -> {
+            isEnoughSol(sourceTokenTotal, inputAmount, minRentExemption)
+        }
         // assuming that source token is not SOL
-        feePayerToken.isSOL ->
-            sourceTokenTotal >= inputAmount && feePayerTotalLamports > feeRelayerFee.totalInSol
+        feePayerToken.isSOL -> {
+            val totalInSol = feeRelayerFee.totalInSol
+            sourceTokenTotal >= inputAmount && isEnoughSol(feePayerTotalLamports, totalInSol, minRentExemption)
+        }
         // assuming that source token and fee payer are same
         sourceTokenSymbol == feePayerSymbol ->
             sourceTokenTotal >= inputAmount + feeRelayerFee.totalInSpl
@@ -128,6 +132,15 @@ data class SendSolanaFee constructor(
         else ->
             feePayerToken.totalInLamports >= feeRelayerFee.totalInSpl
     }
+
+    private fun isEnoughSol(
+        sourceTokenTotal: BigInteger,
+        inputAmount: BigInteger,
+        minRentExemption: BigInteger
+    ): Boolean =
+        sourceTokenTotal == inputAmount + feeRelayerFee.totalInSol ||
+            // added min required balance for SOL check
+            (sourceTokenTotal - minRentExemption) >= inputAmount + feeRelayerFee.totalInSol
 
     fun calculateFeePayerState(
         strategy: FeePayerSelectionStrategy,

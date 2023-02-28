@@ -1,7 +1,7 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
 import java.math.BigDecimal
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 
 sealed interface SwapRateLoaderState {
     object Empty : SwapRateLoaderState
