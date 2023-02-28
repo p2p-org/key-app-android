@@ -1,6 +1,5 @@
 package org.p2p.wallet.swap.ui.jupiter.settings
 
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
