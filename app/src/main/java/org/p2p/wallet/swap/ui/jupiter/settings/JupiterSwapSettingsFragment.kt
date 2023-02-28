@@ -14,10 +14,11 @@ import org.p2p.wallet.utils.withArgs
 
 private const val ARG_STATE_MANAGE_KEY = "ARG_STATE_MANAGE_KEY"
 
+private typealias SwapSettingsBaseMvpFragment =
+    BaseMvpFragment<JupiterSwapSettingsContract.View, JupiterSwapSettingsContract.Presenter>
+
 class JupiterSwapSettingsFragment :
-    BaseMvpFragment<
-        JupiterSwapSettingsContract.View,
-        JupiterSwapSettingsContract.Presenter>(R.layout.fragment_jupiter_swap_settings),
+    SwapSettingsBaseMvpFragment(R.layout.fragment_jupiter_swap_settings),
     JupiterSwapSettingsContract.View {
 
     companion object {

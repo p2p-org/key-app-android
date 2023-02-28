@@ -81,12 +81,11 @@ class JupiterSwapFragment :
             sliderSend.onSlideCollapseCompleted = { presenter.onSwapTokenClick() }
 
             toolbar.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.settingsMenuItem -> {
-                        openSwapSettingsScreen()
-                        true
-                    }
-                    else -> false
+                if (item.itemId == R.id.settingsMenuItem) {
+                    openSwapSettingsScreen()
+                    true
+                } else {
+                    false
                 }
             }
         }
