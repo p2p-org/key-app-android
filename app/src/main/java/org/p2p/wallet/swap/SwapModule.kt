@@ -69,6 +69,8 @@ import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
+import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
+import org.p2p.wallet.swap.ui.jupiter.settings.presenter.JupiterSwapSettingsPresenter
 
 object SwapModule : InjectionModule {
 
@@ -227,5 +229,13 @@ object SwapModule : InjectionModule {
         factoryOf(::SwapTokensMapper)
         factoryOf(::SearchSwapTokensMapper)
         factoryOf(::SwapTokensPresenter) bind SwapTokensContract.Presenter::class
+
+        factory { (stateManagerHolderKey: String) ->
+            val managerHolder: SwapStateManagerHolder = get()
+            val stateManager = managerHolder.get(stateManagerHolderKey)
+            JupiterSwapSettingsPresenter(
+                stateManager = stateManager
+            )
+        } bind JupiterSwapSettingsContract.Presenter::class
     }
 }
