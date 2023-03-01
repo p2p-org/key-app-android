@@ -42,8 +42,7 @@ object EthereumUtils {
     }
 
     private fun containsHexPrefix(input: String): Boolean {
-        return input.isNotEmpty() &&
-            input.length > 1 &&
+        return input.length > 1 &&
             input[0] == '0' &&
             input[1] == 'x'
     }
