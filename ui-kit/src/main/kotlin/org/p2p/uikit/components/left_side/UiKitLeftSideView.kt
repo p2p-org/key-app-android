@@ -26,21 +26,21 @@ class UiKitLeftSideView @JvmOverloads constructor(
     fun bindViewStyle(style: FinanceBlockStyle) {
         styleType = style
         when (style) {
-            FinanceBlockStyle.FINANCE_BLOCK -> {
-                binding.textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_SemiBold_Text3)
-                binding.textViewFirst.setTextColor(getColorStateList(R.color.text_night))
-                binding.textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
-                binding.textViewSecond.setTextColor(getColorStateList(R.color.text_mountain))
-                binding.textViewThird.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
-                binding.textViewThird.setTextColor(getColorStateList(R.color.text_mountain))
+            FinanceBlockStyle.FINANCE_BLOCK -> with(binding) {
+                textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_SemiBold_Text3)
+                textViewFirst.setTextColor(getColorStateList(R.color.text_night))
+                textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewSecond.setTextColor(getColorStateList(R.color.text_mountain))
+                textViewThird.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewThird.setTextColor(getColorStateList(R.color.text_mountain))
             }
-            FinanceBlockStyle.BASE_CELL -> {
-                binding.textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Text3)
-                binding.textViewFirst.setTextColor(getColorStateList(R.color.text_night))
-                binding.textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
-                binding.textViewSecond.setTextColor(getColorStateList(R.color.text_mountain))
-                binding.textViewThird.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
-                binding.textViewThird.setTextColor(getColorStateList(R.color.text_mountain))
+            FinanceBlockStyle.BASE_CELL -> with(binding) {
+                textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Text3)
+                textViewFirst.setTextColor(getColorStateList(R.color.text_night))
+                textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewSecond.setTextColor(getColorStateList(R.color.text_mountain))
+                textViewThird.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewThird.setTextColor(getColorStateList(R.color.text_mountain))
             }
         }
     }
