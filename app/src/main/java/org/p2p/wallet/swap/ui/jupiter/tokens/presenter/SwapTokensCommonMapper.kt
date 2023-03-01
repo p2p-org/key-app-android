@@ -55,12 +55,18 @@ class SwapTokensCommonMapper {
         return this.equalsByMint(selectedToken)
     }
 
-    fun SwapTokenModel.toTokenFinanceCellModel(isPopularToken: Boolean = false): FinanceBlockCellModel = when (this) {
-        is SwapTokenModel.JupiterToken -> asTokenFinanceCellModel(isPopularToken)
-        is SwapTokenModel.UserToken -> asTokenFinanceCellModel(isPopularToken)
+    fun SwapTokenModel.toTokenFinanceCellModel(
+        isPopularToken: Boolean = false,
+        isSearchResult: Boolean = false
+    ): FinanceBlockCellModel = when (this) {
+        is SwapTokenModel.JupiterToken -> asTokenFinanceCellModel(isPopularToken, isSearchResult)
+        is SwapTokenModel.UserToken -> asTokenFinanceCellModel(isPopularToken, isSearchResult)
     }
 
-    private fun SwapTokenModel.UserToken.asTokenFinanceCellModel(isPopularToken: Boolean): FinanceBlockCellModel =
+    private fun SwapTokenModel.UserToken.asTokenFinanceCellModel(
+        isPopularToken: Boolean,
+        isSearchResult: Boolean
+    ): FinanceBlockCellModel =
         with(details) {
             createTokenFinanceCellModel(
                 tokenIconUrl = iconUrl.orEmpty(),
@@ -69,11 +75,18 @@ class SwapTokensCommonMapper {
                 totalTokenAmount = getFormattedTotal(),
                 totalTokenPriceInUsd = totalInUsd?.formatFiat(),
                 addPopularLabel = isPopularToken,
-                payload = this@asTokenFinanceCellModel
+                payload = SwapTokensCellModelPayload(
+                    hasPopularLabel = isPopularToken,
+                    isSearchResultItem = isSearchResult,
+                    tokenModel = this@asTokenFinanceCellModel
+                )
             )
         }
 
-    private fun SwapTokenModel.JupiterToken.asTokenFinanceCellModel(isPopularToken: Boolean): FinanceBlockCellModel =
+    private fun SwapTokenModel.JupiterToken.asTokenFinanceCellModel(
+        isPopularToken: Boolean,
+        isSearchResult: Boolean
+    ): FinanceBlockCellModel =
         with(details) {
             createTokenFinanceCellModel(
                 tokenIconUrl = iconUrl.orEmpty(),
@@ -81,8 +94,12 @@ class SwapTokensCommonMapper {
                 tokenSymbol = tokenSymbol,
                 totalTokenAmount = null,
                 totalTokenPriceInUsd = null,
-                payload = this@asTokenFinanceCellModel,
-                addPopularLabel = isPopularToken
+                addPopularLabel = isPopularToken,
+                payload = SwapTokensCellModelPayload(
+                    hasPopularLabel = isPopularToken,
+                    isSearchResultItem = isSearchResult,
+                    tokenModel = this@asTokenFinanceCellModel
+                )
             )
         }
 
@@ -92,7 +109,7 @@ class SwapTokensCommonMapper {
         tokenSymbol: String,
         totalTokenAmount: String?,
         totalTokenPriceInUsd: String?,
-        payload: SwapTokenModel,
+        payload: SwapTokensCellModelPayload,
         addPopularLabel: Boolean,
     ): FinanceBlockCellModel {
         return FinanceBlockCellModel(

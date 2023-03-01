@@ -19,7 +19,7 @@
     <string name="swap_tokens_toolbar_search_hint">token name</string>
     <string name="swap_tokens_section_search_result">Here\'s what we found</string>
 
-    <string name="swap_tokens_section_chosen_token">Chosen token</string>
-    <string name="swap_tokens_section_all_tokens">All tokens</string>
+    <string name="swap_tokens_section_chosen_token">CHOSEN TOKEN</string>
+    <string name="swap_tokens_section_all_tokens">ALL TOKENS</string>
     <string name="swap_tokens_popular_label">popular</string>
 </resources>

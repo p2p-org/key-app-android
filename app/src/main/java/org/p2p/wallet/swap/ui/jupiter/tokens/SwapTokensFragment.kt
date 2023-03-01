@@ -20,8 +20,9 @@ import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapTokensBinding
-import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokenAItemDecoration
+import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensARoundedItemDecoration
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensAdapter
+import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensOtherGroupDividerDecoration
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.unsafeLazy
@@ -63,11 +64,17 @@ class SwapTokensFragment :
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
         inflateSearchMenu(binding.toolbar)
 
-        binding.recyclerViewTokens.attachAdapter(adapter)
-        when (tokenToChange) {
-            SwapTokensListMode.TOKEN_A -> binding.recyclerViewTokens.addItemDecoration(SwapTokenAItemDecoration())
-            SwapTokensListMode.TOKEN_B -> {
-                // todo
+        with(binding.recyclerViewTokens) {
+            attachAdapter(this@SwapTokensFragment.adapter)
+            addItemDecoration(SwapTokensOtherGroupDividerDecoration())
+
+            when (tokenToChange) {
+                SwapTokensListMode.TOKEN_A -> {
+                    addItemDecoration(SwapTokensARoundedItemDecoration())
+                }
+                SwapTokensListMode.TOKEN_B -> {
+                    // todo
+                }
             }
         }
     }
