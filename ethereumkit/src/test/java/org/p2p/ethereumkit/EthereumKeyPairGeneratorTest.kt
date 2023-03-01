@@ -10,7 +10,7 @@ private const val ETHEREUM_ADDRESS_LENGTH = 42
 
 class EthereumKeyPairGeneratorTest {
     //This seed phrase was taken from ethereum kit repository, so feel free to use it
-    private val seedPhrase = "PUT YOUR SEED PHRASE HERE ".split(" ")
+    private val seedPhrase = "apart approve black comfort steel spin real renew tone primary key cherry".split(" ")
 
     @Before
     fun setup() {
@@ -22,8 +22,9 @@ class EthereumKeyPairGeneratorTest {
      */
     @Test
     fun `generate eth key pair by given seed phrase`() {
-//        val repository = EthereumKitRepository()
-//        val result = repository.generateKeyPair(seedPhrase)
-//        assert(result.publicKey.toString().length == ETHEREUM_ADDRESS_LENGTH)
+        val repository = EthereumKitRepository()
+        val result = repository.generateKeyPair(seedPhrase)
+        assert(result.publicKey.toString().length == ETHEREUM_ADDRESS_LENGTH)
     }
+
 }

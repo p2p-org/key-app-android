@@ -33,6 +33,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import org.bouncycastle.jce.provider.BouncyCastleProvider
+import org.p2p.ethereumkit.internal.crypto.InternalBouncyCastleProvider
 import java.math.BigInteger
 import java.security.Security
 import java.util.*
@@ -347,7 +348,7 @@ class EthereumKit(
 
         fun init() {
             Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME)
-            Security.addProvider(org.p2p.ethereumkit.internal.crypto.InternalBouncyCastleProvider.getInstance())
+            Security.addProvider(InternalBouncyCastleProvider.getInstance())
         }
 
         fun getInstance(

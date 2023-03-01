@@ -15,8 +15,8 @@ public final class InternalBouncyCastleProvider {
 
             INSTANCE = (p != null) ? p : new BouncyCastleProvider();
 
-            INSTANCE.put("MessageDigest.ETH-KECCAK-256", "org.p2p.ethereumkit.crypto.digest.Keccak256");
-            INSTANCE.put("MessageDigest.ETH-KECCAK-512", "org.p2p.ethereumkit.crypto.digest.Keccak512");
+            INSTANCE.put("MessageDigest.ETH-KECCAK-256", "org.p2p.ethereumkit.internal.crypto.digest.Keccak256");
+            INSTANCE.put("MessageDigest.ETH-KECCAK-512", "org.p2p.ethereumkit.internal.crypto.digest.Keccak512");
         }
     }
 
