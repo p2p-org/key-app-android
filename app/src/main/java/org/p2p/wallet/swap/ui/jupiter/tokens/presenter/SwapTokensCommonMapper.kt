@@ -5,22 +5,24 @@ import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatFiat
-import org.p2p.core.utils.orZero
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
-import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.utils.image.commonCircleImage
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.utils.Base58String
 
-class SwapTokensToCellItemsMapper {
-
-    private val byTokenMintComparator = Comparator<Base58String> { current, next ->
+/**
+ * Contains base logic for mapping Swap domain models to Cell UI models
+ * - sorting logic
+ * - creating finance block cell model
+ */
+class SwapTokensCommonMapper {
+    val byTokenMintComparator = Comparator<Base58String> { current, next ->
         val currentTokenMint = current.base58Value
         val nextTokenMint = next.base58Value
 
@@ -39,84 +41,50 @@ class SwapTokensToCellItemsMapper {
         }
     }
 
-    private val userTokensSorter =
-        compareByDescending(byTokenMintComparator, SwapTokenModel.UserToken::mintAddress)
-            .thenByDescending { it.tokenAmountInUsd.orZero() }
+    val otherTokensSorter: Comparator<SwapTokenModel> =
+        compareBy(SwapTokenModel::tokenName)
 
-    private val otherTokensSorter =
-        compareByDescending(SwapTokenModel.JupiterToken::tokenName)
-
-    fun toCellItems(
-        chosenToken: SwapTokenModel,
-        swapTokens: List<SwapTokenModel>
-    ): List<AnyCellItem> = buildList {
-        this += chosenTokenGroup(chosenToken)
-
-        this += userTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.UserToken>())
-        this += allOtherTokens(swapTokens.filterIsInstance<SwapTokenModel.JupiterToken>())
-    }
-
-    private fun chosenTokenGroup(
-        chosenToken: SwapTokenModel
-    ): List<AnyCellItem> = buildList {
-        val sectionHeaderCell = createSectionHeader(R.string.swap_tokens_section_chosen_token)
-        val chosenTokenCell = when (chosenToken) {
-            is SwapTokenModel.JupiterToken -> chosenToken.toTokenFinanceCellModel()
-            is SwapTokenModel.UserToken -> chosenToken.toTokenFinanceCellModel()
-        }
-
-        this += sectionHeaderCell
-        this += chosenTokenCell
-    }
-
-    private fun userTokensGroup(userTokens: List<SwapTokenModel.UserToken>): List<AnyCellItem> = buildList {
-        val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)
-        val userTokenItems = userTokens
-            .sortedWith(userTokensSorter)
-            .map { it.toTokenFinanceCellModel() }
-
-        this += sectionHeader
-        this += userTokenItems
-    }
-
-    private fun allOtherTokens(otherTokens: List<SwapTokenModel.JupiterToken>): List<AnyCellItem> = buildList {
-        val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)
-        val otherTokenItems = otherTokens
-            .sortedWith(otherTokensSorter)
-            .map { it.toTokenFinanceCellModel() }
-
-        this += sectionHeader
-        this += otherTokenItems
-    }
-
-    private fun createSectionHeader(@StringRes stringRes: Int): SectionHeaderCellModel {
+    fun createSectionHeader(@StringRes stringRes: Int): SectionHeaderCellModel {
         return SectionHeaderCellModel(
             sectionTitle = TextContainer(stringRes),
             isShevronVisible = false
         )
     }
 
-    private fun SwapTokenModel.UserToken.toTokenFinanceCellModel(): FinanceBlockCellModel = with(details) {
-        createTokenFinanceCellModel(
-            tokenIconUrl = iconUrl.orEmpty(),
-            tokenName = tokenName,
-            tokenSymbol = tokenSymbol,
-            totalTokenAmount = getFormattedTotal(),
-            totalTokenPriceInUsd = totalInUsd?.formatFiat(),
-            payload = this@toTokenFinanceCellModel
-        )
+    fun SwapTokenModel.isSelectedToken(selectedToken: SwapTokenModel): Boolean {
+        return this.equalsByMint(selectedToken)
     }
 
-    private fun SwapTokenModel.JupiterToken.toTokenFinanceCellModel(): FinanceBlockCellModel = with(details) {
-        createTokenFinanceCellModel(
-            tokenIconUrl = iconUrl.orEmpty(),
-            tokenName = tokenName,
-            tokenSymbol = tokenSymbol,
-            totalTokenAmount = null,
-            totalTokenPriceInUsd = null,
-            payload = this@toTokenFinanceCellModel
-        )
+    fun SwapTokenModel.toTokenFinanceCellModel(isPopularToken: Boolean = false): FinanceBlockCellModel = when (this) {
+        is SwapTokenModel.JupiterToken -> asTokenFinanceCellModel(isPopularToken)
+        is SwapTokenModel.UserToken -> asTokenFinanceCellModel(isPopularToken)
     }
+
+    private fun SwapTokenModel.UserToken.asTokenFinanceCellModel(isPopularToken: Boolean): FinanceBlockCellModel =
+        with(details) {
+            createTokenFinanceCellModel(
+                tokenIconUrl = iconUrl.orEmpty(),
+                tokenName = tokenName,
+                tokenSymbol = tokenSymbol,
+                totalTokenAmount = getFormattedTotal(),
+                totalTokenPriceInUsd = totalInUsd?.formatFiat(),
+                addPopularLabel = isPopularToken,
+                payload = this@asTokenFinanceCellModel
+            )
+        }
+
+    private fun SwapTokenModel.JupiterToken.asTokenFinanceCellModel(isPopularToken: Boolean): FinanceBlockCellModel =
+        with(details) {
+            createTokenFinanceCellModel(
+                tokenIconUrl = iconUrl.orEmpty(),
+                tokenName = tokenName,
+                tokenSymbol = tokenSymbol,
+                totalTokenAmount = null,
+                totalTokenPriceInUsd = null,
+                payload = this@asTokenFinanceCellModel,
+                addPopularLabel = isPopularToken
+            )
+        }
 
     private fun createTokenFinanceCellModel(
         tokenIconUrl: String,
@@ -125,6 +93,7 @@ class SwapTokensToCellItemsMapper {
         totalTokenAmount: String?,
         totalTokenPriceInUsd: String?,
         payload: SwapTokenModel,
+        addPopularLabel: Boolean,
     ): FinanceBlockCellModel {
         return FinanceBlockCellModel(
             leftSideCellModel = createLeftSideModel(
@@ -133,7 +102,11 @@ class SwapTokensToCellItemsMapper {
                 tokenSymbol = tokenSymbol,
                 totalTokenAmount = totalTokenAmount
             ),
-            rightSideCellModel = createRightSideModel(totalTokenPriceInUsd),
+            rightSideCellModel = if (addPopularLabel) {
+                createPopularRightSideModel()
+            } else {
+                createPriceRightSideModel(totalTokenPriceInUsd)
+            },
             payload = payload
         )
     }
@@ -160,7 +133,14 @@ class SwapTokensToCellItemsMapper {
         )
     }
 
-    private fun createRightSideModel(totalTokenPriceInUsd: String?): RightSideCellModel.TwoLineText? {
+    private fun createPopularRightSideModel(): RightSideCellModel.TextBadge {
+        return RightSideCellModel.TextBadge(
+            TextContainer(R.string.swap_tokens_popular_label),
+            badgeTint = R.color.elements_rain
+        )
+    }
+
+    private fun createPriceRightSideModel(totalTokenPriceInUsd: String?): RightSideCellModel.TwoLineText? {
         if (totalTokenPriceInUsd == null) return null
 
         val totalTokenInUsdText = TextViewCellModel.Raw(

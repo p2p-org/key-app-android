@@ -19,7 +19,7 @@ class SwapLoadingSettingsMapper(
 
     fun mapLoadingList(
         slippage: Double,
-    ): List<AnyCellItem> = mutableListOf<AnyCellItem>().apply {
+    ): List<AnyCellItem> = buildList {
         addRouteCell()
         add(commonMapper.getNetworkFeeCell())
         addAccountFeeCell()

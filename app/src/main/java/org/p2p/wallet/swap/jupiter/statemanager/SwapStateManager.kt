@@ -23,7 +23,7 @@ class SwapStateManager(
 ) : CoroutineScope {
 
     companion object {
-        const val DEFAULT_ACTIVE_ROUTE_ORDINAL = 1
+        const val DEFAULT_ACTIVE_ROUTE_ORDINAL = 0
         const val DEFAULT_SLIPPAGE = 0.5
     }
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io

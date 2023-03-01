@@ -46,7 +46,7 @@ class NewSendButtonState(
 
             val sendFee = (feeRelayerState as? FeeRelayerState.UpdateFee)?.solanaFee
             val isEnoughToCoverExpenses =
-                sendFee == null || sendFee.isEnoughToCoverExpenses(totalInLamports, inputAmount)
+                sendFee == null || sendFee.isEnoughToCoverExpenses(totalInLamports, inputAmount, minRentExemption)
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
             val isAmountValidForSender = isAmountValidForSender(inputAmount)
