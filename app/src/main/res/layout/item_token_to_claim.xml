@@ -29,7 +29,7 @@
             tools:src="@tools:sample/avatars" />
 
         <ImageView
-            android:id="@+id/wrappedImageView"
+            android:id="@+id/imageViewWrapped"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-4dp"
@@ -41,21 +41,21 @@
             tools:visibility="visible" />
 
         <TextView
-            android:id="@+id/textViewName"
+            android:id="@+id/textViewTokenName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-            app:layout_constraintBottom_toTopOf="@id/textViewTotal"
+            app:layout_constraintBottom_toTopOf="@id/textViewTokenTotal"
             app:layout_constraintEnd_toStartOf="@id/buttonClaim"
             app:layout_constraintStart_toEndOf="@id/imageViewToken"
             app:layout_constraintTop_toTopOf="@id/imageViewToken"
             tools:text="Wrapped Ethereum" />
 
         <TextView
-            android:id="@+id/textViewTotal"
+            android:id="@+id/textViewTokenTotal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
@@ -66,7 +66,7 @@
             app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
             app:layout_constraintEnd_toStartOf="@id/buttonClaim"
             app:layout_constraintStart_toEndOf="@id/imageViewToken"
-            app:layout_constraintTop_toBottomOf="@id/textViewName"
+            app:layout_constraintTop_toBottomOf="@id/textViewTokenName"
             app:layout_constraintVertical_bias="1"
             tools:text="0.999717252 WETH" />
 

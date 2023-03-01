@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenToClaimBinding
 import org.p2p.wallet.home.model.HomeElementItem
@@ -28,11 +29,11 @@ class TokenToClaimViewHolder(
         with(binding.buttonClaim) {
             if (isEnabled) {
                 setText(R.string.claim_button_text)
-                setTextColor(getColor(R.color.text_snow))
+                setTextColorRes(R.color.text_snow)
                 setBackgroundColor(getColor(R.color.bg_night))
             } else {
                 setText(R.string.claiming_button_text)
-                setTextColor(getColor(R.color.text_mountain))
+                setTextColorRes(R.color.text_mountain)
                 setBackgroundColor(getColor(R.color.bg_rain))
             }
         }
