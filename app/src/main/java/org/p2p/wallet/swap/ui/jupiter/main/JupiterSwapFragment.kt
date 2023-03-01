@@ -56,11 +56,11 @@ class JupiterSwapFragment :
     }
 
     private val stateManagerHolderKey: String = UUID.randomUUID().toString()
-    private val token: Token.Active? by args(EXTRA_TOKEN)
+    private val initialToken: Token.Active? by args(EXTRA_TOKEN)
     private val binding: FragmentJupiterSwapBinding by viewBinding()
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
     override val presenter: JupiterSwapContract.Presenter by inject {
-        parametersOf(token, stateManagerHolderKey)
+        parametersOf(initialToken, stateManagerHolderKey)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
