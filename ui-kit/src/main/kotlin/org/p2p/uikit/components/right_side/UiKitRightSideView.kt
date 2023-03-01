@@ -58,7 +58,6 @@ class UiKitRightSideView @JvmOverloads constructor(
             when (val binding = it.value.first) {
                 is WidgetRightSideDoubleTextBinding -> binding.updateStyle(style)
                 is WidgetRightSideSingleTextTwoIconBinding -> binding.updateStyle(style)
-
             }
         }
     }
