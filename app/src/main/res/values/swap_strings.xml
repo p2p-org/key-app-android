@@ -18,4 +18,5 @@
 
     <string name="swap_tokens_section_chosen_token">Chosen token</string>
     <string name="swap_tokens_section_all_tokens">All tokens</string>
+    <string name="swap_tokens_popular_label">popular</string>
 </resources>

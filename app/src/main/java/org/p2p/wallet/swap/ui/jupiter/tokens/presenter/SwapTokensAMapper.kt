@@ -5,26 +5,23 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 
-class SwapTokensMapper : SwapTokensPresenterMapper() {
+class SwapTokensAMapper(private val commonMapper: SwapTokensCommonMapper) {
 
     private val userTokensSorter: Comparator<SwapTokenModel.UserToken> =
-        compareByDescending(byTokenMintComparator, SwapTokenModel.UserToken::mintAddress)
+        compareByDescending(commonMapper.byTokenMintComparator, SwapTokenModel.UserToken::mintAddress)
             .thenByDescending { it.tokenAmountInUsd.orZero() }
 
-    private val otherTokensSorter: Comparator<SwapTokenModel.JupiterToken> =
-        compareByDescending(SwapTokenModel.JupiterToken::tokenName)
-
-    fun toCellItems(
+    fun toTokenACellItems(
         chosenToken: SwapTokenModel,
         swapTokens: List<SwapTokenModel>
     ): List<AnyCellItem> = buildList {
-        this += chosenTokenGroup(chosenToken)
+        this += commonMapper.chosenTokenGroup(chosenToken)
 
-        this += userTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.UserToken>())
-        this += allOtherTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.JupiterToken>())
+        this += commonMapper.userTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.UserToken>())
+        this += commonMapper.allOtherTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.JupiterToken>())
     }
 
-    private fun chosenTokenGroup(
+    private fun SwapTokensCommonMapper.chosenTokenGroup(
         selectedTokenModel: SwapTokenModel
     ): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_chosen_token)
@@ -34,7 +31,7 @@ class SwapTokensMapper : SwapTokensPresenterMapper() {
         this += selectedToken
     }
 
-    private fun userTokensGroup(
+    private fun SwapTokensCommonMapper.userTokensGroup(
         userTokensModels: List<SwapTokenModel.UserToken>
     ): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)
@@ -46,7 +43,7 @@ class SwapTokensMapper : SwapTokensPresenterMapper() {
         this += userTokens
     }
 
-    private fun allOtherTokensGroup(
+    private fun SwapTokensCommonMapper.allOtherTokensGroup(
         otherTokenModels: List<SwapTokenModel.JupiterToken>
     ): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)

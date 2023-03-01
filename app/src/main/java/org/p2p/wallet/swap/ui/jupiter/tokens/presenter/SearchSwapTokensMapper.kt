@@ -4,15 +4,15 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 
-class SearchSwapTokensMapper : SwapTokensPresenterMapper() {
+class SearchSwapTokensMapper(
+    private val commonMapper: SwapTokensCommonMapper
+) {
 
-    fun toCellItems(
-        foundSwapTokens: List<SwapTokenModel>
-    ): List<AnyCellItem> {
-        return foundTokensGroup(foundSwapTokens)
+    fun toCellItems(foundSwapTokens: List<SwapTokenModel>): List<AnyCellItem> {
+        return commonMapper.foundTokensGroup(foundSwapTokens)
     }
 
-    private fun foundTokensGroup(
+    private fun SwapTokensCommonMapper.foundTokensGroup(
         foundSwapTokens: List<SwapTokenModel>
     ): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_search_result)

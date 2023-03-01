@@ -67,7 +67,9 @@ import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensContract
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SearchSwapTokensMapper
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensMapper
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensAMapper
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensBMapper
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensCommonMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
@@ -249,12 +251,15 @@ object SwapModule : InjectionModule {
             )
         }
 
-        factoryOf(::SwapTokensMapper)
+        factoryOf(::SwapTokensCommonMapper)
+        factoryOf(::SwapTokensAMapper)
+        factoryOf(::SwapTokensBMapper)
         factoryOf(::SearchSwapTokensMapper)
         factory { (mode: SwapTokensListMode, stateManagerHolderKey: String) ->
             SwapTokensPresenter(
                 tokenToChange = mode,
-                mapper = get(),
+                mapperA = get(),
+                mapperB = get(),
                 searchResultMapper = get(),
                 interactor = get(parameters = { parametersOf(stateManagerHolderKey) })
             )
