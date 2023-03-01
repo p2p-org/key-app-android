@@ -14,6 +14,8 @@ sealed interface SwapTokenModel {
     val tokenSymbol: String
     val iconUrl: String?
 
+    fun equalsByMint(other: SwapTokenModel?): Boolean = this.mintAddress == other?.mintAddress
+
     data class UserToken(
         val details: Token.Active,
     ) : SwapTokenModel {

@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.ui.jupiter.main
 
 import androidx.activity.addCallback
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -26,6 +27,7 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
+import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
@@ -54,11 +56,11 @@ class JupiterSwapFragment :
     }
 
     private val stateManagerHolderKey: String = UUID.randomUUID().toString()
-    private val token: Token.Active? by args(EXTRA_TOKEN)
+    private val initialToken: Token.Active? by args(EXTRA_TOKEN)
     private val binding: FragmentJupiterSwapBinding by viewBinding()
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
     override val presenter: JupiterSwapContract.Presenter by inject {
-        parametersOf(token, stateManagerHolderKey)
+        parametersOf(initialToken, stateManagerHolderKey)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -158,6 +160,19 @@ class JupiterSwapFragment :
     fun openSwapSettingsScreen() {
         val fragment = JupiterSwapSettingsFragment.create(stateManagerKey = stateManagerHolderKey)
         replaceFragment(fragment)
+    }
+
+    override fun showPriceImpact(priceImpact: SwapPriceImpact) {
+        when (priceImpact) {
+            SwapPriceImpact.NORMAL -> Unit
+            SwapPriceImpact.YELLOW -> setYellowAlert()
+            SwapPriceImpact.RED -> setRoseAlert()
+        }
+        binding.linearLayoutAlert.isVisible = priceImpact != SwapPriceImpact.NORMAL
+    }
+
+    override fun scrollToPriceImpact() {
+        binding.scrollView.smoothScrollTo(0, binding.scrollView.height)
     }
 
     private fun setYellowAlert() {
