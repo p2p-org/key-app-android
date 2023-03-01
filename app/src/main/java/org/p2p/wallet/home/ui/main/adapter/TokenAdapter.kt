@@ -3,15 +3,18 @@ package org.p2p.wallet.home.ui.main.adapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomeElementItem.Action
 import org.p2p.wallet.home.model.HomeElementItem.Banners
+import org.p2p.wallet.home.model.HomeElementItem.Claim
 import org.p2p.wallet.home.model.HomeElementItem.Hidden
 import org.p2p.wallet.home.model.HomeElementItem.Shown
 import org.p2p.wallet.home.model.HomeElementItem.Title
 
 class TokenAdapter(
+    private val glideManager: GlideManager,
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -40,6 +43,7 @@ class TokenAdapter(
         is Action -> R.layout.item_token_group_button
         is Banners -> R.layout.item_banners
         is Title -> R.layout.item_main_header
+        is Claim -> R.layout.item_token_to_claim
     }
 
     override fun getItemCount(): Int = data.size
@@ -50,6 +54,7 @@ class TokenAdapter(
         R.layout.item_token_group_button -> TokenButtonViewHolder(parent, listener)
         R.layout.item_banners -> BannersViewHolder(parent, listener)
         R.layout.item_main_header -> HeaderViewHolder(parent)
+        R.layout.item_token_to_claim -> TokenToClaimViewHolder(parent, glideManager, listener)
         else -> throw IllegalStateException("Unknown viewType: $viewType")
     }
 
@@ -60,6 +65,7 @@ class TokenAdapter(
             is TokenButtonViewHolder -> holder.onBind(data[position] as Action)
             is BannersViewHolder -> holder.onBind(data[position] as Banners)
             is HeaderViewHolder -> holder.onBind(data[position] as Title)
+            is TokenToClaimViewHolder -> holder.onBind(data[position] as Claim)
         }
     }
 

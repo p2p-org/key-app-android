@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Claim-->
+    <string name="claim_button_text">Claim</string>
+    <string name="claiming_button_text">Claiming…</string>
+
+</resources>
