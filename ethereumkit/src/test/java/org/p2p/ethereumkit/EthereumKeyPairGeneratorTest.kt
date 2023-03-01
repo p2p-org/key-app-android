@@ -17,9 +17,6 @@ class EthereumKeyPairGeneratorTest {
         EthereumKit.init()
     }
 
-    /*
-        before uncomment this test, make sure that you have already provider seed phrase above
-     */
     @Test
     fun `generate eth key pair by given seed phrase`() {
         val repository = EthereumKitRepository()
