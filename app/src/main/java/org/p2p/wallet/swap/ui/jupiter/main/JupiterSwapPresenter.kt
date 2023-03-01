@@ -249,7 +249,7 @@ class JupiterSwapPresenter(
     }
 
     private fun mapWidgetStates(state: SwapState): Pair<SwapWidgetModel, SwapWidgetModel> {
-        val result = when (state) {
+        val result: Pair<SwapWidgetModel, SwapWidgetModel> = when (state) {
             SwapState.InitialLoading ->
                 widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A) to
                     widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_B)
