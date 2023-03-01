@@ -10,6 +10,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenType
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
@@ -31,9 +32,11 @@ class SwapWidgetMapper {
 
     fun mapFiatAmount(
         state: SwapRateLoaderState,
-        widgetModel: SwapWidgetModel.Content,
+        oldWidgetModel: SwapWidgetModel,
         tokenAmount: BigDecimal
-    ): SwapWidgetModel.Content {
+    ): SwapWidgetModel {
+        val widgetModel = oldWidgetModel as? SwapWidgetModel.Content ?: return oldWidgetModel
+        val oldAmount = widgetModel.amount as? TextViewCellModel.Raw ?: return oldWidgetModel
         return when (state) {
             SwapRateLoaderState.Empty,
             SwapRateLoaderState.Error,
@@ -42,7 +45,7 @@ class SwapWidgetMapper {
                 fiatAmount = fiatAmount(
                     fiatAmount = tokenAmount.multiply(state.rate)
                 ),
-                amount = tokenAmount(state.token, tokenAmount)
+                amount = tokenAmount(state.token, tokenAmount).copy(textColor = oldAmount.textColor)
             )
             SwapRateLoaderState.Loading -> widgetModel.copy(
                 fiatAmount = textCellSkeleton(
@@ -168,4 +171,26 @@ class SwapWidgetMapper {
 
     private fun swapWidgetToTitle(): TextViewCellModel.Raw =
         TextViewCellModel.Raw(TextContainer(R.string.swap_main_you_receive))
+
+    fun mapErrorTokenAAmount(
+        tokenA: SwapTokenModel?,
+        oldWidgetAState: SwapWidgetModel,
+        notValidAmount: BigDecimal
+    ): SwapWidgetModel {
+        if (tokenA == null) return oldWidgetAState
+        val result = oldWidgetAState as? SwapWidgetModel.Content ?: return oldWidgetAState
+        return result.copy(
+            amount = tokenAmount(tokenA, notValidAmount).copy(textColor = R.color.text_rose),
+        )
+    }
+
+    fun mapPriceImpact(oldWidgetModel: SwapWidgetModel, priceImpact: SwapPriceImpact): SwapWidgetModel {
+        val fiatAmount = (oldWidgetModel as? SwapWidgetModel.Content)?.fiatAmount as? TextViewCellModel.Raw
+            ?: return oldWidgetModel
+        return when (priceImpact) {
+            SwapPriceImpact.NORMAL -> oldWidgetModel
+            SwapPriceImpact.YELLOW -> oldWidgetModel.copy(fiatAmount = fiatAmount.copy(textColor = R.color.text_sun))
+            SwapPriceImpact.RED -> oldWidgetModel.copy(fiatAmount = fiatAmount.copy(textColor = R.color.text_rose))
+        }
+    }
 }
