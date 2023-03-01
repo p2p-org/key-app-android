@@ -12,10 +12,11 @@ class SwapValidator {
         tokenA: SwapTokenModel,
         amountTokenA: BigDecimal
     ) {
+        val isJupiterTokenAndNotZero = tokenA is SwapTokenModel.JupiterToken && !amountTokenA.isZero()
+        val isUserTokenAndNotEnough = tokenA is SwapTokenModel.UserToken && amountTokenA.isMoreThan(tokenA.tokenAmount)
         when {
-            tokenA is SwapTokenModel.JupiterToken && !amountTokenA.isZero() ||
-                tokenA is SwapTokenModel.UserToken && amountTokenA.isMoreThan(tokenA.tokenAmount)
-            -> throw SwapFeatureException.NotValidTokenA(amountTokenA)
+            isJupiterTokenAndNotZero || isUserTokenAndNotEnough ->
+                throw SwapFeatureException.NotValidTokenA(amountTokenA)
         }
     }
 

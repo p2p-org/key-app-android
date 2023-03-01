@@ -20,9 +20,10 @@ class SwapButtonMapper {
         SwapButtonState.Disabled(TextContainer(R.string.swap_main_button_route_not_found))
 
     fun mapTokenAmountNotEnough(tokenA: SwapTokenModel?): SwapButtonState.Disabled =
-        tokenA?.tokenSymbol?.let { symbol ->
-            SwapButtonState.Disabled(TextContainer(R.string.swap_main_button_not_enough_amount, symbol))
-        } ?: mapEnterAmount()
+        tokenA?.tokenSymbol
+            ?.let { symbol ->
+                SwapButtonState.Disabled(TextContainer(R.string.swap_main_button_not_enough_amount, symbol))
+            } ?: mapEnterAmount()
 
     fun mapReadyToSwap(tokenA: SwapTokenModel, tokenB: SwapTokenModel): SwapButtonState.ReadyToSwap {
         val firstName = tokenA.tokenSymbol

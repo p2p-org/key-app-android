@@ -37,18 +37,23 @@ class JupiterSwapPresenter(
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToScrollPriceImpact = true
-    private var featureState: SwapState? = null
+    private var currentFeatureState: SwapState? = null
     private var rateTokenAJob: Job? = null
     private var rateTokenBJob: Job? = null
     private var debounceInputJob: Job? = null
     private var widgetAState: SwapWidgetModel = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A)
     private var widgetBState: SwapWidgetModel = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_B)
+    private val threePercent
+        get() = BigDecimal.valueOf(0.3)
+
+    private val onePercent
+        get() = BigDecimal.valueOf(0.1)
 
     override fun attach(view: JupiterSwapContract.View) {
         super.attach(view)
 
         stateManager.observe()
-            .onEach(::handleFeatureState)
+            .onEach(::handleNewFeatureState)
             .launchIn(this)
     }
 
@@ -64,7 +69,7 @@ class JupiterSwapPresenter(
             val action = if (newAmount.isZero()) {
                 SwapStateAction.EmptyAmountTokenA
             } else {
-                val pair = featureState?.getTokensPair()
+                val pair = currentFeatureState?.getTokensPair()
                 val tokenA = pair?.first
                 val tokenB = pair?.second
                 if (tokenB != null) {
@@ -102,7 +107,7 @@ class JupiterSwapPresenter(
     }
 
     override fun onAllAmountClick() {
-        val allTokenAAmount = when (val featureState = featureState) {
+        val allTokenAAmount = when (val featureState = currentFeatureState) {
             SwapState.InitialLoading,
             is SwapState.SwapLoaded,
             is SwapState.TokenAZero,
@@ -131,13 +136,13 @@ class JupiterSwapPresenter(
     }
 
     override fun onChangeTokenAClick() {
-        if (isChangeTokenScreenAvailable(featureState)) {
+        if (isChangeTokenScreenAvailable(currentFeatureState)) {
             view?.openChangeTokenAScreen()
         }
     }
 
     override fun onChangeTokenBClick() {
-        if (isChangeTokenScreenAvailable(featureState)) {
+        if (isChangeTokenScreenAvailable(currentFeatureState)) {
             view?.openChangeTokenBScreen()
         }
     }
@@ -163,9 +168,9 @@ class JupiterSwapPresenter(
         managerHolder.clear(stateManagerHolderKey)
     }
 
-    private fun handleFeatureState(state: SwapState) {
+    private fun handleNewFeatureState(state: SwapState) {
         cancelRateJobs()
-        featureState = state
+        currentFeatureState = state
         when (state) {
             is SwapState.InitialLoading -> handleInitialLoading(state)
             is SwapState.TokenAZero -> handleTokenAZero(state)
@@ -193,11 +198,13 @@ class JupiterSwapPresenter(
                     oldWidgetAState = widgetAState,
                     notValidAmount = featureException.notValidAmount
                 )
-                if (tokenA != null) getRateTokenA(
-                    widgetAModel = this.widgetAState,
-                    tokenA = tokenA,
-                    tokenAmount = featureException.notValidAmount
-                )
+                if (tokenA != null) {
+                    getRateTokenA(
+                        widgetAModel = this.widgetAState,
+                        tokenA = tokenA,
+                        tokenAmount = featureException.notValidAmount
+                    )
+                }
                 view?.setButtonState(buttonState = buttonMapper.mapTokenAmountNotEnough(tokenA))
             }
         }
@@ -288,11 +295,13 @@ class JupiterSwapPresenter(
         rateTokenAJob = rateLoaderTokenA.getRate(tokenA)
             .flowOn(dispatchers.io)
             .onEach {
-                if (isActive) handleRateTokenALoader(
-                    widgetAModel = widgetAModel,
-                    state = it,
-                    tokenAmount = tokenAmount,
-                )
+                if (isActive) {
+                    handleRateTokenALoader(
+                        widgetAModel = widgetAModel,
+                        state = it,
+                        tokenAmount = tokenAmount,
+                    )
+                }
             }
             .launchIn(this)
     }
@@ -302,11 +311,13 @@ class JupiterSwapPresenter(
         rateTokenBJob = rateLoaderTokenB.getRate(tokenB)
             .flowOn(dispatchers.io)
             .onEach {
-                if (isActive) handleRateTokenBLoader(
-                    widgetBModel = widgetBModel,
-                    state = it,
-                    tokenAmount = tokenAmount,
-                )
+                if (isActive) {
+                    handleRateTokenBLoader(
+                        widgetBModel = widgetBModel,
+                        state = it,
+                        tokenAmount = tokenAmount,
+                    )
+                }
             }
             .launchIn(this)
     }
@@ -330,13 +341,12 @@ class JupiterSwapPresenter(
         state: SwapRateLoaderState,
         tokenAmount: BigDecimal,
     ) {
-
         var newWidgetModel = widgetMapper.mapFiatAmount(
             state = state,
             oldWidgetModel = widgetBModel,
             tokenAmount = tokenAmount
         )
-        when (val priceImpact = getPriceImpact(featureState)?.toPriceImpactType()) {
+        when (val priceImpact = getPriceImpact(currentFeatureState)?.toPriceImpactType()) {
             null,
             SwapPriceImpact.NORMAL -> view?.showPriceImpact(SwapPriceImpact.NORMAL)
             SwapPriceImpact.YELLOW,
@@ -370,12 +380,6 @@ class JupiterSwapPresenter(
         view?.setFirstTokenWidgetState(state = widgetAState)
         view?.setSecondTokenWidgetState(state = widgetBState)
     }
-
-    private val threePercent
-        get() = BigDecimal.valueOf(0.3)
-
-    private val onePercent
-        get() = BigDecimal.valueOf(0.1)
 
     private fun BigDecimal.toPriceImpactType(): SwapPriceImpact {
         return when {
