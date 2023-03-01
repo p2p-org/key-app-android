@@ -6,17 +6,14 @@ plugins {
 android {
     defaultConfig {
         javaCompileOptions {
-            javaCompileOptions {
-                annotationProcessorOptions {
-                    arguments += mapOf(
-                        "room.schemaLocation" to "$projectDir/schemas",
-                        "room.incremental" to "true"
-                    )
-                }
+            annotationProcessorOptions {
+                arguments += mapOf(
+                    "room.schemaLocation" to "$projectDir/schemas",
+                    "room.incremental" to "true"
+                )
             }
         }
     }
-
 }
 
 dependencies {
@@ -70,7 +67,7 @@ dependencies {
     androidTestImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
 }
 configurations.all {
-    resolutionStrategy.cacheChangingModulesFor(0,"seconds")
+    resolutionStrategy.cacheChangingModulesFor(0, "seconds")
 }
 repositories {
     mavenCentral()
