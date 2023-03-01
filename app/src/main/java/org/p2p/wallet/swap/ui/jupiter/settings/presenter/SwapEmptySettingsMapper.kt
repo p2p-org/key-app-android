@@ -12,7 +12,7 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 
 class SwapEmptySettingsMapper(
     private val commonMapper: SwapCommonSettingsMapper

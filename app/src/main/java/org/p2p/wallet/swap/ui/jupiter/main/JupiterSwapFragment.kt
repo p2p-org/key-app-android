@@ -162,11 +162,6 @@ class JupiterSwapFragment :
         replaceFragment(fragment)
     }
 
-    fun openSwapSettingsScreen() {
-        val fragment = JupiterSwapSettingsFragment.create(stateManagerKey = stateManagerHolderKey)
-        replaceFragment(fragment)
-    }
-
     override fun showPriceImpact(priceImpact: SwapPriceImpact) {
         when (priceImpact) {
             SwapPriceImpact.NORMAL -> Unit

@@ -30,7 +30,7 @@ class UiKitRightSideView @JvmOverloads constructor(
                 .apply { updateStyle(styleType) }
             RightSideCellModel.SingleTextTwoIcon::class -> inflateViewBinding<WidgetRightSideSingleTextTwoIconBinding>()
                 .apply { updateStyle(styleType) }
-            RightSideCellModel.TextBadge::clss -> inflateViewBinding<WidgetRightSideSingleTextBadgeBinding>()
+            RightSideCellModel.TextBadge::class -> inflateViewBinding<WidgetRightSideSingleTextBadgeBinding>()
             else -> error("No type for viewPool: $this")
         }
     }
