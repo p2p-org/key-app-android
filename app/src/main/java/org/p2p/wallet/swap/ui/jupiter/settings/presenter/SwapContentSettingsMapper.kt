@@ -14,7 +14,7 @@ import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
