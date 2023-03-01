@@ -17,6 +17,7 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
+import org.p2p.wallet.ethereum.EthereumModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
@@ -89,7 +90,8 @@ object AppModule {
                 SendModule.create(),
                 TransactionManagerModule.create(),
                 SolendModule.create(),
-                SellModule.create()
+                SellModule.create(),
+                EthereumModule.create()
             )
         )
     }

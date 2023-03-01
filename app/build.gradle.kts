@@ -40,12 +40,22 @@ android {
             }
         }
     }
+
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if(requested.group == "org.bouncycastle") {
+                useTarget("org.bouncycastle:bcprov-jdk15to18:1.68")
+            }
+        }
+    }
 }
 
 dependencies {
     implementation(project(":solana"))
     implementation(project(":ui-kit"))
     implementation(project(":core"))
+    implementation(project(":ethereumkit"))
+
     implementation(files("libs/borshj-0.0.0.jar"))
 
     Dependencies.baseAndroidLibraries.forEach { implementation(it) }
