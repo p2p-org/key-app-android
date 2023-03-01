@@ -1,5 +1,7 @@
 package org.p2p.wallet.newsend.interactor
 
+import timber.log.Timber
+import java.math.BigInteger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
@@ -18,6 +20,8 @@ import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_L
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
+import org.p2p.wallet.feerelayer.model.FeeCalculationState
+import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
@@ -31,8 +35,6 @@ import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
-import java.math.BigInteger
 
 private const val SEND_TAG = "SEND"
 
@@ -82,47 +84,56 @@ class SendInteractor(
         token: Token.Active,
         recipient: String,
         useCache: Boolean = true
-    ): FeeRelayerFee? {
-        val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
-        val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
+    ): FeeCalculationState {
+        try {
+            val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
+            val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 
-        var transactionFee = BigInteger.ZERO
+            var transactionFee = BigInteger.ZERO
 
-        // owner's signature
-        transactionFee += lamportsPerSignature
-
-        // feePayer's signature
-        if (!feePayerToken.isSOL) {
+            // owner's signature
             transactionFee += lamportsPerSignature
+
+            // feePayer's signature
+            if (!feePayerToken.isSOL) {
+                transactionFee += lamportsPerSignature
+            }
+
+            val shouldCreateAccount =
+                token.mintAddress != WRAPPED_SOL_MINT && addressInteractor.findSplTokenAddressData(
+                    mintAddress = token.mintAddress,
+                    destinationAddress = recipient.toPublicKey(),
+                    useCache = useCache
+                ).shouldCreateAccount
+
+            val expectedFee = FeeAmount(
+                transaction = transactionFee,
+                accountBalances = if (shouldCreateAccount) minRentExemption else BigInteger.ZERO
+            )
+
+            val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
+
+            if (fees.total.isZero()) {
+                return FeeCalculationState.NoFees
+            }
+
+            val poolsStateFee = getFeesInPayingToken(
+                feePayerToken = feePayerToken,
+                transactionFeeInSOL = fees.transaction,
+                accountCreationFeeInSOL = fees.accountBalances
+            )
+
+            return when (poolsStateFee) {
+                is FeePoolsState.Calculated -> {
+                    FeeCalculationState.Success(FeeRelayerFee(fees, poolsStateFee.feeInSpl, expectedFee))
+                }
+                is FeePoolsState.Failed -> {
+                    FeeCalculationState.PoolsNotFound(FeeRelayerFee(fees, poolsStateFee.feeInSOL, expectedFee))
+                }
+            }
+        } catch (e: Throwable) {
+            return FeeCalculationState.Error(e)
         }
-
-        val shouldCreateAccount = token.mintAddress != WRAPPED_SOL_MINT && addressInteractor.findSplTokenAddressData(
-            mintAddress = token.mintAddress,
-            destinationAddress = recipient.toPublicKey(),
-            useCache = useCache
-        ).shouldCreateAccount
-
-        val expectedFee = FeeAmount(
-            transaction = transactionFee,
-            accountBalances = if (shouldCreateAccount) minRentExemption else BigInteger.ZERO
-        )
-
-        val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
-
-        if (fees.total.isZero()) return null
-
-        val feeInSpl = getFeesInPayingToken(
-            feePayerToken = feePayerToken,
-            transactionFeeInSOL = fees.transaction,
-            accountCreationFeeInSOL = fees.accountBalances
-        )
-        return FeeRelayerFee(
-            transactionFeeInSol = fees.transaction,
-            accountCreationFeeInSol = fees.accountBalances,
-            transactionFeeInSpl = feeInSpl.transaction,
-            accountCreationFeeInSpl = feeInSpl.accountBalances,
-            expectedFee = expectedFee
-        )
     }
 
     /*
@@ -168,7 +179,7 @@ class SendInteractor(
         destinationAddress: PublicKey,
         token: Token.Active,
         lamports: BigInteger
-    ): String {
+    ): String = withContext(dispatchers.io) {
 
         val preparedTransaction = prepareForSending(
             token = token,
@@ -176,7 +187,7 @@ class SendInteractor(
             amount = lamports,
         )
 
-        return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
+        return@withContext if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             // send normally, paid by SOL
             transactionInteractor.serializeAndSend(
                 preparedTransaction = preparedTransaction,
@@ -219,7 +230,11 @@ class SendInteractor(
             accountCreationFeeInSOL = accountCreationFeeInSOL
         )
 
-        token.tokenSymbol to feeInSpl
+        if (feeInSpl is FeePoolsState.Calculated) {
+            token.tokenSymbol to feeInSpl.feeInSpl
+        } else {
+            null
+        }
     } catch (e: IllegalStateException) {
         // ignoring tokens without fees
         null
@@ -229,12 +244,14 @@ class SendInteractor(
         feePayerToken: Token.Active,
         transactionFeeInSOL: BigInteger,
         accountCreationFeeInSOL: BigInteger
-    ): FeeAmount {
-        if (feePayerToken.isSOL)
-            return FeeAmount(
+    ): FeePoolsState {
+        if (feePayerToken.isSOL) {
+            val fee = FeeAmount(
                 transaction = transactionFeeInSOL,
                 accountBalances = accountCreationFeeInSOL
             )
+            return FeePoolsState.Calculated(fee)
+        }
 
         return feeRelayerInteractor.calculateFeeInPayingToken(
             feeInSOL = FeeAmount(transaction = transactionFeeInSOL, accountBalances = accountCreationFeeInSOL),

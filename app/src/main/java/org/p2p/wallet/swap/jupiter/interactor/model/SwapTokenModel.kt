@@ -1,4 +1,4 @@
-package org.p2p.wallet.swap.jupiter.domain.model
+package org.p2p.wallet.swap.jupiter.interactor.model
 
 import java.math.BigDecimal
 import org.p2p.core.token.Token
@@ -13,6 +13,8 @@ sealed interface SwapTokenModel {
     val tokenName: String
     val tokenSymbol: String
     val iconUrl: String?
+
+    fun equalsByMint(other: SwapTokenModel?): Boolean = this.mintAddress == other?.mintAddress
 
     data class UserToken(
         val details: Token.Active,

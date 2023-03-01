@@ -1,6 +1,6 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import java.math.BigDecimal
 
 sealed interface SwapStateAction {

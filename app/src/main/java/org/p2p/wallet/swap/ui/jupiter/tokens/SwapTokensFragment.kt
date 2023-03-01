@@ -22,7 +22,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapTokensBinding
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokenAItemDecoration
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensAdapter
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensChangeToken
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.unsafeLazy
@@ -38,7 +37,7 @@ class SwapTokensFragment :
     SearchView.OnQueryTextListener {
 
     companion object {
-        fun create(tokenToChange: SwapTokensChangeToken, stateManagerKey: String): SwapTokensFragment =
+        fun create(tokenToChange: SwapTokensListMode, stateManagerKey: String): SwapTokensFragment =
             SwapTokensFragment()
                 .withArgs(
                     ARG_CHANGE_TOKEN to tokenToChange,
@@ -48,7 +47,7 @@ class SwapTokensFragment :
 
     private val binding: FragmentJupiterSwapTokensBinding by viewBinding()
 
-    private val tokenToChange: SwapTokensChangeToken by args(ARG_CHANGE_TOKEN)
+    private val tokenToChange: SwapTokensListMode by args(ARG_CHANGE_TOKEN)
     private val stateManagerKey: String by args(ARG_STATE_MANAGE_KEY)
 
     override val presenter: SwapTokensContract.Presenter by inject { parametersOf(tokenToChange, stateManagerKey) }
@@ -66,8 +65,8 @@ class SwapTokensFragment :
 
         binding.recyclerViewTokens.attachAdapter(adapter)
         when (tokenToChange) {
-            SwapTokensChangeToken.TOKEN_A -> binding.recyclerViewTokens.addItemDecoration(SwapTokenAItemDecoration())
-            SwapTokensChangeToken.TOKEN_B -> {
+            SwapTokensListMode.TOKEN_A -> binding.recyclerViewTokens.addItemDecoration(SwapTokenAItemDecoration())
+            SwapTokensListMode.TOKEN_B -> {
                 // todo
             }
         }
@@ -113,5 +112,9 @@ class SwapTokensFragment :
 
     override fun setTokenItems(items: List<AnyCellItem>) {
         adapter.setTokenItems(items)
+    }
+
+    override fun close() {
+        popBackStack()
     }
 }
