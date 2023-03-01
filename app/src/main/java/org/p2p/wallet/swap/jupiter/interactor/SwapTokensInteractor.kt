@@ -5,9 +5,9 @@ import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
-import org.p2p.wallet.utils.Base58String
 
 class SwapTokensInteractor(
     private val homeLocalRepository: HomeLocalRepository,
@@ -46,14 +46,16 @@ class SwapTokensInteractor(
 
         val userTokensModel = userTokens.map(SwapTokenModel::UserToken)
         val jupiterTokensModel = jupiterTokens.map(SwapTokenModel::JupiterToken)
+            .filter { it.mintAddress !in userTokensModel.map(SwapTokenModel.UserToken::mintAddress) }
         val allTokens = userTokensModel + jupiterTokensModel
 
-        return allTokens.withoutCurrentToken(tokenA.mintAddress)
+        return allTokens.filter { it.notSelectedToken(tokenA) }
     }
 
     suspend fun getAllAvailableTokensB(): List<SwapTokenModel> {
         val userTokens = homeLocalRepository.getUserTokens().map(SwapTokenModel::UserToken)
         val jupiterTokens = swapTokensRepository.getTokens().map(SwapTokenModel::JupiterToken)
+            .filter { it.mintAddress !in userTokens.map(SwapTokenModel.UserToken::mintAddress) }
 
         val tokenA = getCurrentTokenA()
         val tokenB = getCurrentTokenB()
@@ -61,8 +63,7 @@ class SwapTokensInteractor(
 
         val allTokensB = userTokens + jupiterTokens
         return allTokensB
-            .withoutCurrentToken(tokenB.mintAddress)
-            .filter { it.mintAddress in availableTokenBMints }
+            .filter { it.notSelectedToken(tokenB) && it.mintAddress in availableTokenBMints }
     }
 
     suspend fun searchToken(tokenMode: SwapTokensListMode, symbolOrName: String): List<SwapTokenModel> {
@@ -78,8 +79,15 @@ class SwapTokensInteractor(
             swapToken.tokenName.startsWith(querySymbolOrName, ignoreCase = true)
     }
 
-    private fun List<SwapTokenModel>.withoutCurrentToken(chosenTokenMint: Base58String): List<SwapTokenModel> {
-        val currentTokenIndex = indexOfFirst { it.mintAddress == chosenTokenMint }
-        return toMutableList().apply { removeAt(currentTokenIndex) }
+    private fun SwapTokenModel.notSelectedToken(selectedTokenMint: SwapTokenModel): Boolean {
+        return this.mintAddress != selectedTokenMint.mintAddress
+    }
+
+    fun selectToken(mode: SwapTokensListMode, token: SwapTokenModel) {
+        val action = when (mode) {
+            SwapTokensListMode.TOKEN_A -> SwapStateAction.TokenAChanged(token)
+            SwapTokensListMode.TOKEN_B -> SwapStateAction.TokenBChanged(token)
+        }
+        swapStateManager.onNewAction(action)
     }
 }

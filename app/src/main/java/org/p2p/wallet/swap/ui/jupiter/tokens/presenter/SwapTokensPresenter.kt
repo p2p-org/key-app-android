@@ -10,7 +10,8 @@ import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
 
 class SwapTokensPresenter(
     private val tokenToChange: SwapTokensListMode,
-    private val mapper: SwapTokensMapper,
+    private val mapperA: SwapTokensAMapper,
+    private val mapperB: SwapTokensBMapper,
     private val searchResultMapper: SearchSwapTokensMapper,
     private val interactor: SwapTokensInteractor,
 ) : BasePresenter<SwapTokensContract.View>(), SwapTokensContract.Presenter {
@@ -40,10 +41,20 @@ class SwapTokensPresenter(
     }
 
     private fun renderAllSwapTokensList(tokens: List<SwapTokenModel>) {
-        val cellItems = mapper.toCellItems(
-            chosenToken = currentToken ?: return,
-            swapTokens = tokens
-        )
+        val cellItems = when (tokenToChange) {
+            SwapTokensListMode.TOKEN_A -> {
+                mapperA.toTokenACellItems(
+                    chosenToken = currentToken ?: return,
+                    swapTokens = tokens
+                )
+            }
+            SwapTokensListMode.TOKEN_B -> {
+                mapperB.toTokenBCellItems(
+                    selectedTokenModel = currentToken ?: return,
+                    tokens = tokens
+                )
+            }
+        }
         view?.setTokenItems(cellItems)
     }
 
@@ -69,6 +80,7 @@ class SwapTokensPresenter(
     }
 
     override fun onTokenClicked(clickedToken: SwapTokenModel) {
-        view?.showUiKitSnackBar(clickedToken.tokenName)
+        interactor.selectToken(tokenToChange, clickedToken)
+        view?.close()
     }
 }

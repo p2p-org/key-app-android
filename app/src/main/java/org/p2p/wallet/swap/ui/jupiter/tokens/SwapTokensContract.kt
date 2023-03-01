@@ -8,6 +8,7 @@ import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 interface SwapTokensContract {
     interface View : MvpView {
         fun setTokenItems(items: List<AnyCellItem>)
+        fun close()
     }
 
     interface Presenter : MvpPresenter<View> {
