@@ -65,6 +65,11 @@ import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapPresenter
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
+import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
+import org.p2p.wallet.swap.ui.jupiter.settings.presenter.JupiterSwapSettingsPresenter
+import org.p2p.wallet.swap.ui.jupiter.settings.presenter.SwapCommonSettingsMapper
+import org.p2p.wallet.swap.ui.jupiter.settings.presenter.SwapEmptySettingsMapper
+import org.p2p.wallet.swap.ui.jupiter.settings.presenter.SwapLoadingSettingsMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensContract
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SearchSwapTokensMapper
@@ -252,7 +257,22 @@ object SwapModule : InjectionModule {
                 )
             )
         }
+        factoryOf(::SwapTokensInteractor)
+        factoryOf(::SwapTokensPresenter) bind SwapTokensContract.Presenter::class
 
+        factoryOf(::SwapCommonSettingsMapper)
+        factoryOf(::SwapEmptySettingsMapper)
+        factoryOf(::SwapLoadingSettingsMapper)
+        factory { (stateManagerHolderKey: String) ->
+            val managerHolder: SwapStateManagerHolder = get()
+            val stateManager = managerHolder.get(stateManagerHolderKey)
+            JupiterSwapSettingsPresenter(
+                stateManager = stateManager,
+                emptyMapper = get(),
+                loadingMapper = get(),
+                commonMapper = get(),
+            )
+        } bind JupiterSwapSettingsContract.Presenter::class
         factoryOf(::SwapTokensCommonMapper)
         factoryOf(::SwapTokensAMapper)
         factoryOf(::SwapTokensBMapper)
