@@ -6,6 +6,8 @@ import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.R
+import org.p2p.wallet.claim.model.ClaimDetails
+import org.p2p.wallet.claim.model.ClaimFee
 import org.p2p.wallet.common.mvp.BasePresenter
 
 class ClaimPresenter(
@@ -27,6 +29,30 @@ class ClaimPresenter(
                 }
             )
         }
+    }
+
+    override fun onFeeClicked() {
+        // TODO connect real fee details
+        val tokenSymbol = "WETH"
+        val claimDetails: ClaimDetails = ClaimDetails(
+            willGet = ClaimFee(
+                tokenSymbol,
+                BigDecimal(0.999717252),
+                BigDecimal(1215.75)
+            ),
+            networkFee = ClaimFee.free(),
+            accountCreationFee = ClaimFee(
+                tokenSymbol,
+                BigDecimal(0.003),
+                BigDecimal(0.01)
+            ),
+            bridgeFee = ClaimFee(
+                tokenSymbol,
+                BigDecimal(0.01),
+                BigDecimal(4.12)
+            )
+        )
+        view?.showClaimFeeInfo(claimDetails)
     }
 
     override fun onSendButtonClicked() {

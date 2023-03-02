@@ -11,4 +11,11 @@
     <string name="claiming_fees_free">Paid by Key App</string>
     <string name="claiming_bottom_button">Send</string>
 
+    <string name="claim_info_free_transaction_message">With Key App, the first transaction is free. Also all the transactions above $300 are free</string>
+    <string name="claim_info_transaction_free">Free</string>
+    <string name="claim_info_you_will_get">You will get</string>
+    <string name="claim_info_network_fee">Network Fee</string>
+    <string name="claim_info_account_creation_fee">Account creation Fee</string>
+    <string name="claim_info_bridge_fee">Wormhole Bridge and Transaction Fee</string>
+
 </resources>

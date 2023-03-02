@@ -6,6 +6,8 @@ import org.koin.android.ext.android.inject
 import java.math.BigDecimal
 import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
+import org.p2p.wallet.claim.model.ClaimDetails
+import org.p2p.wallet.claim.ui.dialogs.ClaimInfoBottomSheet
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentClaimBinding
 import org.p2p.wallet.utils.args
@@ -49,9 +51,8 @@ class ClaimFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            buttonBottom.setOnClickListener {
-                presenter.onSendButtonClicked()
-            }
+            layoutFeeContainer.setOnClickListener { presenter.onFeeClicked() }
+            buttonBottom.setOnClickListener { presenter.onSendButtonClicked() }
             presenter.loadData(
                 tokenSymbol = tokenSymbol,
                 tokenAmount = tokenAmount,
@@ -84,5 +85,9 @@ class ClaimFragment :
 
     override fun showFee(fee: String) {
         binding.textViewFeeValue.text = fee
+    }
+
+    override fun showClaimFeeInfo(claimDetails: ClaimDetails) {
+        ClaimInfoBottomSheet.show(childFragmentManager, claimDetails)
     }
 }

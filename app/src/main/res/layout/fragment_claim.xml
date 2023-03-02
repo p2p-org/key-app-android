@@ -78,6 +78,7 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="32dp"
         android:background="@drawable/bg_rounded_solid_snow_12"
+        android:foreground="@drawable/ripple_button_large"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
