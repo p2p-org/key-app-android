@@ -45,4 +45,6 @@
     <string name="swap_settings_slippage_hint">%</string>
     <string name="swap_settings_custom_slippage_hint">The slippage could be 0.01–50%</string>
     <string name="swap_settings_custom_slippage_confirm">Done</string>
+
+    <string name="swap_transaction_details_token_amounts">%s %s → %s %s</string>
 </resources>

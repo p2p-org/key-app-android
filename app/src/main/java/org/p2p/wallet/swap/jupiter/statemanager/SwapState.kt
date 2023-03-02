@@ -38,7 +38,7 @@ sealed interface SwapState {
         val amountTokenB: BigDecimal,
         val routes: List<JupiterSwapRoute>,
         val activeRoute: Int,
-        val swapBlockchainTransaction: Base64String,
+        val jupiterSwapTransaction: Base64String,
         val slippage: Double
     ) : SwapState
 

@@ -1,12 +1,12 @@
 package org.p2p.wallet.swap.jupiter.statemanager.handler
 
+import java.math.BigDecimal
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
-import java.math.BigDecimal
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class SwapStateLoadingRoutesHandler(
     private val routesRefresher: SwapStateRoutesRefresher,
@@ -47,7 +47,7 @@ class SwapStateLoadingRoutesHandler(
                 stateFlow.value = SwapState.InitialLoading
                 return
             }
-            SwapStateAction.SwapSuccess -> return
+            SwapStateAction.CancelSwapLoading -> return
         }
 
         routesRefresher.refreshRoutes(
