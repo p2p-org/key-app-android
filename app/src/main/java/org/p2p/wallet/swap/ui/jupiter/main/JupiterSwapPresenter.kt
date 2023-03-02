@@ -232,7 +232,6 @@ class JupiterSwapPresenter(
 
     override fun reloadFeature() {
         stateManager.onNewAction(SwapStateAction.InitialLoading)
-        stateManager.onNewAction(SwapStateAction.InitialLoading)
     }
 
     private fun handleNewFeatureState(state: SwapState) {
