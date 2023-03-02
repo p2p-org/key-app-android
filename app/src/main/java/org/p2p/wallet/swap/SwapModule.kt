@@ -257,7 +257,6 @@ object SwapModule : InjectionModule {
                 )
             )
         }
-        factoryOf(::SwapTokensInteractor)
         factoryOf(::SwapTokensPresenter) bind SwapTokensContract.Presenter::class
 
         factoryOf(::SwapCommonSettingsMapper)
