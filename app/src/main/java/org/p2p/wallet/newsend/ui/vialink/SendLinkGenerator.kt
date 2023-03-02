@@ -5,6 +5,7 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.utils.emptyString
 
 private const val LINK_ALLOWED_SYMBOLS = "!$'()*+,-.0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~"
 private const val SYMBOLS_COUNT = 16
@@ -23,9 +24,7 @@ object SendLinkGenerator {
         )
 
         return TemporaryAccount(
-            symbols = buildString {
-                generatedSymbols.forEach { append(it) }
-            },
+            symbols = generatedSymbols.joinToString(emptyString()),
             address = account.publicKey.toBase58(),
             keypair = account.getEncodedKeyPair()
         )
