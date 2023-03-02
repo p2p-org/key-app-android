@@ -19,7 +19,7 @@ interface HistoryListViewContract {
 
     interface Presenter : MvpPresenter<View> {
         fun loadHistory(mintAddress: String? = null)
-        fun refreshHistory(mintAddress: String? = null)
+        fun refreshHistory(mintAddress: String?)
         fun loadNextHistoryPage(mintAddress: String? = null)
 
         fun onItemClicked(historyItem: HistoryItem)
