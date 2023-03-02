@@ -60,7 +60,7 @@ class Account {
             walletIndex: Int,
             saltPrefix: String = "mnemonic",
             includeSpaces: Boolean = true,
-            passphrase: String = ""
+            passphrase: String = emptyString()
         ): Account = try {
             val seed = toSeed(words, saltPrefix, passphrase, includeSpaces)
             val masterPrivateKey = HDKeyDerivation.createMasterPrivateKey(seed)

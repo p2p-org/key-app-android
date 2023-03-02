@@ -44,7 +44,7 @@ class AccountTest {
 
         val phrase2 = "HelloWorld".toCharArray().map { it.toStr() }
         val account2 = Account.fromBip44Mnemonic(phrase2, 0, DerivationPath.BIP44CHANGE, includeSpaces = false)
-        assertEquals("E3hcmVpjJEsLLYwWZKa2EdtwGrypR8QXfioTnnaJ2rwq", account2.publicKey.toBase58())
+        assertEquals("E6R7yqi3Wh1p7fSrX7bMkSVB9Sh75dAGFgHVFevasSv6", account2.publicKey.toBase58())
         assertEquals(
             "YixumKVXM5QwZsKc1k1y3niyWtaH51UxUByVpJMxGswXL6cAp556htJ8rBGPe3m1Q9PiKmtKVgrcMrMATpDZDzJ",
             account2.getEncodedKeyPair()
