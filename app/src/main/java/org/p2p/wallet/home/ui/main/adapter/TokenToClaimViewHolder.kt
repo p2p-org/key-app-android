@@ -18,7 +18,7 @@ class TokenToClaimViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun onBind(item: HomeElementItem.Claim) = with(binding) {
-        val canBeClaimed = item.claimStatus
+        val canBeClaimed = item.isClaimEnabled
         // TODO add binding from token
         setClaimButtonEnabled(isEnabled = canBeClaimed)
         contentView.setOnClickListener { listener.onClaimTokenClicked() }
