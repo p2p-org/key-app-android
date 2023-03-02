@@ -1,6 +1,6 @@
 package org.p2p.ethereumkit.external.repository
 
-import org.p2p.ethereumkit.internal.model.EthTokenKeyProvider
+import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 
 interface EthereumRepository {
 

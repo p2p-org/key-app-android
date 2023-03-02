@@ -1,11 +1,16 @@
 package org.p2p.ethereumkit.external.repository
 
 import io.horizontalsystems.hdwalletkit.Mnemonic
+import org.p2p.ethereumkit.internal.core.EthereumKit
 import org.p2p.ethereumkit.internal.core.signer.Signer
-import org.p2p.ethereumkit.internal.model.EthTokenKeyProvider
+import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.internal.models.Chain
 
 class EthereumKitRepository : EthereumRepository {
+
+    init {
+        EthereumKit.init()
+    }
 
     override fun generateKeyPair(seedPhrase: List<String>): EthTokenKeyProvider {
         val seed = Mnemonic().toSeed(seedPhrase)
