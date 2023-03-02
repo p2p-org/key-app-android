@@ -44,7 +44,8 @@ class SwapTokensBRoundedItemDecoration(
         val previousViewHolder = parent.findViewHolderForLayoutPosition(adapterPosition - 1)
         val nextViewHolder = parent.findViewHolderForLayoutPosition(adapterPosition + 1)
 
-        val shouldCheckForBottomPadding = currentItemPayload.hasPopularLabel
+        val shouldCheckForBottomPadding = !currentItemPayload.hasPopularLabel
+
         if (shouldCheckForBottomPadding) {
             addBottomPaddingToPopularGroup(outRect, previousViewHolder, nextViewHolder)
         }
@@ -55,13 +56,15 @@ class SwapTokensBRoundedItemDecoration(
         previousViewHolder: RecyclerView.ViewHolder?,
         nextViewHolder: RecyclerView.ViewHolder?
     ) {
-        val nextTokenPayload = nextViewHolder
-            .asFinanceCell
+        val prevTokenPayload = previousViewHolder.asFinanceCell
+            ?.getPayload<SwapTokensCellModelPayload>()
+        val nextTokenPayload = nextViewHolder.asFinanceCell
             ?.getPayload<SwapTokensCellModelPayload>()
 
-        val isPopularGroupFinished = nextTokenPayload?.hasPopularLabel == false
+        val isPopularGroupFinished = prevTokenPayload?.hasPopularLabel == true
+
         if (isPopularGroupFinished) {
-            outRect.bottom = 30
+            outRect.top = 30
         }
     }
 
@@ -73,9 +76,9 @@ class SwapTokensBRoundedItemDecoration(
 
     private fun roundItem(view: View, recyclerView: RecyclerView) {
         val viewHolder = recyclerView.getChildViewHolder(view) as? FinanceBlockViewHolder ?: return
-        val adapterPosition = viewHolder.bindingAdapterPosition
-        val payload = viewHolder.item.payload as? SwapTokensCellModelPayload ?: return
+        val payload = viewHolder.getPayload<SwapTokensCellModelPayload>()
 
+        val adapterPosition = viewHolder.layoutPosition
         val previousViewHolder = recyclerView.findViewHolderForLayoutPosition(adapterPosition - 1)
         val nextViewHolder = recyclerView.findViewHolderForAdapterPosition(adapterPosition + 1)
 
@@ -84,7 +87,7 @@ class SwapTokensBRoundedItemDecoration(
                 previousItem = previousViewHolder,
                 nextItem = nextViewHolder,
             )
-            else -> selectShapeForUserToken(
+            else -> selectShapeForOtherToken(
                 previousItem = previousViewHolder,
                 nextItem = nextViewHolder,
             )
@@ -99,12 +102,16 @@ class SwapTokensBRoundedItemDecoration(
         }
     }
 
-    private fun selectShapeForUserToken(
+    private fun selectShapeForOtherToken(
         previousItem: RecyclerView.ViewHolder?,
         nextItem: RecyclerView.ViewHolder?,
     ): ShapeAppearanceModel {
-        val previousToken = getPayloadFromViewHolder(previousItem)?.tokenModel
-        val nextToken = getPayloadFromViewHolder(nextItem)?.tokenModel
+        val previousToken = previousItem.asFinanceCell
+            ?.getPayload<SwapTokensCellModelPayload>()
+            ?.tokenModel
+        val nextToken = nextItem.asFinanceCell
+            ?.getPayload<SwapTokensCellModelPayload>()
+            ?.tokenModel
 
         val isChosenTokenGroup = previousToken !is SwapTokenModel &&
             nextToken !is SwapTokenModel
@@ -129,25 +136,23 @@ class SwapTokensBRoundedItemDecoration(
         previousItem: RecyclerView.ViewHolder?,
         nextItem: RecyclerView.ViewHolder?,
     ): ShapeAppearanceModel {
-        val previousToken = getPayloadFromViewHolder(previousItem)
-        val nextToken = getPayloadFromViewHolder(nextItem)
+        val previousItemPayload = previousItem.asFinanceCell
+            ?.getPayload<SwapTokensCellModelPayload>()
+        val nextItemPayload = previousItem.asFinanceCell
+            ?.getPayload<SwapTokensCellModelPayload>()
 
         val isPopularTokensGroupStarted =
-            previousToken?.tokenModel !is SwapTokenModel &&
-                nextToken?.hasPopularLabel == true
+            previousItem !is FinanceBlockViewHolder &&
+                nextItemPayload?.hasPopularLabel == true
 
         val isPopularTokensGroupFinished =
-            previousToken?.hasPopularLabel == true &&
-                nextToken?.hasPopularLabel == false
+            previousItemPayload?.hasPopularLabel == true &&
+                nextItemPayload?.hasPopularLabel == false
 
         return when {
             isPopularTokensGroupStarted -> shapeTopRounded
             isPopularTokensGroupFinished -> shapeBottomRounded
             else -> shapeRectangle
         }
-    }
-
-    private fun getPayloadFromViewHolder(viewHolder: RecyclerView.ViewHolder?): SwapTokensCellModelPayload? {
-        return (viewHolder as? FinanceBlockViewHolder)?.getPayload()
     }
 }

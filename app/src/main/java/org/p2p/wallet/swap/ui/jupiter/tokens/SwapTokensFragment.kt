@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.ui.jupiter.tokens
 
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -66,6 +67,7 @@ class SwapTokensFragment :
         inflateSearchMenu(binding.toolbar)
 
         with(binding.recyclerViewTokens) {
+            layoutManager = LinearLayoutManager(requireContext())
             attachAdapter(this@SwapTokensFragment.adapter)
 
             when (tokenToChange) {
