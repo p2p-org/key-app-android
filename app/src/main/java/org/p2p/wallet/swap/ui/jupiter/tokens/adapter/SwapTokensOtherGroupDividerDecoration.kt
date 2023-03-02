@@ -11,7 +11,9 @@ import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensCellModelPayloa
 class SwapTokensOtherGroupDividerDecoration : RecyclerView.ItemDecoration() {
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         val currentViewHolder = parent.getChildViewHolder(view) as? FinanceBlockViewHolder ?: return
-        val currentItemPayload = currentViewHolder.asFinanceCell?.getPayload<SwapTokensCellModelPayload>() ?: return
+        val currentItemPayload = currentViewHolder.asFinanceCell
+            ?.getPayload<SwapTokensCellModelPayload>()
+            ?: return
 
         // no need for paddings if we search tokens
         if (currentItemPayload.isSearchResultItem) {
@@ -19,9 +21,9 @@ class SwapTokensOtherGroupDividerDecoration : RecyclerView.ItemDecoration() {
             return
         }
 
-        val adapterPosition = currentViewHolder.bindingAdapterPosition
-        val previousViewHolder = parent.findViewHolderForAdapterPosition(adapterPosition - 1)
-        val nextViewHolder = parent.findViewHolderForAdapterPosition(adapterPosition + 1)
+        val adapterPosition = parent.getChildLayoutPosition(view)
+        val previousViewHolder = parent.findViewHolderForLayoutPosition(adapterPosition - 1)
+        val nextViewHolder = parent.findViewHolderForLayoutPosition(adapterPosition + 1)
 
         val isOtherTokensGroupStarted = currentItemPayload.tokenModel is SwapTokenModel.JupiterToken
         if (isOtherTokensGroupStarted) {
