@@ -13,6 +13,7 @@ data class FinanceBlockCellModel(
     val rightSideCellModel: RightSideCellModel? = null,
     val accessibility: ViewAccessibilityCellModel = ViewAccessibilityCellModel(),
     val background: DrawableCellModel? = DrawableCellModel(tint = R.color.snow),
+    val styleType: FinanceBlockStyle = FinanceBlockStyle.FINANCE_BLOCK,
     override val payload: Any? = null,
 ) : CellModelPayload, AnyCellItem {
 
