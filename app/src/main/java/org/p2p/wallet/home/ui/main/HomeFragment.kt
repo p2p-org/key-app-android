@@ -13,6 +13,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
+import org.p2p.wallet.claim.ui.ClaimFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.new.requestPermissionNotification
@@ -318,7 +319,14 @@ class HomeFragment :
     }
 
     override fun onClaimTokenClicked() {
-        // TODO implement claim logic
+        // TODO pass real data
+        replaceFragment(
+            ClaimFragment.create(
+                tokenSymbol = "WETH",
+                tokenAmount = BigDecimal(0.999717252),
+                fiatAmount = BigDecimal(1219.87)
+            )
+        )
     }
 
     override fun onDestroy() {

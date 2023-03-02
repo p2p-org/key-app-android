@@ -5,4 +5,10 @@
     <string name="claim_button_text">Claim</string>
     <string name="claiming_button_text">Claiming…</string>
 
+    <string name="claiming_title_format">Claim %s</string>
+    <string name="claiming_sub_title_format">Confirm claiming the tokens</string>
+    <string name="claiming_fees">Fees</string>
+    <string name="claiming_fees_free">Paid by Key App</string>
+    <string name="claiming_bottom_button">Send</string>
+
 </resources>

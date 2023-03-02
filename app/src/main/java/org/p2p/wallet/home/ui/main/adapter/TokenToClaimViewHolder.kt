@@ -22,6 +22,7 @@ class TokenToClaimViewHolder(
         // TODO add binding from token
         setClaimButtonEnabled(isEnabled = canBeClaimed)
         contentView.setOnClickListener { listener.onClaimTokenClicked() }
+        buttonClaim.setOnClickListener { listener.onClaimTokenClicked() }
     }
 
     private fun setClaimButtonEnabled(isEnabled: Boolean) {
