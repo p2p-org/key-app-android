@@ -15,6 +15,8 @@ class ComponentViewPool<CellModel : Any>(
 
     private val viewPool = mutableMapOf<KClass<out CellModel>, BindingWithViews>()
 
+    fun getViewPool(): Map<KClass<out CellModel>, BindingWithViews> = viewPool
+
     fun findPoolOfViews(type: KClass<out CellModel>, removeIfInflate: Boolean): BindingWithViews {
         return viewPool[type] ?: inflateAndSave(type)
             .also { if (removeIfInflate) viewGroup.removeAllViews() }

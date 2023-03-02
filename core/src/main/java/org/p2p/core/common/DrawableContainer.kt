@@ -14,8 +14,8 @@ import org.p2p.core.glide.SvgSoftwareLayerSetter
 sealed class DrawableContainer : Parcelable {
 
     companion object {
-        operator fun invoke(@DrawableRes textRes: Int) =
-            Res(textRes)
+        operator fun invoke(@DrawableRes iconRes: Int) =
+            Res(iconRes)
 
         operator fun invoke(iconUrl: String) =
             Raw(iconUrl)
