@@ -3,9 +3,12 @@ package org.p2p.uikit.components.right_side
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.content.Context
 import android.util.AttributeSet
+import org.p2p.uikit.R
+import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.databinding.WidgetRightSideDoubleTextBinding
 import org.p2p.uikit.databinding.WidgetRightSideSingleTextBadgeBinding
 import org.p2p.uikit.databinding.WidgetRightSideSingleTextTwoIconBinding
+import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.image.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.text.TextViewBackgroundModel
@@ -19,11 +22,14 @@ class UiKitRightSideView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
+    private var styleType = FinanceBlockStyle.FINANCE_BLOCK
     private var currentModel: RightSideCellModel? = null
     private val viewPool = ComponentViewPool<RightSideCellModel>(this) {
         when (this) {
             RightSideCellModel.TwoLineText::class -> inflateViewBinding<WidgetRightSideDoubleTextBinding>()
+                .apply { updateStyle(styleType) }
             RightSideCellModel.SingleTextTwoIcon::class -> inflateViewBinding<WidgetRightSideSingleTextTwoIconBinding>()
+                .apply { updateStyle(styleType) }
             RightSideCellModel.TextBadge::class -> inflateViewBinding<WidgetRightSideSingleTextBadgeBinding>()
             else -> error("No type for viewPool: $this")
         }
@@ -36,6 +42,7 @@ class UiKitRightSideView @JvmOverloads constructor(
         if (isInEditMode) {
             inflateViewBinding<WidgetRightSideDoubleTextBinding>()
         }
+        bindViewStyle(styleType)
     }
 
     fun setOnSwitchAction(
@@ -48,6 +55,16 @@ class UiKitRightSideView @JvmOverloads constructor(
             .switch.setOnCheckedChangeListener{
                 onItemSwitchAction(this, currentModel as RightSideUiModel.Switcher)
             }*/
+    }
+
+    fun bindViewStyle(style: FinanceBlockStyle) {
+        styleType = style
+        viewPool.getViewPool().forEach {
+            when (val binding = it.value.first) {
+                is WidgetRightSideDoubleTextBinding -> binding.updateStyle(style)
+                is WidgetRightSideSingleTextTwoIconBinding -> binding.updateStyle(style)
+            }
+        }
     }
 
     fun bind(model: RightSideCellModel) {
@@ -84,5 +101,32 @@ class UiKitRightSideView @JvmOverloads constructor(
             badgeBackground = TextViewBackgroundModel(badgeRounded(tint = model.badgeTint))
         )
         textViewText.bindOrGone(textViewCellModel)
+    }
+
+    private fun WidgetRightSideDoubleTextBinding.updateStyle(style: FinanceBlockStyle) {
+        when (style) {
+            FinanceBlockStyle.FINANCE_BLOCK -> {
+                textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_SemiBold_Text3)
+                textViewFirst.setTextColor(getColorStateList(R.color.text_night))
+                textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewSecond.setTextColor(getColorStateList(R.color.text_mountain))
+            }
+            FinanceBlockStyle.BASE_CELL -> {
+                textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Text3)
+                textViewFirst.setTextColor(getColorStateList(R.color.text_night))
+                textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewSecond.setTextColor(getColorStateList(R.color.text_mountain))
+            }
+        }
+    }
+
+    private fun WidgetRightSideSingleTextTwoIconBinding.updateStyle(style: FinanceBlockStyle) {
+        when (style) {
+            FinanceBlockStyle.FINANCE_BLOCK,
+            FinanceBlockStyle.BASE_CELL -> {
+                textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewFirst.setTextColor(getColorStateList(R.color.text_mountain))
+            }
+        }
     }
 }

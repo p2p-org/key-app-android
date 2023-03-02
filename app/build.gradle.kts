@@ -49,6 +49,7 @@ dependencies {
     implementation(files("libs/borshj-0.0.0.jar"))
 
     Dependencies.baseAndroidLibraries.forEach { implementation(it) }
+    Dependencies.adapterDelegatesLibraries.forEach { implementation(it) }
 
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.browser:browser:1.4.0")
