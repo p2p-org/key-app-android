@@ -86,8 +86,18 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                 timeFormat.format(data.date)
             )
 
-            glideManager.load(imageView = imageViewFirstIcon, url = data.tokenA.tokenUrl, size = IMAGE_SIZE)
-            glideManager.load(imageView = imageViewSecondIcon, url = data.tokenB.tokenUrl, size = IMAGE_SIZE)
+            glideManager.load(
+                imageView = imageViewFirstIcon,
+                url = data.tokenA.tokenUrl,
+                size = IMAGE_SIZE,
+                circleCrop = true
+            )
+            glideManager.load(
+                imageView = imageViewSecondIcon,
+                url = data.tokenB.tokenUrl,
+                size = IMAGE_SIZE,
+                circleCrop = true
+            )
             textViewAmountUsd.text = "$ ${data.amountUsd}"
             textViewAmountTokens.text = getString(
                 R.string.swap_transaction_details_token_amounts,
