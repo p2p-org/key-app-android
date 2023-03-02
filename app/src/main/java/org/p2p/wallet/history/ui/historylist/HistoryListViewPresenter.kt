@@ -1,7 +1,7 @@
 package org.p2p.wallet.history.ui.historylist
 
-import kotlinx.coroutines.flow.filterNotNull
 import timber.log.Timber
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -22,7 +22,9 @@ class HistoryListViewPresenter(
 
     override fun attach(view: HistoryListViewContract.View) {
         super.attach(view)
-        environmentManager.addEnvironmentListener(this::class) { refreshHistory() }
+        environmentManager.addEnvironmentListener(this::class) {
+            refreshHistory(mintAddress = null)
+        }
         attachToHistoryFlow()
     }
 
