@@ -1,13 +1,18 @@
 package org.p2p.solanaj.core
 
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.base.Joiner
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.base.Stopwatch
 import org.bitcoinj.crypto.DeterministicHierarchy
 import org.bitcoinj.crypto.HDKeyDerivation
 import org.bitcoinj.crypto.HDUtils
-import org.bitcoinj.crypto.MnemonicCode
+import org.bitcoinj.crypto.PBKDF2SHA512
+import org.p2p.core.utils.emptyString
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.solanaj.crypto.SolanaBip44
 import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.solanaj.utils.crypto.Base58Utils
+
+private const val PBKDF2_ROUNDS = 2048
 
 class Account {
     private var keyPair: TweetNaclFast.Signature.KeyPair
@@ -50,8 +55,14 @@ class Account {
          * @param passphrase seed passphrase
          * @return Solana account
          */
-        fun fromBip32Mnemonic(words: List<String>, walletIndex: Int, passphrase: String = ""): Account = try {
-            val seed = MnemonicCode.toSeed(words, passphrase)
+        fun fromBip32Mnemonic(
+            words: List<String>,
+            walletIndex: Int,
+            saltPrefix: String = "mnemonic",
+            includeSpaces: Boolean = true,
+            passphrase: String = ""
+        ): Account = try {
+            val seed = toSeed(words, saltPrefix, passphrase, includeSpaces)
             val masterPrivateKey = HDKeyDerivation.createMasterPrivateKey(seed)
             val deterministicHierarchy = DeterministicHierarchy(masterPrivateKey)
             val child = deterministicHierarchy[HDUtils.parsePath("M/501H/${walletIndex}H/0/0"), true, true]
@@ -73,17 +84,49 @@ class Account {
             words: List<String>,
             walletIndex: Int,
             derivationPath: DerivationPath,
-            passphrase: String = ""
+            saltPrefix: String = "mnemonic",
+            passphrase: String = emptyString(),
+            includeSpaces: Boolean = true
         ): Account {
-            require(derivationPath != DerivationPath.BIP32DEPRECATED) { "Call .fromBip32Mnemonic" }
+            require(derivationPath != DerivationPath.BIP32DEPRECATED) {
+                "Incorrect derivation path for this method: $derivationPath"
+            }
             return try {
                 val solanaBip44 = SolanaBip44(walletIndex)
-                val seed = MnemonicCode.toSeed(words, passphrase)
+                val seed = toSeed(
+                    words = words,
+                    saltPrefix = saltPrefix,
+                    passphrase = passphrase,
+                    includeSpaces = includeSpaces
+                )
                 val privateKey: ByteArray = solanaBip44.getPrivateKeyFromSeed(seed, derivationPath)
                 Account(TweetNaclFast.Signature.keyPair_fromSeed(privateKey))
             } catch (error: Throwable) {
                 throw AccountCreationFailed(derivationPath.stringValue, error)
             }
+        }
+
+        private fun toSeed(
+            words: List<String>,
+            saltPrefix: String,
+            passphrase: String,
+            includeSpaces: Boolean
+        ): ByteArray {
+            val seedPhrase = if (includeSpaces) {
+                Joiner.on(" ").join(words)
+            } else {
+                buildString { words.forEach { append(it) } }
+            }
+
+            return toSeedPhrase(seedPhrase, saltPrefix, passphrase)
+        }
+
+        private fun toSeedPhrase(seedPhrase: String, saltPrefix: String = "mnemonic", passphrase: String): ByteArray {
+            val salt = "$saltPrefix$passphrase"
+            val watch: Stopwatch = Stopwatch.createStarted()
+            val seed = PBKDF2SHA512.derive(seedPhrase, salt, PBKDF2_ROUNDS, 64)
+            watch.stop()
+            return seed
         }
     }
 }
