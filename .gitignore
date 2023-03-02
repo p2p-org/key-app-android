@@ -27,6 +27,7 @@ signing.properties
 apikey*.properties
 analytics.properties
 credentials.properties
+common.properties
 p2pwallet.keystore
 *.jks
 
