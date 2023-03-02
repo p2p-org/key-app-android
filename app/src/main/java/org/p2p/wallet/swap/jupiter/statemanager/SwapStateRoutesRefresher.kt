@@ -71,7 +71,7 @@ class SwapStateRoutesRefresher(
             amountTokenB = amountTokenB,
             routes = updatedRoutes,
             activeRoute = activeRouteOrdinal,
-            swapBlockchainTransaction = freshSwapTransaction,
+            jupiterSwapTransaction = freshSwapTransaction,
             slippage = slippage
         )
     }

@@ -185,6 +185,8 @@ object SwapModule : InjectionModule {
                 rateLoaderTokenA = get(),
                 rateLoaderTokenB = get(),
                 dispatchers = get(),
+                swapInteractor = get(),
+                transactionManager = get()
             )
         } bind JupiterSwapContract.Presenter::class
 

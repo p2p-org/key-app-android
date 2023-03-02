@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.ui.jupiter.main
 import androidx.activity.addCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -15,6 +16,7 @@ import org.p2p.core.utils.insets.appleTopInsets
 import org.p2p.core.utils.insets.consume
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
+import org.p2p.uikit.components.ScreenTab
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
@@ -27,12 +29,16 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
+import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.transaction.ui.JupiterTransactionProgressBottomSheet
+import org.p2p.wallet.transaction.ui.JupiterTransactionProgressBottomSheetListener
+import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -44,7 +50,8 @@ private const val EXTRA_OPENED_FROM = "EXTRA_OPENED_FROM"
 
 class JupiterSwapFragment :
     BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
-    JupiterSwapContract.View {
+    JupiterSwapContract.View,
+    JupiterTransactionProgressBottomSheetListener {
 
     companion object {
         fun create(token: Token.Active? = null, source: SwapOpenedFrom = SwapOpenedFrom.OTHER): JupiterSwapFragment =
@@ -61,6 +68,13 @@ class JupiterSwapFragment :
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
     override val presenter: JupiterSwapContract.Presenter by inject {
         parametersOf(initialToken, stateManagerHolderKey)
+    }
+
+    private var mainTabsSwitcher: MainTabsSwitcher? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mainTabsSwitcher = parentFragment as? MainTabsSwitcher
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,7 +100,7 @@ class JupiterSwapFragment :
             }
 
             sliderSend.onSlideCompleteListener = { sliderSend.showCompleteAnimation() }
-            sliderSend.onSlideCollapseCompleted = { presenter.onSwapTokenClick() }
+            sliderSend.onSlideCollapseCompleted = { presenter.onSwapButtonClicked() }
 
             toolbar.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.settingsMenuItem) {
@@ -173,6 +187,36 @@ class JupiterSwapFragment :
 
     override fun scrollToPriceImpact() {
         binding.scrollView.smoothScrollTo(0, binding.scrollView.height)
+    }
+
+    override fun showProgressDialog(internalTransactionId: String, transactionDetails: SwapTransactionBottomSheetData) {
+        JupiterTransactionProgressBottomSheet.show(
+            fm = childFragmentManager,
+            transactionId = internalTransactionId,
+            data = transactionDetails
+        )
+    }
+
+    override fun onBottomSheetDismissed(isTransactionSucceed: Boolean) {
+        if (isTransactionSucceed) {
+            when (openedFrom) {
+                SwapOpenedFrom.MAIN_SCREEN -> {
+                    presenter.reloadFeature()
+                    mainTabsSwitcher?.navigate(ScreenTab.HOME_SCREEN)
+                }
+                SwapOpenedFrom.OTHER -> {
+                    popBackStack()
+                }
+            }
+        }
+    }
+
+    override fun onSwapTryAgainClicked() {
+        TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
+    }
+
+    override fun onSwapIncreaseSlippageClicked() {
+        TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
     }
 
     private fun setYellowAlert() {

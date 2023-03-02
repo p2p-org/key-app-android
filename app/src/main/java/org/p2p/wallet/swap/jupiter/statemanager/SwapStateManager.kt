@@ -1,11 +1,9 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.CoroutineScope
-import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -14,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 
 private const val DELAY_IN_MILLIS = 20_000L
 
@@ -75,6 +75,7 @@ class SwapStateManager(
     private suspend fun handleNewAction(action: SwapStateAction) {
         val currentState = actualNoErrorState()
         val actionHandler = handlers.firstOrNull { it.canHandle(currentState) } ?: return
+        Timber.e("Handler found: $actionHandler; $action; $currentState")
         actionHandler.handleAction(state, currentState, action)
     }
 
