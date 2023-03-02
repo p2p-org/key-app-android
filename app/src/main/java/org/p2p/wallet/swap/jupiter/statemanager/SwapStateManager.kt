@@ -75,7 +75,6 @@ class SwapStateManager(
     private suspend fun handleNewAction(action: SwapStateAction) {
         val currentState = actualNoErrorState()
         val actionHandler = handlers.firstOrNull { it.canHandle(currentState) } ?: return
-        Timber.e("Handler found: $actionHandler; $action; $currentState")
         actionHandler.handleAction(state, currentState, action)
     }
 
