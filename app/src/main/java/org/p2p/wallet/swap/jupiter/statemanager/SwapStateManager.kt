@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.p2p.wallet.swap.model.Slippage
 
 private const val DELAY_IN_MILLIS = 20_000L
 
@@ -24,7 +25,7 @@ class SwapStateManager(
 
     companion object {
         const val DEFAULT_ACTIVE_ROUTE_ORDINAL = 0
-        const val DEFAULT_SLIPPAGE = 0.5
+        val DEFAULT_SLIPPAGE = Slippage.Medium
     }
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
     private val state = MutableStateFlow<SwapState>(SwapState.InitialLoading)

@@ -8,6 +8,7 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAU
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.p2p.wallet.swap.model.Slippage
 
 class SwapStateSwapLoadedHandler(
     private val routesRefresher: SwapStateRoutesRefresher,
@@ -26,7 +27,7 @@ class SwapStateSwapLoadedHandler(
         var tokenA: SwapTokenModel = oldState.tokenA
         var tokenB: SwapTokenModel = oldState.tokenB
         var amountTokenA: BigDecimal = oldState.amountTokenA
-        var slippage: Double = oldState.slippage
+        var slippage: Slippage = oldState.slippage
         var activeRouteOrdinal = oldState.activeRoute
 
         when (action) {

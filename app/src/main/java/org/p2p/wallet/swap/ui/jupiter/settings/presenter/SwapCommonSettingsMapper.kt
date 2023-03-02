@@ -41,26 +41,31 @@ class SwapCommonSettingsMapper {
         )
     }
 
-    fun getSlippageList(slippage: Double): List<AnyCellItem> = buildList {
+    private fun mapSlippageList(slippage: Double, isSelectedCustom: Boolean): List<AnyCellItem> = buildList {
+        this += createHeader(R.string.swap_settings_slippage_title)
+        this += getSlippageList(slippage, isSelectedCustom)
+    }
+
+    fun getSlippageList(slippage: Double, isSelectedCustom: Boolean): List<AnyCellItem> = buildList {
         val selectedSlippage = slippage.slippageToEnum()
         addSlippageCell(
             slippage = TextContainer("0,1%"),
-            isSelected = selectedSlippage == SwapSlippagePayload.ZERO_POINT_ONE,
+            isSelected = !isSelectedCustom && selectedSlippage == SwapSlippagePayload.ZERO_POINT_ONE,
             payload = SwapSlippagePayload.ZERO_POINT_ONE
         )
         addSlippageCell(
             slippage = TextContainer("0,5%"),
-            isSelected = selectedSlippage == SwapSlippagePayload.ZERO_POINT_FIVE,
+            isSelected = !isSelectedCustom && selectedSlippage == SwapSlippagePayload.ZERO_POINT_FIVE,
             payload = SwapSlippagePayload.ZERO_POINT_FIVE
         )
         addSlippageCell(
             slippage = TextContainer("1%"),
-            isSelected = selectedSlippage == SwapSlippagePayload.ONE,
+            isSelected = !isSelectedCustom && selectedSlippage == SwapSlippagePayload.ONE,
             payload = SwapSlippagePayload.ONE
         )
         addSlippageCell(
             slippage = TextContainer(R.string.swap_settings_slippage_custom),
-            isSelected = selectedSlippage == SwapSlippagePayload.CUSTOM,
+            isSelected = !isSelectedCustom && selectedSlippage == SwapSlippagePayload.CUSTOM,
             payload = SwapSlippagePayload.CUSTOM
         )
     }

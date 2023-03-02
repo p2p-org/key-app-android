@@ -1,12 +1,13 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import java.math.BigDecimal
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.model.Slippage
 
 sealed interface SwapStateAction {
     data class ActiveRouteChanged(val ordinalRouteNumber: Int) : SwapStateAction
 
-    data class SlippageChanged(val newSlippageValue: Double) : SwapStateAction
+    data class SlippageChanged(val newSlippageValue: Slippage) : SwapStateAction
 
     object InitialLoading : SwapStateAction
 

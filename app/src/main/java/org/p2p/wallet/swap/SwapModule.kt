@@ -68,6 +68,7 @@ import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
 import org.p2p.wallet.swap.ui.jupiter.settings.presenter.JupiterSwapSettingsPresenter
 import org.p2p.wallet.swap.ui.jupiter.settings.presenter.SwapCommonSettingsMapper
+import org.p2p.wallet.swap.ui.jupiter.settings.presenter.SwapContentSettingsMapper
 import org.p2p.wallet.swap.ui.jupiter.settings.presenter.SwapEmptySettingsMapper
 import org.p2p.wallet.swap.ui.jupiter.settings.presenter.SwapLoadingSettingsMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensContract
@@ -261,6 +262,7 @@ object SwapModule : InjectionModule {
         factoryOf(::SwapCommonSettingsMapper)
         factoryOf(::SwapEmptySettingsMapper)
         factoryOf(::SwapLoadingSettingsMapper)
+        factoryOf(::SwapContentSettingsMapper)
         factory { (stateManagerHolderKey: String) ->
             val managerHolder: SwapStateManagerHolder = get()
             val stateManager = managerHolder.get(stateManagerHolderKey)
@@ -269,6 +271,8 @@ object SwapModule : InjectionModule {
                 emptyMapper = get(),
                 loadingMapper = get(),
                 commonMapper = get(),
+                contentMapper = get(),
+                swapTokensRepository = get(),
             )
         } bind JupiterSwapSettingsContract.Presenter::class
         factoryOf(::SwapTokensCommonMapper)

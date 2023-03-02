@@ -12,5 +12,6 @@ interface JupiterSwapSettingsContract {
 
     interface Presenter : MvpPresenter<View> {
         fun onSettingItemClick(item: FinanceBlockCellModel)
+        fun onCustomSlippageChange(slippage: Double?)
     }
 }

@@ -17,17 +17,13 @@ class SwapLoadingSettingsMapper(
     private val commonMapper: SwapCommonSettingsMapper
 ) {
 
-    fun mapLoadingList(
-        slippage: Double,
-    ): List<AnyCellItem> = buildList {
+    fun mapLoadingList(): List<AnyCellItem> = buildList {
         addRouteCell()
         add(commonMapper.getNetworkFeeCell())
         addAccountFeeCell()
         addLiquidityFeeCell()
         addEstimatedFeeCell()
         addMinimumReceivedCell()
-        add(commonMapper.createHeader(R.string.swap_settings_slippage_title))
-        addAll(commonMapper.getSlippageList(slippage))
     }
 
     private fun MutableList<AnyCellItem>.addRouteCell() {

@@ -18,6 +18,7 @@ import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
 
@@ -26,7 +27,7 @@ class SwapContentSettingsMapper(
 ) {
 
     fun mapForLoadingTransactionState(
-        slippage: Double,
+        slippage: Slippage,
         routes: List<JupiterSwapRoute>,
         activeRoute: Int,
         jupiterTokens: List<JupiterSwapToken>,
@@ -41,7 +42,7 @@ class SwapContentSettingsMapper(
     )
 
     fun mapForSwapLoadedState(
-        slippage: Double,
+        slippage: Slippage,
         routes: List<JupiterSwapRoute>,
         activeRoute: Int,
         jupiterTokens: List<JupiterSwapToken>,
@@ -57,7 +58,7 @@ class SwapContentSettingsMapper(
     )
 
     private fun mapList(
-        slippage: Double,
+        slippage: Slippage,
         routes: List<JupiterSwapRoute>,
         activeRoute: Int,
         jupiterTokens: List<JupiterSwapToken>,
@@ -70,8 +71,6 @@ class SwapContentSettingsMapper(
         addLiquidityFeeCell(routes, activeRoute, jupiterTokens)
         addEstimatedFeeCell()
         addMinimumReceivedCell(slippage, tokenBAmount, tokenB)
-        this += commonMapper.createHeader(R.string.swap_settings_slippage_title)
-        addAll(commonMapper.getSlippageList(slippage))
     }
 
     private fun MutableList<AnyCellItem>.addRouteCell(
@@ -120,7 +119,7 @@ class SwapContentSettingsMapper(
     }
 
     private fun MutableList<AnyCellItem>.addMinimumReceivedCell(
-        slippage: Double,
+        slippage: Slippage,
         tokenBAmount: BigDecimal?,
         tokenB: SwapTokenModel
     ) {
@@ -130,7 +129,9 @@ class SwapContentSettingsMapper(
             )
         } else {
             TextViewCellModel.Raw(
-                text = TextContainer(tokenBAmount.multiply(slippage.toBigDecimal()).formatToken(tokenB.decimals))
+                text = TextContainer(
+                    tokenBAmount.multiply(slippage.doubleValue.toBigDecimal()).formatToken(tokenB.decimals)
+                )
             )
         }
         this += FinanceBlockCellModel(
