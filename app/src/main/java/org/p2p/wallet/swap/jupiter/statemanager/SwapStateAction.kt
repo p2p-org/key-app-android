@@ -1,7 +1,7 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import java.math.BigDecimal
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 
 sealed interface SwapStateAction {
     data class ActiveRouteChanged(val ordinalRouteNumber: Int) : SwapStateAction
@@ -22,6 +22,5 @@ sealed interface SwapStateAction {
     ) : SwapStateAction
 
     object SwitchTokens : SwapStateAction
-    object SwapSuccess : SwapStateAction
     object CancelSwapLoading : SwapStateAction
 }
