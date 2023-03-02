@@ -19,6 +19,17 @@
         app:titleTextColor="@color/text_night"
         tools:title="\@kirill.key" />
 
+    <TextView
+        android:id="@+id/textViewMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/send_via_link_message"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        android:textColor="@color/text_mountain"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
     <org.p2p.uikit.components.UiKitSendDetailsWidget
         android:id="@+id/widgetSendDetails"
         android:layout_width="0dp"
@@ -28,8 +39,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintTop_toBottomOf="@id/textViewMessage"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textViewDebug"

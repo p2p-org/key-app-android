@@ -5,10 +5,6 @@ on:
     branches:
       - develop
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   android-lint:
     name: "Run ktlint check"
@@ -37,6 +33,8 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+          secret-memo: ${{ secrets.SECRET_MEMO }}
+          salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   android-unit-tests:
@@ -72,6 +70,8 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+          secret-memo: ${{ secrets.SECRET_MEMO }}
+          salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: Run unit tests
         run: ./gradlew testDebug
   android-build-artifacts:
@@ -111,6 +111,8 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+          secret-memo: ${{ secrets.SECRET_MEMO }}
+          salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: "Generate changelog"
         uses: ./.github/actions/setup-changelog
       - name: "Send start deploy message to slack"
