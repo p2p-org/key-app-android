@@ -31,6 +31,8 @@ private const val IMAGE_SIZE = 64
 private const val DATE_FORMAT = "MMMM dd, yyyy"
 private const val TIME_FORMAT = "HH:mm"
 
+private const val SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE: Double = 9.0
+
 class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     companion object {
         fun show(
@@ -66,7 +68,7 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private val progressStateFormat: String by unsafeLazy { getString(R.string.transaction_progress_title) }
 
     private var parentListener: JupiterTransactionBottomSheetDismissListener? = null
-    private var dismissResult: JupiterTransactionDismissResult = JupiterTransactionDismissResult.IN_PROGRESS
+    private var dismissResult: JupiterTransactionDismissResult = JupiterTransactionDismissResult.TransactionInProgress
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
@@ -141,7 +143,7 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setProgressState() {
-        dismissResult = JupiterTransactionDismissResult.IN_PROGRESS
+        dismissResult = JupiterTransactionDismissResult.TransactionInProgress
         with(binding) {
             textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_submitted))
             progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
@@ -150,7 +152,7 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setSuccessState() {
-        dismissResult = JupiterTransactionDismissResult.SUCCESS
+        dismissResult = JupiterTransactionDismissResult.TransactionSuccess
         with(binding) {
             textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_succeeded))
             progressStateTransaction.setSuccessState()
@@ -160,26 +162,52 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setErrorState(reason: TransactionStateSwapFailureReason) {
-        with(binding) {
-            when (reason) {
-                is TransactionStateSwapFailureReason.LowSlippage -> {
-                    dismissResult = JupiterTransactionDismissResult.LOW_SLIPPAGE_ERROR
-
-                    textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
-                    progressStateTransaction.setFailedState()
-                    progressStateTransaction.setDescriptionText(R.string.swap_transaction_details_error_low_slippage)
-                    buttonDone.setText(R.string.swap_transaction_details_error_low_slippage_button)
-                }
-                is TransactionStateSwapFailureReason.Unknown -> {
-                    dismissResult = JupiterTransactionDismissResult.UNKNOWN_ERROR
-
-                    textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
-                    progressStateTransaction.setFailedState()
-                    progressStateTransaction.setDescriptionText(R.string.swap_transaction_details_error_unknown)
-                    buttonDone.setText(R.string.common_try_again)
-                }
-            }
+        when (reason) {
+            is TransactionStateSwapFailureReason.LowSlippage -> setLowSlippageError(reason)
+            is TransactionStateSwapFailureReason.Unknown -> setUnknownTransactionError()
         }
+    }
+
+    private fun setLowSlippageError(error: TransactionStateSwapFailureReason.LowSlippage) = with(binding) {
+        if (error.currentSlippageValue < SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE) {
+            val newSlippage = getNewSlippage(error.currentSlippageValue)
+            progressStateTransaction.setDescriptionText(
+                getString(
+                    R.string.swap_transaction_details_error_low_slippage,
+                    error.currentSlippageValue.toString(),
+                    newSlippage.toString()
+                )
+            )
+
+            dismissResult = JupiterTransactionDismissResult.SlippageChangeNeeded(newSlippage)
+        } else {
+            progressStateTransaction.setDescriptionText(
+                getString(
+                    R.string.swap_transaction_details_error_low_slippage_manual,
+                    error.currentSlippageValue.toString()
+                )
+            )
+            dismissResult = JupiterTransactionDismissResult.ManualSlippageChangeNeeded
+        }
+        textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
+        progressStateTransaction.setFailedState()
+
+        buttonDone.setText(R.string.swap_transaction_details_error_low_slippage_button)
+    }
+
+    private fun setUnknownTransactionError() = with(binding) {
+        dismissResult = JupiterTransactionDismissResult.TrySwapAgain
+
+        textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
+        progressStateTransaction.setFailedState()
+        progressStateTransaction.setDescriptionText(R.string.swap_transaction_details_error_unknown)
+        buttonDone.setText(R.string.common_try_again)
+    }
+
+    private fun getNewSlippage(currentSlippage: Double): Double = when (currentSlippage) {
+        in (0.0..0.4) -> 0.5
+        in (0.5..0.9) -> 1.0
+        else -> currentSlippage
     }
 
     override fun dismissAllowingStateLoss() {

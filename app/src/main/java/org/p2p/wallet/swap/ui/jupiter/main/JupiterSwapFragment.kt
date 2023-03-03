@@ -200,14 +200,17 @@ class JupiterSwapFragment :
 
     override fun onBottomSheetDismissed(result: JupiterTransactionDismissResult) {
         when (result) {
-            JupiterTransactionDismissResult.IN_PROGRESS -> Unit
-            JupiterTransactionDismissResult.SUCCESS -> {
+            JupiterTransactionDismissResult.TransactionInProgress,
+            JupiterTransactionDismissResult.TransactionSuccess -> {
                 navigateBackOnTransactionSuccess()
             }
-            JupiterTransactionDismissResult.LOW_SLIPPAGE_ERROR -> {
+            JupiterTransactionDismissResult.TrySwapAgain -> {
                 TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
             }
-            JupiterTransactionDismissResult.UNKNOWN_ERROR -> {
+            JupiterTransactionDismissResult.ManualSlippageChangeNeeded -> {
+                TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
+            }
+            is JupiterTransactionDismissResult.SlippageChangeNeeded -> {
                 TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
             }
         }
