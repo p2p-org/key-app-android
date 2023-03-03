@@ -47,4 +47,5 @@
     <string name="swap_settings_custom_slippage_confirm">Done</string>
 
     <string name="swap_transaction_details_token_amounts">%s %s → %s %s</string>
+    <string name="swap_select_routes_header">Swapping Through</string>
 </resources>
