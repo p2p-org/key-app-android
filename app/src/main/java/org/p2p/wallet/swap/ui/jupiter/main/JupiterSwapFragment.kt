@@ -24,7 +24,7 @@ import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.text.bind
+import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -142,23 +142,23 @@ class JupiterSwapFragment :
         when (buttonState) {
             is SwapButtonState.Disabled -> {
                 buttonError.isInvisible = false
-                sliderSend.isInvisible = true
+                sliderSend.isVisible = false
                 buttonError.bind(buttonState.text)
             }
             is SwapButtonState.Hide -> {
                 buttonError.isInvisible = true
-                sliderSend.isInvisible = true
+                sliderSend.isVisible = false
             }
             is SwapButtonState.ReadyToSwap -> {
                 buttonError.isInvisible = true
-                sliderSend.isInvisible = false
+                sliderSend.isVisible = true
                 sliderSend.setActionText(buttonState.text)
             }
         }
     }
 
-    override fun setRatioState(state: TextViewCellModel) {
-        binding.textViewRate.bind(state)
+    override fun setRatioState(state: TextViewCellModel?) {
+        binding.textViewRate.bindOrInvisible(state)
     }
 
     override fun openChangeTokenAScreen() {

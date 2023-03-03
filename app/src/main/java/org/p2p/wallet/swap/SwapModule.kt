@@ -45,9 +45,11 @@ import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionMapper
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRemoteRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.swap.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
+import org.p2p.wallet.swap.jupiter.statemanager.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateInitialLoadingHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingRoutesHandler
@@ -64,6 +66,7 @@ import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapContract
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapPresenter
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
+import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
 import org.p2p.wallet.swap.ui.jupiter.settings.presenter.JupiterSwapSettingsPresenter
@@ -85,6 +88,8 @@ object SwapModule : InjectionModule {
     const val JUPITER_RETROFIT_QUALIFIER = "JUPITER_RETROFIT_QUALIFIER"
 
     override fun create() = module {
+        singleOf(::SwapCoroutineScope)
+
         single {
             val baseUrl = androidContext().getString(R.string.orcaApiBaseUrl)
             getRetrofit(
@@ -170,10 +175,13 @@ object SwapModule : InjectionModule {
 
         factoryOf(::JupiterSwapInteractor)
 
+        factoryOf(::SwapRateTickerManager)
+
         factoryOf(::SwapValidator)
         factoryOf(::SwapStateRoutesRefresher)
         factoryOf(::SwapWidgetMapper)
         factoryOf(::SwapButtonMapper)
+        factoryOf(::SwapRateTickerMapper)
 
         factory { (initialToken: Token.Active?, stateManagerHolderKey: String) ->
             val stateManager: SwapStateManager = getSwapStateManager(initialToken, stateManagerHolderKey)
@@ -181,6 +189,8 @@ object SwapModule : InjectionModule {
                 managerHolder = get(),
                 widgetMapper = get(),
                 buttonMapper = get(),
+                rateTickerMapper = get(),
+                rateTickerManager = get(),
                 stateManager = stateManager,
                 rateLoaderTokenA = get(),
                 rateLoaderTokenB = get(),
@@ -229,7 +239,7 @@ object SwapModule : InjectionModule {
                 get<SwapStateLoadingRoutesHandler>(),
                 get<SwapStateLoadingTransactionHandler>(),
                 get<SwapStateSwapLoadedHandler>(),
-                get<SwapStateTokenAZeroHandler>(),
+                get<SwapStateTokenAZeroHandler>()
             )
         }
         factoryOf(::SwapTokenRateLoader)
