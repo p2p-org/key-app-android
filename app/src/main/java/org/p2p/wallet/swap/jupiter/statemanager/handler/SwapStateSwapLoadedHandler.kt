@@ -1,13 +1,13 @@
 package org.p2p.wallet.swap.jupiter.statemanager.handler
 
+import java.math.BigDecimal
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.swap.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_ACTIVE_ROUTE_ORDINAL
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
-import java.math.BigDecimal
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.swap.model.Slippage
 
 class SwapStateSwapLoadedHandler(
@@ -42,20 +42,11 @@ class SwapStateSwapLoadedHandler(
             is SwapStateAction.ActiveRouteChanged -> activeRouteOrdinal = action.ordinalRouteNumber
             SwapStateAction.RefreshRoutes -> activeRouteOrdinal = DEFAULT_ACTIVE_ROUTE_ORDINAL
 
-            SwapStateAction.EmptyAmountTokenA -> {
+            SwapStateAction.InitialLoading, SwapStateAction.EmptyAmountTokenA -> {
                 stateFlow.value = SwapState.TokenAZero(tokenA, tokenB, slippage)
                 return
             }
-
-            SwapStateAction.InitialLoading -> {
-                stateFlow.value = SwapState.InitialLoading
-                return
-            }
-            SwapStateAction.SwapSuccess -> {
-                val swapRoute = oldState.routes[activeRouteOrdinal]
-                swapInteractor.swapTokens(swapRoute)
-                return
-            }
+            SwapStateAction.CancelSwapLoading -> return
         }
 
         routesRefresher.refreshRoutes(

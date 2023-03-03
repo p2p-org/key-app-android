@@ -7,6 +7,7 @@ dependencies {
 
     implementation(project(":core"))
     implementation("net.i2p.crypto:eddsa:0.3.0")
+    implementation("com.google.firebase:firebase-crashlytics-buildtools:2.9.4")
 
     val retrofitVersion = "2.9.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")

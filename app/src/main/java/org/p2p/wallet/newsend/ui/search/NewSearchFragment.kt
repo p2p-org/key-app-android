@@ -19,6 +19,7 @@ import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.search.adapter.SearchAdapter
+import org.p2p.wallet.newsend.ui.vialink.SendViaLinkFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -77,6 +78,10 @@ class NewSearchFragment :
 
             buttonScanQr.setOnClickListener { presenter.onScanClicked() }
 
+            containerSendViaLink.setOnClickListener {
+                replaceFragment(SendViaLinkFragment.create(initialToken = selectedToken))
+            }
+
             recyclerViewSearchResults.apply {
                 itemAnimator = null
                 layoutManager = LinearLayoutManager(requireContext())
@@ -91,6 +96,10 @@ class NewSearchFragment :
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
+    }
+
+    override fun showSendViaLink(isVisible: Boolean) {
+        binding.containerSendViaLink.isVisible = isVisible
     }
 
     override fun showNotFound() = with(binding) {

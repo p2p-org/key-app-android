@@ -5,6 +5,7 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
+import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 
 interface JupiterSwapContract {
     interface View : MvpView {
@@ -17,16 +18,18 @@ interface JupiterSwapContract {
         fun openChangeTokenBScreen()
         fun showPriceImpact(priceImpact: SwapPriceImpact)
         fun scrollToPriceImpact()
+        fun showProgressDialog(internalTransactionId: String, progressDetails: SwapTransactionBottomSheetData)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun switchTokens()
         fun onTokenAmountChange(amount: String)
-        fun onSwapTokenClick()
+        fun onSwapButtonClicked()
         fun onAllAmountClick()
         fun onChangeTokenAClick()
         fun onChangeTokenBClick()
         fun onBackPressed()
         fun finishFeature(stateManagerHolderKey: String)
+        fun reloadFeature()
     }
 }

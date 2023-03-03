@@ -14,6 +14,7 @@ import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.solanaj.programs.MemoProgram
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
@@ -178,13 +179,15 @@ class SendInteractor(
     suspend fun sendTransaction(
         destinationAddress: PublicKey,
         token: Token.Active,
-        lamports: BigInteger
+        lamports: BigInteger,
+        memo: String? = null
     ): String = withContext(dispatchers.io) {
 
         val preparedTransaction = prepareForSending(
             token = token,
             receiver = destinationAddress.toBase58(),
             amount = lamports,
+            memo = memo
         )
 
         return@withContext if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
@@ -265,7 +268,8 @@ class SendInteractor(
         amount: BigInteger,
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null,
-        minRentExemption: BigInteger? = null
+        minRentExemption: BigInteger? = null,
+        memo: String?
     ): PreparedTransaction {
         val sender = token.publicKey
 
@@ -299,7 +303,8 @@ class SendInteractor(
                 transferChecked = useFeeRelayer, // create transferChecked instruction when using fee relayer
                 recentBlockhash = recentBlockhash,
                 lamportsPerSignature = lamportsPerSignature,
-                minBalanceForRentExemption = minRentExemption
+                minBalanceForRentExemption = minRentExemption,
+                memo = memo
             ).first
         }
     }
@@ -341,7 +346,8 @@ class SendInteractor(
         feePayerPublicKey: PublicKey? = null,
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null,
-        minBalanceForRentExemption: BigInteger? = null
+        minBalanceForRentExemption: BigInteger? = null,
+        memo: String? = null
     ): Pair<PreparedTransaction, String> {
         val account = Account(tokenKeyProvider.keyPair)
 
@@ -359,6 +365,11 @@ class SendInteractor(
         val toPublicKey = splDestinationAddress.destinationAddress
 
         val instructions = mutableListOf<TransactionInstruction>()
+
+        if (!memo.isNullOrEmpty()) {
+            instructions += MemoProgram.createMemoInstruction(signer = feePayer, memo = memo)
+        }
+
         var accountsCreationFee: BigInteger = BigInteger.ZERO
         // create associated token address
         if (splDestinationAddress.shouldCreateAccount) {

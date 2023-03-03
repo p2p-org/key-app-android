@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
@@ -23,6 +23,8 @@ import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.Base58String
 
 private const val DELAY_IN_MILLIS = 20_000L
+
+private const val TAG = "SwapStateManager"
 
 class SwapStateManager(
     private val handlers: Set<SwapStateHandler>,
@@ -48,7 +50,19 @@ class SwapStateManager(
     fun observe(): StateFlow<SwapState> = state
 
     suspend fun <T> getStateValue(getter: (state: SwapState) -> T): T {
-        return getter.invoke(state.first())
+        return getter.invoke(internalGetState(state.first()))
+    }
+
+    private fun internalGetState(state: SwapState): SwapState {
+        return when (state) {
+            is SwapState.SwapException.FeatureExceptionWrapper -> {
+                internalGetState(state.previousFeatureState)
+            }
+            is SwapState.SwapException.OtherException -> {
+                return internalGetState(state.previousFeatureState)
+            }
+            else -> state
+        }
     }
 
     fun onNewAction(action: SwapStateAction) {
@@ -65,9 +79,13 @@ class SwapStateManager(
                     startRefreshJob()
                 }
             } catch (cancelled: CancellationException) {
-                Timber.i(cancelled)
+                Timber.tag(TAG).i(cancelled)
             } catch (featureException: SwapFeatureException) {
-                Timber.e(featureException)
+                if (featureException is SwapFeatureException.RoutesNotFound) {
+                    Timber.tag(TAG).e(featureException)
+                } else {
+                    Timber.tag(TAG).i(featureException)
+                }
                 state.value = SwapState.SwapException.FeatureExceptionWrapper(
                     previousFeatureState = actualNoErrorState(),
                     featureException = featureException,

@@ -1,22 +1,23 @@
 package org.p2p.wallet.newsend.ui.search
 
-import org.p2p.core.token.Token
-import org.p2p.solanaj.core.PublicKey
-import org.p2p.wallet.R
-import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.newsend.model.SearchState
-import org.p2p.wallet.newsend.interactor.SearchInteractor
-import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.model.SearchTarget
-import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.newsend.interactor.SearchInteractor
+import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchState
+import org.p2p.wallet.newsend.model.SearchTarget
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.toBase58Instance
 
 private const val DELAY_IN_MS = 250L
 
@@ -25,7 +26,8 @@ class NewSearchPresenter(
     private val searchInteractor: SearchInteractor,
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val userInteractor: UserInteractor,
-    private val newSendAnalytics: NewSendAnalytics
+    private val newSendAnalytics: NewSendAnalytics,
+    private val sendViaLinkFeatureToggle: SendViaLinkFeatureToggle
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
     private var state = SearchState()
@@ -54,28 +56,33 @@ class NewSearchPresenter(
     private fun renderCurrentState() {
         when (val currentState = state.state) {
             is SearchState.State.UsersFound -> {
+                showSendViaLinkContainer(isVisible = false)
                 view?.showUsers(currentState.users)
                 view?.showUsersMessage(R.string.search_found)
                 view?.updateSearchInput(currentState.query, submit = false)
                 view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.UsersNotFound -> {
+                showSendViaLinkContainer(isVisible = false)
                 view?.showNotFound()
                 view?.showUsersMessage(null)
                 view?.updateSearchInput(currentState.query, submit = false)
                 view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.ShowInvalidAddresses -> {
+                showSendViaLinkContainer(isVisible = false)
                 view?.showUsers(currentState.users)
                 view?.showUsersMessage(R.string.search_found)
                 view?.showBackgroundVisible(isVisible = false)
             }
             is SearchState.State.ShowRecipients -> {
+                showSendViaLinkContainer(isVisible = true)
                 view?.showUsers(currentState.recipients)
                 view?.showUsersMessage(R.string.search_recently)
                 view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.ShowEmptyState -> {
+                showSendViaLinkContainer(isVisible = true)
                 view?.showEmptyState(isEmpty = true)
                 view?.showUsersMessage(null)
                 view?.clearUsers()
@@ -147,6 +154,11 @@ class NewSearchPresenter(
 
             view?.submitSearchResult(finalResult, preselectedToken)
         }
+    }
+
+    private fun showSendViaLinkContainer(isVisible: Boolean) {
+        val isEnabledAndVisible = sendViaLinkFeatureToggle.isFeatureEnabled && isVisible
+        view?.showSendViaLink(isVisible = isEnabledAndVisible)
     }
 
     private suspend fun validateAndSearch(target: SearchTarget) {

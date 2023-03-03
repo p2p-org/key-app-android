@@ -1,18 +1,28 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
+import timber.log.Timber
 import java.math.BigDecimal
+import java.util.Date
+import java.util.UUID
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import org.p2p.wallet.swap.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.SwapFeatureException
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
@@ -23,6 +33,10 @@ import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
+import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
+import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
+import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetToken
 
 private const val AMOUNT_INPUT_DELAY = 400L
 
@@ -31,6 +45,8 @@ class JupiterSwapPresenter(
     private val stateManager: SwapStateManager,
     private val widgetMapper: SwapWidgetMapper,
     private val buttonMapper: SwapButtonMapper,
+    private val swapInteractor: JupiterSwapInteractor,
+    private val transactionManager: TransactionManager,
     private val dispatchers: CoroutineDispatchers,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
@@ -100,8 +116,54 @@ class JupiterSwapPresenter(
         }
     }
 
-    override fun onSwapTokenClick() {
-        stateManager.onNewAction(SwapStateAction.SwapSuccess)
+    override fun onSwapButtonClicked() {
+        launch {
+            val internalTransactionId = UUID.randomUUID().toString()
+            val currentState = currentFeatureState as? SwapState.SwapLoaded ?: return@launch
+            val transactionDate = Date()
+            val tokenBUsdAmount =
+                rateLoaderTokenB.getRate(currentState.tokenB)
+                    .filterIsInstance<SwapRateLoaderState.Loaded>()
+                    .map { it.rate * currentState.amountTokenB }
+                    .flowOn(dispatchers.io)
+                    .firstOrNull()
+                    ?: return@launch
+
+            val progressDetails = SwapTransactionBottomSheetData(
+                date = transactionDate,
+                amountUsd = tokenBUsdAmount.formatFiat(),
+                tokenA = SwapTransactionBottomSheetToken(
+                    tokenUrl = currentState.tokenA.iconUrl.orEmpty(),
+                    tokenName = currentState.tokenA.tokenName,
+                    formattedTokenAmount = currentState.amountTokenA.formatToken(currentState.tokenA.decimals)
+                ),
+                tokenB = SwapTransactionBottomSheetToken(
+                    tokenUrl = currentState.tokenB.iconUrl.orEmpty(),
+                    tokenName = currentState.tokenB.tokenName,
+                    formattedTokenAmount = currentState.amountTokenB.formatToken(currentState.tokenA.decimals)
+                )
+            )
+
+            view?.showProgressDialog(internalTransactionId, progressDetails)
+
+            when (val result = swapInteractor.swapTokens(currentState.routes[currentState.activeRoute])) {
+                is JupiterSwapInteractor.JupiterSwapTokensResult.Success -> {
+                    stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
+                }
+                is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
+                    Timber.e(result, "Failed to swap tokens")
+                    transactionManager.emitTransactionState(
+                        transactionId = internalTransactionId,
+                        state = TransactionState.JupiterSwapFailed(
+                            failure = TransactionStateSwapFailureReason.Unknown(result.message.orEmpty())
+                        )
+                    )
+                }
+            }
+
+            val transactionState = TransactionState.JupiterSwapSuccess
+            transactionManager.emitTransactionState(internalTransactionId, transactionState)
+        }
     }
 
     override fun onAllAmountClick() {
@@ -164,6 +226,10 @@ class JupiterSwapPresenter(
 
     override fun finishFeature(stateManagerHolderKey: String) {
         managerHolder.clear(stateManagerHolderKey)
+    }
+
+    override fun reloadFeature() {
+        stateManager.onNewAction(SwapStateAction.InitialLoading)
     }
 
     private fun handleNewFeatureState(state: SwapState) {

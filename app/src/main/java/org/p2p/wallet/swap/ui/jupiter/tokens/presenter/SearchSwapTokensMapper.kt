@@ -16,7 +16,7 @@ class SearchSwapTokensMapper(
         foundSwapTokens: List<SwapTokenModel>
     ): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_search_result)
-        val searchResultTokens = foundSwapTokens.map { it.toTokenFinanceCellModel() }
+        val searchResultTokens = foundSwapTokens.map { it.toTokenFinanceCellModel(isSearchResult = true) }
 
         this += sectionHeader
         this += searchResultTokens
