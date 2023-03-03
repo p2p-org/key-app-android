@@ -65,6 +65,12 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("com.linkedin.dexmaker:dexmaker-mockito-inline:2.19.1")
     androidTestImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
+
+    testImplementation( "io.insert-koin:koin-test:3.1.5")
+    // Needed JUnit version
+    testImplementation( "io.insert-koin:koin-test-junit4:3.1.5")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+
 }
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor(0, "seconds")
