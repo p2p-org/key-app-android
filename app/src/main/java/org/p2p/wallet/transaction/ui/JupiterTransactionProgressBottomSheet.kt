@@ -14,6 +14,7 @@ import org.koin.android.ext.android.inject
 import java.text.SimpleDateFormat
 import java.util.Locale
 import org.p2p.core.glide.GlideManager
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogJupiterSwapTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -171,6 +172,7 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setErrorState(reason: TransactionStateSwapFailureReason) {
+        binding.textViewAmountUsd.setTextColorRes(R.color.text_rose)
         when (reason) {
             is TransactionStateSwapFailureReason.LowSlippage -> setLowSlippageError(reason)
             is TransactionStateSwapFailureReason.Unknown -> setUnknownTransactionError()
