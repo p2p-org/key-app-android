@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.ui.jupiter.tokens.presenter
 
+import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -25,6 +26,7 @@ class SwapTokensPresenter(
             try {
                 initialLoad()
             } catch (error: Throwable) {
+                Timber.e(error, "Failed to load swap tokens")
                 view.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
