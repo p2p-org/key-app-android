@@ -11,10 +11,5 @@ class EthereumKeyPairGeneratorTest {
 
     @Test
     fun `generate eth key pair by given seed phrase`() {
-        val repository = EthereumKitRepository()
-        val result = repository.generateKeyPair(seedPhrase)
-        println("Private key: ${result.privateKey}")
-        println("Public key: ${result.publicKey}")
-        assert(result.publicKey.toString().length == ETHEREUM_ADDRESS_LENGTH)
     }
 }

@@ -1,4 +1,4 @@
-package org.p2p.wallet.moonpay.repository.sell
+package org.p2p.wallet.sdk.moonpay.repository.sell
 
 import io.mockk.every
 import io.mockk.mockk
@@ -7,6 +7,7 @@ import org.junit.Test
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.UserSeedPhraseDetails
+import org.p2p.wallet.moonpay.repository.sell.MoonpayExternalCustomerIdProvider
 import org.p2p.wallet.utils.mnemoticgenerator.English
 
 class MoonpayExternalCustomerIdProviderTest {
