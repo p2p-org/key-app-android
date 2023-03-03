@@ -136,10 +136,10 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
         lifecycleScope.launchWhenCreated {
             transactionManager.getTransactionStateFlow(transactionId).collect { state ->
                 TransitionManager.beginDelayedTransition(binding.root)
-                    isBottomSheetDraggable(
-                        state is TransactionState.Progress ||
-                            state is TransactionState.JupiterSwapSuccess
-                    )
+                isBottomSheetDraggable(
+                    state is TransactionState.Progress ||
+                        state is TransactionState.JupiterSwapSuccess
+                )
 
                 when (state) {
                     is TransactionState.Progress -> setProgressState()

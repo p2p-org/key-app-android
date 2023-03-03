@@ -100,7 +100,7 @@ class JupiterSwapFragment :
                 }
             }
 
-            sliderSend.onSlideCompleteListener = {  presenter.onSwapSliderClicked() }
+            sliderSend.onSlideCompleteListener = { presenter.onSwapSliderClicked() }
 
             toolbar.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.settingsMenuItem) {
