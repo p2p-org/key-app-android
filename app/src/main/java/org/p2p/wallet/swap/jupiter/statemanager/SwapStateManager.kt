@@ -114,7 +114,7 @@ class SwapStateManager(
         coroutineContext.cancelChildren()
     }
 
-    fun getTokenRatio(token: SwapTokenModel): Flow<SwapRateLoaderState> {
+    fun getTokenRate(token: SwapTokenModel): Flow<SwapRateLoaderState> {
         return tokenRatioCache.getOrPut(token.mintAddress) {
             SwapTokenRateLoader(tokenPricesRepository)
         }.getRate(token)

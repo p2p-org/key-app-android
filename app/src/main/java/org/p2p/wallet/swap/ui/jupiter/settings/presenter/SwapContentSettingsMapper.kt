@@ -183,7 +183,7 @@ class SwapContentSettingsMapper(
         val fee = accountFee.fromLamports(tokenA.decimals)
         val feeText = fee.formatToken(tokenA.decimals)
 
-        val ratio = swapStateManager.getTokenRatio(tokenA)
+        val ratio = swapStateManager.getTokenRate(tokenA)
             .filterIsInstance<SwapRateLoaderState.Loaded>().firstOrNull()
         val feeUsd = ratio?.let { fee.multiply(it.rate).formatFiat() }
             ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_fiat_value, usd)) }
@@ -261,7 +261,7 @@ class SwapContentSettingsMapper(
 
         val feeCell = if (fee != null) {
             val ratio =
-                swapStateManager.getTokenRatio(tokenA).filterIsInstance<SwapRateLoaderState.Loaded>().firstOrNull()
+                swapStateManager.getTokenRate(tokenA).filterIsInstance<SwapRateLoaderState.Loaded>().firstOrNull()
             ratio?.let { fee.multiply(it.rate).formatFiat() }
                 ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_fiat_value, usd)) }
         } else {

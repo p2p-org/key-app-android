@@ -31,8 +31,6 @@ class JupiterSwapPresenter(
     private val stateManager: SwapStateManager,
     private val widgetMapper: SwapWidgetMapper,
     private val buttonMapper: SwapButtonMapper,
-    private val rateLoaderTokenA: SwapTokenRateLoader,
-    private val rateLoaderTokenB: SwapTokenRateLoader,
     private val dispatchers: CoroutineDispatchers,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
@@ -292,7 +290,7 @@ class JupiterSwapPresenter(
 
     private fun getRateTokenA(widgetAModel: SwapWidgetModel, tokenA: SwapTokenModel, tokenAmount: BigDecimal) {
         rateTokenAJob?.cancel()
-        rateTokenAJob = rateLoaderTokenA.getRate(tokenA)
+        rateTokenAJob = stateManager.getTokenRate(tokenA)
             .flowOn(dispatchers.io)
             .onEach {
                 if (isActive) {
@@ -308,7 +306,7 @@ class JupiterSwapPresenter(
 
     private fun getRateTokenB(widgetBModel: SwapWidgetModel, tokenB: SwapTokenModel, tokenAmount: BigDecimal) {
         rateTokenBJob?.cancel()
-        rateTokenBJob = rateLoaderTokenB.getRate(tokenB)
+        rateTokenBJob = stateManager.getTokenRate(tokenB)
             .flowOn(dispatchers.io)
             .onEach {
                 if (isActive) {
