@@ -16,23 +16,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editTextCustomSlippage"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutCustomSlippage"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="20dp"
-        android:background="@color/button_rain"
-        android:digits="0123456789."
-        android:hint="@string/swap_settings_slippage_hint"
-        android:imeOptions="actionDone"
-        android:inputType="numberDecimal"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
-        android:textColor="@color/selector_lime_to_mountain_text"
+        app:boxBackgroundColor="@color/button_rain"
+        app:boxStrokeColor="@android:color/transparent"
+        app:boxStrokeErrorColor="@color/bg_rose"
+        app:errorEnabled="true"
+        app:errorTextAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        app:errorTextColor="@color/text_rose"
+        app:helperText="@string/swap_settings_custom_slippage_hint"
+        app:helperTextTextAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        app:helperTextTextColor="@color/text_mountain"
+        app:hintEnabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_min="44dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputEditTextCustomSlippage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="0123456789."
+            android:hint="@string/swap_settings_slippage_hint"
+            android:imeOptions="actionDone"
+            android:inputType="numberDecimal"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textColor="@color/text_mountain" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

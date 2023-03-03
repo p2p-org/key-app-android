@@ -25,7 +25,7 @@ sealed class Slippage(val doubleValue: Double, val percentValue: String) : Parce
     object Medium : Slippage(0.005, "0.5%")
 
     @Parcelize
-    object One : Slippage(0.01, "0.1%")
+    object One : Slippage(0.01, "1%")
 
     @Parcelize
     object TopUpSlippage : Slippage(0.03, "3%")

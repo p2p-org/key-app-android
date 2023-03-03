@@ -12,6 +12,8 @@ import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.ui.jupiter.settings.view.SwapCustomSlippageCellModel
 
 class SwapCommonSettingsMapper {
 
@@ -41,33 +43,37 @@ class SwapCommonSettingsMapper {
         )
     }
 
-    private fun mapSlippageList(slippage: Double, isSelectedCustom: Boolean): List<AnyCellItem> = buildList {
+    fun mapSlippageList(slippage: Slippage, isSelectedCustom: Boolean): List<AnyCellItem> = buildList {
         this += createHeader(R.string.swap_settings_slippage_title)
         this += getSlippageList(slippage, isSelectedCustom)
     }
 
-    fun getSlippageList(slippage: Double, isSelectedCustom: Boolean): List<AnyCellItem> = buildList {
+    private fun getSlippageList(slippage: Slippage, isSelectedCustom: Boolean): List<AnyCellItem> = buildList {
         val selectedSlippage = slippage.slippageToEnum()
         addSlippageCell(
             slippage = TextContainer("0,1%"),
-            isSelected = !isSelectedCustom && selectedSlippage == SwapSlippagePayload.ZERO_POINT_ONE,
+            isSelected = !isSelectedCustom && slippage is Slippage.Min,
             payload = SwapSlippagePayload.ZERO_POINT_ONE
         )
         addSlippageCell(
             slippage = TextContainer("0,5%"),
-            isSelected = !isSelectedCustom && selectedSlippage == SwapSlippagePayload.ZERO_POINT_FIVE,
+            isSelected = !isSelectedCustom && slippage is Slippage.Medium,
             payload = SwapSlippagePayload.ZERO_POINT_FIVE
         )
         addSlippageCell(
             slippage = TextContainer("1%"),
-            isSelected = !isSelectedCustom && selectedSlippage == SwapSlippagePayload.ONE,
+            isSelected = !isSelectedCustom && slippage is Slippage.One,
             payload = SwapSlippagePayload.ONE
         )
+        val isCustom = isSelectedCustom || slippage is Slippage.Custom
         addSlippageCell(
             slippage = TextContainer(R.string.swap_settings_slippage_custom),
-            isSelected = !isSelectedCustom && selectedSlippage == SwapSlippagePayload.CUSTOM,
+            isSelected = isCustom,
             payload = SwapSlippagePayload.CUSTOM
         )
+        if (isCustom) {
+            this += SwapCustomSlippageCellModel(slippage = slippage,)
+        }
     }
 
     private fun MutableList<AnyCellItem>.addSlippageCell(
@@ -98,11 +104,11 @@ class SwapCommonSettingsMapper {
         )
     }
 
-    fun Double.slippageToEnum(): SwapSlippagePayload {
+    private fun Slippage.slippageToEnum(): SwapSlippagePayload {
         return when (this) {
-            0.1 -> SwapSlippagePayload.ZERO_POINT_ONE
-            0.5 -> SwapSlippagePayload.ZERO_POINT_FIVE
-            1.0 -> SwapSlippagePayload.ONE
+            Slippage.Min -> SwapSlippagePayload.ZERO_POINT_ONE
+            Slippage.Medium -> SwapSlippagePayload.ZERO_POINT_FIVE
+            Slippage.One -> SwapSlippagePayload.ONE
             else -> SwapSlippagePayload.CUSTOM
         }
     }
