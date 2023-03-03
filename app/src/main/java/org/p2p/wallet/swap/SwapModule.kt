@@ -185,6 +185,8 @@ object SwapModule : InjectionModule {
                 rateLoaderTokenA = get(),
                 rateLoaderTokenB = get(),
                 dispatchers = get(),
+                swapInteractor = get(),
+                transactionManager = get()
             )
         } bind JupiterSwapContract.Presenter::class
 
@@ -257,8 +259,6 @@ object SwapModule : InjectionModule {
                 )
             )
         }
-        factoryOf(::SwapTokensInteractor)
-        factoryOf(::SwapTokensPresenter) bind SwapTokensContract.Presenter::class
 
         factoryOf(::SwapCommonSettingsMapper)
         factoryOf(::SwapEmptySettingsMapper)

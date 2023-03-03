@@ -1,10 +1,10 @@
 package org.p2p.wallet.swap.jupiter.statemanager.handler
 
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_ACTIVE_ROUTE_ORDINAL
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class SwapStateTokenAZeroHandler(
     private val swapRoutesRefresher: SwapStateRoutesRefresher
@@ -54,7 +54,7 @@ class SwapStateTokenAZeroHandler(
             SwapStateAction.RefreshRoutes,
             SwapStateAction.EmptyAmountTokenA,
             is SwapStateAction.ActiveRouteChanged,
-            SwapStateAction.SwapSuccess -> return
+            SwapStateAction.CancelSwapLoading -> return
         }
     }
 }

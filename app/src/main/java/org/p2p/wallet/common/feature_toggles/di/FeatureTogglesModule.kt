@@ -20,6 +20,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSwapEnabledFeatur
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
@@ -39,6 +40,7 @@ object FeatureTogglesModule : InjectionModule {
                 get<BuyWithTransferFeatureToggle>(),
                 get<SettingsNetworkListFeatureToggle>(),
                 get<NetworkObservationFeatureToggle>(),
+                get<SendViaLinkFeatureToggle>(),
                 get<SolendEnabledFeatureToggle>(),
                 get<UsernameDomainFeatureToggle>(),
                 get<RegisterUsernameEnabledFeatureToggle>(),
@@ -54,6 +56,7 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::SettingsNetworkListFeatureToggle)
         factoryOf(::SolendEnabledFeatureToggle)
         factoryOf(::NetworkObservationFeatureToggle)
+        factoryOf(::SendViaLinkFeatureToggle)
         factoryOf(::NetworkObservationPercentFeatureToggle)
         factoryOf(::NetworkObservationFrequencyFeatureToggle)
         factoryOf(::NetworkObservationDebounceFeatureToggle)
