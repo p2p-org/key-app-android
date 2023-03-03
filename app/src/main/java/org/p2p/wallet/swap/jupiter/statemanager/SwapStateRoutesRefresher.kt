@@ -12,6 +12,7 @@ import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.utils.toBase58Instance
 
 class SwapStateRoutesRefresher(
@@ -25,7 +26,7 @@ class SwapStateRoutesRefresher(
         tokenA: SwapTokenModel,
         tokenB: SwapTokenModel,
         amountTokenA: BigDecimal,
-        slippage: Double,
+        slippage: Slippage,
         activeRouteOrdinal: Int
     ) {
         swapValidator.validateInputAmount(tokenA = tokenA, amountTokenA = amountTokenA)

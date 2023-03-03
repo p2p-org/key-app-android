@@ -13,7 +13,9 @@ class SwapSettingsAdapter(
 private class DiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
 
     override fun areItemsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
-        return oldItem.hashCode() == newItem.hashCode()
+        return when {
+            else -> oldItem::class == newItem::class
+        }
     }
 
     override fun areContentsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {

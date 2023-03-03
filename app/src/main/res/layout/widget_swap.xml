@@ -117,6 +117,7 @@
         android:background="@android:color/transparent"
         android:digits="0123456789."
         android:hint="@string/amounts_view_zero_hint"
+        android:saveEnabled="false"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
         android:maxLines="1"

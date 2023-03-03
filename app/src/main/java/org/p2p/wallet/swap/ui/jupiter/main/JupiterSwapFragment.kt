@@ -31,6 +31,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
@@ -215,7 +216,7 @@ class JupiterSwapFragment :
                 openSwapSettingsScreen()
             }
             is JupiterTransactionDismissResult.SlippageChangeNeeded -> {
-                presenter.changeSlippage(result.newSlippageValue)
+                presenter.changeSlippage(Slippage.parse(result.newSlippageValue))
                 showUiKitSnackBar(
                     message = getString(R.string.swap_main_slippage_changed, result.newSlippageValue.toString()),
                     actionButtonResId = R.string.swap_main_slippage_changed_details_button,
