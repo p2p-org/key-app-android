@@ -235,7 +235,7 @@ class SwapContentSettingsMapper(
             val lpFee = marketInfo.lpFee
             val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return@forEachIndexed
             val amount = lpFee.amountInLamports.fromLamports(lpToken.decimals).formatToken(lpToken.decimals)
-            val fee = "${amount} ${lpToken.tokenSymbol}"
+            val fee = "$amount ${lpToken.tokenSymbol}"
             result = result.plus(fee)
             if (index != route.marketInfos.lastIndex) result = result.plus(", ")
         }
