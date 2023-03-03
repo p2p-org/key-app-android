@@ -80,7 +80,7 @@ sealed class Token constructor(
                 visibility == TokenVisibility.DEFAULT
 
         fun getFormattedUsdTotal(includeSymbol: Boolean = true): String? {
-            return if(includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
+            return if (includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
         }
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
@@ -95,6 +95,52 @@ sealed class Token constructor(
                 R.drawable.ic_show
             } else {
                 R.drawable.ic_hide
+            }
+    }
+
+    @Parcelize
+    data class Eth constructor(
+        override val publicKey: String,
+        val totalInUsd: BigDecimal?,
+        val total: BigDecimal,
+        override val tokenSymbol: String,
+        override val decimals: Int,
+        override val mintAddress: String,
+        override val tokenName: String,
+        override val iconUrl: String?,
+        override var rate: BigDecimal?,
+        override var currency: String = Constants.USD_READABLE_SYMBOL
+    ) : Token(
+        publicKey = publicKey,
+        tokenSymbol = tokenSymbol,
+        decimals = decimals,
+        mintAddress = mintAddress,
+        tokenName = tokenName,
+        iconUrl = iconUrl,
+        serumV3Usdc = null,
+        serumV3Usdt = null,
+        isWrapped = false,
+        rate = rate,
+        currency = currency
+    ) {
+
+        @IgnoredOnParcel
+        val totalInLamports: BigInteger
+            get() = total.toLamports(decimals)
+
+        @IgnoredOnParcel
+        val isZero: Boolean
+            get() = total.isZero()
+
+        fun getFormattedUsdTotal(includeSymbol: Boolean = true): String? {
+            return if (includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
+        }
+
+        fun getFormattedTotal(includeSymbol: Boolean = false): String =
+            if (includeSymbol) {
+                "${total.formatToken(decimals)} $tokenSymbol"
+            } else {
+                total.formatToken(decimals)
             }
     }
 

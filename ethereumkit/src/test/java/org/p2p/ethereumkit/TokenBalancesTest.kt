@@ -1,6 +1,5 @@
 package org.p2p.ethereumkit
 
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -8,6 +7,7 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import kotlinx.coroutines.test.runTest
 import org.p2p.ethereumkit.external.EthereumModule
 import org.p2p.ethereumkit.external.api.EthereumNetworkModule
 import org.p2p.ethereumkit.external.balance.BalanceRepository
@@ -47,11 +47,13 @@ class TokenBalancesTest : KoinTest {
             val tokenLogo = tokenMetadata.logoUrl
             val tokenBalance = balance.balances.first { it.contractAddress == address }.tokenBalance
             stringBuilder.append("Token Name: $tokenName ")
+            stringBuilder.append("Token Address: $address ")
             stringBuilder.append("Token Symbol: $tokenSymbol ")
             stringBuilder.append("Token Balance: $tokenBalance ")
             stringBuilder.append("Token Decimals: $tokenDecimals ")
             stringBuilder.append("Token logo: $tokenLogo ")
             stringBuilder.append("\n")
         }
+        println(stringBuilder)
     }
 }

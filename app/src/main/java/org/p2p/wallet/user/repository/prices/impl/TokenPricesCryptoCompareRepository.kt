@@ -1,15 +1,16 @@
 package org.p2p.wallet.user.repository.prices.impl
 
 import com.google.gson.JsonObject
+import kotlinx.coroutines.withContext
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.api.CryptoCompareApi
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.user.repository.prices.TokenAddress
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import kotlinx.coroutines.withContext
 
 private const val COMPARE_API_CHUNK_SIZE = 30
 private const val COMPARE_API_BODY_KEY = "Response"
@@ -37,6 +38,16 @@ class TokenPricesCryptoCompareRepository(
             price = priceValue.asBigDecimal.scaleMedium()
         )
     }
+
+    override suspend fun getTokenPricesByAddressesMap(
+        tokenAddresses: List<TokenAddress>,
+        targetCurrency: String
+    ): Map<TokenAddress, TokenPrice> = throw UnsupportedOperationException("method not implemented")
+
+    override suspend fun getTokenPriceByAddress(
+        tokenAddress: TokenAddress,
+        targetCurrency: String
+    ): TokenPrice = throw UnsupportedOperationException("method not implemented")
 
     override suspend fun getTokenPriceByIds(
         tokenIds: List<TokenId>,

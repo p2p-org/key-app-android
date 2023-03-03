@@ -1,9 +1,9 @@
 package org.p2p.ethereumkit.external.repository
 
-import org.p2p.ethereumkit.external.balance.BalanceRepository
-import org.p2p.ethereumkit.internal.core.EthereumKit
-import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import java.math.BigInteger
+import org.p2p.ethereumkit.external.balance.BalanceRepository
+import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
+import org.p2p.ethereumkit.internal.core.EthereumKit
 
 internal class EthereumKitRepository(
     private val tokenKeyProvider: EthTokenKeyProvider,
@@ -15,6 +15,6 @@ internal class EthereumKitRepository(
     }
 
     override suspend fun getBalance(): BigInteger {
-       return balanceRepository.getWalletBalance(tokenKeyProvider.address)
+        return balanceRepository.getWalletBalance(tokenKeyProvider.address)
     }
 }

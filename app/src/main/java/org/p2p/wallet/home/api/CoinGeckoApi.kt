@@ -19,6 +19,12 @@ interface CoinGeckoApi {
         @Query("vs_currency") targetCurrency: String
     ): List<CoinGeckoPriceResponse>
 
+    @GET("simple/token_price/ethereum")
+    suspend fun getEthereumTokenPrices(
+        @Query("contract_addresses") tokenAddresses: String,
+        @Query("vs_currencies") targetCurrency: String
+    ): Map<String, CoinGeckoEthereumPrice>
+
     @GET("coins/list")
     suspend fun getAllTokens(): ResponseBody
 }
