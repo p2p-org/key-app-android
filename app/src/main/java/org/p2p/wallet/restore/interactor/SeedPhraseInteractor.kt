@@ -8,7 +8,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
-import org.p2p.core.utils.Constants.SOL_NAME
+import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.scaleLong
@@ -71,7 +71,7 @@ class SeedPhraseInteractor(
         val balance = balances.find { it.first == account.publicKey.toBase58() }
             ?.second
             ?: return@mapNotNull null
-        val tokenId = TokenId(SOL_NAME.lowercase())
+        val tokenId = TokenId(SOL_COINGECKO_ID)
 
         val exchangeRate =
             solRate ?: tokenPricesRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL).price

@@ -71,8 +71,8 @@ class SwapStateRoutesRefresher(
         state.value = SwapState.SwapLoaded(
             tokenA = tokenA,
             tokenB = tokenB,
-            amountTokenA = amountTokenA,
-            amountTokenB = amountTokenB,
+            lamportsTokenA = bestRoute.inAmountInLamports,
+            lamportsTokenB = bestRoute.outAmountInLamports,
             routes = updatedRoutes,
             activeRoute = activeRouteOrdinal,
             jupiterSwapTransaction = freshSwapTransaction,

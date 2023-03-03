@@ -74,10 +74,7 @@ class SwapStateManager(
         activeActionHandleJob = launch {
             try {
                 handleNewAction(action)
-                val stateAfterHandle = state.value
-                if (stateAfterHandle is SwapState.SwapLoaded) {
-                    startRefreshJob()
-                }
+                if (state.value is SwapState.SwapLoaded) startRefreshJob()
             } catch (cancelled: CancellationException) {
                 Timber.tag(TAG).i(cancelled)
             } catch (featureException: SwapFeatureException) {

@@ -12,24 +12,27 @@ interface JupiterSwapContract {
         fun setFirstTokenWidgetState(state: SwapWidgetModel)
         fun setSecondTokenWidgetState(state: SwapWidgetModel)
         fun setButtonState(buttonState: SwapButtonState)
-        fun setRatioState(state: TextViewCellModel)
+        fun setRatioState(state: TextViewCellModel?)
         fun closeScreen()
         fun openChangeTokenAScreen()
         fun openChangeTokenBScreen()
         fun showPriceImpact(priceImpact: SwapPriceImpact)
         fun scrollToPriceImpact()
-        fun showProgressDialog(internalTransactionId: String, progressDetails: SwapTransactionBottomSheetData)
+        fun showProgressDialog(internalTransactionId: String, transactionDetails: SwapTransactionBottomSheetData)
+        fun showDefaultSlider()
+        fun showCompleteSlider()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun switchTokens()
         fun onTokenAmountChange(amount: String)
-        fun onSwapButtonClicked()
+        fun onSwapSliderClicked()
         fun onAllAmountClick()
         fun onChangeTokenAClick()
         fun onChangeTokenBClick()
         fun onBackPressed()
         fun finishFeature(stateManagerHolderKey: String)
         fun reloadFeature()
+        fun changeSlippage(newSlippageValue: Double)
     }
 }

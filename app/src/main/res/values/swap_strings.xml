@@ -12,7 +12,12 @@
     <string name="swap_main_button_ready_to_swap">Swap %s → %s</string>
     <string name="swap_main_fee_inform">Key App doesn\’t make any profit from swap 💚</string>
     <string name="swap_main_confirm_button">Swap %s → %s</string>
-    <string name="swap_main_alert">The price is higher due to the large amount of cash lost for the pair of tokens. Split your transaction for few small swaps.</string>
+    <string name="swap_main_alert">
+        The price is higher due to the large amount of cash lost for the pair of tokens. 
+        Split your transaction for few small swaps.
+    </string>
+    <string name="swap_main_slippage_changed">🤖 We changed slippage to %s%%</string>
+    <string name="swap_main_slippage_changed_details_button">OPEN DETAILS</string>
 
     <string name="swap_tokens_token_a_toolbar">Token you pay</string>
     <string name="swap_tokens_token_b_toolbar">Token you receive</string>
@@ -47,4 +52,17 @@
     <string name="swap_settings_custom_slippage_confirm">Done</string>
 
     <string name="swap_transaction_details_token_amounts">%s %s → %s %s</string>
+    <string name="swap_select_routes_header">Swapping Through</string>
+    <string name="swap_transaction_details_error_low_slippage">
+        Low slippage %s%%. We recommend to increase slippage to %s%% and try again
+    </string>
+    <string name="swap_transaction_details_error_low_slippage_manual">
+        Low slippage %s%%. We recommend to increase slippage manually
+    </string>
+    <string name="swap_transaction_details_error_low_slippage_button">
+        Increase slippage and try again
+    </string>
+    <string name="swap_transaction_details_error_unknown">
+        Oops, something went wrong.\nPlease try again later
+    </string>
 </resources>

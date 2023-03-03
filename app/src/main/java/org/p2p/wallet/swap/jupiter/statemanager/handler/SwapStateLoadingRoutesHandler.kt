@@ -10,7 +10,7 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
 import org.p2p.wallet.swap.model.Slippage
 
 class SwapStateLoadingRoutesHandler(
-    private val routesRefresher: SwapStateRoutesRefresher,
+    private val routesRefresher: SwapStateRoutesRefresher
 ) : SwapStateHandler {
 
     override fun canHandle(state: SwapState): Boolean = state is SwapState.LoadingRoutes

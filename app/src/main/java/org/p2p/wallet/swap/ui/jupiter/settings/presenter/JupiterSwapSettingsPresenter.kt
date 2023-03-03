@@ -10,11 +10,14 @@ import kotlinx.coroutines.launch
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
+import org.p2p.wallet.swap.model.jupiter.SwapRateTickerState
+import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
 
@@ -26,6 +29,8 @@ class JupiterSwapSettingsPresenter(
     private val loadingMapper: SwapLoadingSettingsMapper,
     private val contentMapper: SwapContentSettingsMapper,
     private val commonMapper: SwapCommonSettingsMapper,
+    private val rateTickerMapper: SwapRateTickerMapper,
+    private val rateTickerManager: SwapRateTickerManager,
     private val swapTokensRepository: JupiterSwapTokensRepository,
 ) : BasePresenter<JupiterSwapSettingsContract.View>(), JupiterSwapSettingsContract.Presenter {
 
@@ -46,6 +51,10 @@ class JupiterSwapSettingsPresenter(
             }
             .onEach { handleFeatureState(it.first, it.second) }
             .launchIn(this)
+
+        rateTickerManager.observe()
+            .onEach(::handleRateTickerChanges)
+            .launchIn(this)
     }
 
     private suspend fun handleFeatureState(state: SwapState, tokens: List<JupiterSwapToken>) {
@@ -54,6 +63,18 @@ class JupiterSwapSettingsPresenter(
         val contentList = getContentListByFeatureState(state, tokens)
             .addSlippageSettings(state)
         view?.bindSettingsList(contentList)
+        when (state) {
+            SwapState.InitialLoading,
+            is SwapState.LoadingTransaction,
+            is SwapState.TokenAZero -> Unit
+            is SwapState.LoadingRoutes -> {
+                rateTickerManager.handleRoutesLoading(state)
+            }
+            is SwapState.SwapLoaded -> {
+                rateTickerManager.handleJupiterRates(state)
+            }
+            else -> Unit
+        }
     }
 
     override fun onSettingItemClick(item: FinanceBlockCellModel) {
@@ -139,6 +160,14 @@ class JupiterSwapSettingsPresenter(
                 )
             }
             is SwapState.SwapException -> getContentListByFeatureState(state.previousFeatureState, tokens)
+        }
+    }
+
+    private fun handleRateTickerChanges(state: SwapRateTickerState) {
+        when (state) {
+            is SwapRateTickerState.Shown -> view?.setRatioState(rateTickerMapper.mapRateLoaded(state))
+            is SwapRateTickerState.Loading -> view?.setRatioState(rateTickerMapper.mapRateSkeleton(state))
+            is SwapRateTickerState.Hidden -> view?.setRatioState(state = null)
         }
     }
 

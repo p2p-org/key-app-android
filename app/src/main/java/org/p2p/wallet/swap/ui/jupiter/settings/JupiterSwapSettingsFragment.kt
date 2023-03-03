@@ -13,6 +13,8 @@ import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapSettingsBinding
@@ -65,6 +67,10 @@ class JupiterSwapSettingsFragment :
 
     override fun bindSettingsList(list: List<AnyCellItem>) {
         adapter.items = list
+    }
+
+    override fun setRatioState(state: TextViewCellModel?) {
+        binding.textViewRate.bindOrInvisible(state)
     }
 
     override fun applyWindowInsets(rootView: View) {
