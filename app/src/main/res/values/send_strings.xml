@@ -75,6 +75,16 @@
     <string name="send_no_account_non_critical_continue">Continue with %s</string>
     <string name="send_no_account_non_critical_switch">Switch to another token</string>
 
+    <string name="send_via_link">Send crypto via one-time link</string>
+    <string name="send_via_link_title">Send via one-time link</string>
+    <string name="send_via_link_message">Anyone who gets the one-time link can claim the funds</string>
+    <string name="send_via_link_action_text">Create a one-time link</string>
+    <string name="send_via_link_animation_text">Creating your one-time link</string>
+    <string name="send_via_link_animation_time_text">This will take up to 5 seconds</string>
+    <string name="send_via_link_ready">The one-time link is ready! The funds can be claimed</string>
+    <string name="send_via_link_return_back">If you want to get your money back just open one-time link by yourself</string>
+    <string name="send_dont_need_the_address">You don\'t need to know the address</string>
+
     <!--Transactions Progress BottomSheet-->
     <string name="transaction_progress_title">Transaction %s</string>
     <string name="transaction_progress_submitted">submitted</string>
