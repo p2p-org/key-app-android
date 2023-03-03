@@ -6,6 +6,8 @@ import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.R
+import org.p2p.wallet.claim.model.BridgeAmount
+import org.p2p.wallet.claim.model.ClaimDetails
 import org.p2p.wallet.common.mvp.BasePresenter
 
 class ClaimPresenter(
@@ -16,17 +18,41 @@ class ClaimPresenter(
         // TODO add real logic
         val fee: BigDecimal = BigDecimal(125.12)
         view?.apply {
-            setTitle(resources.getString(R.string.claiming_title_format, tokenSymbol))
+            setTitle(resources.getString(R.string.bridge_claim_title_format, tokenSymbol))
             setTokenAmount("${tokenAmount.scaleMedium().formatToken()} $tokenSymbol")
             setFiatAmount(fiatAmount.asApproximateUsd(withBraces = false))
             showFee(
                 if (fee == BigDecimal.ZERO) {
-                    resources.getString(R.string.claiming_fees_free)
+                    resources.getString(R.string.bridge_claim_fees_free)
                 } else {
                     fee.asApproximateUsd(withBraces = false)
                 }
             )
         }
+    }
+
+    override fun onFeeClicked() {
+        // TODO connect real fee details
+        val tokenSymbol = "WETH"
+        val claimDetails = ClaimDetails(
+            willGetAmount = BridgeAmount(
+                tokenSymbol,
+                BigDecimal(0.999717252),
+                BigDecimal(1215.75)
+            ),
+            networkFee = BridgeAmount.zero(),
+            accountCreationFee = BridgeAmount(
+                tokenSymbol,
+                BigDecimal(0.003),
+                BigDecimal(0.01)
+            ),
+            bridgeFee = BridgeAmount(
+                tokenSymbol,
+                BigDecimal(0.01),
+                BigDecimal(4.12)
+            )
+        )
+        view?.showClaimFeeInfo(claimDetails)
     }
 
     override fun onSendButtonClicked() {
