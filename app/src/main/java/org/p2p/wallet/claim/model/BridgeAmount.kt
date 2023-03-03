@@ -9,14 +9,14 @@ import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.utils.emptyString
 
 @Parcelize
-data class ClaimFee(
+data class BridgeAmount(
     val tokenSymbol: String,
     val tokenAmount: BigDecimal?,
     val fiatAmount: BigDecimal?
 ) : Parcelable {
 
     companion object {
-        fun free(): ClaimFee = ClaimFee(
+        fun zero(): BridgeAmount = BridgeAmount(
             tokenSymbol = emptyString(),
             tokenAmount = null,
             fiatAmount = null

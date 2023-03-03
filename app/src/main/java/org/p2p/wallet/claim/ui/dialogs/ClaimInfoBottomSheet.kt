@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
+import org.p2p.wallet.claim.model.BridgeAmount
 import org.p2p.wallet.claim.model.ClaimDetails
-import org.p2p.wallet.claim.model.ClaimFee
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogClaimInfoBinding
 import org.p2p.wallet.databinding.ItemClaimDetailsPartBinding
@@ -25,20 +25,19 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
             fm: FragmentManager,
             claimDetails: ClaimDetails
         ) {
-            ClaimInfoBottomSheet().withArgs(
-                ARG_CLAIM_DETAILS to claimDetails
-            ).show(
-                fm, ClaimInfoBottomSheet::javaClass.name
-            )
+            ClaimInfoBottomSheet()
+                .withArgs(ARG_CLAIM_DETAILS to claimDetails)
+                .show(fm, ClaimInfoBottomSheet::javaClass.name)
         }
     }
 
-    private lateinit var binding: DialogClaimInfoBinding
+    private var viewBinding: DialogClaimInfoBinding? = null
+    private val binding get() = viewBinding!!
 
     private val claimDetails: ClaimDetails by args(ARG_CLAIM_DETAILS)
 
     override fun onCreateInnerView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DialogClaimInfoBinding.inflate(inflater, container, false)
+        viewBinding = DialogClaimInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -48,37 +47,42 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
         with(binding) {
             layoutFreeTransactions.bindLayoutFreeTransactions()
             layoutWillGetAmount.bindDetailsLineWithFee(
-                title = getString(R.string.claim_info_you_will_get),
-                fee = claimDetails.willGet
+                title = getString(R.string.bridge_info_you_will_get),
+                fee = claimDetails.willGetAmount
             )
             layoutNetworkFee.bindDetailsLineWithFee(
-                title = getString(R.string.claim_info_network_fee),
+                title = getString(R.string.bridge_info_network_fee),
                 fee = claimDetails.networkFee
             )
             layoutAccountCreationFee.bindDetailsLineWithFee(
-                title = getString(R.string.claim_info_account_creation_fee),
+                title = getString(R.string.bridge_info_account_creation_fee),
                 fee = claimDetails.accountCreationFee
             )
             layoutBridgeFee.bindDetailsLineWithFee(
-                title = getString(R.string.claim_info_bridge_fee),
+                title = getString(R.string.bridge_info_bridge_fee),
                 fee = claimDetails.bridgeFee
             )
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewBinding = null
     }
 
     private fun ItemInfoImageDoubleTextBinding.bindLayoutFreeTransactions() {
         root.setBackgroundResource(R.drawable.bg_rounded_solid_cloud_16)
         imageViewIcon.setImageResource(R.drawable.ic_lightning)
         textViewTitle.setText(R.string.free_transactions_title)
-        textViewSubtitle.text = getString(R.string.claim_info_free_transaction_message)
+        textViewSubtitle.text = getString(R.string.bridge_info_free_transaction_message)
     }
 
-    private fun ItemClaimDetailsPartBinding.bindDetailsLineWithFee(title: String, fee: ClaimFee) {
+    private fun ItemClaimDetailsPartBinding.bindDetailsLineWithFee(title: String, fee: BridgeAmount) {
         textViewTitle.text = title
-        textViewFiatAmount.text = fee.formattedFiatAmount ?: getString(R.string.claim_info_transaction_free)
+        textViewFiatAmount.text = fee.formattedFiatAmount ?: getString(R.string.bridge_info_transaction_free)
         val formattedTokenAmount = fee.formattedTokenAmount
         if (formattedTokenAmount == null) {
-            textViewTokenAmount.text = getString(R.string.claiming_fees_free)
+            textViewTokenAmount.text = getString(R.string.bridge_claim_fees_free)
             textViewTokenAmount.setTextColorRes(R.color.text_mint)
         } else {
             textViewTokenAmount.text = formattedTokenAmount

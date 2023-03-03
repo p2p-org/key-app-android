@@ -5,8 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ClaimDetails(
-    val willGet: ClaimFee,
-    val networkFee: ClaimFee,
-    val accountCreationFee: ClaimFee,
-    val bridgeFee: ClaimFee,
+    val willGetAmount: BridgeAmount,
+    val networkFee: BridgeAmount,
+    val accountCreationFee: BridgeAmount,
+    val bridgeFee: BridgeAmount,
 ) : Parcelable
