@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.swap.JupiterSelectedSwapTokenStorageContract
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 
 private const val DELAY_IN_MILLIS = 20_000L
@@ -20,6 +21,7 @@ private const val DELAY_IN_MILLIS = 20_000L
 class SwapStateManager(
     private val handlers: Set<SwapStateHandler>,
     private val dispatchers: CoroutineDispatchers,
+    private val selectedSwapTokenStorage: JupiterSelectedSwapTokenStorageContract
 ) : CoroutineScope {
 
     companion object {
@@ -44,9 +46,13 @@ class SwapStateManager(
     fun onNewAction(action: SwapStateAction) {
         refreshJob?.cancel()
         activeActionHandleJob?.cancel()
-        if (action is SwapStateAction.CancelSwapLoading) {
-            return
+        when (action) {
+            is SwapStateAction.CancelSwapLoading -> return
+            is SwapStateAction.TokenAChanged -> selectedSwapTokenStorage.savedTokenAMint = action.newTokenA.mintAddress
+            is SwapStateAction.TokenBChanged -> selectedSwapTokenStorage.savedTokenBMint = action.newTokenB.mintAddress
+            else -> Unit
         }
+
         activeActionHandleJob = launch {
             try {
                 handleNewAction(action)

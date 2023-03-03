@@ -5,6 +5,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.swap.JupiterSelectedSwapTokenStorageContract
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 
@@ -12,6 +13,7 @@ class PreinstallTokenASelector(
     private val jupiterTokensRepository: JupiterSwapTokensRepository,
     private val dispatchers: CoroutineDispatchers,
     private val homeLocalRepository: HomeLocalRepository,
+    private val savedSelectedSwapTokenStorage: JupiterSelectedSwapTokenStorageContract,
     private val preinstallTokenA: Token.Active,
 ) : SwapInitialTokenSelector {
 
@@ -25,8 +27,12 @@ class PreinstallTokenASelector(
         val tokenB: SwapTokenModel = getTokenB(
             jupiterTokens = jupiterTokens,
             userTokens = userTokens,
-            findSolOrUsdc = !preinstallTokenA.isSOL
+            findSolOrUsdc = !preinstallTokenA.isSOL,
+            savedSwapTokenB = savedSelectedSwapTokenStorage.savedTokenBMint
         )
+        savedSelectedSwapTokenStorage.savedTokenAMint = tokenA.mintAddress
+        savedSelectedSwapTokenStorage.savedTokenBMint = tokenB.mintAddress
+
         tokenA to tokenB
     }
 }

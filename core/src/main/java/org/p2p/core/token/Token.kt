@@ -188,3 +188,7 @@ sealed class Token constructor(
         }
     }
 }
+
+fun List<Token.Active>.findSol(): Token.Active = first { it.isSOL }
+
+fun List<Token.Active>.findSolOrNull(): Token.Active? = firstOrNull { it.isSOL }
