@@ -31,6 +31,7 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.jupiter.SwapRateTickerState
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapRateTickerMapper
@@ -242,7 +243,7 @@ class JupiterSwapPresenter(
         stateManager.onNewAction(SwapStateAction.InitialLoading)
     }
 
-    override fun changeSlippage(newSlippageValue: Double) {
+    override fun changeSlippage(newSlippageValue: Slippage) {
         stateManager.onNewAction(SwapStateAction.SlippageChanged(newSlippageValue))
     }
 
