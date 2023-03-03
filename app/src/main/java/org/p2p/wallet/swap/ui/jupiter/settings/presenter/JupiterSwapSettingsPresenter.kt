@@ -4,8 +4,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
+import org.p2p.wallet.swap.model.jupiter.SwapRateTickerState
+import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
 
 class JupiterSwapSettingsPresenter(
@@ -13,6 +16,8 @@ class JupiterSwapSettingsPresenter(
     private val emptyMapper: SwapEmptySettingsMapper,
     private val loadingMapper: SwapLoadingSettingsMapper,
     private val commonMapper: SwapCommonSettingsMapper,
+    private val rateTickerMapper: SwapRateTickerMapper,
+    private val rateTickerManager: SwapRateTickerManager
 ) : BasePresenter<JupiterSwapSettingsContract.View>(), JupiterSwapSettingsContract.Presenter {
 
     private var featureState: SwapState? = null
@@ -22,6 +27,10 @@ class JupiterSwapSettingsPresenter(
 
         stateManager.observe()
             .onEach(::handleFeatureState)
+            .launchIn(this)
+
+        rateTickerManager.observe()
+            .onEach(::handleRateTickerChanges)
             .launchIn(this)
     }
 
@@ -35,16 +44,26 @@ class JupiterSwapSettingsPresenter(
                     tokenB = state.tokenB
                 )
             )
-            is SwapState.LoadingRoutes -> view?.bindSettingsList(
-                list = loadingMapper.mapLoadingList(slippage = state.slippage)
-            )
+            is SwapState.LoadingRoutes -> {
+                view?.bindSettingsList(loadingMapper.mapLoadingList(slippage = state.slippage))
+                rateTickerManager.handleRoutesLoading(state)
+            }
             is SwapState.LoadingTransaction -> {
                 // todo
             }
             is SwapState.SwapLoaded -> {
                 // todo
+                rateTickerManager.handleJupiterRates(state)
             }
             is SwapState.SwapException -> handleFeatureState(state.previousFeatureState)
+        }
+    }
+
+    private fun handleRateTickerChanges(state: SwapRateTickerState) {
+        when (state) {
+            is SwapRateTickerState.Shown -> view?.setRatioState(rateTickerMapper.mapRateLoaded(state))
+            is SwapRateTickerState.Loading -> view?.setRatioState(rateTickerMapper.mapRateSkeleton(state))
+            is SwapRateTickerState.Hidden -> view?.setRatioState(state = null)
         }
     }
 

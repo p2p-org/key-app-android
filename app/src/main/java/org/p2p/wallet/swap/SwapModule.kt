@@ -49,13 +49,13 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
-import org.p2p.wallet.swap.jupiter.statemanager.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateInitialLoadingHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingRoutesHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingTransactionHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateSwapLoadedHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
+import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.CommonSwapTokenSelector
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.PreinstallTokenASelector
 import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
@@ -175,8 +175,6 @@ object SwapModule : InjectionModule {
 
         factoryOf(::JupiterSwapInteractor)
 
-        factoryOf(::SwapRateTickerManager)
-
         factoryOf(::SwapValidator)
         factoryOf(::SwapStateRoutesRefresher)
         factoryOf(::SwapWidgetMapper)
@@ -244,6 +242,7 @@ object SwapModule : InjectionModule {
         }
         factoryOf(::SwapTokenRateLoader)
         singleOf(::SwapStateManagerHolder)
+        singleOf(::SwapRateTickerManager)
 
         factory<SwapStateManager> { (initialToken: Token.Active?, stateManagerHolderKey: String) ->
             val managerHolder: SwapStateManagerHolder = get()
@@ -281,6 +280,8 @@ object SwapModule : InjectionModule {
                 emptyMapper = get(),
                 loadingMapper = get(),
                 commonMapper = get(),
+                rateTickerManager = get(),
+                rateTickerMapper = get(),
             )
         } bind JupiterSwapSettingsContract.Presenter::class
         factoryOf(::SwapTokensCommonMapper)

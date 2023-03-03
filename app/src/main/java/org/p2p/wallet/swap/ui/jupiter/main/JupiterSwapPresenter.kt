@@ -29,7 +29,7 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
-import org.p2p.wallet.swap.jupiter.statemanager.SwapRateTickerManager
+import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
 import org.p2p.wallet.swap.model.jupiter.SwapRateTickerState
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
@@ -237,6 +237,7 @@ class JupiterSwapPresenter(
 
     override fun finishFeature(stateManagerHolderKey: String) {
         managerHolder.clear(stateManagerHolderKey)
+        rateTickerManager.stopAll()
     }
 
     override fun reloadFeature() {
@@ -257,13 +258,9 @@ class JupiterSwapPresenter(
                 // todo
             }
         }
-
-        val (tokenA, tokenB) = state.getTokensPair()
-        rateTickerManager.handleTokensChanged(tokenA, tokenB)
     }
 
     private fun handleRateTickerChanges(state: SwapRateTickerState) {
-        Timber.d("### rate $state")
         when (state) {
             is SwapRateTickerState.Shown -> view?.setRatioState(rateTickerMapper.mapRateLoaded(state))
             is SwapRateTickerState.Loading -> view?.setRatioState(rateTickerMapper.mapRateSkeleton(state))
@@ -299,6 +296,8 @@ class JupiterSwapPresenter(
     }
 
     private fun handleSwapLoaded(state: SwapState.SwapLoaded) {
+        rateTickerManager.handleJupiterRates(state)
+
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(
@@ -317,6 +316,8 @@ class JupiterSwapPresenter(
     }
 
     private fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
+        rateTickerManager.handleRoutesLoading(state)
+
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = buttonMapper.mapLoading())
@@ -324,6 +325,8 @@ class JupiterSwapPresenter(
     }
 
     private fun handleTokenAZero(state: SwapState.TokenAZero) {
+        rateTickerManager.onInitialTokensSelected(state.tokenA, state.tokenB)
+
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonMapper.mapEnterAmount())

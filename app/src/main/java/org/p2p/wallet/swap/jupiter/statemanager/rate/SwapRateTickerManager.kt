@@ -1,17 +1,20 @@
-package org.p2p.wallet.swap.jupiter.statemanager
+package org.p2p.wallet.swap.jupiter.statemanager.rate
 
 import java.math.BigDecimal
 import java.util.concurrent.Executors
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.statemanager.SwapCoroutineScope
+import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.model.jupiter.SwapRateTickerState
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.prices.TokenId
@@ -42,7 +45,29 @@ class SwapRateTickerManager private constructor(
 
     fun observe(): Flow<SwapRateTickerState> = currentRateState
 
-    fun handleTokensChanged(
+    fun handleRoutesLoading(state: SwapState.LoadingRoutes) {
+        currentRateState.value = SwapRateTickerState.Loading
+    }
+
+    fun handleJupiterRates(state: SwapState.SwapLoaded) {
+        val newTokenA = state.tokenA.also { currentTokenA = it }
+        val newTokenB = state.tokenB.also { currentTokenB = it }
+
+        val result = when {
+            !newTokenA.isStable() && newTokenB.isStable() -> {
+                val newRate = (state.amountTokenB / state.amountTokenA).scaleLong(newTokenB.decimals)
+                "1 ${newTokenA.tokenSymbol} ≈ $newRate ${newTokenB.tokenSymbol}"
+            }
+            else -> {
+                val newRate = (state.amountTokenA / state.amountTokenB).scaleLong(newTokenA.decimals)
+                "1 ${newTokenB.tokenSymbol} ≈ $newRate ${newTokenA.tokenSymbol}"
+            }
+        }
+
+        currentRateState.value = SwapRateTickerState.Shown(result)
+    }
+
+    fun onInitialTokensSelected(
         newTokenA: SwapTokenModel?,
         newTokenB: SwapTokenModel?
     ) {
@@ -54,14 +79,14 @@ class SwapRateTickerManager private constructor(
             return
         }
 
+        currentTokenA = newTokenA
+        currentTokenB = newTokenB
+
         launch {
             currentRateState.value = SwapRateTickerState.Loading
 
             val newRatesState = findTokensRatesState(newTokenA, newTokenB)
             currentRateState.value = newRatesState
-
-            currentTokenA = newTokenA
-            currentTokenB = newTokenB
         }
     }
 
@@ -89,7 +114,7 @@ class SwapRateTickerManager private constructor(
             is SwapTokenModel.JupiterToken -> findJupiterTokenRate(to)
         } ?: return SwapRateTickerState.Hidden
 
-        val newRate = (amountFrom / amountTo).scaleShort()
+        val newRate = (amountFrom / amountTo).scaleLong(to.decimals)
 
         val result = "1 ${from.tokenSymbol} ≈ $newRate ${to.tokenSymbol}"
         return SwapRateTickerState.Shown(result)
@@ -100,5 +125,9 @@ class SwapRateTickerManager private constructor(
         val coingeckoId = tokenData?.coingeckoId ?: return null
         val price = userLocalRepository.getPriceByTokenId(coingeckoId)
         return price?.price ?: tokenPricesRepository.getTokenPriceById(TokenId(coingeckoId), USD_READABLE_SYMBOL).price
+    }
+
+    fun stopAll() {
+        coroutineContext.cancelChildren()
     }
 }
