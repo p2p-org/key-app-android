@@ -1,9 +1,11 @@
 package org.p2p.wallet.swap.ui.jupiter.settings.presenter
 
 import java.math.BigDecimal
+import java.math.BigInteger
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.fromLamports
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -32,13 +34,15 @@ class SwapContentSettingsMapper(
         activeRoute: Int,
         jupiterTokens: List<JupiterSwapToken>,
         tokenB: SwapTokenModel,
+        tokenA: SwapTokenModel,
     ): List<AnyCellItem> = mapList(
         slippage = slippage,
         routes = routes,
         activeRoute = activeRoute,
         jupiterTokens = jupiterTokens,
         tokenBAmount = null,
-        tokenB = tokenB
+        tokenB = tokenB,
+        tokenA = tokenA,
     )
 
     fun mapForSwapLoadedState(
@@ -48,13 +52,15 @@ class SwapContentSettingsMapper(
         jupiterTokens: List<JupiterSwapToken>,
         tokenBAmount: BigDecimal?,
         tokenB: SwapTokenModel,
+        tokenA: SwapTokenModel,
     ): List<AnyCellItem> = mapList(
         slippage = slippage,
         routes = routes,
         activeRoute = activeRoute,
         jupiterTokens = jupiterTokens,
         tokenBAmount = tokenBAmount,
-        tokenB = tokenB
+        tokenB = tokenB,
+        tokenA = tokenA,
     )
 
     private fun mapList(
@@ -64,10 +70,11 @@ class SwapContentSettingsMapper(
         jupiterTokens: List<JupiterSwapToken>,
         tokenBAmount: BigDecimal?,
         tokenB: SwapTokenModel,
+        tokenA: SwapTokenModel,
     ): List<AnyCellItem> = buildList {
         addRouteCell(routes, activeRoute, jupiterTokens)
         this += commonMapper.getNetworkFeeCell()
-        addAccountFeeCell()
+        addAccountFeeCell(routes, activeRoute, tokenA)
         addLiquidityFeeCell(routes, activeRoute, jupiterTokens)
         addEstimatedFeeCell()
         addMinimumReceivedCell(slippage, tokenBAmount, tokenB)
@@ -130,7 +137,8 @@ class SwapContentSettingsMapper(
         } else {
             TextViewCellModel.Raw(
                 text = TextContainer(
-                    tokenBAmount.multiply(slippage.doubleValue.toBigDecimal()).formatToken(tokenB.decimals)
+                    tokenBAmount.minus(tokenBAmount.multiply(slippage.doubleValue.toBigDecimal()))
+                        .formatToken(tokenB.decimals)
                 )
             )
         }
@@ -152,14 +160,29 @@ class SwapContentSettingsMapper(
         )
     }
 
-    private fun MutableList<AnyCellItem>.addAccountFeeCell() {
+    private fun MutableList<AnyCellItem>.addAccountFeeCell(
+        routes: List<JupiterSwapRoute>,
+        activeRoute: Int,
+        tokenA: SwapTokenModel
+    ) {
+        val route = routes.getOrNull(activeRoute)
+        val ataDeposits = route?.fees?.ataDeposits ?: listOf()
+        val openOrdersDeposits = route?.fees?.openOrdersDeposits ?: listOf()
+        var accountFee = BigInteger.ZERO
+        ataDeposits.forEach {
+            accountFee = accountFee.plus(it)
+        }
+        openOrdersDeposits.forEach {
+            accountFee = accountFee.plus(it)
+        }
+        val fee = accountFee.fromLamports(tokenA.decimals).formatToken(tokenA.decimals)
         this += FinanceBlockCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_creation_fee_title),
                 ),
-                secondLineText = TextViewCellModel.Skeleton(
-                    skeleton = leftSubtitleSkeleton()
+                secondLineText = TextViewCellModel.Raw(
+                    text = TextContainer(fee)
                 ),
             ),
             rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
@@ -210,7 +233,9 @@ class SwapContentSettingsMapper(
         var result = ""
         route.marketInfos.forEachIndexed { index, marketInfo ->
             val lpFee = marketInfo.lpFee
-            val fee = "${lpFee.amountInLamports} ${jupiterTokens.findTokenSymbolByMint(lpFee.mint)}"
+            val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return@forEachIndexed
+            val amount = lpFee.amountInLamports.fromLamports(lpToken.decimals).formatToken(lpToken.decimals)
+            val fee = "${amount} ${lpToken.tokenSymbol}"
             result = result.plus(fee)
             if (index != route.marketInfos.lastIndex) result = result.plus(", ")
         }
@@ -252,6 +277,10 @@ class SwapContentSettingsMapper(
     }
 
     private fun List<JupiterSwapToken>.findTokenSymbolByMint(mint: Base58String): String {
-        return find { it.tokenMint == mint }?.tokenSymbol ?: emptyString()
+        return findTokenByMint(mint)?.tokenSymbol ?: emptyString()
+    }
+
+    private fun List<JupiterSwapToken>.findTokenByMint(mint: Base58String): JupiterSwapToken? {
+        return find { it.tokenMint == mint }
     }
 }

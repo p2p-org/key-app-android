@@ -119,6 +119,7 @@ class JupiterSwapSettingsPresenter(
                     activeRoute = state.activeRoute,
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
+                    tokenA = state.tokenA,
                 )
             }
             is SwapState.SwapLoaded -> {
@@ -129,6 +130,7 @@ class JupiterSwapSettingsPresenter(
                     jupiterTokens = tokens,
                     tokenBAmount = state.amountTokenB,
                     tokenB = state.tokenB,
+                    tokenA = state.tokenA,
                 )
             }
             is SwapState.SwapException -> getContentListByFeatureState(state.previousFeatureState, tokens)
