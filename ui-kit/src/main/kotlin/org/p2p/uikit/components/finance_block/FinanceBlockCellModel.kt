@@ -15,4 +15,9 @@ data class FinanceBlockCellModel(
     val background: DrawableCellModel? = DrawableCellModel(tint = R.color.snow),
     val styleType: FinanceBlockStyle = FinanceBlockStyle.FINANCE_BLOCK,
     override val payload: Any? = null,
-) : CellModelPayload, AnyCellItem
+) : CellModelPayload, AnyCellItem {
+
+    @Suppress("UNCHECKED_CAST")
+    @Throws(ClassCastException::class)
+    fun <T: Any> typedPayload(): T = payload as T
+}

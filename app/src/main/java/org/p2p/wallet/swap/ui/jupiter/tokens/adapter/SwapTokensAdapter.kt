@@ -8,6 +8,7 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderViewHolder
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensCellModelPayload
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class SwapTokensAdapter(
@@ -36,7 +37,9 @@ class SwapTokensAdapter(
             FinanceBlockViewHolder(
                 binding = parent.inflateViewBinding(attachToRoot = false),
                 inflateListener = {
-                    it.setOnClickAction { _, item -> onTokenClicked.invoke(item.payload as SwapTokenModel) }
+                    it.setOnClickAction { _, item ->
+                        onTokenClicked.invoke(item.typedPayload<SwapTokensCellModelPayload>().tokenModel)
+                    }
                 }
             )
         }
