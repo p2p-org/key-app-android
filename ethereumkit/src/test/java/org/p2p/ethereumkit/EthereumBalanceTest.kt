@@ -9,7 +9,7 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.p2p.ethereumkit.external.EthereumModule
-import org.p2p.ethereumkit.external.api.NetworkModule
+import org.p2p.ethereumkit.external.api.EthereumNetworkModule
 import org.p2p.ethereumkit.external.balance.BalanceRepository
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.internal.core.EthereumKit
@@ -27,7 +27,7 @@ class EthereumBalanceTest : KoinTest {
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.DEBUG)
         modules(
-            NetworkModule.create(),
+            EthereumNetworkModule.create(),
             EthereumModule.create()
         )
     }
@@ -35,6 +35,5 @@ class EthereumBalanceTest : KoinTest {
     @Test
     fun getBalance() = runTest {
         val balance = repository.getWalletBalance(tokenKeyProvider.address)
-        println("Eth Balance: $balance")
     }
 }

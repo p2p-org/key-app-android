@@ -10,9 +10,9 @@ class EthTokenKeyProvider(
     private val seedPhrase: List<String>
 ) {
 
-    private val mnemonic = Mnemonic().toSeed(seedPhrase)
+    private val mnemonic: ByteArray = Mnemonic().toSeed(seedPhrase)
 
-    val address: EthAddress = Signer.Companion.address(mnemonic, Chain.Ethereum)
+    val address: EthAddress = Signer.address(mnemonic, Chain.Ethereum)
 
-    val privateKey: BigInteger = Signer.privateKey(mnemonic,Chain.Ethereum)
+    val privateKey: BigInteger = Signer.privateKey(mnemonic, Chain.Ethereum)
 }

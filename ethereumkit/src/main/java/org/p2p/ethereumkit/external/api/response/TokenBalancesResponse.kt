@@ -22,9 +22,9 @@ internal data class TokenMetadataResponse(
     @SerializedName("decimals")
     val decimals: Int,
     @SerializedName("logo")
-    val logo: String? = null,
+    val logoUrl: String? = null,
     @SerializedName("name")
-    val name: String? = null,
+    val tokenName: String? = null,
     @SerializedName("symbol")
     val symbol: String? = null
 )

@@ -1,4 +1,4 @@
-package org.p2p.ethereumkit.external.core
+package org.p2p.ethereumkexternal.core
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -23,24 +23,28 @@ class GsonProvider {
     var gson: Gson? = null
 
     fun provide(): Gson {
-        return gson ?: GsonBuilder().also {
-            it.setLenient()
-            it.registerTypeAdapter(BigInteger::class.java, BigIntegerTypeAdapter())
-            it.registerTypeAdapter(object: TypeToken<BigInteger?>() {}.type, BigIntegerTypeAdapter())
-            it.registerTypeAdapter(Long::class.java, LongTypeAdapter())
-            it.registerTypeAdapter(Int::class.java, IntTypeAdapter())
-            it.registerTypeAdapter(ByteArray::class.java, ByteArrayTypeAdapter())
-            it.registerTypeHierarchyAdapter(DefaultBlockParameter::class.java, DefaultBlockParameterTypeAdapter())
-            it.registerTypeAdapter(EthAddress::class.java, AddressTypeAdapter())
-            it.registerTypeAdapter(
+        return gson ?: buildGson()
+    }
+
+    private fun buildGson(): Gson {
+        return GsonBuilder().apply {
+            setLenient()
+            registerTypeAdapter(BigInteger::class.java, BigIntegerTypeAdapter())
+            registerTypeAdapter(object : TypeToken<BigInteger?>() {}.type, BigIntegerTypeAdapter())
+            registerTypeAdapter(Long::class.java, LongTypeAdapter())
+            registerTypeAdapter(Int::class.java, IntTypeAdapter())
+            registerTypeAdapter(ByteArray::class.java, ByteArrayTypeAdapter())
+            registerTypeHierarchyAdapter(DefaultBlockParameter::class.java, DefaultBlockParameterTypeAdapter())
+            registerTypeAdapter(EthAddress::class.java, AddressTypeAdapter())
+            registerTypeAdapter(
                 object : TypeToken<Optional<RpcTransaction>>() {}.type,
                 OptionalTypeAdapter<RpcTransaction>(RpcTransaction::class.java)
             )
-            it.registerTypeAdapter(
+            registerTypeAdapter(
                 object : TypeToken<Optional<RpcTransactionReceipt>>() {}.type,
                 OptionalTypeAdapter<RpcTransactionReceipt>(RpcTransactionReceipt::class.java)
             )
-            it.registerTypeAdapter(
+            registerTypeAdapter(
                 object : TypeToken<Optional<RpcBlock>>() {}.type,
                 OptionalTypeAdapter<RpcBlock>(RpcBlock::class.java)
             )
