@@ -13,7 +13,7 @@
     <string name="swap_main_fee_inform">Key App doesn\’t make any profit from swap 💚</string>
     <string name="swap_main_confirm_button">Swap %s → %s</string>
     <string name="swap_main_alert">
-        The price is higher due to the large amount of cash lost for the pair of tokens. 
+        The price is higher due to the large amount of cash lost for the pair of tokens.
         Split your transaction for few small swaps.
     </string>
     <string name="swap_main_slippage_changed">🤖 We changed slippage to %s%%</string>
@@ -65,4 +65,19 @@
     <string name="swap_transaction_details_error_unknown">
         Oops, something went wrong.\nPlease try again later
     </string>
+
+    <string name="swap_info_details_network_fee_title">Enjoy free transactions!</string>
+    <string name="swap_info_details_network_fee_subtitle">With Key App, all transactions you make on the Solana network are free</string>
+    <string name="swap_info_details_network_fee_done">Got it 👍</string>
+    <string name="swap_info_details_account_fee_title">Account creation fee</string>
+    <string name="swap_info_details_account_fee_subtitle">When you trade the token for the first time, Solana charges a one-time fee for creating an account.</string>
+    <string name="swap_info_details_account_fee_done">Got it 👍</string>
+    <string name="swap_info_details_minimum_received_fee_title">Minimum received</string>
+    <string name="swap_info_details_minimum_received_fee_subtitle">The minimum amount you will receive. If the price slips any further, your transaction will revert.</string>
+    <string name="swap_info_details_minimum_received_fee_done">Done 👍</string>
+    <string name="swap_info_details_liquidity_fee_title">Liquidity fee</string>
+    <string name="swap_info_details_liquidity_fee_subtitle">A fee paid to the liquidity providers</string>
+    <string name="swap_info_details_liquidity_fee_done">Okay 👍</string>
+
+    <string name="swap_info_details_liquidity_cell_title">%s Liquidity fee %s</string>
 </resources>

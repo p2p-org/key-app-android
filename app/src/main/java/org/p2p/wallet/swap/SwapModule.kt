@@ -62,6 +62,7 @@ import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
+import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoMapper
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapContract
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapPresenter
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
@@ -270,6 +271,7 @@ object SwapModule : InjectionModule {
         }
 
         factoryOf(::SwapCommonSettingsMapper)
+        factoryOf(::SwapInfoMapper)
         factoryOf(::SwapEmptySettingsMapper)
         factoryOf(::SwapLoadingSettingsMapper)
         factory { (stateManagerHolderKey: String) ->
