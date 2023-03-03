@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back_night"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night"
+        tools:title="Claim WETH" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:text="@string/bridge_claim_sub_title_format"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
+        android:id="@+id/imageViewToken"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="28dp"
+        app:cornerRadius="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/textViewTokenAmount"
+        style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewToken"
+        tools:text="0.999717252 WETH" />
+
+    <TextView
+        android:id="@+id/textViewFiatAmount"
+        style="@style/UiKit.TextAppearance.SemiBold.Text2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:gravity="center"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTokenAmount"
+        tools:text="~ $1 219.87" />
+
+    <LinearLayout
+        android:id="@+id/layoutFeeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/bg_rounded_solid_snow_12"
+        android:foreground="@drawable/ripple_button_large"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewFiatAmount">
+
+        <TextView
+            style="@style/UiKit.TextAppearance.SemiBold.Text4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/bridge_claim_fees"
+            android:textColor="@color/text_night"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewTokenAmount" />
+
+        <TextView
+            android:id="@+id/textViewFeeValue"
+            style="@style/UiKit.TextAppearance.SemiBold.Text4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="12dp"
+            android:gravity="end|center_vertical"
+            android:text="@string/bridge_claim_fees_free"
+            android:textColor="@color/text_mountain"
+            app:drawableEndCompat="@drawable/ic_info_outline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewTokenAmount" />
+
+    </LinearLayout>
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonBottom"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:autoSizeMaxTextSize="16sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeTextType="uniform"
+        android:backgroundTint="@color/bg_night"
+        android:enabled="false"
+        android:maxLines="1"
+        android:text="@string/bridge_claim_bottom_button"
+        android:textColor="@color/text_snow"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

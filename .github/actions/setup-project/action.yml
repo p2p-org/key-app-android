@@ -68,6 +68,12 @@ inputs:
   lokalise-app-id:
     description: "Lokalise App ID"
     required: true
+  secret-memo:
+    description: "Secret memo for generating a send link"
+    required: true
+  salt-prefix:
+    description: "Salt prefix for generating a temporary account for send"
+    required: true
 runs:
   using: composite
   steps:
@@ -111,5 +117,12 @@ runs:
         echo "auth.token=${{ inputs.sentry-auth-token }}" >> sentry.properties
         echo "auth.dsn=${{ inputs.sentry-auth-dsn }}" >> sentry.properties
         echo "sentry.properties is successfully created"
+    - name: "Create common.properties file"
+      shell: bash
+      run: |
+        touch common.properties
+        echo "secretMemo=${{ inputs.secret-memo }}" >> common.properties
+        echo "saltPrefix=${{ inputs.salt-prefix }}" >> common.properties
+        echo "common.properties is successfully created"
     - name: "Setup gradle"
       uses: ./.github/actions/setup-gradle

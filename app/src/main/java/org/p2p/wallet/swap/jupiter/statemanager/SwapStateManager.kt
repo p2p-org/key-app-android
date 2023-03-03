@@ -1,11 +1,9 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.CoroutineScope
-import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -14,8 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 
 private const val DELAY_IN_MILLIS = 20_000L
+
+private const val TAG = "SwapStateManager"
 
 class SwapStateManager(
     private val handlers: Set<SwapStateHandler>,
@@ -26,6 +28,7 @@ class SwapStateManager(
         const val DEFAULT_ACTIVE_ROUTE_ORDINAL = 0
         const val DEFAULT_SLIPPAGE = 0.5
     }
+
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
     private val state = MutableStateFlow<SwapState>(SwapState.InitialLoading)
     private var activeActionHandleJob: Job? = null
@@ -38,7 +41,19 @@ class SwapStateManager(
     fun observe(): StateFlow<SwapState> = state
 
     suspend fun <T> getStateValue(getter: (state: SwapState) -> T): T {
-        return getter.invoke(state.first())
+        return getter.invoke(internalGetState(state.first()))
+    }
+
+    private fun internalGetState(state: SwapState): SwapState {
+        return when (state) {
+            is SwapState.SwapException.FeatureExceptionWrapper -> {
+                internalGetState(state.previousFeatureState)
+            }
+            is SwapState.SwapException.OtherException -> {
+                return internalGetState(state.previousFeatureState)
+            }
+            else -> state
+        }
     }
 
     fun onNewAction(action: SwapStateAction) {
@@ -55,9 +70,13 @@ class SwapStateManager(
                     startRefreshJob()
                 }
             } catch (cancelled: CancellationException) {
-                Timber.i(cancelled)
+                Timber.tag(TAG).i(cancelled)
             } catch (featureException: SwapFeatureException) {
-                Timber.e(featureException)
+                if (featureException is SwapFeatureException.RoutesNotFound) {
+                    Timber.tag(TAG).e(featureException)
+                } else {
+                    Timber.tag(TAG).i(featureException)
+                }
                 state.value = SwapState.SwapException.FeatureExceptionWrapper(
                     previousFeatureState = actualNoErrorState(),
                     featureException = featureException,

@@ -4,7 +4,9 @@ import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.p2p.ethereumkit.external.EthereumModule
 import org.p2p.wallet.auth.AuthModule
+import org.p2p.wallet.claim.ClaimModule
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.ResourcesProvider
@@ -17,7 +19,6 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
-import org.p2p.wallet.ethereum.EthereumModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
@@ -26,6 +27,7 @@ import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.moonpay.MoonpayModule
 import org.p2p.wallet.moonpay.ui.BuyModule
+import org.p2p.wallet.newsend.SendModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.renbtc.RenBtcModule
@@ -34,7 +36,6 @@ import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.sdk.di.AppSdkModule
 import org.p2p.wallet.sell.SellModule
-import org.p2p.wallet.newsend.SendModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.solend.SolendModule
 import org.p2p.wallet.swap.SwapModule
@@ -90,8 +91,9 @@ object AppModule {
                 SendModule.create(),
                 TransactionManagerModule.create(),
                 SolendModule.create(),
+                EthereumModule.create(),
                 SellModule.create(),
-                EthereumModule.create()
+                ClaimModule.create()
             )
         )
     }

@@ -21,6 +21,12 @@ sealed class TransactionState {
         val toToken: String
     ) : TransactionState()
 
+    object JupiterSwapSuccess : TransactionState()
+
+    data class JupiterSwapFailed(
+        val failure: TransactionStateSwapFailureReason
+    ) : TransactionState()
+
     data class Error(
         val message: String,
         val transaction: HistoryTransaction? = null,

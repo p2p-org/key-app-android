@@ -1,16 +1,19 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import java.math.BigDecimal
+import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
+import org.p2p.wallet.claim.ui.ClaimFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.new.requestPermissionNotification
@@ -38,13 +41,12 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
+import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import java.math.BigDecimal
-import org.p2p.wallet.swap.ui.SwapFragmentFactory
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
@@ -67,7 +69,14 @@ class HomeFragment :
 
     private val binding: FragmentHomeBinding by viewBinding()
 
-    private val contentAdapter: TokenAdapter by unsafeLazy { TokenAdapter(this) }
+    private val glideManager: GlideManager by inject()
+
+    private val contentAdapter: TokenAdapter by unsafeLazy {
+        TokenAdapter(
+            glideManager = glideManager,
+            listener = this
+        )
+    }
 
     private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
 
@@ -307,6 +316,17 @@ class HomeFragment :
 
     override fun onHideClicked(token: Token.Active) {
         presenter.toggleTokenVisibility(token)
+    }
+
+    override fun onClaimTokenClicked() {
+        // TODO pass real data
+        replaceFragment(
+            ClaimFragment.create(
+                tokenSymbol = "WETH",
+                tokenAmount = BigDecimal(0.999717252),
+                fiatAmount = BigDecimal(1219.87)
+            )
+        )
     }
 
     override fun onDestroy() {

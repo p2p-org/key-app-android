@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="220dp"
+        android:layout_height="164dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/sell_only_sol_warning" />
+
+    <include
+        android:id="@+id/layoutFreeTransactions"
+        layout="@layout/item_info_image_double_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="28dp" />
+
+    <include
+        android:id="@+id/layoutWillGetAmount"
+        layout="@layout/item_claim_details_part"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <include
+        android:id="@+id/layoutNetworkFee"
+        layout="@layout/item_claim_details_part"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <include
+        android:id="@+id/layoutAccountCreationFee"
+        layout="@layout/item_claim_details_part"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <include
+        android:id="@+id/layoutBridgeFee"
+        layout="@layout/item_claim_details_part"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="32dp" />
+
+</LinearLayout>

@@ -46,12 +46,10 @@ class SwapTokensAMapper(private val commonMapper: SwapTokensCommonMapper) {
     private fun SwapTokensCommonMapper.allOtherTokensGroup(
         otherTokenModels: List<SwapTokenModel.JupiterToken>
     ): List<AnyCellItem> = buildList {
-        val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)
         val otherTokens = otherTokenModels
             .sortedWith(otherTokensSorter)
             .map { it.toTokenFinanceCellModel() }
 
-        this += sectionHeader
         this += otherTokens
     }
 }
