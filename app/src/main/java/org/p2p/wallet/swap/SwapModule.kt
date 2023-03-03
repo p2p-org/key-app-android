@@ -240,7 +240,8 @@ object SwapModule : InjectionModule {
             managerHolder.getOrCreate(key = stateManagerHolderKey) {
                 SwapStateManager(
                     dispatchers = get(),
-                    handlers = handlers
+                    handlers = handlers,
+                    tokenPricesRepository = get(),
                 )
             }
         }
@@ -262,7 +263,14 @@ object SwapModule : InjectionModule {
         factoryOf(::SwapCommonSettingsMapper)
         factoryOf(::SwapEmptySettingsMapper)
         factoryOf(::SwapLoadingSettingsMapper)
-        factoryOf(::SwapContentSettingsMapper)
+        factory { (stateManagerHolderKey: String) ->
+            val managerHolder: SwapStateManagerHolder = get()
+            val stateManager = managerHolder.get(stateManagerHolderKey)
+            SwapContentSettingsMapper(
+                commonMapper = get(),
+                swapStateManager = stateManager,
+            )
+        }
         factory { (stateManagerHolderKey: String) ->
             val managerHolder: SwapStateManagerHolder = get()
             val stateManager = managerHolder.get(stateManagerHolderKey)
@@ -271,7 +279,7 @@ object SwapModule : InjectionModule {
                 emptyMapper = get(),
                 loadingMapper = get(),
                 commonMapper = get(),
-                contentMapper = get(),
+                contentMapper = get(parameters = { parametersOf(stateManagerHolderKey) }),
                 swapTokensRepository = get(),
             )
         } bind JupiterSwapSettingsContract.Presenter::class

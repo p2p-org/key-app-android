@@ -1,36 +1,45 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.CoroutineScope
-import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
+import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
+import org.p2p.wallet.utils.Base58String
 
 private const val DELAY_IN_MILLIS = 20_000L
 
 class SwapStateManager(
     private val handlers: Set<SwapStateHandler>,
     private val dispatchers: CoroutineDispatchers,
+    private val tokenPricesRepository: TokenPricesRemoteRepository,
 ) : CoroutineScope {
 
     companion object {
         const val DEFAULT_ACTIVE_ROUTE_ORDINAL = 0
         val DEFAULT_SLIPPAGE = Slippage.Medium
     }
+
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
     private val state = MutableStateFlow<SwapState>(SwapState.InitialLoading)
     private var activeActionHandleJob: Job? = null
     private var refreshJob: Job? = null
+    private val tokenRatioCache = mutableMapOf<Base58String, SwapTokenRateLoader>()
 
     init {
         onNewAction(SwapStateAction.InitialLoading)
@@ -103,5 +112,11 @@ class SwapStateManager(
 
     fun finishWork() {
         coroutineContext.cancelChildren()
+    }
+
+    fun getTokenRatio(token: SwapTokenModel): Flow<SwapRateLoaderState> {
+        return tokenRatioCache.getOrPut(token.mintAddress) {
+            SwapTokenRateLoader(tokenPricesRepository)
+        }.getRate(token)
     }
 }

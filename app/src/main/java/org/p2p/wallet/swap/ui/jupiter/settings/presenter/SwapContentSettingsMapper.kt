@@ -2,8 +2,11 @@ package org.p2p.wallet.swap.ui.jupiter.settings.presenter
 
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.firstOrNull
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
@@ -21,14 +24,16 @@ import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
 
 class SwapContentSettingsMapper(
-    private val commonMapper: SwapCommonSettingsMapper
+    private val commonMapper: SwapCommonSettingsMapper,
+    private val swapStateManager: SwapStateManager
 ) {
 
-    fun mapForLoadingTransactionState(
+    suspend fun mapForLoadingTransactionState(
         slippage: Slippage,
         routes: List<JupiterSwapRoute>,
         activeRoute: Int,
@@ -45,7 +50,7 @@ class SwapContentSettingsMapper(
         tokenA = tokenA,
     )
 
-    fun mapForSwapLoadedState(
+    suspend fun mapForSwapLoadedState(
         slippage: Slippage,
         routes: List<JupiterSwapRoute>,
         activeRoute: Int,
@@ -63,7 +68,7 @@ class SwapContentSettingsMapper(
         tokenA = tokenA,
     )
 
-    private fun mapList(
+    private suspend fun mapList(
         slippage: Slippage,
         routes: List<JupiterSwapRoute>,
         activeRoute: Int,
@@ -76,7 +81,7 @@ class SwapContentSettingsMapper(
         this += commonMapper.getNetworkFeeCell()
         addAccountFeeCell(routes, activeRoute, tokenA)
         addLiquidityFeeCell(routes, activeRoute, jupiterTokens)
-        addEstimatedFeeCell()
+        addEstimatedFeeCell(routes, activeRoute, tokenA)
         addMinimumReceivedCell(slippage, tokenBAmount, tokenB)
     }
 
@@ -160,7 +165,7 @@ class SwapContentSettingsMapper(
         )
     }
 
-    private fun MutableList<AnyCellItem>.addAccountFeeCell(
+    private suspend fun MutableList<AnyCellItem>.addAccountFeeCell(
         routes: List<JupiterSwapRoute>,
         activeRoute: Int,
         tokenA: SwapTokenModel
@@ -175,20 +180,25 @@ class SwapContentSettingsMapper(
         openOrdersDeposits.forEach {
             accountFee = accountFee.plus(it)
         }
-        val fee = accountFee.fromLamports(tokenA.decimals).formatToken(tokenA.decimals)
+        val fee = accountFee.fromLamports(tokenA.decimals)
+        val feeText = fee.formatToken(tokenA.decimals)
+
+        val ratio = swapStateManager.getTokenRatio(tokenA)
+            .filterIsInstance<SwapRateLoaderState.Loaded>().firstOrNull()
+        val feeUsd = ratio?.let { fee.multiply(it.rate).formatFiat() }
+            ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_fiat_value, usd)) }
+
         this += FinanceBlockCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_creation_fee_title),
                 ),
                 secondLineText = TextViewCellModel.Raw(
-                    text = TextContainer(fee)
+                    text = TextContainer(feeText)
                 ),
             ),
             rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
-                text = TextViewCellModel.Skeleton(
-                    skeleton = rightSideSkeleton(),
-                ),
+                text = feeUsd,
                 firstIcon = ImageViewCellModel(
                     icon = DrawableContainer(R.drawable.ic_info_outline),
                     iconTint = R.color.icons_mountain,
@@ -215,9 +225,7 @@ class SwapContentSettingsMapper(
                 ),
             ),
             rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
-                text = TextViewCellModel.Raw(
-                    text = TextContainer("TODO"),
-                ),
+                text = null,
                 firstIcon = ImageViewCellModel(
                     icon = DrawableContainer(R.drawable.ic_info_outline),
                     iconTint = R.color.icons_mountain,
@@ -242,7 +250,23 @@ class SwapContentSettingsMapper(
         return result
     }
 
-    private fun MutableList<AnyCellItem>.addEstimatedFeeCell() {
+    private suspend fun MutableList<AnyCellItem>.addEstimatedFeeCell(
+        routes: List<JupiterSwapRoute>,
+        activeRoute: Int,
+        tokenA: SwapTokenModel
+    ) {
+        val route = routes.getOrNull(activeRoute)
+
+        val fee = route?.fees?.totalFeeAndDeposits?.fromLamports(tokenA.decimals)
+
+        val feeCell = if (fee != null) {
+            val ratio =
+                swapStateManager.getTokenRatio(tokenA).filterIsInstance<SwapRateLoaderState.Loaded>().firstOrNull()
+            ratio?.let { fee.multiply(it.rate).formatFiat() }
+                ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_fiat_value, usd)) }
+        } else {
+            null
+        }
         this += FinanceBlockCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
@@ -251,9 +275,7 @@ class SwapContentSettingsMapper(
                 ),
             ),
             rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
-                text = TextViewCellModel.Raw(
-                    text = TextContainer("TODO"),
-                ),
+                text = feeCell,
             ),
             payload = SwapSettingsPayload.ESTIMATED_FEE,
             styleType = FinanceBlockStyle.BASE_CELL,

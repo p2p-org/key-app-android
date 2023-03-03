@@ -48,7 +48,7 @@ class JupiterSwapSettingsPresenter(
             .launchIn(this)
     }
 
-    private fun handleFeatureState(state: SwapState, tokens: List<JupiterSwapToken>) {
+    private suspend fun handleFeatureState(state: SwapState, tokens: List<JupiterSwapToken>) {
         featureState = state
         if (isSelectedCustom == null) isSelectedCustom = state.getCurrentSlippage() is Slippage.Custom
         val contentList = getContentListByFeatureState(state, tokens)
@@ -73,9 +73,11 @@ class JupiterSwapSettingsPresenter(
             }
             SwapSlippagePayload.CUSTOM -> {
                 isSelectedCustom = true
-                val contentList = getContentListByFeatureState(featureState, jupiterTokens)
-                    .addSlippageSettings(featureState)
-                view?.bindSettingsList(contentList)
+                launch {
+                    val contentList = getContentListByFeatureState(featureState, jupiterTokens)
+                        .addSlippageSettings(featureState)
+                    view?.bindSettingsList(contentList)
+                }
             }
         }
     }
@@ -104,7 +106,10 @@ class JupiterSwapSettingsPresenter(
         }
     }
 
-    private fun getContentListByFeatureState(state: SwapState, tokens: List<JupiterSwapToken>): List<AnyCellItem> {
+    private suspend fun getContentListByFeatureState(
+        state: SwapState,
+        tokens: List<JupiterSwapToken>
+    ): List<AnyCellItem> {
         return when (state) {
             SwapState.InitialLoading -> listOf()
             is SwapState.TokenAZero -> emptyMapper.mapEmptyList(
