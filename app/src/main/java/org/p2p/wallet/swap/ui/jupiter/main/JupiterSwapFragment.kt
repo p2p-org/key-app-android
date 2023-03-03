@@ -100,8 +100,7 @@ class JupiterSwapFragment :
                 }
             }
 
-            sliderSend.onSlideCompleteListener = { sliderSend.showCompleteAnimation() }
-            sliderSend.onSlideCollapseCompleted = { presenter.onSwapButtonClicked() }
+            sliderSend.onSlideCompleteListener = {  presenter.onSwapSliderClicked() }
 
             toolbar.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.settingsMenuItem) {
@@ -198,21 +197,32 @@ class JupiterSwapFragment :
         )
     }
 
+    override fun showDefaultSlider() {
+        binding.sliderSend.restoreSlider()
+    }
+
+    override fun showCompleteSlider() {
+        binding.sliderSend.showCompleteAnimation()
+    }
+
     override fun onBottomSheetDismissed(result: JupiterTransactionDismissResult) {
         when (result) {
             JupiterTransactionDismissResult.TransactionInProgress,
             JupiterTransactionDismissResult.TransactionSuccess -> {
                 navigateBackOnTransactionSuccess()
             }
-            JupiterTransactionDismissResult.TrySwapAgain -> {
-                TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
-            }
             JupiterTransactionDismissResult.ManualSlippageChangeNeeded -> {
-                TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
+                openSwapSettingsScreen()
             }
             is JupiterTransactionDismissResult.SlippageChangeNeeded -> {
-                TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
+                presenter.changeSlippage(result.newSlippageValue)
+                showUiKitSnackBar(
+                    message = getString(R.string.swap_main_slippage_changed, result.newSlippageValue.toString()),
+                    actionButtonResId = R.string.swap_main_slippage_changed_details_button,
+                    actionBlock = { openSwapSettingsScreen() }
+                )
             }
+            JupiterTransactionDismissResult.TrySwapAgain -> Unit
         }
     }
 

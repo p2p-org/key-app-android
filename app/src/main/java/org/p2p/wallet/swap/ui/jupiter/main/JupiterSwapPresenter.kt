@@ -118,7 +118,7 @@ class JupiterSwapPresenter(
         }
     }
 
-    override fun onSwapButtonClicked() {
+    override fun onSwapSliderClicked() {
         launch {
             val internalTransactionId = UUID.randomUUID().toString()
             val currentState = currentFeatureState as? SwapState.SwapLoaded ?: return@launch
@@ -151,21 +151,20 @@ class JupiterSwapPresenter(
             when (val result = swapInteractor.swapTokens(currentState.routes[currentState.activeRoute])) {
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Success -> {
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
+                    val transactionState = TransactionState.JupiterSwapSuccess
+                    transactionManager.emitTransactionState(internalTransactionId, transactionState)
+                    view?.showCompleteSlider()
                 }
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
                     // todo also check for slippage error
                     Timber.e(result, "Failed to swap tokens")
-                    transactionManager.emitTransactionState(
-                        transactionId = internalTransactionId,
-                        state = TransactionState.JupiterSwapFailed(
-                            failure = TransactionStateSwapFailureReason.Unknown(result.message.orEmpty())
-                        )
+                    val transactionState = TransactionState.JupiterSwapFailed(
+                        failure = TransactionStateSwapFailureReason.Unknown(result.message.orEmpty())
                     )
+                    transactionManager.emitTransactionState(internalTransactionId, transactionState)
+                    view?.showDefaultSlider()
                 }
             }
-
-            val transactionState = TransactionState.JupiterSwapSuccess
-            transactionManager.emitTransactionState(internalTransactionId, transactionState)
         }
     }
 
@@ -233,6 +232,10 @@ class JupiterSwapPresenter(
 
     override fun reloadFeature() {
         stateManager.onNewAction(SwapStateAction.InitialLoading)
+    }
+
+    override fun changeSlippage(newSlippageValue: Double) {
+        stateManager.onNewAction(SwapStateAction.SlippageChanged(newSlippageValue))
     }
 
     private fun handleNewFeatureState(state: SwapState) {

@@ -128,10 +128,19 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    private fun isBottomSheetDraggable(isDraggable: Boolean) {
+        BottomSheetBehavior.from(requireView().parent as View).isDraggable = isDraggable
+    }
+
     private fun observeState() {
         lifecycleScope.launchWhenCreated {
             transactionManager.getTransactionStateFlow(transactionId).collect { state ->
                 TransitionManager.beginDelayedTransition(binding.root)
+                    isBottomSheetDraggable(
+                        state is TransactionState.Progress ||
+                            state is TransactionState.JupiterSwapSuccess
+                    )
+
                 when (state) {
                     is TransactionState.Progress -> setProgressState()
                     is TransactionState.JupiterSwapSuccess -> setSuccessState()
@@ -169,7 +178,7 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setLowSlippageError(error: TransactionStateSwapFailureReason.LowSlippage) = with(binding) {
-        if (error.currentSlippageValue < SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE) {
+        if (error.currentSlippageValue <= SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE) {
             val newSlippage = getNewSlippage(error.currentSlippageValue)
             progressStateTransaction.setDescriptionText(
                 getString(
@@ -207,6 +216,8 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun getNewSlippage(currentSlippage: Double): Double = when (currentSlippage) {
         in (0.0..0.4) -> 0.5
         in (0.5..0.9) -> 1.0
+        in (1.0..4.9) -> 5.0
+        in (5.0..9.9) -> 10.0
         else -> currentSlippage
     }
 
