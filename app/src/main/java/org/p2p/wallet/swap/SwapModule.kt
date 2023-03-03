@@ -183,8 +183,6 @@ object SwapModule : InjectionModule {
                 widgetMapper = get(),
                 buttonMapper = get(),
                 stateManager = stateManager,
-                rateLoaderTokenA = get(),
-                rateLoaderTokenB = get(),
                 dispatchers = get(),
                 swapInteractor = get(),
                 transactionManager = get()

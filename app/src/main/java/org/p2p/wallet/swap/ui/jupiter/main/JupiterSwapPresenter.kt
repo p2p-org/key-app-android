@@ -122,7 +122,7 @@ class JupiterSwapPresenter(
             val currentState = currentFeatureState as? SwapState.SwapLoaded ?: return@launch
             val transactionDate = Date()
             val tokenBUsdAmount =
-                rateLoaderTokenB.getRate(currentState.tokenB)
+                stateManager.getTokenRate(currentState.tokenB)
                     .filterIsInstance<SwapRateLoaderState.Loaded>()
                     .map { it.rate * currentState.amountTokenB }
                     .flowOn(dispatchers.io)
