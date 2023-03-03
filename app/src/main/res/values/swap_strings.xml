@@ -47,4 +47,15 @@
     <string name="swap_settings_custom_slippage_confirm">Done</string>
 
     <string name="swap_transaction_details_token_amounts">%s %s → %s %s</string>
+    <string name="swap_transaction_details_error_low_slippage">
+        Low slippage s%. We recommend to increase slippage to s% and try again
+    </string>
+    <string name="swap_transaction_details_error_low_slippage_button">
+        Increase slippage and try again
+    </string>
+    <string name="swap_transaction_details_error_unknown">
+        Oops, something went wrong.
+        Please try again later
+    </string>
+
 </resources>

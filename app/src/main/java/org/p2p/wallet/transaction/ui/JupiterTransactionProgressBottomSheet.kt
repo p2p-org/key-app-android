@@ -18,6 +18,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogJupiterSwapTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -64,14 +65,14 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
 
     private val progressStateFormat: String by unsafeLazy { getString(R.string.transaction_progress_title) }
 
-    private var parentListener: JupiterTransactionProgressBottomSheetListener? = null
-    private var isTransactionSucceed: Boolean = true
+    private var parentListener: JupiterTransactionBottomSheetDismissListener? = null
+    private var dismissResult: JupiterTransactionDismissResult = JupiterTransactionDismissResult.IN_PROGRESS
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        parentListener = parentFragment as? JupiterTransactionProgressBottomSheetListener
+        parentListener = parentFragment as? JupiterTransactionBottomSheetDismissListener
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
@@ -130,26 +131,17 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
             transactionManager.getTransactionStateFlow(transactionId).collect { state ->
                 TransitionManager.beginDelayedTransition(binding.root)
                 when (state) {
-                    is TransactionState.Progress -> setProgressState(state)
+                    is TransactionState.Progress -> setProgressState()
                     is TransactionState.JupiterSwapSuccess -> setSuccessState()
-                    is TransactionState.JupiterSwapFailed -> setErrorState(state)
+                    is TransactionState.JupiterSwapFailed -> setErrorState(state.failure)
                     else -> error("Not supported transaction state for this details: $state")
                 }
             }
         }
     }
 
-    private fun setSuccessState() {
-        with(binding) {
-            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_succeeded))
-            progressStateTransaction.setSuccessState()
-            progressStateTransaction.setDescriptionText(R.string.transaction_description_succeeded)
-            buttonDone.setText(R.string.common_done)
-            isTransactionSucceed = true
-        }
-    }
-
-    private fun setProgressState(state: TransactionState.Progress) {
+    private fun setProgressState() {
+        dismissResult = JupiterTransactionDismissResult.IN_PROGRESS
         with(binding) {
             textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_submitted))
             progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
@@ -157,22 +149,46 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setErrorState(state: TransactionState.JupiterSwapFailed) {
+    private fun setSuccessState() {
+        dismissResult = JupiterTransactionDismissResult.SUCCESS
         with(binding) {
-            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
-            progressStateTransaction.setFailedState()
-            progressStateTransaction.setDescriptionText(R.string.transaction_description_failed)
-            buttonDone.setText(R.string.common_close)
+            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_succeeded))
+            progressStateTransaction.setSuccessState()
+            progressStateTransaction.setDescriptionText(R.string.transaction_description_succeeded)
+            buttonDone.setText(R.string.common_done)
+        }
+    }
+
+    private fun setErrorState(reason: TransactionStateSwapFailureReason) {
+        with(binding) {
+            when (reason) {
+                is TransactionStateSwapFailureReason.LowSlippage -> {
+                    dismissResult = JupiterTransactionDismissResult.LOW_SLIPPAGE_ERROR
+
+                    textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
+                    progressStateTransaction.setFailedState()
+                    progressStateTransaction.setDescriptionText(R.string.swap_transaction_details_error_low_slippage)
+                    buttonDone.setText(R.string.swap_transaction_details_error_low_slippage_button)
+                }
+                is TransactionStateSwapFailureReason.Unknown -> {
+                    dismissResult = JupiterTransactionDismissResult.UNKNOWN_ERROR
+
+                    textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
+                    progressStateTransaction.setFailedState()
+                    progressStateTransaction.setDescriptionText(R.string.swap_transaction_details_error_unknown)
+                    buttonDone.setText(R.string.common_try_again)
+                }
+            }
         }
     }
 
     override fun dismissAllowingStateLoss() {
-        parentListener?.onBottomSheetDismissed(isTransactionSucceed)
+        parentListener?.onBottomSheetDismissed(dismissResult)
         super.dismissAllowingStateLoss()
     }
 
     override fun dismiss() {
-        parentListener?.onBottomSheetDismissed(isTransactionSucceed)
+        parentListener?.onBottomSheetDismissed(dismissResult)
         super.dismiss()
     }
 

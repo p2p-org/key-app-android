@@ -36,8 +36,9 @@ import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.transaction.ui.JupiterTransactionBottomSheetDismissListener
+import org.p2p.wallet.transaction.ui.JupiterTransactionDismissResult
 import org.p2p.wallet.transaction.ui.JupiterTransactionProgressBottomSheet
-import org.p2p.wallet.transaction.ui.JupiterTransactionProgressBottomSheetListener
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -51,7 +52,7 @@ private const val EXTRA_OPENED_FROM = "EXTRA_OPENED_FROM"
 class JupiterSwapFragment :
     BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
     JupiterSwapContract.View,
-    JupiterTransactionProgressBottomSheetListener {
+    JupiterTransactionBottomSheetDismissListener {
 
     companion object {
         fun create(token: Token.Active? = null, source: SwapOpenedFrom = SwapOpenedFrom.OTHER): JupiterSwapFragment =
@@ -197,26 +198,31 @@ class JupiterSwapFragment :
         )
     }
 
-    override fun onBottomSheetDismissed(isTransactionSucceed: Boolean) {
-        if (isTransactionSucceed) {
-            when (openedFrom) {
-                SwapOpenedFrom.MAIN_SCREEN -> {
-                    presenter.reloadFeature()
-                    mainTabsSwitcher?.navigate(ScreenTab.HOME_SCREEN)
-                }
-                SwapOpenedFrom.OTHER -> {
-                    popBackStack()
-                }
+    override fun onBottomSheetDismissed(result: JupiterTransactionDismissResult) {
+        when (result) {
+            JupiterTransactionDismissResult.IN_PROGRESS -> Unit
+            JupiterTransactionDismissResult.SUCCESS -> {
+                navigateBackOnTransactionSuccess()
+            }
+            JupiterTransactionDismissResult.LOW_SLIPPAGE_ERROR -> {
+                TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
+            }
+            JupiterTransactionDismissResult.UNKNOWN_ERROR -> {
+                TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
             }
         }
     }
 
-    override fun onSwapTryAgainClicked() {
-        TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
-    }
-
-    override fun onSwapIncreaseSlippageClicked() {
-        TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
+    private fun navigateBackOnTransactionSuccess() {
+        when (openedFrom) {
+            SwapOpenedFrom.MAIN_SCREEN -> {
+                presenter.reloadFeature()
+                mainTabsSwitcher?.navigate(ScreenTab.HOME_SCREEN)
+            }
+            SwapOpenedFrom.OTHER -> {
+                popBackStack()
+            }
+        }
     }
 
     private fun setYellowAlert() {

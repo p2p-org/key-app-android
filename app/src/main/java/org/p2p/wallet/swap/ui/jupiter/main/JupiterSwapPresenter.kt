@@ -153,6 +153,7 @@ class JupiterSwapPresenter(
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                 }
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
+                    // todo also check for slippage error
                     Timber.e(result, "Failed to swap tokens")
                     transactionManager.emitTransactionState(
                         transactionId = internalTransactionId,
