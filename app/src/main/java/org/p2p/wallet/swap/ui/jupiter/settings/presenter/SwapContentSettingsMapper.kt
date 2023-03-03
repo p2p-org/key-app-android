@@ -143,7 +143,7 @@ class SwapContentSettingsMapper(
             TextViewCellModel.Raw(
                 text = TextContainer(
                     tokenBAmount.minus(tokenBAmount.multiply(slippage.doubleValue.toBigDecimal()))
-                        .formatToken(tokenB.decimals)
+                        .formatToken(tokenB.decimals).plus(" ${tokenB.tokenSymbol}")
                 )
             )
         }
