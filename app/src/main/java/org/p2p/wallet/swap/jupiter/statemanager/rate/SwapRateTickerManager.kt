@@ -54,7 +54,7 @@ class SwapRateTickerManager private constructor(
         val newTokenB = state.tokenB.also { currentTokenB = it }
 
         val result = when {
-            !newTokenA.isStable() && newTokenB.isStable() -> {
+            !newTokenA.isStableCoin() && newTokenB.isStableCoin() -> {
                 val newRate = (state.amountTokenB / state.amountTokenA).scaleLong(newTokenB.decimals)
                 "1 ${newTokenA.tokenSymbol} ≈ $newRate ${newTokenB.tokenSymbol}"
             }
@@ -73,9 +73,9 @@ class SwapRateTickerManager private constructor(
     ) {
         if (newTokenA == null || newTokenB == null) return
 
-        val currentTokenSymbolA = currentTokenA?.tokenSymbol
-        val currentTokenSymbolB = currentTokenB?.tokenSymbol
-        if (newTokenA.tokenSymbol == currentTokenSymbolA && newTokenB.tokenSymbol == currentTokenSymbolB) {
+        val currentTokenAMint = currentTokenA?.mintAddress
+        val currentTokenBMint = currentTokenB?.mintAddress
+        if (newTokenA.mintAddress == currentTokenAMint && newTokenB.mintAddress == currentTokenBMint) {
             return
         }
 
@@ -100,7 +100,7 @@ class SwapRateTickerManager private constructor(
      * */
     private suspend fun findTokensRatesState(tokenA: SwapTokenModel, tokenB: SwapTokenModel): SwapRateTickerState {
         val (from, to) = when {
-            !tokenA.isStable() && tokenB.isStable() -> tokenA to tokenB
+            !tokenA.isStableCoin() && tokenB.isStableCoin() -> tokenA to tokenB
             else -> tokenB to tokenA
         }
 

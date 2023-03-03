@@ -16,7 +16,7 @@ sealed interface SwapTokenModel {
     val tokenSymbol: String
     val iconUrl: String?
 
-    fun isStable(): Boolean = tokenSymbol == USDC_SYMBOL || tokenSymbol == USDT_SYMBOL
+    fun isStableCoin(): Boolean = tokenSymbol == USDC_SYMBOL || tokenSymbol == USDT_SYMBOL
 
     fun equalsByMint(other: SwapTokenModel?): Boolean = this.mintAddress == other?.mintAddress
 
