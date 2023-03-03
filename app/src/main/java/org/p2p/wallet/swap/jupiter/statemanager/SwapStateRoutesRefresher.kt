@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
+import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.utils.fromLamports
@@ -41,6 +42,7 @@ class SwapStateRoutesRefresher(
             tokenB = tokenB,
             amountTokenA = amountTokenA,
         )
+        Timber.i("Jupiter routes fetched: ${updatedRoutes.size}")
 
         val bestRoute = updatedRoutes.getOrNull(activeRouteOrdinal)
             ?: throw SwapFeatureException.RoutesNotFound
@@ -63,6 +65,7 @@ class SwapStateRoutesRefresher(
             route = updatedRoutes[activeRouteOrdinal],
             userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
         )
+        Timber.i("Fresh swap transaction fetched")
 
         state.value = SwapState.SwapLoaded(
             tokenA = tokenA,
