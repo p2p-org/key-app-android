@@ -6,7 +6,6 @@ import org.p2p.ethereumkit.external.api.EthereumNetworkModule
 import org.p2p.ethereumkit.internal.core.EthereumKit
 
 object EthereumKitService {
-
     fun getEthereumKitModules(): List<Module> {
         return listOf(
             EthereumNetworkModule.create(),
