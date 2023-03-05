@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.firstOrNull
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.asUsdSwap
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
@@ -184,8 +184,8 @@ class SwapContentSettingsMapper(
 
         val ratio = swapStateManager.getTokenRate(tokenA)
             .filterIsInstance<SwapRateLoaderState.Loaded>().firstOrNull()
-        val feeUsd = ratio?.let { fee.multiply(it.rate).formatFiat() }
-            ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_fiat_value, usd)) }
+        val feeUsd = ratio?.let { fee.multiply(it.rate) }?.asUsdSwap()
+            ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(usd)) }
 
         this += FinanceBlockCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
@@ -261,8 +261,8 @@ class SwapContentSettingsMapper(
         val feeCell = if (fee != null) {
             val ratio =
                 swapStateManager.getTokenRate(tokenA).filterIsInstance<SwapRateLoaderState.Loaded>().firstOrNull()
-            ratio?.let { fee.multiply(it.rate).formatFiat() }
-                ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_fiat_value, usd)) }
+            ratio?.let { fee.multiply(it.rate) }?.asUsdSwap()
+                ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(usd)) }
         } else {
             null
         }

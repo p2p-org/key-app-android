@@ -3,7 +3,7 @@ package org.p2p.wallet.swap.ui.jupiter.info
 import androidx.annotation.DrawableRes
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.asUsdSwap
 import org.p2p.core.utils.fromLamports
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.FinanceBlockStyle
@@ -162,11 +162,11 @@ class SwapInfoMapper {
                 val rate = state.rate
                 val token = state.token
                 val feeInUsd = marketInfo.lpFee.amountInLamports
-                    .fromLamports(token.decimals).multiply(rate).formatFiat()
+                    .fromLamports(token.decimals).multiply(rate).asUsdSwap()
                 oldCell.copy(
                     rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
                         text = TextViewCellModel.Raw(
-                            text = TextContainer("≈$feeInUsd USD")
+                            text = TextContainer(feeInUsd)
                         ),
                     )
                 )

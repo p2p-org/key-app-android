@@ -3,7 +3,6 @@
     <string name="swap_main_you_receive">You receive</string>
     <string name="swap_main_balance_amount">Balance %s</string>
     <string name="swap_main_available_amount">All %s</string>
-    <string name="swap_main_fiat_value">≈%s USD</string>
     <string name="swap_main_button_loading">Counting…</string>
     <string name="swap_main_button_enter_amount">Enter amount</string>
     <string name="swap_main_button_not_enough_amount">Not enough %s</string>
