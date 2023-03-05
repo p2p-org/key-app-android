@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.baseCellDelegate
-import org.p2p.uikit.components.info_block.infoBlockCellDelegate
+import org.p2p.uikit.components.info_block.InfoBlockCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
@@ -87,7 +87,6 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
 
     private val adapter = SwapSettingsAdapter(
         baseCellDelegate(),
-        infoBlockCellDelegate(),
         swapInfoBannerDelegate(),
     )
 
@@ -152,7 +151,7 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
                         rateLoaderList += getRateLoaderFlow(marketInfo, tokens, loadingCell)
                         loadingCell
                     }
-                    val fullUiList = mapper.mapEmptyLiquidityFee().plus(feeCells)
+                    var fullUiList = mapper.mapEmptyLiquidityFee().plus(feeCells)
                     emit(fullUiList)
 
                     rateLoaderList.merge()
@@ -165,6 +164,7 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
                                 val newCell = mapper.updateLiquidityFee(marketInfo, loadingCell, rateLoaderState)
                                 val newList = fullUiList.toMutableList()
                                     .apply { set(indexOf, newCell) }
+                                fullUiList = newList
                                 emit(newList)
                             }
                         }
@@ -202,9 +202,11 @@ fun swapInfoBannerDelegate(): AdapterDelegate<List<AnyCellItem>> =
 
         bind {
             binding.imageViewBanner.setImageResource(item.banner)
+            binding.infoBlockView.bind(item.infoCell)
         }
     }
 
 data class SwapInfoBannerCellModel(
     @DrawableRes val banner: Int,
+    val infoCell: InfoBlockCellModel
 ) : AnyCellItem
