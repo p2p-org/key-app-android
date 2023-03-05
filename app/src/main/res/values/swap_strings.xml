@@ -24,7 +24,7 @@
     <string name="swap_tokens_section_chosen_token">CHOSEN TOKEN</string>
     <string name="swap_tokens_section_all_tokens">ALL TOKENS</string>
     <string name="swap_tokens_popular_label">popular</string>
-    <string name="swap_tokens_you_pay_only">🤖 You can enter "You pay" field only</string>
+    <string name="swap_tokens_you_pay_only">🤖 You can enter \"You pay\" field only</string>
 
     <string name="swap_settings_route_title">Swapping Through</string>
     <string name="swap_settings_route_best">Best price</string>
