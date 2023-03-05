@@ -181,7 +181,6 @@ class SwapContentSettingsMapper(
             accountFee = accountFee.plus(it)
         }
         val fee = accountFee.fromLamports(tokenA.decimals)
-        if (fee.isZero()) return
         val feeText = fee.formatToken(tokenA.decimals)
 
         val ratio = swapStateManager.getTokenRate(tokenA)

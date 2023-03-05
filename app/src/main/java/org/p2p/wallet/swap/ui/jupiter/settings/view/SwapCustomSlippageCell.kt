@@ -7,6 +7,7 @@ import org.p2p.core.utils.DecimalFormatter
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getString
+import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSwapCustomSlippageBinding
 import org.p2p.wallet.swap.model.MAX_ALLOWED_SLIPPAGE
@@ -53,6 +54,7 @@ fun swapCustomSlippageDelegate(
                 if (text != textInputEditTextCustomSlippage.text?.toString()) {
                     internalOnAmountChanged = null
                     textInputEditTextCustomSlippage.setText(text)
+                    validateSlippage(text)
                     textInputEditTextCustomSlippage.setSelection(text.length)
                     internalOnAmountChanged = { validateSlippage(it) }
                 }
