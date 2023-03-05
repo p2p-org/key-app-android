@@ -66,6 +66,7 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerViewRoutes.attachAdapter(adapter)
+        binding.buttonDone.setOnClickListener { dismiss() }
         lifecycleScope.launchWhenResumed {
             stateManager.observe().collect {
                 adapter.items = getRoutesList(it)

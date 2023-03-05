@@ -18,6 +18,9 @@ import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapSettingsBinding
+import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoBottomSheet
+import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoType
+import org.p2p.wallet.swap.ui.jupiter.routes.SwapSelectRoutesBottomSheet
 import org.p2p.wallet.swap.ui.jupiter.settings.adapter.SwapSettingsAdapter
 import org.p2p.wallet.swap.ui.jupiter.settings.view.swapCustomSlippageDelegate
 import org.p2p.wallet.utils.args
@@ -71,6 +74,14 @@ class JupiterSwapSettingsFragment :
 
     override fun setRatioState(state: TextViewCellModel?) {
         binding.textViewRate.bindOrInvisible(state)
+    }
+
+    override fun showDetailsDialog(type: SwapInfoType) {
+        SwapInfoBottomSheet.show(childFragmentManager, stateManagerKey, type)
+    }
+
+    override fun showRouteDialog() {
+        SwapSelectRoutesBottomSheet.show(childFragmentManager, stateManagerKey)
     }
 
     override fun applyWindowInsets(rootView: View) {

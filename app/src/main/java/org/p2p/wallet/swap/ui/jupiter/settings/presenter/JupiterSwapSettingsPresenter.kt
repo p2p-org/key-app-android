@@ -19,6 +19,7 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.model.jupiter.SwapRateTickerState
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoType
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
 
 private const val AMOUNT_INPUT_DELAY = 400L
@@ -100,7 +101,25 @@ class JupiterSwapSettingsPresenter(
                     view?.bindSettingsList(contentList)
                 }
             }
+            is SwapSettingsPayload -> onDetailsClick(payload)
         }
+    }
+
+    private fun onDetailsClick(settingsPayload: SwapSettingsPayload) {
+        when (settingsPayload) {
+            SwapSettingsPayload.ROUTE ->
+                if (canOpenDetails()) view?.showRouteDialog()
+            SwapSettingsPayload.NETWORK_FEE -> view?.showDetailsDialog(SwapInfoType.NETWORK_FEE)
+            SwapSettingsPayload.CREATION_FEE -> view?.showDetailsDialog(SwapInfoType.ACCOUNT_FEE)
+            SwapSettingsPayload.LIQUIDITY_FEE ->
+                if (canOpenDetails()) view?.showDetailsDialog(SwapInfoType.LIQUIDITY_FEE)
+            SwapSettingsPayload.ESTIMATED_FEE -> Unit
+            SwapSettingsPayload.MINIMUM_RECEIVED -> view?.showDetailsDialog(SwapInfoType.MINIMUM_RECEIVED)
+        }
+    }
+
+    private fun canOpenDetails(): Boolean {
+        return featureState is SwapState.SwapLoaded || featureState is SwapState.LoadingTransaction
     }
 
     override fun onCustomSlippageChange(slippage: Double?) {
