@@ -108,7 +108,11 @@ fun BigDecimal.asNegativeUsdTransaction(): String = asUsdTransaction("-")
 fun BigDecimal.asUsdTransaction(
     transactionSymbol: String
 ): String = if (lessThenMinValue()) "<$ 0.01" else "$transactionSymbol$ ${formatFiat()}"
-fun BigDecimal.asUsdSwap(): String = if (lessThenMinValue()) "<0.01 USD" else "≈${formatFiat()} USD"
+fun BigDecimal.asUsdSwap(): String = when {
+    isZero() -> "0 USD"
+    lessThenMinValue() -> "<0.01 USD"
+    else -> "≈${formatFiat()} USD"
+}
 
 fun Int?.orZero(): Int = this ?: 0
 
