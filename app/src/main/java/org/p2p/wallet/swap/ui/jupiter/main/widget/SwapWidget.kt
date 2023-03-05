@@ -35,6 +35,7 @@ class SwapWidget @JvmOverloads constructor(
     var onAmountChanged: (newAmount: String) -> Unit = {}
     var onAllAmountClick: () -> Unit = {}
     var onChangeTokenClick: () -> Unit = {}
+    var onInputClicked: () -> Unit = {}
 
     init {
         minHeight = 120.toPx()
@@ -47,6 +48,9 @@ class SwapWidget @JvmOverloads constructor(
             viewEditTextClickable.setOnClickListener {
                 if (isEnabled) editTextAmount.focusAndShowKeyboard(true)
             }
+
+            editTextAmount.setOnClickListener { onInputClicked() }
+            textViewShadowAutoSize.setOnClickListener { onInputClicked() }
         }
     }
 

@@ -12,8 +12,8 @@ sealed interface SwapWidgetModel {
         val currencyName: TextViewCellModel? = null,
         val amount: TextViewCellModel? = null,
         val amountMaxDecimals: Int? = null,
-        val balance: TextViewCellModel? = null,
-        val fiatAmount: TextViewCellModel? = null,
+        val balance: TextViewCellModel,
+        val fiatAmount: TextViewCellModel? = null
     ) : SwapWidgetModel
 
     data class Loading(
