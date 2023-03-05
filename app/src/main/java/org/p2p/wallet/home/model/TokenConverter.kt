@@ -8,7 +8,6 @@ import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
-import org.p2p.ethereumkit.external.api.response.TokenMetadataResponse
 import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.user.local.TokenResponse
@@ -26,19 +25,6 @@ object TokenConverter {
             serumV3Usdc = response.extensions?.serumV3Usdc,
             serumV3Usdt = response.extensions?.serumV3Usdt,
             coingeckoId = response.extensions?.coingeckoId
-        )
-
-    fun fromNetwork(address: String, response: TokenMetadataResponse): TokenData =
-        TokenData(
-            mintAddress = address,
-            name = response.tokenName.orEmpty(),
-            symbol = response.symbol.orEmpty(),
-            iconUrl = response.logoUrl,
-            decimals = response.decimals,
-            isWrapped = false,
-            serumV3Usdc = null,
-            serumV3Usdt = null,
-            coingeckoId = null
         )
 
     fun fromNetwork(

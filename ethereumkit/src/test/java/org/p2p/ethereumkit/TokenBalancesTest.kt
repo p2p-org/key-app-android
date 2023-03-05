@@ -1,5 +1,6 @@
 package org.p2p.ethereumkit
 
+import kotlinx.coroutines.delay
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -8,16 +9,15 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import kotlinx.coroutines.test.runTest
-import org.p2p.ethereumkit.external.EthereumModule
-import org.p2p.ethereumkit.external.api.EthereumNetworkModule
-import org.p2p.ethereumkit.external.balance.BalanceRepository
-import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
+import org.koin.dsl.module
+import org.p2p.ethereumkit.external.core.CoroutineDispatchers
+import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.internal.core.EthereumKit
+import kotlin.test.assertIs
 
 class TokenBalancesTest : KoinTest {
 
-    private val repository: BalanceRepository by inject()
-    private val tokenKeyProvider: EthTokenKeyProvider by inject()
+    private val repository: EthereumRepository by inject()
 
     @Before
     fun setup() {
@@ -26,34 +26,21 @@ class TokenBalancesTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
+        allowOverride(true)
         printLogger(Level.DEBUG)
         modules(
-            EthereumNetworkModule.create(),
-            EthereumModule.create()
+            EthereumKitService.getEthereumKitModules(),
         )
+        module {
+            single<CoroutineDispatchers> { TestCoroutineDispatcher() }
+        }
     }
 
     @Test
     fun getBalance() = runTest {
-        val balance = repository.getTokenBalances(tokenKeyProvider.address)
-        val stringBuilder = StringBuilder()
-        balance.balances.map { it.contractAddress }.forEach { address ->
-            val tokenMetadata = repository.getTokenMetadata(
-                contractAddresses = address
-            )
-            val tokenName = tokenMetadata.tokenName
-            val tokenSymbol = tokenMetadata.symbol
-            val tokenDecimals = tokenMetadata.decimals
-            val tokenLogo = tokenMetadata.logoUrl
-            val tokenBalance = balance.balances.first { it.contractAddress == address }.tokenBalance
-            stringBuilder.append("Token Name: $tokenName ")
-            stringBuilder.append("Token Address: $address ")
-            stringBuilder.append("Token Symbol: $tokenSymbol ")
-            stringBuilder.append("Token Balance: $tokenBalance ")
-            stringBuilder.append("Token Decimals: $tokenDecimals ")
-            stringBuilder.append("Token logo: $tokenLogo ")
-            stringBuilder.append("\n")
-        }
-        println(stringBuilder)
+        repository.init(seedPhrase = "apart approve black comfort steel spin real renew tone primary key cherry".split(" "))
+        val result = repository.loadWalletTokens()
+        assert(result.isNotEmpty())
     }
 }
+

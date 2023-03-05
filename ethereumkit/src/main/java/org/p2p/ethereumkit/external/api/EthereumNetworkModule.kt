@@ -9,6 +9,8 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.p2p.ethereumkexternal.core.GsonProvider
+import org.p2p.ethereumkit.external.api.alchemy.AlchemyService
+import org.p2p.ethereumkit.external.api.coingecko.CoinGeckoService
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,12 +19,14 @@ import java.util.logging.Logger
 
 private const val QUALIFIER_ETH_HTTP_CLIENT = "ethereum"
 
-object EthereumNetworkModule {
+internal object EthereumNetworkModule {
 
     fun create(): Module = module {
         single(named(QUALIFIER_ETH_HTTP_CLIENT)) { getOkHttpClient() }
-        single { getRetrofit(get(named(QUALIFIER_ETH_HTTP_CLIENT)),get()) }
-        single { GsonProvider().provide()}
+        single { getRetrofit(get(named(QUALIFIER_ETH_HTTP_CLIENT)), get()) }
+        single { GsonProvider().provide() }
+        single { get<Retrofit>().create(AlchemyService::class.java) }
+        single { get<Retrofit>().create(CoinGeckoService::class.java) }
     }
 
     private fun getOkHttpClient(): OkHttpClient {
@@ -42,13 +46,12 @@ object EthereumNetworkModule {
         return httpClient.build()
     }
 
-    private fun getRetrofit(httpClient: OkHttpClient,gson: Gson): AlchemyService {
-        val retrofit = Retrofit.Builder()
+    private fun getRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
+        return Retrofit.Builder()
             .baseUrl(EthereumNetworkEnvironment.ALCHEMY_DEMO.baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(httpClient)
             .build()
-        return retrofit.create(AlchemyService::class.java)
     }
 }
