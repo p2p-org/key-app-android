@@ -100,6 +100,11 @@ class JupiterSwapPresenter(
                     view?.setSecondTokenWidgetState(widgetMapper.mapTokenBLoading(token = tokenB))
                 }
                 if (tokenA != null) {
+                    widgetAState = widgetMapper.copyAmount(
+                        oldWidgetModel = widgetAState,
+                        token = tokenA,
+                        tokenAmount = newAmount
+                    )
                     getRateTokenA(widgetAModel = widgetAState, tokenA = tokenA, tokenAmount = newAmount)
                 }
                 stateManager.onNewAction(SwapStateAction.CancelSwapLoading)

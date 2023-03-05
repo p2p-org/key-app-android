@@ -10,6 +10,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenType
@@ -36,7 +37,6 @@ class SwapWidgetMapper {
         tokenAmount: BigDecimal
     ): SwapWidgetModel {
         val widgetModel = oldWidgetModel as? SwapWidgetModel.Content ?: return oldWidgetModel
-        val oldAmount = widgetModel.amount as? TextViewCellModel.Raw ?: return oldWidgetModel
         return when (state) {
             SwapRateLoaderState.Empty,
             SwapRateLoaderState.Error,
@@ -45,7 +45,6 @@ class SwapWidgetMapper {
                 fiatAmount = fiatAmount(
                     fiatAmount = tokenAmount.multiply(state.rate)
                 ),
-                amount = tokenAmount(state.token, tokenAmount).copy(textColor = oldAmount.textColor)
             )
             SwapRateLoaderState.Loading -> widgetModel.copy(
                 fiatAmount = textCellSkeleton(
@@ -55,6 +54,16 @@ class SwapWidgetMapper {
                 )
             )
         }
+    }
+
+    fun copyAmount(
+        oldWidgetModel: SwapWidgetModel,
+        token: SwapTokenModel,
+        tokenAmount: BigDecimal,
+    ): SwapWidgetModel {
+        val widgetModel = oldWidgetModel as? SwapWidgetModel.Content ?: return oldWidgetModel
+        val oldAmount = widgetModel.amount as? TextViewCellModel.Raw ?: return oldWidgetModel
+        return widgetModel.copy(amount = tokenAmount(token, tokenAmount).copy(textColor = oldAmount.textColor))
     }
 
     fun mapTokenAAndSaveOldFiatAmount(
