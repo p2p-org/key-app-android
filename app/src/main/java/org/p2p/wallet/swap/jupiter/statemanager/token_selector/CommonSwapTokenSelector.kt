@@ -3,7 +3,7 @@ package org.p2p.wallet.swap.jupiter.statemanager.token_selector
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
-import org.p2p.core.token.findSol
+import org.p2p.core.token.findSolOrThrow
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -55,7 +55,7 @@ class CommonSwapTokenSelector(
                 )
             }
             userHasSol -> {
-                tokenA = SwapTokenModel.UserToken(userTokens.findSol())
+                tokenA = SwapTokenModel.UserToken(userTokens.findSolOrThrow())
                 tokenB = getTokenB(
                     jupiterTokens = jupiterTokens,
                     userTokens = userTokens,
