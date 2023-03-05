@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.ui.jupiter.routes
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -18,6 +19,7 @@ class SwapSelectRoutesMapper {
     fun mapLoadingList(): List<AnyCellItem> = buildList {
         repeat(3) {
             this += FinanceBlockCellModel(
+                styleType = FinanceBlockStyle.BASE_CELL,
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = titleSkeleton(),
                     secondLineText = subtitleSkeleton(),
@@ -48,6 +50,7 @@ class SwapSelectRoutesMapper {
                 ),
                 rightSideCellModel = rightIcon,
                 payload = route,
+                styleType = FinanceBlockStyle.BASE_CELL,
             )
         }
     }
