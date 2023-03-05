@@ -4,6 +4,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 
@@ -12,7 +13,7 @@ interface JupiterSwapContract {
         fun setFirstTokenWidgetState(state: SwapWidgetModel)
         fun setSecondTokenWidgetState(state: SwapWidgetModel)
         fun setButtonState(buttonState: SwapButtonState)
-        fun setRatioState(state: TextViewCellModel)
+        fun setRatioState(state: TextViewCellModel?)
         fun closeScreen()
         fun openChangeTokenAScreen()
         fun openChangeTokenBScreen()
@@ -33,6 +34,6 @@ interface JupiterSwapContract {
         fun onBackPressed()
         fun finishFeature(stateManagerHolderKey: String)
         fun reloadFeature()
-        fun changeSlippage(newSlippageValue: Double)
+        fun changeSlippage(newSlippageValue: Slippage)
     }
 }

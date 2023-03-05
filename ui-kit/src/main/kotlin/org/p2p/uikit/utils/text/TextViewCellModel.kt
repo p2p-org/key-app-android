@@ -3,6 +3,7 @@ package org.p2p.uikit.utils.text
 import androidx.annotation.ColorRes
 import androidx.annotation.Px
 import androidx.annotation.StyleRes
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import android.content.res.ColorStateList
@@ -86,6 +87,11 @@ fun badgeRounded(
 
 fun TextView.bindOrGone(model: TextViewCellModel?) {
     this.isVisible = model != null
+    if (model != null) bind(model)
+}
+
+fun TextView.bindOrInvisible(model: TextViewCellModel?) {
+    this.isInvisible = model == null
     if (model != null) bind(model)
 }
 

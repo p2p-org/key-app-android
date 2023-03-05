@@ -13,10 +13,13 @@ import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapSettingsBinding
 import org.p2p.wallet.swap.ui.jupiter.settings.adapter.SwapSettingsAdapter
+import org.p2p.wallet.swap.ui.jupiter.settings.view.swapCustomSlippageDelegate
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -46,6 +49,7 @@ class JupiterSwapSettingsFragment :
     override val presenter: JupiterSwapSettingsContract.Presenter by inject { parametersOf(stateManagerKey) }
 
     private val adapter = SwapSettingsAdapter(
+        swapCustomSlippageDelegate { presenter.onCustomSlippageChange(it) },
         sectionHeaderCellDelegate(),
         baseCellDelegate(inflateListener = { financeBlock ->
             financeBlock.setOnClickAction { _, item -> presenter.onSettingItemClick(item) }
@@ -63,6 +67,10 @@ class JupiterSwapSettingsFragment :
 
     override fun bindSettingsList(list: List<AnyCellItem>) {
         adapter.items = list
+    }
+
+    override fun setRatioState(state: TextViewCellModel?) {
+        binding.textViewRate.bindOrInvisible(state)
     }
 
     override fun applyWindowInsets(rootView: View) {

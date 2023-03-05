@@ -8,12 +8,19 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
+import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
+import org.p2p.wallet.utils.Base58String
 
 private const val DELAY_IN_MILLIS = 20_000L
 
@@ -22,17 +29,19 @@ private const val TAG = "SwapStateManager"
 class SwapStateManager(
     private val handlers: Set<SwapStateHandler>,
     private val dispatchers: CoroutineDispatchers,
+    private val tokenPricesRepository: TokenPricesRemoteRepository,
 ) : CoroutineScope {
 
     companion object {
         const val DEFAULT_ACTIVE_ROUTE_ORDINAL = 0
-        const val DEFAULT_SLIPPAGE = 0.5
+        val DEFAULT_SLIPPAGE = Slippage.Medium
     }
 
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
     private val state = MutableStateFlow<SwapState>(SwapState.InitialLoading)
     private var activeActionHandleJob: Job? = null
     private var refreshJob: Job? = null
+    private val tokenRatioCache = mutableMapOf<Base58String, SwapTokenRateLoader>()
 
     init {
         onNewAction(SwapStateAction.InitialLoading)
@@ -65,10 +74,7 @@ class SwapStateManager(
         activeActionHandleJob = launch {
             try {
                 handleNewAction(action)
-                val stateAfterHandle = state.value
-                if (stateAfterHandle is SwapState.SwapLoaded) {
-                    startRefreshJob()
-                }
+                if (state.value is SwapState.SwapLoaded) startRefreshJob()
             } catch (cancelled: CancellationException) {
                 Timber.tag(TAG).i(cancelled)
             } catch (featureException: SwapFeatureException) {
@@ -121,5 +127,11 @@ class SwapStateManager(
 
     fun finishWork() {
         coroutineContext.cancelChildren()
+    }
+
+    fun getTokenRate(token: SwapTokenModel): Flow<SwapRateLoaderState> {
+        return tokenRatioCache.getOrPut(token.mintAddress) {
+            SwapTokenRateLoader(tokenPricesRepository)
+        }.getRate(token)
     }
 }

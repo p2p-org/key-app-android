@@ -19,13 +19,10 @@ class SwapEmptySettingsMapper(
 ) {
 
     fun mapEmptyList(
-        slippage: Double,
         tokenB: SwapTokenModel,
     ): List<AnyCellItem> = buildList {
         this += commonMapper.getNetworkFeeCell()
         addMinimumReceivedCell(tokenB)
-        this += commonMapper.createHeader(R.string.swap_settings_slippage_title)
-        this += commonMapper.getSlippageList(slippage)
     }
 
     private fun MutableList<AnyCellItem>.addMinimumReceivedCell(tokenB: SwapTokenModel, amount: BigDecimal? = null) {
