@@ -22,6 +22,7 @@ interface JupiterSwapContract {
         fun showProgressDialog(internalTransactionId: String, transactionDetails: SwapTransactionBottomSheetData)
         fun showDefaultSlider()
         fun showCompleteSlider()
+        fun showFullScreenError()
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.ui.jupiter.tokens
 
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
@@ -122,6 +123,11 @@ class SwapTokensFragment :
 
     override fun setTokenItems(items: List<AnyCellItem>) {
         adapter.setTokenItems(items)
+    }
+
+    override fun showEmptyState(isEmpty: Boolean) {
+        binding.textViewEmpty.isVisible = isEmpty
+        binding.recyclerViewTokens.isVisible = !isEmpty
     }
 
     override fun close() {

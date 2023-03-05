@@ -17,7 +17,7 @@ class SwapButtonMapper {
         SwapButtonState.Disabled(TextContainer(R.string.swap_main_button_route_not_found))
 
     fun mapSameToken(): SwapButtonState.Disabled =
-        SwapButtonState.Disabled(TextContainer(R.string.swap_main_button_route_not_found))
+        SwapButtonState.Disabled(TextContainer(R.string.swap_main_button_same_token))
 
     fun mapTokenAmountNotEnough(tokenA: SwapTokenModel?): SwapButtonState.Disabled =
         tokenA?.tokenSymbol
