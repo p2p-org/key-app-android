@@ -26,6 +26,7 @@ import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.uikit.utils.toPx
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
@@ -119,6 +120,7 @@ class JupiterSwapFragment :
         swapWidgetFrom.onAllAmountClick = { presenter.onAllAmountClick() }
         swapWidgetFrom.onChangeTokenClick = { presenter.onChangeTokenAClick() }
         swapWidgetTo.onChangeTokenClick = { presenter.onChangeTokenBClick() }
+        swapWidgetTo.onInputClicked = { toast(R.string.swap_tokens_you_pay_only) }
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -270,5 +272,13 @@ class JupiterSwapFragment :
 
     override fun closeScreen() {
         popBackStack()
+    }
+
+    override fun showFullScreenError() {
+        with(binding) {
+            scrollView.isVisible = false
+            frameLayoutSliderSend.isVisible = false
+            containerError.isVisible = true
+        }
     }
 }

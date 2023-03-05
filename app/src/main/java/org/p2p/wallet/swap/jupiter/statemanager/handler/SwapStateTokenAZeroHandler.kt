@@ -5,9 +5,11 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_ACTIVE_ROUTE_ORDINAL
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
+import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 
 class SwapStateTokenAZeroHandler(
-    private val swapRoutesRefresher: SwapStateRoutesRefresher
+    private val swapRoutesRefresher: SwapStateRoutesRefresher,
+    private val swapValidator: SwapValidator
 ) : SwapStateHandler {
 
     override fun canHandle(state: SwapState): Boolean = state is SwapState.TokenAZero
@@ -35,9 +37,11 @@ class SwapStateTokenAZeroHandler(
             }
             is SwapStateAction.TokenAChanged -> {
                 stateFlow.value = oldState.copy(tokenA = action.newTokenA)
+                swapValidator.validateIsSameTokens(tokenA = action.newTokenA, tokenB = oldState.tokenB)
             }
             is SwapStateAction.TokenBChanged -> {
                 stateFlow.value = oldState.copy(tokenB = action.newTokenB)
+                swapValidator.validateIsSameTokens(tokenA = oldState.tokenA, tokenB = action.newTokenB)
             }
             SwapStateAction.InitialLoading -> {
                 stateFlow.value = SwapState.InitialLoading
