@@ -29,27 +29,31 @@ import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 class SwapInfoMapper {
 
     fun mapNetworkFee(): List<AnyCellItem> = buildList {
-        this += SwapInfoBannerCellModel(banner = R.drawable.ic_welcome)
-        this += InfoBlockCellModel(
-            icon = getIcon(R.drawable.ic_lightning),
-            firstLineText = TextViewCellModel.Raw(
-                text = TextContainer(R.string.swap_info_details_network_fee_title)
-            ),
-            secondLineText = TextViewCellModel.Raw(
-                text = TextContainer(R.string.swap_info_details_network_fee_subtitle)
+        this += SwapInfoBannerCellModel(
+            banner = R.drawable.ic_welcome,
+            infoCell = InfoBlockCellModel(
+                icon = getIcon(R.drawable.ic_lightning),
+                firstLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_info_details_network_fee_title)
+                ),
+                secondLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_info_details_network_fee_subtitle)
+                )
             )
         )
     }
 
     fun mapAccountFee(): List<AnyCellItem> = buildList {
-        this += SwapInfoBannerCellModel(banner = R.drawable.ic_wallet_found)
-        this += InfoBlockCellModel(
-            icon = getIcon(R.drawable.ic_lightning),
-            firstLineText = TextViewCellModel.Raw(
-                text = TextContainer(R.string.swap_info_details_account_fee_title)
-            ),
-            secondLineText = TextViewCellModel.Raw(
-                text = TextContainer(R.string.swap_info_details_account_fee_subtitle)
+        this += SwapInfoBannerCellModel(
+            banner = R.drawable.ic_wallet_found,
+            infoCell = InfoBlockCellModel(
+                icon = getIcon(R.drawable.ic_lightning),
+                firstLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_info_details_account_fee_title)
+                ),
+                secondLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_info_details_account_fee_subtitle)
+                )
             )
         )
     }
@@ -72,7 +76,7 @@ class SwapInfoMapper {
         val label = marketInfo.label
         val lpToken = allTokens.find { marketInfo.lpFee.mint == it.mintAddress }
         val secondLineText = lpToken?.let {
-            val feeLamports = lpToken.decimals.let { marketInfo.lpFee.amountInLamports.fromLamports(it) }
+            val feeLamports = lpToken.decimals.let { marketInfo.lpFee.amountInLamports.fromLamports(lpToken.decimals) }
             TextViewCellModel.Raw(
                 text = TextContainer("$feeLamports ${lpToken.tokenSymbol}")
             )
@@ -103,38 +107,42 @@ class SwapInfoMapper {
     )
 
     fun mapEmptyLiquidityFee(): List<AnyCellItem> = buildList {
-        this += SwapInfoBannerCellModel(banner = R.drawable.ic_wallet_found)
-        this += InfoBlockCellModel(
-            icon = getIcon(R.drawable.ic_lightning),
-            firstLineText = TextViewCellModel.Raw(
-                text = TextContainer(R.string.swap_info_details_liquidity_fee_title)
-            ),
-            secondLineText = TextViewCellModel.Raw(
-                text = TextContainer(R.string.swap_info_details_liquidity_fee_subtitle)
+        this += SwapInfoBannerCellModel(
+            banner = R.drawable.ic_fee_banner,
+            infoCell = InfoBlockCellModel(
+                icon = getIcon(R.drawable.ic_lightning),
+                firstLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_info_details_liquidity_fee_title)
+                ),
+                secondLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_info_details_liquidity_fee_subtitle)
+                )
             )
         )
     }
 
     fun mapMinimumReceived(): List<AnyCellItem> = buildList {
-        this += SwapInfoBannerCellModel(banner = R.drawable.ic_about_earn_3)
-        this += InfoBlockCellModel(
-            icon = IconWrapperCellModel.SingleIcon(
-                icon = ImageViewCellModel(
-                    icon = DrawableContainer(R.drawable.ic_lightning),
-                    iconTint = R.color.icons_mountain,
-                    background = DrawableCellModel(tint = R.color.bg_snow),
-                    clippingShape = shapeCircle(),
+        this += SwapInfoBannerCellModel(
+            banner = R.drawable.ic_about_earn_3,
+            infoCell = InfoBlockCellModel(
+                icon = IconWrapperCellModel.SingleIcon(
+                    icon = ImageViewCellModel(
+                        icon = DrawableContainer(R.drawable.ic_lightning),
+                        iconTint = R.color.icons_mountain,
+                        background = DrawableCellModel(tint = R.color.bg_snow),
+                        clippingShape = shapeCircle(),
+                    )
+                ),
+                firstLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_info_details_account_fee_title)
+                ),
+                secondLineText = TextViewCellModel.Raw(
+                    text = TextContainer(R.string.swap_info_details_account_fee_subtitle)
+                ),
+                background = DrawableCellModel(
+                    drawable = shapeDrawable(shapeRoundedAll(12f.toPx())),
+                    tint = org.p2p.uikit.R.color.bg_smoke
                 )
-            ),
-            firstLineText = TextViewCellModel.Raw(
-                text = TextContainer(R.string.swap_info_details_account_fee_title)
-            ),
-            secondLineText = TextViewCellModel.Raw(
-                text = TextContainer(R.string.swap_info_details_account_fee_subtitle)
-            ),
-            background = DrawableCellModel(
-                drawable = shapeDrawable(shapeRoundedAll(12f.toPx())),
-                tint = org.p2p.uikit.R.color.bg_smoke
             )
         )
     }
