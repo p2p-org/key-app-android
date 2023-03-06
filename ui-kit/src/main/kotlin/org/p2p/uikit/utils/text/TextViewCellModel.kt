@@ -72,9 +72,9 @@ data class TextViewBackgroundModel(
 
 fun badgePadding(
     @Px left: Int = 8.toPx(),
-    @Px top: Int = 0.toPx(),
+    @Px top: Int = 1.toPx(),
     @Px right: Int = 8.toPx(),
-    @Px bottom: Int = 0.toPx(),
+    @Px bottom: Int = 3.toPx(),
 ): InitialViewPadding = InitialViewPadding(left, top, right, bottom)
 
 fun badgeRounded(
