@@ -8,6 +8,7 @@ import java.math.BigInteger
 
 data class EthTokenMetadata(
     val contractAddress: EthAddress,
+    val mintAddress: String,
     val balance: BigInteger,
     val decimals: Int,
     val logoUrl: String,
@@ -18,10 +19,12 @@ data class EthTokenMetadata(
 
 internal fun mapToTokenMetadata(
     balanceResponse: TokenBalanceResponse,
-    metadata: TokenMetadataResponse
+    metadata: TokenMetadataResponse,
+    mintAddress: String
 ): EthTokenMetadata {
     return EthTokenMetadata(
         contractAddress = balanceResponse.contractAddress,
+        mintAddress = mintAddress,
         balance = balanceResponse.tokenBalance,
         decimals = metadata.decimals,
         logoUrl = metadata.logoUrl.orEmpty(),
