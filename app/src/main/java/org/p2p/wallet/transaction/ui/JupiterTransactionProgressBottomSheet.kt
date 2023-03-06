@@ -180,8 +180,8 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setLowSlippageError(error: TransactionStateSwapFailureReason.LowSlippage) = with(binding) {
-        if (error.currentSlippageValue <= SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE) {
-            val newSlippage = getNewSlippage(error.currentSlippageValue)
+        if (error.currentSlippageValue.doubleValue <= SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE) {
+            val newSlippage = getNewSlippage(error.currentSlippageValue.doubleValue)
             progressStateTransaction.setDescriptionText(
                 getString(
                     R.string.swap_transaction_details_error_low_slippage,

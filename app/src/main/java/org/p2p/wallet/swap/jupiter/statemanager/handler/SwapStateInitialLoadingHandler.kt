@@ -1,11 +1,11 @@
 package org.p2p.wallet.swap.jupiter.statemanager.handler
 
-import org.p2p.wallet.swap.jupiter.statemanager.SwapState
-import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
-import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_SLIPPAGE
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.swap.jupiter.statemanager.SwapState
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_SLIPPAGE
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.SwapInitialTokenSelector
 
 class SwapStateInitialLoadingHandler(
@@ -20,8 +20,6 @@ class SwapStateInitialLoadingHandler(
         state: SwapState,
         action: SwapStateAction
     ) = withContext(dispatchers.io) {
-        val oldState = state as SwapState.InitialLoading
-
         when (action) {
             is SwapStateAction.InitialLoading -> {
                 stateFlow.value = SwapState.InitialLoading
