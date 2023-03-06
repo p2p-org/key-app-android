@@ -8,7 +8,6 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.api.CryptoCompareApi
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.user.repository.prices.TokenAddress
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
@@ -38,16 +37,6 @@ class TokenPricesCryptoCompareRepository(
             price = priceValue.asBigDecimal.scaleMedium()
         )
     }
-
-    override suspend fun getTokenPricesByAddressesMap(
-        tokenAddresses: List<TokenAddress>,
-        targetCurrency: String
-    ): Map<TokenAddress, TokenPrice> = throw UnsupportedOperationException("method not implemented")
-
-    override suspend fun getTokenPriceByAddress(
-        tokenAddress: TokenAddress,
-        targetCurrency: String
-    ): TokenPrice = throw UnsupportedOperationException("method not implemented")
 
     override suspend fun getTokenPriceByIds(
         tokenIds: List<TokenId>,
