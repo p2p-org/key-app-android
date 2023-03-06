@@ -5,7 +5,7 @@ import java.math.BigInteger
 const val ADDRESS_SIZE = 160
 const val ADDRESS_LENGTH_IN_HEX = ADDRESS_SIZE shr 2
 
-object EthereumUtils {
+internal object EthereumUtils {
 
     /**
      * convert string key to BigInteger to use in keyPair

@@ -1,24 +1,23 @@
 package org.p2p.ethereumkit.external.balance
 
 import com.google.gson.Gson
-import com.google.gson.JsonElement
-import org.p2p.ethereumkit.external.api.AlchemyService
+import org.p2p.ethereumkit.external.api.alchemy.AlchemyService
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
-import org.p2p.ethereumkit.external.api.request.GetBalanceJsonRpc
-import org.p2p.ethereumkit.external.api.request.GetTokenBalancesJsonRpc
-import org.p2p.ethereumkit.external.api.request.GetTokenMetadataJsonRpc
-import org.p2p.ethereumkit.external.api.response.TokenBalancesResponse
-import org.p2p.ethereumkit.external.api.response.TokenMetadataResponse
+import org.p2p.ethereumkit.external.api.alchemy.request.GetBalanceJsonRpc
+import org.p2p.ethereumkit.external.api.alchemy.request.GetTokenBalancesJsonRpc
+import org.p2p.ethereumkit.external.api.alchemy.request.GetTokenMetadataJsonRpc
+import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalancesResponse
+import org.p2p.ethereumkit.external.api.alchemy.response.TokenMetadataResponse
 import org.p2p.ethereumkit.internal.models.EthAddress
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import java.math.BigInteger
 import java.net.URI
 
-internal class EthereumBalanceRepository(
+internal class EthereumTokensRemoteRepository(
     private val alchemyService: AlchemyService,
     private val networkEnvironment: EthereumNetworkEnvironment,
     private val gson: Gson
-) : BalanceRepository {
+) : EthereumTokensRepository {
 
     override suspend fun getWalletBalance(address: EthAddress): BigInteger {
         val request = GetBalanceJsonRpc(
@@ -33,9 +32,13 @@ internal class EthereumBalanceRepository(
         return request.parseResponse(response, gson)
     }
 
-    override suspend fun getTokenBalances(address: EthAddress): TokenBalancesResponse {
+    override suspend fun getTokenBalances(
+        address: EthAddress,
+        tokenAddresses: List<EthAddress>
+    ): TokenBalancesResponse {
         val request = GetTokenBalancesJsonRpc(
-            address = address
+            address = address,
+            tokenAddresses = tokenAddresses
         )
         val requestGson = gson.toJson(request)
         val response = alchemyService.launch(
@@ -56,6 +59,6 @@ internal class EthereumBalanceRepository(
             jsonRpc = requestGson
         )
 
-        return request.parseResponse(response,gson)
+        return request.parseResponse(response, gson)
     }
 }
