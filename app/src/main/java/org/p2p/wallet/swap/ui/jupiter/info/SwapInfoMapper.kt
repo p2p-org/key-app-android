@@ -170,7 +170,9 @@ class SwapInfoMapper {
                 val rate = state.rate
                 val token = state.token
                 val feeInUsd = marketInfo.lpFee.amountInLamports
-                    .fromLamports(token.decimals).multiply(rate).asUsdSwap()
+                    .fromLamports(token.decimals)
+                    .multiply(rate)
+                    .asUsdSwap()
                 oldCell.copy(
                     rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
                         text = TextViewCellModel.Raw(
