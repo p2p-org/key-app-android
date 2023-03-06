@@ -24,13 +24,14 @@ import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.text.bind
+import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
@@ -142,23 +143,23 @@ class JupiterSwapFragment :
         when (buttonState) {
             is SwapButtonState.Disabled -> {
                 buttonError.isInvisible = false
-                sliderSend.isInvisible = true
+                sliderSend.isVisible = false
                 buttonError.bind(buttonState.text)
             }
             is SwapButtonState.Hide -> {
                 buttonError.isInvisible = true
-                sliderSend.isInvisible = true
+                sliderSend.isVisible = false
             }
             is SwapButtonState.ReadyToSwap -> {
                 buttonError.isInvisible = true
-                sliderSend.isInvisible = false
+                sliderSend.isVisible = true
                 sliderSend.setActionText(buttonState.text)
             }
         }
     }
 
-    override fun setRatioState(state: TextViewCellModel) {
-        binding.textViewRate.bind(state)
+    override fun setRatioState(state: TextViewCellModel?) {
+        binding.textViewRate.bindOrInvisible(state)
     }
 
     override fun openChangeTokenAScreen() {
@@ -215,7 +216,7 @@ class JupiterSwapFragment :
                 openSwapSettingsScreen()
             }
             is JupiterTransactionDismissResult.SlippageChangeNeeded -> {
-                presenter.changeSlippage(result.newSlippageValue)
+                presenter.changeSlippage(Slippage.parse(result.newSlippageValue))
                 showUiKitSnackBar(
                     message = getString(R.string.swap_main_slippage_changed, result.newSlippageValue.toString()),
                     actionButtonResId = R.string.swap_main_slippage_changed_details_button,

@@ -1,9 +1,12 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
 import java.math.BigDecimal
+import java.math.BigInteger
+import org.p2p.core.utils.fromLamports
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.swap.model.Slippage
 
 sealed interface SwapState {
     object InitialLoading : SwapState
@@ -11,14 +14,14 @@ sealed interface SwapState {
     data class TokenAZero(
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
-        val slippage: Double
+        val slippage: Slippage
     ) : SwapState
 
     data class LoadingRoutes(
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
         val amountTokenA: BigDecimal,
-        val slippage: Double
+        val slippage: Slippage
     ) : SwapState
 
     data class LoadingTransaction(
@@ -28,19 +31,26 @@ sealed interface SwapState {
         val routes: List<JupiterSwapRoute>,
         val activeRoute: Int,
         val amountTokenB: BigDecimal,
-        val slippage: Double
+        val slippage: Slippage
     ) : SwapState
 
     data class SwapLoaded(
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
-        val amountTokenA: BigDecimal,
-        val amountTokenB: BigDecimal,
+        val lamportsTokenA: BigInteger,
+        val lamportsTokenB: BigInteger,
         val routes: List<JupiterSwapRoute>,
         val activeRoute: Int,
         val jupiterSwapTransaction: Base64String,
-        val slippage: Double
-    ) : SwapState
+        val slippage: Slippage
+    ) : SwapState {
+
+        val amountTokenA: BigDecimal
+            get() = lamportsTokenA.fromLamports(tokenA.decimals)
+
+        val amountTokenB: BigDecimal
+            get() = lamportsTokenB.fromLamports(tokenB.decimals)
+    }
 
     sealed interface SwapException : SwapState {
 
