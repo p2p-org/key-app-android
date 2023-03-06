@@ -4,6 +4,9 @@ plugins {
 }
 
 android {
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
     defaultConfig {
         javaCompileOptions {
             annotationProcessorOptions {

@@ -1,12 +1,14 @@
 package org.p2p.ethereumkit.external.repository
 
+import android.util.Log
+import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
-import java.math.BigInteger
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
-import org.p2p.ethereumkit.external.model.ERC20Token
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
@@ -14,7 +16,6 @@ import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.EthAddress
-import java.math.BigDecimal
 
 internal class EthereumKitRepository(
     private val balanceRepository: EthereumTokensRepository,
@@ -42,7 +43,7 @@ internal class EthereumKitRepository(
         tokensPrice.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
         }
-        return@withContext walletTokens
+        walletTokens
     }
 
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {
@@ -52,13 +53,19 @@ internal class EthereumKitRepository(
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
         val publicKey = tokenKeyProvider?.publicKey ?: error("init function wasn't called")
-        val tokenAddresses = ERC20Token.values().map { EthAddress(it.contractAddress) }
-        return@withContext balanceRepository.getTokenBalances(address = publicKey, tokenAddresses = tokenAddresses)
+        val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
+        balanceRepository.getTokenBalances(address = publicKey, tokenAddresses = tokenAddresses)
             .balances
-            .map { token ->
+            .mapNotNull { token ->
+                val mintAddress = ERC20Tokens.findToken(token.contractAddress)
+                    ?.mintAddress
+                    ?: return@mapNotNull kotlin.run {
+                        Log.i(this::class.simpleName,"ETH Token not found for ${token.contractAddress}")
+                        null
+                    }
+
                 async {
                     val metadata = balanceRepository.getTokenMetadata(token.contractAddress)
-                    val mintAddress = ERC20Token.findItem(token.contractAddress).mintAddress
                     mapToTokenMetadata(balanceResponse = token, metadata = metadata, mintAddress = mintAddress)
                 }
             }

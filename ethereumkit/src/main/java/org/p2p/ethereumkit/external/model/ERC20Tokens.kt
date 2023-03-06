@@ -65,8 +65,8 @@ enum class ERC20Tokens(val contractAddress: String, val mintAddress: String) {
     );
 
     companion object {
-        fun findToken(contractAddress: EthAddress): ERC20Tokens {
-            return values().first { contractAddress.hex == it.contractAddress }
+        fun findToken(contractAddress: EthAddress): ERC20Tokens? {
+            return values().firstOrNull { contractAddress.hex == it.contractAddress }
         }
     }
 }
