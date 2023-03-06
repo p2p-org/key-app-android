@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
+import android.view.Gravity
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Date
@@ -14,23 +15,26 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.swap.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.statemanager.SwapFeatureException
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
-import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.jupiter.SwapRateTickerState
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
@@ -41,6 +45,7 @@ import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetToken
+import org.p2p.wallet.user.repository.UserLocalRepository
 
 private const val AMOUNT_INPUT_DELAY = 400L
 
@@ -54,6 +59,7 @@ class JupiterSwapPresenter(
     private val transactionManager: TransactionManager,
     private val rateTickerManager: SwapRateTickerManager,
     private val dispatchers: CoroutineDispatchers,
+    private val userLocalRepository: UserLocalRepository
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToScrollPriceImpact = true
@@ -309,6 +315,8 @@ class JupiterSwapPresenter(
     private fun handleSwapLoaded(state: SwapState.SwapLoaded) {
         rateTickerManager.handleJupiterRates(state)
 
+        showRoutesForDebug(state.routes[state.activeRoute], state.slippage)
+
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(
@@ -480,6 +488,38 @@ class JupiterSwapPresenter(
     private fun updateWidgets() {
         view?.setFirstTokenWidgetState(state = widgetAState)
         view?.setSecondTokenWidgetState(state = widgetBState)
+    }
+
+    private fun showRoutesForDebug(bestRoute: JupiterSwapRoute, slippage: Slippage) {
+        val info = buildString {
+            append("Route: ")
+
+            bestRoute.marketInfos.forEachIndexed { index, info ->
+                if (index == 0) {
+                    val fromTokenData = userLocalRepository.findTokenData(info.inputMint.base58Value) ?: return
+                    val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value) ?: return
+                    append(fromTokenData.symbol)
+                    append(" -> ")
+                    append(toTokenData.symbol)
+                    return@forEachIndexed
+                }
+
+                val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value) ?: return
+                append(" -> ")
+                append(toTokenData.symbol)
+            }
+
+            appendLine()
+            appendLine()
+            append("Slippage: ${slippage.percentValue}")
+        }
+
+        view?.showDebugInfo(
+            TextViewCellModel.Raw(
+                text = TextContainer(info),
+                gravity = Gravity.CENTER
+            )
+        )
     }
 
     private fun BigDecimal.toPriceImpactType(): SwapPriceImpact {

@@ -1,8 +1,21 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.LifecycleOwner
+import timber.log.Timber
+import java.math.BigDecimal
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.R
@@ -20,28 +33,16 @@ import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
-import timber.log.Timber
-import java.math.BigDecimal
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import org.p2p.core.utils.Constants
-import org.p2p.core.utils.Constants.SOL_SYMBOL
-import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.wallet.intercom.IntercomDeeplinkManager
-import org.p2p.wallet.user.repository.prices.TokenId
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, Constants.BTC_SYMBOL, Constants.ETH_SYMBOL, Constants.USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
@@ -74,6 +75,8 @@ class HomePresenter(
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
+
+    private var pollingJob: Job? = null
 
     init {
         // TODO maybe we can find better place to start this service
@@ -365,7 +368,11 @@ class HomePresenter(
     }
 
     private fun startPollingForTokens() {
-        tokensPolling.startPolling(onTokensLoaded = ::handleUserTokensLoaded)
+        if (pollingJob?.isActive == true) return
+
+        pollingJob = launch {
+            tokensPolling.startPolling(onTokensLoaded = ::handleUserTokensLoaded)
+        }
     }
 
     private fun getUserBalance(): BigDecimal =
