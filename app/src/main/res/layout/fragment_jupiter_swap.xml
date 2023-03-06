@@ -106,12 +106,12 @@
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
                 android:textColor="@color/text_rose"
                 android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayoutAlert"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textViewFeeInform"
-                tools:text="Route: USDC -> SOL" />
+                tools:text="Route: USDC -> SOL"
+                tools:visibility="visible" />
             <!--TODO component-->
             <LinearLayout
                 android:id="@+id/linearLayoutAlert"
