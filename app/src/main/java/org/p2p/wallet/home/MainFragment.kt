@@ -1,8 +1,5 @@
 package org.p2p.wallet.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
@@ -11,9 +8,12 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import kotlinx.coroutines.launch
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
@@ -205,7 +205,7 @@ class MainFragment :
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
-                ScreenTab.SWAP_SCREEN -> swapFragmentFactory.swapFragment(source = SwapOpenedFrom.MAIN_SCREEN)
+                ScreenTab.SWAP_SCREEN -> swapFragmentFactory.swapFragment(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
                 else -> error("Can't create fragment for $clickedTab")
             }
             tabCachedFragments[itemId] = fragment

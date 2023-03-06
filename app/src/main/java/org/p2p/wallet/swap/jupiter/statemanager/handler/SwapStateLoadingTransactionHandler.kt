@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.jupiter.statemanager.handler
 
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
@@ -11,6 +12,7 @@ import org.p2p.wallet.swap.model.Slippage
 
 class SwapStateLoadingTransactionHandler(
     private val routesRefresher: SwapStateRoutesRefresher,
+    private val analytics: JupiterSwapMainScreenAnalytics
 ) : SwapStateHandler {
 
     override fun canHandle(state: SwapState): Boolean = state is SwapState.LoadingTransaction
@@ -33,6 +35,7 @@ class SwapStateLoadingTransactionHandler(
             SwapStateAction.SwitchTokens -> {
                 tokenA = oldState.tokenB
                 tokenB = oldState.tokenA
+                analytics.logTokensSwitchClicked(tokenA, tokenB)
             }
             is SwapStateAction.TokenAAmountChanged -> amountTokenA = action.newAmount
             is SwapStateAction.TokenAChanged -> tokenA = action.newTokenA

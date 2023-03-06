@@ -4,6 +4,7 @@ continuation_indent_size = 4
 insert_final_newline = true
 max_line_length = 120
 disabled_rules = import-ordering
+ij_kotlin_imports_layout = androidx.**,android.**,*,java.**,javax.**,kotlin.**,kotlinx.**,org.p2p.**,^
 
 [**/test/**.kt]
 max_line_length=off

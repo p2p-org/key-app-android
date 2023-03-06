@@ -22,6 +22,7 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -116,7 +117,7 @@ class TokenHistoryFragment :
                 replaceFragment(NewSearchFragment.create(tokenForHistory))
             }
             ActionButton.SWAP_BUTTON -> {
-                replaceFragment(swapFragmentFactory.swapFragment(tokenForHistory))
+                replaceFragment(swapFragmentFactory.swapFragment(tokenForHistory, SwapOpenedFrom.TOKEN_SCREEN))
             }
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())

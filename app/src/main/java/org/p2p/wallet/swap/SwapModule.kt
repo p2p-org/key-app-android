@@ -200,7 +200,8 @@ object SwapModule : InjectionModule {
                 dispatchers = get(),
                 swapInteractor = get(),
                 transactionManager = get(),
-                userLocalRepository = get()
+                userLocalRepository = get(),
+                analytics = get()
             )
         } bind JupiterSwapContract.Presenter::class
 
