@@ -178,7 +178,7 @@ class JupiterSwapPresenter(
                     // todo also check for slippage error
                     Timber.e(result, "Failed to swap tokens")
                     val causeFailure = if (result.cause is JupiterSwapInteractor.LowSlippageRpcError) {
-                        TransactionStateSwapFailureReason.LowSlippage(currentState.slippage.doubleValue)
+                        TransactionStateSwapFailureReason.LowSlippage(currentState.slippage)
                     } else {
                         TransactionStateSwapFailureReason.Unknown(result.message.orEmpty())
                     }
