@@ -14,8 +14,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_back"
         app:menu="@menu/menu_jupiter_swap"
+        app:navigationIcon="@drawable/ic_back"
         app:title="@string/main_swap" />
 
     <TextView
@@ -98,6 +98,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/swapWidgetTo" />
 
+            <TextView
+                android:id="@+id/textViewDebug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+                android:textColor="@color/text_rose"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayoutAlert"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewFeeInform"
+                tools:text="Route: USDC -> SOL" />
             <!--TODO component-->
             <LinearLayout
                 android:id="@+id/linearLayoutAlert"
@@ -113,7 +127,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewFeeInform"
+                app:layout_constraintTop_toBottomOf="@+id/textViewDebug"
                 tools:background="@color/bg_light_sun"
                 tools:visibility="visible">
 
@@ -180,6 +194,52 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/containerError"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/common_sorry"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            app:drawableTopCompat="@drawable/ic_cat" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/sell_error_body_message"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonTryAgain"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
+            android:text="@string/common_try_again"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

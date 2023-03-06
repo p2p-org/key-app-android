@@ -14,38 +14,25 @@
         android:layout_marginTop="6dp"
         android:background="@drawable/shape_bottomsheet_pointer"
         android:backgroundTint="@color/bg_rain"
-        app:layout_constraintBottom_toTopOf="@+id/textViewHeader"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerViewRoutes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textViewHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="18dp"
-        android:text="@string/swap_select_routes_header"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerViewRoutes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewTop" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewRoutes"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:clipToPadding="false"
         android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/buttonDone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewHeader" />
+        app:layout_constraintTop_toBottomOf="@+id/viewTop" />
 
 
     <org.p2p.uikit.components.UiKitButton
@@ -56,9 +43,9 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/bg_rain"
+        android:backgroundTint="@color/bg_night"
         android:text="@string/swap_settings_custom_slippage_confirm"
-        android:textColor="@color/text_mountain"
+        android:textColor="@color/text_snow"
         app:cornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

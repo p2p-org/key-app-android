@@ -15,6 +15,8 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
+import org.p2p.wallet.infrastructure.swap.JupiterSelectedSwapTokenStorage
+import org.p2p.wallet.infrastructure.swap.JupiterSelectedSwapTokenStorageContract
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.api.OrcaApi
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
@@ -62,12 +64,14 @@ import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
+import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoMapper
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapContract
 import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapPresenter
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
+import org.p2p.wallet.swap.ui.jupiter.routes.SwapSelectRoutesMapper
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
 import org.p2p.wallet.swap.ui.jupiter.settings.presenter.JupiterSwapSettingsPresenter
 import org.p2p.wallet.swap.ui.jupiter.settings.presenter.SwapCommonSettingsMapper
@@ -162,6 +166,8 @@ object SwapModule : InjectionModule {
     }
 
     private fun Module.initJupiterSwap() {
+        factoryOf(::JupiterSelectedSwapTokenStorage) bind JupiterSelectedSwapTokenStorageContract::class
+
         single { get<Retrofit>(named(JUPITER_RETROFIT_QUALIFIER)).create<SwapJupiterApi>() }
 
         factoryOf(::JupiterSwapRoutesMapper)
@@ -193,7 +199,8 @@ object SwapModule : InjectionModule {
                 stateManager = stateManager,
                 dispatchers = get(),
                 swapInteractor = get(),
-                transactionManager = get()
+                transactionManager = get(),
+                userLocalRepository = get()
             )
         } bind JupiterSwapContract.Presenter::class
 
@@ -209,12 +216,14 @@ object SwapModule : InjectionModule {
                     jupiterTokensRepository = get(),
                     homeLocalRepository = get(),
                     dispatchers = get(),
+                    selectedSwapTokenStorage = get()
                 )
             } else {
                 PreinstallTokenASelector(
                     jupiterTokensRepository = get(),
                     dispatchers = get(),
                     homeLocalRepository = get(),
+                    savedSelectedSwapTokenStorage = get(),
                     preinstallTokenA = token,
                 )
             }
@@ -250,6 +259,7 @@ object SwapModule : InjectionModule {
                 SwapStateManager(
                     dispatchers = get(),
                     handlers = handlers,
+                    selectedSwapTokenStorage = get(),
                     tokenPricesRepository = get(),
                 )
             }
@@ -270,6 +280,8 @@ object SwapModule : InjectionModule {
         }
 
         factoryOf(::SwapCommonSettingsMapper)
+        factoryOf(::SwapInfoMapper)
+        factoryOf(::SwapSelectRoutesMapper)
         factoryOf(::SwapEmptySettingsMapper)
         factoryOf(::SwapLoadingSettingsMapper)
         factory { (stateManagerHolderKey: String) ->

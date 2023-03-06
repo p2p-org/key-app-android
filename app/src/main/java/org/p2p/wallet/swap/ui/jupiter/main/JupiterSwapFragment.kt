@@ -24,8 +24,11 @@ import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.bind
 import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.uikit.utils.toPx
+import org.p2p.uikit.utils.toast
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
@@ -89,36 +92,46 @@ class JupiterSwapFragment :
             imageViewSwapTokens.setOnClickListener {
                 presenter.switchTokens()
             }
-            val onBackPressed = { presenter.onBackPressed() }
-            toolbar.setNavigationOnClickListener { onBackPressed() }
-            when (openedFrom) {
-                SwapOpenedFrom.MAIN_SCREEN -> {
-                    toolbar.navigationIcon = null
-                }
-                SwapOpenedFrom.OTHER -> {
-                    requireActivity().onBackPressedDispatcher
-                        .addCallback(viewLifecycleOwner) { onBackPressed() }
-                }
-            }
-
             sliderSend.onSlideCompleteListener = { presenter.onSwapSliderClicked() }
 
-            toolbar.setOnMenuItemClickListener { item ->
-                if (item.itemId == R.id.settingsMenuItem) {
-                    openSwapSettingsScreen()
-                    true
-                } else {
-                    false
-                }
+            textViewDebug.isVisible = BuildConfig.DEBUG
+
+            setupToolbar()
+        }
+    }
+
+    private fun FragmentJupiterSwapBinding.setupToolbar() {
+        val onBackPressed = { presenter.onBackPressed() }
+        toolbar.setNavigationOnClickListener { onBackPressed() }
+
+        when (openedFrom) {
+            SwapOpenedFrom.MAIN_SCREEN -> {
+                toolbar.navigationIcon = null
+            }
+            SwapOpenedFrom.OTHER -> {
+                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { onBackPressed() }
+            }
+        }
+
+        toolbar.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.settingsMenuItem) {
+                openSwapSettingsScreen()
+                true
+            } else {
+                false
             }
         }
     }
 
     private fun setupWidgetsActionCallbacks() = with(binding) {
+        if (openedFrom == SwapOpenedFrom.OTHER) {
+            swapWidgetFrom.focusAndShowKeyboard()
+        }
         swapWidgetFrom.onAmountChanged = { presenter.onTokenAmountChange(it) }
         swapWidgetFrom.onAllAmountClick = { presenter.onAllAmountClick() }
         swapWidgetFrom.onChangeTokenClick = { presenter.onChangeTokenAClick() }
         swapWidgetTo.onChangeTokenClick = { presenter.onChangeTokenBClick() }
+        swapWidgetTo.onInputClicked = { toast(R.string.swap_tokens_you_pay_only) }
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -270,5 +283,17 @@ class JupiterSwapFragment :
 
     override fun closeScreen() {
         popBackStack()
+    }
+
+    override fun showFullScreenError() {
+        with(binding) {
+            scrollView.isVisible = false
+            frameLayoutSliderSend.isVisible = false
+            containerError.isVisible = true
+        }
+    }
+
+    override fun showDebugInfo(cellModel: TextViewCellModel) {
+        binding.textViewDebug.bind(cellModel)
     }
 }

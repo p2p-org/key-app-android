@@ -39,17 +39,21 @@ class SwapTokensInteractor(
         }
     }
 
-    suspend fun getAllTokensA(): List<SwapTokenModel> {
+    suspend fun getAllTokens(): List<SwapTokenModel> {
         val userTokens = homeLocalRepository.getUserTokens()
         val jupiterTokens = swapTokensRepository.getTokens()
-        val tokenA = getCurrentTokenA()
 
         val userTokensModel = userTokens.map(SwapTokenModel::UserToken)
         val jupiterTokensModel = jupiterTokens.map(SwapTokenModel::JupiterToken)
             .filter { it.mintAddress !in userTokensModel.map(SwapTokenModel.UserToken::mintAddress) }
         val allTokens = userTokensModel + jupiterTokensModel
 
-        return allTokens.filter { it.notSelectedToken(tokenA) }
+        return allTokens
+    }
+
+    suspend fun getAllTokensA(): List<SwapTokenModel> {
+        val tokenA = getCurrentTokenA()
+        return getAllTokens().filter { it.notSelectedToken(tokenA) }
     }
 
     suspend fun getAllAvailableTokensB(): List<SwapTokenModel> {
@@ -67,16 +71,28 @@ class SwapTokensInteractor(
     }
 
     suspend fun searchToken(tokenMode: SwapTokensListMode, symbolOrName: String): List<SwapTokenModel> {
-        return when (tokenMode) {
+        val tokens = when (tokenMode) {
             SwapTokensListMode.TOKEN_A -> getAllTokensA()
             SwapTokensListMode.TOKEN_B -> getAllAvailableTokensB()
         }
-            .filter { filterBySymbolOrName(swapToken = it, querySymbolOrName = symbolOrName) }
+
+        return filterSwapTokens(tokens, symbolOrName)
     }
 
-    private fun filterBySymbolOrName(swapToken: SwapTokenModel, querySymbolOrName: String): Boolean {
-        return swapToken.tokenSymbol.startsWith(querySymbolOrName, ignoreCase = true) ||
-            swapToken.tokenName.startsWith(querySymbolOrName, ignoreCase = true)
+    private fun filterSwapTokens(swapTokens: List<SwapTokenModel>, query: String): List<SwapTokenModel> {
+        val filteredList = mutableListOf<SwapTokenModel>()
+
+        // Filter items that start with the query
+        swapTokens.filterTo(filteredList) {
+            it.tokenSymbol.startsWith(query, ignoreCase = true)
+        }
+
+        // Filter items that contain the query
+        swapTokens.filterTo(filteredList) {
+            it.tokenSymbol.contains(query, ignoreCase = true) && !it.tokenSymbol.startsWith(query, ignoreCase = true)
+        }
+
+        return filteredList
     }
 
     private fun SwapTokenModel.notSelectedToken(selectedTokenMint: SwapTokenModel): Boolean {
