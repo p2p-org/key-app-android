@@ -33,7 +33,7 @@ class UserInteractor(
 
     fun findTokenData(mintAddress: String): Token? {
         val tokenData = userLocalRepository.findTokenData(mintAddress)
-        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.symbol) }
+        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.coingeckoId) }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
@@ -129,7 +129,7 @@ class UserInteractor(
 
     private fun findTokenDataBySymbol(symbol: String): Token? {
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
-        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.symbol) }
+        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.coingeckoId) }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 

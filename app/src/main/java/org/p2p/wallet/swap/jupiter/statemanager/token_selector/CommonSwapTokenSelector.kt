@@ -4,7 +4,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.token.findSolOrThrow
-import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.USDC_SYMBOL
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSelectedSwapTokenStorageContract
@@ -27,10 +28,10 @@ class CommonSwapTokenSelector(
         val userTokens = userTokensJob.await()
 
         val userHasUsdc = userTokens.any { it.isUSDC }
-        val userHasSol = userTokens.any { it.isSOL }
+        val userHasSol = userTokens.any { it.isSOL && !it.isZero }
         val jupiterMints = jupiterTokens.map { it.tokenMint.base58Value }
         val userTokensContainsJupiter = userTokens.filter {
-            jupiterMints.contains(it.mintAddress)
+            jupiterMints.contains(it.mintAddress) && !it.isZero
         }
         val userTokenWithMaxAmount = userTokensContainsJupiter.maxByOrNull { it.total }
 
@@ -72,10 +73,10 @@ class CommonSwapTokenSelector(
                     savedSwapTokenB = savedSelectedTokenMintB
                 )
             }
-            // not have any tokens
+            // no any tokens
             else -> {
-                val jupiterUsdc = jupiterTokens.first { it.tokenSymbol == Constants.USDC_SYMBOL }
-                val jupiterSol = jupiterTokens.first { it.tokenMint.base58Value == Constants.WRAPPED_SOL_MINT }
+                val jupiterUsdc = jupiterTokens.first { it.tokenSymbol == USDC_SYMBOL }
+                val jupiterSol = jupiterTokens.first { it.tokenMint.base58Value == WRAPPED_SOL_MINT }
                 tokenA = SwapTokenModel.JupiterToken(jupiterUsdc)
                 tokenB = SwapTokenModel.JupiterToken(jupiterSol)
             }

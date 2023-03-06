@@ -1,15 +1,19 @@
 package org.p2p.wallet.swap.jupiter.interactor
 
+import timber.log.Timber
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
+
+private const val LOW_SLIPPAGE_ERROR_CODE = "SlippageToleranceExceeded"
+private const val LOW_SLIPPAGE_ERROR_MESSAGE = "Slippage tolerance exceeded"
 
 class JupiterSwapInteractor(
     private val relaySdkFacade: RelaySdkFacade,
@@ -18,6 +22,8 @@ class JupiterSwapInteractor(
     private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val rpcSolanaRepository: RpcSolanaRepository
 ) {
+    class LowSlippageRpcError(cause: ServerException) : Throwable(cause.message)
+
     sealed interface JupiterSwapTokensResult {
         object Success : JupiterSwapTokensResult
         data class Failure(override val cause: Throwable) : Throwable(), JupiterSwapTokensResult
@@ -42,6 +48,15 @@ class JupiterSwapInteractor(
         )
         Timber.i("Swap tokens success: $firstTransactionSignature")
         JupiterSwapTokensResult.Success
+    } catch (error: ServerException) {
+        val errorMessage = error.message.orEmpty()
+        if (LOW_SLIPPAGE_ERROR_CODE in errorMessage ||
+            LOW_SLIPPAGE_ERROR_MESSAGE in errorMessage
+        ) {
+            JupiterSwapTokensResult.Failure(LowSlippageRpcError(error))
+        } else {
+            JupiterSwapTokensResult.Failure(error)
+        }
     } catch (failure: Throwable) {
         JupiterSwapTokensResult.Failure(failure)
     }

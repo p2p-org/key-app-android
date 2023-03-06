@@ -26,4 +26,9 @@ class FinanceBlockViewHolder(
         binding.root.bind(model)
         onBindListener?.invoke(binding.root, model)
     }
+
+    inline fun <reified T : Any> getPayload(): T = this.item.payload as T
 }
+
+val RecyclerView.ViewHolder?.asFinanceCell: FinanceBlockViewHolder?
+    get() = this as? FinanceBlockViewHolder

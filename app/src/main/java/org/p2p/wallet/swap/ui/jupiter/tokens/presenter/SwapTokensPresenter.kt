@@ -1,6 +1,8 @@
 package org.p2p.wallet.swap.ui.jupiter.tokens.presenter
 
+import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.swap.jupiter.interactor.SwapTokensInteractor
@@ -25,6 +27,7 @@ class SwapTokensPresenter(
             try {
                 initialLoad()
             } catch (error: Throwable) {
+                Timber.e(error, "Failed to load swap tokens")
                 view.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
@@ -55,7 +58,9 @@ class SwapTokensPresenter(
                 )
             }
         }
+        // todo: optimize. There are about 800~ items being set at once, we need to set list partially
         view?.setTokenItems(cellItems)
+        view?.showEmptyState(isEmpty = false)
     }
 
     override fun onSearchTokenQueryChanged(newQuery: String) {
@@ -72,6 +77,9 @@ class SwapTokensPresenter(
                 val searchResult = interactor.searchToken(tokenToChange, newQuery)
                 val cellItems = searchResultMapper.toCellItems(searchResult)
                 view?.setTokenItems(cellItems)
+
+                val isEmpty = cellItems.none { it is FinanceBlockCellModel }
+                view?.showEmptyState(isEmpty = isEmpty)
             } catch (error: Throwable) {
                 view?.setTokenItems(emptyList())
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)

@@ -3,7 +3,6 @@
     <string name="swap_main_you_receive">You receive</string>
     <string name="swap_main_balance_amount">Balance %s</string>
     <string name="swap_main_available_amount">All %s</string>
-    <string name="swap_main_fiat_value">≈%s USD</string>
     <string name="swap_main_button_loading">Counting…</string>
     <string name="swap_main_button_enter_amount">Enter amount</string>
     <string name="swap_main_button_not_enough_amount">Not enough %s</string>
@@ -13,21 +12,24 @@
     <string name="swap_main_fee_inform">Key App doesn\’t make any profit from swap 💚</string>
     <string name="swap_main_confirm_button">Swap %s → %s</string>
     <string name="swap_main_alert">The price is higher due to the large amount of cash lost for the pair of tokens. Split your transaction for few small swaps.</string>
+    <string name="swap_main_slippage_changed">🤖 We changed slippage to %s%%</string>
+    <string name="swap_main_slippage_changed_details_button">OPEN DETAILS</string>
 
     <string name="swap_tokens_token_a_toolbar">Token you pay</string>
     <string name="swap_tokens_token_b_toolbar">Token you receive</string>
     <string name="swap_tokens_toolbar_search_hint">token name</string>
     <string name="swap_tokens_section_search_result">Here\'s what we found</string>
 
-    <string name="swap_tokens_section_chosen_token">Chosen token</string>
-    <string name="swap_tokens_section_all_tokens">All tokens</string>
+    <string name="swap_tokens_section_chosen_token">CHOSEN TOKEN</string>
+    <string name="swap_tokens_section_all_tokens">ALL TOKENS</string>
     <string name="swap_tokens_popular_label">popular</string>
+    <string name="swap_tokens_you_pay_only">🤖 You can enter \"You pay\" field only</string>
 
     <string name="swap_settings_route_title">Swapping Through</string>
     <string name="swap_settings_route_best">Best price</string>
 
     <string name="swap_settings_network_fee_title">Network fee</string>
-    <string name="swap_settings_network_fee_subtitle">Paid by P2P.org</string>
+    <string name="swap_settings_network_fee_subtitle">Paid by Key App</string>
     <string name="swap_settings_network_fee_free">Free</string>
 
     <string name="swap_settings_creation_fee_title">Account Creation fee</string>
@@ -41,10 +43,38 @@
     <string name="swap_settings_minimum_received_subtitle">%s %s</string>
 
     <string name="swap_settings_slippage_custom">Custom</string>
-    <string name="swap_settings_slippage_title">Slippage</string>
+    <string name="swap_settings_slippage_title">SLIPPAGE</string>
     <string name="swap_settings_slippage_hint">%</string>
     <string name="swap_settings_custom_slippage_hint">The slippage could be 0.01–50%</string>
     <string name="swap_settings_custom_slippage_confirm">Done</string>
 
     <string name="swap_transaction_details_token_amounts">%s %s → %s %s</string>
+    <string name="swap_select_routes_header">Swapping Through</string>
+    <string name="swap_transaction_details_error_low_slippage">
+        Low slippage %s%%. We recommend to increase slippage to %s%% and try again
+    </string>
+    <string name="swap_transaction_details_error_low_slippage_manual">
+        Low slippage %s%%. We recommend to increase slippage manually
+    </string>
+    <string name="swap_transaction_details_error_low_slippage_button">
+        Increase slippage and try again
+    </string>
+    <string name="swap_transaction_details_error_unknown">
+        Oops, something went wrong.\nPlease try again later
+    </string>
+
+    <string name="swap_info_details_network_fee_title">Enjoy free transactions!</string>
+    <string name="swap_info_details_network_fee_subtitle">With Key App, all transactions you make on the Solana network are free</string>
+    <string name="swap_info_details_network_fee_done">Got it 👍</string>
+    <string name="swap_info_details_account_fee_title">Account creation fee</string>
+    <string name="swap_info_details_account_fee_subtitle">When you trade the token for the first time, Solana charges a one-time fee for creating an account.</string>
+    <string name="swap_info_details_account_fee_done">Got it 👍</string>
+    <string name="swap_info_details_minimum_received_fee_title">Minimum received</string>
+    <string name="swap_info_details_minimum_received_fee_subtitle">The minimum amount you will receive. If the price slips any further, your transaction will revert.</string>
+    <string name="swap_info_details_minimum_received_fee_done">Done 👍</string>
+    <string name="swap_info_details_liquidity_fee_title">Liquidity fee</string>
+    <string name="swap_info_details_liquidity_fee_subtitle">A fee paid to the liquidity providers</string>
+    <string name="swap_info_details_liquidity_fee_done">Okay 👍</string>
+
+    <string name="swap_info_details_liquidity_cell_title">%s Liquidity fee %s</string>
 </resources>

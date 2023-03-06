@@ -24,20 +24,23 @@ import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.text.bind
+import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.uikit.utils.toPx
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensFragment
 import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.transaction.ui.JupiterTransactionBottomSheetDismissListener
+import org.p2p.wallet.transaction.ui.JupiterTransactionDismissResult
 import org.p2p.wallet.transaction.ui.JupiterTransactionProgressBottomSheet
-import org.p2p.wallet.transaction.ui.JupiterTransactionProgressBottomSheetListener
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -51,7 +54,7 @@ private const val EXTRA_OPENED_FROM = "EXTRA_OPENED_FROM"
 class JupiterSwapFragment :
     BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
     JupiterSwapContract.View,
-    JupiterTransactionProgressBottomSheetListener {
+    JupiterTransactionBottomSheetDismissListener {
 
     companion object {
         fun create(token: Token.Active? = null, source: SwapOpenedFrom = SwapOpenedFrom.OTHER): JupiterSwapFragment =
@@ -99,8 +102,7 @@ class JupiterSwapFragment :
                 }
             }
 
-            sliderSend.onSlideCompleteListener = { sliderSend.showCompleteAnimation() }
-            sliderSend.onSlideCollapseCompleted = { presenter.onSwapButtonClicked() }
+            sliderSend.onSlideCompleteListener = { presenter.onSwapSliderClicked() }
 
             toolbar.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.settingsMenuItem) {
@@ -118,6 +120,7 @@ class JupiterSwapFragment :
         swapWidgetFrom.onAllAmountClick = { presenter.onAllAmountClick() }
         swapWidgetFrom.onChangeTokenClick = { presenter.onChangeTokenAClick() }
         swapWidgetTo.onChangeTokenClick = { presenter.onChangeTokenBClick() }
+        swapWidgetTo.onInputClicked = { toast(R.string.swap_tokens_you_pay_only) }
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -142,23 +145,23 @@ class JupiterSwapFragment :
         when (buttonState) {
             is SwapButtonState.Disabled -> {
                 buttonError.isInvisible = false
-                sliderSend.isInvisible = true
+                sliderSend.isVisible = false
                 buttonError.bind(buttonState.text)
             }
             is SwapButtonState.Hide -> {
                 buttonError.isInvisible = true
-                sliderSend.isInvisible = true
+                sliderSend.isVisible = false
             }
             is SwapButtonState.ReadyToSwap -> {
                 buttonError.isInvisible = true
-                sliderSend.isInvisible = false
+                sliderSend.isVisible = true
                 sliderSend.setActionText(buttonState.text)
             }
         }
     }
 
-    override fun setRatioState(state: TextViewCellModel) {
-        binding.textViewRate.bind(state)
+    override fun setRatioState(state: TextViewCellModel?) {
+        binding.textViewRate.bindOrInvisible(state)
     }
 
     override fun openChangeTokenAScreen() {
@@ -197,26 +200,45 @@ class JupiterSwapFragment :
         )
     }
 
-    override fun onBottomSheetDismissed(isTransactionSucceed: Boolean) {
-        if (isTransactionSucceed) {
-            when (openedFrom) {
-                SwapOpenedFrom.MAIN_SCREEN -> {
-                    presenter.reloadFeature()
-                    mainTabsSwitcher?.navigate(ScreenTab.HOME_SCREEN)
-                }
-                SwapOpenedFrom.OTHER -> {
-                    popBackStack()
-                }
+    override fun showDefaultSlider() {
+        binding.sliderSend.restoreSlider()
+    }
+
+    override fun showCompleteSlider() {
+        binding.sliderSend.showCompleteAnimation()
+    }
+
+    override fun onBottomSheetDismissed(result: JupiterTransactionDismissResult) {
+        when (result) {
+            JupiterTransactionDismissResult.TransactionInProgress,
+            JupiterTransactionDismissResult.TransactionSuccess -> {
+                navigateBackOnTransactionSuccess()
             }
+            JupiterTransactionDismissResult.ManualSlippageChangeNeeded -> {
+                openSwapSettingsScreen()
+            }
+            is JupiterTransactionDismissResult.SlippageChangeNeeded -> {
+                presenter.changeSlippage(Slippage.parse(result.newSlippageValue))
+                showUiKitSnackBar(
+                    message = getString(R.string.swap_main_slippage_changed, result.newSlippageValue.toString()),
+                    actionButtonResId = R.string.swap_main_slippage_changed_details_button,
+                    actionBlock = { openSwapSettingsScreen() }
+                )
+            }
+            JupiterTransactionDismissResult.TrySwapAgain -> Unit
         }
     }
 
-    override fun onSwapTryAgainClicked() {
-        TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
-    }
-
-    override fun onSwapIncreaseSlippageClicked() {
-        TODO("https://p2pvalidator.atlassian.net/browse/PWN-7177")
+    private fun navigateBackOnTransactionSuccess() {
+        when (openedFrom) {
+            SwapOpenedFrom.MAIN_SCREEN -> {
+                presenter.reloadFeature()
+                mainTabsSwitcher?.navigate(ScreenTab.HOME_SCREEN)
+            }
+            SwapOpenedFrom.OTHER -> {
+                popBackStack()
+            }
+        }
     }
 
     private fun setYellowAlert() {
@@ -250,5 +272,13 @@ class JupiterSwapFragment :
 
     override fun closeScreen() {
         popBackStack()
+    }
+
+    override fun showFullScreenError() {
+        with(binding) {
+            scrollView.isVisible = false
+            frameLayoutSliderSend.isVisible = false
+            containerError.isVisible = true
+        }
     }
 }

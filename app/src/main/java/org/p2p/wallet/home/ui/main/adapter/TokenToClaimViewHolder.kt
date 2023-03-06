@@ -29,11 +29,11 @@ class TokenToClaimViewHolder(
         binding.buttonClaim.isEnabled = isEnabled
         with(binding.buttonClaim) {
             if (isEnabled) {
-                setText(R.string.claim_button_text)
+                setText(R.string.bridge_claim_button_text)
                 setTextColorRes(R.color.text_snow)
                 setBackgroundColor(getColor(R.color.bg_night))
             } else {
-                setText(R.string.claiming_button_text)
+                setText(R.string.bridge_claiming_button_text)
                 setTextColorRes(R.color.text_mountain)
                 setBackgroundColor(getColor(R.color.bg_rain))
             }

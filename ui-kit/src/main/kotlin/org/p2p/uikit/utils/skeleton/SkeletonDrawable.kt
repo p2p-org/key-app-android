@@ -8,16 +8,15 @@ import android.graphics.LinearGradient
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.PixelFormat
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
 import android.graphics.RadialGradient
 import android.graphics.Rect
 import android.graphics.Shader
 import android.graphics.drawable.PaintDrawable
+import android.graphics.drawable.shapes.Shape
 
 class SkeletonDrawable : PaintDrawable() {
     private val mUpdateListener = AnimatorUpdateListener { invalidateSelf() }
-    private val mShimmerPaint = Paint()
+    private val mShimmerPaint = paint
     private val mDrawRect = Rect()
     private val mShaderMatrix = Matrix()
     private var mValueAnimator: ValueAnimator? = null
@@ -27,13 +26,8 @@ class SkeletonDrawable : PaintDrawable() {
         mShimmerPaint.isAntiAlias = true
     }
 
-    fun setShimmer(shimmer: Shimmer?) {
+    fun setShimmer(shimmer: Shimmer) {
         mShimmer = shimmer
-        if (mShimmer != null) {
-            mShimmerPaint.xfermode = PorterDuffXfermode(
-                if (mShimmer!!.alphaShimmer) PorterDuff.Mode.DST_IN else PorterDuff.Mode.SRC_IN
-            )
-        }
         updateShader()
         updateValueAnimator()
         invalidateSelf()
@@ -72,7 +66,7 @@ class SkeletonDrawable : PaintDrawable() {
         maybeStartShimmer()
     }
 
-    override fun draw(canvas: Canvas) {
+    override fun onDraw(shape: Shape, canvas: Canvas, paint: Paint) {
         if (mShimmer == null || mShimmerPaint.shader == null) {
             return
         }
@@ -108,18 +102,7 @@ class SkeletonDrawable : PaintDrawable() {
         mShaderMatrix.setRotate(mShimmer!!.tilt, mDrawRect.width() / 2f, mDrawRect.height() / 2f)
         mShaderMatrix.postTranslate(dx, dy)
         mShimmerPaint.shader.setLocalMatrix(mShaderMatrix)
-        val r = bounds
-        val shape = shape
-
-        // copied part of parent super.draw
-        if (shape != null) {
-            val count = canvas.save()
-            canvas.translate(r.left.toFloat(), r.top.toFloat())
-            onDraw(shape, canvas, mShimmerPaint)
-            canvas.restoreToCount(count)
-        } else {
-            canvas.drawRect(r, mShimmerPaint)
-        }
+        shape.draw(canvas, mShimmerPaint)
     }
 
     override fun setAlpha(alpha: Int) {

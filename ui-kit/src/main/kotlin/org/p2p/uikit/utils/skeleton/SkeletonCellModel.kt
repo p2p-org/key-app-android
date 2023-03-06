@@ -22,7 +22,6 @@ fun View.bindSkeleton(model: SkeletonCellModel) {
         setCornerRadius(model.radius)
         intrinsicWidth = model.width
         intrinsicHeight = model.height
-        setTintList(context.getColorStateList(android.R.color.transparent))
     }
 
     val shimmer = Shimmer.ColorHighlightBuilder()

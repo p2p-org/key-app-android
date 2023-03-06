@@ -1,6 +1,7 @@
 package org.p2p.uikit.components.icon_wrapper
 
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
 import org.p2p.uikit.databinding.WidgetIconWrapperSingleBinding
@@ -27,6 +28,11 @@ class UiKitIconWrapper @JvmOverloads constructor(
         if (isInEditMode) {
             inflateViewBinding<WidgetIconWrapperTwoBinding>()
         }
+    }
+
+    fun bindOrGone(model: IconWrapperCellModel?) {
+        isVisible = model != null
+        model?.let { bind(it) }
     }
 
     fun bind(model: IconWrapperCellModel) {
