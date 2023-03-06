@@ -62,9 +62,10 @@ class SwapWidgetMapper {
     ): SwapWidgetModel {
         val widgetModel = oldWidgetModel as? SwapWidgetModel.Content ?: return oldWidgetModel
         val oldAmount = widgetModel.amount as? TextViewCellModel.Raw ?: return oldWidgetModel
-        return widgetModel
-            .copy(amount = tokenAmount(token, tokenAmount)
-            .copy(textColor = oldAmount.textColor))
+        return widgetModel.copy(
+            amount = tokenAmount(token, tokenAmount)
+                .copy(textColor = oldAmount.textColor)
+        )
     }
 
     fun mapTokenAAndSaveOldFiatAmount(
