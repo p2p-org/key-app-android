@@ -2,8 +2,8 @@ package org.p2p.wallet.swap.ui.jupiter.main.mapper
 
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
+import org.p2p.core.utils.asUsdSwap
 import org.p2p.core.utils.emptyString
-import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.uikit.utils.skeleton.textCellSkeleton
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -36,7 +36,6 @@ class SwapWidgetMapper {
         tokenAmount: BigDecimal
     ): SwapWidgetModel {
         val widgetModel = oldWidgetModel as? SwapWidgetModel.Content ?: return oldWidgetModel
-        val oldAmount = widgetModel.amount as? TextViewCellModel.Raw ?: return oldWidgetModel
         return when (state) {
             SwapRateLoaderState.Empty,
             SwapRateLoaderState.Error,
@@ -45,7 +44,6 @@ class SwapWidgetMapper {
                 fiatAmount = fiatAmount(
                     fiatAmount = tokenAmount.multiply(state.rate)
                 ),
-                amount = tokenAmount(state.token, tokenAmount).copy(textColor = oldAmount.textColor)
             )
             SwapRateLoaderState.Loading -> widgetModel.copy(
                 fiatAmount = textCellSkeleton(
@@ -55,6 +53,19 @@ class SwapWidgetMapper {
                 )
             )
         }
+    }
+
+    fun copyAmount(
+        oldWidgetModel: SwapWidgetModel,
+        token: SwapTokenModel,
+        tokenAmount: BigDecimal,
+    ): SwapWidgetModel {
+        val widgetModel = oldWidgetModel as? SwapWidgetModel.Content ?: return oldWidgetModel
+        val oldAmount = widgetModel.amount as? TextViewCellModel.Raw ?: return oldWidgetModel
+        return widgetModel.copy(
+            amount = tokenAmount(token, tokenAmount)
+                .copy(textColor = oldAmount.textColor)
+        )
     }
 
     fun mapTokenAAndSaveOldFiatAmount(
@@ -128,8 +139,8 @@ class SwapWidgetMapper {
         )
 
     private fun fiatAmount(fiatAmount: BigDecimal): TextViewCellModel.Raw {
-        val usd = fiatAmount.formatFiat()
-        return TextViewCellModel.Raw(TextContainer(R.string.swap_main_fiat_value, usd))
+        val usd = fiatAmount.asUsdSwap()
+        return TextViewCellModel.Raw(TextContainer(usd))
     }
 
     private fun tokenAmount(token: SwapTokenModel, tokenAmount: BigDecimal?): TextViewCellModel.Raw {

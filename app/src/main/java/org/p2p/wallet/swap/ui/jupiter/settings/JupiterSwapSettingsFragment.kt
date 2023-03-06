@@ -22,6 +22,7 @@ import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoBottomSheet
 import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoType
 import org.p2p.wallet.swap.ui.jupiter.routes.SwapSelectRoutesBottomSheet
 import org.p2p.wallet.swap.ui.jupiter.settings.adapter.SwapSettingsAdapter
+import org.p2p.wallet.swap.ui.jupiter.settings.adapter.SwapSettingsDecorator
 import org.p2p.wallet.swap.ui.jupiter.settings.view.swapCustomSlippageDelegate
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -64,12 +65,13 @@ class JupiterSwapSettingsFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             recyclerViewSettings.itemAnimator = null
+            recyclerViewSettings.addItemDecoration(SwapSettingsDecorator())
             recyclerViewSettings.attachAdapter(adapter)
         }
     }
 
     override fun bindSettingsList(list: List<AnyCellItem>) {
-        adapter.items = list
+        adapter.setItems(list) { binding.recyclerViewSettings.invalidateItemDecorations() }
     }
 
     override fun setRatioState(state: TextViewCellModel?) {

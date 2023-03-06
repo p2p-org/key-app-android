@@ -96,6 +96,7 @@ fun TextView.bindOrInvisible(model: TextViewCellModel?) {
 }
 
 fun TextView.bind(model: TextViewCellModel) {
+    if (equalsNewCellModel(model)) return
     when (model) {
         is TextViewCellModel.Raw -> bind(model)
         is TextViewCellModel.Skeleton -> bindSkeleton(model)
@@ -164,6 +165,22 @@ private fun TextView.saveAndGetInitialTextStyle(): InitialTextStyle {
         setTag(tagKey, initialTextStyle)
         initialTextStyle
     }
+}
+
+private fun TextView.equalsNewCellModel(newModel: TextViewCellModel): Boolean {
+    val previewModel = previewTextViewCellModel()
+    val isEquals = previewModel != null &&
+        newModel.hashCode() == previewModel.hashCode() &&
+        previewModel == newModel
+    if (!isEquals) {
+        setTag(R.id.preview_text_cell_model_tag_id, newModel)
+    }
+    return isEquals
+}
+
+private fun TextView.previewTextViewCellModel(): TextViewCellModel? {
+    val tagKey = R.id.preview_text_cell_model_tag_id
+    return getTag(tagKey) as? TextViewCellModel
 }
 
 private data class InitialTextStyle(
