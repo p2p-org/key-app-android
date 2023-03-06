@@ -67,16 +67,28 @@ class SwapTokensInteractor(
     }
 
     suspend fun searchToken(tokenMode: SwapTokensListMode, symbolOrName: String): List<SwapTokenModel> {
-        return when (tokenMode) {
+        val tokens = when (tokenMode) {
             SwapTokensListMode.TOKEN_A -> getAllTokensA()
             SwapTokensListMode.TOKEN_B -> getAllAvailableTokensB()
         }
-            .filter { filterBySymbolOrName(swapToken = it, querySymbolOrName = symbolOrName) }
+
+        return filterSwapTokens(tokens, symbolOrName)
     }
 
-    private fun filterBySymbolOrName(swapToken: SwapTokenModel, querySymbolOrName: String): Boolean {
-        return swapToken.tokenSymbol.startsWith(querySymbolOrName, ignoreCase = true) ||
-            swapToken.tokenName.startsWith(querySymbolOrName, ignoreCase = true)
+    private fun filterSwapTokens(swapTokens: List<SwapTokenModel>, query: String): List<SwapTokenModel> {
+        val filteredList = mutableListOf<SwapTokenModel>()
+
+        // Filter items that start with the query
+        swapTokens.filterTo(filteredList) {
+            it.tokenSymbol.startsWith(query, ignoreCase = true)
+        }
+
+        // Filter items that contain the query
+        swapTokens.filterTo(filteredList) {
+            it.tokenSymbol.contains(query, ignoreCase = true) && !it.tokenSymbol.startsWith(query, ignoreCase = true)
+        }
+
+        return filteredList
     }
 
     private fun SwapTokenModel.notSelectedToken(selectedTokenMint: SwapTokenModel): Boolean {
