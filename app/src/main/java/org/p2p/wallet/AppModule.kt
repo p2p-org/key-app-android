@@ -4,7 +4,7 @@ import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import org.p2p.ethereumkit.external.EthereumModule
+import org.p2p.ethereumkit.EthereumKitService
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.claim.ClaimModule
 import org.p2p.wallet.common.AppRestarter
@@ -92,11 +92,10 @@ object AppModule {
                 SendModule.create(),
                 TransactionManagerModule.create(),
                 SolendModule.create(),
-                EthereumModule.create(),
                 SellModule.create(),
                 ReceiveModule.create(),
                 ClaimModule.create()
-            )
+            ) + EthereumKitService.getEthereumKitModules()
         )
     }
 

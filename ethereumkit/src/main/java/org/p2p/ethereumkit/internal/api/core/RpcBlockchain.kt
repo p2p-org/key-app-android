@@ -11,7 +11,7 @@ import org.p2p.ethereumkit.internal.models.*
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import org.p2p.ethereumkit.external.api.request.GetBalanceJsonRpc
+import org.p2p.ethereumkit.external.api.alchemy.request.GetBalanceJsonRpc
 import java.math.BigInteger
 
 class RpcBlockchain(
