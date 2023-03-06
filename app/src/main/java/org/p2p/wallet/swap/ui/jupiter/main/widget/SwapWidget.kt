@@ -61,6 +61,10 @@ class SwapWidget @JvmOverloads constructor(
         }
     }
 
+    fun focusAndShowKeyboard() {
+        binding.editTextAmount.focusAndShowKeyboard(true)
+    }
+
     private fun bindLoading(model: SwapWidgetModel.Loading) = with(binding) {
         isEnabled = !model.isStatic
         textViewWidgetTitle.bindOrGone(model.widgetTitle)
