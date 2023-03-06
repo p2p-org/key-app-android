@@ -53,6 +53,7 @@ fun swapCustomSlippageDelegate(
                 if (text != textInputEditTextCustomSlippage.text?.toString()) {
                     internalOnAmountChanged = null
                     textInputEditTextCustomSlippage.setText(text)
+                    validateSlippage(text)
                     textInputEditTextCustomSlippage.setSelection(text.length)
                     internalOnAmountChanged = { validateSlippage(it) }
                 }

@@ -39,17 +39,21 @@ class SwapTokensInteractor(
         }
     }
 
-    suspend fun getAllTokensA(): List<SwapTokenModel> {
+    suspend fun getAllTokens(): List<SwapTokenModel> {
         val userTokens = homeLocalRepository.getUserTokens()
         val jupiterTokens = swapTokensRepository.getTokens()
-        val tokenA = getCurrentTokenA()
 
         val userTokensModel = userTokens.map(SwapTokenModel::UserToken)
         val jupiterTokensModel = jupiterTokens.map(SwapTokenModel::JupiterToken)
             .filter { it.mintAddress !in userTokensModel.map(SwapTokenModel.UserToken::mintAddress) }
         val allTokens = userTokensModel + jupiterTokensModel
 
-        return allTokens.filter { it.notSelectedToken(tokenA) }
+        return allTokens
+    }
+
+    suspend fun getAllTokensA(): List<SwapTokenModel> {
+        val tokenA = getCurrentTokenA()
+        return getAllTokens().filter { it.notSelectedToken(tokenA) }
     }
 
     suspend fun getAllAvailableTokensB(): List<SwapTokenModel> {
