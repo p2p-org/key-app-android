@@ -13,11 +13,11 @@ import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import java.math.BigInteger
 import java.net.URI
 
-internal class EthereumTokensRepository(
+internal class EthereumTokensRemoteRepository(
     private val alchemyService: AlchemyService,
     private val networkEnvironment: EthereumNetworkEnvironment,
     private val gson: Gson
-) : TokensRepository {
+) : EthereumTokensRepository {
 
     override suspend fun getWalletBalance(address: EthAddress): BigInteger {
         val request = GetBalanceJsonRpc(

@@ -4,7 +4,6 @@ import kotlinx.coroutines.withContext
 import org.p2p.wallet.home.api.CoinGeckoApi
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.user.repository.prices.TokenAddress
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
@@ -36,31 +35,5 @@ class TokenPricesCoinGeckoRepository(
                 targetCurrency = targetCurrencySymbol.lowercase()
             )
                 .map { TokenPrice(tokenId = it.id, price = it.currentPrice) }
-        }
-
-    override suspend fun getTokenPricesByAddressesMap(
-        tokenAddresses: List<TokenAddress>,
-        targetCurrency: String
-    ): Map<TokenAddress, TokenPrice> {
-        return loadEthereumPrices(tokenAddresses, targetCurrency).associateBy { TokenAddress(it.tokenId) }
-    }
-
-    override suspend fun getTokenPriceByAddress(
-        tokenAddress: TokenAddress,
-        targetCurrency: String
-    ): TokenPrice = loadEthereumPrices(listOf(tokenAddress), targetCurrency).first()
-
-    private suspend fun loadEthereumPrices(
-        tokenAddresses: List<TokenAddress>,
-        targetCurrencySymbol: String
-    ): List<TokenPrice> =
-        withContext(dispatchers.io) {
-            val tokenAddressesForRequest = tokenAddresses.joinToString(",") { it.address }
-            coinGeckoApi.getEthereumTokenPrices(
-                tokenAddresses = tokenAddressesForRequest,
-                targetCurrency = targetCurrencySymbol.lowercase()
-            ).map { (tokenAddress, tokenPrice) ->
-                TokenPrice(tokenId = tokenAddress, price = tokenPrice.currentPrice)
-            }
         }
 }

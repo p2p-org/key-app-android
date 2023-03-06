@@ -17,14 +17,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.logging.Logger
 
-private const val QUALIFIER_ETH_HTTP_CLIENT = "ethereum"
+internal const val QUALIFIER_ETH_HTTP_CLIENT = "ethereum"
+internal const val QUALIFIER_ETH_GSON = "ethereum_gson"
 
 internal object EthereumNetworkModule {
 
     fun create(): Module = module {
         single(named(QUALIFIER_ETH_HTTP_CLIENT)) { getOkHttpClient() }
-        single { getRetrofit(get(named(QUALIFIER_ETH_HTTP_CLIENT)), get()) }
-        single { GsonProvider().provide() }
+        single { getRetrofit(get(named(QUALIFIER_ETH_HTTP_CLIENT)), get(named(QUALIFIER_ETH_GSON))) }
+        single(named(QUALIFIER_ETH_GSON)) { GsonProvider().provide() }
         single { get<Retrofit>().create(AlchemyService::class.java) }
         single { get<Retrofit>().create(CoinGeckoService::class.java) }
     }

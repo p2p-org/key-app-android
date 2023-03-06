@@ -4,11 +4,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
-import org.p2p.ethereumkit.external.balance.TokensRepository
+import org.p2p.ethereumkit.external.balance.EthereumTokensRemoteRepository
+import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
+import org.p2p.ethereumkit.external.model.mapToTokenMetadata
 import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
@@ -16,7 +18,7 @@ import org.p2p.ethereumkit.internal.models.EthAddress
 import java.math.BigDecimal
 
 internal class EthereumKitRepository(
-    private val balanceRepository: TokensRepository,
+    private val balanceRepository: EthereumTokensRepository,
     private val priceRepository: PriceRepository,
     private val dispatchers: CoroutineDispatchers
 ) : EthereumRepository {
@@ -57,15 +59,9 @@ internal class EthereumKitRepository(
             .map { token ->
                 async {
                     val metadata = balanceRepository.getTokenMetadata(token.contractAddress)
-                    EthTokenMetadata(
-                        contractAddress = token.contractAddress,
-                        balance = token.tokenBalance,
-                        decimals = metadata.decimals,
-                        logoUrl = metadata.logoUrl.orEmpty(),
-                        tokenName = metadata.tokenName.orEmpty(),
-                        symbol = metadata.symbol.orEmpty()
-                    )
+                    mapToTokenMetadata(balanceResponse = token, metadata = metadata)
                 }
-            }.awaitAll()
+            }
+            .awaitAll()
     }
 }
