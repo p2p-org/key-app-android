@@ -6,14 +6,11 @@ import android.util.AttributeSet
 import org.p2p.uikit.R
 import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.databinding.WidgetRightSideDoubleTextBinding
-import org.p2p.uikit.databinding.WidgetRightSideSingleTextBadgeBinding
+import org.p2p.uikit.databinding.WidgetRightSideIconWrapperBinding
 import org.p2p.uikit.databinding.WidgetRightSideSingleTextTwoIconBinding
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.image.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
-import org.p2p.uikit.utils.text.TextViewBackgroundModel
-import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.text.badgeRounded
 import org.p2p.uikit.utils.text.bindOrGone
 import org.p2p.uikit.utils.viewpool.ComponentViewPool
 
@@ -30,7 +27,7 @@ class UiKitRightSideView @JvmOverloads constructor(
                 .apply { updateStyle(styleType) }
             RightSideCellModel.SingleTextTwoIcon::class -> inflateViewBinding<WidgetRightSideSingleTextTwoIconBinding>()
                 .apply { updateStyle(styleType) }
-            RightSideCellModel.TextBadge::class -> inflateViewBinding<WidgetRightSideSingleTextBadgeBinding>()
+            RightSideCellModel.IconWrapper::class -> inflateViewBinding<WidgetRightSideIconWrapperBinding>()
             else -> error("No type for viewPool: $this")
         }
     }
@@ -76,9 +73,8 @@ class UiKitRightSideView @JvmOverloads constructor(
             is RightSideCellModel.SingleTextTwoIcon -> {
                 (pair.first as WidgetRightSideSingleTextTwoIconBinding).bind(model)
             }
-            is RightSideCellModel.TextBadge -> {
-                (pair.first as WidgetRightSideSingleTextBadgeBinding).bind(model)
-            }
+            is RightSideCellModel.IconWrapper ->
+                (pair.first as WidgetRightSideIconWrapperBinding).bind(model)
         }
         this.currentModel = model
     }
@@ -94,13 +90,8 @@ class UiKitRightSideView @JvmOverloads constructor(
         this.imageViewSecondIcon.bindOrGone(model.secondIcon)
     }
 
-    private fun WidgetRightSideSingleTextBadgeBinding.bind(model: RightSideCellModel.TextBadge) {
-        val textViewCellModel = TextViewCellModel.Raw(
-            text = model.text,
-            textColor = model.textColor,
-            badgeBackground = TextViewBackgroundModel(badgeRounded(tint = model.badgeTint))
-        )
-        textViewText.bindOrGone(textViewCellModel)
+    private fun WidgetRightSideIconWrapperBinding.bind(model: RightSideCellModel.IconWrapper) {
+        this.iconWrapper.bindOrGone(model.iconWrapper)
     }
 
     private fun WidgetRightSideDoubleTextBinding.updateStyle(style: FinanceBlockStyle) {
