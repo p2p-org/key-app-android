@@ -134,7 +134,7 @@ class ReceiveTokensFragment :
         binding.layoutReceiveBanner.isVisible = isVisible
     }
 
-    override fun reset() {
+    override fun resetScrollPosition() {
         scrollListener.reset()
         binding.recyclerViewTokens.post {
             binding.recyclerViewTokens.smoothScrollToPosition(0)

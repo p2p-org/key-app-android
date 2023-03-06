@@ -42,7 +42,7 @@ class ReceiveTokensPresenter(
     override fun onSearchTokenQueryChanged(newQuery: String) {
         searchText = newQuery
         if (newQuery.isBlank()) {
-            view?.reset()
+            view?.resetScrollPosition()
         }
         load(isRefresh = true, scrollToUp = true)
     }

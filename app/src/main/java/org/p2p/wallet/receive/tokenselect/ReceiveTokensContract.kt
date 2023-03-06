@@ -10,7 +10,7 @@ interface ReceiveTokensContract {
         fun showTokenItems(items: List<TokenData>, scrollToUp: Boolean)
         fun showEmptyState(isEmpty: Boolean)
         fun setBannerVisibility(isVisible: Boolean)
-        fun reset()
+        fun resetScrollPosition()
     }
 
     interface Presenter : MvpPresenter<View> {
