@@ -50,7 +50,7 @@ class SwapStateRoutesRefresher(
 
         val amountTokenB = bestRoute
             .outAmountInLamports
-            .fromLamports(tokenA.decimals)
+            .fromLamports(tokenB.decimals)
 
         state.value = SwapState.LoadingTransaction(
             tokenA = tokenA,
