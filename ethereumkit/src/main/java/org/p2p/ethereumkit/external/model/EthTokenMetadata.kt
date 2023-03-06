@@ -22,7 +22,7 @@ internal fun mapToTokenMetadata(
     metadata: TokenMetadataResponse,
     mintAddress: String
 ): EthTokenMetadata {
-    return  EthTokenMetadata(
+    return EthTokenMetadata(
         contractAddress = balanceResponse.contractAddress,
         mintAddress = mintAddress,
         balance = balanceResponse.tokenBalance,

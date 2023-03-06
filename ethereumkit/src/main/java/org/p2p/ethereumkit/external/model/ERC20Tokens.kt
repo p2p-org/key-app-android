@@ -2,7 +2,7 @@ package org.p2p.ethereumkit.external.model
 
 import org.p2p.ethereumkit.internal.models.EthAddress
 
-enum class ERC20Token(val contractAddress: String, val mintAddress: String) {
+enum class ERC20Tokens(val contractAddress: String, val mintAddress: String) {
     USDC(
         contractAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
         mintAddress = "A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM"
@@ -65,7 +65,7 @@ enum class ERC20Token(val contractAddress: String, val mintAddress: String) {
     );
 
     companion object {
-        fun findItem(contractAddress: EthAddress): ERC20Token {
+        fun findToken(contractAddress: EthAddress): ERC20Tokens {
             return values().first { contractAddress.hex == it.contractAddress }
         }
     }
