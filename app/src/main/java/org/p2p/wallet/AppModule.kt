@@ -30,6 +30,7 @@ import org.p2p.wallet.moonpay.ui.BuyModule
 import org.p2p.wallet.newsend.SendModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
+import org.p2p.wallet.receive.ReceiveModule
 import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
@@ -93,6 +94,7 @@ object AppModule {
                 SolendModule.create(),
                 EthereumModule.create(),
                 SellModule.create(),
+                ReceiveModule.create(),
                 ClaimModule.create()
             )
         )

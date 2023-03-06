@@ -39,6 +39,7 @@ import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.receive.tokenselect.ReceiveTokensFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
@@ -183,7 +184,7 @@ class HomeFragment :
                 presenter.onBuyClicked()
             }
             ActionButton.RECEIVE_BUTTON -> {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
+                replaceFragment(ReceiveTokensFragment.create())
             }
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked()
