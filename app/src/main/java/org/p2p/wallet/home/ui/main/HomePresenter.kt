@@ -18,6 +18,7 @@ import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
+import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -30,8 +31,10 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
+import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
@@ -71,7 +74,9 @@ class HomePresenter(
     private val sellInteractor: SellInteractor,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val metadataInteractor: MetadataInteractor,
-    private val intercomDeeplinkManager: IntercomDeeplinkManager
+    private val ethereumRepository: EthereumRepository,
+    private val intercomDeeplinkManager: IntercomDeeplinkManager,
+    seedPhraseProvider: SeedPhraseProvider,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -80,8 +85,12 @@ class HomePresenter(
 
     init {
         // TODO maybe we can find better place to start this service
+        val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
         launch {
             awaitAll(
+                async {
+                    ethereumRepository.init(seedPhrase = userSeedPhrase)
+                },
                 async { networkObserver.start() },
                 async { metadataInteractor.tryLoadAndSaveMetadata() }
             )
@@ -90,6 +99,7 @@ class HomePresenter(
 
     private data class ViewState(
         val tokens: List<Token.Active> = emptyList(),
+        val ethereumTokens: List<Token.Eth> = emptyList(),
         val visibilityState: VisibilityState = VisibilityState.Hidden,
         val username: Username? = null,
         val areZerosHidden: Boolean
@@ -225,9 +235,16 @@ class HomePresenter(
 
     private fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
         launch {
+            val ethereumTokens = try {
+                ethereumRepository.loadWalletTokens().map { TokenConverter.ethMetadataToToken(it) }
+            } catch (throwable: Throwable) {
+                Timber.d(throwable, "Error on loading ethereumTokens")
+                emptyList()
+            }
             Timber.d("local tokens change arrived")
             state = state.copy(
                 tokens = userTokens,
+                ethereumTokens = ethereumTokens,
                 username = usernameInteractor.getUsername(),
             )
 
@@ -333,7 +350,10 @@ class HomePresenter(
             /* Mapping elements according to visibility settings */
             val areZerosHidden = settingsInteractor.areZerosHidden()
             val mappedTokens = homeElementItemMapper.mapToItems(
-                tokens = state.tokens, visibilityState = state.visibilityState, isZerosHidden = areZerosHidden
+                tokens = state.tokens,
+                ethereumTokens = state.ethereumTokens,
+                visibilityState = state.visibilityState,
+                isZerosHidden = areZerosHidden
             )
 
             view?.showTokens(mappedTokens, areZerosHidden)
@@ -378,6 +398,10 @@ class HomePresenter(
     private fun getUserBalance(): BigDecimal =
         state.tokens
             .mapNotNull(Token.Active::totalInUsd)
+            .plus(
+                state.ethereumTokens
+                    .mapNotNull(Token.Eth::totalInUsd)
+            )
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 

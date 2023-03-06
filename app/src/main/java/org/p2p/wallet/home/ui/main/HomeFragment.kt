@@ -318,14 +318,9 @@ class HomeFragment :
         presenter.toggleTokenVisibility(token)
     }
 
-    override fun onClaimTokenClicked() {
-        // TODO pass real data
+    override fun onClaimTokenClicked(token: Token.Eth) {
         replaceFragment(
-            ClaimFragment.create(
-                tokenSymbol = "WETH",
-                tokenAmount = BigDecimal(0.999717252),
-                fiatAmount = BigDecimal(1219.87)
-            )
+            ClaimFragment.create(ethereumToken = token)
         )
     }
 
