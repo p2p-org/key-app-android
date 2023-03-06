@@ -202,7 +202,7 @@ class JupiterSwapPresenter(
         }
         if (allTokenAAmount != null) {
             cancelRateJobs()
-            stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(allTokenAAmount))
+            onTokenAmountChange(allTokenAAmount.toPlainString())
         }
     }
 

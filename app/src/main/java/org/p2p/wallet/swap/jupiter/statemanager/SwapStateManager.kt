@@ -1,6 +1,7 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
 import timber.log.Timber
+import java.math.BigDecimal
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -15,8 +16,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSelectedSwapTokenStorageContract
-import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
@@ -57,12 +58,7 @@ class SwapStateManager(
 
     private fun internalGetState(state: SwapState): SwapState {
         return when (state) {
-            is SwapState.SwapException.FeatureExceptionWrapper -> {
-                internalGetState(state.previousFeatureState)
-            }
-            is SwapState.SwapException.OtherException -> {
-                return internalGetState(state.previousFeatureState)
-            }
+            is SwapState.SwapException -> internalGetState(state.previousFeatureState)
             else -> state
         }
     }
@@ -72,8 +68,16 @@ class SwapStateManager(
         activeActionHandleJob?.cancel()
         when (action) {
             is SwapStateAction.CancelSwapLoading -> return
-            is SwapStateAction.TokenAChanged -> selectedSwapTokenStorage.savedTokenAMint = action.newTokenA.mintAddress
-            is SwapStateAction.TokenBChanged -> selectedSwapTokenStorage.savedTokenBMint = action.newTokenB.mintAddress
+            is SwapStateAction.TokenAChanged -> {
+                selectedSwapTokenStorage.savedTokenAMint = action.newTokenA.mintAddress
+                if (handleTokenAChangeWithOldAmountInput(action.newTokenA)) return
+            }
+            is SwapStateAction.TokenBChanged -> {
+                selectedSwapTokenStorage.savedTokenBMint = action.newTokenB.mintAddress
+            }
+            is SwapStateAction.SwitchTokens -> {
+                if (handleSwitchTokensWithOldAmountInput()) return
+            }
             else -> Unit
         }
 
@@ -129,6 +133,53 @@ class SwapStateManager(
             currentState = currentState.previousFeatureState
         }
         return currentState
+    }
+
+    private fun handleTokenAChangeWithOldAmountInput(newTokenA: SwapTokenModel): Boolean {
+        val oldTokenAAmount = getOldTokenAAmount(state.value) ?: return false
+        val oldTokenAZeroState = getOldTokenAZeroState(state.value) ?: return false
+        state.value = oldTokenAZeroState.copy(tokenA = newTokenA)
+        onNewAction(SwapStateAction.TokenAAmountChanged(oldTokenAAmount))
+        return true
+    }
+
+    private fun handleSwitchTokensWithOldAmountInput(): Boolean {
+        val oldTokenAAmount = getOldTokenAAmount(state.value) ?: return false
+        val oldTokenAZeroState = getOldTokenAZeroState(state.value) ?: return true
+        val oldTokenA = oldTokenAZeroState.tokenA
+        val oldTokenB = oldTokenAZeroState.tokenB
+        state.value = oldTokenAZeroState.copy(tokenA = oldTokenB, tokenB = oldTokenA)
+        onNewAction(SwapStateAction.TokenAAmountChanged(oldTokenAAmount))
+        return true
+    }
+
+    private fun getOldTokenAZeroState(
+        state: SwapState,
+    ): SwapState.TokenAZero? {
+        fun mapState(
+            oldTokenA: SwapTokenModel,
+            oldTokenB: SwapTokenModel,
+            slippage: Slippage
+        ): SwapState.TokenAZero = SwapState.TokenAZero(oldTokenA, oldTokenB, slippage)
+        return when (state) {
+            SwapState.InitialLoading,
+            is SwapState.TokenAZero -> null
+            is SwapState.LoadingRoutes -> with(state) { mapState(tokenA, tokenB, slippage) }
+            is SwapState.LoadingTransaction -> with(state) { mapState(tokenA, tokenB, slippage) }
+            is SwapState.SwapLoaded -> with(state) { mapState(tokenA, tokenB, slippage) }
+            is SwapState.SwapException -> getOldTokenAZeroState(state.previousFeatureState)
+        }
+    }
+
+    private fun getOldTokenAAmount(state: SwapState): BigDecimal? {
+        return when (state) {
+            SwapState.InitialLoading,
+            is SwapState.TokenAZero -> null
+            is SwapState.LoadingRoutes -> state.amountTokenA
+            is SwapState.LoadingTransaction -> state.amountTokenA
+            is SwapState.SwapLoaded -> state.amountTokenA
+            is SwapState.SwapException -> getOldTokenAAmount(state.previousFeatureState)
+        }
     }
 
     fun finishWork() {
