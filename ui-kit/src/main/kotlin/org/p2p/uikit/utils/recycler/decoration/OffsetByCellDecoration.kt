@@ -11,10 +11,10 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 
-fun eightOffsetFinanceBlockDecoration(offset: Int = 8.toPx()) =
-    EightPxOffsetDecoration(FinanceBlockCellModel::class, offset)
+fun offsetFinanceBlockDecoration(offset: Int = 8.toPx()) =
+    OffsetByCellDecoration(FinanceBlockCellModel::class, offset)
 
-class EightPxOffsetDecoration(
+class OffsetByCellDecoration(
     private val itemCellType: KClass<out AnyCellItem>,
     @Px private val offset: Int = 8.toPx(),
 ) : ItemDecoration() {
