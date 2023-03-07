@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.receive.tokenselect.ReceiveTokensMapper.toTokenFinanceCellModel
+import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
 
@@ -48,6 +49,12 @@ class ReceiveTokensPresenter(
             view?.resetScrollPosition()
         }
         load(isRefresh = true, scrollToUp = true)
+    }
+
+    override fun onTokenClicked(tokenDataPayload: ReceiveTokenPayload) {
+        if (tokenDataPayload.containsInTwoNetworks) {
+            // TODO open dialog
+        }
     }
 
     private fun observeTokens() {

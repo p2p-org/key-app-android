@@ -17,6 +17,7 @@ import org.p2p.core.utils.insets.appleTopInsets
 import org.p2p.core.utils.insets.consume
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
+import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
@@ -25,6 +26,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveSupportedTokensBinding
+import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -48,7 +50,9 @@ class ReceiveTokensFragment :
     override val presenter: ReceiveTokensContract.Presenter by inject()
 
     private val adapter = ReceiveTokensAdapter(
-        financeBlockCellDelegate()
+        financeBlockCellDelegate(inflateListener = { financeBlock ->
+            financeBlock.setOnClickAction { _, item -> onTokenClick(item) }
+        })
     )
     private val linearLayoutManager by lazy { LinearLayoutManager(requireContext()) }
 
@@ -146,5 +150,10 @@ class ReceiveTokensFragment :
             size = IMAGE_SIZE_DP,
             circleCrop = true
         )
+    }
+
+    private fun onTokenClick(item: FinanceBlockCellModel) {
+        val tokenDataPayload = (item.payload as? ReceiveTokenPayload) ?: return
+        presenter.onTokenClicked(tokenDataPayload)
     }
 }
