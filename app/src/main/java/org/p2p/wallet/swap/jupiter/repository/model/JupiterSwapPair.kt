@@ -7,4 +7,5 @@ data class JupiterSwapPair(
     val inputMint: Base58String,
     val outputMint: Base58String,
     val amountInLamports: BigInteger,
+    val slippageBasePoints: Int
 )
