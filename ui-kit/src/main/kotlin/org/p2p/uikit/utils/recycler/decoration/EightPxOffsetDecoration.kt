@@ -1,5 +1,6 @@
 package org.p2p.uikit.utils.recycler.decoration
 
+import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import android.graphics.Rect
@@ -10,13 +11,13 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 
-fun eightOffsetFinanceBlockDecoration() = EightPxOffsetDecoration(FinanceBlockCellModel::class)
+fun eightOffsetFinanceBlockDecoration(offset: Int = 8.toPx()) =
+    EightPxOffsetDecoration(FinanceBlockCellModel::class, offset)
 
 class EightPxOffsetDecoration(
-    private val itemCellType: KClass<out AnyCellItem>
+    private val itemCellType: KClass<out AnyCellItem>,
+    @Px private val offset: Int = 8.toPx(),
 ) : ItemDecoration() {
-
-    private val offset = 8.toPx()
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         val adapter = parent.adapter ?: return
