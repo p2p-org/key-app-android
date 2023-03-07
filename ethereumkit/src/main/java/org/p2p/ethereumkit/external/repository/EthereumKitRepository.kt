@@ -5,9 +5,11 @@ import java.math.BigInteger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
+import org.p2p.core.token.Token
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
+import org.p2p.ethereumkit.external.model.EthTokenConverter
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
@@ -36,13 +38,13 @@ internal class EthereumKitRepository(
         return balanceRepository.getWalletBalance(publicKey)
     }
 
-    override suspend fun loadWalletTokens(): List<EthTokenMetadata> = withContext(dispatchers.io) {
+    override suspend fun loadWalletTokens(): List<Token.Eth> = withContext(dispatchers.io) {
         val walletTokens = loadTokensMetadata()
         val tokensPrice = getPriceForTokens(tokenAddresses = walletTokens.map { it.contractAddress.toString() })
         tokensPrice.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
         }
-        return@withContext walletTokens
+        return@withContext walletTokens.map { EthTokenConverter.ethMetadataToToken(it) }
     }
 
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {

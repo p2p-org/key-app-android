@@ -31,7 +31,6 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
-import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
@@ -234,9 +233,9 @@ class HomePresenter(
     private fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
         launch {
             val ethereumTokens = try {
-                ethereumRepository.loadWalletTokens().map { TokenConverter.ethMetadataToToken(it) }
+                ethereumRepository.loadWalletTokens()
             } catch (throwable: Throwable) {
-                Timber.d(throwable, "Error on loading ethereumTokens")
+                Timber.e(throwable, "Error on loading ethereumTokens")
                 emptyList()
             }
             Timber.d("local tokens change arrived")

@@ -25,8 +25,9 @@ class ClaimFragment :
     ClaimContract.View {
 
     companion object {
-        fun create(ethereumToken: Token.Eth) = ClaimFragment()
-            .withArgs(ARG_TOKEN to ethereumToken)
+        fun create(ethereumToken: Token.Eth) =
+            ClaimFragment()
+                .withArgs(ARG_TOKEN to ethereumToken)
     }
 
     private val token: Token.Eth by args(ARG_TOKEN)

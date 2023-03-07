@@ -1,34 +1,18 @@
 package org.p2p.wallet.home.model
 
 import java.math.BigDecimal
-import java.math.RoundingMode
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
-import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.user.local.TokenResponse
 
 object TokenConverter {
-
-    fun ethMetadataToToken(metadata: EthTokenMetadata): Token.Eth = Token.Eth(
-        publicKey = metadata.contractAddress.hex,
-        tokenSymbol = metadata.symbol,
-        decimals = metadata.decimals,
-        mintAddress = metadata.mintAddress,
-        tokenName = metadata.tokenName,
-        iconUrl = metadata.logoUrl,
-        totalInUsd = metadata.price.takeIf { it.isNotZero() }
-            ?.let { metadata.balance.fromLamports(metadata.decimals).times(it).scaleMedium() },
-        total = BigDecimal(metadata.balance).divide(metadata.decimals.toPowerValue(), RoundingMode.HALF_UP),
-        rate = metadata.price,
-    )
 
     fun fromNetwork(response: TokenResponse): TokenData =
         TokenData(
