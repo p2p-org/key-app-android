@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.swap.JupiterSelectedSwapTokenStorageContract
-import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
+import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
@@ -30,7 +30,7 @@ private const val TAG = "SwapStateManager"
 class SwapStateManager(
     private val handlers: Set<SwapStateHandler>,
     private val dispatchers: CoroutineDispatchers,
-    private val selectedSwapTokenStorage: JupiterSelectedSwapTokenStorageContract,
+    private val selectedSwapTokenStorage: JupiterSwapStorageContract,
     private val tokenPricesRepository: TokenPricesRemoteRepository,
 ) : CoroutineScope {
 
