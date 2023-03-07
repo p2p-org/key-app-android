@@ -4,9 +4,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
+import org.p2p.ethereumkit.external.balance.EthereumTokensRemoteRepository
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
-import org.p2p.ethereumkit.external.model.ERC20Token
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
@@ -52,13 +53,13 @@ internal class EthereumKitRepository(
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
         val publicKey = tokenKeyProvider?.publicKey ?: error("init function wasn't called")
-        val tokenAddresses = ERC20Token.values().map { EthAddress(it.contractAddress) }
+        val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
         return@withContext balanceRepository.getTokenBalances(address = publicKey, tokenAddresses = tokenAddresses)
             .balances
             .map { token ->
                 async {
                     val metadata = balanceRepository.getTokenMetadata(token.contractAddress)
-                    val mintAddress = ERC20Token.findItem(token.contractAddress).mintAddress
+                    val mintAddress = ERC20Tokens.findToken(token.contractAddress).mintAddress
                     mapToTokenMetadata(balanceResponse = token, metadata = metadata, mintAddress = mintAddress)
                 }
             }
