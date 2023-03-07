@@ -11,20 +11,20 @@ import android.widget.EditText
 import android.widget.ImageView
 import org.koin.android.ext.android.inject
 import org.p2p.core.glide.GlideManager
-import org.p2p.core.token.TokenData
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.core.utils.insets.appleBottomInsets
 import org.p2p.core.utils.insets.appleTopInsets
 import org.p2p.core.utils.insets.consume
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
+import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
+import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveSupportedTokensBinding
-import org.p2p.wallet.receive.list.TokenListAdapter
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -47,7 +47,9 @@ class ReceiveTokensFragment :
 
     override val presenter: ReceiveTokensContract.Presenter by inject()
 
-    private val adapter = TokenListAdapter() // PWN-7380 TODO make new adapter for Tokens
+    private val adapter = ReceiveTokensAdapter(
+        financeBlockCellDelegate()
+    )
     private val linearLayoutManager by lazy { LinearLayoutManager(requireContext()) }
 
     private val scrollListener by lazy {
@@ -114,9 +116,9 @@ class ReceiveTokensFragment :
         imageViewSecondIcon.setTokenIconUrl(secondTokenUrl)
     }
 
-    override fun showTokenItems(items: List<TokenData>, scrollToUp: Boolean) {
+    override fun showTokenItems(items: List<AnyCellItem>, scrollToUp: Boolean) {
         with(binding) {
-            adapter.setItems(items)
+            adapter.items = items
             if (scrollToUp) {
                 recyclerViewTokens.smoothScrollToPosition(0)
             }

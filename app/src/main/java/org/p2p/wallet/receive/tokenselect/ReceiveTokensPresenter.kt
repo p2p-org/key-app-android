@@ -3,6 +3,7 @@ package org.p2p.wallet.receive.tokenselect
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.receive.tokenselect.ReceiveTokensMapper.toTokenFinanceCellModel
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
 
@@ -15,9 +16,11 @@ class ReceiveTokensPresenter(
     private var searchText = emptyString()
     private var scrollToUp = false
 
+    private var solTokenUrl = emptyString()
+    private var ethTokenUrl = emptyString()
+
     override fun attach(view: ReceiveTokensContract.View) {
         super.attach(view)
-        observeTokens()
         launch {
             val tokensForReceiveBanner = interactor.getTokensForBuy(
                 availableTokensSymbols = listOf(
@@ -25,10 +28,10 @@ class ReceiveTokensPresenter(
                     Constants.ETH_SYMBOL
                 )
             )
-            view.setBannerTokens(
-                tokensForReceiveBanner[0].iconUrl.orEmpty(),
-                tokensForReceiveBanner[1].iconUrl.orEmpty()
-            )
+            solTokenUrl = tokensForReceiveBanner[0].iconUrl.orEmpty()
+            ethTokenUrl = tokensForReceiveBanner[1].iconUrl.orEmpty()
+            view.setBannerTokens(solTokenUrl, ethTokenUrl)
+            observeTokens()
         }
     }
 
@@ -53,7 +56,10 @@ class ReceiveTokensPresenter(
                 val isEmpty = data.result.isEmpty()
                 view?.showEmptyState(isEmpty)
                 view?.setBannerVisibility(!isEmpty && searchText.isEmpty())
-                view?.showTokenItems(data.result, scrollToUp)
+                view?.showTokenItems(
+                    data.result.map { it.toTokenFinanceCellModel(solTokenUrl, ethTokenUrl) },
+                    scrollToUp
+                )
             }
         }
     }
