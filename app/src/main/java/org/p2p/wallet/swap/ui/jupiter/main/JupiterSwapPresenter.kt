@@ -209,7 +209,7 @@ class JupiterSwapPresenter(
         if (allTokenAAmount != null) {
             analytics.logTokenAAllClicked(allTokenAAmount.toString())
             cancelRateJobs()
-            stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(allTokenAAmount))
+            onTokenAmountChange(allTokenAAmount.toPlainString())
         }
     }
 
