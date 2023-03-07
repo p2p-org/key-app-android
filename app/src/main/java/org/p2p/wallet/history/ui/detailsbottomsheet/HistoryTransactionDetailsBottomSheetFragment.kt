@@ -75,7 +75,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
     override val presenter: HistoryTransactionDetailsContract.Presenter by inject()
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     private val timeFormat by unsafeLazy { DateTimeFormatter.ofPattern(TIME_FORMAT, Locale.US) }
 

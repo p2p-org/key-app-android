@@ -13,6 +13,7 @@ import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
+import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogSwapSelectRoutesBinding
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
@@ -21,7 +22,6 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
-import org.p2p.wallet.swap.ui.jupiter.settings.adapter.SwapSettingsAdapter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -51,13 +51,13 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
     private val stateManager: SwapStateManager
         get() = managerHolder.get(stateManagerKey)
 
-    private val adapter = SwapSettingsAdapter(
+    private val adapter = CommonAnyCellAdapter(
         baseCellDelegate(inflateListener = { financeBlock ->
             financeBlock.setOnClickAction { view, item -> onRouteClick(item, view) }
         }),
     )
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_swap_select_routes, container, false)

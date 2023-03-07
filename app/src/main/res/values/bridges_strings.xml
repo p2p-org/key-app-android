@@ -23,4 +23,6 @@
     <string name="receive_token_search_not_found">Token not found. Try another one</string>
     <string name="receive_token_banner_message">Receive tokens on\nEthereum and Solana</string>
 
+    <string name="receive_network_dialog_title">Choose network</string>
+
 </resources>

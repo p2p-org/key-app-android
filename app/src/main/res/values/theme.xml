@@ -45,9 +45,16 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="WalletTheme.BottomSheet.Rounded" parent="Theme.Design.BottomSheetDialog">
+    <style name="WalletTheme.BottomSheet.RoundedSnow" parent="WalletTheme.BottomSheet">
+        <item name="bottomSheetStyle">@style/AppRoundCornersModalStyleSnow</item>
+    </style>
+
+    <style name="WalletTheme.BottomSheet.RoundedSmoke" parent="WalletTheme.BottomSheet">
+        <item name="bottomSheetStyle">@style/AppRoundCornersModalStyleSmoke</item>
+    </style>
+
+    <style name="WalletTheme.BottomSheet" parent="Theme.Design.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="enableEdgeToEdge">true</item>
-        <item name="bottomSheetStyle">@style/AppRoundCornersModalStyle</item>
     </style>
 </resources>

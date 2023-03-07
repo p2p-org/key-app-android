@@ -94,7 +94,7 @@ class HomeActionsBottomSheet :
         }
     }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     private fun ViewBinding.setResultClickListener(action: HomeAction) {
         root.setOnClickListener {

@@ -7,8 +7,12 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <style name="AppRoundCornersModalStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/bg_alert_elevation_rounded_top</item>
+    <style name="AppRoundCornersModalStyleSnow" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_alert_elevation_rounded_top_snow</item>
+    </style>
+
+    <style name="AppRoundCornersModalStyleSmoke" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_alert_elevation_rounded_top_smoke</item>
     </style>
 
     <style name="WalletTheme.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">

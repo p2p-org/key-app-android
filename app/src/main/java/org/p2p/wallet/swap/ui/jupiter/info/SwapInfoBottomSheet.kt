@@ -27,6 +27,7 @@ import org.p2p.uikit.components.info_block.InfoBlockCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
+import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogSwapInfoBinding
 import org.p2p.wallet.databinding.ItemSwapInfoBannerBinding
@@ -39,7 +40,6 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
-import org.p2p.wallet.swap.ui.jupiter.settings.adapter.SwapSettingsAdapter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -85,12 +85,12 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
     private val stateManager: SwapStateManager
         get() = managerHolder.get(stateManagerKey)
 
-    private val adapter = SwapSettingsAdapter(
+    private val adapter = CommonAnyCellAdapter(
         baseCellDelegate(),
         swapInfoBannerDelegate(),
     )
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_swap_info, container, false)

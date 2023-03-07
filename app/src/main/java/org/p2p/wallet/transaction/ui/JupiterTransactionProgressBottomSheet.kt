@@ -71,7 +71,7 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private var parentListener: JupiterTransactionBottomSheetDismissListener? = null
     private var dismissResult: JupiterTransactionDismissResult = JupiterTransactionDismissResult.TransactionInProgress
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

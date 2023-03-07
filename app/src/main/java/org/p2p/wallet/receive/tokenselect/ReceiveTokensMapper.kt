@@ -31,7 +31,6 @@ object ReceiveTokensMapper {
                 tokenSymbol = symbol,
             ),
             rightSideCellModel = createRightSideModel(
-                mintAddress = mintAddress,
                 firstIconUrl = solTokenUrl,
                 secondIconUrl = ethTokenUrl,
                 containsInEth = containsInEth
@@ -67,7 +66,6 @@ object ReceiveTokensMapper {
     }
 
     private fun createRightSideModel(
-        mintAddress: String,
         firstIconUrl: String,
         secondIconUrl: String,
         containsInEth: Boolean
