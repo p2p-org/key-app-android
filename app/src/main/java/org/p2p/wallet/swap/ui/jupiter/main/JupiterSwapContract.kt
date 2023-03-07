@@ -23,6 +23,7 @@ interface JupiterSwapContract {
         fun showDefaultSlider()
         fun showCompleteSlider()
         fun showFullScreenError()
+        fun hideFullScreenError()
         fun showDebugInfo(debugInfo: TextViewCellModel)
     }
 
@@ -37,5 +38,6 @@ interface JupiterSwapContract {
         fun finishFeature(stateManagerHolderKey: String)
         fun reloadFeature()
         fun changeSlippage(newSlippageValue: Slippage)
+        fun onTryAgainClick()
     }
 }

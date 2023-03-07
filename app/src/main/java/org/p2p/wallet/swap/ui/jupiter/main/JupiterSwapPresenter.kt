@@ -80,6 +80,7 @@ class JupiterSwapPresenter(
         get() = BigDecimal.valueOf(0.01)
 
     private var shouldLogScreenOpened = true
+    private var retryAction = {}
 
     override fun attach(view: JupiterSwapContract.View) {
         super.attach(view)
@@ -256,6 +257,10 @@ class JupiterSwapPresenter(
         stateManager.onNewAction(SwapStateAction.SlippageChanged(newSlippageValue))
     }
 
+    override fun onTryAgainClick() {
+        retryAction()
+    }
+
     private fun handleNewFeatureState(state: SwapState) {
         // log analytics only on first TokenAZero
         if (shouldLogScreenOpened && state is SwapState.TokenAZero) {
@@ -276,10 +281,17 @@ class JupiterSwapPresenter(
             is SwapState.LoadingTransaction -> handleLoadingTransaction(state)
             is SwapState.SwapLoaded -> handleSwapLoaded(state)
             is SwapState.SwapException.FeatureExceptionWrapper -> handleFeatureException(state)
-            is SwapState.SwapException.OtherException -> {
-                // todo
-            }
+            is SwapState.SwapException.OtherException -> handleOtherException(state)
         }
+    }
+
+    private fun handleOtherException(state: SwapState.SwapException.OtherException) {
+        rateTickerManager.handleSwapException(state)
+        retryAction = {
+            view?.hideFullScreenError()
+            stateManager.onNewAction(state.lastSwapStateAction)
+        }
+        view?.showFullScreenError()
     }
 
     private fun handleRateTickerChanges(state: SwapRateTickerState) {
@@ -291,6 +303,7 @@ class JupiterSwapPresenter(
     }
 
     private fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
+        rateTickerManager.handleSwapException(state)
         val (widgetAState, _) = mapWidgetStates(state.previousFeatureState)
         when (val featureException = state.featureException) {
             is SwapFeatureException.SameTokens -> {

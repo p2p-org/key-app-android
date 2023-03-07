@@ -44,6 +44,7 @@ class SwapStateManager(
     private var activeActionHandleJob: Job? = null
     private var refreshJob: Job? = null
     private val tokenRatioCache = mutableMapOf<Base58String, SwapTokenRateLoader>()
+    private var lastSwapStateAction: SwapStateAction = SwapStateAction.InitialLoading
 
     init {
         onNewAction(SwapStateAction.InitialLoading)
@@ -68,6 +69,7 @@ class SwapStateManager(
     }
 
     fun onNewAction(action: SwapStateAction) {
+        lastSwapStateAction = action
         refreshJob?.cancel()
         activeActionHandleJob?.cancel()
         when (action) {
@@ -98,6 +100,7 @@ class SwapStateManager(
                 state.value = SwapState.SwapException.OtherException(
                     previousFeatureState = actualNoErrorState(),
                     exception = exception,
+                    lastSwapStateAction = lastSwapStateAction,
                 )
             }
         }

@@ -49,6 +49,10 @@ class SwapRateTickerManager private constructor(
         currentRateState.value = SwapRateTickerState.Loading
     }
 
+    fun handleSwapException(state: SwapState.SwapException) {
+        currentRateState.value = SwapRateTickerState.Hidden
+    }
+
     fun handleJupiterRates(state: SwapState.SwapLoaded) {
         val newTokenA = state.tokenA.also { currentTokenA = it }
         val newTokenB = state.tokenB.also { currentTokenB = it }
