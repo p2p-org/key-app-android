@@ -1,12 +1,11 @@
 package org.p2p.wallet.swap.ui.jupiter.tokens.adapter
-
 import androidx.annotation.Px
 import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
 import android.graphics.Canvas
 import android.view.View
 import com.google.android.material.shape.ShapeAppearanceModel
-import org.p2p.uikit.components.finance_block.FinanceBlockViewHolder
+import org.p2p.uikit.components.finance_block.asFinanceCell
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
 import org.p2p.uikit.utils.drawable.shape.shapeBottomRounded
 import org.p2p.uikit.utils.drawable.shape.shapeOutline
@@ -33,22 +32,27 @@ class SwapTokensARoundedItemDecoration(
     }
 
     private fun roundItem(view: View, recyclerView: RecyclerView) {
-        val viewHolder = recyclerView.getChildViewHolder(view) as? FinanceBlockViewHolder ?: return
-        val adapterPosition = viewHolder.bindingAdapterPosition
-        val payload = viewHolder.item.payload as? SwapTokensCellModelPayload ?: return
+        val viewHolder = recyclerView.getChildViewHolder(view).asFinanceCell ?: return
+        val payload = viewHolder.getPayloadOrNull<SwapTokensCellModelPayload>() ?: return
 
+        val adapterPosition = viewHolder.bindingAdapterPosition
         val previousViewHolder = recyclerView.findViewHolderForAdapterPosition(adapterPosition - 1)
         val nextViewHolder = recyclerView.findViewHolderForAdapterPosition(adapterPosition + 1)
 
-        val shape = when (payload.tokenModel) {
-            is SwapTokenModel.JupiterToken -> selectShapeForJupiterToken(
+        val shape = when {
+            payload.isSearchResultItem -> selectShapeForSearchResultItem(
+                previousItem = previousViewHolder,
+                nextItem = nextViewHolder
+            )
+            payload.tokenModel is SwapTokenModel.JupiterToken -> selectShapeForJupiterToken(
                 previousItem = previousViewHolder,
                 nextItem = nextViewHolder,
             )
-            is SwapTokenModel.UserToken -> selectShapeForUserToken(
+            payload.tokenModel is SwapTokenModel.UserToken -> selectShapeForUserToken(
                 previousItem = previousViewHolder,
                 nextItem = nextViewHolder,
             )
+            else -> return
         }
 
         viewHolder.itemView.apply {
@@ -60,12 +64,41 @@ class SwapTokensARoundedItemDecoration(
         }
     }
 
+    private fun selectShapeForSearchResultItem(
+        previousItem: RecyclerView.ViewHolder?,
+        nextItem: RecyclerView.ViewHolder?,
+    ): ShapeAppearanceModel {
+        val previousToken = previousItem.asFinanceCell
+            ?.getPayload<SwapTokensCellModelPayload>()
+            ?.tokenModel
+        val nextToken = nextItem.asFinanceCell
+            ?.getPayload<SwapTokensCellModelPayload>()
+            ?.tokenModel
+
+        val isSearchResultStarted =
+            previousToken !is SwapTokenModel && nextToken is SwapTokenModel
+        val isSearchResultEnded =
+            previousToken is SwapTokenModel && nextToken !is SwapTokenModel
+        val isSearchResultSingle =
+            previousToken !is SwapTokenModel && nextToken !is SwapTokenModel
+        return when {
+            isSearchResultSingle -> shapeRounded
+            isSearchResultStarted -> shapeTopRounded
+            isSearchResultEnded -> shapeBottomRounded
+            else -> shapeRectangle
+        }
+    }
+
     private fun selectShapeForUserToken(
         previousItem: RecyclerView.ViewHolder?,
         nextItem: RecyclerView.ViewHolder?,
     ): ShapeAppearanceModel {
-        val previousToken = getPayloadFromViewHolder(previousItem)?.tokenModel
-        val nextToken = getPayloadFromViewHolder(nextItem)?.tokenModel
+        val previousToken = previousItem.asFinanceCell
+            ?.getPayloadOrNull<SwapTokensCellModelPayload>()
+            ?.tokenModel
+        val nextToken = nextItem.asFinanceCell
+            ?.getPayloadOrNull<SwapTokensCellModelPayload>()
+            ?.tokenModel
 
         val isChosenTokenGroup =
             previousToken !is SwapTokenModel.UserToken &&
@@ -91,8 +124,12 @@ class SwapTokensARoundedItemDecoration(
         previousItem: RecyclerView.ViewHolder?,
         nextItem: RecyclerView.ViewHolder?,
     ): ShapeAppearanceModel {
-        val previousToken = getPayloadFromViewHolder(previousItem)?.tokenModel
-        val nextToken = getPayloadFromViewHolder(nextItem)?.tokenModel
+        val previousToken = previousItem.asFinanceCell
+            ?.getPayloadOrNull<SwapTokensCellModelPayload>()
+            ?.tokenModel
+        val nextToken = nextItem.asFinanceCell
+            ?.getPayloadOrNull<SwapTokensCellModelPayload>()
+            ?.tokenModel
 
         val isChosenTokenGroup =
             previousToken !is SwapTokenModel.JupiterToken &&
@@ -112,9 +149,5 @@ class SwapTokensARoundedItemDecoration(
             isOtherTokensGroupFinished -> shapeBottomRounded
             else -> shapeRectangle
         }
-    }
-
-    private fun getPayloadFromViewHolder(viewHolder: RecyclerView.ViewHolder?): SwapTokensCellModelPayload? {
-        return (viewHolder as? FinanceBlockViewHolder)?.getPayload()
     }
 }

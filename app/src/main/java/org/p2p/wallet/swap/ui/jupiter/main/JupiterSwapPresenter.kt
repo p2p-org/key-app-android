@@ -74,10 +74,10 @@ class JupiterSwapPresenter(
     private var widgetAState: SwapWidgetModel = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A)
     private var widgetBState: SwapWidgetModel = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_B)
     private val threePercent
-        get() = BigDecimal.valueOf(0.3)
+        get() = BigDecimal.valueOf(0.03)
 
     private val onePercent
-        get() = BigDecimal.valueOf(0.1)
+        get() = BigDecimal.valueOf(0.01)
 
     private var shouldLogScreenOpened = true
 
@@ -298,6 +298,10 @@ class JupiterSwapPresenter(
             }
             is SwapFeatureException.RoutesNotFound -> {
                 analytics.logSwapPairNotExists()
+                val (_, tokenB) = state.previousFeatureState.getTokensPair()
+                tokenB?.let {
+                    this.widgetBState = widgetMapper.mapTokenB(token = tokenB, tokenAmount = null)
+                }
                 view?.setButtonState(buttonState = buttonMapper.mapRouteNotFound())
             }
             is SwapFeatureException.NotValidTokenA -> {
@@ -332,6 +336,23 @@ class JupiterSwapPresenter(
         view?.setButtonState(
             buttonState = buttonMapper.mapReadyToSwap(tokenA = state.tokenA, tokenB = state.tokenB)
         )
+        val priceImpact = swapInteractor.getPriceImpact(currentFeatureState)
+        when (val type = priceImpact?.toPriceImpactType()) {
+            null, SwapPriceImpactView.NORMAL -> {
+                priceImpact?.also { analytics.logPriceImpactLow(priceImpact) }
+                view?.showPriceImpact(SwapPriceImpactView.NORMAL)
+            }
+            SwapPriceImpactView.YELLOW, SwapPriceImpactView.RED -> {
+                analytics.logPriceImpactHigh(priceImpact)
+
+                widgetBState = widgetMapper.mapPriceImpact(widgetBState, type)
+                view?.showPriceImpact(type)
+                if (needToScrollPriceImpact) {
+                    view?.scrollToPriceImpact()
+                    needToScrollPriceImpact = false
+                }
+            }
+        }
         getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
         getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
@@ -461,29 +482,11 @@ class JupiterSwapPresenter(
         state: SwapRateLoaderState,
         tokenAmount: BigDecimal,
     ) {
-        var newWidgetModel = widgetMapper.mapFiatAmount(
+        widgetBState = widgetMapper.mapFiatAmount(
             state = state,
             oldWidgetModel = widgetBModel,
             tokenAmount = tokenAmount
         )
-        val priceImpact = swapInteractor.getPriceImpact(currentFeatureState)
-        when (val priceImpactType = priceImpact?.toPriceImpactType()) {
-            null, SwapPriceImpactView.NORMAL -> {
-                priceImpact?.also { analytics.logPriceImpactLow(priceImpact) }
-                view?.showPriceImpact(SwapPriceImpactView.NORMAL)
-            }
-            SwapPriceImpactView.YELLOW, SwapPriceImpactView.RED -> {
-                analytics.logPriceImpactHigh(priceImpact)
-
-                newWidgetModel = widgetMapper.mapPriceImpact(newWidgetModel, priceImpactType)
-                view?.showPriceImpact(priceImpactType)
-                if (needToScrollPriceImpact) {
-                    view?.scrollToPriceImpact()
-                    needToScrollPriceImpact = false
-                }
-            }
-        }
-        widgetBState = newWidgetModel
         view?.setSecondTokenWidgetState(state = widgetBState)
     }
 

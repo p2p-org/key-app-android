@@ -42,6 +42,7 @@ class SwapStateRoutesRefresher(
             tokenA = tokenA,
             tokenB = tokenB,
             amountTokenA = amountTokenA,
+            slippage = slippage
         )
         Timber.i("Jupiter routes fetched: ${updatedRoutes.size}")
 
@@ -84,11 +85,13 @@ class SwapStateRoutesRefresher(
         tokenA: SwapTokenModel,
         tokenB: SwapTokenModel,
         amountTokenA: BigDecimal,
+        slippage: Slippage,
     ): List<JupiterSwapRoute> {
         val routesRequest = JupiterSwapPair(
             inputMint = tokenA.mintAddress,
             outputMint = tokenB.mintAddress,
-            amountInLamports = amountTokenA.toLamports(tokenA.decimals)
+            amountInLamports = amountTokenA.toLamports(tokenA.decimals),
+            slippageBasePoints = (slippage.doubleValue * 10000).toInt() // 100% = 1000; 0.5 = 50
         )
         return swapRoutesRepository.getSwapRoutesForSwapPair(
             jupiterSwapPair = routesRequest,

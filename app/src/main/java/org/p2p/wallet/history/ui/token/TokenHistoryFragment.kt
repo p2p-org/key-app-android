@@ -19,7 +19,7 @@ import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.receive.token.ReceiveTokenFragment
+import org.p2p.wallet.receive.tokenselect.ReceiveTokensFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
@@ -111,7 +111,7 @@ class TokenHistoryFragment :
             }
             ActionButton.RECEIVE_BUTTON -> {
                 receiveAnalytics.logTokenReceiveViewed(tokenForHistory.tokenName)
-                replaceFragment(ReceiveTokenFragment.create(tokenForHistory))
+                replaceFragment(ReceiveTokensFragment.create())
             }
             ActionButton.SEND_BUTTON -> {
                 replaceFragment(NewSearchFragment.create(tokenForHistory))

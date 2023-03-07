@@ -2,7 +2,7 @@ package org.p2p.wallet.swap.jupiter.statemanager.handler
 
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.p2p.wallet.infrastructure.swap.JupiterSelectedSwapTokenStorageContract
+import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
@@ -13,7 +13,7 @@ import org.p2p.wallet.swap.model.Slippage
 
 class SwapStateLoadingRoutesHandler(
     private val routesRefresher: SwapStateRoutesRefresher,
-    private val selectedTokensStorage: JupiterSelectedSwapTokenStorageContract,
+    private val selectedTokensStorage: JupiterSwapStorageContract,
     private val analytics: JupiterSwapMainScreenAnalytics
 ) : SwapStateHandler {
 

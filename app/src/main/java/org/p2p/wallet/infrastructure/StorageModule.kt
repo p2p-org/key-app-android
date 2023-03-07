@@ -7,6 +7,8 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import timber.log.Timber
+import java.security.KeyStore
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
@@ -15,8 +17,13 @@ import org.p2p.wallet.infrastructure.account.AccountStorage
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
-import timber.log.Timber
-import java.security.KeyStore
+import org.p2p.wallet.infrastructure.swap.JupiterSwapStorage
+import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
+
+private const val PREFS_DEFAULT = "prefs"
+private const val PREFS_ACCOUNT = "account_prefs"
+private const val PREFS_TOGGLE = "toggle_prefs"
+private const val PREFS_SWAP = "swap_prefs"
 
 object StorageModule {
     private fun Scope.androidPreferences(prefsName: String): SharedPreferences {
@@ -28,7 +35,7 @@ object StorageModule {
 
     fun create() = module {
         // TODO PWN-5418 - extract misc data to separate prefs
-        single { androidPreferences("prefs") }
+        single { androidPreferences(PREFS_DEFAULT) }
 
         // TODO PWN-5418 - extract data to separate prefs from org.p2p.wallet.prefs
         factory {
@@ -45,7 +52,7 @@ object StorageModule {
             )
         } bind SecureStorageContract::class
         factory {
-            val prefs = androidPreferences("account_prefs")
+            val prefs = androidPreferences(PREFS_ACCOUNT)
             AccountStorage(
                 keyStoreWrapper = KeyStoreWrapper(
                     encoderDecoder = get(),
@@ -59,9 +66,14 @@ object StorageModule {
 
         single {
             LocalFeatureToggleStorage(
-                sharedPreferences = androidPreferences(prefsName = "toggle_prefs")
+                sharedPreferences = androidPreferences(prefsName = PREFS_TOGGLE)
             )
         }
+
+        factory {
+            val prefs = androidPreferences(PREFS_SWAP)
+            JupiterSwapStorage(prefs)
+        } bind JupiterSwapStorageContract::class
 
         single { KeyStore.getInstance("AndroidKeyStore") }
         factoryOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class

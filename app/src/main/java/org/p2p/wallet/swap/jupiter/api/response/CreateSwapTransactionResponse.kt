@@ -5,5 +5,5 @@ import org.p2p.solanaj.utils.crypto.Base64String
 
 data class CreateSwapTransactionResponse(
     @SerializedName("swapTransaction")
-    val swapTransaction: Base64String
+    val versionedSwapTransaction: Base64String
 )
