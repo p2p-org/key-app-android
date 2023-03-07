@@ -36,15 +36,18 @@ class SwapWidgetMapper {
         tokenAmount: BigDecimal
     ): SwapWidgetModel {
         val widgetModel = oldWidgetModel as? SwapWidgetModel.Content ?: return oldWidgetModel
+        val oldFiatAmount = (oldWidgetModel as? SwapWidgetModel.Content)?.fiatAmount as? TextViewCellModel.Raw
         return when (state) {
             SwapRateLoaderState.Empty,
             SwapRateLoaderState.Error,
             is SwapRateLoaderState.NoRateAvailable -> widgetModel.copy(fiatAmount = null)
-            is SwapRateLoaderState.Loaded -> widgetModel.copy(
-                fiatAmount = fiatAmount(
-                    fiatAmount = tokenAmount.multiply(state.rate)
-                ),
-            )
+            is SwapRateLoaderState.Loaded -> {
+                var newFiatAmount = fiatAmount(fiatAmount = tokenAmount.multiply(state.rate))
+                oldFiatAmount?.let { newFiatAmount = newFiatAmount.copy(textColor = oldFiatAmount.textColor) }
+                widgetModel.copy(
+                    fiatAmount = newFiatAmount,
+                )
+            }
             SwapRateLoaderState.Loading -> widgetModel.copy(
                 fiatAmount = textCellSkeleton(
                     height = 8.toPx(),
