@@ -1,13 +1,15 @@
 package org.p2p.ethereumkit.external.repository
 
+import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
-import java.math.BigInteger
-import org.p2p.ethereumkit.external.balance.EthereumTokensRemoteRepository
+import org.p2p.core.token.Token
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
+import org.p2p.ethereumkit.external.model.EthTokenConverter
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
@@ -15,7 +17,6 @@ import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.EthAddress
-import java.math.BigDecimal
 
 internal class EthereumKitRepository(
     private val balanceRepository: EthereumTokensRepository,
@@ -25,7 +26,7 @@ internal class EthereumKitRepository(
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
 
-    override suspend fun init(seedPhrase: List<String>) {
+    override fun init(seedPhrase: List<String>) {
         tokenKeyProvider = EthTokenKeyProvider(
             publicKey = Signer.address(words = seedPhrase, chain = Chain.Ethereum),
             privateKey = Signer.privateKey(words = seedPhrase, chain = Chain.Ethereum)
@@ -37,13 +38,13 @@ internal class EthereumKitRepository(
         return balanceRepository.getWalletBalance(publicKey)
     }
 
-    override suspend fun loadWalletTokens(): List<EthTokenMetadata> = withContext(dispatchers.io) {
+    override suspend fun loadWalletTokens(): List<Token.Eth> = withContext(dispatchers.io) {
         val walletTokens = loadTokensMetadata()
         val tokensPrice = getPriceForTokens(tokenAddresses = walletTokens.map { it.contractAddress.toString() })
         tokensPrice.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
         }
-        return@withContext walletTokens
+        return@withContext walletTokens.map { EthTokenConverter.ethMetadataToToken(it) }
     }
 
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {

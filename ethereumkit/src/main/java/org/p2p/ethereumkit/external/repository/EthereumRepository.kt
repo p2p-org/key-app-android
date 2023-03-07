@@ -1,10 +1,10 @@
 package org.p2p.ethereumkit.external.repository
 
-import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import java.math.BigInteger
+import org.p2p.core.token.Token
 
 interface EthereumRepository {
-    suspend fun init(seedPhrase: List<String>)
+    fun init(seedPhrase: List<String>)
     suspend fun getBalance(): BigInteger
-    suspend fun loadWalletTokens(): List<EthTokenMetadata>
+    suspend fun loadWalletTokens(): List<Token.Eth>
 }

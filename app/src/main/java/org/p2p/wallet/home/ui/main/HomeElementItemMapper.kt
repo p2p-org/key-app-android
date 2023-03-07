@@ -1,9 +1,9 @@
 package org.p2p.wallet.home.ui.main
 
 import kotlinx.coroutines.withContext
+import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 
@@ -13,6 +13,7 @@ class HomeElementItemMapper(
 
     suspend fun mapToItems(
         tokens: List<Token.Active>,
+        ethereumTokens: List<Token.Eth>,
         visibilityState: VisibilityState,
         isZerosHidden: Boolean
     ): List<HomeElementItem> = withContext(dispatchers.io) {
@@ -22,6 +23,8 @@ class HomeElementItemMapper(
         val visibleTokens = groups[false].orEmpty()
 
         val result = mutableListOf<HomeElementItem>(HomeElementItem.Title(R.string.home_tokens))
+
+        result += ethereumTokens.map { HomeElementItem.Claim(it, isClaimEnabled = true) }
 
         result += visibleTokens.map { HomeElementItem.Shown(it) }
 
