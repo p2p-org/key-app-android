@@ -23,15 +23,15 @@ private const val SWAP_ERROR_TOKEN_PAIR_NOT_EXIST = "Swap_Error_Token_Pair_Not_E
 class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
     fun logStartScreen(
         openedFrom: SwapOpenedFrom,
-        tokenA: SwapTokenModel,
-        tokenB: SwapTokenModel
+        initialTokenA: SwapTokenModel,
+        initialTokenB: SwapTokenModel
     ) {
         tracker.logEvent(
             event = SWAP_START_SCREEN,
             params = mapOf(
                 "Last_Screen" to openedFrom.toAnalyticsValue().value,
-                "From" to tokenA.tokenName,
-                "To" to tokenB.tokenName
+                "From" to initialTokenA.tokenName,
+                "To" to initialTokenB.tokenName
             )
         )
     }

@@ -42,6 +42,7 @@ import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
@@ -51,6 +52,7 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 private const val AMOUNT_INPUT_DELAY = 400L
 
 class JupiterSwapPresenter(
+    private val swapOpenedFrom: SwapOpenedFrom,
     private val managerHolder: SwapStateManagerHolder,
     private val stateManager: SwapStateManager,
     private val widgetMapper: SwapWidgetMapper,
@@ -76,6 +78,8 @@ class JupiterSwapPresenter(
 
     private val onePercent
         get() = BigDecimal.valueOf(0.1)
+
+    private var shouldLogScreenOpened = true
 
     override fun attach(view: JupiterSwapContract.View) {
         super.attach(view)
@@ -253,6 +257,16 @@ class JupiterSwapPresenter(
     }
 
     private fun handleNewFeatureState(state: SwapState) {
+        // log analytics only on first TokenAZero
+        if (shouldLogScreenOpened && state is SwapState.TokenAZero) {
+            analytics.logStartScreen(
+                openedFrom = swapOpenedFrom,
+                initialTokenA = state.tokenA,
+                initialTokenB = state.tokenB
+            )
+            shouldLogScreenOpened = false
+        }
+
         cancelRateJobs()
         currentFeatureState = state
         when (state) {

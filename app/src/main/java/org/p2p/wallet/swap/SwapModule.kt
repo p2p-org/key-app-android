@@ -87,6 +87,7 @@ import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensCommonMapper
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 
 object SwapModule : InjectionModule {
 
@@ -188,9 +189,10 @@ object SwapModule : InjectionModule {
         factoryOf(::SwapButtonMapper)
         factoryOf(::SwapRateTickerMapper)
 
-        factory { (initialToken: Token.Active?, stateManagerHolderKey: String) ->
+        factory { (initialToken: Token.Active?, stateManagerHolderKey: String, swapOpenedFrom: SwapOpenedFrom) ->
             val stateManager: SwapStateManager = getSwapStateManager(initialToken, stateManagerHolderKey)
             JupiterSwapPresenter(
+                swapOpenedFrom = swapOpenedFrom,
                 managerHolder = get(),
                 widgetMapper = get(),
                 buttonMapper = get(),

@@ -75,7 +75,7 @@ class JupiterSwapFragment :
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
     private val analytics: JupiterSwapMainScreenAnalytics by inject()
     override val presenter: JupiterSwapContract.Presenter by inject {
-        parametersOf(initialToken, stateManagerHolderKey)
+        parametersOf(initialToken, stateManagerHolderKey, openedFrom)
     }
 
     private var mainTabsSwitcher: MainTabsSwitcher? = null
