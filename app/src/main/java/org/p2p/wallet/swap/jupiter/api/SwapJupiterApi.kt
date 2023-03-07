@@ -29,7 +29,7 @@ interface SwapJupiterApi {
         @Query("outputMint") outputMint: String,
         @Query("amount") amountInLamports: BigInteger,
         @Query("userPublicKey") userPublicKey: String,
-        @Query("asLegacyTransaction") asLegacyTransaction: Boolean = true
+        @Query("slippageBps") slippageBps: Int
     ): SwapJupiterQuoteResponse
 
     @GET("v4/indexed-route-map")

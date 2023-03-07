@@ -1,6 +1,7 @@
 package org.p2p.wallet.swap.jupiter.interactor
 
 import timber.log.Timber
+import java.math.BigDecimal
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
@@ -8,8 +9,10 @@ import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.utils.toBase58Instance
 
 private const val LOW_SLIPPAGE_ERROR_CODE = "SlippageToleranceExceeded"
@@ -59,5 +62,44 @@ class JupiterSwapInteractor(
         }
     } catch (failure: Throwable) {
         JupiterSwapTokensResult.Failure(failure)
+    }
+
+    fun getSwapTokenPair(state: SwapState): Pair<SwapTokenModel?, SwapTokenModel?> {
+        return state.run {
+            when (this) {
+                SwapState.InitialLoading -> null to null
+                is SwapState.LoadingRoutes -> tokenA to tokenB
+                is SwapState.LoadingTransaction -> tokenA to tokenB
+                is SwapState.SwapException -> getSwapTokenPair(previousFeatureState)
+                is SwapState.SwapLoaded -> tokenA to tokenB
+                is SwapState.TokenAZero -> tokenA to tokenB
+            }
+        }
+    }
+
+    fun getTokenAAmount(state: SwapState): BigDecimal? {
+        val tokenA = when (state) {
+            is SwapState.LoadingRoutes -> state.tokenA
+            is SwapState.LoadingTransaction -> state.tokenA
+            is SwapState.SwapLoaded -> state.tokenA
+            is SwapState.TokenAZero -> state.tokenA
+            SwapState.InitialLoading,
+            is SwapState.SwapException.FeatureExceptionWrapper,
+            is SwapState.SwapException.OtherException -> null
+        }
+        return (tokenA as? SwapTokenModel.UserToken)?.details?.total
+    }
+
+    fun getPriceImpact(state: SwapState?): BigDecimal? {
+        return when (state) {
+            null,
+            SwapState.InitialLoading,
+            is SwapState.LoadingRoutes,
+            is SwapState.TokenAZero -> null
+            is SwapState.SwapException -> getPriceImpact(state.previousFeatureState)
+
+            is SwapState.LoadingTransaction -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
+            is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
+        }
     }
 }
