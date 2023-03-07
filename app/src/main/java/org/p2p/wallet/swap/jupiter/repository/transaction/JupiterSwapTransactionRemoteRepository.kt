@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.jupiter.repository.transaction
 
+import kotlinx.coroutines.CancellationException
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
@@ -21,6 +22,8 @@ class JupiterSwapTransactionRemoteRepository(
             val request = mapper.toNetwork(route, userPublicKey)
             api.createRouteSwapTransaction(request)
                 .let(mapper::fromNetwork)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
         } catch (error: Throwable) {
             throw SwapFailure.CreateSwapTransactionFailed(route, error)
         }
