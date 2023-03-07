@@ -8,5 +8,5 @@ interface OnHomeItemsClickListener {
     fun onPopularTokenClicked(token: Token)
     fun onToggleClicked()
     fun onHideClicked(token: Token.Active)
-    fun onClaimTokenClicked()
+    fun onClaimTokenClicked(token: Token.Eth)
 }

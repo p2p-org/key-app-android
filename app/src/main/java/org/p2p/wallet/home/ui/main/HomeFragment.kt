@@ -43,6 +43,7 @@ import org.p2p.wallet.receive.tokenselect.ReceiveTokensFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -193,7 +194,7 @@ class HomeFragment :
                 replaceFragment(SellPayloadFragment.create())
             }
             ActionButton.SWAP_BUTTON -> {
-                replaceFragment(swapFragmentFactory.swapFragment())
+                replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.MAIN_SCREEN))
             }
         }
     }
@@ -217,7 +218,7 @@ class HomeFragment :
             HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
             HomeAction.BUY -> presenter.onBuyClicked()
             HomeAction.RECEIVE -> replaceFragment(ReceiveSolanaFragment.create(token = null))
-            HomeAction.SWAP -> replaceFragment(swapFragmentFactory.swapFragment())
+            HomeAction.SWAP -> replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.ACTION_PANEL))
             HomeAction.SEND -> presenter.onSendClicked()
         }
     }
@@ -319,14 +320,9 @@ class HomeFragment :
         presenter.toggleTokenVisibility(token)
     }
 
-    override fun onClaimTokenClicked() {
-        // TODO pass real data
+    override fun onClaimTokenClicked(token: Token.Eth) {
         replaceFragment(
-            ClaimFragment.create(
-                tokenSymbol = "WETH",
-                tokenAmount = BigDecimal(0.999717252),
-                fiatAmount = BigDecimal(1219.87)
-            )
+            ClaimFragment.create(ethereumToken = token)
         )
     }
 

@@ -8,7 +8,7 @@ import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.swap.JupiterSelectedSwapTokenStorageContract
+import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
@@ -17,7 +17,7 @@ import org.p2p.wallet.utils.Base58String
 class CommonSwapTokenSelector(
     private val jupiterTokensRepository: JupiterSwapTokensRepository,
     private val homeLocalRepository: HomeLocalRepository,
-    private val selectedSwapTokenStorage: JupiterSelectedSwapTokenStorageContract,
+    private val selectedSwapTokenStorage: JupiterSwapStorageContract,
     private val dispatchers: CoroutineDispatchers,
 ) : SwapInitialTokenSelector {
 

@@ -17,6 +17,7 @@ import org.p2p.core.utils.insets.consume
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.components.ScreenTab
+import org.p2p.uikit.utils.context
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
@@ -33,7 +34,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
-import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapMainScreenAnalytics
+import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsFragment
@@ -59,7 +61,7 @@ class JupiterSwapFragment :
     JupiterTransactionBottomSheetDismissListener {
 
     companion object {
-        fun create(token: Token.Active? = null, source: SwapOpenedFrom = SwapOpenedFrom.OTHER): JupiterSwapFragment =
+        fun create(token: Token.Active? = null, source: SwapOpenedFrom): JupiterSwapFragment =
             JupiterSwapFragment()
                 .withArgs(
                     EXTRA_TOKEN to token,
@@ -71,8 +73,9 @@ class JupiterSwapFragment :
     private val initialToken: Token.Active? by args(EXTRA_TOKEN)
     private val binding: FragmentJupiterSwapBinding by viewBinding()
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
+    private val analytics: JupiterSwapMainScreenAnalytics by inject()
     override val presenter: JupiterSwapContract.Presenter by inject {
-        parametersOf(initialToken, stateManagerHolderKey)
+        parametersOf(initialToken, stateManagerHolderKey, openedFrom)
     }
 
     private var mainTabsSwitcher: MainTabsSwitcher? = null
@@ -97,6 +100,7 @@ class JupiterSwapFragment :
             textViewDebug.isVisible = BuildConfig.DEBUG
 
             setupToolbar()
+            buttonTryAgain.setOnClickListener { presenter.onTryAgainClick() }
         }
     }
 
@@ -105,10 +109,10 @@ class JupiterSwapFragment :
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
         when (openedFrom) {
-            SwapOpenedFrom.MAIN_SCREEN -> {
+            SwapOpenedFrom.BOTTOM_NAVIGATION -> {
                 toolbar.navigationIcon = null
             }
-            SwapOpenedFrom.OTHER -> {
+            else -> {
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { onBackPressed() }
             }
         }
@@ -124,13 +128,13 @@ class JupiterSwapFragment :
     }
 
     private fun setupWidgetsActionCallbacks() = with(binding) {
-        if (openedFrom == SwapOpenedFrom.OTHER) {
+        if (openedFrom != SwapOpenedFrom.BOTTOM_NAVIGATION) {
             swapWidgetFrom.focusAndShowKeyboard()
         }
-        swapWidgetFrom.onAmountChanged = { presenter.onTokenAmountChange(it) }
-        swapWidgetFrom.onAllAmountClick = { presenter.onAllAmountClick() }
-        swapWidgetFrom.onChangeTokenClick = { presenter.onChangeTokenAClick() }
-        swapWidgetTo.onChangeTokenClick = { presenter.onChangeTokenBClick() }
+        swapWidgetFrom.onAmountChanged = presenter::onTokenAmountChange
+        swapWidgetFrom.onAllAmountClick = presenter::onAllAmountClick
+        swapWidgetFrom.onChangeTokenClick = presenter::onChangeTokenAClick
+        swapWidgetTo.onChangeTokenClick = presenter::onChangeTokenBClick
         swapWidgetTo.onInputClicked = { toast(R.string.swap_tokens_you_pay_only) }
     }
 
@@ -140,6 +144,7 @@ class JupiterSwapFragment :
                 binding.toolbar.appleTopInsets(this)
                 binding.scrollView.appleBottomInsets(this)
                 binding.frameLayoutSliderSend.appleBottomInsets(this)
+                binding.containerError.appleBottomInsets(this)
             }
         }
     }
@@ -185,18 +190,19 @@ class JupiterSwapFragment :
         replaceFragment(fragment)
     }
 
-    fun openSwapSettingsScreen() {
+    private fun openSwapSettingsScreen() {
+        analytics.logSwapSettingsClicked()
         val fragment = JupiterSwapSettingsFragment.create(stateManagerKey = stateManagerHolderKey)
         replaceFragment(fragment)
     }
 
-    override fun showPriceImpact(priceImpact: SwapPriceImpact) {
+    override fun showPriceImpact(priceImpact: SwapPriceImpactView) {
         when (priceImpact) {
-            SwapPriceImpact.NORMAL -> Unit
-            SwapPriceImpact.YELLOW -> setYellowAlert()
-            SwapPriceImpact.RED -> setRoseAlert()
+            SwapPriceImpactView.NORMAL -> Unit
+            SwapPriceImpactView.YELLOW -> setYellowAlert()
+            SwapPriceImpactView.RED -> setRoseAlert()
         }
-        binding.linearLayoutAlert.isVisible = priceImpact != SwapPriceImpact.NORMAL
+        binding.linearLayoutAlert.isVisible = priceImpact != SwapPriceImpactView.NORMAL
     }
 
     override fun scrollToPriceImpact() {
@@ -242,38 +248,36 @@ class JupiterSwapFragment :
 
     private fun navigateBackOnTransactionSuccess() {
         when (openedFrom) {
-            SwapOpenedFrom.MAIN_SCREEN -> {
+            SwapOpenedFrom.BOTTOM_NAVIGATION -> {
                 presenter.reloadFeature()
                 mainTabsSwitcher?.navigate(ScreenTab.HOME_SCREEN)
             }
-            SwapOpenedFrom.OTHER -> {
+            else -> {
                 popBackStack()
             }
         }
     }
 
-    private fun setYellowAlert() {
-        val context = binding.root.context
+    private fun setYellowAlert() = with(binding) {
         DrawableCellModel(
             drawable = shapeDrawable(shapeRoundedAll(8f.toPx())),
             tint = R.color.bg_light_sun,
             strokeWidth = 1f.toPx(),
             strokeColor = R.color.bg_sun,
-        ).applyBackground(binding.linearLayoutAlert)
-        binding.imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_sun)
-        binding.textViewAlert.setTextColor(context.getColorStateList(R.color.text_night))
+        ).applyBackground(linearLayoutAlert)
+        imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_sun)
+        textViewAlert.setTextColor(context.getColorStateList(R.color.text_night))
     }
 
-    private fun setRoseAlert() {
-        val context = binding.root.context
+    private fun setRoseAlert() = with(binding) {
         DrawableCellModel(
             drawable = shapeDrawable(shapeRoundedAll(8f.toPx())),
             tint = R.color.light_rose,
             strokeWidth = 1f.toPx(),
             strokeColor = R.color.bg_rose,
         ).applyBackground(binding.linearLayoutAlert)
-        binding.imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_rose)
-        binding.textViewAlert.setTextColor(context.getColorStateList(R.color.text_rose))
+        imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_rose)
+        textViewAlert.setTextColor(context.getColorStateList(R.color.text_rose))
     }
 
     override fun onDestroy() {
@@ -285,11 +289,19 @@ class JupiterSwapFragment :
         popBackStack()
     }
 
-    override fun showFullScreenError() {
+    override fun showFullScreenError() = with(binding) {
+        scrollView.isVisible = false
+        frameLayoutSliderSend.isVisible = false
+        textViewRate.isVisible = false
+        containerError.isVisible = true
+    }
+
+    override fun hideFullScreenError() {
         with(binding) {
-            scrollView.isVisible = false
-            frameLayoutSliderSend.isVisible = false
-            containerError.isVisible = true
+            scrollView.isVisible = true
+            frameLayoutSliderSend.isVisible = true
+            textViewRate.isVisible = true
+            containerError.isVisible = false
         }
     }
 

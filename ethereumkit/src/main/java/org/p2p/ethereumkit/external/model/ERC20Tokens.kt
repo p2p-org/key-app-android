@@ -68,5 +68,9 @@ enum class ERC20Tokens(val contractAddress: String, val mintAddress: String) {
         fun findToken(contractAddress: EthAddress): ERC20Tokens {
             return values().first { contractAddress.hex.contains(it.contractAddress, ignoreCase = true) }
         }
+
+        fun findTokenByMint(mintAddress: String): ERC20Tokens? {
+            return values().firstOrNull() { mintAddress.contains(it.mintAddress, ignoreCase = true) }
+        }
     }
 }

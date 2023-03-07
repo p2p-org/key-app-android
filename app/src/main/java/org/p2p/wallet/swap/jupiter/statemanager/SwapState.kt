@@ -64,6 +64,7 @@ sealed interface SwapState {
         data class OtherException(
             override val previousFeatureState: SwapState,
             val exception: Throwable,
+            val lastSwapStateAction: SwapStateAction,
         ) : SwapException
     }
 }

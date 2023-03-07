@@ -10,6 +10,8 @@ import org.p2p.wallet.databinding.ItemTokenToClaimBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
+private const val IMAGE_SIZE_DP = 64
+
 class TokenToClaimViewHolder(
     parent: ViewGroup,
     private val glideManager: GlideManager,
@@ -18,11 +20,14 @@ class TokenToClaimViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun onBind(item: HomeElementItem.Claim) = with(binding) {
+        val token = item.token
+        textViewTokenName.text = token.tokenName
+        textViewTokenTotal.text = token.getFormattedTotal(includeSymbol = true)
+        setTokenIconUrl(token.iconUrl)
         val canBeClaimed = item.isClaimEnabled
-        // TODO add binding from token
         setClaimButtonEnabled(isEnabled = canBeClaimed)
-        contentView.setOnClickListener { listener.onClaimTokenClicked() }
-        buttonClaim.setOnClickListener { listener.onClaimTokenClicked() }
+        contentView.setOnClickListener { listener.onClaimTokenClicked(token) }
+        buttonClaim.setOnClickListener { listener.onClaimTokenClicked(token) }
     }
 
     private fun setClaimButtonEnabled(isEnabled: Boolean) {
@@ -38,5 +43,14 @@ class TokenToClaimViewHolder(
                 setBackgroundColor(getColor(R.color.bg_rain))
             }
         }
+    }
+
+    private fun setTokenIconUrl(tokenIconUrl: String?) {
+        glideManager.load(
+            imageView = binding.imageViewToken,
+            url = tokenIconUrl,
+            size = IMAGE_SIZE_DP,
+            circleCrop = true
+        )
     }
 }

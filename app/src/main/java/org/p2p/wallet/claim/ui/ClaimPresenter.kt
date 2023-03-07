@@ -2,8 +2,10 @@ package org.p2p.wallet.claim.ui
 
 import android.content.res.Resources
 import java.math.BigDecimal
+import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.R
 import org.p2p.wallet.claim.model.BridgeAmount
@@ -11,16 +13,19 @@ import org.p2p.wallet.claim.model.ClaimDetails
 import org.p2p.wallet.common.mvp.BasePresenter
 
 class ClaimPresenter(
+    private val tokenToClaim: Token.Eth,
     private val resources: Resources
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
-    override fun loadData(tokenSymbol: String, tokenAmount: BigDecimal, fiatAmount: BigDecimal) {
-        // TODO add real logic
-        val fee: BigDecimal = BigDecimal(125.12)
-        view?.apply {
-            setTitle(resources.getString(R.string.bridge_claim_title_format, tokenSymbol))
-            setTokenAmount("${tokenAmount.scaleMedium().formatToken()} $tokenSymbol")
-            setFiatAmount(fiatAmount.asApproximateUsd(withBraces = false))
+    override fun attach(view: ClaimContract.View) {
+        super.attach(view)
+
+        val fee: BigDecimal = BigDecimal.ZERO
+        view.apply {
+            setTitle(resources.getString(R.string.bridge_claim_title_format, tokenToClaim.tokenSymbol))
+            setTokenIconUrl(tokenToClaim.iconUrl)
+            setTokenAmount("${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}")
+            setFiatAmount(tokenToClaim.totalInUsd.orZero().asApproximateUsd(withBraces = false))
             showFee(
                 if (fee == BigDecimal.ZERO) {
                     resources.getString(R.string.bridge_claim_fees_free)
