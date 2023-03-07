@@ -100,6 +100,7 @@ class JupiterSwapFragment :
             textViewDebug.isVisible = BuildConfig.DEBUG
 
             setupToolbar()
+            buttonTryAgain.setOnClickListener { presenter.onTryAgainClick() }
         }
     }
 
@@ -143,6 +144,7 @@ class JupiterSwapFragment :
                 binding.toolbar.appleTopInsets(this)
                 binding.scrollView.appleBottomInsets(this)
                 binding.frameLayoutSliderSend.appleBottomInsets(this)
+                binding.containerError.appleBottomInsets(this)
             }
         }
     }
@@ -290,7 +292,17 @@ class JupiterSwapFragment :
     override fun showFullScreenError() = with(binding) {
         scrollView.isVisible = false
         frameLayoutSliderSend.isVisible = false
+        textViewRate.isVisible = false
         containerError.isVisible = true
+    }
+
+    override fun hideFullScreenError() {
+        with(binding) {
+            scrollView.isVisible = true
+            frameLayoutSliderSend.isVisible = true
+            textViewRate.isVisible = true
+            containerError.isVisible = false
+        }
     }
 
     override fun showDebugInfo(cellModel: TextViewCellModel) {
