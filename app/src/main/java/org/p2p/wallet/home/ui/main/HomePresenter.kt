@@ -86,11 +86,9 @@ class HomePresenter(
     init {
         // TODO maybe we can find better place to start this service
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
+        ethereumRepository.init(seedPhrase = userSeedPhrase)
         launch {
             awaitAll(
-                async {
-                    ethereumRepository.init(seedPhrase = userSeedPhrase)
-                },
                 async { networkObserver.start() },
                 async { metadataInteractor.tryLoadAndSaveMetadata() }
             )

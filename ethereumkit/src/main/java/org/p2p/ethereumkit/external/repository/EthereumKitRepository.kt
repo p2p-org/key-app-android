@@ -24,7 +24,7 @@ internal class EthereumKitRepository(
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
 
-    override suspend fun init(seedPhrase: List<String>) {
+    override fun init(seedPhrase: List<String>) {
         tokenKeyProvider = EthTokenKeyProvider(
             publicKey = Signer.address(words = seedPhrase, chain = Chain.Ethereum),
             privateKey = Signer.privateKey(words = seedPhrase, chain = Chain.Ethereum)
