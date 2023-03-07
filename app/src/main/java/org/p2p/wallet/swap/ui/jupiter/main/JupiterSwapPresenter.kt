@@ -70,10 +70,10 @@ class JupiterSwapPresenter(
     private var widgetAState: SwapWidgetModel = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A)
     private var widgetBState: SwapWidgetModel = widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_B)
     private val threePercent
-        get() = BigDecimal.valueOf(0.3)
+        get() = BigDecimal.valueOf(0.03)
 
     private val onePercent
-        get() = BigDecimal.valueOf(0.1)
+        get() = BigDecimal.valueOf(0.01)
 
     override fun attach(view: JupiterSwapContract.View) {
         super.attach(view)
@@ -290,8 +290,13 @@ class JupiterSwapPresenter(
         when (val featureException = state.featureException) {
             is SwapFeatureException.SameTokens ->
                 view?.setButtonState(buttonState = buttonMapper.mapSameToken())
-            is SwapFeatureException.RoutesNotFound ->
+            is SwapFeatureException.RoutesNotFound -> {
+                val (_, tokenB) = state.previousFeatureState.getTokensPair()
+                tokenB?.let {
+                    this.widgetBState = widgetMapper.mapTokenB(token = tokenB, tokenAmount = null)
+                }
                 view?.setButtonState(buttonState = buttonMapper.mapRouteNotFound())
+            }
             is SwapFeatureException.NotValidTokenA -> {
                 val tokenA = state.previousFeatureState.getTokensPair().first
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
@@ -322,6 +327,19 @@ class JupiterSwapPresenter(
         view?.setButtonState(
             buttonState = buttonMapper.mapReadyToSwap(tokenA = state.tokenA, tokenB = state.tokenB)
         )
+        when (val priceImpact = getPriceImpact(currentFeatureState)?.toPriceImpactType()) {
+            null,
+            SwapPriceImpact.NORMAL -> view?.showPriceImpact(SwapPriceImpact.NORMAL)
+            SwapPriceImpact.YELLOW,
+            SwapPriceImpact.RED -> {
+                widgetBState = widgetMapper.mapPriceImpact(widgetBState, priceImpact)
+                view?.showPriceImpact(priceImpact)
+                if (needToScrollPriceImpact) {
+                    view?.scrollToPriceImpact()
+                    needToScrollPriceImpact = false
+                }
+            }
+        }
         getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
         getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
@@ -450,25 +468,11 @@ class JupiterSwapPresenter(
         state: SwapRateLoaderState,
         tokenAmount: BigDecimal,
     ) {
-        var newWidgetModel = widgetMapper.mapFiatAmount(
+        widgetBState = widgetMapper.mapFiatAmount(
             state = state,
             oldWidgetModel = widgetBModel,
             tokenAmount = tokenAmount
         )
-        when (val priceImpact = getPriceImpact(currentFeatureState)?.toPriceImpactType()) {
-            null,
-            SwapPriceImpact.NORMAL -> view?.showPriceImpact(SwapPriceImpact.NORMAL)
-            SwapPriceImpact.YELLOW,
-            SwapPriceImpact.RED -> {
-                newWidgetModel = widgetMapper.mapPriceImpact(newWidgetModel, priceImpact)
-                view?.showPriceImpact(priceImpact)
-                if (needToScrollPriceImpact) {
-                    view?.scrollToPriceImpact()
-                    needToScrollPriceImpact = false
-                }
-            }
-        }
-        widgetBState = newWidgetModel
         view?.setSecondTokenWidgetState(state = widgetBState)
     }
 

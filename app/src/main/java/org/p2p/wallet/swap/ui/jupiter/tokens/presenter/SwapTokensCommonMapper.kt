@@ -11,7 +11,9 @@ import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.utils.image.commonCircleImage
+import org.p2p.uikit.utils.text.TextViewBackgroundModel
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.badgeRounded
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.utils.Base58String
@@ -150,10 +152,14 @@ class SwapTokensCommonMapper {
         )
     }
 
-    private fun createPopularRightSideModel(): RightSideCellModel.TextBadge {
-        return RightSideCellModel.TextBadge(
-            TextContainer(R.string.swap_tokens_popular_label),
-            badgeTint = R.color.elements_rain
+    private fun createPopularRightSideModel(): RightSideCellModel.SingleTextTwoIcon {
+        return RightSideCellModel.SingleTextTwoIcon(
+            text = TextViewCellModel.Raw(
+                text = TextContainer(R.string.swap_tokens_popular_label),
+                badgeBackground = TextViewBackgroundModel(
+                    badgeRounded(tint = R.color.elements_rain)
+                )
+            ),
         )
     }
 

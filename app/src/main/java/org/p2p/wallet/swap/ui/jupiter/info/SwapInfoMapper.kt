@@ -88,7 +88,8 @@ class SwapInfoMapper {
             styleType = FinanceBlockStyle.BASE_CELL,
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
-                    text = TextContainer(R.string.swap_info_details_liquidity_cell_title, label, feePct)
+                    text = TextContainer(R.string.swap_info_details_liquidity_cell_title, label, feePct),
+                    maxLines = 2,
                 ),
                 secondLineText = secondLineText
             ),

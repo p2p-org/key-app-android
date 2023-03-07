@@ -1,4 +1,4 @@
-package org.p2p.ethereumkit.external.api.request
+package org.p2p.ethereumkit.external.api.alchemy.request
 
 import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter

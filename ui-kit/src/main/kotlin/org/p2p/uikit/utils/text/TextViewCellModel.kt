@@ -36,6 +36,7 @@ sealed interface TextViewCellModel {
         val gravity: Int? = null,
         val badgeBackground: TextViewBackgroundModel? = null,
         val autoSizeConfiguration: TextViewAutoSizeConfiguration? = null,
+        val maxLines: Int? = null,
     ) : TextViewCellModel
 
     data class Skeleton(
@@ -72,9 +73,9 @@ data class TextViewBackgroundModel(
 
 fun badgePadding(
     @Px left: Int = 8.toPx(),
-    @Px top: Int = 0.toPx(),
+    @Px top: Int = 1.toPx(),
     @Px right: Int = 8.toPx(),
-    @Px bottom: Int = 0.toPx(),
+    @Px bottom: Int = 3.toPx(),
 ): InitialViewPadding = InitialViewPadding(left, top, right, bottom)
 
 fun badgeRounded(
@@ -126,6 +127,7 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
         foreground = null
     }
 
+    maxLines = model.maxLines ?: initialTextStyle.maxLines
     val autoSize = model.autoSizeConfiguration
     val initialAutoSize = initialTextStyle.textViewAutoSizeConfiguration
     val autoSizeTextType =
@@ -193,6 +195,7 @@ private data class InitialTextStyle(
     val backgroundTint: ColorStateList?,
     val gravity: Int,
     val textViewAutoSizeConfiguration: TextViewAutoSizeConfiguration,
+    val maxLines: Int,
 ) {
     constructor(textView: TextView) : this(
         textSize = textView.textSize,
@@ -203,6 +206,7 @@ private data class InitialTextStyle(
         backgroundTint = textView.backgroundTintList,
         gravity = textView.gravity,
         hintTextColors = textView.hintTextColors,
+        maxLines = textView.maxLines,
         textViewAutoSizeConfiguration = TextViewAutoSizeConfiguration(
             autoSizeTextType = textView.autoSizeTextType,
             autoSizeMinTextSize = textView.autoSizeMinTextSize,

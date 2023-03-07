@@ -28,6 +28,7 @@ class FinanceBlockViewHolder(
     }
 
     inline fun <reified T : Any> getPayload(): T = this.item.payload as T
+    inline fun <reified T : Any> getPayloadOrNull(): T? = this.item.payload as? T
 }
 
 val RecyclerView.ViewHolder?.asFinanceCell: FinanceBlockViewHolder?
