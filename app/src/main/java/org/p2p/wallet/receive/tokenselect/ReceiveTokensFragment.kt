@@ -116,11 +116,9 @@ class ReceiveTokensFragment :
 
     override fun showTokenItems(items: List<TokenData>, scrollToUp: Boolean) {
         with(binding) {
-            recyclerViewTokens.post {
-                adapter.setItems(items)
-                if (scrollToUp) {
-                    recyclerViewTokens.smoothScrollToPosition(0)
-                }
+            adapter.setItems(items)
+            if (scrollToUp) {
+                recyclerViewTokens.smoothScrollToPosition(0)
             }
         }
     }
@@ -136,9 +134,7 @@ class ReceiveTokensFragment :
 
     override fun resetScrollPosition() {
         scrollListener.reset()
-        binding.recyclerViewTokens.post {
-            binding.recyclerViewTokens.smoothScrollToPosition(0)
-        }
+        binding.recyclerViewTokens.smoothScrollToPosition(0)
     }
 
     private fun ImageView.setTokenIconUrl(tokenIconUrl: String) {
