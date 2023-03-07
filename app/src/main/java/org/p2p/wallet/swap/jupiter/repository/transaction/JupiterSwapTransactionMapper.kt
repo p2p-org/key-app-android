@@ -17,7 +17,7 @@ class JupiterSwapTransactionMapper {
     }
 
     fun fromNetwork(response: CreateSwapTransactionResponse): Base64String {
-        return response.swapTransaction
+        return response.versionedSwapTransaction
     }
 
     private fun List<JupiterSwapMarketInformation>.toRequest(): List<SwapRouteRequest.MarketInfoRequest> =

@@ -35,7 +35,8 @@ class JupiterSwapRoutesRemoteRepository(
             inputMint = jupiterSwapPair.inputMint.base58Value,
             outputMint = jupiterSwapPair.outputMint.base58Value,
             amountInLamports = jupiterSwapPair.amountInLamports,
-            userPublicKey = userPublicKey.base58Value
+            userPublicKey = userPublicKey.base58Value,
+            slippageBps = jupiterSwapPair.slippageBasePoints
         )
         mapper.fromNetwork(response)
     }
