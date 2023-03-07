@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import org.p2p.uikit.databinding.WidgetIconWrapperSingleBinding
 import org.p2p.uikit.databinding.WidgetIconWrapperTwoBinding
 import org.p2p.uikit.utils.image.bind
+import org.p2p.uikit.utils.image.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.viewpool.ComponentViewPool
 
@@ -51,8 +52,8 @@ class UiKitIconWrapper @JvmOverloads constructor(
     }
 
     private fun WidgetIconWrapperTwoBinding.bind(model: IconWrapperCellModel.TwoIcon) {
-        this.imageViewFirstIcon.bind(model.first)
-        this.imageViewSecondIcon.bind(model.second)
+        this.imageViewFirstIcon.bindOrGone(model.first)
+        this.imageViewSecondIcon.bindOrGone(model.second)
 
         constraintSet.clone(this@UiKitIconWrapper)
         when (model.angleType) {

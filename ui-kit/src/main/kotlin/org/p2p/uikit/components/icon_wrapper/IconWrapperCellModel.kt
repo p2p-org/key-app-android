@@ -15,8 +15,8 @@ sealed interface IconWrapperCellModel {
     )*/
 
     data class TwoIcon(
-        val first: ImageViewCellModel,
-        val second: ImageViewCellModel,
+        val first: ImageViewCellModel?,
+        val second: ImageViewCellModel?,
         val angleType: TwoIconAngle = TwoIconAngle.Plus45,
     ) : IconWrapperCellModel
 }

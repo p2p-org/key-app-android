@@ -70,16 +70,24 @@ object ReceiveTokensMapper {
             icon = DrawableContainer.Raw(firstIconUrl),
             clippingShape = shapeCircle(),
         )
-        val iconWrapper = if (containsInEth) IconWrapperCellModel.TwoIcon(
-            first = ImageViewCellModel(
+        val firstIcon: ImageViewCellModel?
+        val secondIcon: ImageViewCellModel?
+        if (containsInEth) {
+            firstIcon = ImageViewCellModel(
                 icon = DrawableContainer.Raw(secondIconUrl),
                 clippingShape = shapeCircle(),
-            ),
-            second = solImageCell,
-            angleType = TwoIconAngle.Plus180
-        ) else {
-            IconWrapperCellModel.SingleIcon(solImageCell)
+            )
+            secondIcon = solImageCell
+        } else {
+            firstIcon = solImageCell
+            secondIcon = null
         }
-        return RightSideCellModel.IconWrapper(iconWrapper = iconWrapper)
+        return RightSideCellModel.IconWrapper(
+            iconWrapper = IconWrapperCellModel.TwoIcon(
+                first = firstIcon,
+                second = secondIcon,
+                angleType = TwoIconAngle.Plus180
+            )
+        )
     }
 }
