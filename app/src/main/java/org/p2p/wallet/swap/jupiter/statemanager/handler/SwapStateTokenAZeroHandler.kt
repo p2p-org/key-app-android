@@ -1,6 +1,7 @@
 package org.p2p.wallet.swap.jupiter.statemanager.handler
 
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_ACTIVE_ROUTE_ORDINAL
@@ -9,7 +10,8 @@ import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 
 class SwapStateTokenAZeroHandler(
     private val swapRoutesRefresher: SwapStateRoutesRefresher,
-    private val swapValidator: SwapValidator
+    private val swapValidator: SwapValidator,
+    private val analytics: JupiterSwapMainScreenAnalytics
 ) : SwapStateHandler {
 
     override fun canHandle(state: SwapState): Boolean = state is SwapState.TokenAZero
@@ -48,11 +50,13 @@ class SwapStateTokenAZeroHandler(
             }
 
             SwapStateAction.SwitchTokens -> {
-                val oldStateA = oldState.tokenA
-                val oldStateB = oldState.tokenB
+                val tokenA = oldState.tokenA
+                val tokenB = oldState.tokenB
+                analytics.logTokensSwitchClicked(tokenA, tokenB)
+
                 stateFlow.value = oldState.copy(
-                    tokenA = oldStateB,
-                    tokenB = oldStateA,
+                    tokenA = tokenB,
+                    tokenB = tokenA,
                 )
             }
             SwapStateAction.RefreshRoutes,

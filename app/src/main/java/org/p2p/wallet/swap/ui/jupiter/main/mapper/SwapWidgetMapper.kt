@@ -10,7 +10,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenType
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
@@ -197,13 +197,20 @@ class SwapWidgetMapper {
         )
     }
 
-    fun mapPriceImpact(oldWidgetModel: SwapWidgetModel, priceImpact: SwapPriceImpact): SwapWidgetModel {
-        val fiatAmount = (oldWidgetModel as? SwapWidgetModel.Content)?.fiatAmount as? TextViewCellModel.Raw
+    fun mapPriceImpact(oldWidgetModel: SwapWidgetModel, priceImpact: SwapPriceImpactView): SwapWidgetModel {
+        val fiatAmount = (oldWidgetModel as? SwapWidgetModel.Content)
+            ?.fiatAmount as? TextViewCellModel.Raw
             ?: return oldWidgetModel
         return when (priceImpact) {
-            SwapPriceImpact.NORMAL -> oldWidgetModel
-            SwapPriceImpact.YELLOW -> oldWidgetModel.copy(fiatAmount = fiatAmount.copy(textColor = R.color.text_sun))
-            SwapPriceImpact.RED -> oldWidgetModel.copy(fiatAmount = fiatAmount.copy(textColor = R.color.text_rose))
+            SwapPriceImpactView.NORMAL -> {
+                oldWidgetModel
+            }
+            SwapPriceImpactView.YELLOW -> {
+                oldWidgetModel.copy(fiatAmount = fiatAmount.copy(textColor = R.color.text_sun))
+            }
+            SwapPriceImpactView.RED -> {
+                oldWidgetModel.copy(fiatAmount = fiatAmount.copy(textColor = R.color.text_rose))
+            }
         }
     }
 }

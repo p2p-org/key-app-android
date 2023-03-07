@@ -3,7 +3,7 @@ package org.p2p.wallet.swap.ui.jupiter.main
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpact
+import org.p2p.wallet.swap.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
@@ -17,7 +17,7 @@ interface JupiterSwapContract {
         fun closeScreen()
         fun openChangeTokenAScreen()
         fun openChangeTokenBScreen()
-        fun showPriceImpact(priceImpact: SwapPriceImpact)
+        fun showPriceImpact(priceImpact: SwapPriceImpactView)
         fun scrollToPriceImpact()
         fun showProgressDialog(internalTransactionId: String, transactionDetails: SwapTransactionBottomSheetData)
         fun showDefaultSlider()
