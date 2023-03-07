@@ -79,7 +79,7 @@ class GroupedRoundingDecoration(
                 currentClass == nextClass -> shapeTopRounded
             previousClass == currentClass &&
                 currentClass != nextClass -> shapeBottomRounded
-            previousClass == current &&
+            previousClass == currentClass &&
                 currentClass == nextClass -> shapeRectangle
             else -> shapeRectangle
         }
