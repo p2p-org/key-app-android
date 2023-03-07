@@ -62,6 +62,7 @@ class JupiterSwapPresenter(
     private val userLocalRepository: UserLocalRepository
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
+    private var needToShowKeyboard = true
     private var needToScrollPriceImpact = true
     private var currentFeatureState: SwapState? = null
     private var rateTokenAJob: Job? = null
@@ -491,6 +492,10 @@ class JupiterSwapPresenter(
 
     private fun updateWidgets() {
         view?.setFirstTokenWidgetState(state = widgetAState)
+        if (needToShowKeyboard && widgetAState !is SwapWidgetModel.Loading){
+            view?.showKeyboard()
+            needToShowKeyboard = false
+        }
         view?.setSecondTokenWidgetState(state = widgetBState)
     }
 

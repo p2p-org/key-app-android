@@ -24,6 +24,7 @@ interface JupiterSwapContract {
         fun showCompleteSlider()
         fun showFullScreenError()
         fun showDebugInfo(debugInfo: TextViewCellModel)
+        fun showKeyboard()
     }
 
     interface Presenter : MvpPresenter<View> {
