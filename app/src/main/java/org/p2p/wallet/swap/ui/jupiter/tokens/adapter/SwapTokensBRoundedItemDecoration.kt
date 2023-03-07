@@ -47,7 +47,11 @@ class SwapTokensBRoundedItemDecoration(
         val shouldCheckForBottomPadding = !currentItemPayload.hasPopularLabel
 
         if (shouldCheckForBottomPadding) {
-            addBottomPaddingToPopularGroup(outRect, previousViewHolder, nextViewHolder)
+            addBottomPaddingToPopularGroup(
+                outRect = outRect,
+                previousViewHolder = previousViewHolder,
+                nextViewHolder = nextViewHolder
+            )
         }
     }
 
@@ -106,19 +110,21 @@ class SwapTokensBRoundedItemDecoration(
         previousItem: RecyclerView.ViewHolder?,
         nextItem: RecyclerView.ViewHolder?,
     ): ShapeAppearanceModel {
-        val previousToken = previousItem.asFinanceCell
+        val previousPayload = previousItem.asFinanceCell
             ?.getPayload<SwapTokensCellModelPayload>()
-            ?.tokenModel
-        val nextToken = nextItem.asFinanceCell
+        val nextPayload = nextItem.asFinanceCell
             ?.getPayload<SwapTokensCellModelPayload>()
-            ?.tokenModel
 
-        val isChosenTokenGroup = previousToken !is SwapTokenModel &&
-            nextToken !is SwapTokenModel
+        val previousToken = previousPayload?.tokenModel
+        val nextToken = nextPayload?.tokenModel
+
+        val isChosenTokenGroup =
+            previousToken !is SwapTokenModel &&
+                nextToken !is SwapTokenModel
 
         val isOtherTokensGroupStarted =
-            previousToken !is SwapTokenModel &&
-                nextToken is SwapTokenModel
+            previousPayload?.hasPopularLabel == true &&
+                nextPayload?.hasPopularLabel == false
 
         val isOtherTokensGroupFinished =
             previousToken is SwapTokenModel &&
@@ -138,7 +144,7 @@ class SwapTokensBRoundedItemDecoration(
     ): ShapeAppearanceModel {
         val previousItemPayload = previousItem.asFinanceCell
             ?.getPayload<SwapTokensCellModelPayload>()
-        val nextItemPayload = previousItem.asFinanceCell
+        val nextItemPayload = nextItem.asFinanceCell
             ?.getPayload<SwapTokensCellModelPayload>()
 
         val isPopularTokensGroupStarted =
