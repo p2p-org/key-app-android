@@ -2,6 +2,7 @@ package org.p2p.uikit.utils.recycler.decoration
 
 import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
@@ -17,17 +18,16 @@ import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 
 fun onePxDividerFinanceBlockDecoration(
-    recyclerView: RecyclerView,
+    context: Context,
     orientation: Int = LinearLayout.VERTICAL,
-) = OnePxDividerDecoration(FinanceBlockCellModel::class, recyclerView, orientation)
+) = OnePxDividerDecoration(FinanceBlockCellModel::class, context, orientation)
 
 class OnePxDividerDecoration(
     private val itemCellType: KClass<out AnyCellItem>,
-    recyclerView: RecyclerView,
+    private val context: Context,
     orientation: Int = LinearLayout.VERTICAL,
-) : MaterialDividerItemDecoration(recyclerView.context, orientation) {
+) : MaterialDividerItemDecoration(context, orientation) {
 
-    private val context = recyclerView.context
     private val tempRect = Rect()
     private val dividerInset = 16.toPx()
     private val underlayDrawable = shapeDrawable().apply {

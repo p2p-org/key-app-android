@@ -65,7 +65,7 @@ class NewSendDetailsBottomSheet :
     private val colorMountain by unsafeLazy { getColor(R.color.text_mountain) }
     private val colorMint by unsafeLazy { getColor(R.color.text_mint) }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogNewSendDetailsBinding.inflate(inflater, container, false)

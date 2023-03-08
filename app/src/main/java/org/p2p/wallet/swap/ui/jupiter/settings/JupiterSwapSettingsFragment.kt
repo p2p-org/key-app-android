@@ -16,13 +16,13 @@ import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.wallet.R
+import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapSettingsBinding
 import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoBottomSheet
 import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoType
 import org.p2p.wallet.swap.ui.jupiter.routes.SwapSelectRoutesBottomSheet
-import org.p2p.wallet.swap.ui.jupiter.settings.adapter.SwapSettingsAdapter
 import org.p2p.wallet.swap.ui.jupiter.settings.adapter.SwapSettingsDecorator
 import org.p2p.wallet.swap.ui.jupiter.settings.view.swapCustomSlippageDelegate
 import org.p2p.wallet.utils.args
@@ -55,7 +55,7 @@ class JupiterSwapSettingsFragment :
 
     private val analytics: JupiterSwapSettingsAnalytics by inject()
 
-    private val adapter = SwapSettingsAdapter(
+    private val adapter = CommonAnyCellAdapter(
         swapCustomSlippageDelegate { presenter.onCustomSlippageChange(it) },
         sectionHeaderCellDelegate(),
         baseCellDelegate(inflateListener = { financeBlock ->

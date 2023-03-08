@@ -15,6 +15,7 @@ import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.image.commonCircleImage
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
 
 object ReceiveTokensMapper {
 
@@ -22,6 +23,7 @@ object ReceiveTokensMapper {
         solTokenUrl: String,
         ethTokenUrl: String
     ): AnyCellItem {
+        val isErc20Token = ERC20Tokens.findTokenByMint(mintAddress) != null
         return FinanceBlockCellModel(
             leftSideCellModel = createLeftSideModel(
                 tokenIconUrl = iconUrl.orEmpty(),
@@ -29,11 +31,14 @@ object ReceiveTokensMapper {
                 tokenSymbol = symbol,
             ),
             rightSideCellModel = createRightSideModel(
-                mintAddress = mintAddress,
                 firstIconUrl = solTokenUrl,
-                secondIconUrl = ethTokenUrl
+                secondIconUrl = ethTokenUrl,
+                isErc20Token = isErc20Token
             ),
-            payload = this
+            payload = ReceiveTokenPayload(
+                tokenData = this,
+                isErc20Token = isErc20Token
+            )
         )
     }
 
@@ -61,18 +66,17 @@ object ReceiveTokensMapper {
     }
 
     private fun createRightSideModel(
-        mintAddress: String,
         firstIconUrl: String,
-        secondIconUrl: String
+        secondIconUrl: String,
+        isErc20Token: Boolean
     ): RightSideCellModel {
-        val containsInEth = ERC20Tokens.findTokenByMint(mintAddress) != null
         val solImageCell = ImageViewCellModel(
             icon = DrawableContainer.Raw(firstIconUrl),
             clippingShape = shapeCircle(),
         )
         val firstIcon: ImageViewCellModel?
         val secondIcon: ImageViewCellModel?
-        if (containsInEth) {
+        if (isErc20Token) {
             firstIcon = ImageViewCellModel(
                 icon = DrawableContainer.Raw(secondIconUrl),
                 clippingShape = shapeCircle(),
