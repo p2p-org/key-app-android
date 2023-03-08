@@ -55,15 +55,11 @@ class SwapSelectRoutesMapper {
         }
     }
 
-    private fun formatLabel(route: JupiterSwapRoute): String {
-        var result = ""
+    private fun formatLabel(route: JupiterSwapRoute): String = buildString {
         route.marketInfos.forEachIndexed { index, marketInfo ->
-            result = result.plus(marketInfo.label)
-            if (index != route.marketInfos.lastIndex) {
-                result = result.plus(" + ")
-            }
+            append(marketInfo.label)
+            if (index != route.marketInfos.lastIndex) append(" + ")
         }
-        return result
     }
 
     private fun titleSkeleton(): TextViewCellModel.Skeleton = TextViewCellModel.Skeleton(

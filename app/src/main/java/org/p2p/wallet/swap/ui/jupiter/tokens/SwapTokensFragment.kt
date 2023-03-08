@@ -22,6 +22,7 @@ import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapTokensBinding
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensARoundedItemDecoration
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensAdapter
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensBRoundedItemDecoration
@@ -56,15 +57,21 @@ class SwapTokensFragment :
 
     override val presenter: SwapTokensContract.Presenter by inject { parametersOf(tokenToChange, stateManagerKey) }
 
+    private val analytics: JupiterSwapMainScreenAnalytics by inject()
+
     private val adapter: SwapTokensAdapter by unsafeLazy {
-        SwapTokensAdapter(
-            onTokenClicked = presenter::onTokenClicked
-        )
+        SwapTokensAdapter(onTokenClicked = {
+            analytics.logTokenChanged(tokenToChange, it)
+            presenter.onTokenClicked(it)
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.setNavigationOnClickListener { popBackStack() }
+        binding.toolbar.setNavigationOnClickListener {
+            analytics.logSelectTokenClosed(tokenToChange)
+            popBackStack()
+        }
         inflateSearchMenu(binding.toolbar)
 
         with(binding.recyclerViewTokens) {

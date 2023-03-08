@@ -308,4 +308,8 @@ class JupiterSwapFragment :
     override fun showDebugInfo(cellModel: TextViewCellModel) {
         binding.textViewDebug.bind(cellModel)
     }
+
+    override fun showKeyboard() {
+        if (openedFrom != SwapOpenedFrom.MAIN_SCREEN) binding.swapWidgetTo.focusAndShowKeyboard()
+    }
 }

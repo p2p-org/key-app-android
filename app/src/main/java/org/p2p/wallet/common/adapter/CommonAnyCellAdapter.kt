@@ -1,4 +1,4 @@
-package org.p2p.wallet.receive.tokenselect
+package org.p2p.wallet.common.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
@@ -6,11 +6,12 @@ import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import java.util.Objects
 import org.p2p.uikit.model.AnyCellItem
 
-class ReceiveTokensAdapter(
-    vararg delegates: AdapterDelegate<List<AnyCellItem>>
-) : AsyncListDifferDelegationAdapter<AnyCellItem>(DiffCallback(), *delegates)
+class CommonAnyCellAdapter(
+    vararg delegates: AdapterDelegate<List<AnyCellItem>>,
+    diffUtilCallback: DiffUtil.ItemCallback<AnyCellItem> = DefaultDiffCallback()
+) : AsyncListDifferDelegationAdapter<AnyCellItem>(diffUtilCallback, *delegates)
 
-private class DiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
+private class DefaultDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
 
     override fun areItemsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {

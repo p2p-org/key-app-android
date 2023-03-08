@@ -58,6 +58,7 @@ import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateTokenAZeroHandl
 import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.CommonSwapTokenSelector
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.PreinstallTokenASelector
+import org.p2p.wallet.swap.jupiter.statemanager.validator.MinimumSolAmountValidator
 import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
@@ -178,7 +179,7 @@ object SwapModule : InjectionModule {
         singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
 
         factoryOf(::JupiterSwapInteractor)
-
+        factoryOf(::MinimumSolAmountValidator)
         factoryOf(::SwapValidator)
         factoryOf(::SwapStateRoutesRefresher)
         factoryOf(::SwapWidgetMapper)
@@ -303,6 +304,7 @@ object SwapModule : InjectionModule {
                 rateTickerMapper = get(),
                 contentMapper = get(parameters = { parametersOf(stateManagerHolderKey) }),
                 swapTokensRepository = get(),
+                analytics = get()
             )
         } bind JupiterSwapSettingsContract.Presenter::class
         factoryOf(::SwapTokensCommonMapper)

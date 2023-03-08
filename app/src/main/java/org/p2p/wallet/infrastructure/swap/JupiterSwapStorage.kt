@@ -18,26 +18,33 @@ class JupiterSwapStorage(
     override var savedTokenAMint: Base58String?
         get() = sharedPreferences.getString(KEY_TOKEN_A_MINT, null)?.let(::Base58String)
         set(value) {
-            value?.let(::saveTokenA)
+            value?.let(::saveTokenA) ?: remove(KEY_TOKEN_A_MINT)
         }
 
     override var savedTokenBMint: Base58String?
         get() = sharedPreferences.getString(KEY_TOKEN_B_MINT, null)?.let(::Base58String)
         set(value) {
-            value?.let(::saveTokenB)
+            value?.let(::saveTokenB) ?: remove(KEY_TOKEN_B_MINT)
         }
 
     override var routesFetchDateMillis: Long?
         get() = sharedPreferences.getLong(KEY_ROUTES_FETCH_DATE, 0L).takeIf { it != 0L }
         set(value) {
-            value?.let(::saveRoutesFetchDate)
+            value?.let(::saveRoutesFetchDate) ?: remove(KEY_ROUTES_FETCH_DATE)
         }
 
     override var routesMap: JupiterAvailableSwapRoutesMap?
         get() = getRoutesMapFromStorage()
         set(value) {
-            value?.let(::saveRoutesMapToStorage)
+            value?.let(::saveRoutesMapToStorage) ?: remove(KEY_ROUTES_MINTS)
         }
+
+    override fun clear() {
+        savedTokenAMint = null
+        savedTokenBMint = null
+        routesFetchDateMillis = null
+        routesMap = null
+    }
 
     private fun saveTokenA(mintAddress: Base58String) {
         sharedPreferences.edit { putString(KEY_TOKEN_A_MINT, mintAddress.base58Value) }
@@ -94,5 +101,9 @@ class JupiterSwapStorage(
             putStringSet(KEY_ROUTES_MINTS, mintAddresses.toSet())
             routesInPrefsFormat.forEach { (key, value) -> putStringSet(key, value) }
         }
+    }
+
+    private fun remove(key: String) {
+        sharedPreferences.edit { remove(key) }
     }
 }

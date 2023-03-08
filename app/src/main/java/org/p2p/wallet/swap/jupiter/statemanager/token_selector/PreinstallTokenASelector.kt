@@ -27,7 +27,7 @@ class PreinstallTokenASelector(
         val tokenB: SwapTokenModel = getTokenB(
             jupiterTokens = jupiterTokens,
             userTokens = userTokens,
-            findSolOrUsdc = !preinstallTokenA.isSOL,
+            preferSol = !preinstallTokenA.isSOL,
             savedSwapTokenB = savedSelectedSwapTokenStorage.savedTokenBMint
         )
         savedSelectedSwapTokenStorage.savedTokenAMint = tokenA.mintAddress

@@ -13,6 +13,7 @@ import org.bouncycastle.crypto.modes.SICBlockCipher
 import org.bouncycastle.crypto.params.*
 import org.bouncycastle.crypto.signers.ECDSASigner
 import org.bouncycastle.crypto.signers.HMacDSAKCalculator
+import org.bouncycastle.jcajce.provider.digest.Keccak
 import org.bouncycastle.jce.spec.ECParameterSpec
 import org.bouncycastle.math.ec.ECAlgorithms
 import org.bouncycastle.math.ec.ECCurve
@@ -21,6 +22,7 @@ import org.bouncycastle.util.BigIntegers
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
+import org.p2p.ethereumkit.internal.crypto.digest.Keccak256
 
 object CryptoUtils {
 
@@ -108,7 +110,7 @@ object CryptoUtils {
     }
 
     fun sha3(data: ByteArray): ByteArray {
-        val digest = MessageDigest.getInstance(HASH_256_ALGORITHM_NAME)
+        val digest = Keccak.Digest256()
         digest.update(data)
         return digest.digest()
     }

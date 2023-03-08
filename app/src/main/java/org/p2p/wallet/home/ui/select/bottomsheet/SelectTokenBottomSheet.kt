@@ -1,21 +1,21 @@
 package org.p2p.wallet.home.ui.select.bottomsheet
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
+import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.DialogSelectTokenBinding
-import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.select.SelectTokenAdapter
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.utils.args
@@ -73,5 +73,5 @@ class SelectTokenBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 }

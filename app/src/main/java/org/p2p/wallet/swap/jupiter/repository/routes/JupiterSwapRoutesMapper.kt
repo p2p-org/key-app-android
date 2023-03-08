@@ -21,7 +21,9 @@ class JupiterSwapRoutesMapper {
                 slippageBps = route.slippageBps,
                 otherAmountThreshold = route.otherAmountThreshold,
                 swapMode = route.swapMode,
-                fees = route.fees.toSwapFee()
+                fees = route.fees.toSwapFee(),
+                keyAppFee = route.keyAppFees.fee,
+                keyAppHash = route.keyAppFees.hash
             )
         }
 

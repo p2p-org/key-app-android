@@ -1,9 +1,12 @@
 package org.p2p.wallet.receive.tokenselect
 
 import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.receive.tokenselect.ReceiveTokensMapper.toTokenFinanceCellModel
+import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
+import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
 
@@ -16,8 +19,10 @@ class ReceiveTokensPresenter(
     private var searchText = emptyString()
     private var scrollToUp = false
 
-    private var solTokenUrl = emptyString()
-    private var ethTokenUrl = emptyString()
+    private var solToken: Token? = null
+    private var ethToken: Token? = null
+
+    private var lastSelectedTokenPayload: ReceiveTokenPayload? = null
 
     override fun attach(view: ReceiveTokensContract.View) {
         super.attach(view)
@@ -28,9 +33,12 @@ class ReceiveTokensPresenter(
                     Constants.ETH_SYMBOL
                 )
             )
-            solTokenUrl = tokensForReceiveBanner[0].iconUrl.orEmpty()
-            ethTokenUrl = tokensForReceiveBanner[1].iconUrl.orEmpty()
-            view.setBannerTokens(solTokenUrl, ethTokenUrl)
+            solToken = tokensForReceiveBanner[0]
+            ethToken = tokensForReceiveBanner[1]
+            view.setBannerTokens(
+                firstTokenUrl = solToken?.iconUrl.orEmpty(),
+                secondTokenUrl = ethToken?.iconUrl.orEmpty()
+            )
             observeTokens()
         }
     }
@@ -50,6 +58,26 @@ class ReceiveTokensPresenter(
         load(isRefresh = true, scrollToUp = true)
     }
 
+    override fun onTokenClicked(tokenDataPayload: ReceiveTokenPayload) {
+        if (tokenDataPayload.isErc20Token) {
+            lastSelectedTokenPayload = tokenDataPayload
+            view?.showSelectNetworkDialog(listOfNotNull(solToken, ethToken))
+        } else {
+            view?.openReceiveInSolana(tokenDataPayload.tokenData)
+        }
+    }
+
+    override fun onNetworkSelected(network: ReceiveNetwork) {
+        lastSelectedTokenPayload?.tokenData?.let { tokenData ->
+            view?.apply {
+                when (network) {
+                    ReceiveNetwork.SOLANA -> openReceiveInSolana(tokenData)
+                    ReceiveNetwork.ETHEREUM -> openReceiveInEthereum()
+                }
+            }
+        }
+    }
+
     private fun observeTokens() {
         launch {
             interactor.getTokenListFlow().collect { data ->
@@ -57,7 +85,12 @@ class ReceiveTokensPresenter(
                 view?.showEmptyState(isEmpty)
                 view?.setBannerVisibility(!isEmpty && searchText.isEmpty())
                 view?.showTokenItems(
-                    data.result.map { it.toTokenFinanceCellModel(solTokenUrl, ethTokenUrl) },
+                    data.result.map {
+                        it.toTokenFinanceCellModel(
+                            solTokenUrl = solToken?.iconUrl.orEmpty(),
+                            ethTokenUrl = ethToken?.iconUrl.orEmpty()
+                        )
+                    },
                     scrollToUp
                 )
             }

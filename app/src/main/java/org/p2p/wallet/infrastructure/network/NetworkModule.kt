@@ -133,7 +133,7 @@ object NetworkModule : InjectionModule {
     fun Scope.getRetrofit(
         baseUrl: String,
         tag: String? = "OkHttpClient",
-        interceptor: Interceptor?
+        interceptor: Interceptor?,
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)

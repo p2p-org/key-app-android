@@ -1,15 +1,17 @@
 package org.p2p.wallet.transaction.ui
 
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
+import androidx.transition.TransitionManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.lifecycleScope
-import androidx.transition.TransitionManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
+import java.text.SimpleDateFormat
+import java.util.Locale
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -21,8 +23,6 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 /**
  * Bottom sheet dialog which shows current transaction's state
@@ -73,7 +73,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
 
     private val colorMountain by unsafeLazy { getColor(R.color.text_mountain) }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_new_transaction_progress, container, false)

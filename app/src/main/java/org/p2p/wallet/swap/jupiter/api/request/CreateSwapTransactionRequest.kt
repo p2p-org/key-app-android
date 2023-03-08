@@ -8,11 +8,7 @@ data class CreateSwapTransactionRequest(
     @SerializedName("route")
     val route: SwapRouteRequest,
     @SerializedName("userPublicKey")
-    val userPublicKey: Base58String,
-    @SerializedName("wrapUnwrapSOL")
-    val wrapUnwrapSOL: Boolean,
-    @SerializedName("asLegacyTransaction")
-    val asLegacyTransaction: Boolean,
+    val userPublicKey: Base58String
 )
 
 data class SwapRouteRequest(
@@ -39,7 +35,9 @@ data class SwapRouteRequest(
     @SerializedName("swapMode")
     val swapMode: JupiterSwapMode,
     @SerializedName("fees")
-    val fees: JupiterSwapFeesRequest
+    val fees: JupiterSwapFeesRequest,
+    @SerializedName("keyapp")
+    val keyAppFees: KeyAppFees
 ) {
 
     data class MarketInfoRequest(
@@ -86,6 +84,13 @@ data class SwapRouteRequest(
             val pct: Double
         )
     }
+
+    data class KeyAppFees(
+        @SerializedName("fee")
+        val fee: String,
+        @SerializedName("_hash")
+        val hash: String
+    )
 }
 
 data class JupiterSwapFeesRequest(
@@ -110,5 +115,5 @@ data class JupiterSwapFeesRequest(
      * the minimum lamports needed for transaction(s)
      */
     @SerializedName("minimumSOLForTransaction")
-    val minimumSolForTransactionLamports: Long
+    val minimumSolForTransactionLamports: Long,
 )
