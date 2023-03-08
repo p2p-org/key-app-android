@@ -8,4 +8,6 @@ interface JupiterSwapStorageContract {
     var savedTokenBMint: Base58String?
     var routesFetchDateMillis: Long?
     var routesMap: JupiterAvailableSwapRoutesMap?
+
+    fun clear()
 }

@@ -51,7 +51,7 @@ class CommonSwapTokenSelector(
                 tokenB = getTokenB(
                     jupiterTokens = jupiterTokens,
                     userTokens = userTokens,
-                    findSolOrUsdc = true,
+                    preferSol = true,
                     savedSwapTokenB = savedSelectedTokenMintB
                 )
             }
@@ -60,7 +60,7 @@ class CommonSwapTokenSelector(
                 tokenB = getTokenB(
                     jupiterTokens = jupiterTokens,
                     userTokens = userTokens,
-                    findSolOrUsdc = false,
+                    preferSol = false,
                     savedSwapTokenB = savedSelectedTokenMintB
                 )
             }
@@ -69,7 +69,7 @@ class CommonSwapTokenSelector(
                 tokenB = getTokenB(
                     jupiterTokens = jupiterTokens,
                     userTokens = userTokens,
-                    findSolOrUsdc = false,
+                    preferSol = true,
                     savedSwapTokenB = savedSelectedTokenMintB
                 )
             }

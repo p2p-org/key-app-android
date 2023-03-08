@@ -116,6 +116,7 @@ object AuthModule {
                 pushNotificationsInteractor = get(),
                 appScope = get(),
                 analytics = get(),
+                jupiterSwapStorage = get()
             )
         }
 
