@@ -14,5 +14,7 @@ data class JupiterSwapRoute(
     val slippageBps: Int,
     val otherAmountThreshold: String,
     val swapMode: JupiterSwapMode,
-    val fees: JupiterSwapFees
+    val fees: JupiterSwapFees,
+    val keyAppFee: String,
+    val keyAppHash: String
 )

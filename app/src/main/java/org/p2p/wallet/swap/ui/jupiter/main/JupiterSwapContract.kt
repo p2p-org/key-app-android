@@ -25,6 +25,7 @@ interface JupiterSwapContract {
         fun showFullScreenError()
         fun hideFullScreenError()
         fun showDebugInfo(debugInfo: TextViewCellModel)
+        fun showKeyboard()
     }
 
     interface Presenter : MvpPresenter<View> {

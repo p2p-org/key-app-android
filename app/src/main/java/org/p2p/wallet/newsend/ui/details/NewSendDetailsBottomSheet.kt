@@ -101,7 +101,7 @@ class NewSendDetailsBottomSheet :
 
     private fun DialogNewSendDetailsBinding.setRecipientAddress() {
         val address = state.recipientAddress
-        with(layoutAddress) {
+        with(containerAddress) {
             imageViewIcon.setImageResource(R.drawable.ic_wallet_24)
             textViewTitle.text = getString(R.string.send_transactions_details_address)
             textViewSubtitle.text = address

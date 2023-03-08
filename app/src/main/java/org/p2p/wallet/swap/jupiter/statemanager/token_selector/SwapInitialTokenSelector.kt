@@ -13,7 +13,7 @@ interface SwapInitialTokenSelector {
     fun getTokenB(
         jupiterTokens: List<JupiterSwapToken>,
         userTokens: List<Token.Active>,
-        findSolOrUsdc: Boolean,
+        preferSol: Boolean,
         savedSwapTokenB: Base58String?
     ): SwapTokenModel {
         return when {
@@ -27,7 +27,7 @@ interface SwapInitialTokenSelector {
                 }
             }
 
-            findSolOrUsdc -> {
+            preferSol -> {
                 val userSol = userTokens.firstOrNull { it.isSOL }
                 val jupiterSol = jupiterTokens.first { it.tokenMint.base58Value == Constants.WRAPPED_SOL_MINT }
                 if (userSol != null) {

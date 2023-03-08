@@ -10,16 +10,17 @@ import kotlinx.coroutines.launch
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
-import org.p2p.wallet.swap.model.jupiter.SwapRateTickerState
-import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapRateTickerMapper
+import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.model.jupiter.SwapRateTickerState
 import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoType
+import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.swap.ui.jupiter.settings.JupiterSwapSettingsContract
 
 private const val AMOUNT_INPUT_DELAY = 400L
@@ -32,6 +33,7 @@ class JupiterSwapSettingsPresenter(
     private val commonMapper: SwapCommonSettingsMapper,
     private val rateTickerMapper: SwapRateTickerMapper,
     private val rateTickerManager: SwapRateTickerManager,
+    private val analytics: JupiterSwapSettingsAnalytics,
     private val swapTokensRepository: JupiterSwapTokensRepository,
 ) : BasePresenter<JupiterSwapSettingsContract.View>(), JupiterSwapSettingsContract.Presenter {
 
@@ -83,14 +85,17 @@ class JupiterSwapSettingsPresenter(
         when (payload) {
             SwapSlippagePayload.ZERO_POINT_ONE -> {
                 isSelectedCustom = false
+                analytics.logSlippageChangedClicked(Slippage.Min)
                 stateManager.onNewAction(SwapStateAction.SlippageChanged(Slippage.Min))
             }
             SwapSlippagePayload.ZERO_POINT_FIVE -> {
                 isSelectedCustom = false
+                analytics.logSlippageChangedClicked(Slippage.Medium)
                 stateManager.onNewAction(SwapStateAction.SlippageChanged(Slippage.Medium))
             }
             SwapSlippagePayload.ONE -> {
                 isSelectedCustom = false
+                analytics.logSlippageChangedClicked(Slippage.One)
                 stateManager.onNewAction(SwapStateAction.SlippageChanged(Slippage.One))
             }
             SwapSlippagePayload.CUSTOM -> {
@@ -101,7 +106,9 @@ class JupiterSwapSettingsPresenter(
                     view?.bindSettingsList(contentList)
                 }
             }
-            is SwapSettingsPayload -> onDetailsClick(payload)
+            is SwapSettingsPayload -> {
+                onDetailsClick(payload)
+            }
         }
     }
 
@@ -109,12 +116,16 @@ class JupiterSwapSettingsPresenter(
         when (settingsPayload) {
             SwapSettingsPayload.ROUTE ->
                 if (canOpenDetails()) view?.showRouteDialog()
-            SwapSettingsPayload.NETWORK_FEE -> view?.showDetailsDialog(SwapInfoType.NETWORK_FEE)
-            SwapSettingsPayload.CREATION_FEE -> view?.showDetailsDialog(SwapInfoType.ACCOUNT_FEE)
+            SwapSettingsPayload.NETWORK_FEE ->
+                view?.showDetailsDialog(SwapInfoType.NETWORK_FEE)
+            SwapSettingsPayload.CREATION_FEE ->
+                view?.showDetailsDialog(SwapInfoType.ACCOUNT_FEE)
             SwapSettingsPayload.LIQUIDITY_FEE ->
                 if (canOpenDetails()) view?.showDetailsDialog(SwapInfoType.LIQUIDITY_FEE)
-            SwapSettingsPayload.ESTIMATED_FEE -> Unit
-            SwapSettingsPayload.MINIMUM_RECEIVED -> view?.showDetailsDialog(SwapInfoType.MINIMUM_RECEIVED)
+            SwapSettingsPayload.MINIMUM_RECEIVED ->
+                view?.showDetailsDialog(SwapInfoType.MINIMUM_RECEIVED)
+            SwapSettingsPayload.ESTIMATED_FEE ->
+                Unit
         }
     }
 
@@ -130,6 +141,7 @@ class JupiterSwapSettingsPresenter(
         val newCustomSlippage = Slippage.parse(slippage)
         debounceInputJob = launch {
             stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
+            analytics.logSlippageChangedClicked(newCustomSlippage)
             delay(AMOUNT_INPUT_DELAY)
             stateManager.onNewAction(SwapStateAction.SlippageChanged(newCustomSlippage))
         }
@@ -151,12 +163,15 @@ class JupiterSwapSettingsPresenter(
         tokens: List<JupiterSwapToken>
     ): List<AnyCellItem> {
         return when (state) {
-            SwapState.InitialLoading -> listOf()
-            is SwapState.TokenAZero -> emptyMapper.mapEmptyList(
-                tokenB = state.tokenB
-            )
-            is SwapState.LoadingRoutes ->
+            SwapState.InitialLoading -> {
+                emptyList()
+            }
+            is SwapState.TokenAZero -> {
+                emptyMapper.mapEmptyList(tokenB = state.tokenB)
+            }
+            is SwapState.LoadingRoutes -> {
                 loadingMapper.mapLoadingList()
+            }
             is SwapState.LoadingTransaction -> {
                 contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
@@ -178,7 +193,9 @@ class JupiterSwapSettingsPresenter(
                     tokenA = state.tokenA,
                 )
             }
-            is SwapState.SwapException -> getContentListByFeatureState(state.previousFeatureState, tokens)
+            is SwapState.SwapException -> {
+                getContentListByFeatureState(state.previousFeatureState, tokens)
+            }
         }
     }
 
@@ -192,9 +209,9 @@ class JupiterSwapSettingsPresenter(
 
     private fun List<AnyCellItem>.addSlippageSettings(state: SwapState): List<AnyCellItem> {
         val currentSlippage = state.getCurrentSlippage()
-        val result = this.toMutableList().also {
-            it.addAll(commonMapper.mapSlippageList(currentSlippage, isSelectedCustom ?: false))
-        }
-        return result
+        return this + commonMapper.mapSlippageList(
+            slippage = currentSlippage,
+            isSelectedCustom = isSelectedCustom ?: false
+        )
     }
 }

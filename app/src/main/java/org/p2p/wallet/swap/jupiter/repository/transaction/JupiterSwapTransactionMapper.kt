@@ -30,8 +30,8 @@ class JupiterSwapTransactionMapper {
                 notEnoughLiquidity = domainModel.notEnoughLiquidity,
                 inAmount = domainModel.inAmountInLamports.toString(),
                 outAmount = domainModel.outAmountInLamports.toString(),
-                minInAmount = domainModel.minInAmountInLamports.toString(),
-                minOutAmount = domainModel.minOutAmountInLamports.toString(),
+                minInAmount = domainModel.minInAmountInLamports?.toString(),
+                minOutAmount = domainModel.minOutAmountInLamports?.toString(),
                 priceImpactPct = domainModel.priceImpactPct.toDouble(),
                 lpFee = domainModel.lpFee.let { domainFee ->
                     SwapRouteRequest.MarketInfoRequest.LpFeeRequest(
@@ -61,11 +61,10 @@ class JupiterSwapTransactionMapper {
                 slippageBps = slippageBps,
                 otherAmountThreshold = otherAmountThreshold,
                 swapMode = swapMode,
-                fees = fees.toRequest()
+                fees = fees.toRequest(),
+                keyAppFees = SwapRouteRequest.KeyAppFees(keyAppFee, keyAppHash)
             ),
-            userPublicKey = userPublicKey,
-            wrapUnwrapSOL = true,
-            asLegacyTransaction = true
+            userPublicKey = userPublicKey
         )
     }
 
