@@ -47,13 +47,13 @@ class NewReceiveSolanaFragment :
             toolbar.title = getString(R.string.receive_on_solana, tokenSymbol)
             toolbar.setNavigationOnClickListener { popBackStack() }
             textViewAddress.text = tokenAddress
-            glideManager.load(watermarkImageView, logoUrl)
+            glideManager.load(imageViewWatermark, logoUrl)
 
             buttonAction.setOnClickListener {
                 requireContext().copyToClipBoard(tokenAddress)
                 showUiKitSnackBar(messageResId = R.string.receive_sol_address_copied)
             }
-            layoutAddress.setOnClickListener {
+            containerAddress.setOnClickListener {
                 requireContext().copyToClipBoard(tokenAddress)
                 showUiKitSnackBar(messageResId = R.string.receive_sol_address_copied)
             }
@@ -68,7 +68,7 @@ class NewReceiveSolanaFragment :
     }
 
     override fun showQrAndUsername(qrBitmap: Bitmap, username: String?) {
-        binding.qrImageView.setImageBitmap(qrBitmap)
+        binding.imageViewQr.setImageBitmap(qrBitmap)
         showUsername(username)
     }
 
@@ -78,7 +78,7 @@ class NewReceiveSolanaFragment :
 
     private fun showUsername(username: String?) {
         if (username == null) {
-            binding.layoutAddress.setBackgroundResource(R.drawable.bg_snow_rounded_16)
+            binding.containerAddress.setBackgroundResource(R.drawable.bg_snow_rounded_16)
             binding.separator.isVisible = false
             binding.layoutUsername.isVisible = false
         } else {
