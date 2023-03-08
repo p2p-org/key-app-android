@@ -1,9 +1,9 @@
 package org.p2p.wallet.receive.solana
 
+import androidx.core.view.isVisible
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
@@ -26,9 +26,9 @@ class NewReceiveSolanaFragment :
     NewReceiveSolanaContract.View {
 
     companion object {
-        fun create(address: String, logoUrl: String, tokenSymbol: String) = NewReceiveSolanaFragment()
+        fun create(solAddress: String, logoUrl: String, tokenSymbol: String) = NewReceiveSolanaFragment()
             .withArgs(
-                ARG_SOL_ADDRESS to address,
+                ARG_SOL_ADDRESS to solAddress,
                 ARG_TOKEN_LOGO_URL to logoUrl,
                 ARG_TOKEN_SYMBOL to tokenSymbol
             )
@@ -44,10 +44,10 @@ class NewReceiveSolanaFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            textViewAddress.text = tokenAddress
-            glideManager.load(watermarkImageView, logoUrl)
             toolbar.title = getString(R.string.receive_on_solana, tokenSymbol)
             toolbar.setNavigationOnClickListener { popBackStack() }
+            textViewAddress.text = tokenAddress
+            glideManager.load(watermarkImageView, logoUrl)
 
             buttonAction.setOnClickListener {
                 requireContext().copyToClipBoard(tokenAddress)
@@ -67,7 +67,7 @@ class NewReceiveSolanaFragment :
         presenter.loadQr(tokenAddress)
     }
 
-    override fun showQrAndUsername(qrBitmap: Bitmap, username: String) {
+    override fun showQrAndUsername(qrBitmap: Bitmap, username: String?) {
         binding.qrImageView.setImageBitmap(qrBitmap)
         showUsername(username)
     }
@@ -76,8 +76,8 @@ class NewReceiveSolanaFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    private fun showUsername(username: String) {
-        if (username.isEmpty()) {
+    private fun showUsername(username: String?) {
+        if (username == null) {
             binding.layoutAddress.setBackgroundResource(R.drawable.bg_snow_rounded_16)
             binding.separator.isVisible = false
             binding.layoutUsername.isVisible = false

@@ -16,7 +16,7 @@
         app:title="@string/receive_on_solana" />
 
     <FrameLayout
-        android:id="@+id/qrFrame"
+        android:id="@+id/containerQr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -25,7 +25,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <ImageView
-            android:id="@+id/qrImageView"
+            android:id="@+id/imageViewQr"
             android:layout_width="220dp"
             android:layout_height="220dp"
             android:layout_gravity="center"
@@ -34,14 +34,14 @@
             tools:src="@tools:sample/avatars" />
 
         <FrameLayout
-            android:id="@+id/watermarkImageViewBackground"
+            android:id="@+id/containerWatermark"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_gravity="center"
             android:background="@drawable/bg_circle">
 
             <org.p2p.uikit.atoms.UiKitRoundedImageView
-                android:id="@+id/watermarkImageView"
+                android:id="@+id/imageViewWatermark"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
@@ -53,7 +53,7 @@
     </FrameLayout>
 
     <LinearLayout
-        android:id="@+id/layoutAddress"
+        android:id="@+id/containerAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -62,7 +62,7 @@
         android:backgroundTint="@color/bg_snow"
         android:orientation="vertical"
         android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/qrFrame">
+        app:layout_constraintTop_toBottomOf="@id/containerQr">
 
         <TextView
             android:id="@+id/textViewAddressTitle"
@@ -90,7 +90,7 @@
         android:layout_height="1dp"
         android:layout_marginHorizontal="32dp"
         android:background="@color/bg_rain"
-        app:layout_constraintTop_toBottomOf="@id/layoutAddress" />
+        app:layout_constraintTop_toBottomOf="@id/containerAddress" />
 
     <LinearLayout
         android:id="@+id/layoutUsername"
@@ -120,9 +120,7 @@
             app:layout_constraintTop_toBottomOf="@id/textViewUsernameTitle"
             tools:text="username.key" />
 
-
     </LinearLayout>
-
 
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonAction"
@@ -140,8 +138,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        tools:visibility="gone"
-        />
-
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
