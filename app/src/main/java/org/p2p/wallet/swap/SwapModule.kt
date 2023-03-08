@@ -303,6 +303,7 @@ object SwapModule : InjectionModule {
                 rateTickerMapper = get(),
                 contentMapper = get(parameters = { parametersOf(stateManagerHolderKey) }),
                 swapTokensRepository = get(),
+                analytics = get()
             )
         } bind JupiterSwapSettingsContract.Presenter::class
         factoryOf(::SwapTokensCommonMapper)

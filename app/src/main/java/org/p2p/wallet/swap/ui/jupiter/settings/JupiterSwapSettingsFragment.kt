@@ -18,6 +18,7 @@ import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapSettingsBinding
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoBottomSheet
 import org.p2p.wallet.swap.ui.jupiter.info.SwapInfoType
 import org.p2p.wallet.swap.ui.jupiter.routes.SwapSelectRoutesBottomSheet
@@ -52,6 +53,8 @@ class JupiterSwapSettingsFragment :
 
     override val presenter: JupiterSwapSettingsContract.Presenter by inject { parametersOf(stateManagerKey) }
 
+    private val analytics: JupiterSwapSettingsAnalytics by inject()
+
     private val adapter = SwapSettingsAdapter(
         swapCustomSlippageDelegate { presenter.onCustomSlippageChange(it) },
         sectionHeaderCellDelegate(),
@@ -79,10 +82,12 @@ class JupiterSwapSettingsFragment :
     }
 
     override fun showDetailsDialog(type: SwapInfoType) {
+        analytics.logFeeDetailsClicked(type)
         SwapInfoBottomSheet.show(childFragmentManager, stateManagerKey, type)
     }
 
     override fun showRouteDialog() {
+        analytics.logChangeRouteClicked()
         SwapSelectRoutesBottomSheet.show(childFragmentManager, stateManagerKey)
     }
 

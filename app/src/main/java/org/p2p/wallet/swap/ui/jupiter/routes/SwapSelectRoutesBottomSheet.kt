@@ -16,6 +16,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogSwapSelectRoutesBinding
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
@@ -48,6 +49,7 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
     private val stateManagerKey: String by args(ARG_STATE_MANAGE_KEY)
     private val managerHolder: SwapStateManagerHolder by inject()
     private val mapper: SwapSelectRoutesMapper by inject()
+    private val analytics: JupiterSwapSettingsAnalytics by inject()
     private val stateManager: SwapStateManager
         get() = managerHolder.get(stateManagerKey)
 
@@ -87,6 +89,8 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
 
     private fun onRouteClick(item: FinanceBlockCellModel, view: UiKitFinanceBlockView) {
         val route = (item.payload as? JupiterSwapRoute) ?: return
+        analytics.logSwapRouteChanged(route)
+
         val routePosition = binding.recyclerViewRoutes.findContainingViewHolder(view)?.bindingAdapterPosition ?: return
         stateManager.onNewAction(SwapStateAction.ActiveRouteChanged(routePosition))
         dismiss()
