@@ -17,6 +17,8 @@ import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.image.commonCircleImage
+import org.p2p.uikit.utils.recycler.decoration.offsetFinanceBlockDecoration
+import org.p2p.uikit.utils.recycler.decoration.roundingByCellFinanceBlockDecoration
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
@@ -52,7 +54,7 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSmoke
 
-    private val adapter = CommonAnyCellAdapter(
+    private val networkAdapter = CommonAnyCellAdapter(
         financeBlockCellDelegate(inflateListener = { financeBlock ->
             financeBlock.setOnClickAction { _, item -> onNetworkClick(item) }
         })
@@ -68,10 +70,12 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
         super.onViewCreated(view, savedInstanceState)
         baseDialogBinding.root.backgroundTintList = requireContext().getColorStateListCompat(R.color.bg_smoke)
         setDoneButtonVisibility(isVisible = false)
-        with(recyclerBinding) {
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            recyclerView.attachAdapter(adapter)
-            adapter.items = makeNetworkDataToSelect()
+        with(recyclerBinding.recyclerView) {
+            layoutManager = LinearLayoutManager(requireContext())
+            attachAdapter(networkAdapter)
+            addItemDecoration(roundingByCellFinanceBlockDecoration())
+            addItemDecoration(offsetFinanceBlockDecoration())
+            networkAdapter.items = makeNetworkDataToSelect()
         }
     }
 

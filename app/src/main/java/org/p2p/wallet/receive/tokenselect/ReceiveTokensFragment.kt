@@ -24,6 +24,8 @@ import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.recycler.decoration.groupedRoundingFinanceBlockDecoration
+import org.p2p.uikit.utils.recycler.decoration.onePxDividerFinanceBlockDecoration
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
@@ -82,6 +84,8 @@ class ReceiveTokensFragment :
         with(binding.recyclerViewTokens) {
             layoutManager = linearLayoutManager
             attachAdapter(this@ReceiveTokensFragment.adapter)
+            addItemDecoration(groupedRoundingFinanceBlockDecoration())
+            addItemDecoration(onePxDividerFinanceBlockDecoration(requireContext()))
 
             clearOnScrollListeners()
             addOnScrollListener(scrollListener)
