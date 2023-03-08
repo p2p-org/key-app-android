@@ -14,6 +14,7 @@ import org.koin.android.ext.android.inject
 import java.util.Objects
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenData
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.core.utils.insets.appleBottomInsets
 import org.p2p.core.utils.insets.appleTopInsets
@@ -33,11 +34,13 @@ import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveSupportedTokensBinding
+import org.p2p.wallet.receive.solana.NewReceiveSolanaFragment
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
 import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 private const val IMAGE_SIZE_DP = 44
@@ -67,14 +70,7 @@ class ReceiveTokensFragment :
         }),
         diffUtilCallback = TokenDiffCallback()
     )
-    private val linearLayoutManager by lazy { LinearLayoutManager(requireContext()) }
-
-    private val scrollListener by lazy {
-        EndlessScrollListener(
-            layoutManager = linearLayoutManager,
-            loadNextPage = { presenter.load(isRefresh = false) }
-        )
-    }
+    private var scrollListener: EndlessScrollListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,13 +78,19 @@ class ReceiveTokensFragment :
         inflateSearchMenu(binding.toolbar)
 
         with(binding.recyclerViewTokens) {
+            val linearLayoutManager = LinearLayoutManager(requireContext())
             layoutManager = linearLayoutManager
             attachAdapter(this@ReceiveTokensFragment.adapter)
             addItemDecoration(groupedRoundingFinanceBlockDecoration())
             addItemDecoration(onePxDividerFinanceBlockDecoration(requireContext()))
 
             clearOnScrollListeners()
-            addOnScrollListener(scrollListener)
+            scrollListener = EndlessScrollListener(
+                layoutManager = linearLayoutManager,
+                loadNextPage = { presenter.load(isRefresh = false) }
+            ).also {
+                addOnScrollListener(it)
+            }
         }
         presenter.load(isRefresh = true)
         childFragmentManager.setFragmentResultListener(
@@ -165,7 +167,7 @@ class ReceiveTokensFragment :
     }
 
     override fun resetScrollPosition() {
-        scrollListener.reset()
+        scrollListener?.reset()
         binding.recyclerViewTokens.smoothScrollToPosition(0)
     }
 
@@ -179,9 +181,14 @@ class ReceiveTokensFragment :
         )
     }
 
-    override fun openReceiveInSolana() {
-        // TODO make real implementation
-        toast("Receive in Solana network should be opened!")
+    override fun openReceiveInSolana(tokenData: TokenData) = with(tokenData) {
+        replaceFragment(
+            NewReceiveSolanaFragment.create(
+                solAddress = mintAddress, // TODO make this address wallet sol address!
+                logoUrl = iconUrl.orEmpty(),
+                tokenSymbol = symbol
+            )
+        )
     }
 
     override fun openReceiveInEthereum() {

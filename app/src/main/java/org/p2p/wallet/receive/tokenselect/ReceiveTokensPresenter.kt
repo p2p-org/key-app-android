@@ -63,15 +63,17 @@ class ReceiveTokensPresenter(
             lastSelectedTokenPayload = tokenDataPayload
             view?.showSelectNetworkDialog(listOfNotNull(solToken, ethToken))
         } else {
-            view?.openReceiveInSolana()
+            view?.openReceiveInSolana(tokenDataPayload.tokenData)
         }
     }
 
     override fun onNetworkSelected(network: ReceiveNetwork) {
-        view?.apply {
-            when (network) {
-                ReceiveNetwork.SOLANA -> openReceiveInSolana()
-                ReceiveNetwork.ETHEREUM -> openReceiveInEthereum()
+        lastSelectedTokenPayload?.tokenData?.let { tokenData ->
+            view?.apply {
+                when (network) {
+                    ReceiveNetwork.SOLANA -> openReceiveInSolana(tokenData)
+                    ReceiveNetwork.ETHEREUM -> openReceiveInEthereum()
+                }
             }
         }
     }
