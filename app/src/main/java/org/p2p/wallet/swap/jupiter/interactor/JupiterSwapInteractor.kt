@@ -7,7 +7,6 @@ import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
@@ -22,7 +21,6 @@ class JupiterSwapInteractor(
     private val relaySdkFacade: RelaySdkFacade,
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapTransactionRepository: JupiterSwapTransactionRepository,
-    private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val rpcSolanaRepository: RpcSolanaRepository
 ) {
     class LowSlippageRpcError(cause: ServerException) : Throwable(cause.message)
@@ -37,13 +35,14 @@ class JupiterSwapInteractor(
             route = route,
             userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
         )
-        val latestBlockhash = rpcBlockhashRepository.getRecentBlockhash()
         val userAccount = Account(tokenKeyProvider.keyPair)
 
         val signedSwapTransaction = relaySdkFacade.signTransaction(
             transaction = swapTransaction,
             keyPair = userAccount.getEncodedKeyPair().toBase58Instance(),
-            recentBlockhash = latestBlockhash
+            // empty string because swap transaction already has recent blockhash
+            // if pass our own recent blockhash, there is an error
+            recentBlockhash = null
         )
         val firstTransactionSignature = rpcSolanaRepository.sendTransaction(
             serializedTransaction = signedSwapTransaction.transaction.base58Value,
