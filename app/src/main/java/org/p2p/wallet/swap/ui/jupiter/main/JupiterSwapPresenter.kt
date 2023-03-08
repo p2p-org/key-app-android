@@ -49,7 +49,7 @@ import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetToken
 import org.p2p.wallet.user.repository.UserLocalRepository
 
-private const val AMOUNT_INPUT_DELAY = 400L
+private const val AMOUNT_INPUT_DELAY = 700L
 
 class JupiterSwapPresenter(
     private val swapOpenedFrom: SwapOpenedFrom,
