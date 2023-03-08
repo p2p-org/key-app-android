@@ -9,6 +9,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.swap.jupiter.repository.model.SwapFailure
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
@@ -63,10 +64,18 @@ class SwapStateRoutesRefresher(
             slippage = slippage,
         )
 
-        val freshSwapTransaction = swapTransactionRepository.createSwapTransactionForRoute(
-            route = updatedRoutes[activeRouteOrdinal],
-            userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
-        )
+        val freshSwapTransaction = try {
+            swapTransactionRepository.createSwapTransactionForRoute(
+                route = updatedRoutes[activeRouteOrdinal],
+                userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
+            )
+        } catch (error: SwapFailure.CreateSwapTransactionFailed) {
+            state.value = SwapState.SwapException.OtherException(
+                previousFeatureState = state.value,
+                exception = error
+            )
+            return
+        }
         Timber.i("Fresh swap transaction fetched")
 
         state.value = SwapState.SwapLoaded(
