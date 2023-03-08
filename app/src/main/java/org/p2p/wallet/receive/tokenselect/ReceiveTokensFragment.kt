@@ -3,6 +3,7 @@ package org.p2p.wallet.receive.tokenselect
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
@@ -10,6 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import org.koin.android.ext.android.inject
+import java.util.Objects
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.core.utils.hideKeyboard
@@ -60,7 +62,8 @@ class ReceiveTokensFragment :
     private val adapter = CommonAnyCellAdapter(
         financeBlockCellDelegate(inflateListener = { financeBlock ->
             financeBlock.setOnClickAction { _, item -> onTokenClick(item) }
-        })
+        }),
+        diffUtilCallback = TokenDiffCallback()
     )
     private val linearLayoutManager by lazy { LinearLayoutManager(requireContext()) }
 
@@ -192,7 +195,26 @@ class ReceiveTokensFragment :
     }
 
     private fun onTokenClick(item: FinanceBlockCellModel) {
-        val tokenDataPayload = (item.payload as? ReceiveTokenPayload) ?: return
-        presenter.onTokenClicked(tokenDataPayload)
+        presenter.onTokenClicked(item.typedPayload())
+    }
+}
+
+private class TokenDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
+
+    override fun areItemsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
+        return when {
+            else -> oldItem::class == newItem::class
+        }
+    }
+
+    override fun areContentsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
+        return when {
+            oldItem is FinanceBlockCellModel && newItem is FinanceBlockCellModel -> {
+                val oldMint = oldItem.typedPayload<ReceiveTokenPayload>().tokenData.mintAddress
+                val newMint = newItem.typedPayload<ReceiveTokenPayload>().tokenData.mintAddress
+                oldMint == newMint
+            }
+            else -> Objects.equals(oldItem, newItem)
+        }
     }
 }
