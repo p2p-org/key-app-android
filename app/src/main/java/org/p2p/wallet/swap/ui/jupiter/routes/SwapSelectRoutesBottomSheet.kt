@@ -76,15 +76,14 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
         }
     }
 
-    private fun getRoutesList(state: SwapState): List<AnyCellItem> {
-        return when (state) {
-            SwapState.InitialLoading,
-            is SwapState.TokenAZero,
-            is SwapState.LoadingRoutes -> mapper.mapLoadingList()
-            is SwapState.SwapException -> getRoutesList(state.previousFeatureState)
-            is SwapState.LoadingTransaction -> mapper.mapRoutesList(state.routes, state.activeRoute)
-            is SwapState.SwapLoaded -> mapper.mapRoutesList(state.routes, state.activeRoute)
-        }
+    private fun getRoutesList(state: SwapState): List<AnyCellItem> = when (state) {
+        SwapState.InitialLoading,
+        is SwapState.TokenAZero,
+        is SwapState.LoadingRoutes -> mapper.mapLoadingList()
+        is SwapState.LoadingTransaction -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)
+        is SwapState.SwapLoaded -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)
+
+        is SwapState.SwapException -> getRoutesList(state.previousFeatureState)
     }
 
     private fun onRouteClick(item: FinanceBlockCellModel, view: UiKitFinanceBlockView) {
