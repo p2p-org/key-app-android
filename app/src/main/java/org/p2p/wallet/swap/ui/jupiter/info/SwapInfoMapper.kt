@@ -135,10 +135,10 @@ class SwapInfoMapper {
                     )
                 ),
                 firstLineText = TextViewCellModel.Raw(
-                    text = TextContainer(R.string.swap_info_details_account_fee_title)
+                    text = TextContainer(R.string.swap_info_details_minimum_received_fee_title)
                 ),
                 secondLineText = TextViewCellModel.Raw(
-                    text = TextContainer(R.string.swap_info_details_account_fee_subtitle)
+                    text = TextContainer(R.string.swap_info_details_minimum_received_fee_subtitle)
                 ),
                 background = DrawableCellModel(
                     drawable = shapeDrawable(shapeRoundedAll(12f.toPx())),

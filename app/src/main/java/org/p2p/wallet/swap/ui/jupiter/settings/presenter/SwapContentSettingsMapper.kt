@@ -121,7 +121,7 @@ class SwapContentSettingsMapper(
         if (route == null) return emptyString()
         var result = ""
         route.marketInfos.forEachIndexed { index, marketInfo ->
-            result = result.plus(jupiterTokens.findTokenSymbolByMint(marketInfo.inputMint)).plus("→")
+            result = result.plus(jupiterTokens.findTokenSymbolByMint(marketInfo.inputMint)).plus(" → ")
             if (index == route.marketInfos.lastIndex) {
                 result = result.plus(jupiterTokens.findTokenSymbolByMint(marketInfo.outputMint))
             }
