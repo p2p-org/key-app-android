@@ -335,6 +335,16 @@ class JupiterSwapPresenter(
                 analytics.logNotEnoughTokenA()
                 view?.setButtonState(buttonState = buttonMapper.mapTokenAmountNotEnough(tokenA))
             }
+            is SwapFeatureException.InsufficientSolBalance -> {
+                val tokenA = state.previousFeatureState.getTokensPair().first
+
+                this.widgetAState = widgetMapper.mapErrorTokenAAmount(
+                    tokenA = tokenA,
+                    oldWidgetAState = widgetAState,
+                    notValidAmount = featureException.inputAmount
+                )
+                view?.setButtonState(buttonState = buttonMapper.mapInsufficientSolBalance())
+            }
         }
         updateWidgets()
     }

@@ -8,6 +8,8 @@ open class SwapFeatureException : Exception() {
         val notValidAmount: BigDecimal,
     ) : SwapFeatureException()
 
+    data class InsufficientSolBalance(val inputAmount: BigDecimal) : SwapFeatureException()
+
     object SameTokens : SwapFeatureException()
 
     object RoutesNotFound : SwapFeatureException()
