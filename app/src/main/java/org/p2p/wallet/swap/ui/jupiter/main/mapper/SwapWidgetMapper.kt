@@ -161,7 +161,7 @@ class SwapWidgetMapper {
                 TextContainer(R.string.swap_main_balance_amount, "0 ${token.tokenSymbol}")
             )
             is SwapTokenModel.UserToken -> TextViewCellModel.Raw(
-                TextContainer(R.string.swap_main_balance_amount, tokenAmount(token))
+                TextContainer(R.string.swap_main_balance_amount, tokenAmount(token, includeSymbol = false))
             )
         }
 
@@ -176,8 +176,8 @@ class SwapWidgetMapper {
             TextContainer(tokenAmount(token))
         )
 
-    private fun tokenAmount(token: SwapTokenModel.UserToken): String =
-        token.details.getFormattedTotal(includeSymbol = true)
+    private fun tokenAmount(token: SwapTokenModel.UserToken, includeSymbol: Boolean = true): String =
+        token.details.getFormattedTotal(includeSymbol = includeSymbol)
 
     private fun swapWidgetFromTitle(): TextViewCellModel.Raw =
         TextViewCellModel.Raw(TextContainer(R.string.swap_main_you_pay))
