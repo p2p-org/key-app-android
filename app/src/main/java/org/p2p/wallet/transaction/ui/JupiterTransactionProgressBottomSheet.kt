@@ -18,8 +18,10 @@ import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogJupiterSwapTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
+import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -57,6 +59,8 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
 
     private val transactionManager: TransactionManager by inject()
     private val glideManager: GlideManager by inject()
+    private val analytics: JupiterSwapTransactionDetailsAnalytics by inject()
+    private val connectionStateProvider: ConnectionStateProvider by inject()
 
     private val binding: DialogJupiterSwapTransactionProgressBinding by viewBinding()
 
@@ -83,6 +87,8 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analytics.logTransactionProgressOpened()
+
         with(binding) {
             textViewSubtitle.text = getString(
                 R.string.transaction_date_format,
@@ -114,6 +120,7 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
             textViewFeeValue.text = getString(R.string.transaction_transaction_fee_free_value)
 
             buttonDone.setOnClickListener {
+                analytics.logTransactionDoneClicked()
                 dismissAllowingStateLoss()
             }
         }
@@ -180,6 +187,8 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setLowSlippageError(error: TransactionStateSwapFailureReason.LowSlippage) = with(binding) {
+        analytics.logSwapErrorSlippage()
+
         if (error.currentSlippageValue.doubleValue <= SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE) {
             val newSlippage = getNewSlippage(error.currentSlippageValue.doubleValue)
             progressStateTransaction.setDescriptionText(
@@ -207,6 +216,8 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setUnknownTransactionError() = with(binding) {
+        analytics.logSwapErrorUnknown(isInternetError = !connectionStateProvider.hasConnection())
+
         dismissResult = JupiterTransactionDismissResult.TrySwapAgain
 
         textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))

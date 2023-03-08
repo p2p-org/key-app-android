@@ -26,6 +26,8 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapMainScreenAnalytics
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapSettingsAnalytics
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
 
 object AnalyticsModule : InjectionModule {
     override fun create() = module {
@@ -54,7 +56,11 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::NewSendAnalytics)
         factoryOf(::HistoryAnalytics)
         factoryOf(::SellAnalytics)
+
         factoryOf(::JupiterSwapMainScreenAnalytics)
+        factoryOf(::JupiterSwapSettingsAnalytics)
+        factoryOf(::JupiterSwapTransactionDetailsAnalytics)
+
         singleOf(::AnalyticsInMemoryRepository) bind AnalyticsLocalRepository::class
     }
 }

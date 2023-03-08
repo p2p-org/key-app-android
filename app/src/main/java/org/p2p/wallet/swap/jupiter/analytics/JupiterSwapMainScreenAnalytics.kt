@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.jupiter.analytics
 import java.math.BigDecimal
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensListMode
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 
 private const val SWAP_START_SCREEN = "Swap_Start_Screen"
@@ -19,6 +20,11 @@ private const val SWAP_CLICK_APPROVE_BUTTON = "Swap_Click_Approve_Button"
 private const val SWAP_ERROR_TOKEN_A_INSUFFICIENT_AMOUNT = "Swap_Error_Token_A_Insufficient_Amount"
 private const val SWAP_ERROR_TOKEN_A_MIN = "Swap_Error_Token_A_Min"
 private const val SWAP_ERROR_TOKEN_PAIR_NOT_EXIST = "Swap_Error_Token_Pair_Not_Exist"
+
+private const val SWAP_CHANGING_TOKEN_A = "Swap_Changing_Token_A"
+private const val SWAP_RETURN_FROM_CHANGING_TOKEN_A = "Swap_Return_From_Changing_Token_A"
+private const val SWAP_CHANGING_TOKEN_B = "Swap_Changing_Token_B"
+private const val SWAP_RETURN_FROM_CHANGING_TOKEN_B = "Swap_Return_From_Changing_Token_B"
 
 class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
     fun logStartScreen(
@@ -132,6 +138,34 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
 
     fun logSwapPairNotExists() {
         tracker.logEvent(event = SWAP_ERROR_TOKEN_PAIR_NOT_EXIST)
+    }
+
+    fun logTokenChanged(listMode: SwapTokensListMode, token: SwapTokenModel) {
+        val eventName: String
+        val params: Map<String, Any>
+        if (listMode == SwapTokensListMode.TOKEN_A) {
+            eventName = SWAP_CHANGING_TOKEN_A
+            params = mapOf(
+                "Token_A_Name" to token.tokenName,
+                "Token_A_Value" to if (token is SwapTokenModel.UserToken) token.tokenAmount else 0
+            )
+        } else {
+            eventName = SWAP_CHANGING_TOKEN_B
+            params = mapOf(
+                "Token_B_Name" to token.tokenName,
+                "Token_B_Value" to if (token is SwapTokenModel.UserToken) token.tokenAmount else 0
+            )
+        }
+        tracker.logEvent(eventName, params)
+    }
+
+    fun logSelectTokenClosed(listMode: SwapTokensListMode) {
+        val eventName = if (listMode == SwapTokensListMode.TOKEN_A) {
+            SWAP_RETURN_FROM_CHANGING_TOKEN_A
+        } else {
+            SWAP_RETURN_FROM_CHANGING_TOKEN_B
+        }
+        tracker.logEvent(eventName)
     }
 
     private enum class SwapOpenedFromAnalytics(val value: String) {
