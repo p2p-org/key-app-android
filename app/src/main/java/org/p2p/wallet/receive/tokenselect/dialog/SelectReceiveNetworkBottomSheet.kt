@@ -37,12 +37,15 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
             requestKey: String,
             resultKey: String,
             tokensForNetworks: List<Token>
-        ) = SelectReceiveNetworkBottomSheet().withArgs(
-            ARG_TITLE to title,
-            ARG_NETWORKS_TOKENS to tokensForNetworks,
-            ARG_REQUEST_KEY to requestKey,
-            ARG_RESULT_KEY to resultKey
-        ).show(fm, SelectReceiveNetworkBottomSheet::javaClass.name)
+        ) =
+            SelectReceiveNetworkBottomSheet()
+                .withArgs(
+                    ARG_TITLE to title,
+                    ARG_NETWORKS_TOKENS to tokensForNetworks,
+                    ARG_REQUEST_KEY to requestKey,
+                    ARG_RESULT_KEY to resultKey
+                )
+                .show(fm, SelectReceiveNetworkBottomSheet::javaClass.name)
     }
 
     private val tokenDataForNetworks: List<Token> by args(ARG_NETWORKS_TOKENS)
@@ -56,7 +59,7 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
     )
 
     private fun onNetworkClick(item: FinanceBlockCellModel) {
-        val network = (item.payload as? ReceiveNetwork) ?: return
+        val network = item.typedPayload<ReceiveNetwork>()
         setFragmentResult(requestKey, bundleOf(resultKey to network))
         dismissAllowingStateLoss()
     }

@@ -23,7 +23,7 @@ object ReceiveTokensMapper {
         solTokenUrl: String,
         ethTokenUrl: String
     ): AnyCellItem {
-        val containsInEth = ERC20Tokens.findTokenByMint(mintAddress) != null
+        val isErc20Token = ERC20Tokens.findTokenByMint(mintAddress) != null
         return FinanceBlockCellModel(
             leftSideCellModel = createLeftSideModel(
                 tokenIconUrl = iconUrl.orEmpty(),
@@ -33,11 +33,11 @@ object ReceiveTokensMapper {
             rightSideCellModel = createRightSideModel(
                 firstIconUrl = solTokenUrl,
                 secondIconUrl = ethTokenUrl,
-                containsInEth = containsInEth
+                isErc20Token = isErc20Token
             ),
             payload = ReceiveTokenPayload(
                 tokenData = this,
-                containsInTwoNetworks = containsInEth
+                isErc20Token = isErc20Token
             )
         )
     }
@@ -68,7 +68,7 @@ object ReceiveTokensMapper {
     private fun createRightSideModel(
         firstIconUrl: String,
         secondIconUrl: String,
-        containsInEth: Boolean
+        isErc20Token: Boolean
     ): RightSideCellModel {
         val solImageCell = ImageViewCellModel(
             icon = DrawableContainer.Raw(firstIconUrl),
@@ -76,7 +76,7 @@ object ReceiveTokensMapper {
         )
         val firstIcon: ImageViewCellModel?
         val secondIcon: ImageViewCellModel?
-        if (containsInEth) {
+        if (isErc20Token) {
             firstIcon = ImageViewCellModel(
                 icon = DrawableContainer.Raw(secondIconUrl),
                 clippingShape = shapeCircle(),

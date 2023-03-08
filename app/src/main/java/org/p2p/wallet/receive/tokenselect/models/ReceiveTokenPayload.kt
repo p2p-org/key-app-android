@@ -7,5 +7,5 @@ import org.p2p.core.token.TokenData
 @Parcelize
 data class ReceiveTokenPayload(
     val tokenData: TokenData,
-    val containsInTwoNetworks: Boolean
+    val isErc20Token: Boolean
 ) : Parcelable

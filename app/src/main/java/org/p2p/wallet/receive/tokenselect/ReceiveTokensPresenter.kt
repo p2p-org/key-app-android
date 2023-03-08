@@ -59,7 +59,7 @@ class ReceiveTokensPresenter(
     }
 
     override fun onTokenClicked(tokenDataPayload: ReceiveTokenPayload) {
-        if (tokenDataPayload.containsInTwoNetworks) {
+        if (tokenDataPayload.isErc20Token) {
             lastSelectedTokenPayload = tokenDataPayload
             view?.showSelectNetworkDialog(listOfNotNull(solToken, ethToken))
         } else {

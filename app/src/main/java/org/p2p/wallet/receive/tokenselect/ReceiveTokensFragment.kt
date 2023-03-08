@@ -32,6 +32,7 @@ import org.p2p.wallet.databinding.FragmentReceiveSupportedTokensBinding
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
+import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -91,11 +92,8 @@ class ReceiveTokensFragment :
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
-        if (result.containsKey(KEY_RESULT_NETWORK)) {
-            val network = result.getSerializable(KEY_RESULT_NETWORK) as? ReceiveNetwork
-            if (network != null) {
-                presenter.onNetworkSelected(network)
-            }
+        result.getSerializableOrNull<ReceiveNetwork>(KEY_RESULT_NETWORK)?.let { network ->
+            presenter.onNetworkSelected(network)
         }
     }
 
