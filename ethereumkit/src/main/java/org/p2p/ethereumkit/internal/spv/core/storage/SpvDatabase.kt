@@ -9,7 +9,7 @@ import org.p2p.ethereumkit.internal.api.storage.RoomTypeConverters
 import org.p2p.ethereumkit.internal.spv.models.AccountStateSpv
 import org.p2p.ethereumkit.internal.spv.models.BlockHeader
 
-@Database(entities = [BlockHeader::class, AccountStateSpv::class], version = 2, exportSchema = true)
+@Database(entities = [BlockHeader::class, AccountStateSpv::class], version = 2, exportSchema = false)
 @TypeConverters(RoomTypeConverters::class)
 abstract class SpvDatabase : RoomDatabase() {
 

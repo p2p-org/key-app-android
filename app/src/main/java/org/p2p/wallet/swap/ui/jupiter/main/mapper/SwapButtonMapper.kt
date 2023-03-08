@@ -19,6 +19,9 @@ class SwapButtonMapper {
     fun mapSameToken(): SwapButtonState.Disabled =
         SwapButtonState.Disabled(TextContainer(R.string.swap_main_button_same_token))
 
+    fun mapInsufficientSolBalance(): SwapButtonState.Disabled =
+        SwapButtonState.Disabled(TextContainer(R.string.error_insufficient_funds))
+
     fun mapTokenAmountNotEnough(tokenA: SwapTokenModel?): SwapButtonState.Disabled =
         tokenA?.tokenSymbol
             ?.let { symbol ->
