@@ -1,9 +1,18 @@
 package org.p2p.wallet.receive.tokenselect
 
+import timber.log.Timber
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
+import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.receive.tokenselect.ReceiveTokensMapper.toTokenFinanceCellModel
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
@@ -14,6 +23,7 @@ private const val PAGE_SIZE = 20
 
 class ReceiveTokensPresenter(
     private val interactor: UserInteractor,
+    private val dispatchers: CoroutineDispatchers
 ) : BasePresenter<ReceiveTokensContract.View>(), ReceiveTokensContract.Presenter {
 
     private var searchText = emptyString()
@@ -23,6 +33,8 @@ class ReceiveTokensPresenter(
     private var ethToken: Token? = null
 
     private var lastSelectedTokenPayload: ReceiveTokenPayload? = null
+
+    private val tokensFlow = MutableStateFlow<List<AnyCellItem>>(emptyList())
 
     override fun attach(view: ReceiveTokensContract.View) {
         super.attach(view)
@@ -40,22 +52,30 @@ class ReceiveTokensPresenter(
                 secondTokenUrl = ethToken?.iconUrl.orEmpty()
             )
             observeTokens()
+            observeMappedTokens()
         }
     }
 
     override fun load(isRefresh: Boolean, scrollToUp: Boolean) {
         launch {
+            if (isRefresh) {
+                tokensFlow.value = emptyList()
+            }
             this@ReceiveTokensPresenter.scrollToUp = scrollToUp
             interactor.fetchTokens(searchText, PAGE_SIZE, isRefresh)
         }
     }
 
     override fun onSearchTokenQueryChanged(newQuery: String) {
-        searchText = newQuery
-        if (newQuery.isBlank()) {
-            view?.resetScrollPosition()
+        launch {
+            delay(300L)
+            searchText = newQuery
+            if (newQuery.isBlank()) {
+                view?.resetView()
+                tokensFlow.value = emptyList()
+            }
+            load(isRefresh = true, scrollToUp = true)
         }
-        load(isRefresh = true, scrollToUp = true)
     }
 
     override fun onTokenClicked(tokenDataPayload: ReceiveTokenPayload) {
@@ -78,20 +98,38 @@ class ReceiveTokensPresenter(
         }
     }
 
+    private fun observeMappedTokens() {
+        launch {
+            tokensFlow.collectLatest {
+                view?.showTokenItems(it)
+            }
+        }
+    }
+
     private fun observeTokens() {
         launch {
-            interactor.getTokenListFlow().collect { data ->
+            interactor.getTokenListFlow().distinctUntilChanged().collectLatest { data ->
+                Timber.tag("____data").d("data size = ${data.size}")
                 val isEmpty = data.result.isEmpty()
                 view?.showEmptyState(isEmpty)
                 view?.setBannerVisibility(!isEmpty && searchText.isEmpty())
-                view?.showTokenItems(
-                    data.result.map {
-                        it.toTokenFinanceCellModel(
-                            solTokenUrl = solToken?.iconUrl.orEmpty(),
-                            ethTokenUrl = ethToken?.iconUrl.orEmpty()
-                        )
-                    },
-                    scrollToUp
+
+                launch {
+                    val dropSize = tokensFlow.value.size
+                    val newItems = data.result.asSequence().drop(dropSize)
+                    val result = tokensFlow.value + mapTokenToCellItem(newItems.toList())
+                    tokensFlow.emit(result)
+                }
+            }
+        }
+    }
+
+    private suspend fun mapTokenToCellItem(items: List<TokenData>): List<AnyCellItem> {
+        return withContext(dispatchers.io) {
+            items.map {
+                it.toTokenFinanceCellModel(
+                    solTokenUrl = solToken?.iconUrl.orEmpty(),
+                    ethTokenUrl = ethToken?.iconUrl.orEmpty()
                 )
             }
         }

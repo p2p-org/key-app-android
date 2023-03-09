@@ -19,7 +19,6 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule.REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER
-import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Base58TypeAdapter
 import org.p2p.wallet.home.model.Base64TypeAdapter
@@ -157,10 +156,8 @@ object NetworkModule : InjectionModule {
                     addInterceptor(interceptor)
                 }
                 if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
-                    addInterceptor(httpLoggingInterceptor(tag))
                 }
                 if (BuildConfig.CRASHLYTICS_ENABLED) {
-                    addInterceptor(CrashHttpLoggingInterceptor())
                 }
             }
             .addNetworkInterceptor(ContentTypeInterceptor())
