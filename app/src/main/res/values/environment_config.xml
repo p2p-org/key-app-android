@@ -26,7 +26,7 @@
 
     <string name="orcaApiBaseUrl">https://orca.key.app/</string>
 
-    <string name="jupiterQuoteBaseUrl">https://swap.keyapp.org/</string>
+    <string name="jupiterQuoteBaseUrl">https://swap.key.app/</string>
 
     <string name="notificationServiceBaseUrl">https://push-service.key.app/</string>
     <string name="notificationServiceTestBaseUrl">https://push-service.keyapp.org/</string>

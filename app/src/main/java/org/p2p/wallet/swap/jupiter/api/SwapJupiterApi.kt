@@ -12,15 +12,15 @@ import org.p2p.wallet.swap.jupiter.api.response.SwapJupiterQuoteResponse
 import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
 
 interface SwapJupiterApi {
-    @GET("tokens")
+    @GET("v4/tokens")
     suspend fun getSwapTokens(): List<JupiterTokenResponse>
 
-    @POST("swap")
+    @POST("v4/swap")
     suspend fun createRouteSwapTransaction(
         @Body body: CreateSwapTransactionRequest
     ): CreateSwapTransactionResponse
 
-    @GET("quote")
+    @GET("v4/quote")
     suspend fun getSwapRoutes(
         @Query("inputMint") inputMint: String,
         @Query("outputMint") outputMint: String,
@@ -29,6 +29,6 @@ interface SwapJupiterApi {
         @Query("slippageBps") slippageBps: Int
     ): SwapJupiterQuoteResponse
 
-    @GET("indexed-route-map")
+    @GET("v4/indexed-route-map")
     suspend fun getSwapRoutesMap(): JupiterAllSwapRoutesResponse
 }
