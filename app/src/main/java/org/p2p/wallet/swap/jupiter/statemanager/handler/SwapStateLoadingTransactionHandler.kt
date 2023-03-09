@@ -61,7 +61,7 @@ class SwapStateLoadingTransactionHandler(
             tokenB = tokenB,
             amountTokenA = amountTokenA,
             slippage = slippage,
-            activeRouteOrdinal = activeRouteOrdinal
+            activeRouteIndex = activeRouteOrdinal
         )
     }
 }

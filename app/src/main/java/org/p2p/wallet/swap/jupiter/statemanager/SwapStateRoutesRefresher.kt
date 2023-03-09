@@ -29,7 +29,7 @@ class SwapStateRoutesRefresher(
         tokenB: SwapTokenModel,
         amountTokenA: BigDecimal,
         slippage: Slippage,
-        activeRouteOrdinal: Int
+        activeRouteIndex: Int
     ) {
 
         minSolBalanceValidator.validateMinimumSolAmount(
@@ -54,10 +54,10 @@ class SwapStateRoutesRefresher(
         )
         Timber.i("Jupiter routes fetched: ${updatedRoutes.size}")
 
-        val bestRoute = updatedRoutes.getOrNull(activeRouteOrdinal)
+        val activeRoute = updatedRoutes.getOrNull(activeRouteIndex)
             ?: throw SwapFeatureException.RoutesNotFound
 
-        val amountTokenB = bestRoute
+        val amountTokenB = activeRoute
             .outAmountInLamports
             .fromLamports(tokenB.decimals)
 
@@ -66,13 +66,13 @@ class SwapStateRoutesRefresher(
             tokenB = tokenB,
             amountTokenA = amountTokenA,
             routes = updatedRoutes,
-            activeRoute = activeRouteOrdinal,
+            activeRoute = activeRouteIndex,
             amountTokenB = amountTokenB,
             slippage = slippage,
         )
 
         val freshSwapTransaction = swapTransactionRepository.createSwapTransactionForRoute(
-            route = updatedRoutes[activeRouteOrdinal],
+            route = activeRoute,
             userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
         )
         Timber.i("Fresh swap transaction fetched")
@@ -80,10 +80,10 @@ class SwapStateRoutesRefresher(
         state.value = SwapState.SwapLoaded(
             tokenA = tokenA,
             tokenB = tokenB,
-            lamportsTokenA = bestRoute.inAmountInLamports,
-            lamportsTokenB = bestRoute.outAmountInLamports,
+            lamportsTokenA = activeRoute.inAmountInLamports,
+            lamportsTokenB = activeRoute.outAmountInLamports,
             routes = updatedRoutes,
-            activeRoute = activeRouteOrdinal,
+            activeRoute = activeRouteIndex,
             jupiterSwapTransaction = freshSwapTransaction,
             slippage = slippage
         )

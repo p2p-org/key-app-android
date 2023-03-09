@@ -6,13 +6,15 @@ import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 private const val TAG = "JupiterSwapTokensInMemoryRepository"
 
 internal class JupiterSwapTokensInMemoryRepository : JupiterSwapTokensLocalRepository {
-    private var cachedTokens: MutableList<JupiterSwapToken> = mutableListOf()
+    private var cachedSwapTokens: List<JupiterSwapToken>? = null
+        set(value) {
+            Timber.tag(TAG).i("swap tokens updated: old:${field?.size}; new=${value?.size}")
+            field = value
+        }
 
-    override fun getCachedTokens(): List<JupiterSwapToken> = cachedTokens
+    override fun getCachedTokens(): List<JupiterSwapToken>? = cachedSwapTokens
 
     override fun setCachedTokens(tokens: List<JupiterSwapToken>) {
-        cachedTokens.clear()
-        cachedTokens.addAll(tokens)
-        Timber.tag(TAG).i("Jupiter cached swap tokens updated: size=${cachedTokens.size}")
+        this.cachedSwapTokens = tokens
     }
 }

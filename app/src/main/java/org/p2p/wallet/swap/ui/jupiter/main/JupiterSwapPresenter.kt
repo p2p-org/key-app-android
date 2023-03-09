@@ -174,7 +174,9 @@ class JupiterSwapPresenter(
 
             view?.showProgressDialog(internalTransactionId, progressDetails)
 
-            when (val result = swapInteractor.swapTokens(currentState.routes[currentState.activeRoute])) {
+            val swapTransaction = currentState.jupiterSwapTransaction
+
+            when (val result = swapInteractor.swapTokens(swapTransaction)) {
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Success -> {
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                     val transactionState = TransactionState.JupiterSwapSuccess

@@ -234,6 +234,9 @@ class HomePresenter(
         launch {
             val ethereumTokens = try {
                 ethereumRepository.loadWalletTokens()
+            } catch (cancelled: CancellationException) {
+                Timber.i(cancelled)
+                emptyList()
             } catch (throwable: Throwable) {
                 Timber.e(throwable, "Error on loading ethereumTokens")
                 emptyList()
