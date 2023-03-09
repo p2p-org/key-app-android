@@ -21,7 +21,6 @@ interface JupiterSwapContract {
         fun scrollToPriceImpact()
         fun showProgressDialog(internalTransactionId: String, transactionDetails: SwapTransactionBottomSheetData)
         fun showDefaultSlider()
-        fun showCompleteSlider()
         fun showFullScreenError()
         fun hideFullScreenError()
         fun showDebugInfo(debugInfo: TextViewCellModel)

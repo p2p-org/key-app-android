@@ -218,10 +218,6 @@ class JupiterSwapFragment :
         binding.sliderSend.restoreSlider()
     }
 
-    override fun showCompleteSlider() {
-        binding.sliderSend.showCompleteAnimation()
-    }
-
     override fun onBottomSheetDismissed(result: JupiterTransactionDismissResult) {
         when (result) {
             JupiterTransactionDismissResult.TransactionInProgress,
