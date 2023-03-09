@@ -81,6 +81,7 @@ object HomeModule : InjectionModule {
                 metadataInteractor = get(),
                 sellInteractor = get(),
                 sellEnabledFeatureToggle = get(),
+                ethAddressEnabledFeatureToggle = get(),
                 ethereumRepository = get(),
                 intercomDeeplinkManager = get(),
                 seedPhraseProvider = get()

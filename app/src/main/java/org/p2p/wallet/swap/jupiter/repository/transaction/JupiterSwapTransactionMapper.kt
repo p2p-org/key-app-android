@@ -33,18 +33,18 @@ class JupiterSwapTransactionMapper {
                 minInAmount = domainModel.minInAmountInLamports?.toString(),
                 minOutAmount = domainModel.minOutAmountInLamports?.toString(),
                 priceImpactPct = domainModel.priceImpactPct.toDouble(),
-                lpFee = domainModel.lpFee.let { domainFee ->
+                lpFee = domainModel.liquidityFee.let { domainFee ->
                     SwapRouteRequest.MarketInfoRequest.LpFeeRequest(
                         amount = domainFee.amountInLamports.toString(),
                         mint = domainFee.mint.base58Value,
-                        pct = domainFee.pct.toDouble()
+                        pct = domainFee.percent.toDouble()
                     )
                 },
                 platformFee = domainModel.platformFee.let { domainFee ->
                     SwapRouteRequest.MarketInfoRequest.PlatformFeeRequest(
                         amountInLamports = domainFee.amountInLamports.toString(),
                         mint = domainFee.mint.base58Value,
-                        pct = domainFee.pct.toDouble()
+                        pct = domainFee.percent.toDouble()
                     )
                 }
             )
@@ -73,7 +73,7 @@ class JupiterSwapTransactionMapper {
             signatureFeeInLamports = signatureFee.toLong(),
             openOrdersDepositsLamports = openOrdersDeposits.map { it.toLong() },
             ataDeposits = ataDeposits.map { it.toLong() },
-            totalFeeAndDepositsLamports = totalFeeAndDeposits.toLong(),
+            totalFeeAndDepositsLamports = totalFeeAndDepositsInTokenB.toLong(),
             minimumSolForTransactionLamports = minimumSolForTransaction.toLong()
         )
     }

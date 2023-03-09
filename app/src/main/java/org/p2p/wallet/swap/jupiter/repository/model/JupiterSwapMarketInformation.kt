@@ -1,8 +1,9 @@
 package org.p2p.wallet.swap.jupiter.repository.model
 
-import org.p2p.wallet.utils.Base58String
 import java.math.BigDecimal
 import java.math.BigInteger
+import org.p2p.core.utils.scaleShortOrFirstNotZero
+import org.p2p.wallet.utils.Base58String
 
 data class JupiterSwapMarketInformation(
     val id: String,
@@ -15,18 +16,22 @@ data class JupiterSwapMarketInformation(
     val minInAmountInLamports: BigInteger?,
     val minOutAmountInLamports: BigInteger?,
     val priceImpactPct: BigDecimal,
-    val lpFee: LpFee,
+    val liquidityFee: LpFee,
     val platformFee: PlatformFee
 ) {
     data class LpFee(
         val amountInLamports: BigInteger,
         val mint: Base58String,
-        val pct: BigDecimal
-    )
+        val percent: BigDecimal
+    ) {
+        val formattedPercent: BigDecimal = percent.times(BigDecimal(100)).scaleShortOrFirstNotZero()
+    }
 
     data class PlatformFee(
         val amountInLamports: BigInteger,
         val mint: Base58String,
-        val pct: BigDecimal
-    )
+        val percent: BigDecimal
+    ) {
+        val formattedPercent: BigDecimal = percent.times(BigDecimal(100)).scaleShortOrFirstNotZero()
+    }
 }

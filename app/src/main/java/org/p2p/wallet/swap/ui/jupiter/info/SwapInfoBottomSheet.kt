@@ -139,6 +139,7 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
         return when (state) {
             SwapState.InitialLoading,
             is SwapState.LoadingRoutes,
+            is SwapState.TokenANotZero,
             is SwapState.TokenAZero -> flowOf(mapper.mapEmptyLiquidityFee())
             is SwapState.SwapException -> handleFeatureState(state.previousFeatureState, tokens)
             is SwapState.SwapLoaded -> {
@@ -185,7 +186,7 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
         tokens: List<SwapTokenModel>,
         loadingCell: FinanceBlockCellModel,
     ): Flow<LoadRateBox> {
-        val lpToken = tokens.find { it.mintAddress == marketInfo.lpFee.mint }
+        val lpToken = tokens.find { it.mintAddress == marketInfo.liquidityFee.mint }
         val loadingCellFlow = flowOf(marketInfo to loadingCell)
         val rateLoaderFlow = lpToken?.let { stateManager.getTokenRate(lpToken) }
             ?: flowOf(SwapRateLoaderState.Error)

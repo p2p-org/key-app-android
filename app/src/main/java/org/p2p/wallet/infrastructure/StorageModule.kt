@@ -72,7 +72,7 @@ object StorageModule {
 
         factory {
             val prefs = androidPreferences(PREFS_SWAP)
-            JupiterSwapStorage(prefs)
+            JupiterSwapStorage(prefs, gson = get())
         } bind JupiterSwapStorageContract::class
 
         single { KeyStore.getInstance("AndroidKeyStore") }

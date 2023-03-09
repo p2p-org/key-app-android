@@ -3,8 +3,10 @@ package org.p2p.wallet.swap.ui.jupiter.tokens.adapter
 import androidx.recyclerview.widget.RecyclerView
 import android.graphics.Rect
 import android.view.View
+import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.FinanceBlockViewHolder
 import org.p2p.uikit.components.finance_block.asFinanceCell
+import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensCellModelPayload
 
@@ -21,27 +23,25 @@ class SwapTokensOtherGroupDividerDecoration : RecyclerView.ItemDecoration() {
             return
         }
 
-        val adapterPosition = parent.getChildLayoutPosition(view)
-        val previousViewHolder = parent.findViewHolderForLayoutPosition(adapterPosition - 1)
-        val nextViewHolder = parent.findViewHolderForLayoutPosition(adapterPosition + 1)
+        val adapterPosition = parent.getChildAdapterPosition(view)
+        val adapter = parent.adapter ?: return
+        val items = adapter.getItems()
+        val previousCell = items.getOrNull(adapterPosition - 1) as? FinanceBlockCellModel
+        val nextCell = items.getOrNull(adapterPosition + 1) as? FinanceBlockCellModel
 
         val isOtherTokensGroupStarted = currentItemPayload.tokenModel is SwapTokenModel.JupiterToken
         if (isOtherTokensGroupStarted) {
-            addTopPaddingToOtherTokensGroup(outRect, previousViewHolder, nextViewHolder)
+            addTopPaddingToOtherTokensGroup(outRect, previousCell, nextCell)
         }
     }
 
     private fun addTopPaddingToOtherTokensGroup(
         outRect: Rect,
-        previousViewHolder: RecyclerView.ViewHolder?,
-        nextViewHolder: RecyclerView.ViewHolder?
+        previousCell: FinanceBlockCellModel?,
+        nextCell: FinanceBlockCellModel?
     ) {
-        val previousToken = previousViewHolder.asFinanceCell
-            ?.getPayload<SwapTokensCellModelPayload>()
-            ?.tokenModel
-        val nextToken = nextViewHolder.asFinanceCell
-            ?.getPayload<SwapTokensCellModelPayload>()
-            ?.tokenModel
+        val previousToken = (previousCell?.payload as? SwapTokensCellModelPayload)?.tokenModel
+        val nextToken = (nextCell?.payload as? SwapTokensCellModelPayload)?.tokenModel
 
         val isUserTokensGroupFinished =
             previousToken is SwapTokenModel.UserToken &&

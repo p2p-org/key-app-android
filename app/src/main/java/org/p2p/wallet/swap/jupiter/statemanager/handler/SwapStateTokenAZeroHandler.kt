@@ -6,13 +6,11 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_ACTIVE_ROUTE_ORDINAL
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
-import org.p2p.wallet.swap.jupiter.statemanager.validator.MinimumSolAmountValidator
 import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 
 class SwapStateTokenAZeroHandler(
     private val swapRoutesRefresher: SwapStateRoutesRefresher,
     private val swapValidator: SwapValidator,
-    private val minSolBalanceValidator: MinimumSolAmountValidator,
     private val analytics: JupiterSwapMainScreenAnalytics
 ) : SwapStateHandler {
 
@@ -30,18 +28,13 @@ class SwapStateTokenAZeroHandler(
                 stateFlow.value = oldState.copy(slippage = action.newSlippageValue)
             }
             is SwapStateAction.TokenAAmountChanged -> {
-                minSolBalanceValidator.validateMinimumSolAmount(
-                    tokenA = oldState.tokenA,
-                    newAmount = action.newAmount,
-                    slippage = oldState.slippage
-                )
                 swapRoutesRefresher.refreshRoutes(
                     state = stateFlow,
                     tokenA = oldState.tokenA,
                     tokenB = oldState.tokenB,
                     amountTokenA = action.newAmount,
                     slippage = oldState.slippage,
-                    activeRouteOrdinal = DEFAULT_ACTIVE_ROUTE_ORDINAL
+                    activeRouteIndex = DEFAULT_ACTIVE_ROUTE_ORDINAL
                 )
             }
             is SwapStateAction.TokenAChanged -> {

@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
-import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
@@ -49,7 +49,7 @@ import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetToken
 import org.p2p.wallet.user.repository.UserLocalRepository
 
-private const val AMOUNT_INPUT_DELAY = 400L
+private const val AMOUNT_INPUT_DELAY = 700L
 
 class JupiterSwapPresenter(
     private val swapOpenedFrom: SwapOpenedFrom,
@@ -148,11 +148,14 @@ class JupiterSwapPresenter(
                     .map { it.rate * currentState.amountTokenB }
                     .flowOn(dispatchers.io)
                     .firstOrNull()
-                    ?: return@launch
+
+            if (tokenBUsdAmount == null) {
+                Timber.i(SwapTokenRateNotFound(currentState.tokenB))
+            }
 
             val progressDetails = SwapTransactionBottomSheetData(
                 date = transactionDate,
-                amountUsd = tokenBUsdAmount.formatFiat(),
+                formattedAmountUsd = tokenBUsdAmount?.asUsd(),
                 tokenA = SwapTransactionBottomSheetToken(
                     tokenUrl = currentState.tokenA.iconUrl.orEmpty(),
                     tokenName = currentState.tokenA.tokenName,
@@ -174,12 +177,14 @@ class JupiterSwapPresenter(
 
             view?.showProgressDialog(internalTransactionId, progressDetails)
 
-            when (val result = swapInteractor.swapTokens(currentState.routes[currentState.activeRoute])) {
+            val swapTransaction = currentState.jupiterSwapTransaction
+
+            when (val result = swapInteractor.swapTokens(swapTransaction)) {
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Success -> {
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                     val transactionState = TransactionState.JupiterSwapSuccess
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
-                    view?.showCompleteSlider()
+                    view?.showDefaultSlider()
                 }
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
                     // todo also check for slippage error
@@ -202,6 +207,7 @@ class JupiterSwapPresenter(
             SwapState.InitialLoading,
             is SwapState.SwapLoaded,
             is SwapState.TokenAZero,
+            is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction -> swapInteractor.getTokenAAmount(featureState)
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
@@ -235,6 +241,7 @@ class JupiterSwapPresenter(
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction,
             is SwapState.SwapLoaded,
+            is SwapState.TokenANotZero,
             is SwapState.TokenAZero -> true
             is SwapState.SwapException ->
                 isChangeTokenScreenAvailable(featureState.previousFeatureState)
@@ -281,6 +288,7 @@ class JupiterSwapPresenter(
             is SwapState.LoadingRoutes -> handleLoadingRoutes(state)
             is SwapState.LoadingTransaction -> handleLoadingTransaction(state)
             is SwapState.SwapLoaded -> handleSwapLoaded(state)
+            is SwapState.TokenANotZero -> handleTokenANotZero(state)
             is SwapState.SwapException.FeatureExceptionWrapper -> handleFeatureException(state)
             is SwapState.SwapException.OtherException -> handleOtherException(state)
         }
@@ -288,10 +296,12 @@ class JupiterSwapPresenter(
 
     private fun handleOtherException(state: SwapState.SwapException.OtherException) {
         rateTickerManager.handleSwapException(state)
+        mapWidgetStates(state)
         retryAction = {
             view?.hideFullScreenError()
             stateManager.onNewAction(state.lastSwapStateAction)
         }
+        updateWidgets()
         view?.showFullScreenError()
     }
 
@@ -312,10 +322,6 @@ class JupiterSwapPresenter(
             }
             is SwapFeatureException.RoutesNotFound -> {
                 analytics.logSwapPairNotExists()
-                val (_, tokenB) = state.previousFeatureState.getTokensPair()
-                tokenB?.let {
-                    this.widgetBState = widgetMapper.mapTokenB(token = tokenB, tokenAmount = null)
-                }
                 view?.setButtonState(buttonState = buttonMapper.mapRouteNotFound())
             }
             is SwapFeatureException.NotValidTokenA -> {
@@ -360,6 +366,11 @@ class JupiterSwapPresenter(
         view?.setButtonState(
             buttonState = buttonMapper.mapReadyToSwap(tokenA = state.tokenA, tokenB = state.tokenB)
         )
+        getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
+        getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
+    }
+
+    private fun checkPriceImpact() {
         val priceImpact = swapInteractor.getPriceImpact(currentFeatureState)
         when (val type = priceImpact?.toPriceImpactType()) {
             null, SwapPriceImpactView.NORMAL -> {
@@ -377,14 +388,13 @@ class JupiterSwapPresenter(
                 }
             }
         }
-        getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
-        getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
 
     private fun handleLoadingTransaction(state: SwapState.LoadingTransaction) {
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = buttonMapper.mapLoading())
+        checkPriceImpact()
         getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
         getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
@@ -404,6 +414,11 @@ class JupiterSwapPresenter(
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonMapper.mapEnterAmount())
+    }
+
+    private fun handleTokenANotZero(state: SwapState.TokenANotZero) {
+        mapWidgetStates(state)
+        updateWidgets()
     }
 
     private fun handleInitialLoading(state: SwapState.InitialLoading) {
@@ -446,6 +461,12 @@ class JupiterSwapPresenter(
             is SwapState.TokenAZero ->
                 widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = null) to
                     widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
+            is SwapState.TokenANotZero ->
+                widgetMapper.mapTokenAAndSaveOldFiatAmount(
+                    oldWidgetModel = widgetAState,
+                    token = state.tokenA,
+                    tokenAmount = state.amountTokenA
+                ) to widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
 
             is SwapState.SwapException ->
                 mapWidgetStates(state.previousFeatureState)
@@ -516,7 +537,9 @@ class JupiterSwapPresenter(
 
     private fun updateWidgets() {
         view?.setFirstTokenWidgetState(state = widgetAState)
-        if (needToShowKeyboard && widgetAState !is SwapWidgetModel.Loading) {
+        if (needToShowKeyboard &&
+            (widgetAState as? SwapWidgetModel.Content)?.amount is TextViewCellModel.Raw
+        ) {
             view?.showKeyboard()
             needToShowKeyboard = false
         }

@@ -26,6 +26,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
 private const val EXTRA_DATA = "EXTRA_DATA"
 private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
@@ -108,7 +109,7 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                 size = IMAGE_SIZE,
                 circleCrop = true
             )
-            textViewAmountUsd.text = "$ ${data.amountUsd}"
+            textViewAmountUsd.withTextOrGone(data.formattedAmountUsd)
             textViewAmountTokens.text = getString(
                 R.string.swap_transaction_details_token_amounts,
                 data.tokenA.formattedTokenAmount,
@@ -171,7 +172,7 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun setSuccessState() {
         dismissResult = JupiterTransactionDismissResult.TransactionSuccess
         with(binding) {
-            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_succeeded))
+            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_submitted))
             progressStateTransaction.setSuccessState()
             progressStateTransaction.setDescriptionText(R.string.transaction_description_succeeded)
             buttonDone.setText(R.string.common_done)

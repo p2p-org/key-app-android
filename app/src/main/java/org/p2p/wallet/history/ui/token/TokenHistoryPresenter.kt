@@ -10,7 +10,7 @@ import org.p2p.wallet.rpc.interactor.TokenInteractor
 
 class TokenHistoryPresenter(
     private val token: Token.Active,
-    private val tokenInteractor: TokenInteractor,
+    private val tokenInteractor: TokenInteractor
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     override fun attach(view: TokenHistoryContract.View) {

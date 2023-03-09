@@ -24,6 +24,7 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -72,6 +73,7 @@ class HomePresenter(
     private val networkObserver: SolanaNetworkObserver,
     private val sellInteractor: SellInteractor,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
+    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val metadataInteractor: MetadataInteractor,
     private val ethereumRepository: EthereumRepository,
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
@@ -84,8 +86,10 @@ class HomePresenter(
 
     init {
         // TODO maybe we can find better place to start this service
-        val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-        ethereumRepository.init(seedPhrase = userSeedPhrase)
+        if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
+            ethereumRepository.init(seedPhrase = userSeedPhrase)
+        }
         launch {
             awaitAll(
                 async { networkObserver.start() },
@@ -232,10 +236,17 @@ class HomePresenter(
 
     private fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
         launch {
-            val ethereumTokens = try {
-                ethereumRepository.loadWalletTokens()
-            } catch (throwable: Throwable) {
-                Timber.e(throwable, "Error on loading ethereumTokens")
+            val ethereumTokens = if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+                try {
+                    ethereumRepository.loadWalletTokens()
+                } catch (cancelled: CancellationException) {
+                    Timber.i(cancelled)
+                    emptyList()
+                } catch (throwable: Throwable) {
+                    Timber.e(throwable, "Error on loading ethereumTokens")
+                    emptyList()
+                }
+            } else {
                 emptyList()
             }
             Timber.d("local tokens change arrived")
