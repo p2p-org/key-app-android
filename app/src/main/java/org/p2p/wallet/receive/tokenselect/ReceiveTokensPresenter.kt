@@ -117,8 +117,8 @@ class ReceiveTokensPresenter(
 
                 launch {
                     val dropSize = tokensFlow.value.size
-                    val newItems = data.result.asSequence().drop(dropSize)
-                    val result = tokensFlow.value + mapTokenToCellItem(newItems.toList())
+                    val newItems = data.result.drop(dropSize)
+                    val result = tokensFlow.value + mapTokenToCellItem(newItems)
                     tokensFlow.emit(result)
                 }
             }
