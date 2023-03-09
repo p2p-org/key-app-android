@@ -184,7 +184,7 @@ class JupiterSwapPresenter(
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                     val transactionState = TransactionState.JupiterSwapSuccess
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
-                    view?.showCompleteSlider()
+                    view?.showDefaultSlider()
                 }
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
                     // todo also check for slippage error
