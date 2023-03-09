@@ -72,7 +72,7 @@ class ReceiveTokensPresenter(
             view?.apply {
                 when (network) {
                     ReceiveNetwork.SOLANA -> openReceiveInSolana(tokenData)
-                    ReceiveNetwork.ETHEREUM -> openReceiveInEthereum()
+                    ReceiveNetwork.ETHEREUM -> openReceiveInEthereum(tokenData)
                 }
             }
         }

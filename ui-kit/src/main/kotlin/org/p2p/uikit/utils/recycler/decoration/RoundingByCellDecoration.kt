@@ -15,7 +15,7 @@ import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 
-fun roundingByCellFinanceBlockDecoration(@Px round: Float = 12f.toPx()) =
+fun roundingByCellFinanceBlockDecoration(@Px round: Float = 16f.toPx()) =
     RoundingByCellDecoration(FinanceBlockCellModel::class, round)
 
 class RoundingByCellDecoration(

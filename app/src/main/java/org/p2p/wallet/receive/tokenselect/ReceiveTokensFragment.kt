@@ -28,12 +28,12 @@ import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.recycler.decoration.groupedRoundingFinanceBlockDecoration
 import org.p2p.uikit.utils.recycler.decoration.onePxDividerFinanceBlockDecoration
 import org.p2p.uikit.utils.showSoftKeyboard
-import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveSupportedTokensBinding
+import org.p2p.wallet.receive.eth.EthereumReceiveFragment
 import org.p2p.wallet.receive.solana.NewReceiveSolanaFragment
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
@@ -184,15 +184,19 @@ class ReceiveTokensFragment :
     override fun openReceiveInSolana(tokenData: TokenData) = with(tokenData) {
         replaceFragment(
             NewReceiveSolanaFragment.create(
-                logoUrl = iconUrl.orEmpty(),
+                tokenLogoUrl = iconUrl.orEmpty(),
                 tokenSymbol = symbol
             )
         )
     }
 
-    override fun openReceiveInEthereum() {
-        // TODO make real implementation
-        toast("Receive in Ethereum network should be opened!")
+    override fun openReceiveInEthereum(tokenData: TokenData) = with(tokenData) {
+        replaceFragment(
+            EthereumReceiveFragment.create(
+                tokenLogoUrl = iconUrl.orEmpty(),
+                tokenSymbol = symbol
+            )
+        )
     }
 
     private fun ImageView.setTokenIconUrl(tokenIconUrl: String) {

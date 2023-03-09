@@ -25,9 +25,9 @@ class NewReceiveSolanaFragment :
     NewReceiveSolanaContract.View {
 
     companion object {
-        fun create(logoUrl: String, tokenSymbol: String) = NewReceiveSolanaFragment()
+        fun create(tokenLogoUrl: String, tokenSymbol: String) = NewReceiveSolanaFragment()
             .withArgs(
-                ARG_TOKEN_LOGO_URL to logoUrl,
+                ARG_TOKEN_LOGO_URL to tokenLogoUrl,
                 ARG_TOKEN_SYMBOL to tokenSymbol
             )
     }
