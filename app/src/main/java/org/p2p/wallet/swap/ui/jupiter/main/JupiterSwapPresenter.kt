@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
-import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
@@ -148,11 +148,14 @@ class JupiterSwapPresenter(
                     .map { it.rate * currentState.amountTokenB }
                     .flowOn(dispatchers.io)
                     .firstOrNull()
-                    ?: return@launch
+
+            if (tokenBUsdAmount == null) {
+                Timber.i(SwapTokenRateNotFound(currentState.tokenB))
+            }
 
             val progressDetails = SwapTransactionBottomSheetData(
                 date = transactionDate,
-                amountUsd = tokenBUsdAmount.formatFiat(),
+                formattedAmountUsd = tokenBUsdAmount?.asUsd(),
                 tokenA = SwapTransactionBottomSheetToken(
                     tokenUrl = currentState.tokenA.iconUrl.orEmpty(),
                     tokenName = currentState.tokenA.tokenName,

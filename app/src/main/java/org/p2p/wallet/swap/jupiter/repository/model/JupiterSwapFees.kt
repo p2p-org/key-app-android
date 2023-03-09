@@ -15,6 +15,6 @@ data class JupiterSwapFees(
     /**
      * the total lamports needed for fees and deposits above
      */
-    val totalFeeAndDeposits: BigInteger,
+    val totalFeeAndDepositsInTokenB: BigInteger,
     val minimumSolForTransaction: BigInteger
 )

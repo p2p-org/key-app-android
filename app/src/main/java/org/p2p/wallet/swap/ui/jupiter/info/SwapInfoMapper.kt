@@ -74,23 +74,26 @@ class SwapInfoMapper {
         allTokens: List<SwapTokenModel>
     ): FinanceBlockCellModel {
         val label = marketInfo.label
-        val lpToken = allTokens.find { marketInfo.lpFee.mint == it.mintAddress }
-        val secondLineText = lpToken?.let {
-            val feeLamports = lpToken.decimals.let { marketInfo.lpFee.amountInLamports.fromLamports(lpToken.decimals) }
+        val liquidityToken = allTokens.find { marketInfo.liquidityFee.mint == it.mintAddress }
+        val liquidityFee = marketInfo.liquidityFee
+
+        val feePercent = liquidityFee.formattedPercent.toPlainString() + "%"
+        val firstLineText = TextViewCellModel.Raw(
+            text = TextContainer(R.string.swap_info_details_liquidity_cell_title, label, feePercent),
+            maxLines = 2
+        )
+
+        val secondLineText = liquidityToken?.let {
+            val feeInTokenLamports = liquidityFee.amountInLamports.fromLamports(it.decimals)
             TextViewCellModel.Raw(
-                text = TextContainer("$feeLamports ${lpToken.tokenSymbol}")
+                text = TextContainer("$feeInTokenLamports ${it.tokenSymbol}")
             )
         }
-
-        val feePct = marketInfo.lpFee.pct.toPlainString() + "%"
 
         return FinanceBlockCellModel(
             styleType = FinanceBlockStyle.BASE_CELL,
             leftSideCellModel = LeftSideCellModel.IconWithText(
-                firstLineText = TextViewCellModel.Raw(
-                    text = TextContainer(R.string.swap_info_details_liquidity_cell_title, label, feePct),
-                    maxLines = 2,
-                ),
+                firstLineText = firstLineText,
                 secondLineText = secondLineText
             ),
             rightSideCellModel = rightSideSkeleton(),
@@ -170,7 +173,7 @@ class SwapInfoMapper {
             is SwapRateLoaderState.Loaded -> {
                 val rate = state.rate
                 val token = state.token
-                val feeInUsd = marketInfo.lpFee.amountInLamports
+                val feeInUsd = marketInfo.liquidityFee.amountInLamports
                     .fromLamports(token.decimals)
                     .multiply(rate)
                     .asUsdSwap()

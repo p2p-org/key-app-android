@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.ui.jupiter.settings.presenter
 
 import java.math.BigDecimal
-import java.math.BigInteger
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.firstOrNull
 import org.p2p.core.common.DrawableContainer
@@ -9,6 +8,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.asUsdSwap
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.orZero
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -79,7 +79,7 @@ class SwapContentSettingsMapper(
     ): List<AnyCellItem> = buildList {
         addRouteCell(routes, activeRoute, jupiterTokens)
         this += commonMapper.getNetworkFeeCell()
-        addAccountFeeCell(routes, activeRoute, tokenA)
+        addAccountFeeCell(routes, activeRoute, tokenB)
         addLiquidityFeeCell(routes, activeRoute, jupiterTokens)
         addEstimatedFeeCell(routes, activeRoute, tokenA)
         addMinimumReceivedCell(slippage, tokenBAmount, tokenB)
@@ -166,25 +166,24 @@ class SwapContentSettingsMapper(
 
     private suspend fun MutableList<AnyCellItem>.addAccountFeeCell(
         routes: List<JupiterSwapRoute>,
-        activeRoute: Int,
-        tokenA: SwapTokenModel
+        activeRouteIndex: Int,
+        tokenB: SwapTokenModel
     ) {
-        val route = routes.getOrNull(activeRoute)
-        val ataDeposits = route?.fees?.ataDeposits ?: listOf()
-        val openOrdersDeposits = route?.fees?.openOrdersDeposits ?: listOf()
-        var accountFee = BigInteger.ZERO
-        ataDeposits.forEach {
-            accountFee = accountFee.plus(it)
-        }
-        openOrdersDeposits.forEach {
-            accountFee = accountFee.plus(it)
-        }
-        val fee = accountFee.fromLamports(tokenA.decimals)
-        val feeText = fee.formatToken(tokenA.decimals)
+        val activeRoute = routes.getOrNull(activeRouteIndex)
+        val feeAmount = activeRoute?.fees
+            ?.totalFeeAndDepositsInTokenB
+            .orZero()
+            .fromLamports(tokenB.decimals)
 
-        val ratio = swapStateManager.getTokenRate(tokenA)
-            .filterIsInstance<SwapRateLoaderState.Loaded>().firstOrNull()
-        val feeUsd = ratio?.let { fee.multiply(it.rate) }?.asUsdSwap()
+        val feeText = feeAmount.formatToken(tokenB.decimals) + " ${tokenB.tokenSymbol}"
+
+        val tokenRate = swapStateManager.getTokenRate(tokenB)
+            .filterIsInstance<SwapRateLoaderState.Loaded>()
+            .firstOrNull()
+            ?.rate
+        val feeUsdText: TextViewCellModel.Raw? = tokenRate
+            ?.let { feeAmount.multiply(tokenRate) }
+            ?.asUsdSwap()
             ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(usd)) }
 
         this += FinanceBlockCellModel(
@@ -197,7 +196,7 @@ class SwapContentSettingsMapper(
                 ),
             ),
             rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
-                text = feeUsd,
+                text = feeUsdText,
                 firstIcon = ImageViewCellModel(
                     icon = DrawableContainer(R.drawable.ic_info_outline),
                     iconTint = R.color.icons_mountain,
@@ -239,7 +238,7 @@ class SwapContentSettingsMapper(
         if (route == null) return emptyString()
         var result = ""
         route.marketInfos.forEachIndexed { index, marketInfo ->
-            val lpFee = marketInfo.lpFee
+            val lpFee = marketInfo.liquidityFee
             val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return@forEachIndexed
             val amount = lpFee.amountInLamports.fromLamports(lpToken.decimals).formatToken(lpToken.decimals)
             val fee = "$amount ${lpToken.tokenSymbol}"
@@ -256,7 +255,7 @@ class SwapContentSettingsMapper(
     ) {
         val route = routes.getOrNull(activeRoute)
 
-        val fee = route?.fees?.totalFeeAndDeposits?.fromLamports(tokenA.decimals)
+        val fee = route?.fees?.totalFeeAndDepositsInTokenB?.fromLamports(tokenA.decimals)
 
         val feeCell = if (fee != null) {
             val ratio =

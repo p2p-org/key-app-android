@@ -11,6 +11,27 @@ import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
+class SwapTokenRateNotFound(
+    token: SwapTokenModel
+) : Throwable() {
+    override val message: String = buildString {
+        append("Token rate not found for token ")
+        append(token.tokenName)
+        append("; ")
+        append(token.mintAddress)
+        append("; ")
+        append(
+            when (token) {
+                is SwapTokenModel.JupiterToken -> token.coingeckoId
+                is SwapTokenModel.UserToken -> null
+            }
+        )
+        append("; ")
+        append(token::class.simpleName)
+        append("; ")
+    }
+}
+
 class SwapTokenRateLoader(
     private val tokenPricesRepository: TokenPricesRemoteRepository,
 ) {
@@ -20,11 +41,16 @@ class SwapTokenRateLoader(
         val oldState = state.get()
         val oldLoadedToken: SwapTokenModel? = oldState.getOldToken()
 
+        val rateNotLoaded =
+            oldLoadedToken == null
+        val isRateForOtherToken =
+            oldLoadedToken?.mintAddress != token.mintAddress || oldLoadedToken::class != token::class
+        val isRateLoaded =
+            oldLoadedToken?.mintAddress == token.mintAddress
+
         when {
-            oldLoadedToken == null ||
-                oldLoadedToken.mintAddress != token.mintAddress ||
-                oldLoadedToken::class != token::class -> updateToken(token)
-            oldLoadedToken.mintAddress == token.mintAddress -> emitAndSaveState(oldState)
+            rateNotLoaded || isRateForOtherToken -> updateToken(token)
+            isRateLoaded -> emitAndSaveState(oldState)
             else -> updateToken(token)
         }
     }
@@ -36,7 +62,9 @@ class SwapTokenRateLoader(
         }
     }
 
-    private suspend fun FlowCollector<SwapRateLoaderState>.updateUserTokenRate(token: SwapTokenModel.UserToken) {
+    private suspend fun FlowCollector<SwapRateLoaderState>.updateUserTokenRate(
+        token: SwapTokenModel.UserToken
+    ) {
         val rate = token.details.rate
         val newState = if (rate != null) {
             SwapRateLoaderState.Loaded(token = token, rate = rate)
@@ -46,7 +74,9 @@ class SwapTokenRateLoader(
         emitAndSaveState(newState)
     }
 
-    private suspend fun FlowCollector<SwapRateLoaderState>.updateJupiterTokenRate(token: SwapTokenModel.JupiterToken) {
+    private suspend fun FlowCollector<SwapRateLoaderState>.updateJupiterTokenRate(
+        token: SwapTokenModel.JupiterToken
+    ) {
         val coingeckoId = token.coingeckoId
         if (coingeckoId == null) {
             emitAndSaveState(SwapRateLoaderState.NoRateAvailable(token))

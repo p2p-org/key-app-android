@@ -40,18 +40,18 @@ class JupiterSwapRoutesMapper {
                 minInAmountInLamports = response.minInAmount?.toBigInteger(),
                 minOutAmountInLamports = response.minOutAmount?.toBigInteger(),
                 priceImpactPct = response.priceImpactPct.toBigDecimal(),
-                lpFee = response.lpFee.let { responseFee ->
+                liquidityFee = response.lpFee.let { responseFee ->
                     JupiterSwapMarketInformation.LpFee(
                         amountInLamports = responseFee.amount.toBigInteger(),
                         mint = responseFee.mint.toBase58Instance(),
-                        pct = responseFee.pct.toBigDecimal()
+                        percent = responseFee.pct.toBigDecimal()
                     )
                 },
                 platformFee = response.platformFee.let { responseFee ->
                     JupiterSwapMarketInformation.PlatformFee(
                         amountInLamports = responseFee.amountInLamports.toBigInteger(),
                         mint = responseFee.mint.toBase58Instance(),
-                        pct = responseFee.pct.toBigDecimal()
+                        percent = responseFee.pct.toBigDecimal()
                     )
                 }
             )
@@ -61,7 +61,7 @@ class JupiterSwapRoutesMapper {
         signatureFee = signatureFeeInLamports.toBigInteger(),
         openOrdersDeposits = openOrdersDepositsLamports.map { it.toBigInteger() },
         ataDeposits = ataDeposits.map { it.toBigInteger() },
-        totalFeeAndDeposits = totalFeeAndDepositsLamports.toBigInteger(),
+        totalFeeAndDepositsInTokenB = totalFeeAndDepositsLamports.toBigInteger(),
         minimumSolForTransaction = minimumSolForTransactionLamports.toBigInteger(),
     )
 }
