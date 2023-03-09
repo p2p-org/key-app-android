@@ -8,12 +8,12 @@ import retrofit2.http.POST
 
 interface NotificationServiceApi {
 
-    @POST("notifier")
+    @POST("/")
     suspend fun sendDeviceToken(
         @Body rpcRequest: RpcRequest
     ): CommonResponse<DeviceToken>
 
-    @POST("notifier")
+    @POST("/")
     suspend fun deleteDeviceToken(
         @Body rpcRequest: RpcRequest
     ): CommonResponse<DeviceToken>
