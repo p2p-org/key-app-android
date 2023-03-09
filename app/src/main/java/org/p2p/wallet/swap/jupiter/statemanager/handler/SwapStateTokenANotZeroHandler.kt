@@ -8,20 +8,20 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAU
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
 import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 
-class SwapStateTokenAZeroHandler(
+class SwapStateTokenANotZeroHandler(
     private val swapRoutesRefresher: SwapStateRoutesRefresher,
     private val swapValidator: SwapValidator,
     private val analytics: JupiterSwapMainScreenAnalytics
 ) : SwapStateHandler {
 
-    override fun canHandle(state: SwapState): Boolean = state is SwapState.TokenAZero
+    override fun canHandle(state: SwapState): Boolean = state is SwapState.TokenANotZero
 
     override suspend fun handleAction(
         stateFlow: MutableStateFlow<SwapState>,
         state: SwapState,
         action: SwapStateAction,
     ) {
-        val oldState = state as SwapState.TokenAZero
+        val oldState = state as SwapState.TokenANotZero
 
         when (action) {
             is SwapStateAction.SlippageChanged -> {
