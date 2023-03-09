@@ -41,7 +41,7 @@ class SwapStateTokenAZeroHandler(
                     tokenB = oldState.tokenB,
                     amountTokenA = action.newAmount,
                     slippage = oldState.slippage,
-                    activeRouteOrdinal = DEFAULT_ACTIVE_ROUTE_ORDINAL
+                    activeRouteIndex = DEFAULT_ACTIVE_ROUTE_ORDINAL
                 )
             }
             is SwapStateAction.TokenAChanged -> {

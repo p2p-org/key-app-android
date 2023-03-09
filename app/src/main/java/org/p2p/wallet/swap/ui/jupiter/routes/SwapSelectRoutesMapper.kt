@@ -1,7 +1,10 @@
 package org.p2p.wallet.swap.ui.jupiter.routes
 
+import java.math.BigInteger
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.fromLamports
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -12,6 +15,7 @@ import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 
 class SwapSelectRoutesMapper {
@@ -28,24 +32,30 @@ class SwapSelectRoutesMapper {
         }
     }
 
-    fun mapRoutesList(routes: List<JupiterSwapRoute>, activeRoute: Int): List<AnyCellItem> = buildList {
+    fun mapRoutesList(
+        routes: List<JupiterSwapRoute>,
+        activeRouteIndex: Int,
+        tokenB: SwapTokenModel
+    ): List<AnyCellItem> = buildList {
+        val bestRouteOutAmount = routes.first().outAmountInLamports
+
         routes.forEachIndexed { index, route ->
-            var rightIcon: RightSideCellModel.SingleTextTwoIcon? = null
-            if (index == activeRoute) {
-                rightIcon = RightSideCellModel.SingleTextTwoIcon(
-                    firstIcon = ImageViewCellModel(
-                        icon = DrawableContainer(R.drawable.ic_done),
-                        iconTint = R.color.icons_night
-                    )
-                )
-            }
+            val rightIcon = if (index == activeRouteIndex) getActiveRouteIcon() else null
+
             this += FinanceBlockCellModel(
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = TextViewCellModel.Raw(
-                        text = TextContainer(formatLabel(route))
+                        text = formatRouteName(
+                            route = route
+                        )
                     ),
                     secondLineText = TextViewCellModel.Raw(
-                        text = TextContainer("TODO")
+                        text = formatPriceDiffText(
+                            currentRoute = route,
+                            currentIndex = index,
+                            bestOutAmount = bestRouteOutAmount,
+                            tokenB = tokenB
+                        )
                     )
                 ),
                 rightSideCellModel = rightIcon,
@@ -55,12 +65,41 @@ class SwapSelectRoutesMapper {
         }
     }
 
-    private fun formatLabel(route: JupiterSwapRoute): String = buildString {
+    private fun getActiveRouteIcon(): RightSideCellModel.SingleTextTwoIcon {
+        return RightSideCellModel.SingleTextTwoIcon(
+            firstIcon = ImageViewCellModel(
+                icon = DrawableContainer(R.drawable.ic_done),
+                iconTint = R.color.icons_night
+            )
+        )
+    }
+
+    private fun formatPriceDiffText(
+        currentRoute: JupiterSwapRoute,
+        currentIndex: Int,
+        bestOutAmount: BigInteger,
+        tokenB: SwapTokenModel
+    ): TextContainer {
+        val isBestPriceRoute = currentIndex == 0
+        return if (isBestPriceRoute) {
+            TextContainer(R.string.swap_settings_route_best)
+        } else {
+            val currentRouteOutAmount = currentRoute.outAmountInLamports
+            val outAmountDiff = (bestOutAmount - currentRouteOutAmount)
+                .fromLamports(tokenB.decimals)
+                .formatToken(tokenB.decimals)
+            val tokenSymbol = tokenB.tokenSymbol
+            TextContainer("-$outAmountDiff $tokenSymbol")
+        }
+    }
+
+    private fun formatRouteName(route: JupiterSwapRoute): TextContainer = buildString {
         route.marketInfos.forEachIndexed { index, marketInfo ->
             append(marketInfo.label)
             if (index != route.marketInfos.lastIndex) append(" + ")
         }
     }
+        .let { TextContainer(it) }
 
     private fun titleSkeleton(): TextViewCellModel.Skeleton = TextViewCellModel.Skeleton(
         skeleton = SkeletonCellModel(
