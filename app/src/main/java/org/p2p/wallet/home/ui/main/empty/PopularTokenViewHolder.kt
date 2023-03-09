@@ -64,6 +64,7 @@ class PopularTokenViewHolder(
         Constants.USDC_SYMBOL -> "USDC"
         "BTC" -> "Bitcoin"
         "ETH" -> "Ethereum"
-        else -> tokenName
+        else ->
+            if (tokenName == "Wrapped SOL") "Solana" else tokenName
     }
 }

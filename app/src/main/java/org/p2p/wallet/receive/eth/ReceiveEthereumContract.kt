@@ -1,12 +1,13 @@
-package org.p2p.wallet.receive.solana
+package org.p2p.wallet.receive.eth
 
 import android.graphics.Bitmap
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
-interface NewReceiveSolanaContract {
+interface ReceiveEthereumContract {
     interface View : MvpView {
-        fun initView(qrBitmap: Bitmap, username: String?, tokenAddress: String)
+        fun showQrAndAddress(qrBitmap: Bitmap, addressInHexString: String)
+
         fun showLoading(isLoading: Boolean)
     }
 

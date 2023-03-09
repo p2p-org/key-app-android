@@ -17,7 +17,7 @@ interface ReceiveTokensContract {
         fun resetView()
         fun showSelectNetworkDialog(tokensToShowNetworks: List<Token>)
         fun openReceiveInSolana(tokenData: TokenData)
-        fun openReceiveInEthereum()
+        fun openReceiveInEthereum(tokenData: TokenData)
     }
 
     interface Presenter : MvpPresenter<View> {
