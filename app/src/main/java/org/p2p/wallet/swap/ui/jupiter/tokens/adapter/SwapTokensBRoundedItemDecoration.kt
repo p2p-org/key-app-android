@@ -16,6 +16,7 @@ import org.p2p.uikit.utils.drawable.shape.shapeOutline
 import org.p2p.uikit.utils.drawable.shape.shapeRectangle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shape.shapeTopRounded
+import org.p2p.uikit.utils.recycler.decoration.groupedRoundingFinanceBlockDecoration
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
@@ -29,6 +30,7 @@ class SwapTokensBRoundedItemDecoration(
     private val shapeRounded: ShapeAppearanceModel = shapeRoundedAll(round)
     private val shapeBottomRounded: ShapeAppearanceModel = shapeBottomRounded(round)
     private val shapeRectangle: ShapeAppearanceModel = shapeRectangle()
+    private val groupedRounding = groupedRoundingFinanceBlockDecoration()
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         val currentViewHolder = parent.getChildViewHolder(view) as? FinanceBlockViewHolder ?: return
@@ -81,6 +83,11 @@ class SwapTokensBRoundedItemDecoration(
         val adapterPosition = viewHolder.layoutPosition
         val previousViewHolder = recyclerView.findViewHolderForLayoutPosition(adapterPosition - 1)
         val nextViewHolder = recyclerView.findViewHolderForAdapterPosition(adapterPosition + 1)
+
+        if (payload.isSearchResultItem) {
+            groupedRounding.roundItem(view, recyclerView)
+            return
+        }
 
         val shape = when {
             payload.hasPopularLabel -> selectShapeForPopularToken(

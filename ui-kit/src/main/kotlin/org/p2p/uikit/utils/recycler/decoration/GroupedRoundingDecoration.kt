@@ -38,7 +38,7 @@ class GroupedRoundingDecoration(
         }
     }
 
-    private fun roundItem(view: View, parent: RecyclerView) {
+    fun roundItem(view: View, parent: RecyclerView) {
         val adapter = parent.adapter ?: return
         val viewHolder = parent.getChildViewHolder(view) ?: return
         val items = adapter.getItems()
