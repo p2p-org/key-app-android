@@ -9,7 +9,6 @@ import android.content.res.ColorStateList
 import android.text.InputType
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
