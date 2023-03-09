@@ -20,7 +20,7 @@ fun roundingByCellFinanceBlockDecoration(@Px round: Float = 16f.toPx()) =
 
 class RoundingByCellDecoration(
     private val itemCellType: KClass<out AnyCellItem>,
-    @Px round: Float = 12f.toPx(),
+    @Px round: Float = 16f.toPx(),
 ) : RecyclerView.ItemDecoration() {
 
     private val shapeRounded: ShapeAppearanceModel = shapeRoundedAll(round)

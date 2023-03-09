@@ -69,7 +69,8 @@ class EthereumReceiveFragment :
                                 TextContainer.Raw(getString(R.string.receive_my_eth_address))
                             ),
                             secondLineText = TextViewCellModel.Raw(
-                                TextContainer.Raw(addressInHexString)
+                                TextContainer.Raw(addressInHexString),
+                                maxLines = 3
                             )
                         ),
                     )

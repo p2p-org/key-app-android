@@ -24,7 +24,7 @@ fun groupedRoundingFinanceBlockDecoration(@Px round: Float = 16f.toPx()) =
 
 class GroupedRoundingDecoration(
     private val itemCellType: KClass<out AnyCellItem>,
-    @Px round: Float = 12f.toPx(),
+    @Px round: Float = 16f.toPx(),
 ) : ItemDecoration() {
 
     private val shapeTopRounded: ShapeAppearanceModel = shapeTopRounded(round)
