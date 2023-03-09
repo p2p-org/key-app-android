@@ -10,7 +10,7 @@ sealed interface SwapWidgetModel {
         val widgetTitle: TextViewCellModel? = null,
         val availableAmount: TextViewCellModel? = null,
         val currencyName: TextViewCellModel? = null,
-        val amount: TextViewCellModel? = null,
+        val amount: TextViewCellModel,
         val amountMaxDecimals: Int? = null,
         val balance: TextViewCellModel,
         val fiatAmount: TextViewCellModel? = null

@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
 import com.google.android.material.shape.ShapeAppearanceModel
+import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.FinanceBlockViewHolder
 import org.p2p.uikit.components.finance_block.asFinanceCell
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
@@ -15,6 +16,7 @@ import org.p2p.uikit.utils.drawable.shape.shapeOutline
 import org.p2p.uikit.utils.drawable.shape.shapeRectangle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shape.shapeTopRounded
+import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensCellModelPayload
@@ -40,33 +42,27 @@ class SwapTokensBRoundedItemDecoration(
             return
         }
 
-        val adapterPosition = currentViewHolder.layoutPosition // fix position, bottom padding added only on scroll
-        val previousViewHolder = parent.findViewHolderForLayoutPosition(adapterPosition - 1)
-        val nextViewHolder = parent.findViewHolderForLayoutPosition(adapterPosition + 1)
+        val adapterPosition = parent.getChildAdapterPosition(view)
+        val adapter = parent.adapter ?: return
+        val items = adapter.getItems()
+        val previousCell = items.getOrNull(adapterPosition - 1) as? FinanceBlockCellModel
 
         val shouldCheckForBottomPadding = !currentItemPayload.hasPopularLabel
 
         if (shouldCheckForBottomPadding) {
-            addBottomPaddingToPopularGroup(
+            addTopPaddingToNotPopularGroup(
                 outRect = outRect,
-                previousViewHolder = previousViewHolder,
-                nextViewHolder = nextViewHolder
+                previousCell = previousCell,
             )
         }
     }
 
-    private fun addBottomPaddingToPopularGroup(
+    private fun addTopPaddingToNotPopularGroup(
         outRect: Rect,
-        previousViewHolder: RecyclerView.ViewHolder?,
-        nextViewHolder: RecyclerView.ViewHolder?
+        previousCell: FinanceBlockCellModel?,
     ) {
-        val prevTokenPayload = previousViewHolder.asFinanceCell
-            ?.getPayload<SwapTokensCellModelPayload>()
-        val nextTokenPayload = nextViewHolder.asFinanceCell
-            ?.getPayload<SwapTokensCellModelPayload>()
-
+        val prevTokenPayload = previousCell?.payload as? SwapTokensCellModelPayload
         val isPopularGroupFinished = prevTokenPayload?.hasPopularLabel == true
-
         if (isPopularGroupFinished) {
             outRect.top = 30
         }
