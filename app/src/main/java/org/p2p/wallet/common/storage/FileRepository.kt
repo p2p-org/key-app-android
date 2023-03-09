@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.repository
+package org.p2p.wallet.common.storage
 
 import android.content.Context
 import android.graphics.Bitmap

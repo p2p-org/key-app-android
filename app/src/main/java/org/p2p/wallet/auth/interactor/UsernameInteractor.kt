@@ -6,7 +6,7 @@ import android.graphics.Bitmap
 import timber.log.Timber
 import java.io.File
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
