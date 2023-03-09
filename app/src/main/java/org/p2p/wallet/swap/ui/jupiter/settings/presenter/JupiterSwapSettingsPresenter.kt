@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
@@ -67,16 +68,18 @@ class JupiterSwapSettingsPresenter(
             .addSlippageSettings(state)
         view?.bindSettingsList(contentList)
         when (state) {
-            SwapState.InitialLoading,
-            is SwapState.LoadingTransaction,
-            is SwapState.TokenAZero -> Unit
             is SwapState.LoadingRoutes -> {
                 rateTickerManager.handleRoutesLoading(state)
             }
             is SwapState.SwapLoaded -> {
                 rateTickerManager.handleJupiterRates(state)
             }
-            else -> Unit
+            is SwapState.SwapException -> {
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+            SwapState.InitialLoading,
+            is SwapState.LoadingTransaction,
+            is SwapState.TokenAZero -> Unit
         }
     }
 
@@ -154,6 +157,7 @@ class JupiterSwapSettingsPresenter(
             is SwapState.LoadingTransaction -> slippage
             is SwapState.SwapLoaded -> slippage
             is SwapState.TokenAZero -> slippage
+            is SwapState.TokenANotZero -> slippage
             is SwapState.SwapException -> previousFeatureState.getCurrentSlippage()
         }
     }
@@ -167,6 +171,9 @@ class JupiterSwapSettingsPresenter(
                 emptyList()
             }
             is SwapState.TokenAZero -> {
+                emptyMapper.mapEmptyList(tokenB = state.tokenB)
+            }
+            is SwapState.TokenANotZero -> {
                 emptyMapper.mapEmptyList(tokenB = state.tokenB)
             }
             is SwapState.LoadingRoutes -> {

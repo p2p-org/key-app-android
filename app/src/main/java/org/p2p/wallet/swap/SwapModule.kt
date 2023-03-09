@@ -54,6 +54,7 @@ import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateInitialLoadingH
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingRoutesHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingTransactionHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateSwapLoadedHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateTokenANotZeroHandler
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
 import org.p2p.wallet.swap.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.CommonSwapTokenSelector
@@ -238,6 +239,7 @@ object SwapModule : InjectionModule {
         factoryOf(::SwapStateLoadingTransactionHandler)
         factoryOf(::SwapStateSwapLoadedHandler)
         factoryOf(::SwapStateTokenAZeroHandler)
+        factoryOf(::SwapStateTokenANotZeroHandler)
 
         factory<Set<SwapStateHandler>> { (initialToken: Token.Active?) ->
             setOf(
@@ -245,7 +247,8 @@ object SwapModule : InjectionModule {
                 get<SwapStateLoadingRoutesHandler>(),
                 get<SwapStateLoadingTransactionHandler>(),
                 get<SwapStateSwapLoadedHandler>(),
-                get<SwapStateTokenAZeroHandler>()
+                get<SwapStateTokenAZeroHandler>(),
+                get<SwapStateTokenANotZeroHandler>(),
             )
         }
         factoryOf(::SwapTokenRateLoader)
@@ -261,6 +264,7 @@ object SwapModule : InjectionModule {
                     handlers = handlers,
                     selectedSwapTokenStorage = get(),
                     tokenPricesRepository = get(),
+                    swapValidator = get(),
                 )
             }
         }
@@ -272,6 +276,7 @@ object SwapModule : InjectionModule {
                 homeLocalRepository = get(),
                 swapTokensRepository = get(),
                 swapRoutesRepository = get(),
+                jupiterSwapInteractor = get(),
                 swapStateManager = getSwapStateManager(
                     initialToken = null,
                     stateManagerHolderKey = stateManagerHolderKey

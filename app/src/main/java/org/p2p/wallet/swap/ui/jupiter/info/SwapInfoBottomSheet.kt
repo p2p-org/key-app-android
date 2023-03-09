@@ -139,6 +139,7 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
         return when (state) {
             SwapState.InitialLoading,
             is SwapState.LoadingRoutes,
+            is SwapState.TokenANotZero,
             is SwapState.TokenAZero -> flowOf(mapper.mapEmptyLiquidityFee())
             is SwapState.SwapException -> handleFeatureState(state.previousFeatureState, tokens)
             is SwapState.SwapLoaded -> {

@@ -10,9 +10,9 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.EditText
 import android.widget.TextView
-import org.p2p.core.common.TextContainer
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.utils.DEFAULT_DECIMAL
+import org.p2p.core.utils.emptyString
 import org.p2p.uikit.utils.drawable.shape.shapeRounded16dp
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.focusAndShowKeyboard
@@ -32,6 +32,7 @@ class SwapWidget @JvmOverloads constructor(
     private val binding = inflateViewBinding<WidgetSwapBinding>()
     private val initInputType: Int
     private var internalOnAmountChanged: ((newAmount: String) -> Unit)? = null
+    private var currentAmountCell: TextViewCellModel? = null
     var onAmountChanged: (newAmount: String) -> Unit = {}
     var onAllAmountClick: () -> Unit = {}
     var onChangeTokenClick: () -> Unit = {}
@@ -73,7 +74,7 @@ class SwapWidget @JvmOverloads constructor(
         textViewCurrencyName.bindOrGone(model.currencySkeleton)
         textViewCurrencyName.setOnClickListener(null)
         textViewChangeCurrency.setOnClickListener(null)
-        bindInput(model, model.amountSkeleton)
+        bindLoadingInput(model.amountSkeleton)
         textViewBalance.bindOrGone(model.balanceSkeleton)
         textViewFiatAmount.isVisible = false
     }
@@ -88,29 +89,44 @@ class SwapWidget @JvmOverloads constructor(
         textViewCurrencyName.setOnClickListener { onChangeTokenClick() }
         textViewChangeCurrency.setOnClickListener { onChangeTokenClick() }
         textViewCurrencyName.bindOrGone(model.currencyName)
-        bindInput(model, model.amount)
+        if (model.amount is TextViewCellModel.Skeleton) {
+            bindLoadingInput(model.amount)
+        } else {
+            bindInput(model, model.amount)
+        }
         textViewBalance.bindOrGone(model.balance)
         textViewFiatAmount.bindOrGone(model.fiatAmount)
     }
 
-    private fun bindInput(model: SwapWidgetModel, amount: TextViewCellModel?) = with(binding) {
-        val isStatic = when (model) {
-            is SwapWidgetModel.Content -> model.isStatic
-            is SwapWidgetModel.Loading -> model.isStatic
-        }
-        val readOnly = isStatic || model is SwapWidgetModel.Loading
+    private fun bindInput(model: SwapWidgetModel.Content, newAmount: TextViewCellModel) = with(binding) {
+        val readOnly = model.isStatic || newAmount is TextViewCellModel.Skeleton
         val inputType = if (readOnly) InputType.TYPE_NULL else initInputType
         editTextAmount.setReadOnly(readOnly, inputType)
-        val amountMaxDecimals = when (model) {
-            is SwapWidgetModel.Content -> model.amountMaxDecimals ?: DEFAULT_DECIMAL
-            is SwapWidgetModel.Loading -> DEFAULT_DECIMAL
-        }
-        internalOnAmountChanged = null
+        val amountMaxDecimals = model.amountMaxDecimals ?: DEFAULT_DECIMAL
         updateFormatter(amountMaxDecimals)
-        editTextAmount.bindOrGone(amount ?: TextViewCellModel.Raw(text = TextContainer("")))
-        editTextAmount.selectionEnd
-        editTextAmount.setSelection(editTextAmount.text.length)
-        internalOnAmountChanged = { onAmountChanged(it) }
+        val newAmountRaw = (newAmount as? TextViewCellModel.Raw)?.text?.getString(context)
+        val oldAMountRaw = editTextAmount.text?.toString() ?: emptyString()
+        val newTextColorRes = (newAmount as? TextViewCellModel.Raw)?.textColor
+        val oldTextColorRes = (currentAmountCell as? TextViewCellModel.Raw)?.textColor
+        if (currentAmountCell is TextViewCellModel.Skeleton ||
+            newAmountRaw != oldAMountRaw ||
+            newTextColorRes != oldTextColorRes
+        ) {
+            internalOnAmountChanged = null
+            editTextAmount.bindOrGone(newAmount)
+            currentAmountCell = newAmount
+            editTextAmount.setSelection(editTextAmount.text.length)
+            internalOnAmountChanged = { onAmountChanged(it) }
+        }
+    }
+
+    private fun bindLoadingInput(skeleton: TextViewCellModel.Skeleton) = with(binding) {
+        val readOnly = true
+        val inputType = InputType.TYPE_NULL
+        editTextAmount.setReadOnly(readOnly, inputType)
+        internalOnAmountChanged = null
+        editTextAmount.bindOrGone(skeleton)
+        currentAmountCell = skeleton
     }
 
     private fun EditText.setReadOnly(readOnly: Boolean, inputType: Int = InputType.TYPE_NULL) {

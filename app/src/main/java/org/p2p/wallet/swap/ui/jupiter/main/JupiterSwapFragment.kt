@@ -128,9 +128,6 @@ class JupiterSwapFragment :
     }
 
     private fun setupWidgetsActionCallbacks() = with(binding) {
-        if (openedFrom != SwapOpenedFrom.BOTTOM_NAVIGATION) {
-            swapWidgetFrom.focusAndShowKeyboard()
-        }
         swapWidgetFrom.onAmountChanged = presenter::onTokenAmountChange
         swapWidgetFrom.onAllAmountClick = presenter::onAllAmountClick
         swapWidgetFrom.onChangeTokenClick = presenter::onChangeTokenAClick
@@ -310,6 +307,6 @@ class JupiterSwapFragment :
     }
 
     override fun showKeyboard() {
-        if (openedFrom != SwapOpenedFrom.MAIN_SCREEN) binding.swapWidgetTo.focusAndShowKeyboard()
+        if (openedFrom != SwapOpenedFrom.BOTTOM_NAVIGATION) binding.swapWidgetTo.focusAndShowKeyboard()
     }
 }

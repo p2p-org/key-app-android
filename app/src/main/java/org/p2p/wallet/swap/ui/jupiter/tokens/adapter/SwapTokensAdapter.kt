@@ -7,13 +7,14 @@ import org.p2p.uikit.components.finance_block.FinanceBlockViewHolder
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderViewHolder
+import org.p2p.uikit.utils.recycler.CustomBaseAdapter
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensCellModelPayload
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class SwapTokensAdapter(
     private val onTokenClicked: (SwapTokenModel) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), CustomBaseAdapter {
 
     private val items = mutableListOf<AnyCellItem>()
 
@@ -55,4 +56,5 @@ class SwapTokensAdapter(
     }
 
     override fun getItemCount(): Int = items.size
+    override fun getItems(): List<AnyCellItem> = items
 }

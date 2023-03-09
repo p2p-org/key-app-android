@@ -17,6 +17,13 @@ sealed interface SwapState {
         val slippage: Slippage
     ) : SwapState
 
+    data class TokenANotZero(
+        val tokenA: SwapTokenModel,
+        val tokenB: SwapTokenModel,
+        val amountTokenA: BigDecimal,
+        val slippage: Slippage
+    ) : SwapState
+
     data class LoadingRoutes(
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
