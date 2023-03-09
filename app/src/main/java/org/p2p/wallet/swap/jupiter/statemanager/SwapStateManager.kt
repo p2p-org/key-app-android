@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
+import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
@@ -37,6 +38,7 @@ class SwapStateManager(
     private val selectedSwapTokenStorage: JupiterSwapStorageContract,
     private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val swapValidator: SwapValidator,
+    private val analytics: JupiterSwapMainScreenAnalytics,
 ) : CoroutineScope {
 
     companion object {
@@ -96,6 +98,8 @@ class SwapStateManager(
             } catch (featureException: SwapFeatureException) {
                 if (featureException is SwapFeatureException.RoutesNotFound) {
                     Timber.tag(TAG).e(featureException)
+                    // retry to find routes
+                    startRefreshJob()
                 } else {
                     Timber.tag(TAG).i(featureException)
                 }
@@ -195,6 +199,7 @@ class SwapStateManager(
         val oldTokenA = oldTokenAZeroState.tokenA
         val oldTokenB = oldTokenAZeroState.tokenB
         state.value = oldTokenAZeroState.copy(tokenA = oldTokenB, tokenB = oldTokenA)
+        analytics.logTokensSwitchClicked(newTokenA = oldTokenB, newTokenB = oldTokenA)
         if (oldTokenBAmount.isNotZero()) onNewAction(SwapStateAction.TokenAAmountChanged(oldTokenBAmount))
         return true
     }

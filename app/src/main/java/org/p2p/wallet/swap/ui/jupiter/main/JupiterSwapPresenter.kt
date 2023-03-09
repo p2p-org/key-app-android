@@ -534,7 +534,9 @@ class JupiterSwapPresenter(
 
     private fun updateWidgets() {
         view?.setFirstTokenWidgetState(state = widgetAState)
-        if (needToShowKeyboard && widgetAState !is SwapWidgetModel.Loading) {
+        if (needToShowKeyboard &&
+            (widgetAState as? SwapWidgetModel.Content)?.amount is TextViewCellModel.Raw
+        ) {
             view?.showKeyboard()
             needToShowKeyboard = false
         }
