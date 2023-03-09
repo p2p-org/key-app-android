@@ -1,16 +1,19 @@
 package org.p2p.wallet.swap.jupiter.statemanager.handler
 
+import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapMainScreenAnalytics
+import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_ACTIVE_ROUTE_ORDINAL
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
-import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
+import org.p2p.wallet.swap.model.Slippage
 
 class SwapStateTokenANotZeroHandler(
     private val swapRoutesRefresher: SwapStateRoutesRefresher,
-    private val swapValidator: SwapValidator,
+    private val selectedTokensStorage: JupiterSwapStorageContract,
     private val analytics: JupiterSwapMainScreenAnalytics
 ) : SwapStateHandler {
 
@@ -23,46 +26,45 @@ class SwapStateTokenANotZeroHandler(
     ) {
         val oldState = state as SwapState.TokenANotZero
 
+        var tokenA: SwapTokenModel = oldState.tokenA
+        var tokenB: SwapTokenModel = oldState.tokenB
+        var amountTokenA: BigDecimal = oldState.amountTokenA
+        var slippage: Slippage = oldState.slippage
+        var activeRouteOrdinal = DEFAULT_ACTIVE_ROUTE_ORDINAL
+
         when (action) {
-            is SwapStateAction.SlippageChanged -> {
-                stateFlow.value = oldState.copy(slippage = action.newSlippageValue)
+            is SwapStateAction.SlippageChanged -> slippage = action.newSlippageValue
+            SwapStateAction.SwitchTokens -> {
+                tokenA = oldState.tokenB
+                tokenB = oldState.tokenA
+                analytics.logTokensSwitchClicked(tokenA, tokenB)
             }
-            is SwapStateAction.TokenAAmountChanged -> {
-                swapRoutesRefresher.refreshRoutes(
-                    state = stateFlow,
-                    tokenA = oldState.tokenA,
-                    tokenB = oldState.tokenB,
-                    amountTokenA = action.newAmount,
-                    slippage = oldState.slippage,
-                    activeRouteIndex = DEFAULT_ACTIVE_ROUTE_ORDINAL
-                )
-            }
-            is SwapStateAction.TokenAChanged -> {
-                stateFlow.value = oldState.copy(tokenA = action.newTokenA)
-                swapValidator.validateIsSameTokens(tokenA = action.newTokenA, tokenB = oldState.tokenB)
-            }
-            is SwapStateAction.TokenBChanged -> {
-                stateFlow.value = oldState.copy(tokenB = action.newTokenB)
-                swapValidator.validateIsSameTokens(tokenA = oldState.tokenA, tokenB = action.newTokenB)
+            is SwapStateAction.TokenAAmountChanged -> amountTokenA = action.newAmount
+            is SwapStateAction.TokenAChanged -> tokenA = action.newTokenA
+            is SwapStateAction.TokenBChanged -> tokenB = action.newTokenB
+            is SwapStateAction.ActiveRouteChanged -> activeRouteOrdinal = action.ordinalRouteNumber
+            SwapStateAction.RefreshRoutes -> activeRouteOrdinal = DEFAULT_ACTIVE_ROUTE_ORDINAL
+
+            SwapStateAction.EmptyAmountTokenA -> {
+                stateFlow.value = SwapState.TokenAZero(tokenA, tokenB, slippage)
+                return
             }
             SwapStateAction.InitialLoading -> {
                 stateFlow.value = SwapState.InitialLoading
+                return
             }
-
-            SwapStateAction.SwitchTokens -> {
-                val tokenA = oldState.tokenA
-                val tokenB = oldState.tokenB
-                analytics.logTokensSwitchClicked(tokenA, tokenB)
-
-                stateFlow.value = oldState.copy(
-                    tokenA = tokenB,
-                    tokenB = tokenA,
-                )
-            }
-            SwapStateAction.RefreshRoutes,
-            SwapStateAction.EmptyAmountTokenA,
-            is SwapStateAction.ActiveRouteChanged,
             SwapStateAction.CancelSwapLoading -> return
         }
+        selectedTokensStorage.savedTokenAMint = tokenA.mintAddress
+        selectedTokensStorage.savedTokenBMint = tokenB.mintAddress
+
+        swapRoutesRefresher.refreshRoutes(
+            state = stateFlow,
+            tokenA = tokenA,
+            tokenB = tokenB,
+            amountTokenA = amountTokenA,
+            slippage = slippage,
+            activeRouteIndex = activeRouteOrdinal
+        )
     }
 }

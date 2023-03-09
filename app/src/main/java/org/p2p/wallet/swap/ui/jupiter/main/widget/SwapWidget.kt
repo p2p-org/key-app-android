@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.ui.jupiter.main.widget
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
 import android.text.InputType
@@ -13,6 +14,7 @@ import android.widget.TextView
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.emptyString
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.drawable.shape.shapeRounded16dp
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.focusAndShowKeyboard
@@ -48,6 +50,10 @@ class SwapWidget @JvmOverloads constructor(
             editTextAmount.doAfterTextChanged { resizeInput(it) }
             viewEditTextClickable.setOnClickListener {
                 if (isEnabled) editTextAmount.focusAndShowKeyboard(true)
+            }
+            editTextAmount.onFocusChangeListener = OnFocusChangeListener { v, hasFocus ->
+                val activity = (context as? Activity)
+                if (activity != null && activity.currentFocus == null && !hasFocus) v.hideKeyboard()
             }
 
             editTextAmount.setOnClickListener { onInputClicked() }

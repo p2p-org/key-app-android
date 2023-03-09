@@ -267,6 +267,7 @@ object SwapModule : InjectionModule {
                     selectedSwapTokenStorage = get(),
                     tokenPricesRepository = get(),
                     swapValidator = get(),
+                    analytics = get(),
                 )
             }
         }
