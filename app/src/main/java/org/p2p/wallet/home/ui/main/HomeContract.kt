@@ -24,9 +24,6 @@ interface HomeContract {
         fun showNewSendScreen()
         fun showActionButtons(buttons: List<ActionButton>)
 
-        fun showReceiveSolanaScreen()
-        fun showReceiveTokensScreen()
-
         fun navigateToProfile()
         fun navigateToReserveUsername()
         fun showAddressCopied(addressAndUsername: String)
@@ -37,7 +34,6 @@ interface HomeContract {
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun onBuyClicked()
-        fun onReceiveClicked()
         fun onSendClicked()
         fun onBuyTokenClicked(token: Token)
         fun onInfoBuyTokenClicked(token: Token)

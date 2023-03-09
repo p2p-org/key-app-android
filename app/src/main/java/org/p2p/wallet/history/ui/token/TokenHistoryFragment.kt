@@ -18,9 +18,8 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.receive.token.ReceiveTokenFragment
-import org.p2p.wallet.receive.tokenselect.ReceiveTokensFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
@@ -54,6 +53,7 @@ class TokenHistoryFragment :
     private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
 
     private val swapFragmentFactory: SwapFragmentFactory by inject()
+    private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -112,7 +112,7 @@ class TokenHistoryFragment :
             }
             ActionButton.RECEIVE_BUTTON -> {
                 receiveAnalytics.logTokenReceiveViewed(tokenForHistory.tokenName)
-                presenter.onReceiveClicked()
+                replaceFragment(receiveFragmentFactory.receiveFragment(token = tokenForHistory))
             }
             ActionButton.SEND_BUTTON -> {
                 replaceFragment(NewSearchFragment.create(tokenForHistory))
@@ -143,13 +143,5 @@ class TokenHistoryFragment :
 
     override fun openSellTransactionDetails(transactionId: String) {
         SellTransactionDetailsBottomSheet.show(childFragmentManager, transactionId)
-    }
-
-    override fun showReceiveTokenScreen() {
-        replaceFragment(ReceiveTokenFragment.create(tokenForHistory))
-    }
-
-    override fun showReceiveTokensScreen() {
-        replaceFragment(ReceiveTokensFragment.create())
     }
 }

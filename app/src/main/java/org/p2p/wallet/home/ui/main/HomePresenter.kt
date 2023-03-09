@@ -193,14 +193,6 @@ class HomePresenter(
         }
     }
 
-    override fun onReceiveClicked() {
-        if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            view?.showReceiveTokensScreen()
-        } else {
-            view?.showReceiveSolanaScreen()
-        }
-    }
-
     override fun onBuyTokenClicked(token: Token) {
         if (token.tokenSymbol !in TOKEN_SYMBOLS_VALID_FOR_BUY) {
             view?.showBuyInfoScreen(token)
