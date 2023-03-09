@@ -17,11 +17,6 @@ class ReceiveEthereumPresenter(
         launch {
             try {
                 view?.showLoading(isLoading = true)
-                ethereumRepository.init(
-                    seedPhrase = "apart approve black comfort steel spin real renew tone primary key cherry".split(
-                        " "
-                    )
-                )
                 val tokenAddressInHexString = ethereumRepository.getAddress().hex
                 val qr = qrCodeInteractor.generateQrCode(tokenAddressInHexString)
                 view?.showQrAndAddress(qr, tokenAddressInHexString)
