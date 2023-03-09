@@ -1,6 +1,6 @@
 package org.p2p.wallet.receive.tokenselect
 
-import timber.log.Timber
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -33,6 +33,7 @@ class ReceiveTokensPresenter(
     private var ethToken: Token? = null
 
     private var lastSelectedTokenPayload: ReceiveTokenPayload? = null
+    private var searchJob: Job? = null
 
     private val tokensFlow = MutableStateFlow<List<AnyCellItem>>(emptyList())
 
@@ -67,7 +68,8 @@ class ReceiveTokensPresenter(
     }
 
     override fun onSearchTokenQueryChanged(newQuery: String) {
-        launch {
+        searchJob?.cancel()
+        searchJob = launch {
             delay(300L)
             searchText = newQuery
             if (newQuery.isBlank()) {
@@ -109,7 +111,6 @@ class ReceiveTokensPresenter(
     private fun observeTokens() {
         launch {
             interactor.getTokenListFlow().distinctUntilChanged().collectLatest { data ->
-                Timber.tag("____data").d("data size = ${data.size}")
                 val isEmpty = data.result.isEmpty()
                 view?.showEmptyState(isEmpty)
                 view?.setBannerVisibility(!isEmpty && searchText.isEmpty())
