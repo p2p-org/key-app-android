@@ -29,7 +29,6 @@
             android:layout_width="220dp"
             android:layout_height="220dp"
             android:layout_gravity="center"
-            android:background="@drawable/bg_circle"
             tools:ignore="ContentDescription"
             tools:src="@tools:sample/avatars" />
 

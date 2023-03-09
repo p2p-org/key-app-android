@@ -184,7 +184,6 @@ class ReceiveTokensFragment :
     override fun openReceiveInSolana(tokenData: TokenData) = with(tokenData) {
         replaceFragment(
             NewReceiveSolanaFragment.create(
-                solAddress = mintAddress, // TODO make this address wallet sol address!
                 logoUrl = iconUrl.orEmpty(),
                 tokenSymbol = symbol
             )

@@ -15,7 +15,6 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-private const val ARG_SOL_ADDRESS = "ARG_SOL_ADDRESS"
 private const val ARG_TOKEN_LOGO_URL = "ARG_TOKEN_LOGO_URL"
 private const val ARG_TOKEN_SYMBOL = "ARG_TOKEN_SYMBOL"
 
@@ -26,9 +25,8 @@ class NewReceiveSolanaFragment :
     NewReceiveSolanaContract.View {
 
     companion object {
-        fun create(solAddress: String, logoUrl: String, tokenSymbol: String) = NewReceiveSolanaFragment()
+        fun create(logoUrl: String, tokenSymbol: String) = NewReceiveSolanaFragment()
             .withArgs(
-                ARG_SOL_ADDRESS to solAddress,
                 ARG_TOKEN_LOGO_URL to logoUrl,
                 ARG_TOKEN_SYMBOL to tokenSymbol
             )
@@ -37,7 +35,6 @@ class NewReceiveSolanaFragment :
     override val presenter: NewReceiveSolanaContract.Presenter by inject()
     private val binding: FragmentNewReceiveSolanaBinding by viewBinding()
     private val glideManager: GlideManager by inject()
-    private val tokenAddress: String by args(ARG_SOL_ADDRESS)
     private val logoUrl: String by args(ARG_TOKEN_LOGO_URL)
     private val tokenSymbol: String by args(ARG_TOKEN_SYMBOL)
 
@@ -46,9 +43,20 @@ class NewReceiveSolanaFragment :
         with(binding) {
             toolbar.title = getString(R.string.receive_on_solana, tokenSymbol)
             toolbar.setNavigationOnClickListener { popBackStack() }
-            textViewAddress.text = tokenAddress
             glideManager.load(imageViewWatermark, logoUrl)
 
+            layoutUsername.setOnClickListener {
+                val username = binding.textViewUsername.text.toString()
+                if (username.isEmpty()) return@setOnClickListener
+                requireContext().copyToClipBoard(username)
+                showUiKitSnackBar(messageResId = R.string.receive_username_copied)
+            }
+        }
+        presenter.load()
+    }
+
+    override fun initView(qrBitmap: Bitmap, username: String?, tokenAddress: String) {
+        with(binding) {
             buttonAction.setOnClickListener {
                 requireContext().copyToClipBoard(tokenAddress)
                 showUiKitSnackBar(messageResId = R.string.receive_sol_address_copied)
@@ -57,19 +65,10 @@ class NewReceiveSolanaFragment :
                 requireContext().copyToClipBoard(tokenAddress)
                 showUiKitSnackBar(messageResId = R.string.receive_sol_address_copied)
             }
-            layoutUsername.setOnClickListener {
-                val username = binding.textViewUsername.text.toString()
-                if (username.isEmpty()) return@setOnClickListener
-                requireContext().copyToClipBoard(username)
-                showUiKitSnackBar(messageResId = R.string.receive_username_copied)
-            }
+            textViewAddress.text = tokenAddress
+            binding.imageViewQr.setImageBitmap(qrBitmap)
+            showUsername(username)
         }
-        presenter.loadQr(tokenAddress)
-    }
-
-    override fun showQrAndUsername(qrBitmap: Bitmap, username: String?) {
-        binding.imageViewQr.setImageBitmap(qrBitmap)
-        showUsername(username)
     }
 
     override fun showLoading(isLoading: Boolean) {
