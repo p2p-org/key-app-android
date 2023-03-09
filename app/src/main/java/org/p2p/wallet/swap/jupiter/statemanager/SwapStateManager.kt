@@ -169,7 +169,8 @@ class SwapStateManager(
             is SwapState.SwapException.OtherException ->
                 checkInNotLoadingOldNoErrorState(
                     actualNoErrorState.previousFeatureState,
-                    actualNoErrorState.exception)
+                    actualNoErrorState.exception
+                )
         }
     }
 
