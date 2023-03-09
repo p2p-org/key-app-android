@@ -149,6 +149,14 @@ class HomeFragment :
         binding.viewActionButtons.showActionButtons(buttons)
     }
 
+    override fun showReceiveSolanaScreen() {
+        replaceFragment(ReceiveSolanaFragment.create(token = null))
+    }
+
+    override fun showReceiveTokensScreen() {
+        replaceFragment(ReceiveTokensFragment.create())
+    }
+
     private fun FragmentHomeBinding.setupView() {
         layoutToolbar.setupToolbar()
 
@@ -185,7 +193,7 @@ class HomeFragment :
                 presenter.onBuyClicked()
             }
             ActionButton.RECEIVE_BUTTON -> {
-                replaceFragment(ReceiveTokensFragment.create())
+                presenter.onReceiveClicked()
             }
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked()

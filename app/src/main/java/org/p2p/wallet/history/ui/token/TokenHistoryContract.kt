@@ -13,6 +13,9 @@ interface TokenHistoryContract {
         fun showError(@StringRes resId: Int, argument: String)
         fun showDetailsScreen(transactionId: String)
         fun openSellTransactionDetails(transactionId: String)
+
+        fun showReceiveTokenScreen()
+        fun showReceiveTokensScreen()
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
@@ -20,5 +23,6 @@ interface TokenHistoryContract {
 
         fun onTransactionClicked(transactionId: String)
         fun onSellTransactionClicked(transactionId: String)
+        fun onReceiveClicked()
     }
 }
