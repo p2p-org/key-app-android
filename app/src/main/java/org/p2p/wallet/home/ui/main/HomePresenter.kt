@@ -13,9 +13,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
-import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.BTC_COINGECKO_ID
+import org.p2p.core.utils.Constants.BTC_SYMBOL
+import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
+import org.p2p.core.utils.Constants.ETH_SYMBOL
+import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
 import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDC_SYMBOL
+import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
 import org.p2p.ethereumkit.external.repository.EthereumRepository
@@ -47,12 +53,12 @@ import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
 
-val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, Constants.BTC_SYMBOL, Constants.ETH_SYMBOL, Constants.USDT_SYMBOL)
+val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
-    Constants.SOL_COINGECKO_ID,
-    Constants.BTC_COINGECKO_ID,
-    Constants.ETH_COINGECKO_ID,
-    Constants.USDC_COINGECKO_ID
+    SOL_COINGECKO_ID,
+    BTC_COINGECKO_ID,
+    ETH_COINGECKO_ID,
+    USDC_COINGECKO_ID
 ).map { TokenId(it) }
 val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
