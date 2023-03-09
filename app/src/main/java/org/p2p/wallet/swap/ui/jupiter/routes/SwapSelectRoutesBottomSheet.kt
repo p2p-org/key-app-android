@@ -79,6 +79,7 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
     private fun getRoutesList(state: SwapState): List<AnyCellItem> = when (state) {
         SwapState.InitialLoading,
         is SwapState.TokenAZero,
+        is SwapState.TokenANotZero,
         is SwapState.LoadingRoutes -> mapper.mapLoadingList()
         is SwapState.LoadingTransaction -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)
         is SwapState.SwapLoaded -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)

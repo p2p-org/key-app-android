@@ -157,6 +157,7 @@ class JupiterSwapSettingsPresenter(
             is SwapState.LoadingTransaction -> slippage
             is SwapState.SwapLoaded -> slippage
             is SwapState.TokenAZero -> slippage
+            is SwapState.TokenANotZero -> slippage
             is SwapState.SwapException -> previousFeatureState.getCurrentSlippage()
         }
     }
@@ -170,6 +171,9 @@ class JupiterSwapSettingsPresenter(
                 emptyList()
             }
             is SwapState.TokenAZero -> {
+                emptyMapper.mapEmptyList(tokenB = state.tokenB)
+            }
+            is SwapState.TokenANotZero -> {
                 emptyMapper.mapEmptyList(tokenB = state.tokenB)
             }
             is SwapState.LoadingRoutes -> {
