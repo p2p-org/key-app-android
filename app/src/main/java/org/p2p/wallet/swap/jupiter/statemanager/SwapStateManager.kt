@@ -13,12 +13,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
+import org.p2p.wallet.swap.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
@@ -34,6 +36,7 @@ class SwapStateManager(
     private val dispatchers: CoroutineDispatchers,
     private val selectedSwapTokenStorage: JupiterSwapStorageContract,
     private val tokenPricesRepository: TokenPricesRemoteRepository,
+    private val swapValidator: SwapValidator,
 ) : CoroutineScope {
 
     companion object {
@@ -96,14 +99,16 @@ class SwapStateManager(
                 } else {
                     Timber.tag(TAG).i(featureException)
                 }
+                val actualStaticState = checkInNotLoadingOldNoErrorState(actualNoErrorState(), featureException)
                 state.value = SwapState.SwapException.FeatureExceptionWrapper(
-                    previousFeatureState = actualNoErrorState(),
+                    previousFeatureState = actualStaticState,
                     featureException = featureException,
                 )
             } catch (exception: Throwable) {
                 Timber.e(exception)
+                val actualStaticState = checkInNotLoadingOldNoErrorState(actualNoErrorState(), exception)
                 state.value = SwapState.SwapException.OtherException(
-                    previousFeatureState = actualNoErrorState(),
+                    previousFeatureState = actualStaticState,
                     exception = exception,
                     lastSwapStateAction = lastSwapStateAction,
                 )
@@ -126,7 +131,7 @@ class SwapStateManager(
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
-                // todo ignore?
+                if (isActive) startRefreshJob()
             }
         }
     }
@@ -139,9 +144,48 @@ class SwapStateManager(
         return currentState
     }
 
+    private fun checkInNotLoadingOldNoErrorState(actualNoErrorState: SwapState, exception: Throwable): SwapState {
+        return when (actualNoErrorState) {
+            SwapState.InitialLoading,
+            is SwapState.TokenANotZero,
+            is SwapState.TokenAZero,
+            is SwapState.SwapLoaded -> actualNoErrorState
+            is SwapState.LoadingRoutes -> SwapState.TokenANotZero(
+                tokenA = actualNoErrorState.tokenA,
+                tokenB = actualNoErrorState.tokenB,
+                amountTokenA = actualNoErrorState.amountTokenA,
+                slippage = actualNoErrorState.slippage,
+            )
+            is SwapState.LoadingTransaction -> SwapState.TokenANotZero(
+                tokenA = actualNoErrorState.tokenA,
+                tokenB = actualNoErrorState.tokenB,
+                amountTokenA = actualNoErrorState.amountTokenA,
+                slippage = actualNoErrorState.slippage,
+            )
+            is SwapState.SwapException.FeatureExceptionWrapper ->
+                checkInNotLoadingOldNoErrorState(
+                    actualNoErrorState.previousFeatureState,
+                    actualNoErrorState.featureException
+                )
+            is SwapState.SwapException.OtherException ->
+                checkInNotLoadingOldNoErrorState(
+                    actualNoErrorState.previousFeatureState,
+                    actualNoErrorState.exception
+                )
+        }
+    }
+
     private fun handleTokenAChange(newTokenA: SwapTokenModel): Boolean {
         val oldTokenAZeroState = getOldTokenAZeroState(state.value) ?: return false
         state.value = oldTokenAZeroState.copy(tokenA = newTokenA)
+        try {
+            swapValidator.validateIsSameTokens(tokenA = newTokenA, tokenB = oldTokenAZeroState.tokenB)
+        } catch (featureException: SwapFeatureException.SameTokens) {
+            state.value = SwapState.SwapException.FeatureExceptionWrapper(
+                previousFeatureState = oldTokenAZeroState,
+                featureException = featureException,
+            )
+        }
         return true
     }
 
@@ -170,13 +214,15 @@ class SwapStateManager(
             is SwapState.LoadingTransaction -> with(state) { mapState(tokenA, tokenB, slippage) }
             is SwapState.SwapLoaded -> with(state) { mapState(tokenA, tokenB, slippage) }
             is SwapState.SwapException -> getOldTokenAZeroState(state.previousFeatureState)
+            is SwapState.TokenANotZero -> with(state) { mapState(tokenA, tokenB, slippage) }
         }
     }
 
     private fun getOldTokenBAmount(state: SwapState): BigDecimal? {
         return when (state) {
             SwapState.InitialLoading,
-            is SwapState.TokenAZero -> null
+            is SwapState.TokenAZero,
+            is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes -> null
             is SwapState.LoadingTransaction -> state.amountTokenB
             is SwapState.SwapLoaded -> state.amountTokenB
