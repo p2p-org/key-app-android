@@ -97,7 +97,7 @@ class App : Application(), Configuration.Provider {
     }
 
     private fun setupWorkManager() {
-        WorkManager.initialize(this, Configuration.Builder().build())
+        WorkManager.initialize(this, workManagerConfiguration)
     }
 
     private fun setupTimber() {
