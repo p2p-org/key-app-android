@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class SwapTransactionBottomSheetData(
     val date: Date,
-    val amountUsd: String,
+    val formattedAmountUsd: String?,
     val tokenA: SwapTransactionBottomSheetToken,
     val tokenB: SwapTransactionBottomSheetToken
 ) : Parcelable

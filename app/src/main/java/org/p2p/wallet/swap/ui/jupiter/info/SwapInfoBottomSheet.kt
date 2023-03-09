@@ -185,7 +185,7 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
         tokens: List<SwapTokenModel>,
         loadingCell: FinanceBlockCellModel,
     ): Flow<LoadRateBox> {
-        val lpToken = tokens.find { it.mintAddress == marketInfo.lpFee.mint }
+        val lpToken = tokens.find { it.mintAddress == marketInfo.liquidityFee.mint }
         val loadingCellFlow = flowOf(marketInfo to loadingCell)
         val rateLoaderFlow = lpToken?.let { stateManager.getTokenRate(lpToken) }
             ?: flowOf(SwapRateLoaderState.Error)
