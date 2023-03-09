@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -130,7 +131,7 @@ class SwapStateManager(
                 }
             } catch (e: Throwable) {
                 Timber.e(e)
-                // todo ignore?
+                if (isActive) startRefreshJob()
             }
         }
     }
