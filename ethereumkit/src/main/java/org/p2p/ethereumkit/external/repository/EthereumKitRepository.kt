@@ -34,7 +34,7 @@ internal class EthereumKitRepository(
     }
 
     override suspend fun getBalance(): BigInteger {
-        val publicKey = tokenKeyProvider?.publicKey ?: error("init function wasn't called")
+        val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
         return balanceRepository.getWalletBalance(publicKey)
     }
 
@@ -47,13 +47,17 @@ internal class EthereumKitRepository(
         return@withContext walletTokens.map { EthTokenConverter.ethMetadataToToken(it) }
     }
 
+    override suspend fun getAddress(): EthAddress {
+        return tokenKeyProvider?.publicKey ?: throwInitError()
+    }
+
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {
         return priceRepository.getTokenPrice(tokenAddresses = tokenAddresses)
             .mapValues { it.value.priceInUsd }
     }
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
-        val publicKey = tokenKeyProvider?.publicKey ?: error("init function wasn't called")
+        val publicKey = tokenKeyProvider?.publicKey ?: error("")
         val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
         return@withContext balanceRepository.getTokenBalances(address = publicKey, tokenAddresses = tokenAddresses)
             .balances
@@ -66,4 +70,7 @@ internal class EthereumKitRepository(
             }
             .awaitAll()
     }
+
+    private fun throwInitError(): Nothing =
+        error("You must call EthereumKitRepostory.init() method, before interact with this repository")
 }
