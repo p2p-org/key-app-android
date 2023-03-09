@@ -108,6 +108,7 @@ class SwapWidget @JvmOverloads constructor(
         internalOnAmountChanged = null
         updateFormatter(amountMaxDecimals)
         editTextAmount.bindOrGone(amount ?: TextViewCellModel.Raw(text = TextContainer("")))
+        editTextAmount.selectionEnd
         editTextAmount.setSelection(editTextAmount.text.length)
         internalOnAmountChanged = { onAmountChanged(it) }
     }

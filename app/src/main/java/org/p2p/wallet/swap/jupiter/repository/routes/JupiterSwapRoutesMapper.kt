@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.jupiter.repository.routes
 
+import java.math.BigDecimal
 import org.p2p.wallet.swap.jupiter.api.request.JupiterSwapFeesRequest
 import org.p2p.wallet.swap.jupiter.api.request.SwapRouteRequest
 import org.p2p.wallet.swap.jupiter.api.response.SwapJupiterQuoteResponse
@@ -15,7 +16,7 @@ class JupiterSwapRoutesMapper {
             JupiterSwapRoute(
                 inAmountInLamports = route.inAmount.toBigInteger(),
                 outAmountInLamports = route.outAmount.toBigInteger(),
-                priceImpactPct = route.priceImpactPct.toBigDecimal(),
+                priceImpactPct = /*route.priceImpactPct.toBigDecimal()*/ BigDecimal.valueOf(0.02),
                 marketInfos = route.marketInfos.toSwapMarketInformation(),
                 amountInLamports = route.amount.toBigInteger(),
                 slippageBps = route.slippageBps,

@@ -360,6 +360,11 @@ class JupiterSwapPresenter(
         view?.setButtonState(
             buttonState = buttonMapper.mapReadyToSwap(tokenA = state.tokenA, tokenB = state.tokenB)
         )
+        getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
+        getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
+    }
+
+    private fun checkPriceImpact() {
         val priceImpact = swapInteractor.getPriceImpact(currentFeatureState)
         when (val type = priceImpact?.toPriceImpactType()) {
             null, SwapPriceImpactView.NORMAL -> {
@@ -377,14 +382,13 @@ class JupiterSwapPresenter(
                 }
             }
         }
-        getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
-        getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
 
     private fun handleLoadingTransaction(state: SwapState.LoadingTransaction) {
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = buttonMapper.mapLoading())
+        checkPriceImpact()
         getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
         getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
