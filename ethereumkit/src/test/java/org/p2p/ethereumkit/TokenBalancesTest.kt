@@ -40,7 +40,6 @@ class TokenBalancesTest : KoinTest {
     fun getBalance() = runTest {
         repository.init(seedPhrase = "apart approve black comfort steel spin real renew tone primary key cherry".split(" "))
         val result = repository.loadWalletTokens()
-        println(result)
         assert(result.isNotEmpty())
     }
 }

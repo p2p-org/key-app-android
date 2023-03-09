@@ -19,17 +19,17 @@ private const val ARG_TOKEN_LOGO_URL = "ARG_TOKEN_LOGO_URL"
 private const val ARG_TOKEN_SYMBOL = "ARG_TOKEN_SYMBOL"
 
 class EthereumReceiveFragment :
-    BaseMvpFragment<ReceiveEthereumContract.View,
-        ReceiveEthereumContract.Presenter>(
+    BaseMvpFragment<ReceiveEthereumContract.View, ReceiveEthereumContract.Presenter>(
         R.layout.fragment_ethereum_receive
     ),
     ReceiveEthereumContract.View {
 
     companion object {
-        fun create(tokenSymbol: String, tokenLogo: String) = EthereumReceiveFragment().withArgs(
-            ARG_TOKEN_SYMBOL to tokenSymbol,
-            ARG_TOKEN_LOGO_URL to tokenLogo
-        )
+        fun create(tokenSymbol: String, tokenLogo: String): EthereumReceiveFragment =
+            EthereumReceiveFragment().withArgs(
+                ARG_TOKEN_SYMBOL to tokenSymbol,
+                ARG_TOKEN_LOGO_URL to tokenLogo
+            )
     }
 
     override val presenter: ReceiveEthereumContract.Presenter by inject()
