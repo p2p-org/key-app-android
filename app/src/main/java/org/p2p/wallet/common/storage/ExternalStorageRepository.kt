@@ -19,6 +19,12 @@ class ExternalStorageRepository(
     }
 
     fun readJsonFile(fileName: String): ExternalFile? {
+        val file = File(context.filesDir, fileName)
+        if (!file.exists()) {
+            Timber.e("Error reading json file: $fileName - file does not exist")
+            return null
+        }
+
         return try {
             context.openFileInput(fileName).bufferedReader().useLines { lines ->
                 val lastModified = File(context.filesDir, fileName).lastModified()
