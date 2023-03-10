@@ -114,16 +114,16 @@ class SwapWidget @JvmOverloads constructor(
         val oldAMountRaw = editTextAmount.text?.toString() ?: emptyString()
         val newTextColorRes = (newAmount as? TextViewCellModel.Raw)?.textColor
         val oldTextColorRes = (currentAmountCell as? TextViewCellModel.Raw)?.textColor
+        internalOnAmountChanged = null
         if (currentAmountCell is TextViewCellModel.Skeleton ||
             newAmountRaw != oldAMountRaw ||
             newTextColorRes != oldTextColorRes
         ) {
-            internalOnAmountChanged = null
             editTextAmount.bindOrGone(newAmount)
             currentAmountCell = newAmount
             editTextAmount.setSelection(editTextAmount.text.length)
-            internalOnAmountChanged = { onAmountChanged(it) }
         }
+        internalOnAmountChanged = { onAmountChanged(it) }
     }
 
     private fun bindLoadingInput(skeleton: TextViewCellModel.Skeleton) = with(binding) {
