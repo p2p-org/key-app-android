@@ -43,7 +43,10 @@
     <string name="common_sell_all">Sell all</string>
     <string name="common_sorry">Sorry</string>
     <string name="common_less_than_minimum">Less than 0.01</string>
+    <string name="common_less_than_minimum_with_dollar">Less than $0.01</string>
     <string name="not_available">N/A</string>
+    <string name="common_burn">Burn</string>
+    <string name="common_mint">Mint</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -250,8 +253,6 @@
     <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter the amount</string>
     <string name="main_enter_incorrect_amount">Incorrect amount</string>
-    <string name="main_burn_renbtc">Burn renBTC</string>
-    <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
     <string name="main_key_app_username_sol_address">Username / address</string>
     <string name="main_reserve_username">Reserve your username now</string>
@@ -301,7 +302,6 @@
     <string name="receive_started_session">Created active session</string>
     <string name="receive_transaction_fee_amount">Estimated fee calculated</string>
     <string name="receive_no_statuses_yet">No statuses yet</string>
-    <string name="receive_username_copied">Username copied to clipboard!</string>
     <string name="receive_renbtc_transaction_format">Receiving %s renBTC</string>
     <string name="receive_renbtc_transaction">Receiving renBTC</string>
     <string name="receive_tap_to_read">Tap to read</string>
@@ -335,6 +335,21 @@
     <string name="receive_token_name_lower_case">receive %s</string>
     <string name="receive_amount_in_sol">%s SOL</string>
     <string name="receive_pay_and_countinue">Pay %s SOL &amp; Continue</string>
+    <string name="receive_on_solana">%s on Solana</string>
+    <string name="receive_my_sol_address">My Solana address</string>
+    <string name="receive_my_eth_address">My Ethereum address</string>
+    <string name="receive_my_username">My username</string>
+    <string name="receive_copy_address">Copy address</string>
+    <string name="receive_sol_address_copied">✅ Your Solana address was copied</string>
+    <string name="receive_eth_address_copied">✅ Your Ethereum address was copied</string>
+    <string name="receive_username_copied">✅ Your username was copied</string>
+    <string name="receive_on_ethereum">%s on Ethereum</string>
+    <string name="receive_num_1">1</string>
+    <string name="receive_num_2">2</string>
+    <string name="receive_ethereum_step_1">Send USDC to your Ethereum address</string>
+    <string name="receive_ethereum_step_2">We bridge it to Solana with Wormhole</string>
+    <string name="receive_ethereum_banner_text">We refund bridging\ncosts for any transactions over\n$50</string>
+
 
     <!-- send -->
     <string name="send_format">Send %s</string>

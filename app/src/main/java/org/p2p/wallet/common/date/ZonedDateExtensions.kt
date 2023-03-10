@@ -1,7 +1,6 @@
 package org.p2p.wallet.common.date
 
 import android.content.Context
-import org.p2p.wallet.R
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -12,6 +11,7 @@ import org.threeten.bp.temporal.TemporalAccessor
 import timber.log.Timber
 import java.util.Locale
 import kotlin.math.ceil
+import org.p2p.wallet.R
 
 private val monthDayFormatter = DateTimeFormatter.ofPattern("MMMM dd")
 private val monthDayYearFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
@@ -21,8 +21,10 @@ private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 fun ZonedDateTime.toDateString(context: Context): String {
     val day = withZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
     val today = Today.value
+    val yesterday = today.minusDays(1)
     return when {
-        day.isEqual(today) -> context.getString(R.string.details_today)
+        day.isEqual(today) -> context.getString(R.string.common_today)
+        day.isEqual(yesterday) -> context.getString(R.string.common_yesterday)
         today.year == day.year -> monthDayFormatter.formatWithLocale(day)
         else -> monthDayYearFormatter.formatWithLocale(day)
     }
@@ -59,6 +61,10 @@ fun String.toZonedDateTime(): ZonedDateTime {
         Timber.e(e, "Failed to parses string in UTC format, such as '2022-12-01T10:15:20Z'")
         ZonedDateTime.now()
     }
+}
+
+fun ZonedDateTime.dateMilli(): Long {
+    return this.toInstant().toEpochMilli()
 }
 
 private fun DateTimeFormatter.formatWithLocale(temporal: TemporalAccessor) =

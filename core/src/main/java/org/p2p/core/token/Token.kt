@@ -1,6 +1,10 @@
 package org.p2p.core.token
 
 import android.os.Parcelable
+import java.math.BigDecimal
+import java.math.BigInteger
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.p2p.core.R
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
@@ -10,15 +14,12 @@ import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.asCurrency
 import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toPowerValue
-import java.math.BigDecimal
-import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
 sealed class Token constructor(
     open val publicKey: String?,
@@ -78,20 +79,15 @@ sealed class Token constructor(
                 isZero &&
                 visibility == TokenVisibility.DEFAULT
 
-        fun getFormattedUsdTotal(): String? = totalInUsd?.asUsd()
+        fun getFormattedUsdTotal(includeSymbol: Boolean = true): String? {
+            return if (includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
+        }
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
-                "${total.formatToken()} $tokenSymbol"
+                "${total.formatToken(decimals)} $tokenSymbol"
             } else {
-                total.formatToken()
-            }
-
-        fun getTotal(includeSymbol: Boolean = false): String =
-            if (includeSymbol) {
-                "${total.formatToken()} $tokenSymbol"
-            } else {
-                total.formatToken()
+                total.formatToken(decimals)
             }
 
         fun getVisibilityIcon(isZerosHidden: Boolean): Int =
@@ -99,6 +95,52 @@ sealed class Token constructor(
                 R.drawable.ic_show
             } else {
                 R.drawable.ic_hide
+            }
+    }
+
+    @Parcelize
+    data class Eth constructor(
+        override val publicKey: String,
+        val totalInUsd: BigDecimal?,
+        val total: BigDecimal,
+        override val tokenSymbol: String,
+        override val decimals: Int,
+        override val mintAddress: String,
+        override val tokenName: String,
+        override val iconUrl: String?,
+        override var rate: BigDecimal?,
+        override var currency: String = Constants.USD_READABLE_SYMBOL
+    ) : Token(
+        publicKey = publicKey,
+        tokenSymbol = tokenSymbol,
+        decimals = decimals,
+        mintAddress = mintAddress,
+        tokenName = tokenName,
+        iconUrl = iconUrl,
+        serumV3Usdc = null,
+        serumV3Usdt = null,
+        isWrapped = false,
+        rate = rate,
+        currency = currency
+    ) {
+
+        @IgnoredOnParcel
+        val totalInLamports: BigInteger
+            get() = total.toLamports(decimals)
+
+        @IgnoredOnParcel
+        val isZero: Boolean
+            get() = total.isZero()
+
+        fun getFormattedUsdTotal(includeSymbol: Boolean = true): String? {
+            return if (includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
+        }
+
+        fun getFormattedTotal(includeSymbol: Boolean = false): String =
+            if (includeSymbol) {
+                "${total.formatToken(decimals)} $tokenSymbol"
+            } else {
+                total.formatToken(decimals)
             }
     }
 
@@ -192,3 +234,7 @@ sealed class Token constructor(
         }
     }
 }
+
+fun List<Token.Active>.findSolOrThrow(): Token.Active = first { it.isSOL }
+
+fun List<Token.Active>.findSolOrNull(): Token.Active? = firstOrNull { it.isSOL }

@@ -7,11 +7,12 @@ import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import okio.Buffer
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
+import timber.log.Timber
+import java.io.IOException
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
@@ -19,9 +20,6 @@ import org.p2p.wallet.infrastructure.network.data.ServerError
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.rpc.RpcConstants
-import timber.log.Timber
-import java.io.IOException
 
 private const val TAG = "RpcInterceptor"
 
@@ -46,48 +44,10 @@ class RpcInterceptor(
 
     private fun createRpcRequest(chain: Interceptor.Chain): Request {
         val request = chain.request()
-
-        val json = getRequestJson(request)
         val url = request.url
-        val networkEnvironmentForRequest = getValidatedNetworkEnvironment(json)
         return request.newBuilder()
-            .url(createRpcUrl(url, networkEnvironmentForRequest))
+            .url(createRpcUrl(url, currentEnvironment))
             .build()
-    }
-
-    private fun getRequestJson(request: Request): JSONObject? {
-        val requestBuffer = Buffer()
-
-        request.body?.writeTo(requestBuffer)
-
-        val requestBodyString = requestBuffer.readUtf8()
-
-        val json: JSONObject = try {
-            when (val data = JSONTokener(requestBodyString).nextValue()) {
-                is JSONObject -> data
-                is JSONArray -> data.get(0) as JSONObject
-                else -> throw IllegalStateException("Unknown type of request body")
-            }
-        } catch (e: Exception) {
-            Timber.tag(TAG).e("Error on parsing json $e")
-            return null
-        }
-
-        return json
-    }
-
-    private fun getValidatedNetworkEnvironment(requestJson: JSONObject?): NetworkEnvironment {
-        val methodKey = RpcConstants.REQUEST_METHOD_KEY
-        val historyEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS
-        val signaturesEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_SIGNATURES
-        return if (
-            requestJson?.getString(methodKey) == historyEndpoint ||
-            requestJson?.getString(methodKey) == signaturesEndpoint
-        ) {
-            NetworkEnvironment.RPC_POOL
-        } else {
-            currentEnvironment
-        }
     }
 
     private fun createRpcUrl(originalUrl: HttpUrl, networkEnvironment: NetworkEnvironment): HttpUrl {
@@ -105,7 +65,6 @@ class RpcInterceptor(
     }
 
     private fun handleResponse(response: Response): Response {
-        Timber.tag(TAG).d(response.request.url.toString())
         val responseBody = try {
             response.body!!.string()
         } catch (e: Exception) {

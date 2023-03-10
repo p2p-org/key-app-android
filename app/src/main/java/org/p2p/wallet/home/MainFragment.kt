@@ -1,8 +1,5 @@
 package org.p2p.wallet.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
@@ -11,9 +8,12 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import kotlinx.coroutines.launch
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
@@ -38,8 +38,10 @@ import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
+import org.p2p.wallet.swap.ui.SwapFragmentFactory
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.wallet.swap.ui.orca.OrcaSwapOpenedFrom
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -59,6 +61,7 @@ class MainFragment :
     private val generalAnalytics: GeneralAnalytics by inject()
     private val swapAnalytics: SwapAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val swapFragmentFactory: SwapFragmentFactory by inject()
 
     private val deeplinksManager: AppDeeplinksManager by inject()
     private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
@@ -80,8 +83,6 @@ class MainFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        deeplinksManager.mainTabsSwitcher = this
-
         with(binding) {
             bottomNavigation.setOnItemSelectedListener { tab ->
                 triggerTokensUpdateIfNeeded()
@@ -98,12 +99,14 @@ class MainFragment :
         if (tabCachedFragments.isEmpty) {
             createCachedTabFragments()
         }
-        deeplinksManager.handleSavedDeeplinkIntent()
 
         if (onCreateActions?.isNotEmpty() == true) {
             onCreateActions?.forEach(::doOnCreateAction)
             onCreateActions = arrayListOf()
         }
+
+        deeplinksManager.setTabsSwitcher(this)
+        deeplinksManager.executeHomePendingDeeplink()
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -159,14 +162,15 @@ class MainFragment :
                 is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
                 is NewSettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
                 is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
-                is OrcaSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
+                is OrcaSwapFragment,
+                is JupiterSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
             }
         }
         binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
     }
 
     override fun onDestroyView() {
-        deeplinksManager.mainTabsSwitcher = null
+        deeplinksManager.clearTabsSwitcher()
         super.onDestroyView()
     }
 
@@ -191,7 +195,7 @@ class MainFragment :
         val itemId = clickedTab.itemId
 
         // fixme: https://p2pvalidator.atlassian.net/browse/PWN-7051 Refreshing swap every time
-        if (clickedTab == ScreenTab.SWAP_SCREEN) {
+        if (clickedTab == ScreenTab.SWAP_SCREEN && tabCachedFragments.get(itemId) is OrcaSwapFragment) {
             tabCachedFragments.remove(itemId)
         }
 
@@ -201,7 +205,7 @@ class MainFragment :
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
-                ScreenTab.SWAP_SCREEN -> OrcaSwapFragment.create(OrcaSwapOpenedFrom.MAIN_SCREEN)
+                ScreenTab.SWAP_SCREEN -> swapFragmentFactory.swapFragment(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
                 else -> error("Can't create fragment for $clickedTab")
             }
             tabCachedFragments[itemId] = fragment

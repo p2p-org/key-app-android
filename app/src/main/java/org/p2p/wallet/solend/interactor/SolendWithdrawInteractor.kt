@@ -1,11 +1,13 @@
 package org.p2p.wallet.solend.interactor
 
+import java.math.BigInteger
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
+import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -17,7 +19,6 @@ import org.p2p.wallet.solend.model.SolendTokenFee
 import org.p2p.wallet.solend.repository.SolendRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toBase58Instance
-import java.math.BigInteger
 
 class SolendWithdrawInteractor(
     private val rpcSolanaRepository: RpcSolanaRepository,
@@ -85,7 +86,7 @@ class SolendWithdrawInteractor(
         )
 
         // calculating fee in SPL token
-        val feeInSplToken = try {
+        val fee = try {
             feeRelayerInteractor.calculateFeeInPayingToken(
                 feeInSOL = FeeAmount(
                     transaction = if (hasFreeTransactions) BigInteger.ZERO else withdrawFeeInSol.transaction,
@@ -111,20 +112,29 @@ class SolendWithdrawInteractor(
         )
 
         val splToken = userInteractor.findUserToken(token.mintAddress)
-        if (splToken == null || feeInSplToken == null) return feeInSol
+        if (splToken == null || fee == null) return feeInSol
 
-        if (feeInSplToken.total > (splToken.totalInLamports)) return feeInSol
-
-        // calculated fee in SPL token
-        return SolendFee(
-            tokenSymbol = token.tokenSymbol,
-            decimals = splToken.decimals,
-            usdRate = splToken.usdRateOrZero,
-            fee = SolendTokenFee(feeInSplToken),
-            feePayer = TokenAccount(
-                address = splToken.publicKey,
-                mint = splToken.mintAddress
-            )
-        )
+        when (fee) {
+            is FeePoolsState.Failed -> {
+                return feeInSol
+            }
+            is FeePoolsState.Calculated -> {
+                return if (fee.feeInSpl.total > splToken.totalInLamports) {
+                    feeInSol
+                } else {
+                    // calculated fee in SPL token
+                    SolendFee(
+                        tokenSymbol = token.tokenSymbol,
+                        decimals = splToken.decimals,
+                        usdRate = splToken.usdRateOrZero,
+                        fee = SolendTokenFee(fee.feeInSpl),
+                        feePayer = TokenAccount(
+                            address = splToken.publicKey,
+                            mint = splToken.mintAddress
+                        )
+                    )
+                }
+            }
+        }
     }
 }

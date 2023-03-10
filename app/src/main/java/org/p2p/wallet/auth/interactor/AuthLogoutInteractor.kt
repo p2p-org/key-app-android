@@ -1,8 +1,9 @@
 package org.p2p.wallet.auth.interactor
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.edit
+import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.di.AppScope
@@ -11,6 +12,7 @@ import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
@@ -18,13 +20,13 @@ import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.updates.UpdatesManager
-import timber.log.Timber
 
 class AuthLogoutInteractor(
     private val context: Context,
     private val secureStorage: SecureStorageContract,
     private val renBtcInteractor: RenBtcInteractor,
     private val sharedPreferences: SharedPreferences,
+    private val jupiterSwapStorage: JupiterSwapStorageContract,
     private val tokenKeyProvider: TokenKeyProvider,
     private val sendModeProvider: SendModeProvider,
     private val mainLocalRepository: HomeLocalRepository,
@@ -54,6 +56,7 @@ class AuthLogoutInteractor(
             recipientsLocalRepository.clear()
             renBtcInteractor.clearSession()
             transactionDetailsLocalRepository.deleteAll()
+            jupiterSwapStorage.clear()
             IntercomService.logout()
             RenVMService.stopService(context)
 

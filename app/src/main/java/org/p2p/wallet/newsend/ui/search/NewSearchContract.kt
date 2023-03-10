@@ -11,6 +11,7 @@ interface NewSearchContract {
     interface View : MvpView {
         fun updateSearchInput(recentQuery: String, submit: Boolean)
         fun showUsers(result: List<SearchResult>)
+        fun showSendViaLink(isVisible: Boolean)
         fun clearUsers()
         fun showUsersMessage(@StringRes textRes: Int?)
         fun showLoading(isLoading: Boolean)

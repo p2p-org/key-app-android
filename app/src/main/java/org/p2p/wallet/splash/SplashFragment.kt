@@ -1,12 +1,13 @@
 package org.p2p.wallet.splash
 
+import androidx.core.app.NotificationManagerCompat
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.home.MainFragment
-import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.utils.replaceFragment
 
@@ -20,6 +21,13 @@ class SplashFragment :
 
     override val presenter: SplashContract.Presenter by inject()
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val isNotificationPermissionGranted =
+            NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()
+        presenter.logNotificationPermissionGranted(isNotificationPermissionGranted)
+    }
+
     override fun navigateToOnboarding() {
         replaceFragment(OnboardingRootFragment.create(), addToBackStack = false)
         hideSplashScreen()
@@ -32,13 +40,5 @@ class SplashFragment :
 
     private fun hideSplashScreen() {
         (activity as? RootActivity)?.hideSplashScreen()
-    }
-
-    override fun navigateToMain() {
-        popAndReplaceFragment(
-            MainFragment.create(),
-            inclusive = true
-        )
-        hideSplashScreen()
     }
 }

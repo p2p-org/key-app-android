@@ -10,8 +10,10 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
-import org.p2p.solanaj.kits.transaction.network.MessageResponseDeserialization
-import org.p2p.solanaj.kits.transaction.network.transaction.MessageResponse
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -33,16 +35,12 @@ import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
+import org.p2p.wallet.jupiter.JupiterModule.JUPITER_RETROFIT_QUALIFIER
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
-import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.math.BigDecimal
-import java.util.concurrent.TimeUnit
 
 object NetworkModule : InjectionModule {
 
@@ -67,7 +65,6 @@ object NetworkModule : InjectionModule {
                 .registerTypeAdapter(BigDecimal::class.java, BigDecimalTypeAdapter)
                 .registerTypeAdapter(Base58String::class.java, Base58TypeAdapter)
                 .registerTypeAdapter(Base64String::class.java, Base64TypeAdapter)
-                .registerTypeAdapter(MessageResponse::class.java, MessageResponseDeserialization)
                 .setLenient()
                 .disableHtmlEscaping()
                 .create()
@@ -123,7 +120,7 @@ object NetworkModule : InjectionModule {
             )
         }
 
-        single(named(SwapModule.JUPITER_RETROFIT_QUALIFIER)) {
+        single(named(JUPITER_RETROFIT_QUALIFIER)) {
             val baseUrl = androidContext().getString(R.string.jupiterQuoteBaseUrl)
             getRetrofit(
                 baseUrl = baseUrl,
@@ -136,7 +133,7 @@ object NetworkModule : InjectionModule {
     fun Scope.getRetrofit(
         baseUrl: String,
         tag: String? = "OkHttpClient",
-        interceptor: Interceptor?
+        interceptor: Interceptor?,
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -146,7 +143,7 @@ object NetworkModule : InjectionModule {
     }
 
     fun Scope.httpLoggingInterceptor(logTag: String): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor(DebugHttpLoggingLogger(get(), logTag)).apply {
+        return HttpLoggingInterceptor(DebugHttpLoggingLogger(gson = get(), logTag = logTag)).apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
     }

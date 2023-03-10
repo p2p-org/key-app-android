@@ -1,15 +1,14 @@
 package org.p2p.wallet.swap
 
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
+import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.api.OrcaApi
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
@@ -25,28 +24,16 @@ import org.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapAmountInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
-import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
-import org.p2p.wallet.swap.jupiter.domain.JupiterSwapInteractor
-import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesMapper
-import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRemoteRepository
-import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
-import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRemoteRepository
-import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
-import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionMapper
-import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRemoteRepository
-import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
-import retrofit2.Retrofit
-import retrofit2.create
 
 object SwapModule : InjectionModule {
 
-    const val JUPITER_RETROFIT_QUALIFIER = "JUPITER_RETROFIT_QUALIFIER"
-
     override fun create() = module {
+
         single {
             val baseUrl = androidContext().getString(R.string.orcaApiBaseUrl)
             getRetrofit(
@@ -55,6 +42,9 @@ object SwapModule : InjectionModule {
                 interceptor = null
             ).create(OrcaApi::class.java)
         }
+
+        factoryOf(::SwapFragmentFactory)
+        factoryOf(::ReceiveFragmentFactory)
 
         single {
             SerumSwapInteractor(
@@ -111,18 +101,5 @@ object SwapModule : InjectionModule {
                 transactionManager = get(),
             )
         } bind OrcaSwapContract.Presenter::class
-        initJupiterSwap()
-    }
-
-    private fun Module.initJupiterSwap() {
-        single { get<Retrofit>(named(JUPITER_RETROFIT_QUALIFIER)).create<SwapJupiterApi>() }
-
-        factoryOf(::JupiterSwapRoutesMapper)
-        factoryOf(::JupiterSwapTransactionMapper)
-
-        factoryOf(::JupiterSwapRoutesRemoteRepository) bind JupiterSwapRoutesRepository::class
-        factoryOf(::JupiterSwapTransactionRemoteRepository) bind JupiterSwapTransactionRepository::class
-        factoryOf(::JupiterSwapTokensRemoteRepository) bind JupiterSwapTokensRepository::class
-        factoryOf(::JupiterSwapInteractor)
     }
 }

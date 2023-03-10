@@ -32,7 +32,7 @@ class SellInformationBottomSheet :
     private val binding: DialogSellInformationBinding by viewBinding()
     private val sellAnalytics: SellAnalytics by inject()
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

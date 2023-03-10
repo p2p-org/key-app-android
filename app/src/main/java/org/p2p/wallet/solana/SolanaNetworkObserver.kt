@@ -70,7 +70,7 @@ class SolanaNetworkObserver(
         Timber.tag(TAG).i("Solana network observation has been stopped")
     }
 
-    private fun handleSamples(samples: List<RecentPerformanceSample>) {
+    private suspend fun handleSamples(samples: List<RecentPerformanceSample>) {
         val transactions = samples.sumOf { it.numberOfTransactions }
         val periods = samples.sumOf { it.samplePeriodInSeconds }
         val currentAverageTps = transactions / periods
@@ -83,7 +83,7 @@ class SolanaNetworkObserver(
         }
     }
 
-    private fun calculateNegativePercent(
+    private suspend fun calculateNegativePercent(
         oldState: Online,
         currentAverageTps: Int
     ) {
@@ -121,7 +121,7 @@ class SolanaNetworkObserver(
     * Checking if user already saw the error message and we should show the message again or not
     * according to the frequency value from RemoteConfig
     * */
-    private fun showError() {
+    private suspend fun showError() {
         when (errorFrequencyFeatureToggle.frequency) {
             NetworkStatusFrequency.ONCE -> {
                 updateState(Offline)

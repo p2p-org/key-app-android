@@ -13,7 +13,7 @@ runs:
         run_number=${{ github.run_number }}
         
         # Combine the timestamp with the GITHUB_RUN_NUMBER
-        version=$((timestamp / run_number))
+        version=$((timestamp + run_number))
         
         # Set the version build number using the unique identifier
         ./gradlew setVersionBuild -Pversion=$version

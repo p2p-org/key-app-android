@@ -8,17 +8,23 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import timber.log.Timber
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import org.p2p.core.utils.KeyboardListener
 import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
+import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.FragmentLoggingLifecycleListener
@@ -26,6 +32,7 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.databinding.ActivityRootBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
@@ -34,9 +41,6 @@ import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import timber.log.Timber
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 
 class RootActivity :
     BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
@@ -67,6 +71,7 @@ class RootActivity :
 
     private var snackbar: Snackbar? = null
     private var splashScreenBox: SplashScreenBox? = null
+    private var onSplashDataLoaded: Boolean = false
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -91,16 +96,18 @@ class RootActivity :
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()
         }
-        supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
 
         checkForGoogleServices()
-        deeplinksManager.mainFragmentManager = supportFragmentManager
+
+        supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
+        deeplinksManager.setRootListener(this)
         handleDeeplink()
 
         registerNetworkObserver()
     }
 
     fun hideSplashScreen() {
+        onSplashDataLoaded = true
         splashScreenBox?.let {
             it.splashScreen.remove()
             decorSystemBarsDelegate.updateSystemBarsStyle(it.pendingStatusBarStyle, it.pendingNavigationBarStyle)
@@ -110,7 +117,7 @@ class RootActivity :
 
     private fun keepVisibleSplash(splashScreen: SplashScreen) {
         splashScreen.setOnExitAnimationListener { splashProvider ->
-            splashScreenBox = SplashScreenBox(splashProvider)
+            if (onSplashDataLoaded) splashProvider.remove() else splashScreenBox = SplashScreenBox(splashProvider)
         }
     }
 
@@ -154,6 +161,28 @@ class RootActivity :
         NewTransactionProgressBottomSheet.show(supportFragmentManager, internalTransactionId, data)
     }
 
+    override fun triggerOnboardingDeeplink(deeplink: Uri) {
+        val fragment = supportFragmentManager.findFragmentById(R.id.rootContainer)
+        val onboardingRootFragment = fragment as? OnboardingRootFragment
+
+        if (onboardingRootFragment == null) {
+            Timber.i("Cannot trigger onboarding deeplink, the user is not in the root onboarding screen")
+            return
+        }
+
+        onboardingRootFragment.triggerOnboadringDeeplink(deeplink)
+    }
+
+    override fun popBackStackToMain() {
+        with(supportFragmentManager) {
+            if (backStackEntryCount > 1) {
+                val lastScreen = fragments.lastOrNull()
+                if (lastScreen is BottomSheetDialogFragment) lastScreen.dismissAllowingStateLoss()
+                popBackStackImmediate(MainFragment::class.java.name, 0)
+            }
+        }
+    }
+
     private fun checkForGoogleServices() {
         val servicesAvailabilityChecker = GoogleApiAvailability.getInstance()
         val userHasGoogleServices =
@@ -174,7 +203,7 @@ class RootActivity :
     }
 
     override fun onDestroy() {
-        deeplinksManager.mainFragmentManager = null
+        deeplinksManager.clearRootListener()
         super.onDestroy()
     }
 
@@ -183,7 +212,7 @@ class RootActivity :
         navigationBarStyle: SystemIconsStyle? = null,
     ) {
         val splashScreenBox = this.splashScreenBox
-        if (splashScreenBox != null) {
+        if (!onSplashDataLoaded && splashScreenBox != null) {
             this.splashScreenBox = splashScreenBox.copy(
                 pendingStatusBarStyle = statusBarStyle,
                 pendingNavigationBarStyle = navigationBarStyle
@@ -194,8 +223,7 @@ class RootActivity :
     }
 
     private fun handleDeeplink(newIntent: Intent? = null) {
-        val intentToHandle = newIntent ?: intent
-        deeplinksManager.handleDeeplinkIntent(intentToHandle)
+        deeplinksManager.handleDeeplinkIntent(newIntent ?: intent)
     }
 
     private fun registerNetworkObserver() {

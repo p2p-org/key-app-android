@@ -1,15 +1,15 @@
 package org.p2p.wallet.transaction.ui
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -70,7 +70,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
         isCancelable = false
     }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_transaction_progress, container, false)
@@ -106,13 +106,13 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     private fun handleSwapSuccess(state: TransactionState.SwapSuccess) {
         val message = getString(R.string.swap_successfully_format, state.fromToken, state.toToken)
-        val signature = state.transaction.signature
+        val signature = state.transaction.getHistoryTransactionId()
         setSuccessState(message, signature)
     }
 
     private fun handleSendSuccess(state: TransactionState.SendSuccess) {
         val message = getString(R.string.send_successfully_format, state.sourceTokenSymbol)
-        val signature = state.transaction.signature
+        val signature = state.transaction.getHistoryTransactionId()
         setSuccessState(message, signature)
     }
 

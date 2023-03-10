@@ -13,6 +13,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.math.BigDecimal
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
@@ -43,7 +44,6 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import java.math.BigDecimal
 
 const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
 private const val EXTRA_SOURCE_TOKEN = "EXTRA_SOURCE_TOKEN"
@@ -53,21 +53,16 @@ private const val EXTRA_SETTINGS = "EXTRA_SETTINGS"
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_OPENED_FROM = "EXTRA_SOURCE"
 
-enum class OrcaSwapOpenedFrom {
-    MAIN_SCREEN,
-    OTHER
-}
-
 class OrcaSwapFragment :
     BaseMvpFragment<OrcaSwapContract.View, OrcaSwapContract.Presenter>(R.layout.fragment_swap_orca),
     OrcaSwapContract.View {
 
     companion object {
-        fun create(source: OrcaSwapOpenedFrom = OrcaSwapOpenedFrom.OTHER): OrcaSwapFragment =
+        fun create(source: SwapOpenedFrom): OrcaSwapFragment =
             OrcaSwapFragment()
                 .withArgs(EXTRA_OPENED_FROM to source)
 
-        fun create(token: Token, source: OrcaSwapOpenedFrom = OrcaSwapOpenedFrom.OTHER): OrcaSwapFragment =
+        fun create(token: Token.Active, source: SwapOpenedFrom): OrcaSwapFragment =
             OrcaSwapFragment()
                 .withArgs(
                     EXTRA_TOKEN to token,
@@ -76,7 +71,7 @@ class OrcaSwapFragment :
     }
 
     private val token: Token? by args(EXTRA_TOKEN)
-    private val openedFrom: OrcaSwapOpenedFrom by args(EXTRA_OPENED_FROM)
+    private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
 
     override val presenter: OrcaSwapContract.Presenter by inject {
         parametersOf(token)
@@ -121,14 +116,14 @@ class OrcaSwapFragment :
     private fun setupViews() = with(binding) {
         // in case of MainFragment, back is handled by MainFragment
         when (openedFrom) {
-            OrcaSwapOpenedFrom.OTHER -> {
+            SwapOpenedFrom.BOTTOM_NAVIGATION -> {
+                toolbar.navigationIcon = null
+            }
+            else -> {
                 amountEditText.focusAndShowKeyboard(force = true)
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                     presenter.onBackPressed()
                 }
-            }
-            OrcaSwapOpenedFrom.MAIN_SCREEN -> {
-                toolbar.navigationIcon = null
             }
         }
 

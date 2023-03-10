@@ -6,6 +6,8 @@ import com.google.gson.reflect.TypeToken
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305
 import org.koin.ext.getFullName
 import timber.log.Timber
+import java.math.BigDecimal
+import org.p2p.core.utils.orZero
 
 fun <R> unsafeLazy(initializer: () -> R): Lazy<R> = lazy(LazyThreadSafetyMode.NONE, initializer)
 
@@ -59,3 +61,5 @@ fun ChaCha20Poly1305.processBytesKt(
     outBytes,
     outOff
 )
+
+fun BigDecimal?.compareTo(other: BigDecimal?): Int = this.orZero().compareTo(other.orZero())

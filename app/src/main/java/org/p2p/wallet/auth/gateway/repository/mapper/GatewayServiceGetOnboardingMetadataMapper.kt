@@ -17,7 +17,7 @@ import kotlin.time.toDuration
 
 class GatewayServiceGetOnboardingMetadataMapper(
     private val onboardingMetadataCipher: GatewayServiceOnboardingMetadataCipher,
-    private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator,
+    private val signatureFieldGenerator: PushServiceSignatureFieldGenerator,
     private val gson: Gson
 ) {
 

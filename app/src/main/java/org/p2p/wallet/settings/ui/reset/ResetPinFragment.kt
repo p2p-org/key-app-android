@@ -1,15 +1,16 @@
 package org.p2p.wallet.settings.ui.reset
 
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.view.View
-import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResult
 import org.koin.android.ext.android.inject
+import javax.crypto.Cipher
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AuthAnalytics
@@ -25,11 +26,11 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import javax.crypto.Cipher
 
 private const val EXTRA_REQUEST_KEY = "EXTRA_RESET_PIN_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
+@Deprecated("Old onboarding flow, delete someday")
 class ResetPinFragment :
     BaseMvpFragment<ResetPinContract.View, ResetPinContract.Presenter>(R.layout.fragment_change_pin),
     ResetPinContract.View {

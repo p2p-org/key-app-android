@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Claim-->
+    <string name="bridge_claim_button_text">Claim</string>
+    <string name="bridge_claiming_button_text">Claiming…</string>
+
+    <string name="bridge_claim_title_format">Claim %s</string>
+    <string name="bridge_claim_sub_title_format">Confirm claiming the tokens</string>
+    <string name="bridge_claim_fees">Fees</string>
+    <string name="bridge_claim_fees_free">Paid by Key App</string>
+    <string name="bridge_claim_bottom_button">Send</string>
+
+    <string name="bridge_info_free_transaction_message">With Key App, the first transaction is free. Also all the transactions above $300 are free</string>
+    <string name="bridge_info_transaction_free">Free</string>
+    <string name="bridge_info_you_will_get">You will get</string>
+    <string name="bridge_info_network_fee">Network Fee</string>
+    <string name="bridge_info_account_creation_fee">Account creation Fee</string>
+    <string name="bridge_info_bridge_fee">Wormhole Bridge and Transaction Fee</string>
+
+    <!--Receive-->
+    <string name="receive_token_title">Supported tokens</string>
+    <string name="receive_token_search_not_found">Token not found. Try another one</string>
+    <string name="receive_token_banner_message">Receive tokens on\nEthereum and Solana</string>
+
+    <string name="receive_network_dialog_title">Choose network</string>
+
+</resources>

@@ -19,7 +19,7 @@
         tools:text="konstantink.key.sol" />
 
     <FrameLayout
-        android:id="@+id/qrFrame"
+        android:id="@+id/containerQr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -28,7 +28,7 @@
         app:layout_constraintTop_toBottomOf="@id/nameTextView">
 
         <ImageView
-            android:id="@+id/qrImageView"
+            android:id="@+id/imageViewQr"
             android:layout_width="220dp"
             android:layout_height="220dp"
             android:layout_gravity="center"
@@ -38,14 +38,14 @@
             tools:src="@tools:sample/avatars" />
 
         <FrameLayout
-            android:id="@+id/watermarkImageViewBackground"
+            android:id="@+id/containerWatermark"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_gravity="center"
             android:background="@drawable/bg_circle">
 
             <org.p2p.uikit.atoms.UiKitRoundedImageView
-                android:id="@+id/watermarkImageView"
+                android:id="@+id/imageViewWatermark"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
                 android:layout_gravity="center"
@@ -62,10 +62,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminateTint="@color/elements_night"
-        app:layout_constraintBottom_toBottomOf="@id/qrFrame"
-        app:layout_constraintEnd_toEndOf="@id/qrFrame"
-        app:layout_constraintStart_toStartOf="@id/qrFrame"
-        app:layout_constraintTop_toTopOf="@id/qrFrame" />
+        app:layout_constraintBottom_toBottomOf="@id/containerQr"
+        app:layout_constraintEnd_toEndOf="@id/containerQr"
+        app:layout_constraintStart_toStartOf="@id/containerQr"
+        app:layout_constraintTop_toTopOf="@id/containerQr" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/valueTextView"
@@ -75,7 +75,7 @@
         android:layout_marginTop="24dp"
         android:gravity="center"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:layout_constraintTop_toBottomOf="@id/qrFrame"
+        app:layout_constraintTop_toBottomOf="@id/containerQr"
         tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
 
     <ImageView

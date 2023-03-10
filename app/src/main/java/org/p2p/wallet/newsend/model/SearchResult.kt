@@ -1,13 +1,13 @@
 package org.p2p.wallet.newsend.model
 
 import android.os.Parcelable
+import java.util.Date
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
-import java.util.Date
 
 private const val EMPTY_BALANCE = 0L
 private const val USERNAME_KEY_APP_DOMAIN = ".key"
@@ -60,3 +60,6 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
         }
     }
 }
+
+fun TemporaryAccount.toSearchResult(): SearchResult =
+    SearchResult.AddressFound(AddressState(address))

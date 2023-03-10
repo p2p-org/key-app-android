@@ -2,6 +2,8 @@ package org.p2p.wallet.sell.interactor
 
 import androidx.core.content.edit
 import android.content.SharedPreferences
+import timber.log.Timber
+import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -17,8 +19,6 @@ import org.p2p.wallet.moonpay.repository.sell.SellRepository
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
-import java.math.BigDecimal
 
 private const val TAG = "SellInteractor"
 private const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_DIALOG_KEY"
@@ -26,10 +26,10 @@ private const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_
 class SellInteractor(
     private val sellRepository: SellRepository,
     private val currencyRepository: MoonpayCurrenciesRepository,
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val userInteractor: UserInteractor,
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val sharedPreferences: SharedPreferences,
 ) {
@@ -42,11 +42,7 @@ class SellInteractor(
     }
 
     suspend fun loadSellAvailability() {
-        if (sellEnabledFeatureToggle.isFeatureEnabled) {
-            sellRepository.loadMoonpayFlags()
-        } else {
-            Timber.tag(TAG).i("Moonpay flags will not fetch, feature toggle is disabled")
-        }
+        sellRepository.loadMoonpayFlags()
     }
 
     suspend fun isSellAvailable(): Boolean {
@@ -59,7 +55,7 @@ class SellInteractor(
         return try {
             homeLocalRepository.getUserBalance().isNotZero()
         } catch (error: Throwable) {
-            Timber.tag(TAG).i(error, "Cant get user balance")
+            Timber.tag(TAG).e(error, "Cant get user balance")
             false
         }
     }

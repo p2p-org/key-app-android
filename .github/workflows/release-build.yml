@@ -1,0 +1,67 @@
+# The workflow triggers for release branch changes only
+on:
+  push:
+    branches:
+      - release/*
+
+jobs:
+  android-build-store-release:
+    name: "Run build store release artifacts"
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: "Checkout to the current commit hash"
+        uses: actions/checkout@v3
+      - name: "Create release signing configs properties"
+        uses: ./.github/actions/setup-signing-configs
+        with:
+          keystore-password: ${{ secrets.KEYSTORE_PASSWORD }}
+          key-alias: ${{ secrets.KEY_ALIAS }}
+          key-password: ${{ secrets.KEY_PASSWORD }}
+      - name: "Initializing firebase configs"
+        uses: ./.github/actions/setup-google-services
+        with:
+          google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+      - name: "Initialize project keys"
+        uses: ./.github/actions/setup-project
+        with:
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+          secret-memo: ${{ secrets.SECRET_MEMO }}
+          salt-prefix: ${{ secrets.SALT_PREFIX }}
+      - name: Create and fill p2pwallet.jks
+        run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2pwallet.jks
+      - name: "Build release AAB&APK artifacts"
+        run: ./gradlew bundleRelease assembleRelease
+      - name: "Upload AAB to Firebase App Distribution"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: ./gradlew appDistributionUploadRelease
+      - name: "Upload release AAB to Slack Channel"
+        uses: ./.github/actions/setup-slack
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "release"
+          artifact-type: "bundle"
+      - name: "Upload APK to BrowserStack (Release)"
+        run: |
+          credentials=${{ secrets.BROWSER_STACK_CREDENTIALS }}
+          curl -u "${credentials}" \
+          -X POST "https://api-cloud.browserstack.com/app-automate/upload" \
+          -F "file=@$(find app/build/outputs/apk/release -name 'key-app*')" \
+          -F "custom_id=KeyApp_rc.apk"

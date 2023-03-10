@@ -46,7 +46,7 @@ class NewSendButtonState(
 
             val sendFee = (feeRelayerState as? FeeRelayerState.UpdateFee)?.solanaFee
             val isEnoughToCoverExpenses =
-                sendFee == null || sendFee.isEnoughToCoverExpenses(totalInLamports, inputAmount)
+                sendFee == null || sendFee.isEnoughToCoverExpenses(totalInLamports, inputAmount, minRentExemption)
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
             val isAmountValidForSender = isAmountValidForSender(inputAmount)
@@ -131,12 +131,10 @@ class NewSendButtonState(
      * */
     private fun isAmountValidForSender(amount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL
+        if (!isSourceTokenSol) return true
         val balanceDiff = sourceToken.totalInLamports - amount
 
-        val isValidRemainingSource = balanceDiff.isZero() || balanceDiff >= minRentExemption
-        if (!isSourceTokenSol) return true
-
-        return isValidRemainingSource
+        return balanceDiff.isZero() || balanceDiff >= minRentExemption
     }
 
     /**
@@ -148,7 +146,6 @@ class NewSendButtonState(
         if (!sourceToken.isSOL) return true
 
         val isRecipientEmpty = searchResult is SearchResult.AddressFound && searchResult.isEmptyBalance
-        if (!isRecipientEmpty) return true
 
         val sourceTotalLamports = sourceToken.totalInLamports
         val minRequiredBalance = minRentExemption
@@ -156,6 +153,13 @@ class NewSendButtonState(
         val inputAmountInLamports = calculationMode.getCurrentAmountLamports()
         val diff = sourceTotalLamports - inputAmountInLamports
 
-        return diff == BigInteger.ZERO || diff >= minRequiredBalance
+        val maxSolAmountAllowed = if (isRecipientEmpty) {
+            // if recipient has no solana account (balance == 0) we can send at least minRentExemption amount
+            sourceTotalLamports - minRequiredBalance
+        } else {
+            sourceTotalLamports
+        }
+
+        return diff.isZero() || maxSolAmountAllowed >= minRequiredBalance
     }
 }

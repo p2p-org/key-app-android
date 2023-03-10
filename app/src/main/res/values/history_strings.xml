@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="history_empty_message">Your history will appear here.\nTo get started you can:</string>
+    <string name="history_empty_message">Your history will appear here.\nIt will take some time.</string>
     <string name="history_empty_option_buy">Buy crypto</string>
     <string name="history_empty_option_receive">Receive</string>
 
@@ -10,14 +10,35 @@
     <string name="transaction_history_unknown">Unknown</string>
     <string name="transaction_history_swap">Swap</string>
     <string name="transaction_history_swap_pending">Swapping…</string>
-    <string name="transaction_history_swap_failed">Swap failed</string>
     <string name="transaction_history_send">Send</string>
+    <string name="transaction_history_stake">Stake</string>
+    <string name="transaction_history_unstake">Unstake</string>
     <string name="transaction_history_send_pending">Sending…</string>
-    <string name="transaction_history_send_failed">Send failed</string>
     <string name="transaction_history_receive">Receive</string>
     <string name="transaction_history_receive_pending">Receiving…</string>
-    <string name="transaction_history_receive_failed">Receive failed</string>
     <string name="transaction_history_create">Create account</string>
     <string name="transaction_history_closed">Close account</string>
+    <string name="transaction_history_signature_format">Signature: %s</string>
+    <string name="transaction_history_vote_format">Vote account: %s</string>
+
+    <string name="transaction_details_title">Transaction %s</string>
+    <string name="transaction_details_title_submitted">submitted</string>
+    <string name="transaction_details_title_succeeded">succeeded</string>
+    <string name="transaction_details_title_failed">failed</string>
+    <string name="transaction_details_date_format">%s @ %s</string>
+    <string name="transaction_details_send_to">Sent to</string>
+    <string name="transaction_details_receive_from">Receive from</string>
+    <string name="transaction_details_signature">Signature</string>
+    <string name="transaction_details_burn">Burn signature</string>
+    <string name="transaction_details_mint">Mint signature</string>
+    <string name="transaction_details_stake">Stake signature</string>
+    <string name="transaction_details_unstake">Unstake signature</string>
+
+    <string name="transaction_details_share">Share</string>
+    <string name="transaction_details_explorer">Explorer</string>
+
+    <string name="transaction_details_no_balance_change">No balance change</string>
+
+    <string name="transaction_details_status_message_format">There was a problem with the %s, your funds were refunded</string>
 
 </resources>

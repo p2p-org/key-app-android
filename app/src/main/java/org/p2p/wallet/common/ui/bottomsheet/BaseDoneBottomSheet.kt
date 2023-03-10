@@ -1,13 +1,13 @@
 package org.p2p.wallet.common.ui.bottomsheet
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogBaseDoneBinding
 import org.p2p.wallet.utils.args
@@ -55,7 +55,7 @@ abstract class BaseDoneBottomSheet : BaseBottomSheet() {
         }
     }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     protected open fun getResult(): Any? = null
 

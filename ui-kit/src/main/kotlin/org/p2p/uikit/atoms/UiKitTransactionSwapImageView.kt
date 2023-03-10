@@ -1,10 +1,10 @@
 package org.p2p.uikit.atoms
 
+import androidx.annotation.DrawableRes
+import androidx.core.content.res.use
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import androidx.annotation.DrawableRes
-import androidx.core.content.res.use
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTransactionSwapImageBinding
@@ -13,6 +13,7 @@ import org.p2p.uikit.utils.withImageOrGone
 
 private const val IMAGE_SIZE = 28
 
+@Deprecated(message = "use UiKitIconWrapper")
 class TransactionSwapImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -37,8 +38,8 @@ class TransactionSwapImageView @JvmOverloads constructor(
 
     fun setSourceAndDestinationImages(
         glideManager: GlideManager,
-        sourceIconUrl: String,
-        destinationIconUrl: String
+        sourceIconUrl: String?,
+        destinationIconUrl: String?
     ) {
         with(binding) {
             glideManager.apply {

@@ -3,7 +3,7 @@ package org.p2p.wallet.common.ui.recycler
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-private const val VISIBLE_THRESHOLD = 11
+private const val VISIBLE_THRESHOLD = 5
 
 class EndlessScrollListener(
     private val layoutManager: LinearLayoutManager,
@@ -18,21 +18,17 @@ class EndlessScrollListener(
         super.onScrolled(recyclerView, dx, dy)
         onYScroll?.invoke(dy)
 
-        val visibleItemCount = layoutManager.childCount
+        val visibleItemCount = recyclerView.childCount
         val totalItemCount = layoutManager.itemCount
-        val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+        val firstVisibleItem = layoutManager.findLastVisibleItemPosition()
 
         if (totalItemCount == visibleItemCount) return
-
-        if (totalItemCount > totalLoadedItems) {
+        if (isLoading && totalItemCount > totalLoadedItems) {
             isLoading = false
             totalLoadedItems = totalItemCount
-            return
         }
-
-        val smth = totalItemCount - visibleItemCount <= firstVisibleItem + VISIBLE_THRESHOLD
-        if (!isLoading && smth) {
-            loadNextPage(totalItemCount)
+        if (!isLoading && totalItemCount - visibleItemCount <= firstVisibleItem + VISIBLE_THRESHOLD) {
+            loadNextPage.invoke(totalLoadedItems)
             isLoading = true
         }
     }

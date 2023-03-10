@@ -1,11 +1,12 @@
 package org.p2p.wallet.auth.ui.verify
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import org.p2p.wallet.databinding.ItemSecurityKeyBinding
 
+@Deprecated("Old onboarding flow, delete someday")
 class KeysTupleAdapter : RecyclerView.Adapter<KeysTupleAdapter.KeyViewHolder>() {
 
     private val data = mutableListOf<Pair<String, Boolean>>()
@@ -31,6 +32,7 @@ class KeysTupleAdapter : RecyclerView.Adapter<KeysTupleAdapter.KeyViewHolder>() 
 
     override fun getItemCount(): Int = data.size
 
+    @Deprecated("Old onboarding flow, delete someday")
     inner class KeyViewHolder(
         binding: ItemSecurityKeyBinding
     ) : RecyclerView.ViewHolder(binding.root) {

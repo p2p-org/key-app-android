@@ -1,11 +1,11 @@
 package org.p2p.core.utils
 
-import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants.FIAT_FRACTION_LENGTH
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 import kotlin.math.pow
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.FIAT_FRACTION_LENGTH
 
 private const val POWER_VALUE = 10.0
 const val DEFAULT_DECIMAL = 9
@@ -34,7 +34,8 @@ fun BigDecimal.scaleShortOrFirstNotZero(): BigDecimal {
         } else {
             SCALE_VALUE_SHORT
         }
-        setScale(scale, RoundingMode.HALF_EVEN).stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+        // removing zeros, case: 0.02000 -> 0.2
+        setScale(scale, RoundingMode.HALF_EVEN).stripTrailingZeros()
     }
 }
 
@@ -108,6 +109,12 @@ fun BigDecimal.asNegativeUsdTransaction(): String = asUsdTransaction("-")
 fun BigDecimal.asUsdTransaction(
     transactionSymbol: String
 ): String = if (lessThenMinValue()) "<$ 0.01" else "$transactionSymbol$ ${formatFiat()}"
+
+fun BigDecimal.asUsdSwap(): String = when {
+    isZero() -> "0 USD"
+    lessThenMinValue() -> "<0.01 USD"
+    else -> "≈${formatFiat()} USD"
+}
 
 fun Int?.orZero(): Int = this ?: 0
 
