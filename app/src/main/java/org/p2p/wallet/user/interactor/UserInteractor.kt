@@ -2,10 +2,13 @@ package org.p2p.wallet.user.interactor
 
 import androidx.core.content.edit
 import android.content.SharedPreferences
+import com.google.gson.Gson
 import timber.log.Timber
 import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenData
+import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -21,6 +24,9 @@ import org.p2p.wallet.utils.emptyString
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
+private const val TAG = "UserInteractor"
+const val TOKENS_FILE_NAME = "tokens.json"
+
 class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
@@ -28,7 +34,9 @@ class UserInteractor(
     private val recipientsLocalRepository: RecipientsLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val externalStorageRepository: ExternalStorageRepository,
+    private val gson: Gson
 ) {
 
     fun findTokenData(mintAddress: String): Token? {
@@ -64,8 +72,26 @@ class UserInteractor(
     suspend fun getBalance(address: Base58String): Long = rpcRepository.getBalance(address.base58Value)
 
     suspend fun loadAllTokensData() {
+        val file = externalStorageRepository.readJsonFile(TOKENS_FILE_NAME)
+
+        if (file != null) {
+            Timber.tag(TAG).d("Tokens data file was found. Trying to parse it...")
+            val tokens = gson.fromJson(file.data, Array<TokenData>::class.java)?.toList()
+            if (tokens != null) {
+                Timber.tag(TAG).d("Tokens data were successfully parsed from file.")
+                userLocalRepository.setTokenData(tokens)
+                return
+            }
+        }
+
+        Timber.tag(TAG).d("Tokens data file was not found. Loading from remote")
+        // If the file is not found or empty, load from network
         val data = userRepository.loadAllTokens()
         userLocalRepository.setTokenData(data)
+
+        // Save tokens to the file
+        externalStorageRepository.saveJson(json = gson.toJson(data), fileName = TOKENS_FILE_NAME)
+        return
     }
 
     fun fetchTokens(searchText: String = emptyString(), count: Int, refresh: Boolean) {
