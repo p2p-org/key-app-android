@@ -6,21 +6,20 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.wallet.infrastructure.network.data.InstructionErrorType
+import org.p2p.wallet.infrastructure.network.data.RpcTransactionError
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.jupiter.statemanager.SwapState
+import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.utils.toBase58Instance
 
-private const val LOW_SLIPPAGE_ERROR_CODE = "SlippageToleranceExceeded"
-private const val LOW_SLIPPAGE_ERROR_MESSAGE = "Slippage tolerance exceeded"
+private const val LOW_SLIPPAGE_ERROR_CODE = 6001
 
 class JupiterSwapInteractor(
     private val relaySdkFacade: RelaySdkFacade,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val swapTransactionRepository: JupiterSwapTransactionRepository,
     private val rpcSolanaRepository: RpcSolanaRepository
 ) {
     class LowSlippageRpcError(cause: ServerException) : Throwable(cause.message)
@@ -47,9 +46,10 @@ class JupiterSwapInteractor(
         Timber.i("Swap tokens success: $firstTransactionSignature")
         JupiterSwapTokensResult.Success
     } catch (error: ServerException) {
-        val errorMessage = error.message.orEmpty()
-        if (LOW_SLIPPAGE_ERROR_CODE in errorMessage ||
-            LOW_SLIPPAGE_ERROR_MESSAGE in errorMessage
+        if (error.domainErrorType != null &&
+            error.domainErrorType is RpcTransactionError.InstructionError &&
+            error.domainErrorType.errorType is InstructionErrorType.Custom &&
+            error.domainErrorType.errorType.programErrorId == LOW_SLIPPAGE_ERROR_CODE.toLong()
         ) {
             JupiterSwapTokensResult.Failure(LowSlippageRpcError(error))
         } else {

@@ -8,7 +8,8 @@ class ServerException(
     val errorCode: ErrorCode,
     fullMessage: String,
     private val errorMessage: String?,
-    val jsonErrorBody: JsonObject? = null
+    val jsonErrorBody: JsonObject? = null,
+    val domainErrorType: RpcTransactionError? = null
 ) : IOException("statusCode: $errorCode, errorMessage: $fullMessage") {
 
     fun getErrorMessage(resources: Resources) = if (errorCode.hasSpecifiedMessage) {
