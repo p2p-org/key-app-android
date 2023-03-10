@@ -18,7 +18,7 @@ import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogJupiterSwapTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
+import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
 import org.p2p.wallet.updates.ConnectionStateProvider

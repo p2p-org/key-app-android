@@ -12,8 +12,8 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
-import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
-import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
+import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 
 private const val TAG = "RootPresenter"
 
