@@ -17,7 +17,7 @@ import org.p2p.wallet.swap.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensCellModelPayload
 
 class SwapTokensARoundedItemDecoration(
-    @Px round: Float = 12f.toPx()
+    @Px round: Float = 16f.toPx()
 ) : RecyclerView.ItemDecoration() {
 
     private val shapeTopRounded: ShapeAppearanceModel = shapeTopRounded(round)
