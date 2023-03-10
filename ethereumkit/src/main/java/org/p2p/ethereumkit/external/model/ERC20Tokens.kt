@@ -1,6 +1,7 @@
 package org.p2p.ethereumkit.external.model
 
 import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
+import org.p2p.core.utils.Constants.ETH_NAME
 import org.p2p.core.utils.Constants.ETH_SYMBOL
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
 import org.p2p.core.utils.Constants.SOL_NAME
@@ -33,7 +34,7 @@ enum class ERC20Tokens(
         mintAddress = "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
         coingeckoId = ETH_COINGECKO_ID,
         tokenIconUrl = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
-        replaceTokenName = "Ethereum",
+        replaceTokenName = ETH_NAME,
         replaceTokenSymbol = ETH_SYMBOL
     ),
     USDC(
