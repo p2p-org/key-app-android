@@ -3,14 +3,18 @@ package org.p2p.wallet.jupiter.repository.tokens
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.withContext
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.date.toZonedDateTime
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.toBase58Instance
 
 internal class JupiterSwapTokensRemoteRepository(
@@ -18,6 +22,7 @@ internal class JupiterSwapTokensRemoteRepository(
     private val localRepository: JupiterSwapTokensLocalRepository,
     private val dispatchers: CoroutineDispatchers,
     private val userRepository: UserLocalRepository,
+    private val pricesRepository: TokenPricesRemoteRepository,
     private val swapStorage: JupiterSwapStorageContract
 ) : JupiterSwapTokensRepository {
 
@@ -67,4 +72,22 @@ internal class JupiterSwapTokensRemoteRepository(
         val now = System.currentTimeMillis()
         return (now - fetchTokensDate) <= TimeUnit.DAYS.toMillis(1) // check day has passed
     }
+
+    override suspend fun getTokenRate(token: JupiterSwapToken): TokenPrice? =
+        withContext(dispatchers.io) {
+            if (token.coingeckoId == null) {
+                null
+            } else {
+                try {
+                    pricesRepository.getTokenPriceById(
+                        tokenId = TokenId(token.coingeckoId),
+                        targetCurrency = USD_READABLE_SYMBOL
+                    )
+                } catch (error: Throwable) {
+                    // coingecko can return empty price: []
+                    Timber.i(error)
+                    null
+                }
+            }
+        }
 }

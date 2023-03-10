@@ -79,7 +79,8 @@ class JupiterSwapSettingsPresenter(
             }
             SwapState.InitialLoading,
             is SwapState.LoadingTransaction,
-            is SwapState.TokenAZero -> Unit
+            is SwapState.TokenAZero,
+            is SwapState.TokenANotZero -> Unit
         }
     }
 
@@ -180,6 +181,8 @@ class JupiterSwapSettingsPresenter(
                 loadingMapper.mapLoadingList()
             }
             is SwapState.LoadingTransaction -> {
+                val solToken = tokens.firstOrNull { it.isSol() }
+                val solTokenRate = solToken?.let { swapTokensRepository.getTokenRate(it) }
                 contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
                     routes = state.routes,
@@ -187,9 +190,13 @@ class JupiterSwapSettingsPresenter(
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
                     tokenA = state.tokenA,
+                    solTokenForFee = solToken,
+                    solTokenRate = solTokenRate
                 )
             }
             is SwapState.SwapLoaded -> {
+                val solToken = tokens.firstOrNull { it.isSol() }
+                val solTokenRate = solToken?.let { swapTokensRepository.getTokenRate(it) }
                 contentMapper.mapForSwapLoadedState(
                     slippage = state.slippage,
                     routes = state.routes,
@@ -198,6 +205,8 @@ class JupiterSwapSettingsPresenter(
                     tokenBAmount = state.amountTokenB,
                     tokenB = state.tokenB,
                     tokenA = state.tokenA,
+                    solTokenForFee = solToken,
+                    solTokenRate = solTokenRate
                 )
             }
             is SwapState.SwapException -> {
