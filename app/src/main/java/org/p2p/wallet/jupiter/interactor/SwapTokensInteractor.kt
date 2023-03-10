@@ -74,12 +74,13 @@ class SwapTokensInteractor(
 
         // Filter items that start with the query
         swapTokens.filterTo(filteredList) {
-            it.tokenSymbol.startsWith(query, ignoreCase = true)
+            it.tokenSymbol.startsWith(query, ignoreCase = true) || it.tokenName.startsWith(query, ignoreCase = true)
         }
 
         // Filter items that contain the query
         swapTokens.filterTo(filteredList) {
-            it.tokenSymbol.contains(query, ignoreCase = true) && !it.tokenSymbol.startsWith(query, ignoreCase = true)
+            it.tokenSymbol.contains(query, ignoreCase = true) && !it.tokenSymbol.startsWith(query, ignoreCase = true) ||
+                it.tokenName.contains(query, ignoreCase = true) && !it.tokenName.startsWith(query, ignoreCase = true)
         }
 
         return filteredList
