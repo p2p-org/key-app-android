@@ -6,7 +6,7 @@ data class DeviceToken(
     @SerializedName("type")
     val type: String = "device",
     @SerializedName("device_token")
-    val deviceToken: String,
+    val deviceToken: String?,
     @SerializedName("device_info")
     val deviceInfo: DeviceInfo? = null,
     @SerializedName("client_id")

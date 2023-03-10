@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="@string/receive_on_solana" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/buttonAction"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
+
+            <FrameLayout
+                android:id="@+id/containerQr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/imageViewQr"
+                    android:layout_width="220dp"
+                    android:layout_height="220dp"
+                    android:layout_gravity="center"
+                    tools:ignore="ContentDescription"
+                    tools:src="@tools:sample/avatars" />
+
+                <FrameLayout
+                    android:id="@+id/containerWatermark"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_circle">
+
+                    <org.p2p.uikit.atoms.UiKitRoundedImageView
+                        android:id="@+id/imageViewWatermark"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_sol"
+                        app:cornerRadius="16dp" />
+
+                </FrameLayout>
+
+            </FrameLayout>
+
+            <org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
+                android:id="@+id/financeBlockAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/containerQr" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/containerBanner"
+                android:layout_width="match_parent"
+                android:layout_height="108dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_banner_rounded"
+                android:backgroundTint="@color/light_grass"
+                android:paddingHorizontal="20dp"
+                app:layout_constraintTop_toBottomOf="@id/financeBlockAddress">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/receive_ethereum_banner_text"
+                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+                    android:textColor="@color/text_night"
+                    app:layout_constraintEnd_toStartOf="@id/imageViewMoney"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imageViewMoney"
+                    android:layout_width="72dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/placeholder_receive_banner"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/containerInstruction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_snow_rounded_16"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="20dp"
+                app:layout_constraintTop_toBottomOf="@id/containerBanner">
+
+                <TextView
+                    android:id="@+id/textViewFirstNum"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/bg_circle_stroke_icon_secondary"
+                    android:gravity="center"
+                    android:text="@string/receive_num_1"
+                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Label1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/receive_ethereum_step_1"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/textViewFirstNum"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textViewSecondNum"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_circle_stroke_icon_secondary"
+                    android:gravity="center"
+                    android:text="@string/receive_num_2"
+                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Label1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textViewFirstNum" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/receive_ethereum_step_2"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+                    app:layout_constraintBottom_toBottomOf="@id/textViewSecondNum"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/textViewFirstNum"
+                    app:layout_constraintTop_toTopOf="@id/textViewSecondNum" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonAction"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/receive_copy_address"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="1" />
+
+    <org.p2p.wallet.common.ui.widget.ProgressView
+        android:id="@+id/progressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        tools:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

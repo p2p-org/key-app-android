@@ -6,11 +6,11 @@ import org.p2p.wallet.common.mvp.MvpView
 
 interface NewReceiveSolanaContract {
     interface View : MvpView {
-        fun showQrAndUsername(qrBitmap: Bitmap, username: String?)
+        fun initView(qrBitmap: Bitmap, username: String?, tokenAddress: String)
         fun showLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun loadQr(tokenAddress: String)
+        fun load()
     }
 }

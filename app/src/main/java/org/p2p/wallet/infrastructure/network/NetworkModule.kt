@@ -35,10 +35,10 @@ import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
+import org.p2p.wallet.jupiter.JupiterModule.JUPITER_RETROFIT_QUALIFIER
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
-import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
 
@@ -120,7 +120,7 @@ object NetworkModule : InjectionModule {
             )
         }
 
-        single(named(SwapModule.JUPITER_RETROFIT_QUALIFIER)) {
+        single(named(JUPITER_RETROFIT_QUALIFIER)) {
             val baseUrl = androidContext().getString(R.string.jupiterQuoteBaseUrl)
             getRetrofit(
                 baseUrl = baseUrl,

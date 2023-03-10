@@ -19,12 +19,12 @@ import org.p2p.uikit.utils.drawable.shape.shapeTopRounded
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 
-fun groupedRoundingFinanceBlockDecoration(@Px round: Float = 12f.toPx()) =
+fun groupedRoundingFinanceBlockDecoration(@Px round: Float = 16f.toPx()) =
     GroupedRoundingDecoration(FinanceBlockCellModel::class, round)
 
 class GroupedRoundingDecoration(
     private val itemCellType: KClass<out AnyCellItem>,
-    @Px round: Float = 12f.toPx(),
+    @Px round: Float = 16f.toPx(),
 ) : ItemDecoration() {
 
     private val shapeTopRounded: ShapeAppearanceModel = shapeTopRounded(round)
@@ -38,7 +38,7 @@ class GroupedRoundingDecoration(
         }
     }
 
-    private fun roundItem(view: View, parent: RecyclerView) {
+    fun roundItem(view: View, parent: RecyclerView) {
         val adapter = parent.adapter ?: return
         val viewHolder = parent.getChildViewHolder(view) ?: return
         val items = adapter.getItems()
