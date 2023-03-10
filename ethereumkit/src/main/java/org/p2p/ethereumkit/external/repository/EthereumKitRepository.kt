@@ -64,8 +64,8 @@ internal class EthereumKitRepository(
             .map { token ->
                 async {
                     val metadata = balanceRepository.getTokenMetadata(token.contractAddress)
-                    val mintAddress = ERC20Tokens.findToken(token.contractAddress).mintAddress
-                    mapToTokenMetadata(balanceResponse = token, metadata = metadata, mintAddress = mintAddress)
+                    val erc20Token = ERC20Tokens.findToken(token.contractAddress)
+                    mapToTokenMetadata(balanceResponse = token, metadata = metadata, erc20Token = erc20Token)
                 }
             }
             .awaitAll()
