@@ -18,21 +18,17 @@ class EndlessScrollListener(
         super.onScrolled(recyclerView, dx, dy)
         onYScroll?.invoke(dy)
 
-        val visibleItemCount = layoutManager.childCount
+        val visibleItemCount = recyclerView.childCount
         val totalItemCount = layoutManager.itemCount
-        val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+        val firstVisibleItem = layoutManager.findLastVisibleItemPosition()
 
         if (totalItemCount == visibleItemCount) return
-
-        if (totalItemCount > totalLoadedItems) {
+        if (isLoading && totalItemCount > totalLoadedItems) {
             isLoading = false
             totalLoadedItems = totalItemCount
-            return
         }
-
-        val smth = totalItemCount - visibleItemCount <= firstVisibleItem + VISIBLE_THRESHOLD
-        if (!isLoading && smth) {
-            loadNextPage(totalItemCount)
+        if (!isLoading && totalItemCount - visibleItemCount <= firstVisibleItem + VISIBLE_THRESHOLD) {
+            loadNextPage.invoke(totalLoadedItems)
             isLoading = true
         }
     }

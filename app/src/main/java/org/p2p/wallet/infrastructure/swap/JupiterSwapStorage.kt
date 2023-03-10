@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import timber.log.Timber
-import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
-import org.p2p.wallet.swap.jupiter.repository.routes.JupiterAvailableSwapRoutesMap
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
+import org.p2p.wallet.jupiter.repository.routes.JupiterAvailableSwapRoutesMap
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.fromJsonReified
 import org.p2p.wallet.utils.toBase58Instance
