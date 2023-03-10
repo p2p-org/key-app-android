@@ -37,14 +37,14 @@ class ReceiveTokensPresenter(
     private var searchJob: Job? = null
 
     private val tokensFlow = MutableStateFlow<List<AnyCellItem>>(emptyList())
-    private lateinit var pinedWormholeTokens: List<TokenData>
-    private lateinit var pinedWormholeTokensAddresses: List<String>
+    private lateinit var pinnedWormholeTokens: List<TokenData>
+    private lateinit var pinnedWormholeTokensAddresses: List<String>
 
     override fun attach(view: ReceiveTokensContract.View) {
         super.attach(view)
         launch {
-            pinedWormholeTokens = preparePinedWormholeTokens()
-            pinedWormholeTokensAddresses = pinedWormholeTokens.map { it.mintAddress }
+            pinnedWormholeTokens = preparePinedWormholeTokens()
+            pinnedWormholeTokensAddresses = pinnedWormholeTokens.map { it.mintAddress }
             val tokensForReceiveBanner = interactor.getTokensForBuy(
                 availableTokensSymbols = listOf(
                     Constants.SOL_SYMBOL,
@@ -141,7 +141,7 @@ class ReceiveTokensPresenter(
                 launch {
                     val dropSize = tokensFlow.value.size
                     val oldItems = if (dropSize == 0) {
-                        tokensFlow.value + mapTokenToCellItem(pinedWormholeTokens)
+                        tokensFlow.value + mapTokenToCellItem(pinnedWormholeTokens)
                     } else {
                         tokensFlow.value
                     }
@@ -149,7 +149,7 @@ class ReceiveTokensPresenter(
                     val newItems = data.result
                         .drop(dropSize)
                         .toMutableList()
-                        .filter { it.mintAddress !in pinedWormholeTokensAddresses }
+                        .filter { it.mintAddress !in pinnedWormholeTokensAddresses }
                     val result = oldItems + mapTokenToCellItem(newItems)
                     tokensFlow.emit(result)
                 }
