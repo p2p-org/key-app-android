@@ -1,10 +1,10 @@
 package org.p2p.ethereumkit.external.model
 
+import java.math.BigDecimal
+import java.math.BigInteger
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalanceResponse
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenMetadataResponse
 import org.p2p.ethereumkit.internal.models.EthAddress
-import java.math.BigDecimal
-import java.math.BigInteger
 
 data class EthTokenMetadata(
     val contractAddress: EthAddress,
@@ -20,15 +20,16 @@ data class EthTokenMetadata(
 internal fun mapToTokenMetadata(
     balanceResponse: TokenBalanceResponse,
     metadata: TokenMetadataResponse,
-    mintAddress: String
+    erc20Token: ERC20Tokens
 ): EthTokenMetadata {
+
     return EthTokenMetadata(
         contractAddress = balanceResponse.contractAddress,
-        mintAddress = mintAddress,
+        mintAddress = erc20Token.mintAddress,
         balance = balanceResponse.tokenBalance,
         decimals = metadata.decimals,
-        logoUrl = metadata.logoUrl.orEmpty(),
-        tokenName = metadata.tokenName.orEmpty(),
-        symbol = metadata.symbol.orEmpty()
+        logoUrl = erc20Token.tokenIconUrl ?: metadata.logoUrl.orEmpty(),
+        tokenName = erc20Token.replaceTokenName ?: metadata.tokenName.orEmpty(),
+        symbol = erc20Token.replaceTokenSymbol ?: metadata.symbol.orEmpty()
     )
 }

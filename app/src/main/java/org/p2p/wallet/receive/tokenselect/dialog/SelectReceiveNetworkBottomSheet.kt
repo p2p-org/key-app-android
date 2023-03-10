@@ -85,20 +85,22 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
         return listOf<AnyCellItem>(
             createUiCellModel(
                 ReceiveNetwork.SOLANA,
+                Constants.SOL_NAME,
                 tokenDataForNetworks.firstOrNull { it.tokenSymbol == Constants.SOL_SYMBOL }
             ),
             createUiCellModel(
                 ReceiveNetwork.ETHEREUM,
+                Constants.ETH_NAME,
                 tokenDataForNetworks.firstOrNull { it.tokenSymbol == Constants.ETH_SYMBOL }
             )
         )
     }
 
-    private fun createUiCellModel(network: ReceiveNetwork, token: Token?): FinanceBlockCellModel {
+    private fun createUiCellModel(network: ReceiveNetwork, networkName: String, token: Token?): FinanceBlockCellModel {
         return FinanceBlockCellModel(
             leftSideCellModel = createLeftSideModel(
                 tokenIconUrl = token?.iconUrl.orEmpty(),
-                tokenName = token?.tokenName.orEmpty(),
+                tokenName = networkName,
             ),
             payload = network
         )
