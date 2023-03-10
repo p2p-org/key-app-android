@@ -2,6 +2,8 @@ package org.p2p.wallet.receive.tokenselect
 
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -70,7 +72,15 @@ class ReceiveTokensFragment :
         }),
         diffUtilCallback = TokenDiffCallback()
     )
-    private var scrollListener: EndlessScrollListener? = null
+    private val layoutManager: LinearLayoutManager by lazy {
+        LinearLayoutManager(requireContext())
+    }
+    private val scrollListener: EndlessScrollListener by lazy {
+        EndlessScrollListener(
+            layoutManager = layoutManager,
+            loadNextPage = { presenter.load(isRefresh = false) }
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,26 +88,24 @@ class ReceiveTokensFragment :
         inflateSearchMenu(binding.toolbar)
 
         with(binding.recyclerViewTokens) {
-            val linearLayoutManager = LinearLayoutManager(requireContext())
-            layoutManager = linearLayoutManager
             attachAdapter(this@ReceiveTokensFragment.adapter)
             addItemDecoration(groupedRoundingFinanceBlockDecoration())
             addItemDecoration(onePxDividerFinanceBlockDecoration(requireContext()))
-
-            clearOnScrollListeners()
-            scrollListener = EndlessScrollListener(
-                layoutManager = linearLayoutManager,
-                loadNextPage = { presenter.load(isRefresh = false) }
-            ).also {
-                addOnScrollListener(it)
+            doOnAttach {
+                layoutManager = this@ReceiveTokensFragment.layoutManager
+                addOnScrollListener(scrollListener)
+            }
+            doOnDetach {
+                layoutManager = null
+                removeOnScrollListener(scrollListener.also { it.reset() })
             }
         }
-        presenter.load(isRefresh = true)
         childFragmentManager.setFragmentResultListener(
             KEY_REQUEST_NETWORK,
             viewLifecycleOwner,
             ::onFragmentResult
         )
+        presenter.load(isRefresh = true)
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
@@ -148,13 +156,8 @@ class ReceiveTokensFragment :
         imageViewSecondIcon.setTokenIconUrl(secondTokenUrl)
     }
 
-    override fun showTokenItems(items: List<AnyCellItem>, scrollToUp: Boolean) {
-        with(binding) {
-            adapter.items = items
-            if (scrollToUp) {
-                recyclerViewTokens.smoothScrollToPosition(0)
-            }
-        }
+    override fun showTokenItems(items: List<AnyCellItem>) {
+        adapter.setItems(items)
     }
 
     override fun showEmptyState(isEmpty: Boolean) = with(binding) {
@@ -166,8 +169,8 @@ class ReceiveTokensFragment :
         binding.layoutReceiveBanner.isVisible = isVisible
     }
 
-    override fun resetScrollPosition() {
-        scrollListener?.reset()
+    override fun resetView() {
+        scrollListener.reset()
         binding.recyclerViewTokens.smoothScrollToPosition(0)
     }
 
@@ -217,6 +220,11 @@ private class TokenDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
 
     override fun areItemsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {
+            oldItem is FinanceBlockCellModel && newItem is FinanceBlockCellModel -> {
+                val oldMint = oldItem.typedPayload<ReceiveTokenPayload>().tokenData.mintAddress
+                val newMint = newItem.typedPayload<ReceiveTokenPayload>().tokenData.mintAddress
+                oldMint == newMint
+            }
             else -> oldItem::class == newItem::class
         }
     }

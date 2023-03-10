@@ -11,10 +11,10 @@ import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
 interface ReceiveTokensContract {
     interface View : MvpView {
         fun setBannerTokens(firstTokenUrl: String, secondTokenUrl: String)
-        fun showTokenItems(items: List<AnyCellItem>, scrollToUp: Boolean)
+        fun showTokenItems(items: List<AnyCellItem>)
         fun showEmptyState(isEmpty: Boolean)
         fun setBannerVisibility(isVisible: Boolean)
-        fun resetScrollPosition()
+        fun resetView()
         fun showSelectNetworkDialog(tokensToShowNetworks: List<Token>)
         fun openReceiveInSolana(tokenData: TokenData)
         fun openReceiveInEthereum(tokenData: TokenData)
