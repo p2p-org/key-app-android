@@ -158,7 +158,7 @@ class SwapWidgetMapper {
     private fun balance(token: SwapTokenModel): TextViewCellModel.Raw =
         when (token) {
             is SwapTokenModel.JupiterToken -> TextViewCellModel.Raw(
-                TextContainer(R.string.swap_main_balance_amount, "0 ${token.tokenSymbol}")
+                TextContainer(R.string.swap_main_balance_amount, "0")
             )
             is SwapTokenModel.UserToken -> TextViewCellModel.Raw(
                 TextContainer(R.string.swap_main_balance_amount, tokenAmount(token, includeSymbol = false))
