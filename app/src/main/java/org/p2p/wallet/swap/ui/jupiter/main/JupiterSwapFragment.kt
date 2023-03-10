@@ -303,6 +303,6 @@ class JupiterSwapFragment :
     }
 
     override fun showKeyboard() {
-        if (openedFrom != SwapOpenedFrom.BOTTOM_NAVIGATION) binding.swapWidgetTo.focusAndShowKeyboard()
+        if (openedFrom != SwapOpenedFrom.BOTTOM_NAVIGATION) binding.swapWidgetFrom.focusAndShowKeyboard()
     }
 }
