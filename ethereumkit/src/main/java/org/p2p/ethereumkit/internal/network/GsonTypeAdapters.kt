@@ -13,6 +13,7 @@ import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import java.lang.reflect.Type
 import java.math.BigInteger
 import java.util.*
+import org.p2p.core.token.SolAddress
 
 class BigIntegerTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<BigInteger?>() {
     override fun write(writer: JsonWriter, value: BigInteger?) {
@@ -114,6 +115,29 @@ class AddressTypeAdapter : TypeAdapter<EthAddress?>() {
     }
 }
 
+class SolAddressTypeAdapter : TypeAdapter<SolAddress?>() {
+
+    override fun write(writter: JsonWriter, value: SolAddress?) {
+        if (value == null) {
+            writter.nullValue()
+        } else {
+            writter.value(value.raw)
+        }
+    }
+
+    override fun read(reader: JsonReader): SolAddress? {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull()
+            return null
+        }
+        return try {
+            SolAddress(reader.nextString())
+        } catch (error: Throwable) {
+            null
+        }
+    }
+}
+
 class DefaultBlockParameterTypeAdapter : TypeAdapter<DefaultBlockParameter?>() {
     override fun write(writer: JsonWriter, value: DefaultBlockParameter?) {
         value?.let {
@@ -131,19 +155,19 @@ class DefaultBlockParameterTypeAdapter : TypeAdapter<DefaultBlockParameter?>() {
 }
 
 class OptionalTypeAdapter<T>(
-        private val type: Type
+    private val type: Type
 ) : TypeAdapter<Optional<T>>() {
 
     private val gson: Gson = GsonBuilder()
-            .setLenient()
-            .registerTypeAdapter(EthAddress::class.java, AddressTypeAdapter())
-            .registerTypeAdapter(ByteArray::class.java, ByteArrayTypeAdapter())
-            .registerTypeAdapter(BigInteger::class.java, BigIntegerTypeAdapter())
-            .registerTypeAdapter(Long::class.java, LongTypeAdapter())
-            .registerTypeAdapter(object : TypeToken<Long?>() {}.type, LongTypeAdapter())
-            .registerTypeAdapter(Int::class.java, IntTypeAdapter())
-            .registerTypeAdapter(object : TypeToken<Int?>() {}.type, IntTypeAdapter())
-            .create()
+        .setLenient()
+        .registerTypeAdapter(EthAddress::class.java, AddressTypeAdapter())
+        .registerTypeAdapter(ByteArray::class.java, ByteArrayTypeAdapter())
+        .registerTypeAdapter(BigInteger::class.java, BigIntegerTypeAdapter())
+        .registerTypeAdapter(Long::class.java, LongTypeAdapter())
+        .registerTypeAdapter(object : TypeToken<Long?>() {}.type, LongTypeAdapter())
+        .registerTypeAdapter(Int::class.java, IntTypeAdapter())
+        .registerTypeAdapter(object : TypeToken<Int?>() {}.type, IntTypeAdapter())
+        .create()
 
     override fun write(writer: JsonWriter, value: Optional<T>) {
         if (value.isPresent) {
@@ -160,5 +184,4 @@ class OptionalTypeAdapter<T>(
         }
         return Optional.of(gson.fromJson(reader, type))
     }
-
 }

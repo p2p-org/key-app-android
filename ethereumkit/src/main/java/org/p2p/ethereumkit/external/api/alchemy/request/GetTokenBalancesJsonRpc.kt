@@ -8,7 +8,7 @@ import java.lang.reflect.Type
 internal data class GetTokenBalancesJsonRpc(
     @Transient val address: EthAddress,
     @Transient val tokenAddresses: List<EthAddress>
-) : JsonRpc<TokenBalancesResponse>(
+) : JsonRpc<List<Any>,TokenBalancesResponse>(
     method = "alchemy_getTokenBalances",
     params = listOf(address, tokenAddresses)
 ) {

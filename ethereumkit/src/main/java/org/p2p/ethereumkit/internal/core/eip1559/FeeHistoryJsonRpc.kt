@@ -7,7 +7,7 @@ class FeeHistoryJsonRpc(
         @Transient val blocksCount: Long,
         @Transient val defaultBlockParameter: DefaultBlockParameter,
         @Transient val rewardPercentile: List<Int>,
-) : JsonRpc<FeeHistory>(
+) : JsonRpc<List<Any>,FeeHistory>(
         method = "eth_feeHistory",
         params = listOf(blocksCount, defaultBlockParameter, rewardPercentile)
 ) {

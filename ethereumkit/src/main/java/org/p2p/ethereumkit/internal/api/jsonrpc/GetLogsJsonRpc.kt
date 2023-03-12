@@ -11,7 +11,7 @@ class GetLogsJsonRpc(
     @Transient val fromBlock: DefaultBlockParameter,
     @Transient val toBlock: DefaultBlockParameter,
     @Transient val topics: List<ByteArray?>
-) : JsonRpc<ArrayList<TransactionLog>>(
+) : JsonRpc<List<Any>,ArrayList<TransactionLog>>(
         method = "eth_getLogs",
         params = listOf(GetLogsParams(address, fromBlock, toBlock, topics))
 ) {
