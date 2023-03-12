@@ -62,6 +62,7 @@ class EthereumReceiveFragment :
                 showUiKitSnackBar(messageResId = R.string.receive_eth_address_copied)
             }
             financeBlockAddress.apply {
+                updateHorizontalPadding(start = 16, end = 8)
                 bind(
                     FinanceBlockCellModel(
                         leftSideCellModel = LeftSideCellModel.IconWithText(

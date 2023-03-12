@@ -44,6 +44,13 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
         bindViewStyle(styleType)
     }
 
+    fun updateHorizontalPadding(start: Int, end: Int) {
+        updatePadding(
+            left = start.toPx(),
+            right = end.toPx()
+        )
+    }
+
     fun setOnClickAction(onItemClickAction: (view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit) {
         setOnClickListener {
             onItemClickAction.invoke(this, item)
