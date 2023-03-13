@@ -166,9 +166,9 @@ object JupiterModule : InjectionModule {
                     dispatchers = get(),
                     handlers = handlers,
                     selectedSwapTokenStorage = get(),
-                    tokenPricesRepository = get(),
                     swapValidator = get(),
                     analytics = get(),
+                    swapTokensRepository = get()
                 )
             }
         }
@@ -199,6 +199,7 @@ object JupiterModule : InjectionModule {
             SwapContentSettingsMapper(
                 commonMapper = get(),
                 swapStateManager = stateManager,
+                swapTokensRepository = get()
             )
         }
         factory { (stateManagerHolderKey: String) ->

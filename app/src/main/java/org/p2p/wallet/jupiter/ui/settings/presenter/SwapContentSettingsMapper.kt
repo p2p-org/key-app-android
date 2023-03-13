@@ -286,11 +286,16 @@ class SwapContentSettingsMapper(
         return route.marketInfos.map { marketInfo ->
             val lpFee = marketInfo.liquidityFee
             val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return null
-            val tokenRate = swapTokensRepository.getTokenRate(lpToken) ?: return null
+            val tokenRate =
+                swapStateManager.getTokenRate(SwapTokenModel.JupiterToken(lpToken))
+                    .filterIsInstance<SwapRateLoaderState.Loaded>()
+                    .map { it.rate }
+                    .firstOrNull()
+                    ?: return null
 
             lpFee.amountInLamports
                 .fromLamports(lpToken.decimals)
-                .multiply(tokenRate.price)
+                .multiply(tokenRate)
         }
             .sumOf { it }
             .asUsdSwap()
