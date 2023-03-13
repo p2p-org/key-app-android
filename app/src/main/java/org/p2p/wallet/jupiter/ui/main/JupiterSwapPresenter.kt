@@ -28,6 +28,7 @@ import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.model.SwapRateTickerState
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.statemanager.SwapFeatureException
 import org.p2p.wallet.jupiter.statemanager.SwapState
@@ -36,12 +37,11 @@ import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.jupiter.statemanager.rate.SwapRateTickerManager
-import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.jupiter.model.SwapRateTickerState
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapButtonMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
@@ -291,6 +291,8 @@ class JupiterSwapPresenter(
     }
 
     private fun handleOtherException(state: SwapState.SwapException.OtherException) {
+        Timber.e(state.exception)
+
         rateTickerManager.handleSwapException(state)
         mapWidgetStates(state)
         retryAction = {
@@ -310,6 +312,8 @@ class JupiterSwapPresenter(
     }
 
     private fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
+        Timber.i(state.featureException)
+
         rateTickerManager.handleSwapException(state)
         val (widgetAState, _) = mapWidgetStates(state.previousFeatureState)
         when (val featureException = state.featureException) {
