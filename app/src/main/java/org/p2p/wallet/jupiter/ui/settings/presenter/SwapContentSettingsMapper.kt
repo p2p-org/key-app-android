@@ -269,7 +269,7 @@ class SwapContentSettingsMapper(
         accountFee: SwapSettingFeeBox?,
         liquidityFeeList: List<SwapSettingFeeBox>?,
     ) {
-        if (accountFee == null|| liquidityFeeList == null) {
+        if (accountFee == null || liquidityFeeList == null) {
             return
         }
 
