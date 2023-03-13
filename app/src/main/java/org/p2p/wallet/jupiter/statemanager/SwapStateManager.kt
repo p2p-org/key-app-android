@@ -156,18 +156,20 @@ class SwapStateManager(
             is SwapState.TokenANotZero,
             is SwapState.TokenAZero,
             is SwapState.SwapLoaded -> actualNoErrorState
-            is SwapState.LoadingRoutes -> SwapState.TokenANotZero(
-                tokenA = actualNoErrorState.tokenA,
-                tokenB = actualNoErrorState.tokenB,
-                amountTokenA = actualNoErrorState.amountTokenA,
-                slippage = actualNoErrorState.slippage,
-            )
-            is SwapState.LoadingTransaction -> SwapState.TokenANotZero(
-                tokenA = actualNoErrorState.tokenA,
-                tokenB = actualNoErrorState.tokenB,
-                amountTokenA = actualNoErrorState.amountTokenA,
-                slippage = actualNoErrorState.slippage,
-            )
+            is SwapState.LoadingRoutes ->
+                SwapState.TokenANotZero(
+                    tokenA = actualNoErrorState.tokenA,
+                    tokenB = actualNoErrorState.tokenB,
+                    amountTokenA = actualNoErrorState.amountTokenA,
+                    slippage = actualNoErrorState.slippage,
+                )
+            is SwapState.LoadingTransaction ->
+                SwapState.TokenANotZero(
+                    tokenA = actualNoErrorState.tokenA,
+                    tokenB = actualNoErrorState.tokenB,
+                    amountTokenA = actualNoErrorState.amountTokenA,
+                    slippage = actualNoErrorState.slippage,
+                )
             is SwapState.SwapException.FeatureExceptionWrapper ->
                 checkInNotLoadingOldNoErrorState(
                     actualNoErrorState.previousFeatureState,
