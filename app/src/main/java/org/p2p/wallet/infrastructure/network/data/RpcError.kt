@@ -22,6 +22,8 @@ import org.p2p.wallet.utils.getOrNull
  *        "Other"
  *    ]
  * }
+ *    or
+ * "err": "AccountInUse"
  * ```
  * @see [RpcTransactionErrorParserTest]
  * @return valid typed RpcTransactionError or null if parsing is failed
