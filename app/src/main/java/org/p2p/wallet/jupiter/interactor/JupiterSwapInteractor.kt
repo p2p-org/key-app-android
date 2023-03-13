@@ -7,7 +7,7 @@ import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.infrastructure.network.data.InstructionErrorType
-import org.p2p.wallet.infrastructure.network.data.RpcTransactionError
+import org.p2p.wallet.infrastructure.network.data.RpcError
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
@@ -46,10 +46,11 @@ class JupiterSwapInteractor(
         Timber.i("Swap tokens success: $firstTransactionSignature")
         JupiterSwapTokensResult.Success
     } catch (error: ServerException) {
-        if (error.domainErrorType != null &&
-            error.domainErrorType is RpcTransactionError.InstructionError &&
-            error.domainErrorType.errorType is InstructionErrorType.Custom &&
-            error.domainErrorType.errorType.programErrorId == LOW_SLIPPAGE_ERROR_CODE.toLong()
+        val domainErrorType = error.domainErrorType
+        if (domainErrorType != null &&
+            domainErrorType is RpcError.InstructionError &&
+            domainErrorType.instructionErrorType is InstructionErrorType.Custom &&
+            domainErrorType.instructionErrorType.programErrorId == LOW_SLIPPAGE_ERROR_CODE.toLong()
         ) {
             JupiterSwapTokensResult.Failure(LowSlippageRpcError(error))
         } else {

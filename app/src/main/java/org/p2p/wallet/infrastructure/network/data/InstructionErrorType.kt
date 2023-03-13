@@ -8,7 +8,7 @@ sealed interface InstructionErrorType {
     companion object {
         // can be { "Custom" : 1111 } or just plain "SomeError"
         fun from(instructionErrorType: JsonElement): InstructionErrorType {
-            val isCustom = instructionErrorType.isJsonPrimitive
+            val isCustom = !instructionErrorType.isJsonPrimitive
             return if (isCustom) {
                 Custom(programErrorId = instructionErrorType.asJsonObject[KEY_CUSTOM_INSTRUCTION_ERROR_ID].asLong)
             } else {
