@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import kotlin.properties.Delegates
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 

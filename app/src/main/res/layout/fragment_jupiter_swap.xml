@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidget
+            <org.p2p.wallet.jupiter.ui.main.widget.SwapWidget
                 android:id="@+id/swapWidgetFrom"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:layout_constraintVertical_chainStyle="packed" />
 
-            <org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidget
+            <org.p2p.wallet.jupiter.ui.main.widget.SwapWidget
                 android:id="@+id/swapWidgetTo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

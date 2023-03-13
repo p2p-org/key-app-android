@@ -218,7 +218,7 @@ class HomeFragment :
         when (action) {
             HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
             HomeAction.BUY -> presenter.onBuyClicked()
-            HomeAction.RECEIVE -> replaceFragment(ReceiveSolanaFragment.create(token = null))
+            HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             HomeAction.SWAP -> replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.ACTION_PANEL))
             HomeAction.SEND -> presenter.onSendClicked()
         }
@@ -292,7 +292,7 @@ class HomeFragment :
     override fun onBannerClicked(bannerId: Int) {
         when (bannerId) {
             R.id.home_banner_top_up -> {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
+                receiveFragmentFactory.receiveFragment(token = null)
             }
             R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()

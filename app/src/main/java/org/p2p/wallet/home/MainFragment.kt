@@ -39,7 +39,7 @@ import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
-import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapFragment
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.args

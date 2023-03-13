@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -36,10 +37,14 @@ class ReceiveTokensPresenter(
     private var searchJob: Job? = null
 
     private val tokensFlow = MutableStateFlow<List<AnyCellItem>>(emptyList())
+    private lateinit var pinnedWormholeTokens: List<TokenData>
+    private lateinit var pinnedWormholeTokensAddresses: List<String>
 
     override fun attach(view: ReceiveTokensContract.View) {
         super.attach(view)
         launch {
+            pinnedWormholeTokens = preparePinedWormholeTokens()
+            pinnedWormholeTokensAddresses = pinnedWormholeTokens.map { it.mintAddress }
             val tokensForReceiveBanner = interactor.getTokensForBuy(
                 availableTokensSymbols = listOf(
                     Constants.SOL_SYMBOL,
@@ -54,6 +59,24 @@ class ReceiveTokensPresenter(
             )
             observeTokens()
             observeMappedTokens()
+        }
+    }
+
+    private fun preparePinedWormholeTokens(): List<TokenData> {
+        return ERC20Tokens.values().mapNotNull { erc20Token ->
+            interactor.findTokenDataByAddress(erc20Token.mintAddress)?.let { token ->
+                TokenData(
+                    mintAddress = token.mintAddress,
+                    name = erc20Token.replaceTokenName ?: token.tokenName,
+                    symbol = erc20Token.replaceTokenSymbol ?: token.tokenSymbol,
+                    iconUrl = erc20Token.tokenIconUrl ?: token.iconUrl,
+                    decimals = token.decimals,
+                    coingeckoId = erc20Token.coingeckoId,
+                    isWrapped = false,
+                    serumV3Usdc = null,
+                    serumV3Usdt = null
+                )
+            }
         }
     }
 
@@ -115,12 +138,22 @@ class ReceiveTokensPresenter(
                 view?.showEmptyState(isEmpty)
                 view?.setBannerVisibility(!isEmpty && searchText.isEmpty())
 
-                launch {
-                    val dropSize = tokensFlow.value.size
-                    val newItems = data.result.drop(dropSize)
-                    val result = tokensFlow.value + mapTokenToCellItem(newItems)
-                    tokensFlow.emit(result)
+                val isPinnedItemsNeeded = searchText.isEmpty()
+                val dropSize = tokensFlow.value.size
+                val oldItems = if (isPinnedItemsNeeded && dropSize == 0) {
+                    tokensFlow.value + mapTokenToCellItem(pinnedWormholeTokens)
+                } else {
+                    tokensFlow.value
                 }
+
+                val newItems = data.result
+                    .drop(dropSize)
+                    .takeIf { isPinnedItemsNeeded }
+                    ?.filter { it.mintAddress !in pinnedWormholeTokensAddresses }
+                    ?: data.result
+
+                val result = oldItems + mapTokenToCellItem(newItems)
+                tokensFlow.emit(result)
             }
         }
     }

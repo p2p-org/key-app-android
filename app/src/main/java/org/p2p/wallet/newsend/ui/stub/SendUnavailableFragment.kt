@@ -5,6 +5,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
@@ -12,7 +13,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendUnavailableBinding
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
-import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -31,6 +32,7 @@ class SendUnavailableFragment : BaseFragment(R.layout.fragment_send_unavailable)
 
     private val binding: FragmentSendUnavailableBinding by viewBinding()
     private val defaultTokenToBuy: Token by args(ARG_DEFAULT_TOKEN)
+    private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,7 +44,7 @@ class SendUnavailableFragment : BaseFragment(R.layout.fragment_send_unavailable)
                 replaceFragment(NewBuyFragment.create(token = defaultTokenToBuy))
             }
             buttonReceive.setOnClickListener {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
+                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             }
         }
     }

@@ -25,9 +25,9 @@ import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
-import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapMainScreenAnalytics
-import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapSettingsAnalytics
-import org.p2p.wallet.swap.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
+import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
+import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
+import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
 
 object AnalyticsModule : InjectionModule {
     override fun create() = module {

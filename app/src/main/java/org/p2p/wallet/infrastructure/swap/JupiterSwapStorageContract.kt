@@ -1,7 +1,7 @@
 package org.p2p.wallet.infrastructure.swap
 
-import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
-import org.p2p.wallet.swap.jupiter.repository.routes.JupiterAvailableSwapRoutesMap
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
+import org.p2p.wallet.jupiter.repository.routes.JupiterAvailableSwapRoutesMap
 import org.p2p.wallet.utils.Base58String
 
 interface JupiterSwapStorageContract {
