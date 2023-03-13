@@ -43,7 +43,6 @@ interface HomeContract {
         fun clearTokensCache()
         fun onProfileClick()
         fun onAddressClicked()
-
         fun updateTokensIfNeeded()
         fun load()
     }
