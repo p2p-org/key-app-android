@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
@@ -184,20 +185,23 @@ class SwapStateManager(
     private fun handleTokenAChange(newTokenA: SwapTokenModel) {
         val oldTokenAZeroState = getOldTokenAZeroState(state.value) ?: return
         state.value = oldTokenAZeroState.copy(tokenA = newTokenA)
-        if (!validateTokens(newTokenA, oldTokenAZeroState.tokenB)) return
+        if (!areValidTokens(newTokenA, oldTokenAZeroState.tokenB)) return
         selectedSwapTokenStorage.savedTokenAMint = newTokenA.mintAddress
     }
 
     // change switch tokens and try to set old token B amount to new token A amount else zero amount
     private fun handleSwitchTokensAndSaveTokenBAmount() {
-        val oldTokenBAmount = getOldTokenBAmount(state.value) ?: BigDecimal.ZERO
+        val oldTokenBAmount = getOldTokenBAmount(state.value).orZero()
         val oldTokenAZeroState = getOldTokenAZeroState(state.value) ?: return
         val newTokenA = oldTokenAZeroState.tokenB
         val newTokenB = oldTokenAZeroState.tokenA
+
         state.value = oldTokenAZeroState.copy(tokenA = newTokenA, tokenB = newTokenB)
-        if (!validateTokens(newTokenA, newTokenB)) return
+        if (!areValidTokens(newTokenA, newTokenB)) return
+
         selectedSwapTokenStorage.savedTokenAMint = newTokenA.mintAddress
         selectedSwapTokenStorage.savedTokenBMint = newTokenB.mintAddress
+
         analytics.logTokensSwitchClicked(newTokenA = newTokenA, newTokenB = newTokenB)
         if (oldTokenBAmount.isNotZero()) onNewAction(SwapStateAction.TokenAAmountChanged(oldTokenBAmount))
     }
@@ -233,7 +237,7 @@ class SwapStateManager(
         }
     }
 
-    private fun validateTokens(tokenA: SwapTokenModel, tokenB: SwapTokenModel): Boolean {
+    private fun areValidTokens(tokenA: SwapTokenModel, tokenB: SwapTokenModel): Boolean {
         return try {
             swapValidator.validateIsSameTokens(tokenA = tokenA, tokenB = tokenB)
             true
