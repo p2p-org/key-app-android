@@ -1,6 +1,6 @@
 package org.p2p.wallet.infrastructure.network.data
 
-import com.google.gson.JsonObject
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 
 data class ServerErrorResponse(
@@ -23,7 +23,7 @@ data class ErrorDataResponse(
     @SerializedName("logs")
     val logs: List<String>,
     @SerializedName("err")
-    val rpcErrorDetails: JsonObject? = null
+    val rpcErrorDetails: JsonElement? = null // can be object or plain string
 ) {
 
     fun getErrorLog(): String? {

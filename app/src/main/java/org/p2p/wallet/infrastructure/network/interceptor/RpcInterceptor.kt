@@ -2,7 +2,6 @@ package org.p2p.wallet.infrastructure.network.interceptor
 
 import android.net.Uri
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -139,7 +138,7 @@ class RpcInterceptor(
 
         val errorMessage = serverError.error.data?.getErrorLog() ?: serverError.error.message
 
-        val errorType: JsonObject? = serverError.error.data?.rpcErrorDetails
+        val errorType = serverError.error.data?.rpcErrorDetails
         val domainErrorType = runCatching { errorType?.let(RpcError::from) }.getOrNull()
 
         ServerException(
