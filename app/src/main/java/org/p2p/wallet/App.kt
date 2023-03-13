@@ -1,8 +1,12 @@
 package org.p2p.wallet
 
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.work.Configuration
+import androidx.work.WorkManager
 import android.app.Application
 import android.content.Intent
+import android.util.Log.DEBUG
+import android.util.Log.ERROR
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.android.ext.android.inject
@@ -11,6 +15,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import timber.log.Timber
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -22,9 +27,8 @@ import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.utils.SolanajTimberLogger
-import timber.log.Timber
 
-class App : Application() {
+class App : Application(), Configuration.Provider {
     private val crashLogger: CrashLogger by inject()
     private val appCreatedAction: AppCreatedAction by inject()
     private val appsFlyerService: AppsFlyerService by inject()
@@ -34,6 +38,8 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         setupKoin()
+
+        setupWorkManager()
 
         setupTimber()
 
@@ -49,6 +55,18 @@ class App : Application() {
         appCreatedAction.invoke()
         appsFlyerService.install(this, BuildConfig.appsFlyerKey)
         LokaliseService.setup(this, BuildConfig.lokaliseKey, BuildConfig.lokaliseAppId)
+    }
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        val builder = Configuration.Builder()
+
+        if (BuildConfig.DEBUG) {
+            builder.setMinimumLoggingLevel(DEBUG)
+        } else {
+            builder.setMinimumLoggingLevel(ERROR)
+        }
+
+        return builder.build()
     }
 
     private fun setupKoin() {
@@ -76,6 +94,10 @@ class App : Application() {
             .let { startActivity(it) }
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    }
+
+    private fun setupWorkManager() {
+        WorkManager.initialize(this, workManagerConfiguration)
     }
 
     private fun setupTimber() {

@@ -34,6 +34,7 @@ object Constants {
     const val USDT_MINT = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
 
     const val SOL_NAME = "Solana"
+    const val ETH_NAME = "Ethereum"
 
     const val DEVICE_TYPE = "Android"
 

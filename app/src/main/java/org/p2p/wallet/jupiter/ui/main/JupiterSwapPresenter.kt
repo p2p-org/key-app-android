@@ -107,13 +107,10 @@ class JupiterSwapPresenter(
             val pair = currentFeatureState?.getTokensPair()
             val tokenA = pair?.first
             val tokenB = pair?.second
-
+            stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
             val action = if (newAmount.isZero()) {
                 SwapStateAction.EmptyAmountTokenA
             } else {
-                if (tokenB != null) {
-                    view?.setSecondTokenWidgetState(widgetMapper.mapTokenBLoading(token = tokenB))
-                }
                 if (tokenA != null) {
                     widgetAState = widgetMapper.copyAmount(
                         oldWidgetModel = widgetAState,
@@ -123,7 +120,6 @@ class JupiterSwapPresenter(
                     getRateTokenA(widgetAModel = widgetAState, tokenA = tokenA, tokenAmount = newAmount)
                 }
 
-                stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                 delay(AMOUNT_INPUT_DELAY)
                 SwapStateAction.TokenAAmountChanged(newAmount)
             }

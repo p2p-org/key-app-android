@@ -46,7 +46,7 @@ class WebSocketRpcSyncer(
         rpcSocket.stop()
     }
 
-    override fun <T> single(rpc: JsonRpc<T>): Single<T> {
+    override fun <P,T> single(rpc: JsonRpc<P,T>): Single<T> {
         return Single.create { emitter ->
             send(
                     rpc = rpc,
@@ -94,7 +94,7 @@ class WebSocketRpcSyncer(
     }
     //endregion
 
-    private fun <T> send(rpc: JsonRpc<T>, handler: RpcHandler) {
+    private fun <P,T> send(rpc: JsonRpc<P,T>, handler: RpcHandler) {
         rpc.id = currentRpcId.addAndGet(1)
 
         rpcSocket.send(rpc)
@@ -102,7 +102,7 @@ class WebSocketRpcSyncer(
         rpcHandlers[rpc.id] = handler
     }
 
-    private fun <T> send(rpc: JsonRpc<T>, onSuccess: (T) -> Unit, onError: (Throwable) -> Unit) {
+    private fun <P,T> send(rpc: JsonRpc<P,T>, onSuccess: (T) -> Unit, onError: (Throwable) -> Unit) {
         try {
             val rpcHandler = RpcHandler(
                     onSuccess = { response ->

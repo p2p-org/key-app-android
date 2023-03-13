@@ -1,5 +1,6 @@
 package org.p2p.wallet.root
 
+import android.content.Context
 import timber.log.Timber
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -14,6 +15,7 @@ import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
+import org.p2p.wallet.user.worker.TokensDataWorker
 
 private const val TAG = "RootPresenter"
 
@@ -24,12 +26,14 @@ class RootPresenter(
     private val swapTokensRepository: JupiterSwapTokensRepository,
     private val swapRoutesRepository: JupiterSwapRoutesRepository,
     private val newSwapEnabledFeatureToggle: NewSwapEnabledFeatureToggle,
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
+    private val context: Context
 ) : BasePresenter<RootContract.View>(), RootContract.Presenter {
 
     override fun attach(view: RootContract.View) {
         super.attach(view)
         loadInitialData()
+        startPeriodicTokensWorker()
     }
 
     /**
@@ -63,4 +67,13 @@ class RootPresenter(
         .also {
             Timber.tag(TAG).i("Total requests added: ${it.size}")
         }
+
+    /**
+     * Start periodic worker to load tokens data
+     * Every time this function is called, the worker will not be scheduled again
+     * The WorkManager will just ignore it
+     * */
+    private fun startPeriodicTokensWorker() {
+        TokensDataWorker.schedulePeriodicWorker(context)
+    }
 }

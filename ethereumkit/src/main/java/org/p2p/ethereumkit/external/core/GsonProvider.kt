@@ -1,4 +1,4 @@
-package org.p2p.ethereumkexternal.core
+package org.p2p.ethereumkit.external.core
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -17,6 +17,8 @@ import org.p2p.ethereumkit.internal.network.LongTypeAdapter
 import org.p2p.ethereumkit.internal.network.OptionalTypeAdapter
 import java.math.BigInteger
 import java.util.Optional
+import org.p2p.core.token.SolAddress
+import org.p2p.ethereumkit.internal.network.SolAddressTypeAdapter
 
 class GsonProvider {
 
@@ -36,6 +38,7 @@ class GsonProvider {
             registerTypeAdapter(ByteArray::class.java, ByteArrayTypeAdapter())
             registerTypeHierarchyAdapter(DefaultBlockParameter::class.java, DefaultBlockParameterTypeAdapter())
             registerTypeAdapter(EthAddress::class.java, AddressTypeAdapter())
+            registerTypeAdapter(SolAddress::class.java, SolAddressTypeAdapter())
             registerTypeAdapter(
                 object : TypeToken<Optional<RpcTransaction>>() {}.type,
                 OptionalTypeAdapter<RpcTransaction>(RpcTransaction::class.java)

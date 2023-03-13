@@ -6,7 +6,7 @@ import java.lang.reflect.Type
 
 class GetTransactionReceiptJsonRpc(
         @Transient val transactionHash: ByteArray
-) : JsonRpc<RpcTransactionReceipt>(
+) : JsonRpc<List<Any>,RpcTransactionReceipt>(
         method = "eth_getTransactionReceipt",
         params = listOf(transactionHash)
 ) {

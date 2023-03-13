@@ -157,7 +157,7 @@ class ReceiveTokensFragment :
     }
 
     override fun showTokenItems(items: List<AnyCellItem>) {
-        adapter.setItems(items)
+        adapter.items = items
     }
 
     override fun showEmptyState(isEmpty: Boolean) = with(binding) {

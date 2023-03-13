@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
@@ -77,14 +78,15 @@ class SwapStateManager(
         when (action) {
             is SwapStateAction.CancelSwapLoading -> return
             is SwapStateAction.TokenAChanged -> {
-                selectedSwapTokenStorage.savedTokenAMint = action.newTokenA.mintAddress
-                if (handleTokenAChange(action.newTokenA)) return
+                handleTokenAChange(action.newTokenA)
+                return
             }
             is SwapStateAction.TokenBChanged -> {
                 selectedSwapTokenStorage.savedTokenBMint = action.newTokenB.mintAddress
             }
             is SwapStateAction.SwitchTokens -> {
-                if (handleSwitchTokensAndSaveTokenBAmount()) return
+                handleSwitchTokensAndSaveTokenBAmount()
+                return
             }
             else -> Unit
         }
@@ -179,29 +181,29 @@ class SwapStateManager(
         }
     }
 
-    private fun handleTokenAChange(newTokenA: SwapTokenModel): Boolean {
-        val oldTokenAZeroState = getOldTokenAZeroState(state.value) ?: return false
+    // change token A and set zero token A amount
+    private fun handleTokenAChange(newTokenA: SwapTokenModel) {
+        val oldTokenAZeroState = getOldTokenAZeroState(state.value) ?: return
         state.value = oldTokenAZeroState.copy(tokenA = newTokenA)
-        try {
-            swapValidator.validateIsSameTokens(tokenA = newTokenA, tokenB = oldTokenAZeroState.tokenB)
-        } catch (featureException: SwapFeatureException.SameTokens) {
-            state.value = SwapState.SwapException.FeatureExceptionWrapper(
-                previousFeatureState = oldTokenAZeroState,
-                featureException = featureException,
-            )
-        }
-        return true
+        if (!areValidTokens(newTokenA, oldTokenAZeroState.tokenB)) return
+        selectedSwapTokenStorage.savedTokenAMint = newTokenA.mintAddress
     }
 
-    private fun handleSwitchTokensAndSaveTokenBAmount(): Boolean {
-        val oldTokenBAmount = getOldTokenBAmount(state.value) ?: BigDecimal.ZERO
-        val oldTokenAZeroState = getOldTokenAZeroState(state.value) ?: return false
-        val oldTokenA = oldTokenAZeroState.tokenA
-        val oldTokenB = oldTokenAZeroState.tokenB
-        state.value = oldTokenAZeroState.copy(tokenA = oldTokenB, tokenB = oldTokenA)
-        analytics.logTokensSwitchClicked(newTokenA = oldTokenB, newTokenB = oldTokenA)
+    // change switch tokens and try to set old token B amount to new token A amount else zero amount
+    private fun handleSwitchTokensAndSaveTokenBAmount() {
+        val oldTokenBAmount = getOldTokenBAmount(state.value).orZero()
+        val oldTokenAZeroState = getOldTokenAZeroState(state.value) ?: return
+        val newTokenA = oldTokenAZeroState.tokenB
+        val newTokenB = oldTokenAZeroState.tokenA
+
+        state.value = oldTokenAZeroState.copy(tokenA = newTokenA, tokenB = newTokenB)
+        if (!areValidTokens(newTokenA, newTokenB)) return
+
+        selectedSwapTokenStorage.savedTokenAMint = newTokenA.mintAddress
+        selectedSwapTokenStorage.savedTokenBMint = newTokenB.mintAddress
+
+        analytics.logTokensSwitchClicked(newTokenA = newTokenA, newTokenB = newTokenB)
         if (oldTokenBAmount.isNotZero()) onNewAction(SwapStateAction.TokenAAmountChanged(oldTokenBAmount))
-        return true
     }
 
     private fun getOldTokenAZeroState(
@@ -232,6 +234,19 @@ class SwapStateManager(
             is SwapState.LoadingTransaction -> state.amountTokenB
             is SwapState.SwapLoaded -> state.amountTokenB
             is SwapState.SwapException -> getOldTokenBAmount(state.previousFeatureState)
+        }
+    }
+
+    private fun areValidTokens(tokenA: SwapTokenModel, tokenB: SwapTokenModel): Boolean {
+        return try {
+            swapValidator.validateIsSameTokens(tokenA = tokenA, tokenB = tokenB)
+            true
+        } catch (featureException: SwapFeatureException.SameTokens) {
+            state.value = SwapState.SwapException.FeatureExceptionWrapper(
+                previousFeatureState = state.value,
+                featureException = featureException,
+            )
+            false
         }
     }
 

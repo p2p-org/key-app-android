@@ -6,7 +6,7 @@ import java.lang.reflect.Type
 
 class GetBlockByNumberJsonRpc(
         @Transient val blockNumber: Long
-) : JsonRpc<RpcBlock>(
+) : JsonRpc<List<Any>,RpcBlock>(
         method = "eth_getBlockByNumber",
         params = listOf(blockNumber, false)
 ) {

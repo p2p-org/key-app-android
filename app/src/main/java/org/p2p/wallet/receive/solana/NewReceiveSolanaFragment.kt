@@ -43,7 +43,9 @@ class NewReceiveSolanaFragment :
         with(binding) {
             toolbar.title = getString(R.string.receive_on_solana, tokenSymbol)
             toolbar.setNavigationOnClickListener { popBackStack() }
+
             glideManager.load(imageViewWatermark, logoUrl)
+            containerWatermark.isVisible = logoUrl.isNotEmpty()
 
             layoutUsername.setOnClickListener {
                 val username = binding.textViewUsername.text.toString()

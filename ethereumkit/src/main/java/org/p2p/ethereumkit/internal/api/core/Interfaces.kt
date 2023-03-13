@@ -16,7 +16,13 @@ data class RpcSubscriptionResponse(val method: String, val params: Params) {
     data class Params(@SerializedName("subscription") val subscriptionId: String, val result: JsonElement)
 }
 
-data class RpcGeneralResponse(val id: Int?, val result: JsonElement?, val error: RpcResponse.Error?, val method: String?, val params: RpcSubscriptionResponse.Params?)
+data class RpcGeneralResponse(
+    val id: Int?,
+    val result: JsonElement?,
+    val error: RpcResponse.Error?,
+    val method: String?,
+    val params: RpcSubscriptionResponse.Params?
+)
 
 interface IRpcWebSocket {
     var listener: IRpcWebSocketListener?
@@ -24,7 +30,7 @@ interface IRpcWebSocket {
 
     fun start()
     fun stop()
-    fun <T> send(rpc: JsonRpc<T>)
+    fun <P, T> send(rpc: JsonRpc<P, T>)
 }
 
 interface IRpcWebSocketListener {
@@ -47,7 +53,7 @@ sealed class WebSocketState {
 interface IRpcApiProvider {
     val source: String
 
-    fun <T> single(rpc: JsonRpc<T>): Single<T>
+    fun <P, T> single(rpc: JsonRpc<P, T>): Single<T>
 }
 
 interface IRpcSyncer {
@@ -58,7 +64,7 @@ interface IRpcSyncer {
 
     fun start()
     fun stop()
-    fun <T> single(rpc: JsonRpc<T>): Single<T>
+    fun <P, T> single(rpc: JsonRpc<P, T>): Single<T>
 }
 
 interface IRpcSyncerListener {

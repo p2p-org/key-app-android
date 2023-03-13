@@ -53,7 +53,7 @@ class ApiRpcSyncer(
         stopTimer()
     }
 
-    override fun <T> single(rpc: JsonRpc<T>): Single<T> =
+    override fun <P, T> single(rpc: JsonRpc<P, T>): Single<T> =
         rpcApiProvider.single(rpc)
     //endregion
 
@@ -85,15 +85,14 @@ class ApiRpcSyncer(
 
     private fun onFireTimer() {
         rpcApiProvider.single(BlockNumberJsonRpc())
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe({ lastBlockNumber ->
-                    listener?.didUpdateLastBlockHeight(lastBlockNumber)
-                }, {
-                    state = SyncerState.NotReady(it)
-                }).let {
-                    disposables.add(it)
-                }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe({ lastBlockNumber ->
+                listener?.didUpdateLastBlockHeight(lastBlockNumber)
+            }, {
+                state = SyncerState.NotReady(it)
+            }).let {
+                disposables.add(it)
+            }
     }
-
 }

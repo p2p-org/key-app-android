@@ -7,7 +7,6 @@ internal class EthereumPriceRepository(
     private val priceApi: CoinGeckoService
 ): PriceRepository {
 
-
     override suspend fun getTokenPrice(
         tokenAddresses: List<String>,
         targetCurrency: String
@@ -17,4 +16,5 @@ internal class EthereumPriceRepository(
             targetCurrency = targetCurrency
         )
     }
+
 }
