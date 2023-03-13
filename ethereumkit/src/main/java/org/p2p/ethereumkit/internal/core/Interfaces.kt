@@ -61,7 +61,7 @@ interface IBlockchain {
     fun getStorageAt(contractAddress: EthAddress, position: ByteArray, defaultBlockParameter: DefaultBlockParameter): Single<ByteArray>
     fun call(contractAddress: EthAddress, data: ByteArray, defaultBlockParameter: DefaultBlockParameter): Single<ByteArray>
 
-    fun <T> rpcSingle(rpc: JsonRpc<T>): Single<T>
+    fun <P,T> rpcSingle(rpc: JsonRpc<P,T>): Single<T>
 }
 
 interface IBlockchainListener {

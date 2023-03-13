@@ -6,9 +6,9 @@ import com.google.gson.annotations.SerializedName
 import org.p2p.ethereumkit.internal.api.core.RpcResponse
 import java.lang.reflect.Type
 
-abstract class JsonRpc<T>(
+abstract class JsonRpc<P,T>(
         val method: String,
-        val params: List<Any>
+        val params: P
 ) {
     @SerializedName("jsonrpc")
     val version: String = "2.0"

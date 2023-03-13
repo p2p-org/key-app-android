@@ -1,14 +1,13 @@
 package org.p2p.ethereumkit.external.api
 
 import com.google.gson.Gson
-import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import org.p2p.ethereumkexternal.core.GsonProvider
+import org.p2p.ethereumkit.external.core.GsonProvider
 import org.p2p.ethereumkit.external.api.alchemy.AlchemyService
 import org.p2p.ethereumkit.external.api.coingecko.CoinGeckoService
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
@@ -38,7 +37,6 @@ internal object EthereumNetworkModule {
 
         val headersInterceptor = Interceptor { chain ->
             val requestBuilder = chain.request().newBuilder()
-            requestBuilder.header("Authorization", Credentials.basic("", ""))
             chain.proceed(requestBuilder.build())
         }
         val httpClient = OkHttpClient.Builder()
