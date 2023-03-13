@@ -61,7 +61,7 @@ class JupiterSwapRoutesMapper {
         signatureFee = signatureFeeInLamports.toBigInteger(),
         openOrdersDeposits = openOrdersDepositsLamports.map { it.toBigInteger() },
         ataDeposits = ataDeposits.map { it.toBigInteger() },
-        totalFeeAndDepositsInTokenB = totalFeeAndDepositsLamports.toBigInteger(),
+        totalFeeAndDepositsInSol = totalFeeAndDepositsLamports.toBigInteger(),
         minimumSolForTransaction = minimumSolForTransactionLamports.toBigInteger(),
     )
 }
