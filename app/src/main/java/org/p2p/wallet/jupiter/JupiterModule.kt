@@ -206,7 +206,6 @@ object JupiterModule : InjectionModule {
             SwapFeeLoader(
                 dispatchers = get(),
                 swapStateManager = stateManager,
-                swapTokensRepository = get()
             )
         }
         factory { (stateManagerHolderKey: String) ->
