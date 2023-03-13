@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.ui.settings
 
+import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -74,7 +75,11 @@ class JupiterSwapSettingsFragment :
     }
 
     override fun bindSettingsList(list: List<AnyCellItem>) {
-        adapter.setItems(list) { binding.recyclerViewSettings.invalidateItemDecorations() }
+        adapter.setItems(list) {
+            lifecycleScope.launchWhenStarted {
+                binding.recyclerViewSettings.invalidateItemDecorations()
+            }
+        }
     }
 
     override fun setRatioState(state: TextViewCellModel?) {
