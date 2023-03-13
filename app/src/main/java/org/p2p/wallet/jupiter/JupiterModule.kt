@@ -56,6 +56,7 @@ import org.p2p.wallet.jupiter.ui.settings.presenter.JupiterSwapSettingsPresenter
 import org.p2p.wallet.jupiter.ui.settings.presenter.SwapCommonSettingsMapper
 import org.p2p.wallet.jupiter.ui.settings.presenter.SwapContentSettingsMapper
 import org.p2p.wallet.jupiter.ui.settings.presenter.SwapEmptySettingsMapper
+import org.p2p.wallet.jupiter.ui.settings.presenter.SwapFeeLoader
 import org.p2p.wallet.jupiter.ui.settings.presenter.SwapLoadingSettingsMapper
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensContract
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
@@ -194,10 +195,16 @@ object JupiterModule : InjectionModule {
         factoryOf(::SwapEmptySettingsMapper)
         factoryOf(::SwapLoadingSettingsMapper)
         factory { (stateManagerHolderKey: String) ->
-            val managerHolder: SwapStateManagerHolder = get()
-            val stateManager = managerHolder.get(stateManagerHolderKey)
             SwapContentSettingsMapper(
                 commonMapper = get(),
+                swapFeeLoader = get(parameters = { parametersOf(stateManagerHolderKey) }),
+            )
+        }
+        factory { (stateManagerHolderKey: String) ->
+            val managerHolder: SwapStateManagerHolder = get()
+            val stateManager = managerHolder.get(stateManagerHolderKey)
+            SwapFeeLoader(
+                dispatchers = get(),
                 swapStateManager = stateManager,
             )
         }
