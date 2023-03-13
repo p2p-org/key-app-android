@@ -5,7 +5,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.solanaj.model.types.Account
@@ -42,7 +41,7 @@ object TokenConverter {
             mintAddress = mintAddress,
             tokenName = tokenData.name,
             iconUrl = tokenData.iconUrl,
-            totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(it.price).scaleMedium() },
+            totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(it.price) },
             total = BigDecimal(total).divide(tokenData.decimals.toPowerValue()),
             rate = price?.price,
             visibility = TokenVisibility.DEFAULT,
