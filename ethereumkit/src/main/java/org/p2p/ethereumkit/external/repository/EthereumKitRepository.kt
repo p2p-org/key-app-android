@@ -19,7 +19,7 @@ import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.EthAddress
 
-private val ONE_DOLLAR = BigInteger("1")
+private val MINIMAL_DUST = BigInteger("1")
 
 internal class EthereumKitRepository(
     private val balanceRepository: EthereumTokensRepository,
@@ -42,7 +42,7 @@ internal class EthereumKitRepository(
     }
 
     override suspend fun loadWalletTokens(): List<Token.Eth> = withContext(dispatchers.io) {
-        val walletTokens = loadTokensMetadata().filter { it.balance.isMoreThan(ONE_DOLLAR) }
+        val walletTokens = loadTokensMetadata().filter { it.balance.isMoreThan(MINIMAL_DUST) }
         val tokensPrice = getPriceForTokens(tokenAddresses = walletTokens.map { it.contractAddress.toString() })
         tokensPrice.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
