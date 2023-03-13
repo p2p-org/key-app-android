@@ -111,9 +111,6 @@ class JupiterSwapPresenter(
             val action = if (newAmount.isZero()) {
                 SwapStateAction.EmptyAmountTokenA
             } else {
-                if (tokenB != null) {
-                    view?.setSecondTokenWidgetState(widgetMapper.mapTokenBLoading(token = tokenB))
-                }
                 if (tokenA != null) {
                     widgetAState = widgetMapper.copyAmount(
                         oldWidgetModel = widgetAState,
