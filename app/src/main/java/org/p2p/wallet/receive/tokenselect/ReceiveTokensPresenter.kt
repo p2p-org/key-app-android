@@ -138,21 +138,22 @@ class ReceiveTokensPresenter(
                 view?.showEmptyState(isEmpty)
                 view?.setBannerVisibility(!isEmpty && searchText.isEmpty())
 
-                launch {
-                    val dropSize = tokensFlow.value.size
-                    val oldItems = if (dropSize == 0) {
-                        tokensFlow.value + mapTokenToCellItem(pinnedWormholeTokens)
-                    } else {
-                        tokensFlow.value
-                    }
-
-                    val newItems = data.result
-                        .drop(dropSize)
-                        .toMutableList()
-                        .filter { it.mintAddress !in pinnedWormholeTokensAddresses }
-                    val result = oldItems + mapTokenToCellItem(newItems)
-                    tokensFlow.emit(result)
+                val isPinnedItemsNeeded = searchText.isEmpty()
+                val dropSize = tokensFlow.value.size
+                val oldItems = if (isPinnedItemsNeeded && dropSize == 0) {
+                    tokensFlow.value + mapTokenToCellItem(pinnedWormholeTokens)
+                } else {
+                    tokensFlow.value
                 }
+
+                val newItems = data.result
+                    .drop(dropSize)
+                    .takeIf { isPinnedItemsNeeded }
+                    ?.filter { it.mintAddress !in pinnedWormholeTokensAddresses }
+                    ?: data.result
+
+                val result = oldItems + mapTokenToCellItem(newItems)
+                tokensFlow.emit(result)
             }
         }
     }
