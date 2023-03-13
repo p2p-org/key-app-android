@@ -163,7 +163,6 @@ class NodeWebSocket(
                     }
                 }
             }, { error ->
-                error.printStackTrace()
                 logger.warning(error.message)
             })
             .let { disposables.add(it) }
@@ -187,11 +186,9 @@ class NodeWebSocket(
                     }
                 } catch (error: Throwable) {
                     logger.warning("Handle Response error: ${error.javaClass.simpleName}")
-                    error.printStackTrace()
                 }
             }, { error ->
                 logger.warning("On Response error: ${error.message ?: error.javaClass.simpleName}")
-                error.printStackTrace()
             })
             .let { disposables.add(it) }
     }

@@ -15,7 +15,7 @@ import java.math.BigInteger
 import java.util.*
 import org.p2p.core.token.SolAddress
 
-class BigIntegerTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<BigInteger?>() {
+internal class BigIntegerTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<BigInteger?>() {
     override fun write(writer: JsonWriter, value: BigInteger?) {
         if (value == null) {
             writer.nullValue()
@@ -35,7 +35,7 @@ class BigIntegerTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<Big
     }
 }
 
-class LongTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<Long?>() {
+internal class LongTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<Long?>() {
     override fun write(writer: JsonWriter, value: Long?) {
         if (value == null) {
             writer.nullValue()
@@ -55,7 +55,7 @@ class LongTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<Long?>() 
     }
 }
 
-class IntTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<Int?>() {
+internal class IntTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<Int?>() {
     override fun write(writer: JsonWriter, value: Int?) {
         if (value == null) {
             writer.nullValue()
@@ -75,7 +75,7 @@ class IntTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<Int?>() {
     }
 }
 
-class ByteArrayTypeAdapter : TypeAdapter<ByteArray?>() {
+internal class ByteArrayTypeAdapter : TypeAdapter<ByteArray?>() {
     override fun write(writer: JsonWriter, value: ByteArray?) {
         if (value == null) {
             writer.nullValue()
@@ -93,7 +93,7 @@ class ByteArrayTypeAdapter : TypeAdapter<ByteArray?>() {
     }
 }
 
-class AddressTypeAdapter : TypeAdapter<EthAddress?>() {
+internal class AddressTypeAdapter : TypeAdapter<EthAddress?>() {
     override fun write(writer: JsonWriter, value: EthAddress?) {
         if (value == null) {
             writer.nullValue()
@@ -115,7 +115,7 @@ class AddressTypeAdapter : TypeAdapter<EthAddress?>() {
     }
 }
 
-class SolAddressTypeAdapter : TypeAdapter<SolAddress?>() {
+internal class SolAddressTypeAdapter : TypeAdapter<SolAddress?>() {
 
     override fun write(writter: JsonWriter, value: SolAddress?) {
         if (value == null) {
@@ -138,7 +138,7 @@ class SolAddressTypeAdapter : TypeAdapter<SolAddress?>() {
     }
 }
 
-class DefaultBlockParameterTypeAdapter : TypeAdapter<DefaultBlockParameter?>() {
+internal class DefaultBlockParameterTypeAdapter : TypeAdapter<DefaultBlockParameter?>() {
     override fun write(writer: JsonWriter, value: DefaultBlockParameter?) {
         value?.let {
             writer.value(value.raw)
@@ -154,7 +154,7 @@ class DefaultBlockParameterTypeAdapter : TypeAdapter<DefaultBlockParameter?>() {
     }
 }
 
-class OptionalTypeAdapter<T>(
+internal class OptionalTypeAdapter<T>(
     private val type: Type
 ) : TypeAdapter<Optional<T>>() {
 
