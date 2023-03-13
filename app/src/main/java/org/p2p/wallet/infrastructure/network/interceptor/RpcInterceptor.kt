@@ -16,7 +16,8 @@ import java.io.IOException
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerError
+import org.p2p.wallet.infrastructure.network.data.RpcError
+import org.p2p.wallet.infrastructure.network.data.ServerErrorResponse
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
@@ -124,20 +125,27 @@ class RpcInterceptor(
     }
 
     private fun createResponse(response: Response, responseBody: String): Response =
-        response.newBuilder().body(responseBody.toResponseBody()).build()
+        response.newBuilder()
+            .body(responseBody.toResponseBody())
+            .build()
 
     private fun extractException(bodyString: String): Throwable = try {
         val fullMessage = JSONObject(bodyString).toString(1)
 
         Timber.tag("RpcInterceptor").d("Handling exception: $fullMessage")
 
-        val serverError = gson.fromJson(bodyString, ServerError::class.java)
+        val serverError = gson.fromJson(bodyString, ServerErrorResponse::class.java)
 
         val errorMessage = serverError.error.data?.getErrorLog() ?: serverError.error.message
+
+        val errorType = serverError.error.data?.rpcErrorDetails
+        val domainErrorType = runCatching { errorType?.let(RpcError::from) }.getOrNull()
+
         ServerException(
             errorCode = serverError.error.code ?: ErrorCode.SERVER_ERROR,
             fullMessage = fullMessage,
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
+            domainErrorType = domainErrorType
         )
     } catch (e: Throwable) {
         IOException("Error reading response error body", e)
