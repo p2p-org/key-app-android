@@ -5,14 +5,14 @@ import java.util.Optional
 import org.p2p.core.token.SolAddress
 import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
 import org.p2p.ethereumkit.internal.models.EthAddress
-import org.p2p.wallet.claim.api.response.BundleFeeResponse
+import org.p2p.wallet.claim.api.response.FeesResponse
 
 class GetClaimFeeRpcRequest(
     @Transient val ethWallet: EthAddress,
     @Transient val solRecipient: SolAddress,
     @Transient val erc20Token: Optional<EthAddress>,
     @Transient val amount: String
-) : JsonRpc<Map<String, Any>, BundleFeeResponse>(
+) : JsonRpc<Map<String, Any>, FeesResponse>(
     method = "get_claim_fees",
     params = buildMap {
         put("user_wallet", ethWallet)
@@ -21,5 +21,5 @@ class GetClaimFeeRpcRequest(
         put("amount", amount)
     }
 ) {
-    override val typeOfResult: Type = BundleFeeResponse::class.java
+    override val typeOfResult: Type = FeesResponse::class.java
 }

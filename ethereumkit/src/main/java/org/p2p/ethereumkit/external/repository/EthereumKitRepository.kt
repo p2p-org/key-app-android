@@ -6,6 +6,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
+import org.p2p.core.utils.isMoreThan
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -17,6 +18,8 @@ import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.EthAddress
+
+private val ONE_DOLLAR = BigInteger("1")
 
 internal class EthereumKitRepository(
     private val balanceRepository: EthereumTokensRepository,
@@ -39,7 +42,7 @@ internal class EthereumKitRepository(
     }
 
     override suspend fun loadWalletTokens(): List<Token.Eth> = withContext(dispatchers.io) {
-        val walletTokens = loadTokensMetadata()
+        val walletTokens = loadTokensMetadata().filter { it.balance.isMoreThan(ONE_DOLLAR) }
         val tokensPrice = getPriceForTokens(tokenAddresses = walletTokens.map { it.contractAddress.toString() })
         tokensPrice.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
