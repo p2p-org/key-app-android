@@ -74,20 +74,18 @@ internal class JupiterSwapTokensRemoteRepository(
     }
 
     override suspend fun getTokenRate(token: JupiterSwapToken): TokenPrice? =
-        withContext(dispatchers.io) {
-            if (token.coingeckoId == null) {
+        if (token.coingeckoId == null) {
+            null
+        } else {
+            try {
+                pricesRepository.getTokenPriceById(
+                    tokenId = TokenId(token.coingeckoId),
+                    targetCurrency = USD_READABLE_SYMBOL
+                )
+            } catch (error: Throwable) {
+                // coingecko can return empty price: []
+                Timber.i(error)
                 null
-            } else {
-                try {
-                    pricesRepository.getTokenPriceById(
-                        tokenId = TokenId(token.coingeckoId),
-                        targetCurrency = USD_READABLE_SYMBOL
-                    )
-                } catch (error: Throwable) {
-                    // coingecko can return empty price: []
-                    Timber.i(error)
-                    null
-                }
             }
         }
 }
