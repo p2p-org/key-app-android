@@ -63,6 +63,7 @@ val POPULAR_TOKENS_COINGECKO_IDS = setOf(
 val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 private val LOAD_TOKENS_DELAY_MS = 1.toDuration(DurationUnit.SECONDS).inWholeMilliseconds
+private val ONE_DOLLAR = BigDecimal(1.00)
 
 class HomePresenter(
     private val analytics: HomeAnalytics,
@@ -244,7 +245,7 @@ class HomePresenter(
         launch {
             val ethereumTokens = if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
                 try {
-                    ethereumRepository.loadWalletTokens()
+                    ethereumRepository.loadWalletTokens().filter { it.totalInUsd?.isMoreThan(ONE_DOLLAR) ?: false }
                 } catch (cancelled: CancellationException) {
                     Timber.i(cancelled)
                     emptyList()
