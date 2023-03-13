@@ -6,34 +6,11 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.user.repository.prices.TokenId
-import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-
-class SwapTokenRateNotFound(
-    token: SwapTokenModel
-) : Throwable() {
-    override val message: String = buildString {
-        append("Token rate not found for token ")
-        append(token.tokenName)
-        append("; ")
-        append(token.mintAddress)
-        append("; ")
-        append(
-            when (token) {
-                is SwapTokenModel.JupiterToken -> token.coingeckoId
-                is SwapTokenModel.UserToken -> null
-            }
-        )
-        append("; ")
-        append(token::class.simpleName)
-        append("; ")
-    }
-}
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 
 class SwapTokenRateLoader(
-    private val tokenPricesRepository: TokenPricesRemoteRepository,
+    private val swapTokensRepository: JupiterSwapTokensRepository,
 ) {
     private val state = AtomicReference<SwapRateLoaderState>(SwapRateLoaderState.Empty)
 
@@ -77,19 +54,14 @@ class SwapTokenRateLoader(
     private suspend fun FlowCollector<SwapRateLoaderState>.updateJupiterTokenRate(
         token: SwapTokenModel.JupiterToken
     ) {
-        val coingeckoId = token.coingeckoId
-        if (coingeckoId == null) {
-            emitAndSaveState(SwapRateLoaderState.NoRateAvailable(token))
-            return
-        }
-
         emitAndSaveState(SwapRateLoaderState.Loading)
         try {
-            val tokenPrice = tokenPricesRepository.getTokenPriceById(
-                tokenId = TokenId(coingeckoId),
-                targetCurrency = Constants.USD_READABLE_SYMBOL
-            )
-            emitAndSaveState(SwapRateLoaderState.Loaded(token = token, rate = tokenPrice.price))
+            val tokenPrice = swapTokensRepository.getTokenRate(token.details)
+            if (tokenPrice != null) {
+                emitAndSaveState(SwapRateLoaderState.Loaded(token = token, rate = tokenPrice.price))
+            } else {
+                emitAndSaveState(SwapRateLoaderState.NoRateAvailable(token = token))
+            }
         } catch (e: CancellationException) {
             Timber.i(e)
         } catch (e: Throwable) {

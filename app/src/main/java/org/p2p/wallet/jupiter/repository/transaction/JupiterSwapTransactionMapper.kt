@@ -73,7 +73,7 @@ class JupiterSwapTransactionMapper {
             signatureFeeInLamports = signatureFee.toLong(),
             openOrdersDepositsLamports = openOrdersDeposits.map { it.toLong() },
             ataDeposits = ataDeposits.map { it.toLong() },
-            totalFeeAndDepositsLamports = totalFeeAndDepositsInTokenB.toLong(),
+            totalFeeAndDepositsLamports = totalFeeAndDepositsInSol.toLong(),
             minimumSolForTransactionLamports = minimumSolForTransaction.toLong()
         )
     }

@@ -10,31 +10,29 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.model.SwapRateTickerState
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapState
-import org.p2p.wallet.jupiter.model.SwapRateTickerState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.user.repository.prices.TokenId
-import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
 class SwapRateTickerManager private constructor(
     swapScope: SwapCoroutineScope,
     private val userLocalRepository: UserLocalRepository,
-    private val tokenPricesRepository: TokenPricesRemoteRepository,
+    private val swapTokensRepository: JupiterSwapTokensRepository,
     private val initDispatcher: CoroutineDispatcher
 ) : CoroutineScope by (swapScope + initDispatcher) {
 
     constructor(
         swapScope: SwapCoroutineScope,
         userLocalRepository: UserLocalRepository,
-        tokenPricesRepository: TokenPricesRemoteRepository
+        swapTokensRepository: JupiterSwapTokensRepository
     ) : this(
         swapScope = swapScope,
         userLocalRepository = userLocalRepository,
-        tokenPricesRepository = tokenPricesRepository,
+        swapTokensRepository = swapTokensRepository,
         initDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     )
 
@@ -124,11 +122,11 @@ class SwapRateTickerManager private constructor(
         return SwapRateTickerState.Shown(result)
     }
 
-    private suspend fun findJupiterTokenRate(to: SwapTokenModel): BigDecimal? {
+    private suspend fun findJupiterTokenRate(to: SwapTokenModel.JupiterToken): BigDecimal? {
         val tokenData = userLocalRepository.findTokenData(to.mintAddress.base58Value)
         val coingeckoId = tokenData?.coingeckoId ?: return null
-        val price = userLocalRepository.getPriceByTokenId(coingeckoId)
-        return price?.price ?: tokenPricesRepository.getTokenPriceById(TokenId(coingeckoId), USD_READABLE_SYMBOL).price
+        val cachedPrice = userLocalRepository.getPriceByTokenId(coingeckoId)
+        return cachedPrice?.price ?: swapTokensRepository.getTokenRate(to.details)?.price
     }
 
     fun stopAll() {
