@@ -1,12 +1,14 @@
 package org.p2p.wallet.jupiter.ui.settings.presenter
 
 import java.math.BigDecimal
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.asUsdSwap
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.orZero
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -17,13 +19,13 @@ import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.model.findTokenByMint
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
+import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
@@ -42,7 +44,6 @@ class SwapContentSettingsMapper(
         tokenB: SwapTokenModel,
         tokenA: SwapTokenModel,
         solTokenForFee: JupiterSwapToken?,
-        solTokenRate: TokenPrice?
     ): List<AnyCellItem> = mapList(
         slippage = slippage,
         routes = routes,
@@ -52,7 +53,6 @@ class SwapContentSettingsMapper(
         tokenB = tokenB,
         tokenA = tokenA,
         solTokenForFee = solTokenForFee,
-        solTokenRate = solTokenRate
     )
 
     suspend fun mapForSwapLoadedState(
@@ -64,7 +64,6 @@ class SwapContentSettingsMapper(
         tokenB: SwapTokenModel,
         tokenA: SwapTokenModel,
         solTokenForFee: JupiterSwapToken?,
-        solTokenRate: TokenPrice?
     ): List<AnyCellItem> = mapList(
         slippage = slippage,
         routes = routes,
@@ -74,7 +73,6 @@ class SwapContentSettingsMapper(
         tokenB = tokenB,
         tokenA = tokenA,
         solTokenForFee = solTokenForFee,
-        solTokenRate = solTokenRate
     )
 
     private suspend fun mapList(
@@ -86,13 +84,12 @@ class SwapContentSettingsMapper(
         tokenB: SwapTokenModel,
         tokenA: SwapTokenModel,
         solTokenForFee: JupiterSwapToken?,
-        solTokenRate: TokenPrice?
     ): List<AnyCellItem> = buildList {
         addRouteCell(routes, activeRoute, jupiterTokens)
         this += commonMapper.getNetworkFeeCell()
-        addAccountFeeCell(routes, activeRoute, solTokenForFee, solTokenRate)
+        addAccountFeeCell(routes, activeRoute, solTokenForFee)
         addLiquidityFeeCell(routes, activeRoute, jupiterTokens)
-        addEstimatedFeeCell(routes, activeRoute, solTokenForFee, solTokenRate)
+        addEstimatedFeeCell(routes, activeRoute, solTokenForFee)
         addMinimumReceivedCell(slippage, tokenBAmount, tokenB)
     }
 
@@ -174,26 +171,34 @@ class SwapContentSettingsMapper(
         )
     }
 
-    private fun MutableList<AnyCellItem>.addAccountFeeCell(
+    private suspend fun MutableList<AnyCellItem>.addAccountFeeCell(
         routes: List<JupiterSwapRoute>,
         activeRouteIndex: Int,
         solToken: JupiterSwapToken?, // this fee in SOL
-        solTokenRate: TokenPrice?
     ) {
-        if (solToken == null || solTokenRate == null) {
+        if (solToken == null) {
             return
         }
 
         val activeRoute = routes.getOrNull(activeRouteIndex)
         val feeAmount = activeRoute?.fees
             ?.totalFeeAndDepositsInSol
-            .orZero()
-            .fromLamports(solToken.decimals)
+            ?.fromLamports(solToken.decimals)
+            ?: return
 
-        val feeText = feeAmount.formatToken(solToken.decimals).plus(" ${solToken.tokenSymbol}")
+        val solTokenRate = swapStateManager.getTokenRate(SwapTokenModel.JupiterToken(solToken))
+            .filterIsInstance<SwapRateLoaderState.Loaded>()
+            .map { it.rate }
+            .firstOrNull()
+            ?: return
+
+        val feeInTokenText: TextViewCellModel.Raw =
+            feeAmount.formatToken(solToken.decimals)
+                .plus(" ${solToken.tokenSymbol}")
+                .let { TextViewCellModel.Raw(text = TextContainer(it)) }
 
         val feeUsdText: TextViewCellModel.Raw? =
-            feeAmount.multiply(solTokenRate.price)
+            feeAmount.multiply(solTokenRate)
                 ?.asUsdSwap()
                 ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(usd)) }
 
@@ -202,9 +207,7 @@ class SwapContentSettingsMapper(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_creation_fee_title),
                 ),
-                secondLineText = TextViewCellModel.Raw(
-                    text = TextContainer(feeText)
-                ),
+                secondLineText = feeInTokenText
             ),
             rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
                 text = feeUsdText,
@@ -293,19 +296,26 @@ class SwapContentSettingsMapper(
             .asUsdSwap()
     }
 
-    private fun MutableList<AnyCellItem>.addEstimatedFeeCell(
+    private suspend fun MutableList<AnyCellItem>.addEstimatedFeeCell(
         routes: List<JupiterSwapRoute>,
         activeRoute: Int,
         solToken: JupiterSwapToken?,
-        solTokenRate: TokenPrice?,
     ) {
-        if (solToken == null || solTokenRate == null) return
+        if (solToken == null) {
+            return
+        }
         val route = routes.getOrNull(activeRoute)
+
+        val solTokenRate = swapStateManager.getTokenRate(SwapTokenModel.JupiterToken(solToken))
+            .filterIsInstance<SwapRateLoaderState.Loaded>()
+            .map { it.rate }
+            .firstOrNull()
+            ?: return
 
         val totalFee = route?.fees
             ?.totalFeeAndDepositsInSol
             ?.fromLamports(solToken.decimals)
-            ?.multiply(solTokenRate.price)
+            ?.multiply(solTokenRate)
             ?.asUsdSwap()
             ?.let { usd -> TextViewCellModel.Raw(text = TextContainer(usd)) }
 
