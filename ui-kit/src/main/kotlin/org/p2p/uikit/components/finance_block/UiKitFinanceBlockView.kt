@@ -44,6 +44,7 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
         bindViewStyle(styleType)
     }
 
+
     fun setOnClickAction(onItemClickAction: (view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit) {
         setOnClickListener {
             onItemClickAction.invoke(this, item)

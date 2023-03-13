@@ -49,7 +49,7 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_gravity="center"
-                    android:background="@drawable/bg_circle">
+                    android:background="@drawable/bg_smoke_circle">
 
                     <org.p2p.uikit.atoms.UiKitRoundedImageView
                         android:id="@+id/imageViewWatermark"
@@ -158,6 +158,18 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/textViewFirstNum"
                     app:layout_constraintTop_toTopOf="@id/textViewSecondNum" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/receive_only_need_sign_transaction"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+                    android:textColor="@color/text_mountain"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textViewSecondNum" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
