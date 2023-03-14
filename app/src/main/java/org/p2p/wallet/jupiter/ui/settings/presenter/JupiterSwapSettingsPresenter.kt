@@ -74,9 +74,7 @@ class JupiterSwapSettingsPresenter(
             is SwapState.SwapLoaded -> {
                 rateTickerManager.handleJupiterRates(state)
             }
-            is SwapState.SwapException -> {
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-            }
+            is SwapState.SwapException,
             SwapState.InitialLoading,
             is SwapState.LoadingTransaction,
             is SwapState.TokenAZero,
