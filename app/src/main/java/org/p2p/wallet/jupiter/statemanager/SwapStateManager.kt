@@ -111,7 +111,7 @@ class SwapStateManager(
                     featureException = featureException,
                 )
             } catch (exception: Throwable) {
-                Timber.e(exception)
+                Timber.e(exception, "Failed to handle new action: $action")
                 val actualStaticState = checkInNotLoadingOldNoErrorState(actualNoErrorState(), exception)
                 state.value = SwapState.SwapException.OtherException(
                     previousFeatureState = actualStaticState,
@@ -136,7 +136,7 @@ class SwapStateManager(
                     handleNewAction(SwapStateAction.RefreshRoutes)
                 }
             } catch (e: Throwable) {
-                Timber.e(e)
+                Timber.e(e, "Refreshing routes failed with error")
                 if (isActive) startRefreshJob()
             }
         }
