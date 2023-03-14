@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.BTC_COINGECKO_ID
-import org.p2p.core.utils.Constants.BTC_SYMBOL
 import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
 import org.p2p.core.utils.Constants.ETH_SYMBOL
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
@@ -53,7 +52,7 @@ import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
 
-val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
+val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
     SOL_COINGECKO_ID,
     BTC_COINGECKO_ID,
@@ -130,8 +129,10 @@ class HomePresenter(
         if (state.tokens.isEmpty()) {
             initialLoadTokens()
         } else {
-            initializeActionButtons()
-            handleUserTokensLoaded(state.tokens)
+            launch {
+                handleUserTokensLoaded(state.tokens)
+                initializeActionButtons()
+            }
         }
         startPollingForTokens()
 
@@ -241,47 +242,50 @@ class HomePresenter(
         }
     }
 
-    private fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
-        launch {
-            val ethereumTokens = if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-                try {
-                    ethereumRepository.loadWalletTokens().filter { it.totalInUsd?.isMoreThan(ONE_DOLLAR) ?: false }
-                } catch (cancelled: CancellationException) {
-                    Timber.i(cancelled)
-                    emptyList()
-                } catch (throwable: Throwable) {
-                    Timber.e(throwable, "Error on loading ethereumTokens")
-                    emptyList()
-                }
-            } else {
-                emptyList()
-            }
-            Timber.d("local tokens change arrived")
-            state = state.copy(
-                tokens = userTokens,
-                ethereumTokens = ethereumTokens,
-                username = usernameInteractor.getUsername(),
-            )
+    private suspend fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
+        val ethereumTokens = loadEthTokens()
+        Timber.d("local tokens change arrived")
+        state = state.copy(
+            tokens = userTokens,
+            ethereumTokens = ethereumTokens,
+            username = usernameInteractor.getUsername(),
+        )
 
-            val isAccountEmpty = userTokens.all { it.isZero }
-            when {
-                isAccountEmpty -> {
-                    handleEmptyAccount()
-                }
-                userTokens.isNotEmpty() -> {
-                    view?.showEmptyState(isEmpty = false)
-                    showTokensAndBalance()
-                }
+        val isAccountEmpty = userTokens.all(Token.Active::isZero)
+        when {
+            isAccountEmpty -> {
+                view?.showEmptyState(isEmpty = true)
+                handleEmptyAccount()
             }
+            userTokens.isNotEmpty() -> {
+                view?.showEmptyState(isEmpty = false)
+                showTokensAndBalance()
+            }
+        }
+    }
+
+    private suspend fun loadEthTokens(): List<Token.Eth> {
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return emptyList()
+        }
+        return try {
+            ethereumRepository.loadWalletTokens()
+                .filter { it.totalInUsd?.isMoreThan(ONE_DOLLAR) ?: false }
+        } catch (cancelled: CancellationException) {
+            Timber.i(cancelled)
+            emptyList()
+        } catch (throwable: Throwable) {
+            Timber.e(throwable, "Error on loading ethereumTokens")
+            emptyList()
         }
     }
 
     private fun handleEmptyAccount() {
         launch {
-            view?.showEmptyState(isEmpty = true)
+            val tokensForBuy =
+                userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
+                    .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
-            val tokensForBuy = userInteractor.findMultipleTokenData(POPULAR_TOKENS.toList())
-                .sortedBy { tokenToBuy -> POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol) }
             val homeBannerItem = HomeBannerItem(
                 id = R.id.home_banner_top_up,
                 titleTextId = R.string.main_banner_title,
