@@ -10,5 +10,7 @@ data class SendEthereumBundleRpcRequest(
     method = "send_ethereum_bundle",
     params = buildMap { put("bundle", bundleRequest) }
 ) {
+
+    @Transient
     override val typeOfResult: Type = Unit::class.java
 }

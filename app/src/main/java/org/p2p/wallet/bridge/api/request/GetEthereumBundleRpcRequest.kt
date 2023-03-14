@@ -23,5 +23,6 @@ data class GetEthereumBundleRpcRequest(
         put("slippage", slippage)
     }
 ) {
+    @Transient
     override val typeOfResult: Type = BridgeBundleResponse::class.java
 }

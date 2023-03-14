@@ -3,7 +3,6 @@ package org.p2p.wallet.bridge.api.mapper
 import org.p2p.wallet.bridge.model.BridgeResult
 
 class BridgeServiceErrorMapper {
-
     fun parseError(errorCode: Int): BridgeResult.Error {
         return when (errorCode) {
             32001 -> BridgeResult.Error.UnableUnwrapContractCall
