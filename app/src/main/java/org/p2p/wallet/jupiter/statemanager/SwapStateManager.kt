@@ -133,7 +133,7 @@ class SwapStateManager(
             try {
                 while (refreshJob?.isActive == true) {
                     delay(DELAY_IN_MILLIS)
-                    onNewAction(SwapStateAction.RefreshRoutes)
+                    handleNewAction(SwapStateAction.RefreshRoutes)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Refreshing routes failed with error")
