@@ -37,7 +37,8 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
         override val addressState: AddressState,
         val sourceToken: Token.Active? = null,
         val date: Date? = null,
-        val balance: Long = EMPTY_BALANCE
+        val balance: Long = EMPTY_BALANCE,
+        val networkType: NetworkType = NetworkType.SOLANA
     ) : SearchResult(addressState) {
         @IgnoredOnParcel
         val isEmptyBalance = balance == EMPTY_BALANCE
