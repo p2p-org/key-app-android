@@ -84,7 +84,7 @@ class SwapContentSettingsMapper(
         val route = routes.getOrNull(activeRoute)
         val accountFee = swapFeeLoader.getAccountFee(route, solTokenForFee)
         val liquidityFeeList = swapFeeLoader.getLiquidityFeeList(route, jupiterTokens)
-        addAccountFeeCell(solTokenForFee, accountFee)
+        addAccountFeeCell(accountFee)
         addLiquidityFeeCell(routes, activeRoute, jupiterTokens, liquidityFeeList)
         addEstimatedFeeCell(accountFee, liquidityFeeList)
         addMinimumReceivedCell(slippage, tokenBAmount, tokenB)
@@ -169,15 +169,14 @@ class SwapContentSettingsMapper(
     }
 
     private fun MutableList<AnyCellItem>.addAccountFeeCell(
-        solToken: JupiterSwapToken?, // this fee in SOL
         accountFee: SwapSettingFeeBox?,
     ) {
-        if (solToken == null || accountFee == null) {
+        if (accountFee == null) {
             return
         }
-
+        val solToken = accountFee.token
         val feeInTokenText: TextViewCellModel.Raw =
-            accountFee.amountLamports.formatToken(solToken.decimals)
+            accountFee.amountLamports.formatToken(accountFee.token.decimals)
                 .plus(" ${solToken.tokenSymbol}")
                 .let { TextViewCellModel.Raw(text = TextContainer(it)) }
 

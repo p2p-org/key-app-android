@@ -35,12 +35,11 @@ class SwapFeeLoader(
 
         val solTokenRate = swapStateManager.getTokenRate(SwapTokenModel.JupiterToken(solToken))
             .filterIsInstance<SwapRateLoaderState.Loaded>()
-            .map { it.rate }
             .firstOrNull()
             ?: return null
 
-        val feeUsd: BigDecimal = feeAmount.multiply(solTokenRate)
-        return SwapSettingFeeBox(feeAmount, feeUsd)
+        val feeUsd: BigDecimal = feeAmount.multiply(solTokenRate.rate)
+        return SwapSettingFeeBox(feeAmount, feeUsd, solTokenRate.token)
     }
 
     suspend fun getLiquidityFeeList(
@@ -63,12 +62,12 @@ class SwapFeeLoader(
         activeRoute.marketInfos.map { marketInfo ->
             val lpFee = marketInfo.liquidityFee
             val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return@withContext null
-            val rate = lpRateLoader
+            val rateToke = lpRateLoader
                 .find { it?.token?.mintAddress == lpFee.mint } ?: return@withContext null
             val amountLamports = lpFee.amountInLamports
                 .fromLamports(lpToken.decimals)
-            val amountUsd = amountLamports.multiply(rate.rate)
-            SwapSettingFeeBox(amountLamports, amountUsd)
+            val amountUsd = amountLamports.multiply(rateToke.rate)
+            SwapSettingFeeBox(amountLamports, amountUsd, rateToke.token)
         }
     }
 }
@@ -76,4 +75,5 @@ class SwapFeeLoader(
 data class SwapSettingFeeBox(
     val amountLamports: BigDecimal,
     val amountUsd: BigDecimal,
+    val token: SwapTokenModel,
 )
