@@ -177,6 +177,10 @@ class JupiterSwapFragment :
         binding.textViewRate.bindOrInvisible(state)
     }
 
+    override fun showSolErrorToast() {
+        showUiKitSnackBar(message = getString(R.string.swap_main_button_sol_error_toast))
+    }
+
     override fun openChangeTokenAScreen() {
         val fragment = SwapTokensFragment.create(SwapTokensListMode.TOKEN_A, stateManagerHolderKey)
         replaceFragment(fragment)

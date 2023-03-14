@@ -14,6 +14,7 @@ interface JupiterSwapContract {
         fun setSecondTokenWidgetState(state: SwapWidgetModel)
         fun setButtonState(buttonState: SwapButtonState)
         fun setRatioState(state: TextViewCellModel?)
+        fun showSolErrorToast()
         fun closeScreen()
         fun openChangeTokenAScreen()
         fun openChangeTokenBScreen()
