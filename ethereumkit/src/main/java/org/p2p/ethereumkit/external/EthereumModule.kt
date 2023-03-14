@@ -16,7 +16,9 @@ import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.external.repository.EthereumKitRepository
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 
-internal object EthereumModule {
+object EthereumModule {
+
+    const val BRIDGES_SERVICE_RETROFIT_QUALIFIER = "BRIDGES_SERVICE_RETROFIT_QUALIFIER"
 
     fun create(): Module = module {
         singleOf(::EthereumKitRepository) bind EthereumRepository::class

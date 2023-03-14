@@ -2,6 +2,7 @@ package org.p2p.wallet.jupiter.statemanager.validator
 
 import java.math.BigDecimal
 import java.math.BigInteger
+import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.toLamports
@@ -43,9 +44,14 @@ class MinimumSolAmountValidator(
         val amountNeeded = newAmountInLamports + BigInteger.valueOf(allowedAmountChange.toLong())
 
         val remainingBalance = totalInLamports - amountNeeded
+        val remainingAmount = remainingBalance.fromLamports(tokenA.decimals)
 
         if (remainingBalance.isMoreThan(BigInteger.ZERO) && remainingBalance.isLessThan(minRentExemption)) {
-            throw SwapFeatureException.InsufficientSolBalance(newAmount)
+            throw SwapFeatureException.InsufficientSolBalance(
+                inputAmount = newAmount,
+                userSolToken = tokenA,
+                remainingAmount = remainingAmount,
+            )
         }
     }
 }

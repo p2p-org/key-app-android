@@ -21,5 +21,5 @@ class BridgeBundleResponse(
     @SerializedName("signatures")
     val signatures: List<HexString>? = null,
     @SerializedName("fees")
-    val fees: BundleFeeResponse
+    val fees: FeesResponse
 )
