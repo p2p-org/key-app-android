@@ -107,6 +107,10 @@ class SwapStateManager(
                 if (state.value is SwapState.SwapLoaded) startRefreshJob()
             } catch (exception: Throwable) {
                 handleHandlerError(action, exception)
+                if (exception is SwapFeatureException.RoutesNotFound) {
+                    // retry to find routes
+                    startRefreshJob()
+                }
             }
         }
     }
@@ -119,8 +123,6 @@ class SwapStateManager(
             is SwapFeatureException -> {
                 if (exception is SwapFeatureException.RoutesNotFound) {
                     Timber.tag(TAG).e(exception)
-                    // retry to find routes
-                    startRefreshJob()
                 } else {
                     Timber.tag(TAG).i(exception)
                 }
@@ -153,11 +155,15 @@ class SwapStateManager(
             try {
                 while (refreshJob?.isActive == true) {
                     delay(DELAY_IN_MILLIS)
-                    handleNewAction(SwapStateAction.RefreshRoutes)
+                    val action = SwapStateAction.RefreshRoutes
+                    lastSwapStateAction = action
+                    handleNewAction(action)
                 }
             } catch (e: Throwable) {
                 handleHandlerError(SwapStateAction.RefreshRoutes, e)
-                if (isActive) startRefreshJob()
+                if (isActive && e is SwapFeatureException.RoutesNotFound) {
+                    startRefreshJob()
+                }
             }
         }
     }
