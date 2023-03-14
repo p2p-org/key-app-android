@@ -129,6 +129,7 @@ class SwapWidget @JvmOverloads constructor(
     private fun bindLoadingInput(skeleton: TextViewCellModel.Skeleton) = with(binding) {
         val readOnly = true
         val inputType = InputType.TYPE_NULL
+        AmountFractionTextWatcher.uninstallFrom(binding.editTextAmount)
         editTextAmount.setReadOnly(readOnly, inputType)
         internalOnAmountChanged = null
         editTextAmount.bindOrGone(skeleton)
