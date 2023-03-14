@@ -3,12 +3,17 @@ package org.p2p.wallet.jupiter.ui.main
 import androidx.activity.addCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import java.util.UUID
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.p2p.core.common.bind
 import org.p2p.core.token.Token
 import org.p2p.core.utils.insets.appleBottomInsets
@@ -36,11 +41,13 @@ import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
-import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.jupiter.ui.settings.JupiterSwapSettingsFragment
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensFragment
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
+import org.p2p.wallet.root.ActivityVisibility
+import org.p2p.wallet.root.AppActivityVisibility
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.transaction.ui.JupiterTransactionBottomSheetDismissListener
 import org.p2p.wallet.transaction.ui.JupiterTransactionDismissResult
@@ -85,6 +92,20 @@ class JupiterSwapFragment :
         mainTabsSwitcher = parentFragment as? MainTabsSwitcher
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireActivity() as AppActivityVisibility).visibilityState
+            .onEach {
+                when (it) {
+                    ActivityVisibility.Initializing -> Unit
+                    ActivityVisibility.Invisible -> presenter.pauseStateManager()
+                    ActivityVisibility.Visible -> presenter.resumeStateManager()
+                }
+            }
+            .flowWithLifecycle(lifecycle, Lifecycle.State.CREATED)
+            .launchIn(lifecycleScope)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
@@ -101,6 +122,15 @@ class JupiterSwapFragment :
 
             setupToolbar()
             buttonTryAgain.setOnClickListener { presenter.onTryAgainClick() }
+        }
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            presenter.pauseStateManager()
+        } else {
+            presenter.resumeStateManager()
         }
     }
 
