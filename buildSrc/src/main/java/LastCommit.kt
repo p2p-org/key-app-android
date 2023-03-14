@@ -1,3 +1,3 @@
 object LastCommit {
-    const val COMMIT_HASH = "920954b6ab9548ec90d93d5ff28ec0c08512a8ad"
+    const val COMMIT_HASH = "ff8a8c0aba6ca8612073d173b0f3dc3da98b300a"
 }
