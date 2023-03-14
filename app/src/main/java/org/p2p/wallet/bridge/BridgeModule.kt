@@ -23,7 +23,8 @@ object BridgeModule : InjectionModule {
             BridgeRemoteRepository(
                 api = api,
                 gson = get(named(QUALIFIER_RPC_GSON)),
-                errorMapper = BridgeServiceErrorMapper()
+                errorMapper = BridgeServiceErrorMapper(),
+                urlProvider = get()
             )
         } bind BridgeRepository::class
         factoryOf(::BridgeMapper)

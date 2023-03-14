@@ -8,6 +8,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.create
 import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
+import org.p2p.ethereumkit.external.api.QUALIFIER_ETH_RETROFIT
 import org.p2p.ethereumkit.external.api.QUALIFIER_RPC_GSON
 import org.p2p.ethereumkit.external.balance.EthereumTokensRemoteRepository
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
@@ -27,7 +28,7 @@ object EthereumModule {
         singleOf(::DefaultDispatchers) bind CoroutineDispatchers::class
         single<EthereumTokensRepository> {
             EthereumTokensRemoteRepository(
-                alchemyService = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(),
+                alchemyService = get<Retrofit>(named(QUALIFIER_ETH_RETROFIT)).create(),
                 networkEnvironment = EthereumNetworkEnvironment.ALCHEMY,
                 gson = get(named(QUALIFIER_RPC_GSON))
             )
