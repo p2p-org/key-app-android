@@ -2,14 +2,9 @@ package org.p2p.wallet.home
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import retrofit2.Retrofit
-import retrofit2.create
 import org.p2p.core.token.Token
-import org.p2p.ethereumkit.external.EthereumModule
-import org.p2p.wallet.claim.api.BridgeApi
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -46,7 +41,6 @@ object HomeModule : InjectionModule {
     }
 
     private fun Module.initDomainLayer() {
-        single { get<Retrofit>(named(EthereumModule.BRIDGES_SERVICE_RETROFIT_QUALIFIER)).create<BridgeApi>() }
         single {
             SendInteractor(
                 addressInteractor = get(),

@@ -8,24 +8,24 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.p2p.ethereumkit.external.core.GsonProvider
-import org.p2p.ethereumkit.external.api.alchemy.AlchemyService
 import org.p2p.ethereumkit.external.api.coingecko.CoinGeckoService
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.logging.Logger
+import org.p2p.core.rpc.RpcApi
 
 internal const val QUALIFIER_ETH_HTTP_CLIENT = "ethereum"
-internal const val QUALIFIER_ETH_GSON = "ethereum_gson"
+const val QUALIFIER_RPC_GSON = "ethereum_gson"
 
 internal object EthereumNetworkModule {
 
     fun create(): Module = module {
         single(named(QUALIFIER_ETH_HTTP_CLIENT)) { getOkHttpClient() }
-        single { getRetrofit(get(named(QUALIFIER_ETH_HTTP_CLIENT)), get(named(QUALIFIER_ETH_GSON))) }
-        single(named(QUALIFIER_ETH_GSON)) { GsonProvider().provide() }
-        single { get<Retrofit>().create(AlchemyService::class.java) }
+        single { getRetrofit(get(named(QUALIFIER_ETH_HTTP_CLIENT)), get(named(QUALIFIER_RPC_GSON))) }
+        single(named(QUALIFIER_RPC_GSON)) { GsonProvider().provide() }
+        single { get<Retrofit>().create(RpcApi::class.java) }
         single { get<Retrofit>().create(CoinGeckoService::class.java) }
     }
 

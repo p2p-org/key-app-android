@@ -5,13 +5,14 @@ import org.p2p.ethereumkit.internal.models.EthAddress
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import org.p2p.ethereumkit.internal.models.TransactionLog
 import java.lang.reflect.Type
+import org.p2p.core.rpc.JsonRpc
 
 class GetLogsJsonRpc(
     @Transient val address: EthAddress?,
     @Transient val fromBlock: DefaultBlockParameter,
     @Transient val toBlock: DefaultBlockParameter,
     @Transient val topics: List<ByteArray?>
-) : JsonRpc<List<Any>,ArrayList<TransactionLog>>(
+) : JsonRpc<List<Any>, ArrayList<TransactionLog>>(
         method = "eth_getLogs",
         params = listOf(GetLogsParams(address, fromBlock, toBlock, topics))
 ) {

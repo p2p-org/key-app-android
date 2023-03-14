@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.spv.core
 
-import org.p2p.ethereumkit.internal.api.core.IRpcApiProvider
-import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
+import org.p2p.core.rpc.IRpcApiProvider
+import org.p2p.core.rpc.JsonRpc
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcBlock
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransaction
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransactionReceipt
@@ -122,7 +122,7 @@ class SpvBlockchain(
         TODO("not implemented")
     }
 
-    override fun <P,T> rpcSingle(rpc: JsonRpc<P,T>): Single<T> {
+    override fun <P,T> rpcSingle(rpc: JsonRpc<P, T>): Single<T> {
         TODO("not implemented")
     }
 

@@ -13,7 +13,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
-import org.p2p.wallet.claim.ui.ClaimFragment
+import org.p2p.wallet.bridge.claim.ui.ClaimFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.new.requestPermissionNotification
