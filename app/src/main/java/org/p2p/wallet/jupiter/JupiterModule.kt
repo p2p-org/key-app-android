@@ -169,7 +169,9 @@ object JupiterModule : InjectionModule {
                     selectedSwapTokenStorage = get(),
                     swapValidator = get(),
                     analytics = get(),
-                    swapTokensRepository = get()
+                    swapTokensRepository = get(),
+                    homeLocalRepository = get(),
+                    swapInteractor = get(),
                 )
             }
         }
