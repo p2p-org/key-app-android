@@ -13,14 +13,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.orZero
+import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
+import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
@@ -40,6 +47,8 @@ class SwapStateManager(
     private val swapTokensRepository: JupiterSwapTokensRepository,
     private val swapValidator: SwapValidator,
     private val analytics: JupiterSwapMainScreenAnalytics,
+    private val homeLocalRepository: HomeLocalRepository,
+    private val swapInteractor: JupiterSwapInteractor,
 ) : CoroutineScope {
 
     companion object {
@@ -56,6 +65,7 @@ class SwapStateManager(
 
     init {
         onNewAction(SwapStateAction.InitialLoading)
+        observeUserTokens()
     }
 
     fun observe(): StateFlow<SwapState> = state
@@ -111,7 +121,7 @@ class SwapStateManager(
                     featureException = featureException,
                 )
             } catch (exception: Throwable) {
-                Timber.e(exception)
+                Timber.e(exception, "Failed to handle new action: $action")
                 val actualStaticState = checkInNotLoadingOldNoErrorState(actualNoErrorState(), exception)
                 state.value = SwapState.SwapException.OtherException(
                     previousFeatureState = actualStaticState,
@@ -136,7 +146,7 @@ class SwapStateManager(
                     handleNewAction(SwapStateAction.RefreshRoutes)
                 }
             } catch (e: Throwable) {
-                Timber.e(e)
+                Timber.e(e, "Refreshing routes failed with error")
                 if (isActive) startRefreshJob()
             }
         }
@@ -260,5 +270,64 @@ class SwapStateManager(
         return tokenRatioCache.getOrPut(token.mintAddress) {
             SwapTokenRateLoader(swapTokensRepository)
         }.getRate(token)
+    }
+
+    private fun observeUserTokens() {
+        homeLocalRepository.getTokensFlow()
+            .onEach { userTokens ->
+                val (tokenA, _) = swapInteractor.getSwapTokenPair(state.value)
+                if (tokenA == null) return@onEach
+                if (tokenA !is SwapTokenModel.UserToken) return@onEach
+                // org/p2p/wallet/user/interactor/UserInteractor.kt:128
+                // tokens cleared each time on update, emit empty list
+                if (userTokens.isEmpty()) return@onEach
+
+                val updatedTokenA = userTokens.find { it.mintAddress == tokenA.mintAddress.base58Value }
+                val jupiterToken = swapTokensRepository.getTokens()
+                    .find { it.tokenMint == tokenA.mintAddress } ?: return@onEach
+
+                val isNewTotalAmount = updatedTokenA?.totalInLamports != tokenA.tokenAmountInLamports
+
+                when {
+                    updatedTokenA == null -> onUserTokenGone(jupiterToken)
+                        ?.let { newState -> state.value = newState }
+                    isNewTotalAmount -> onUserTokenChangeBalance(updatedTokenA)
+                        ?.let { newState -> state.value = newState }
+                }
+            }
+            .flowOn(dispatchers.io)
+            .launchIn(this)
+    }
+
+    private fun onUserTokenChangeBalance(newUserToken: Token.Active): SwapState? {
+        val newUserSwapToken = SwapTokenModel.UserToken(newUserToken)
+        val newState: SwapState? = when (val state = state.value) {
+            SwapState.InitialLoading -> state
+
+            is SwapState.LoadingRoutes -> state.copy(tokenA = newUserSwapToken)
+            is SwapState.LoadingTransaction -> state.copy(tokenA = newUserSwapToken)
+            is SwapState.SwapLoaded -> state.copy(tokenA = newUserSwapToken)
+            is SwapState.TokenANotZero -> state.copy(tokenA = newUserSwapToken)
+            is SwapState.TokenAZero -> state.copy(tokenA = newUserSwapToken)
+
+            is SwapState.SwapException -> onUserTokenChangeBalance(newUserToken)
+        }
+        return newState
+    }
+
+    private fun onUserTokenGone(newJupiterToken: JupiterSwapToken): SwapState? {
+        val newJupiterSwapToken = SwapTokenModel.JupiterToken(newJupiterToken)
+        val newState: SwapState? = when (val state = state.value) {
+            SwapState.InitialLoading -> state
+
+            is SwapState.LoadingRoutes -> state.copy(tokenA = newJupiterSwapToken)
+            is SwapState.LoadingTransaction -> state.copy(tokenA = newJupiterSwapToken)
+            is SwapState.SwapLoaded -> state.copy(tokenA = newJupiterSwapToken)
+            is SwapState.TokenANotZero -> state.copy(tokenA = newJupiterSwapToken)
+            is SwapState.TokenAZero -> state.copy(tokenA = newJupiterSwapToken)
+
+            is SwapState.SwapException -> onUserTokenGone(newJupiterToken)
+        }
+        return newState
     }
 }
