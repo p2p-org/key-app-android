@@ -32,6 +32,7 @@ class ClaimPresenter(
 
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
+        startRefreshJob()
         val fee: BigDecimal = BigDecimal.ZERO
         view.apply {
             setTitle(resources.getString(R.string.bridge_claim_title_format, tokenToClaim.tokenSymbol))
@@ -48,7 +49,7 @@ class ClaimPresenter(
         }
     }
 
-    private fun startRefreshJob(delayMillis: Long?) {
+    private fun startRefreshJob(delayMillis: Long? = null) {
         refreshJob = launch {
             if (delayMillis != null) delay(delayMillis)
             val total = tokenToClaim.total // BigDecimal(1)
