@@ -1,5 +1,6 @@
 package org.p2p.wallet.infrastructure.network
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -12,14 +13,17 @@ import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
+import org.p2p.ethereumkit.external.api.QUALIFIER_RPC_GSON
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule.REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER
+import org.p2p.wallet.bridge.BridgeModule
 import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Base58TypeAdapter
@@ -93,6 +97,16 @@ object NetworkModule : InjectionModule {
             )
         }
 
+        single(named(BridgeModule.BRIDGE_RETROFIT_QUALIFIER)) {
+            val url = get<NetworkServicesUrlProvider>()
+            getRetrofit(
+                baseUrl = url.loadBridgesServiceEnvironment().baseUrl,
+                tag = "RpcBridge",
+                interceptor = null,
+                gson = get(named(QUALIFIER_RPC_GSON))
+            )
+        }
+
         single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
             val url = get<NetworkServicesUrlProvider>().loadNotificationServiceEnvironment().baseUrl
             getRetrofit(
@@ -134,10 +148,12 @@ object NetworkModule : InjectionModule {
         baseUrl: String,
         tag: String? = "OkHttpClient",
         interceptor: Interceptor?,
+        gson: Gson? = null,
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create(get()))
+            .addConverterFactory(GsonConverterFactory.create(gson ?: get()))
+            .addConverterFactory(ScalarsConverterFactory.create())
             .client(getClient(tag, interceptor))
             .build()
     }

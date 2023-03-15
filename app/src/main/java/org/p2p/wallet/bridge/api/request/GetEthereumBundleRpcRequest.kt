@@ -19,9 +19,7 @@ data class GetEthereumBundleRpcRequest(
         put("recipient", recipientAddress)
         put("token", erc20Token)
         put("amount", amount)
-        slippage?.let {
-            put("slippage", it)
-        }
+        put("slippage", slippage!!)
     }
 ) {
     @Transient

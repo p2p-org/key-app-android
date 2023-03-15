@@ -21,7 +21,7 @@ class ClaimInteractor(
             recipientAddress = solanaAddress,
             erc20Token = EthAddress(erc20TokenAddress),
             amount = amount,
-            slippage = null
+            slippage = 5
         )
     }
 }
