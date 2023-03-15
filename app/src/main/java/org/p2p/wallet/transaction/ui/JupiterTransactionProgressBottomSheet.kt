@@ -4,18 +4,19 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import java.text.SimpleDateFormat
 import java.util.Locale
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogJupiterSwapTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
@@ -37,7 +38,7 @@ private const val TIME_FORMAT = "HH:mm"
 
 private const val SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE: Double = 9.0
 
-class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
+class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
     companion object {
         fun show(
             fm: FragmentManager,
@@ -235,14 +236,9 @@ class JupiterTransactionProgressBottomSheet : BottomSheetDialogFragment() {
         else -> currentSlippage
     }
 
-    override fun dismissAllowingStateLoss() {
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
         parentListener?.onBottomSheetDismissed(dismissResult)
-        super.dismissAllowingStateLoss()
-    }
-
-    override fun dismiss() {
-        parentListener?.onBottomSheetDismissed(dismissResult)
-        super.dismiss()
     }
 
     override fun onDestroy() {

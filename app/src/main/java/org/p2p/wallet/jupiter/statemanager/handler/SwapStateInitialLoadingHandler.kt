@@ -20,17 +20,12 @@ class SwapStateInitialLoadingHandler(
         state: SwapState,
         action: SwapStateAction
     ) = withContext(dispatchers.io) {
-        when (action) {
-            is SwapStateAction.InitialLoading -> {
-                stateFlow.value = SwapState.InitialLoading
-                val (tokenA, tokenB) = initialTokenSelector.getTokenPair()
-                stateFlow.value = SwapState.TokenAZero(
-                    tokenA = tokenA,
-                    tokenB = tokenB,
-                    slippage = DEFAULT_SLIPPAGE
-                )
-            }
-            else -> Unit
-        }
+        stateFlow.value = SwapState.InitialLoading
+        val (tokenA, tokenB) = initialTokenSelector.getTokenPair()
+        stateFlow.value = SwapState.TokenAZero(
+            tokenA = tokenA,
+            tokenB = tokenB,
+            slippage = DEFAULT_SLIPPAGE
+        )
     }
 }
