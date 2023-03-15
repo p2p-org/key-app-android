@@ -1,8 +1,9 @@
 package org.p2p.wallet.newsend.model
 
+import kotlinx.parcelize.IgnoredOnParcel
+import org.p2p.ethereumkit.external.utils.EthereumUtils
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.renbtc.utils.BitcoinAddressValidator
-import kotlinx.parcelize.IgnoredOnParcel
 
 data class SearchTarget(
     val value: String,
@@ -19,6 +20,7 @@ data class SearchTarget(
         INVALID,
         USERNAME,
         SOLANA_TYPE_ADDRESS,
+        ETHEREUM_TYPE_ADDRESS,
         BTC_ADDRESS
     }
 
@@ -59,6 +61,7 @@ data class SearchTarget(
             return when {
                 trimmedUsername.length in 1..USERNAME_MAX_LENGTH -> Validation.USERNAME
                 PublicKeyValidator.isValid(value) -> Validation.SOLANA_TYPE_ADDRESS
+                EthereumUtils.isValidAddress(value) -> Validation.ETHEREUM_TYPE_ADDRESS
                 BitcoinAddressValidator.isValid(value) -> Validation.BTC_ADDRESS
                 value.isEmpty() -> Validation.EMPTY
                 else -> Validation.INVALID
@@ -67,5 +70,5 @@ data class SearchTarget(
 
     @IgnoredOnParcel
     val networkType: NetworkType
-        get() = if (validation == Validation.BTC_ADDRESS) NetworkType.BITCOIN else NetworkType.SOLANA
+        get() = if (validation == Validation.ETHEREUM_TYPE_ADDRESS) NetworkType.ETHEREUM else NetworkType.SOLANA
 }
