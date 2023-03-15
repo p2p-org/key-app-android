@@ -13,6 +13,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.interactor.SearchInteractor
+import org.p2p.wallet.newsend.model.AddressState
+import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SearchState
 import org.p2p.wallet.newsend.model.SearchTarget
@@ -137,11 +139,11 @@ class NewSearchPresenter(
         view?.showScanner()
     }
 
-    fun checkPreselectedTokenAndSubmitResult(result: SearchResult) {
+    private fun checkPreselectedTokenAndSubmitResult(result: SearchResult) {
         launch {
             val finalResult: SearchResult
             val preselectedToken: Token.Active?
-            if (result is SearchResult.AddressFound) {
+            if (result is SearchResult.AddressFound && result.networkType == NetworkType.SOLANA) {
                 val balance = userInteractor.getBalance(result.addressState.address.toBase58Instance())
                 finalResult = result.copyWithBalance(balance)
                 preselectedToken = result.sourceToken ?: initialToken
@@ -165,6 +167,7 @@ class NewSearchPresenter(
         when (target.validation) {
             SearchTarget.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
             SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.ETHEREUM_TYPE_ADDRESS -> searchByEthereumAddress(target.value)
             SearchTarget.Validation.EMPTY -> renderCurrentState()
             else -> showNotFound()
         }
@@ -173,6 +176,7 @@ class NewSearchPresenter(
     private suspend fun validateOnlyAddress(target: SearchTarget) {
         when (target.validation) {
             SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.ETHEREUM_TYPE_ADDRESS -> searchByEthereumAddress(target.value)
             else -> {
                 view?.showErrorState()
                 view?.showUsersMessage(textRes = null)
@@ -197,6 +201,16 @@ class NewSearchPresenter(
         }
 
         val newAddresses = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance(), initialToken)
+        state.updateSearchResult(address, listOf(newAddresses))
+        renderCurrentState()
+    }
+
+    private fun searchByEthereumAddress(address: String) {
+        // TODO make searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance(), initialToken)
+        val newAddresses = SearchResult.AddressFound(
+            addressState = AddressState(address),
+            networkType = NetworkType.ETHEREUM
+        )
         state.updateSearchResult(address, listOf(newAddresses))
         renderCurrentState()
     }

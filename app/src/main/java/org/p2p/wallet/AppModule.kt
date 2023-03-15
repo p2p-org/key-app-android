@@ -6,6 +6,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.p2p.ethereumkit.EthereumKitService
 import org.p2p.wallet.auth.AuthModule
+import org.p2p.wallet.bridge.send.BridgeSendModule
+import org.p2p.wallet.claim.ClaimModule
 import org.p2p.wallet.bridge.BridgeModule
 import org.p2p.wallet.bridge.claim.ClaimModule
 import org.p2p.wallet.common.AppRestarter
@@ -97,6 +99,7 @@ object AppModule {
                 SellModule.create(),
                 JupiterModule.create(),
                 ReceiveModule.create(),
+                BridgeSendModule.create(),
                 ClaimModule.create(),
                 BridgeModule.create()
             ) + EthereumKitService.getEthereumKitModules()

@@ -13,13 +13,13 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
+import org.p2p.wallet.bridge.send.SendFragmentFactory
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
-import org.p2p.wallet.newsend.ui.NewSendFragment
-import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.newsend.ui.vialink.SendViaLinkFragment
+import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -51,6 +51,8 @@ class NewSearchFragment :
         parametersOf(selectedToken)
     }
     private val binding: FragmentNewSearchBinding by viewBinding()
+
+    private val sendFragmentFactory: SendFragmentFactory by inject()
 
     private val searchAdapter: SearchAdapter by unsafeLazy {
         SearchAdapter(
@@ -147,7 +149,7 @@ class NewSearchFragment :
     }
 
     override fun submitSearchResult(searchResult: SearchResult, initialToken: Token.Active?) {
-        replaceFragment(NewSendFragment.create(recipient = searchResult, initialToken = initialToken))
+        replaceFragment(sendFragmentFactory.sendFragment(searchResult, initialToken))
     }
 
     override fun showScanner() {
