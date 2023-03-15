@@ -1,6 +1,5 @@
 package org.p2p.wallet.bridge.claim.repository
 
-import java.util.Optional
 import org.p2p.core.token.SolAddress
 import org.p2p.ethereumkit.internal.models.EthAddress
 import org.p2p.wallet.bridge.model.BridgeBundle
@@ -19,7 +18,7 @@ interface EthereumClaimRepository {
         recipientAddress: SolAddress,
         erc20Token: EthAddress,
         amount: String,
-        slippage: Optional<IntRange>,
+        slippage: Int?,
     ): BridgeBundle
 
     suspend fun sendEthereumBundle(

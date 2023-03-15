@@ -13,7 +13,7 @@ import org.p2p.wallet.bridge.repository.BridgeRepository
 
 class EthereumClaimRemoteRepository(
     private val bridgeRepository: BridgeRepository,
-    private val mapper: BridgeMapper
+    private val mapper: BridgeMapper,
 ) : EthereumClaimRepository {
 
     override suspend fun getEthereumFees(
@@ -37,7 +37,8 @@ class EthereumClaimRemoteRepository(
         recipientAddress: SolAddress,
         erc20Token: EthAddress,
         amount: String,
-        slippage: Optional<IntRange>,
+        @androidx.annotation.IntRange(0, 100)
+        slippage: Int?,
     ): BridgeBundle {
         val rpcRequest = GetEthereumBundleRpcRequest(
             ethAddress = ethAddress,
