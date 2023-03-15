@@ -2,6 +2,7 @@ package org.p2p.wallet.history.interactor.mapper
 
 import com.google.gson.Gson
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.FEE_RELAYER_ACCOUNTS
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.api.model.RpcHistoryFeeResponse
@@ -265,7 +266,7 @@ private fun RpcHistoryTypeResponse.toDomain(): RpcHistoryTransactionType {
 }
 
 private fun List<RpcHistoryFeeResponse>.parseFees(): List<RpcFee>? {
-    return if (this.all { fee -> fee.payer == Constants.FEE_RELAYER_ACCOUNT }) {
+    return if (this.all { fee -> FEE_RELAYER_ACCOUNTS.contains(fee.payer) }) {
         null
     } else {
         map { fee ->
