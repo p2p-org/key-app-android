@@ -91,7 +91,7 @@ Curve DAO Token
         mintAddress = "7gjNiPun3AzEazTZoFEjZgcBMeuaXdpjHq2raZTmTrfs",
         coingeckoId = "curve-dao-token",
         tokenIconUrl = "https://assets.coingecko.com/coins/images/12124/large/Curve.png?1597369484",
-        replaceTokenName = " Curve DAO Token"
+        replaceTokenName = "Curve DAO Token"
     ),
     UST(
         contractAddress = "0xa693b19d2931d498c5b318df961919bb4aee87a5",

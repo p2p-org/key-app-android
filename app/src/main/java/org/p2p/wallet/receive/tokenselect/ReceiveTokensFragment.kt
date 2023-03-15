@@ -15,12 +15,12 @@ import android.widget.ImageView
 import org.koin.android.ext.android.inject
 import java.util.Objects
 import org.p2p.core.glide.GlideManager
-import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.recycler.decoration.groupedRoundingFinanceBlockDecoration
 import org.p2p.uikit.utils.recycler.decoration.onePxDividerFinanceBlockDecoration
@@ -62,6 +62,7 @@ class ReceiveTokensFragment :
     override val presenter: ReceiveTokensContract.Presenter by inject()
 
     private val adapter = CommonAnyCellAdapter(
+        sectionHeaderCellDelegate(),
         financeBlockCellDelegate(inflateListener = { financeBlock ->
             financeBlock.setOnClickAction { _, item -> onTokenClick(item) }
         }),
@@ -160,13 +161,12 @@ class ReceiveTokensFragment :
         binding.recyclerViewTokens.smoothScrollToPosition(0)
     }
 
-    override fun showSelectNetworkDialog(tokensToShowNetworks: List<Token>) {
+    override fun showSelectNetworkDialog() {
         SelectReceiveNetworkBottomSheet.show(
             fm = childFragmentManager,
             title = getString(R.string.receive_network_dialog_title),
             requestKey = KEY_REQUEST_NETWORK,
-            resultKey = KEY_RESULT_NETWORK,
-            tokensForNetworks = tokensToShowNetworks,
+            resultKey = KEY_RESULT_NETWORK
         )
     }
 

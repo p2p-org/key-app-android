@@ -8,8 +8,8 @@ import android.os.Bundle
 import android.view.View
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
@@ -26,11 +26,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.ui.bottomsheet.BaseRecyclerDoneBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
-import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getColorStateListCompat
 import org.p2p.wallet.utils.withArgs
-
-const val ARG_NETWORKS_TOKENS = "ARG_NETWORKS_TOKENS"
 
 class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
 
@@ -40,19 +37,15 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
             title: String,
             requestKey: String,
             resultKey: String,
-            tokensForNetworks: List<Token>
         ) =
             SelectReceiveNetworkBottomSheet()
                 .withArgs(
                     ARG_TITLE to title,
-                    ARG_NETWORKS_TOKENS to tokensForNetworks,
                     ARG_REQUEST_KEY to requestKey,
                     ARG_RESULT_KEY to resultKey
                 )
                 .show(fm, SelectReceiveNetworkBottomSheet::javaClass.name)
     }
-
-    private val tokenDataForNetworks: List<Token> by args(ARG_NETWORKS_TOKENS)
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSmoke
 
@@ -88,20 +81,24 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
             createUiCellModel(
                 ReceiveNetwork.SOLANA,
                 Constants.SOL_NAME,
-                tokenDataForNetworks.firstOrNull { it.tokenSymbol == Constants.SOL_SYMBOL }
+                ERC20Tokens.SOL.tokenIconUrl.orEmpty()
             ),
             createUiCellModel(
                 ReceiveNetwork.ETHEREUM,
                 Constants.ETH_NAME,
-                tokenDataForNetworks.firstOrNull { it.tokenSymbol == Constants.ETH_SYMBOL }
+                ERC20Tokens.ETH.tokenIconUrl.orEmpty()
             )
         )
     }
 
-    private fun createUiCellModel(network: ReceiveNetwork, networkName: String, token: Token?): FinanceBlockCellModel {
+    private fun createUiCellModel(
+        network: ReceiveNetwork,
+        networkName: String,
+        tokenIcon: String
+    ): FinanceBlockCellModel {
         return FinanceBlockCellModel(
             leftSideCellModel = createLeftSideModel(
-                tokenIconUrl = token?.iconUrl.orEmpty(),
+                tokenIconUrl = tokenIcon,
                 tokenName = networkName,
             ),
             rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
