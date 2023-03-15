@@ -8,7 +8,6 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
-import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.api.OrcaApi
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
@@ -44,7 +43,6 @@ object SwapModule : InjectionModule {
         }
 
         factoryOf(::SwapFragmentFactory)
-        factoryOf(::ReceiveFragmentFactory)
 
         single {
             SerumSwapInteractor(
