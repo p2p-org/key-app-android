@@ -21,17 +21,6 @@ enum class ERC20Tokens(
     val replaceTokenName: String? = null,
     val replaceTokenSymbol: String? = null,
 ) {
-
-    /*
-USD Coin
-Tether USD
-Ethereum
-Solana
-Avalanche
-BNB
-Polygon
-Curve DAO Token
-    */
     USDC(
         contractAddress = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         mintAddress = "A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM",
