@@ -14,7 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
-import org.p2p.ethereumkit.external.EthereumModule
+import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -39,7 +39,6 @@ import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
 import org.p2p.wallet.jupiter.JupiterModule.JUPITER_RETROFIT_QUALIFIER
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
-import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
 
@@ -99,15 +98,6 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = url,
                 tag = "NotificationService",
-                interceptor = null
-            )
-        }
-
-        single(named(EthereumModule.BRIDGES_SERVICE_RETROFIT_QUALIFIER)) {
-            val url = get<NetworkServicesUrlProvider>().loadBridgesServiceEnvironment().baseUrl
-            getRetrofit(
-                baseUrl = url,
-                tag = "BridgesService",
                 interceptor = null
             )
         }

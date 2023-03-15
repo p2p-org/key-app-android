@@ -7,6 +7,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.api.RpcHistoryServiceApi
 import org.p2p.wallet.history.interactor.HistoryInteractor
@@ -29,7 +30,6 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.push_notifications.PushNotificationsModule
-import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
 
@@ -64,7 +64,7 @@ object HistoryModule : InjectionModule {
         factoryOf(::TransactionDetailsEntityMapper)
         singleOf(::HistoryServiceSignatureFieldGenerator)
         singleOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
-        single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java) }
+        single { get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java) }
         factoryOf(::HistoryInteractor)
         single<HistoryRemoteRepository> {
             val remotes = listOf(

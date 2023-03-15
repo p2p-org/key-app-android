@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.api.jsonrpcsubscription
 
 import com.google.gson.Gson
-import org.p2p.ethereumkit.internal.api.core.RpcSubscriptionResponse
+import org.p2p.core.rpc.RpcSubscriptionResponse
 
 abstract class RpcSubscription<T>(val params: List<Any>) {
     protected abstract val typeOfResult: Class<T>

@@ -1,6 +1,6 @@
 package org.p2p.ethereumkit.internal.core
 
-import org.p2p.ethereumkit.internal.api.core.IRpcApiProvider
+import org.p2p.core.rpc.IRpcApiProvider
 import org.p2p.ethereumkit.internal.api.core.NodeApiProvider
 import org.p2p.ethereumkit.internal.api.core.RpcBlockchain
 import org.p2p.ethereumkit.internal.contracts.ContractMethod

@@ -10,7 +10,7 @@ import com.tinder.scarlet.streamadapter.rxjava2.RxJava2StreamAdapterFactory
 import com.tinder.scarlet.websocket.okhttp.newWebSocketFactory
 import com.tinder.scarlet.ws.Receive
 import com.tinder.scarlet.ws.Send
-import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
+import org.p2p.core.rpc.JsonRpc
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -20,6 +20,12 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.net.URL
 import java.util.logging.Logger
+import org.p2p.core.rpc.IRpcWebSocket
+import org.p2p.core.rpc.IRpcWebSocketListener
+import org.p2p.core.rpc.RpcGeneralResponse
+import org.p2p.core.rpc.RpcResponse
+import org.p2p.core.rpc.RpcSubscriptionResponse
+import org.p2p.core.rpc.WebSocketState
 
 class NodeWebSocket(
     url: URL,
@@ -175,10 +181,10 @@ class NodeWebSocket(
                 try {
                     when {
                         response.id != null -> {
-                            listener?.didReceive(RpcResponse(response.id, response.result, response.error))
+                            listener?.didReceive(RpcResponse(response.id!!, response.result, response.error))
                         }
                         response.method == "eth_subscription" && response.params != null -> {
-                            listener?.didReceive(RpcSubscriptionResponse(response.method, response.params))
+                            listener?.didReceive(RpcSubscriptionResponse(response.method.orEmpty(), response.params!!))
                         }
                         else -> {
                             logger.warning("Unknown Response: $response")
