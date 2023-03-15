@@ -79,7 +79,7 @@ internal class EthereumKitRepository(
     }
 
     //Temporary solution of creating ETH wallet
-    override suspend fun getWalletMetadata(): EthTokenMetadata {
+    private suspend fun getWalletMetadata(): EthTokenMetadata {
         val erc20TokenAddress = ERC20Tokens.ETH.contractAddress.lowercase()
         val contractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
         val balance = getBalance()

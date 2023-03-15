@@ -10,5 +10,4 @@ interface EthereumRepository {
     suspend fun getBalance(): BigInteger
     suspend fun loadWalletTokens(): List<Token.Eth>
     suspend fun getAddress(): EthAddress
-    suspend fun getWalletMetadata(): EthTokenMetadata
 }
