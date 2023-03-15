@@ -19,7 +19,7 @@ class UserTokensPolling(
     private val isPollingEnabled: Boolean
         get() = appFeatureFlags.isPollingEnabled.featureValue
 
-    suspend fun startPolling(onTokensLoaded: (List<Token.Active>) -> Unit) {
+    suspend fun startPolling(onTokensLoaded: suspend (List<Token.Active>) -> Unit) {
         try {
             while (true) {
                 delay(POLLING_DELAY.inWholeMilliseconds)

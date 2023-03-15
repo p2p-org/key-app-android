@@ -120,7 +120,9 @@ class HomeFragment :
             ::onFragmentResult
         )
         lifecycle.addObserver(presenter)
+
         presenter.load()
+
         requestPermissionNotification { permissionState ->
             if (permissionState == PermissionState.GRANTED) {
                 AppNotificationManager.createNotificationChannels(requireContext())

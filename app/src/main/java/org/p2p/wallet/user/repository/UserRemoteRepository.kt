@@ -52,17 +52,17 @@ class UserRemoteRepository(
             val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
 
             // Get token symbols from user accounts plus SOL
-            val tokenIds = (
-                accounts.mapNotNull {
-                    userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.coingeckoId
-                } + POPULAR_TOKENS_COINGECKO_IDS.map { it.id }
-                ).distinct()
+            val userTokenIds = accounts.mapNotNull {
+                userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.coingeckoId
+            }
+
+            val allTokenIds = (userTokenIds + POPULAR_TOKENS_COINGECKO_IDS.map(TokenId::id)).distinct()
 
             // Load and save user tokens prices
             if (fetchPrices) {
-                loadAndSaveUserTokens(tokenIds)
+                loadAndSaveUserTokens(allTokenIds)
             } else {
-                checkForNewTokens(tokenIds)
+                checkForNewTokens(allTokenIds)
             }
 
             // Map accounts to List<Token.Active>
