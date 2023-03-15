@@ -265,6 +265,14 @@ class JupiterSwapPresenter(
         retryAction()
     }
 
+    override fun pauseStateManager() {
+        stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
+    }
+
+    override fun resumeStateManager() {
+        stateManager.onNewAction(SwapStateAction.RefreshRoutes)
+    }
+
     private fun handleNewFeatureState(state: SwapState) {
         // log analytics only on first TokenAZero
         if (shouldLogScreenOpened && state is SwapState.TokenAZero) {
