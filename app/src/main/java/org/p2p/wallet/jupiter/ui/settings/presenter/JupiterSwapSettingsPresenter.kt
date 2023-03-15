@@ -2,9 +2,12 @@ package org.p2p.wallet.jupiter.ui.settings.presenter
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
@@ -42,6 +45,8 @@ class JupiterSwapSettingsPresenter(
     private var jupiterTokens: List<JupiterSwapToken> = listOf()
     private var debounceInputJob: Job? = null
     private var isSelectedCustom: Boolean? = null
+    private var currentContentList = listOf<AnyCellItem>()
+        get() = field.addSlippageSettings(featureState)
 
     override fun attach(view: JupiterSwapSettingsContract.View) {
         super.attach(view)
@@ -52,7 +57,7 @@ class JupiterSwapSettingsPresenter(
                 this.jupiterTokens = tokens
                 state to tokens
             }
-            .onEach { handleFeatureState(it.first, it.second) }
+            .mapLatest { handleFeatureState(it.first, it.second) }
             .launchIn(this)
 
         rateTickerManager.observe()
@@ -64,21 +69,44 @@ class JupiterSwapSettingsPresenter(
         featureState = state
         if (isSelectedCustom == null) isSelectedCustom = state.getCurrentSlippage() is Slippage.Custom
         val contentList = getContentListByFeatureState(state, tokens)
-            .addSlippageSettings(state)
-        view?.bindSettingsList(contentList)
+        currentContentList = contentList
+        view?.bindSettingsList(currentContentList)
         when (state) {
             is SwapState.LoadingRoutes -> {
                 rateTickerManager.handleRoutesLoading(state)
             }
             is SwapState.SwapLoaded -> {
                 rateTickerManager.handleJupiterRates(state)
+                val solToken = tokens.firstOrNull { it.isSol() }
+                currentContentList = contentMapper.mapForSwapLoadedState(
+                    slippage = state.slippage,
+                    routes = state.routes,
+                    activeRoute = state.activeRoute,
+                    jupiterTokens = tokens,
+                    tokenBAmount = state.amountTokenB,
+                    tokenB = state.tokenB,
+                    tokenA = state.tokenA,
+                    solTokenForFee = solToken,
+                )
+            }
+            is SwapState.LoadingTransaction -> {
+                val solToken = tokens.firstOrNull { it.isSol() }
+                currentContentList = contentMapper.mapForLoadingTransactionState(
+                    slippage = state.slippage,
+                    routes = state.routes,
+                    activeRoute = state.activeRoute,
+                    jupiterTokens = tokens,
+                    tokenB = state.tokenB,
+                    tokenA = state.tokenA,
+                    solTokenForFee = solToken,
+                )
             }
             is SwapState.SwapException,
             SwapState.InitialLoading,
-            is SwapState.LoadingTransaction,
             is SwapState.TokenAZero,
             is SwapState.TokenANotZero -> Unit
         }
+        view?.bindSettingsList(currentContentList)
     }
 
     override fun onSettingItemClick(item: FinanceBlockCellModel) {
@@ -101,11 +129,7 @@ class JupiterSwapSettingsPresenter(
             }
             SwapSlippagePayload.CUSTOM -> {
                 isSelectedCustom = true
-                launch {
-                    val contentList = getContentListByFeatureState(featureState, jupiterTokens)
-                        .addSlippageSettings(featureState)
-                    view?.bindSettingsList(contentList)
-                }
+                view?.bindSettingsList(currentContentList)
             }
             is SwapSettingsPayload -> {
                 onDetailsClick(payload)
@@ -160,7 +184,7 @@ class JupiterSwapSettingsPresenter(
         }
     }
 
-    private suspend fun getContentListByFeatureState(
+    private fun getContentListByFeatureState(
         state: SwapState,
         tokens: List<JupiterSwapToken>
     ): List<AnyCellItem> {
@@ -174,33 +198,10 @@ class JupiterSwapSettingsPresenter(
             is SwapState.TokenANotZero -> {
                 emptyMapper.mapEmptyList(tokenB = state.tokenB)
             }
-            is SwapState.LoadingRoutes -> {
-                loadingMapper.mapLoadingList()
-            }
-            is SwapState.LoadingTransaction -> {
-                val solToken = tokens.firstOrNull { it.isSol() }
-                contentMapper.mapForLoadingTransactionState(
-                    slippage = state.slippage,
-                    routes = state.routes,
-                    activeRoute = state.activeRoute,
-                    jupiterTokens = tokens,
-                    tokenB = state.tokenB,
-                    tokenA = state.tokenA,
-                    solTokenForFee = solToken,
-                )
-            }
+            is SwapState.LoadingRoutes,
+            is SwapState.LoadingTransaction,
             is SwapState.SwapLoaded -> {
-                val solToken = tokens.firstOrNull { it.isSol() }
-                contentMapper.mapForSwapLoadedState(
-                    slippage = state.slippage,
-                    routes = state.routes,
-                    activeRoute = state.activeRoute,
-                    jupiterTokens = tokens,
-                    tokenBAmount = state.amountTokenB,
-                    tokenB = state.tokenB,
-                    tokenA = state.tokenA,
-                    solTokenForFee = solToken,
-                )
+                loadingMapper.mapLoadingList()
             }
             is SwapState.SwapException -> {
                 getContentListByFeatureState(state.previousFeatureState, tokens)
