@@ -1,7 +1,6 @@
 package org.p2p.wallet.history.interactor.mapper
 
 import com.google.gson.Gson
-import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.FEE_RELAYER_ACCOUNTS
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.date.toZonedDateTime
