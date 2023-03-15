@@ -14,8 +14,10 @@ import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
+import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.image.commonCircleImage
 import org.p2p.uikit.utils.recycler.decoration.offsetFinanceBlockDecoration
 import org.p2p.uikit.utils.recycler.decoration.roundingByCellFinanceBlockDecoration
@@ -101,6 +103,12 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
             leftSideCellModel = createLeftSideModel(
                 tokenIconUrl = token?.iconUrl.orEmpty(),
                 tokenName = networkName,
+            ),
+            rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
+                firstIcon = ImageViewCellModel(
+                    icon = DrawableContainer(R.drawable.ic_chevron_right),
+                    iconTint = R.color.icons_mountain,
+                )
             ),
             payload = network
         )

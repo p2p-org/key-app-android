@@ -63,21 +63,23 @@ class ReceiveTokensPresenter(
     }
 
     private fun preparePinedWormholeTokens(): List<TokenData> {
-        return ERC20Tokens.values().mapNotNull { erc20Token ->
-            interactor.findTokenDataByAddress(erc20Token.mintAddress)?.let { token ->
-                TokenData(
-                    mintAddress = token.mintAddress,
-                    name = erc20Token.replaceTokenName ?: token.tokenName,
-                    symbol = erc20Token.replaceTokenSymbol ?: token.tokenSymbol,
-                    iconUrl = erc20Token.tokenIconUrl ?: token.iconUrl,
-                    decimals = token.decimals,
-                    coingeckoId = erc20Token.coingeckoId,
-                    isWrapped = false,
-                    serumV3Usdc = null,
-                    serumV3Usdt = null
-                )
+        return ERC20Tokens.values().toMutableList()
+            .apply { removeAll(listOf(ERC20Tokens.LUNA, ERC20Tokens.UST)) }
+            .mapNotNull { erc20Token ->
+                interactor.findTokenDataByAddress(erc20Token.mintAddress)?.let { token ->
+                    TokenData(
+                        mintAddress = token.mintAddress,
+                        name = erc20Token.replaceTokenName ?: token.tokenName,
+                        symbol = erc20Token.replaceTokenSymbol ?: token.tokenSymbol,
+                        iconUrl = erc20Token.tokenIconUrl ?: token.iconUrl,
+                        decimals = token.decimals,
+                        coingeckoId = erc20Token.coingeckoId,
+                        isWrapped = false,
+                        serumV3Usdc = null,
+                        serumV3Usdt = null
+                    )
+                }
             }
-        }
     }
 
     override fun load(isRefresh: Boolean, scrollToUp: Boolean) {

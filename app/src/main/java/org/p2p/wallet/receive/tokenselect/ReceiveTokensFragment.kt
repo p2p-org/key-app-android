@@ -18,11 +18,6 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.hideKeyboard
-import org.p2p.core.utils.insets.appleBottomInsets
-import org.p2p.core.utils.insets.appleTopInsets
-import org.p2p.core.utils.insets.consume
-import org.p2p.core.utils.insets.doOnApplyWindowInsets
-import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.model.AnyCellItem
@@ -111,15 +106,6 @@ class ReceiveTokensFragment :
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         result.getSerializableOrNull<ReceiveNetwork>(KEY_RESULT_NETWORK)?.let { network ->
             presenter.onNetworkSelected(network)
-        }
-    }
-
-    override fun applyWindowInsets(rootView: View) {
-        rootView.doOnApplyWindowInsets { view, insets, _ ->
-            insets.systemAndIme().consume {
-                view.appleTopInsets(this)
-                binding.recyclerViewTokens.appleBottomInsets(this)
-            }
         }
     }
 
