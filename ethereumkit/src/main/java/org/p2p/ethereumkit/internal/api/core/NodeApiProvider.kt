@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.api.core
 
 import com.google.gson.Gson
-import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
+import org.p2p.core.rpc.JsonRpc
 import io.reactivex.Single
 import okhttp3.Credentials
 import okhttp3.Interceptor
@@ -19,6 +19,8 @@ import java.net.URI
 import java.net.URL
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Logger
+import org.p2p.core.rpc.IRpcApiProvider
+import org.p2p.core.rpc.RpcResponse
 
 class NodeApiProvider(
     private val urls: List<URL>,
@@ -59,7 +61,7 @@ class NodeApiProvider(
 
     override val source: String = urls.first().host
 
-    override fun <P,T> single(rpc: JsonRpc<P,T>): Single<T> {
+    override fun <P,T> single(rpc: JsonRpc<P, T>): Single<T> {
         rpc.id = currentRpcId.addAndGet(1)
 
         return Single.create { emitter ->

@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.api.core
 
 import com.google.gson.Gson
-import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
+import org.p2p.core.rpc.JsonRpc
 import org.p2p.ethereumkit.internal.api.jsonrpc.SubscribeJsonRpc
 import org.p2p.ethereumkit.internal.api.jsonrpcsubscription.NewHeadsRpcSubscription
 import org.p2p.ethereumkit.internal.api.jsonrpcsubscription.RpcSubscription
@@ -10,10 +10,20 @@ import io.reactivex.Single
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Logger
+import org.p2p.core.rpc.IRpcSyncer
+import org.p2p.core.rpc.IRpcSyncerListener
+import org.p2p.core.rpc.IRpcWebSocket
+import org.p2p.core.rpc.IRpcWebSocketListener
+import org.p2p.core.rpc.RpcHandler
+import org.p2p.core.rpc.RpcResponse
+import org.p2p.core.rpc.RpcSubscriptionResponse
+import org.p2p.core.rpc.SubscriptionHandler
+import org.p2p.core.rpc.SyncerState
+import org.p2p.core.rpc.WebSocketState
 
 class WebSocketRpcSyncer(
-        private val rpcSocket: IRpcWebSocket,
-        private val gson: Gson
+    private val rpcSocket: IRpcWebSocket,
+    private val gson: Gson
 ) : IRpcSyncer, IRpcWebSocketListener {
     private val logger = Logger.getLogger("WebSocketRpcSyncer")
 
@@ -46,7 +56,7 @@ class WebSocketRpcSyncer(
         rpcSocket.stop()
     }
 
-    override fun <P,T> single(rpc: JsonRpc<P,T>): Single<T> {
+    override fun <P,T> single(rpc: JsonRpc<P, T>): Single<T> {
         return Single.create { emitter ->
             send(
                     rpc = rpc,
@@ -94,7 +104,7 @@ class WebSocketRpcSyncer(
     }
     //endregion
 
-    private fun <P,T> send(rpc: JsonRpc<P,T>, handler: RpcHandler) {
+    private fun <P,T> send(rpc: JsonRpc<P, T>, handler: RpcHandler) {
         rpc.id = currentRpcId.addAndGet(1)
 
         rpcSocket.send(rpc)
@@ -102,7 +112,7 @@ class WebSocketRpcSyncer(
         rpcHandlers[rpc.id] = handler
     }
 
-    private fun <P,T> send(rpc: JsonRpc<P,T>, onSuccess: (T) -> Unit, onError: (Throwable) -> Unit) {
+    private fun <P,T> send(rpc: JsonRpc<P, T>, onSuccess: (T) -> Unit, onError: (Throwable) -> Unit) {
         try {
             val rpcHandler = RpcHandler(
                     onSuccess = { response ->
