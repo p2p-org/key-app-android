@@ -62,7 +62,7 @@ class JupiterSwapTransactionMapper {
                 otherAmountThreshold = otherAmountThreshold,
                 swapMode = swapMode,
                 fees = fees.toRequest(),
-                keyAppFees = SwapRouteRequest.KeyAppFees(keyAppFee, keyAppFee, keyAppHash)
+                keyAppFees = SwapRouteRequest.KeyAppFees(keyAppFee, keyAppRefundableFee, keyAppHash)
             ),
             userPublicKey = userPublicKey
         )
