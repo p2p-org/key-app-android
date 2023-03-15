@@ -8,6 +8,7 @@
     <string name="swap_main_button_not_enough_amount">Not enough %s</string>
     <string name="swap_main_button_route_not_found">No swap options for these tokens</string>
     <string name="swap_main_button_same_token">You can\'t swap between the same token</string>
+    <string name="swap_main_button_small_token_amount">Enter greater value</string>
     <string name="swap_main_button_sol_error">Max: %s</string>
     <string name="swap_main_button_sol_error_toast">✅ We left a minimum SOL balance to save the account address</string>
     <string name="swap_main_button_ready_to_swap">Swap %s → %s</string>
