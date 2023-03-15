@@ -2,11 +2,13 @@ package org.p2p.ethereumkit.external.repository
 
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.math.log
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.orZero
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -24,7 +26,7 @@ private val MINIMAL_DUST = BigInteger("1")
 internal class EthereumKitRepository(
     private val balanceRepository: EthereumTokensRepository,
     private val priceRepository: PriceRepository,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
 ) : EthereumRepository {
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
@@ -42,12 +44,14 @@ internal class EthereumKitRepository(
     }
 
     override suspend fun loadWalletTokens(): List<Token.Eth> = withContext(dispatchers.io) {
+
         val walletTokens = loadTokensMetadata().filter { it.balance.isMoreThan(MINIMAL_DUST) }
+
         val tokensPrice = getPriceForTokens(tokenAddresses = walletTokens.map { it.contractAddress.toString() })
         tokensPrice.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
         }
-        return@withContext walletTokens.map { EthTokenConverter.ethMetadataToToken(it) }
+        return@withContext (listOf(getWalletMetadata()) + walletTokens).map { EthTokenConverter.ethMetadataToToken(it) }
     }
 
     override suspend fun getAddress(): EthAddress {
@@ -72,6 +76,24 @@ internal class EthereumKitRepository(
                 }
             }
             .awaitAll()
+    }
+
+    //Temporary solution of creating ETH wallet
+    private suspend fun getWalletMetadata(): EthTokenMetadata {
+        val erc20TokenAddress = ERC20Tokens.ETH.contractAddress.lowercase()
+        val contractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
+        val balance = getBalance()
+        val price = priceRepository.getTokenPrice(listOf(erc20TokenAddress))
+        return EthTokenMetadata(
+            contractAddress = contractAddress,
+            mintAddress = ERC20Tokens.ETH.mintAddress,
+            balance = balance,
+            decimals = 18,
+            logoUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty(),
+            tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
+            symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
+            price = price[erc20TokenAddress]?.priceInUsd.orZero()
+        )
     }
 
     private fun throwInitError(): Nothing =
