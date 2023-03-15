@@ -5,7 +5,7 @@ import android.content.Context
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import org.p2p.ethereumkit.internal.api.core.*
-import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
+import org.p2p.core.rpc.JsonRpc
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcBlock
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransaction
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransactionReceipt
@@ -38,6 +38,7 @@ import java.math.BigInteger
 import java.security.Security
 import java.util.*
 import java.util.logging.Logger
+import org.p2p.core.rpc.IRpcSyncer
 
 class EthereumKit(
     private val blockchain: IBlockchain,
@@ -288,7 +289,7 @@ class EthereumKit(
         decorationManager.addTransactionDecorator(decorator)
     }
 
-    internal fun <P,T> rpcSingle(rpc: JsonRpc<P,T>): Single<T> {
+    internal fun <P,T> rpcSingle(rpc: JsonRpc<P, T>): Single<T> {
         return blockchain.rpcSingle(rpc)
     }
 

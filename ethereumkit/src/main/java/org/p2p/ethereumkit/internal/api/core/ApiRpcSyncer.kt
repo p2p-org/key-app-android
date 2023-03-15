@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.api.core
 
 import org.p2p.ethereumkit.internal.api.jsonrpc.BlockNumberJsonRpc
-import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
+import org.p2p.core.rpc.JsonRpc
 import org.p2p.ethereumkit.internal.core.EthereumKit
 import org.p2p.ethereumkit.internal.network.ConnectionManager
 import io.reactivex.Single
@@ -9,6 +9,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import kotlin.concurrent.schedule
+import org.p2p.core.rpc.IRpcApiProvider
+import org.p2p.core.rpc.IRpcSyncer
+import org.p2p.core.rpc.IRpcSyncerListener
+import org.p2p.core.rpc.SyncerState
 
 class ApiRpcSyncer(
     private val rpcApiProvider: IRpcApiProvider,

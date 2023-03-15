@@ -38,10 +38,10 @@ import org.p2p.wallet.rpc.repository.ren.RenPoolRemoteRepository
 import org.p2p.wallet.rpc.repository.solana.RpcSolanaApi
 import org.p2p.wallet.rpc.repository.solana.RpcSolanaRemoteRepository
 import retrofit2.Retrofit
+import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 
 object RpcModule : InjectionModule {
 
-    const val RPC_RETROFIT_QUALIFIER = "RPC_RETROFIT_QUALIFIER"
     const val REN_POOL_RETROFIT_QUALIFIER = "REN_POOL_RETROFIT_QUALIFIER"
 
     override fun create(): Module = module {

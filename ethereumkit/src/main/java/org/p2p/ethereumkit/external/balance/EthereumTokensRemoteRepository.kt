@@ -1,7 +1,6 @@
 package org.p2p.ethereumkit.external.balance
 
 import com.google.gson.Gson
-import org.p2p.ethereumkit.external.api.alchemy.AlchemyService
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
 import org.p2p.ethereumkit.external.api.alchemy.request.GetBalanceJsonRpc
 import org.p2p.ethereumkit.external.api.alchemy.request.GetTokenBalancesJsonRpc
@@ -12,9 +11,10 @@ import org.p2p.ethereumkit.internal.models.EthAddress
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import java.math.BigInteger
 import java.net.URI
+import org.p2p.core.rpc.RpcApi
 
 internal class EthereumTokensRemoteRepository(
-    private val alchemyService: AlchemyService,
+    private val alchemyService: RpcApi,
     private val networkEnvironment: EthereumNetworkEnvironment,
     private val gson: Gson
 ) : EthereumTokensRepository {

@@ -16,5 +16,4 @@ internal class EthereumPriceRepository(
             targetCurrency = targetCurrency
         )
     }
-
 }
