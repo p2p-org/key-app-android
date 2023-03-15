@@ -16,5 +16,6 @@ data class JupiterSwapRoute(
     val swapMode: JupiterSwapMode,
     val fees: JupiterSwapFees,
     val keyAppFee: String,
+    val keyAppRefundableFee: String,
     val keyAppHash: String
 )

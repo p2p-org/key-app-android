@@ -23,6 +23,7 @@ class JupiterSwapRoutesMapper {
                 swapMode = route.swapMode,
                 fees = route.fees.toSwapFee(),
                 keyAppFee = route.keyAppFees.fee,
+                keyAppRefundableFee = route.keyAppFees.refundableFee,
                 keyAppHash = route.keyAppFees.hash
             )
         }
