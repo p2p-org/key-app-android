@@ -87,6 +87,9 @@ class SwapStateManager(
         activeActionHandleJob?.cancel()
         when (action) {
             is SwapStateAction.CancelSwapLoading -> return
+            is SwapStateAction.InitialLoading -> {
+                state.value = SwapState.InitialLoading
+            }
             is SwapStateAction.TokenAChanged -> {
                 handleTokenAChange(action.newTokenA)
                 return

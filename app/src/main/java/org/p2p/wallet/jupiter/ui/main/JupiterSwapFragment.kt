@@ -269,7 +269,7 @@ class JupiterSwapFragment :
                     actionBlock = { openSwapSettingsScreen() }
                 )
             }
-            JupiterTransactionDismissResult.TrySwapAgain -> Unit
+            JupiterTransactionDismissResult.TrySwapAgain -> presenter.resumeStateManager()
         }
     }
 
