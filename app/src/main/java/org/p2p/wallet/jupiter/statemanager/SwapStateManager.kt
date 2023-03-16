@@ -194,6 +194,7 @@ class SwapStateManager(
             SwapState.InitialLoading,
             is SwapState.TokenANotZero,
             is SwapState.TokenAZero,
+            is SwapState.RoutesLoaded,
             is SwapState.SwapLoaded -> actualNoErrorState
             is SwapState.LoadingRoutes ->
                 SwapState.TokenANotZero(
@@ -263,6 +264,7 @@ class SwapStateManager(
             is SwapState.SwapLoaded -> with(state) { mapState(tokenA, tokenB, slippage) }
             is SwapState.SwapException -> getOldTokenAZeroState(state.previousFeatureState)
             is SwapState.TokenANotZero -> with(state) { mapState(tokenA, tokenB, slippage) }
+            is SwapState.RoutesLoaded -> with(state) { mapState(tokenA, tokenB, slippage) }
         }
     }
 
@@ -272,6 +274,7 @@ class SwapStateManager(
             is SwapState.TokenAZero,
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes -> null
+            is SwapState.RoutesLoaded -> state.amountTokenB
             is SwapState.LoadingTransaction -> state.amountTokenB
             is SwapState.SwapLoaded -> state.amountTokenB
             is SwapState.SwapException -> getOldTokenBAmount(state.previousFeatureState)
@@ -338,6 +341,7 @@ class SwapStateManager(
             is SwapState.SwapLoaded -> featureState.copy(tokenA = newUserSwapToken)
             is SwapState.TokenANotZero -> featureState.copy(tokenA = newUserSwapToken)
             is SwapState.TokenAZero -> featureState.copy(tokenA = newUserSwapToken)
+            is SwapState.RoutesLoaded -> featureState.copy(tokenA = newUserSwapToken)
 
             is SwapState.SwapException -> onUserTokenChangeBalance(featureState.previousFeatureState, newUserToken)
         }
@@ -354,6 +358,7 @@ class SwapStateManager(
             is SwapState.SwapLoaded -> featureState.copy(tokenA = newJupiterSwapToken)
             is SwapState.TokenANotZero -> featureState.copy(tokenA = newJupiterSwapToken)
             is SwapState.TokenAZero -> featureState.copy(tokenA = newJupiterSwapToken)
+            is SwapState.RoutesLoaded -> featureState.copy(tokenA = newJupiterSwapToken)
 
             is SwapState.SwapException -> onUserTokenGone(featureState.previousFeatureState, newJupiterToken)
         }

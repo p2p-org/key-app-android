@@ -184,7 +184,6 @@ class JupiterSwapPresenter(
                     view?.showDefaultSlider()
                 }
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
-                    // todo also check for slippage error
                     Timber.e(result, "Failed to swap tokens")
                     val causeFailure = if (result.cause is JupiterSwapInteractor.LowSlippageRpcError) {
                         TransactionStateSwapFailureReason.LowSlippage(currentState.slippage)
@@ -206,6 +205,7 @@ class JupiterSwapPresenter(
             is SwapState.TokenAZero,
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
+            is SwapState.RoutesLoaded,
             is SwapState.LoadingTransaction -> swapInteractor.getTokenAAmount(featureState)
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
             null -> null
@@ -239,6 +239,7 @@ class JupiterSwapPresenter(
             is SwapState.LoadingTransaction,
             is SwapState.SwapLoaded,
             is SwapState.TokenANotZero,
+            is SwapState.RoutesLoaded,
             is SwapState.TokenAZero -> true
             is SwapState.SwapException ->
                 isChangeTokenScreenAvailable(featureState.previousFeatureState)
@@ -291,6 +292,7 @@ class JupiterSwapPresenter(
             is SwapState.InitialLoading -> handleInitialLoading(state)
             is SwapState.TokenAZero -> handleTokenAZero(state)
             is SwapState.LoadingRoutes -> handleLoadingRoutes(state)
+            is SwapState.RoutesLoaded -> handleRoutesLoaded(state)
             is SwapState.LoadingTransaction -> handleLoadingTransaction(state)
             is SwapState.SwapLoaded -> handleSwapLoaded(state)
             is SwapState.TokenANotZero -> handleTokenANotZero(state)
@@ -443,6 +445,11 @@ class JupiterSwapPresenter(
         updateWidgets()
     }
 
+    private fun handleRoutesLoaded(state: SwapState.RoutesLoaded) {
+        mapWidgetStates(state)
+        updateWidgets()
+    }
+
     private fun handleInitialLoading(state: SwapState.InitialLoading) {
         mapWidgetStates(state)
         updateWidgets()
@@ -461,6 +468,16 @@ class JupiterSwapPresenter(
                     tokenAmount = state.amountTokenA
                 ) to widgetMapper.mapTokenBLoading(token = state.tokenB)
             is SwapState.LoadingTransaction ->
+                widgetMapper.mapTokenAAndSaveOldFiatAmount(
+                    oldWidgetModel = widgetAState,
+                    token = state.tokenA,
+                    tokenAmount = state.amountTokenA
+                ) to widgetMapper.mapTokenBAndSaveOldFiatAmount(
+                    oldWidgetModel = widgetBState,
+                    token = state.tokenB,
+                    tokenAmount = state.amountTokenB,
+                )
+            is SwapState.RoutesLoaded ->
                 widgetMapper.mapTokenAAndSaveOldFiatAmount(
                     oldWidgetModel = widgetAState,
                     token = state.tokenA,
