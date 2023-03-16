@@ -20,7 +20,6 @@ import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
-import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -333,11 +332,10 @@ class JupiterSwapPresenter(
             }
             is SwapFeatureException.SmallTokenAAmount -> {
                 val tokenA = state.previousFeatureState.getTokensPair().first
-                val tokenAAmount = swapInteractor.getTokenAAmount(state.previousFeatureState)
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
                     tokenA = tokenA,
                     oldWidgetAState = widgetAState,
-                    notValidAmount = tokenAAmount.orZero()
+                    notValidAmount = featureException.notValidAmount
                 )
                 view?.setButtonState(buttonState = buttonMapper.mapSmallTokenAAmount())
             }

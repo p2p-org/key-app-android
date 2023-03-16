@@ -9,6 +9,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.SwapFailure
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
@@ -45,12 +46,16 @@ class SwapStateRoutesRefresher(
             slippage = slippage
         )
 
-        val updatedRoutes = fetchRoutes(
-            tokenA = tokenA,
-            tokenB = tokenB,
-            amountTokenA = amountTokenA,
-            slippage = slippage
-        )
+        val updatedRoutes = try {
+            fetchRoutes(
+                tokenA = tokenA,
+                tokenB = tokenB,
+                amountTokenA = amountTokenA,
+                slippage = slippage
+            )
+        } catch (e: SwapFailure.TooSmallInputAmount) {
+            throw SwapFeatureException.SmallTokenAAmount(amountTokenA)
+        }
         Timber.i("Jupiter routes fetched: ${updatedRoutes.size}")
 
         val activeRoute = updatedRoutes.getOrNull(activeRouteIndex)

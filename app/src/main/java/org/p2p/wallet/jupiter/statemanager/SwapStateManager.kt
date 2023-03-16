@@ -1,6 +1,5 @@
 package org.p2p.wallet.jupiter.statemanager
 
-import retrofit2.HttpException
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.coroutines.CoroutineContext
@@ -132,15 +131,6 @@ class SwapStateManager(
                 state.value = SwapState.SwapException.FeatureExceptionWrapper(
                     previousFeatureState = actualStaticState,
                     featureException = exception,
-                )
-            }
-            exception is HttpException && exception.message()
-                .contains("The value \"NaN\" cannot be converted to a number.") -> {
-                Timber.tag(TAG).i(exception)
-                val actualStaticState = checkInNotLoadingOldNoErrorState(actualNoErrorState(), exception)
-                state.value = SwapState.SwapException.FeatureExceptionWrapper(
-                    previousFeatureState = actualStaticState,
-                    featureException = SwapFeatureException.SmallTokenAAmount,
                 )
             }
             else -> {
