@@ -1,14 +1,17 @@
 package org.p2p.wallet.bridge.claim.ui
 
 import android.content.res.Resources
+import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toLamports
@@ -16,12 +19,15 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.model.BridgeAmount
+import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.bridge.model.BridgeBundleFee
+import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.common.mvp.BasePresenter
 
-const val DEFAULT_DELAY_IN_MILLIS = 30L
+const val DEFAULT_DELAY_IN_MILLIS = 30_000L
 
 class ClaimPresenter(
     private val tokenToClaim: Token.Eth,
@@ -30,72 +36,97 @@ class ClaimPresenter(
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
     private var refreshJob: Job? = null
+    private var claimDetails: ClaimDetails? = null
+    private var latestBundle: BridgeBundle? = null
 
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
         startRefreshJob()
-        val fee: BigDecimal = BigDecimal.ZERO
         view.apply {
             setTitle(resources.getString(R.string.bridge_claim_title_format, tokenToClaim.tokenSymbol))
             setTokenIconUrl(tokenToClaim.iconUrl)
             setTokenAmount("${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}")
             setFiatAmount(tokenToClaim.totalInUsd.orZero().asApproximateUsd(withBraces = false))
-            showFee(
-                if (fee == BigDecimal.ZERO) {
-                    resources.getString(R.string.bridge_claim_fees_free)
-                } else {
-                    fee.asApproximateUsd(withBraces = false)
-                }
-            )
         }
     }
 
     private fun startRefreshJob(delayMillis: Long? = null) {
+        refreshJob?.cancel()
         refreshJob = launch {
             if (delayMillis != null) delay(delayMillis)
-            val total = tokenToClaim.total // BigDecimal(1)
+            val total = tokenToClaim.total
             val totalToClaim = total.toLamports(tokenToClaim.decimals)
             try {
                 val bundle = claimInteractor.getEthereumBundle(
-                    tokenToClaim.getEthAddress(),
+                    tokenToClaim.getEthAddress().takeIf { !tokenToClaim.isEth },
                     totalToClaim.toString()
                 )
-                val timeExpires = bundle.expiresAt.toZonedDateTime().dateMilli()
-                val timerToSet = timeExpires - System.currentTimeMillis()
+                val timeExpires = bundle.expiresAt.seconds.inWholeMilliseconds.toZonedDateTime().dateMilli()
+                val timerToSet = timeExpires - ZonedDateTime.now().dateMilli()
+                parseFees(bundle.fees)
+                latestBundle = bundle
                 startRefreshJob(timerToSet)
             } catch (error: BridgeResult.Error) {
-                view?.showErrorMessage(error)
                 Timber.e(error, "Error on getting bundle for claim")
-                // TODO check cases and restart job if needed! startRefreshJob(DEFAULT_DELAY_IN_MILLIS)
+                view?.setClaimButtonState(isButtonEnabled = false)
+                view?.showErrorMessage(error)
+                latestBundle = null
+                startRefreshJob(DEFAULT_DELAY_IN_MILLIS)
             }
         }
     }
 
-    override fun onFeeClicked() {
-        // TODO connect real fee details
-        val tokenSymbol = "WETH"
-        val claimDetails = ClaimDetails(
+    private fun parseFees(fees: BridgeBundleFees) {
+        val tokenSymbol = tokenToClaim.tokenSymbol
+        val decimals = tokenToClaim.decimals
+        val feeList = listOf(fees.arbiterFee, fees.gasEth, fees.createAccount)
+        val fee: BigDecimal = feeList.sumOf { it.amountInUsd }
+        view?.showFee(
+            if (fee == BigDecimal.ZERO) {
+                resources.getString(R.string.bridge_claim_fees_free)
+            } else {
+                fee.asApproximateUsd(withBraces = false)
+            }
+        )
+        claimDetails = ClaimDetails(
             willGetAmount = BridgeAmount(
                 tokenSymbol,
-                BigDecimal(0.999717252),
-                BigDecimal(1215.75)
+                tokenToClaim.total,
+                tokenToClaim.totalInUsd
             ),
-            networkFee = BridgeAmount.zero(),
-            accountCreationFee = BridgeAmount(
-                tokenSymbol,
-                BigDecimal(0.003),
-                BigDecimal(0.01)
-            ),
-            bridgeFee = BridgeAmount(
-                tokenSymbol,
-                BigDecimal(0.01),
-                BigDecimal(4.12)
-            )
+            networkFee = fees.gasEth.toBridgeAmount(tokenSymbol, decimals),
+            accountCreationFee = fees.createAccount.toBridgeAmount(tokenSymbol, decimals),
+            bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
         )
-        view?.showClaimFeeInfo(claimDetails)
+        val totalFees = feeList.sumOf { it.amountInToken(decimals) }
+        val finalValue = tokenToClaim.total - totalFees
+        view?.showClaimButtonValue("${finalValue.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}")
+        view?.setClaimButtonState(isButtonEnabled = true)
+    }
+
+    private fun BridgeBundleFee.toBridgeAmount(
+        tokenSymbol: String,
+        decimals: Int
+    ): BridgeAmount {
+        return BridgeAmount(
+            tokenSymbol = tokenSymbol,
+            tokenAmount = amountInToken(decimals).takeIf { it.isNotZero() },
+            fiatAmount = amountInUsd.takeIf { it.isNotZero() }
+        )
+    }
+
+    override fun onFeeClicked() {
+        claimDetails?.let {
+            view?.showClaimFeeInfo(it)
+        }
     }
 
     override fun onSendButtonClicked() {
         // TODO implement claim logic
+    }
+
+    override fun detach() {
+        refreshJob?.cancel()
+        super.detach()
     }
 }

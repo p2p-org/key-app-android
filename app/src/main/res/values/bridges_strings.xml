@@ -9,9 +9,10 @@
     <string name="bridge_claim_sub_title_format">Confirm claiming the tokens</string>
     <string name="bridge_claim_fees">Fees</string>
     <string name="bridge_claim_fees_free">Paid by Key App</string>
-    <string name="bridge_claim_bottom_button">Send</string>
+    <string name="bridge_claim_bottom_button">Claim</string>
+    <string name="bridge_claim_bottom_button_format">Claim %s</string>
 
-    <string name="bridge_info_free_transaction_message">With Key App, the first transaction is free. Also all the transactions above $300 are free</string>
+    <string name="bridge_info_free_transaction_message">All transactions over $50 are free. Key App will cover all fees for you.</string>
     <string name="bridge_info_transaction_free">Free</string>
     <string name="bridge_info_you_will_get">You will get</string>
     <string name="bridge_info_network_fee">Network Fee</string>

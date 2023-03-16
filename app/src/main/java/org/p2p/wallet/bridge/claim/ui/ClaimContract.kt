@@ -13,6 +13,8 @@ interface ClaimContract {
         fun setFiatAmount(fiatAmount: String)
         fun showFee(fee: String)
         fun showClaimFeeInfo(claimDetails: ClaimDetails)
+        fun showClaimButtonValue(tokenAmountToClaim: String)
+        fun setClaimButtonState(isButtonEnabled: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

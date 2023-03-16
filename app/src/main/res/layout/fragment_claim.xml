@@ -38,6 +38,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginTop="28dp"
+        android:background="@drawable/bg_rain_rounded_24"
         app:cornerRadius="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

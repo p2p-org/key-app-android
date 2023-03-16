@@ -24,6 +24,7 @@ object Constants {
     const val USDT_COINGECKO_ID = "tether"
 
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
+    const val WRAPPED_ETH_MINT = "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"
     const val FEE_RELAYER_ACCOUNT = "FG4Y3yX4AAchp1HvNZ7LfzFTewF2f6nDoMDCohTFrdpT"
     const val SWAP_FEE_RELAYER_ACCOUNT = "JdYkwaUrvoeYsCbPgnt3AAa1qzjV2CtoRqU3bzuAvQu"
     val FEE_RELAYER_ACCOUNTS = listOf(

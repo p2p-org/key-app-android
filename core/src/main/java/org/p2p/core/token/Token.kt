@@ -11,6 +11,7 @@ import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.SOL_NAME
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_SYMBOL
+import org.p2p.core.utils.Constants.WRAPPED_ETH_MINT
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.asCurrency
 import org.p2p.core.utils.asUsd
@@ -126,6 +127,10 @@ sealed class Token constructor(
     ) {
 
         @IgnoredOnParcel
+        val isEth: Boolean
+            get() = mintAddress == WRAPPED_ETH_MINT
+
+        @IgnoredOnParcel
         val totalInLamports: BigInteger
             get() = total.toLamports(decimals)
 
@@ -147,7 +152,6 @@ sealed class Token constructor(
         fun getEthAddress(): EthAddress {
             return EthAddress(publicKey)
         }
-
     }
 
     @Parcelize

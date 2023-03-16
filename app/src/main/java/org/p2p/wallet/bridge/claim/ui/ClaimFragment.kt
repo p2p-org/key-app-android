@@ -6,6 +6,8 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
+import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.dialogs.ClaimInfoBottomSheet
@@ -74,5 +76,22 @@ class ClaimFragment :
 
     override fun showClaimFeeInfo(claimDetails: ClaimDetails) {
         ClaimInfoBottomSheet.show(childFragmentManager, claimDetails)
+    }
+
+    override fun showClaimButtonValue(tokenAmountToClaim: String) {
+        binding.buttonBottom.text = getString(R.string.bridge_claim_bottom_button_format, tokenAmountToClaim)
+    }
+
+    override fun setClaimButtonState(isButtonEnabled: Boolean) {
+        with(binding.buttonBottom) {
+            isEnabled = isButtonEnabled
+            if (isButtonEnabled) {
+                setTextColorRes(R.color.text_snow)
+                setBackgroundColor(getColor(R.color.bg_night))
+            } else {
+                setTextColorRes(R.color.text_mountain)
+                setBackgroundColor(getColor(R.color.bg_rain))
+            }
+        }
     }
 }
