@@ -1,8 +1,5 @@
-package org.p2p.ethereumkit.internal.spv.rlp
+package org.p2p.core.wrapper.eth.rlp
 
-import org.p2p.ethereumkit.internal.core.toByteArray
-import org.p2p.ethereumkit.internal.spv.core.toBytesNoLeadZeroes
-import org.p2p.ethereumkit.internal.spv.core.toInt
 import org.bouncycastle.util.Arrays.concatenate
 import org.bouncycastle.util.BigIntegers.asUnsignedByteArray
 import org.bouncycastle.util.encoders.Hex
@@ -11,6 +8,9 @@ import java.math.BigInteger
 import java.util.*
 import kotlin.experimental.and
 import kotlin.math.pow
+import org.p2p.core.wrapper.eth.toByteArray
+import org.p2p.core.wrapper.eth.toBytesNoLeadZeroes
+import org.p2p.core.wrapper.eth.toInt
 
 interface RLPElement : Serializable {
     val rlpData: ByteArray?

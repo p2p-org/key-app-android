@@ -1,8 +1,8 @@
 package org.p2p.ethereumkit.internal.spv.net.devp2p.messages
 
 import org.p2p.ethereumkit.internal.spv.net.IInMessage
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLPList
 
 class DisconnectMessage(payload: ByteArray) : IInMessage {
     private var reason: ReasonCode = ReasonCode.UNKNOWN

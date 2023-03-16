@@ -1,8 +1,9 @@
 package org.p2p.wallet.bridge.claim.repository
 
+import androidx.annotation.IntRange
 import java.util.Optional
 import org.p2p.core.token.SolAddress
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.wallet.bridge.api.mapper.BridgeMapper
 import org.p2p.wallet.bridge.api.request.GetEthereumBundleRpcRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumFeesRpcRequest
@@ -35,9 +36,9 @@ class EthereumClaimRemoteRepository(
     override suspend fun getEthereumBundle(
         ethAddress: EthAddress,
         recipientAddress: SolAddress,
-        erc20Token: EthAddress,
+        erc20Token: EthAddress?,
         amount: String,
-        @androidx.annotation.IntRange(0, 100)
+        @IntRange(0, 100)
         slippage: Int?,
     ): BridgeBundle {
         val rpcRequest = GetEthereumBundleRpcRequest(

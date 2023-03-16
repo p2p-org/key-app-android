@@ -39,6 +39,7 @@ import java.security.Security
 import java.util.*
 import java.util.logging.Logger
 import org.p2p.core.rpc.IRpcSyncer
+import org.p2p.core.wrapper.eth.EthAddress
 
 class EthereumKit(
     private val blockchain: IBlockchain,

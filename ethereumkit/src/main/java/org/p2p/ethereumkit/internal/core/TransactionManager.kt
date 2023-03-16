@@ -6,6 +6,7 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
+import org.p2p.core.wrapper.eth.EthAddress
 import java.math.BigInteger
 
 class TransactionManager(

@@ -3,7 +3,7 @@ package org.p2p.ethereumkit.internal.spv.net
 import org.p2p.ethereumkit.internal.core.ISpvStorage
 import org.p2p.ethereumkit.internal.core.hexStringToByteArray
 import org.p2p.ethereumkit.internal.network.INetwork
-import org.p2p.ethereumkit.internal.crypto.ECKey
+import org.p2p.core.wrapper.eth.ECKey
 import org.p2p.ethereumkit.internal.spv.net.les.LESPeer
 
 class PeerProvider(val connectionKey: ECKey,

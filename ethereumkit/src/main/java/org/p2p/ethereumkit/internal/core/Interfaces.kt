@@ -12,6 +12,7 @@ import org.p2p.ethereumkit.internal.models.*
 import org.p2p.ethereumkit.internal.spv.models.AccountStateSpv
 import org.p2p.ethereumkit.internal.spv.models.BlockHeader
 import io.reactivex.Single
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.ProviderEip1155Transaction
 import org.p2p.ethereumkit.internal.models.ProviderEip721Transaction
 import org.p2p.ethereumkit.internal.models.ProviderInternalTransaction

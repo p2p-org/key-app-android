@@ -4,8 +4,8 @@ import org.p2p.ethereumkit.internal.spv.core.toShort
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils.CURVE
 import org.p2p.ethereumkit.internal.crypto.ECIESEncryptedMessage
-import org.p2p.ethereumkit.internal.crypto.ECKey
-import org.p2p.ethereumkit.internal.spv.helpers.RandomHelper
+import org.p2p.core.wrapper.eth.ECKey
+import org.p2p.core.wrapper.eth.helpers.RandomHelper
 import org.p2p.ethereumkit.internal.spv.net.Node
 import org.bouncycastle.math.ec.ECPoint
 import java.io.IOException

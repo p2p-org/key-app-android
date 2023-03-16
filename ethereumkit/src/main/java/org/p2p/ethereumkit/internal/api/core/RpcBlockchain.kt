@@ -17,6 +17,7 @@ import org.p2p.core.rpc.IRpcSyncer
 import org.p2p.core.rpc.IRpcSyncerListener
 import org.p2p.core.rpc.JsonRpc
 import org.p2p.core.rpc.SyncerState
+import org.p2p.core.wrapper.eth.EthAddress
 
 class RpcBlockchain(
     private val address: EthAddress,

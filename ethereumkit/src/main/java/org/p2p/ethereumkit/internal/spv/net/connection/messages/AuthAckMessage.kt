@@ -2,8 +2,8 @@ package org.p2p.ethereumkit.internal.spv.net.connection.messages
 
 import org.p2p.ethereumkit.internal.core.toHexString
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils.CURVE
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLPList
 import org.p2p.ethereumkit.internal.spv.core.toInt
 import org.bouncycastle.math.ec.ECPoint
 

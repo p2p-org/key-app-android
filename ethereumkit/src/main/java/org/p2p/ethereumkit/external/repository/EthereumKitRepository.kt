@@ -2,7 +2,6 @@ package org.p2p.ethereumkit.external.repository
 
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlin.math.log
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
@@ -19,7 +18,7 @@ import org.p2p.ethereumkit.external.model.mapToTokenMetadata
 import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 
 private val MINIMAL_DUST = BigInteger("1")
 

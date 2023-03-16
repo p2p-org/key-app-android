@@ -3,8 +3,8 @@ package org.p2p.ethereumkit.internal.spv.net.les.messages
 import org.p2p.ethereumkit.internal.spv.core.toLong
 import org.p2p.ethereumkit.internal.spv.models.BlockHeader
 import org.p2p.ethereumkit.internal.spv.net.IInMessage
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLPList
 
 class BlockHeadersMessage(payload: ByteArray) : IInMessage {
 

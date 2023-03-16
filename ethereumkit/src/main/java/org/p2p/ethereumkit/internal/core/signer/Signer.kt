@@ -13,6 +13,7 @@ import org.p2p.ethereumkit.internal.spv.core.toBigInteger
 import io.horizontalsystems.hdwalletkit.HDWallet
 import io.horizontalsystems.hdwalletkit.Mnemonic
 import java.math.BigInteger
+import org.p2p.core.wrapper.eth.EthAddress
 
 class Signer(
     private val transactionBuilder: TransactionBuilder,

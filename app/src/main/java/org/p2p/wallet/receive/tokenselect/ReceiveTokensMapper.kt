@@ -10,7 +10,9 @@ import org.p2p.uikit.components.icon_wrapper.TwoIconAngle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
+import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.image.commonCircleImage
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -79,6 +81,10 @@ object ReceiveTokensMapper {
         if (isErc20Token) {
             firstIcon = ImageViewCellModel(
                 icon = DrawableContainer.Raw(secondIconUrl),
+                background = DrawableCellModel(
+                    drawable = shapeDrawable(shape = shapeCircle()),
+                    tint = R.color.icons_rain,
+                ),
                 clippingShape = shapeCircle(),
             )
             secondIcon = solImageCell
