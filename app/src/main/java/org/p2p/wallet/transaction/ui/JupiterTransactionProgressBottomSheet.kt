@@ -199,7 +199,7 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
                 getString(
                     R.string.swap_transaction_details_error_low_slippage,
                     error.currentSlippageValue.percentValue,
-                    newSlippage.toString()
+                    newSlippage.percentValue
                 )
             )
 
@@ -230,15 +230,13 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
         buttonDone.setText(R.string.common_try_again)
     }
 
-    private fun getNewSlippage(currentSlippage: Double): Slippage {
-        return when (val readablePercent = currentSlippage * PERCENT_DIVIDE_VALUE) {
-            in (0.0..0.49) -> 0.5
-            in (0.5..0.99) -> 1.0
-            in (1.0..9.9) -> 10.0
-            else -> readablePercent
+    private fun getNewSlippage(currentSlippage: Double): Slippage =
+        when (currentSlippage * PERCENT_DIVIDE_VALUE) {
+            in (0.0..0.49) -> Slippage.Medium
+            in (0.5..0.99) -> Slippage.One
+            in (1.0..9.9) -> Slippage.Custom(10.0 / PERCENT_DIVIDE_VALUE)
+            else -> Slippage.parse(currentSlippage)
         }
-            .let { Slippage.parse(it / PERCENT_DIVIDE_VALUE) }
-    }
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
