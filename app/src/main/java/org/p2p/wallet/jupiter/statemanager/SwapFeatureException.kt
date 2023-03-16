@@ -17,5 +17,7 @@ open class SwapFeatureException : Exception() {
 
     object SameTokens : SwapFeatureException()
 
+    object SmallTokenAAmount : SwapFeatureException()
+
     object RoutesNotFound : SwapFeatureException()
 }
