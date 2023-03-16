@@ -294,7 +294,7 @@ class HomeFragment :
     override fun onBannerClicked(bannerId: Int) {
         when (bannerId) {
             R.id.home_banner_top_up -> {
-                receiveFragmentFactory.receiveFragment(token = null)
+                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             }
             R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
