@@ -22,6 +22,7 @@ import org.p2p.wallet.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.jupiter.ui.info.SwapInfoType
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.settings.JupiterSwapSettingsContract
+import org.p2p.wallet.swap.model.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.swap.model.Slippage
 
 private const val AMOUNT_INPUT_DELAY = 400L
@@ -161,7 +162,7 @@ class JupiterSwapSettingsPresenter(
         if (slippage == null) {
             return
         }
-        val newCustomSlippage = Slippage.parse(slippage)
+        val newCustomSlippage = Slippage.parse(slippage / PERCENT_DIVIDE_VALUE)
         debounceInputJob = launch {
             stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
             analytics.logSlippageChangedClicked(newCustomSlippage)

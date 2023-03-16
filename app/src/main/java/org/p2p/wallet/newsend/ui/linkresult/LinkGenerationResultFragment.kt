@@ -33,7 +33,6 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-
             renderState()
 
             imageViewClose.setOnClickListener { popBackStack() }

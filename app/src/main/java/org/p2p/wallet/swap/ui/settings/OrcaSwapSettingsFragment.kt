@@ -1,16 +1,17 @@
 package org.p2p.wallet.swap.ui.settings
 
-import android.annotation.SuppressLint
-import android.os.Bundle
-import android.text.TextWatcher
-import android.view.View
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.text.TextWatcher
+import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
@@ -18,9 +19,9 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
-import org.p2p.core.token.Token
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.model.MAX_ALLOWED_SLIPPAGE
+import org.p2p.wallet.swap.model.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.ui.orca.KEY_REQUEST_SWAP
@@ -35,7 +36,7 @@ private const val EXTRA_TOKENS = "EXTRA_TOKENS"
 private const val EXTRA_SELECTED_TOKEN = "EXTRA_SELECTED_TOKEN"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
-class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
+class OrcaSwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
 
     companion object {
         fun create(
@@ -44,7 +45,7 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
             currentFeePayerToken: Token.Active,
             resultKey: String
         ) =
-            SwapSettingsFragment()
+            OrcaSwapSettingsFragment()
                 .withArgs(
                     EXTRA_SLIPPAGE to currentSlippage,
                     EXTRA_TOKENS to tokens,
@@ -175,7 +176,7 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
     private fun updateSettings() {
         if (binding.slippageRadioGroup.checkedRadioButtonId == R.id.customRadioButton) {
             val slippageValue = binding.slippageInputTextView.text.toString().toDoubleOrNull() ?: 0.0
-            currentSlippage = Slippage.parse(slippageValue)
+            currentSlippage = Slippage.parse(slippageValue / PERCENT_DIVIDE_VALUE)
         }
         val result = OrcaSettingsResult(currentSlippage, selectedToken)
         setFragmentResult(KEY_REQUEST_SWAP, bundleOf(resultKey to result))

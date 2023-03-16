@@ -20,6 +20,8 @@ import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogJupiterSwapTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
+import org.p2p.wallet.swap.model.PERCENT_DIVIDE_VALUE
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
 import org.p2p.wallet.updates.ConnectionStateProvider
@@ -36,7 +38,7 @@ private const val IMAGE_SIZE = 64
 private const val DATE_FORMAT = "MMMM dd, yyyy"
 private const val TIME_FORMAT = "HH:mm"
 
-private const val SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE: Double = 9.0
+private const val SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE: Double = 0.1
 
 class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
     companion object {
@@ -191,13 +193,13 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
     private fun setLowSlippageError(error: TransactionStateSwapFailureReason.LowSlippage) = with(binding) {
         analytics.logSwapErrorSlippage()
 
-        if (error.currentSlippageValue.doubleValue <= SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE) {
+        if (error.currentSlippageValue.doubleValue < SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE) {
             val newSlippage = getNewSlippage(error.currentSlippageValue.doubleValue)
             progressStateTransaction.setDescriptionText(
                 getString(
                     R.string.swap_transaction_details_error_low_slippage,
-                    error.currentSlippageValue.toString(),
-                    newSlippage.toString()
+                    error.currentSlippageValue.percentValue,
+                    newSlippage.percentValue
                 )
             )
 
@@ -206,7 +208,7 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
             progressStateTransaction.setDescriptionText(
                 getString(
                     R.string.swap_transaction_details_error_low_slippage_manual,
-                    error.currentSlippageValue.toString()
+                    error.currentSlippageValue.percentValue
                 )
             )
             dismissResult = JupiterTransactionDismissResult.ManualSlippageChangeNeeded
@@ -228,12 +230,14 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
         buttonDone.setText(R.string.common_try_again)
     }
 
-    private fun getNewSlippage(currentSlippage: Double): Double = when (currentSlippage) {
-        in (0.0..0.4) -> 0.5
-        in (0.5..0.9) -> 1.0
-        in (1.0..4.9) -> 5.0
-        in (5.0..9.9) -> 10.0
-        else -> currentSlippage
+    private fun getNewSlippage(currentSlippage: Double): Slippage {
+        return when (val readablePercent = currentSlippage * PERCENT_DIVIDE_VALUE) {
+            in (0.0..0.49) -> 0.5
+            in (0.5..0.99) -> 1.0
+            in (1.0..9.9) -> 10.0
+            else -> readablePercent
+        }
+            .let { Slippage.parse(it / PERCENT_DIVIDE_VALUE) }
     }
 
     override fun onDismiss(dialog: DialogInterface) {
