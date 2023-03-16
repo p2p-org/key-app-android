@@ -34,7 +34,7 @@ sealed class Slippage(val doubleValue: Double, val percentValue: String) : Parce
     object Five : Slippage(0.05, "5%")
 
     @Parcelize
-    data class Custom(val value: Double) : Slippage(value / PERCENT_DIVIDE_VALUE, "$value")
+    data class Custom(val value: Double) : Slippage(value / PERCENT_DIVIDE_VALUE, "$value%")
 
     companion object {
         fun parse(slippage: Double): Slippage =

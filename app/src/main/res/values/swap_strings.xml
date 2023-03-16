@@ -8,6 +8,7 @@
     <string name="swap_main_button_not_enough_amount">Not enough %s</string>
     <string name="swap_main_button_route_not_found">No swap options for these tokens</string>
     <string name="swap_main_button_same_token">You can\'t swap between the same token</string>
+    <string name="swap_main_button_small_token_amount">Enter greater value</string>
     <string name="swap_main_button_sol_error">Max: %s</string>
     <string name="swap_main_button_sol_error_toast">✅ We left a minimum SOL balance to save the account address</string>
     <string name="swap_main_button_ready_to_swap">Swap %s → %s</string>
@@ -53,10 +54,10 @@
     <string name="swap_transaction_details_token_amounts">%s %s → %s %s</string>
     <string name="swap_select_routes_header">Swapping Through</string>
     <string name="swap_transaction_details_error_low_slippage">
-        Low slippage %s%%. We recommend to increase slippage to %s%% and try again
+        Low slippage %s. We recommend to increase slippage to %s%% and try again
     </string>
     <string name="swap_transaction_details_error_low_slippage_manual">
-        Low slippage %s%%. We recommend to increase slippage manually
+        Low slippage %s. We recommend to increase slippage manually
     </string>
     <string name="swap_transaction_details_error_low_slippage_button">
         Increase slippage and try again
