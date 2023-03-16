@@ -10,6 +10,7 @@ import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
+import org.p2p.core.utils.Constants.WRAPPED_ETH_MINT
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.wrapper.eth.EthAddress
 
@@ -39,7 +40,7 @@ enum class ERC20Tokens(
     ),
     ETH(
         contractAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        mintAddress = "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
+        mintAddress = WRAPPED_ETH_MINT,
         coingeckoId = ETH_COINGECKO_ID,
         tokenIconUrl = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
         replaceTokenName = ETH_NAME,
