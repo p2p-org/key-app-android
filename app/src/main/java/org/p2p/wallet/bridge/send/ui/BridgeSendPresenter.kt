@@ -382,7 +382,7 @@ class BridgeSendPresenter(
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
                     recipient = recipientAddress.nicknameOrAddress(),
-                    totalFee = total
+                    totalFees = total.getFeesCombined(checkFeePayer = false)?.let { listOf(it) }
                 )
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)

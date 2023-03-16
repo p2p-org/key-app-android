@@ -24,4 +24,12 @@ interface EthereumClaimRepository {
     suspend fun sendEthereumBundle(
         bundle: BridgeBundle,
     )
+
+    suspend fun getEthereumBundleStatus(
+        bundleId: String
+    ): BridgeBundle
+
+    suspend fun getListOfEthereumBundleStatuses(
+        ethAddress: EthAddress
+    ): List<BridgeBundle>
 }

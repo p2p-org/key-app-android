@@ -2,9 +2,11 @@ package org.p2p.wallet.bridge.model
 
 import android.os.Parcelable
 import java.math.BigDecimal
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.utils.emptyString
 
@@ -22,6 +24,9 @@ data class BridgeAmount(
             fiatAmount = null
         )
     }
+
+    @IgnoredOnParcel
+    val isFree: Boolean = tokenAmount.isNullOrZero() || fiatAmount.isNullOrZero()
 
     val formattedTokenAmount: String?
         get() = tokenAmount?.let { "${it.scaleMedium().formatToken()} $tokenSymbol" }

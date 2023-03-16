@@ -5,15 +5,18 @@ import android.view.Gravity
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
+import java.util.Date
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.asApproximateUsd
+import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isNullOrZero
@@ -35,6 +38,7 @@ import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPx
 
@@ -158,16 +162,43 @@ class ClaimPresenter(
     }
 
     override fun onSendButtonClicked() {
+        val lastBundle = latestBundle ?: return
         launch {
             try {
-                val lastBundle = latestBundle ?: return@launch
                 val signedTransactions = lastBundle.transactions.map { ethereumRepository.signTransaction(it) }
                 lastBundle.signatures = signedTransactions.map { it.first }
                 claimInteractor.sendEthereumBundle(lastBundle)
+                val transactionDate = Date()
+                val amountTokens = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}"
+                val amountUsd = tokenToClaim.totalInUsd.orZero()
+                val feeList = listOfNotNull(
+                    claimDetails?.networkFee,
+                    claimDetails?.accountCreationFee,
+                    claimDetails?.bridgeFee
+                )
+                val progressDetails = NewShowProgress(
+                    date = transactionDate,
+                    tokenUrl = tokenToClaim.iconUrl.orEmpty(),
+                    amountTokens = amountTokens,
+                    amountUsd = amountUsd.asNegativeUsdTransaction(),
+                    recipient = null,
+                    totalFees = feeList.mapNotNull { it.toTextHighlighting() }
+                )
+                view?.showProgressDialog(lastBundle.bundleId, progressDetails)
             } catch (e: BridgeResult.Error) {
                 Timber.e(e)
             }
         }
+    }
+
+    private fun BridgeAmount.toTextHighlighting(): TextHighlighting? {
+        if (isFree) return null
+        val usdText = formattedFiatAmount.orEmpty()
+        val commonText = "$formattedTokenAmount $usdText"
+        return TextHighlighting(
+            commonText = commonText,
+            highlightedText = usdText
+        )
     }
 
     override fun detach() {

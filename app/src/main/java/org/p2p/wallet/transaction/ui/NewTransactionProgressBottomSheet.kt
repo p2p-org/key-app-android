@@ -1,5 +1,7 @@
 package org.p2p.wallet.transaction.ui
 
+import androidx.core.text.buildSpannedString
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
@@ -13,6 +15,7 @@ import org.koin.android.ext.android.inject
 import java.text.SimpleDateFormat
 import java.util.Locale
 import org.p2p.core.glide.GlideManager
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogNewTransactionProgressBinding
@@ -90,10 +93,26 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
             glideManager.load(imageViewToken, data.tokenUrl, IMAGE_SIZE)
             textViewAmountUsd.text = data.amountUsd
             textViewAmountTokens.text = data.amountTokens
-            textViewSendToValue.text = data.recipient
-            val total = data.totalFee
-            textViewFeeValue.text = if (total.sendFee != null) {
-                total.getFeesCombined(colorMountain, checkFeePayer = false)
+            if (data.recipient == null) {
+                textViewSendToTitle.isVisible = false
+                textViewSendToValue.isVisible = false
+            } else {
+                textViewSendToValue.text = data.recipient
+            }
+            val totalFees = data.totalFees
+            textViewFeeValue.text = if (totalFees != null) {
+                buildSpannedString {
+                    totalFees.forEach { textToHighlight ->
+                        append(
+                            SpanUtils.highlightText(
+                                commonText = textToHighlight.commonText,
+                                highlightedText = textToHighlight.highlightedText,
+                                color = colorMountain
+                            )
+                        )
+                        append("\n")
+                    }
+                }
             } else {
                 resources.getString(R.string.transaction_transaction_fee_free_value)
             }
