@@ -53,10 +53,10 @@
     <string name="swap_transaction_details_token_amounts">%s %s → %s %s</string>
     <string name="swap_select_routes_header">Swapping Through</string>
     <string name="swap_transaction_details_error_low_slippage">
-        Low slippage %s%%. We recommend to increase slippage to %s%% and try again
+        Low slippage %s. We recommend to increase slippage to %s%% and try again
     </string>
     <string name="swap_transaction_details_error_low_slippage_manual">
-        Low slippage %s%%. We recommend to increase slippage manually
+        Low slippage %s. We recommend to increase slippage manually
     </string>
     <string name="swap_transaction_details_error_low_slippage_button">
         Increase slippage and try again

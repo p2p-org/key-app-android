@@ -199,7 +199,7 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
                 getString(
                     R.string.swap_transaction_details_error_low_slippage,
                     error.currentSlippageValue.percentValue,
-                    newSlippage.percentValue
+                    newSlippage.toString()
                 )
             )
 
