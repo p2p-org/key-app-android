@@ -50,6 +50,7 @@ class EthereumReceiveFragment :
         with(binding) {
             toolbar.title = getString(R.string.receive_on_ethereum, tokenSymbol)
             toolbar.setNavigationOnClickListener { popBackStack() }
+            textViewFirstNumValue.text = getString(R.string.receive_ethereum_step_1, tokenSymbol)
             glideManager.load(imageViewWatermark, logoUrl)
         }
         presenter.load()
