@@ -196,7 +196,7 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
             progressStateTransaction.setDescriptionText(
                 getString(
                     R.string.swap_transaction_details_error_low_slippage,
-                    error.currentSlippageValue.toString(),
+                    error.currentSlippageValue.percentValue,
                     newSlippage.toString()
                 )
             )
@@ -206,7 +206,7 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
             progressStateTransaction.setDescriptionText(
                 getString(
                     R.string.swap_transaction_details_error_low_slippage_manual,
-                    error.currentSlippageValue.toString()
+                    error.currentSlippageValue.percentValue
                 )
             )
             dismissResult = JupiterTransactionDismissResult.ManualSlippageChangeNeeded
