@@ -37,7 +37,6 @@ class SwapStateRoutesRefresher(
             newAmount = amountTokenA,
             slippage = slippage
         )
-        swapValidator.validateInputAmount(tokenA = tokenA, amountTokenA = amountTokenA)
         swapValidator.validateIsSameTokens(tokenA = tokenA, tokenB = tokenB)
         state.value = SwapState.LoadingRoutes(
             tokenA = tokenA,
@@ -60,6 +59,21 @@ class SwapStateRoutesRefresher(
         val amountTokenB = activeRoute
             .outAmountInLamports
             .fromLamports(tokenB.decimals)
+
+        try {
+            swapValidator.validateInputAmount(tokenA = tokenA, amountTokenA = amountTokenA)
+        } catch (notValidTokenA: SwapFeatureException.NotValidTokenA) {
+            state.value = SwapState.RoutesLoaded(
+                tokenA = tokenA,
+                tokenB = tokenB,
+                amountTokenA = amountTokenA,
+                routes = updatedRoutes,
+                activeRoute = activeRouteIndex,
+                amountTokenB = amountTokenB,
+                slippage = slippage,
+            )
+            throw notValidTokenA
+        }
 
         state.value = SwapState.LoadingTransaction(
             tokenA = tokenA,
