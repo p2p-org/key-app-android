@@ -7,7 +7,7 @@ import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcBlock
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransaction
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransactionReceipt
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.network.AddressTypeAdapter
 import org.p2p.ethereumkit.internal.network.BigIntegerTypeAdapter
 import org.p2p.ethereumkit.internal.network.ByteArrayTypeAdapter

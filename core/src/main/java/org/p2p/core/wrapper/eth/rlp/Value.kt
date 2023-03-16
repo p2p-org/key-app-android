@@ -1,4 +1,4 @@
-package org.p2p.ethereumkit.internal.spv.rlp
+package org.p2p.core.wrapper.eth.rlp
 
 import java.util.*
 

@@ -1,6 +1,5 @@
-package org.p2p.ethereumkit.internal.crypto
+package org.p2p.core.wrapper.eth
 
-import org.p2p.ethereumkit.internal.core.toHexString
 import org.bouncycastle.math.ec.ECPoint
 import java.math.BigInteger
 

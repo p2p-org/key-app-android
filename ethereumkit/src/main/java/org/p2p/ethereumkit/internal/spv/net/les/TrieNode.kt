@@ -3,7 +3,7 @@ package org.p2p.ethereumkit.internal.spv.net.les
 import org.p2p.ethereumkit.internal.core.toHexString
 import org.p2p.ethereumkit.internal.core.toRawHexString
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLPList
 import java.util.*
 
 class TrieNode(rlpList: RLPList) {

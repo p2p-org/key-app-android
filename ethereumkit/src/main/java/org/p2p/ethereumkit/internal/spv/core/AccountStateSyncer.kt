@@ -1,14 +1,15 @@
 package org.p2p.ethereumkit.internal.spv.core
 
 import org.p2p.ethereumkit.internal.core.ISpvStorage
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.spv.models.AccountStateSpv
 import org.p2p.ethereumkit.internal.spv.models.BlockHeader
 import org.p2p.ethereumkit.internal.spv.net.handlers.AccountStateTaskHandler
 import org.p2p.ethereumkit.internal.spv.net.tasks.AccountStateTask
 
 class AccountStateSyncer(private val storage: ISpvStorage,
-                         private val address: EthAddress) : AccountStateTaskHandler.Listener {
+                         private val address: EthAddress
+) : AccountStateTaskHandler.Listener {
 
     interface Listener {
         fun onUpdate(accountState: AccountStateSpv)

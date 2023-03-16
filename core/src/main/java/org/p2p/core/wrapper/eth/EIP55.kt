@@ -1,9 +1,5 @@
-package org.p2p.ethereumkit.internal.utils
+package org.p2p.core.wrapper.eth
 
-import org.p2p.ethereumkit.internal.core.stripHexPrefix
-import org.p2p.ethereumkit.internal.core.toHexString
-import org.p2p.ethereumkit.internal.core.toRawHexString
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import java.util.*
 
 object EIP55 {

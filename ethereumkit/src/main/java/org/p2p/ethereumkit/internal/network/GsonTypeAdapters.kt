@@ -7,9 +7,8 @@ import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
-import org.bouncycastle.util.encoders.Hex
 import org.p2p.ethereumkit.internal.core.*
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import java.lang.reflect.Type
 import java.math.BigInteger

@@ -1,9 +1,10 @@
 package org.p2p.ethereumkit.internal.core
 
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.models.*
 import org.p2p.ethereumkit.internal.spv.core.toBigInteger
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLP
 
 class TransactionBuilder(
     private val address: EthAddress,

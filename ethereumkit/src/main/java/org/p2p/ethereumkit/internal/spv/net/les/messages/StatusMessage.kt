@@ -7,8 +7,8 @@ import org.p2p.ethereumkit.internal.spv.core.toLong
 import org.p2p.ethereumkit.internal.spv.net.IInMessage
 import org.p2p.ethereumkit.internal.spv.net.IOutMessage
 import org.p2p.ethereumkit.internal.spv.net.les.MaxCost
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLPList
 import java.math.BigInteger
 
 class StatusMessage : IInMessage, IOutMessage {

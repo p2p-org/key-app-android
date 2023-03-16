@@ -2,7 +2,6 @@ package org.p2p.ethereumkit.external.repository
 
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlin.math.log
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
@@ -19,7 +18,7 @@ import org.p2p.ethereumkit.external.model.mapToTokenMetadata
 import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 
 private val MINIMAL_DUST = BigInteger("1")
 
@@ -56,6 +55,12 @@ internal class EthereumKitRepository(
 
     override suspend fun getAddress(): EthAddress {
         return tokenKeyProvider?.publicKey ?: throwInitError()
+    }
+
+    override suspend fun signTransaction() {
+        val result = Signer.getInstance(tokenKeyProvider!!.privateKey, Chain.Ethereum)
+
+        println(result)
     }
 
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {
@@ -99,3 +104,6 @@ internal class EthereumKitRepository(
     private fun throwInitError(): Nothing =
         error("You must call EthereumKitRepostory.init() method, before interact with this repository")
 }
+
+val bundle =
+    "0xf8aa8085174876e800830144d9943ee18b2214aff97000d974cf647e7c347e8fa58580b8849981509f00000000000000000000000000000000000000000000000000000000000000014eeaa58f326f13b7f3df4dd50f4f093cf6040c0cbae465546b70fcdaf7f661ae000000000000000000000000000000000000000000000000000446db017ce94c0000000000000000000000000000000000000000000000000000000000000c94018080"

@@ -5,8 +5,8 @@ import org.p2p.ethereumkit.internal.spv.core.toInt
 import org.p2p.ethereumkit.internal.spv.net.IInMessage
 import org.p2p.ethereumkit.internal.spv.net.IOutMessage
 import org.p2p.ethereumkit.internal.spv.net.devp2p.Capability
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLPList
 import java.util.*
 
 class HelloMessage : IInMessage, IOutMessage {

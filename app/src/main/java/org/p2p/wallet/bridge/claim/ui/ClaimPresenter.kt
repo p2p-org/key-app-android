@@ -16,6 +16,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.model.BridgeAmount
+import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -56,15 +57,15 @@ class ClaimPresenter(
             val totalToClaim = total.toLamports(tokenToClaim.decimals)
             try {
                 val bundle = claimInteractor.getEthereumBundle(
-                    tokenToClaim.publicKey,
+                    tokenToClaim.getEthAddress(),
                     totalToClaim.toString()
                 )
                 val timeExpires = bundle.expiresAt.toZonedDateTime().dateMilli()
                 val timerToSet = timeExpires - System.currentTimeMillis()
                 startRefreshJob(timerToSet)
-            } catch (error: Throwable) {
+            } catch (error: BridgeResult.Error) {
                 view?.showErrorMessage(error)
-                Timber.d(error, "Error on getting bundle for claim")
+                Timber.e(error, "Error on getting bundle for claim")
                 // TODO check cases and restart job if needed! startRefreshJob(DEFAULT_DELAY_IN_MILLIS)
             }
         }

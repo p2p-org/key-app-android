@@ -1,9 +1,5 @@
-package org.p2p.ethereumkit.internal.models
+package org.p2p.core.wrapper.eth
 
-import org.p2p.ethereumkit.internal.core.AddressValidator
-import org.p2p.ethereumkit.internal.core.hexStringToByteArray
-import org.p2p.ethereumkit.internal.core.toHexString
-import org.p2p.ethereumkit.internal.utils.EIP55
 
 data class EthAddress(var raw: ByteArray) {
     init {

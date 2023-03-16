@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 import org.p2p.ethereumkit.internal.core.toHexString
 import org.p2p.ethereumkit.internal.spv.core.toLong
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLPList
 import java.math.BigInteger
 
 @Entity
