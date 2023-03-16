@@ -4,7 +4,7 @@ import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.models.GasPrice
 import org.p2p.ethereumkit.internal.models.RawTransaction
 import org.p2p.ethereumkit.internal.models.Signature
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLP
 import java.math.BigInteger
 
 class TransactionSigner(

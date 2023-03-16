@@ -8,12 +8,13 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import org.p2p.ethereumkit.internal.core.*
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import java.lang.reflect.Type
 import java.math.BigInteger
 import java.util.*
 import org.p2p.core.token.SolAddress
+import org.p2p.core.wrapper.HexString
 
 internal class BigIntegerTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<BigInteger?>() {
     override fun write(writer: JsonWriter, value: BigInteger?) {
@@ -138,6 +139,29 @@ internal class SolAddressTypeAdapter : TypeAdapter<SolAddress?>() {
     }
 }
 
+internal class HexStringTypeAdapter : TypeAdapter<HexString?>() {
+
+    override fun write(writter: JsonWriter, value: HexString?) {
+        if (value == null) {
+            writter.nullValue()
+        } else {
+            writter.value(value.rawValue)
+        }
+    }
+
+    override fun read(reader: JsonReader): HexString? {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull()
+            return null
+        }
+        return try {
+            HexString(reader.nextString())
+        } catch (error: Throwable) {
+            null
+        }
+    }
+}
+
 internal class DefaultBlockParameterTypeAdapter : TypeAdapter<DefaultBlockParameter?>() {
     override fun write(writer: JsonWriter, value: DefaultBlockParameter?) {
         value?.let {
@@ -155,7 +179,7 @@ internal class DefaultBlockParameterTypeAdapter : TypeAdapter<DefaultBlockParame
 }
 
 internal class OptionalTypeAdapter<T>(
-    private val type: Type
+    private val type: Type,
 ) : TypeAdapter<Optional<T>>() {
 
     private val gson: Gson = GsonBuilder()

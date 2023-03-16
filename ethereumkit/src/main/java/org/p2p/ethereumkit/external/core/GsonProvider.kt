@@ -7,7 +7,7 @@ import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcBlock
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransaction
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransactionReceipt
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.network.AddressTypeAdapter
 import org.p2p.ethereumkit.internal.network.BigIntegerTypeAdapter
 import org.p2p.ethereumkit.internal.network.ByteArrayTypeAdapter
@@ -18,6 +18,8 @@ import org.p2p.ethereumkit.internal.network.OptionalTypeAdapter
 import java.math.BigInteger
 import java.util.Optional
 import org.p2p.core.token.SolAddress
+import org.p2p.core.wrapper.HexString
+import org.p2p.ethereumkit.internal.network.HexStringTypeAdapter
 import org.p2p.ethereumkit.internal.network.SolAddressTypeAdapter
 
 class GsonProvider {
@@ -39,6 +41,7 @@ class GsonProvider {
             registerTypeHierarchyAdapter(DefaultBlockParameter::class.java, DefaultBlockParameterTypeAdapter())
             registerTypeAdapter(EthAddress::class.java, AddressTypeAdapter())
             registerTypeAdapter(SolAddress::class.java, SolAddressTypeAdapter())
+            registerTypeAdapter(HexString::class.java, HexStringTypeAdapter())
             registerTypeAdapter(
                 object : TypeToken<Optional<RpcTransaction>>() {}.type,
                 OptionalTypeAdapter<RpcTransaction>(RpcTransaction::class.java)

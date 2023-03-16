@@ -2,7 +2,7 @@ package org.p2p.ethereumkit.internal.spv.net.les
 
 import org.p2p.ethereumkit.internal.core.toHexString
 import org.p2p.ethereumkit.internal.spv.core.*
-import org.p2p.ethereumkit.internal.crypto.ECKey
+import org.p2p.core.wrapper.eth.ECKey
 import org.p2p.ethereumkit.internal.spv.net.IInMessage
 import org.p2p.ethereumkit.internal.spv.net.IOutMessage
 import org.p2p.ethereumkit.internal.spv.net.Node

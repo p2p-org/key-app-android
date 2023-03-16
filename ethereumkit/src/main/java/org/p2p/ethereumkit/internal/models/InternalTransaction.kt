@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import org.p2p.ethereumkit.internal.core.toHexString
 import java.math.BigInteger
 import java.util.*
+import org.p2p.core.wrapper.eth.EthAddress
 
 @Entity
 data class InternalTransaction(

@@ -2,7 +2,6 @@ package org.p2p.ethereumkit.external.model
 
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.scaleMedium
 
 object EthTokenConverter {
 
@@ -13,7 +12,7 @@ object EthTokenConverter {
         mintAddress = metadata.mintAddress,
         tokenName = metadata.tokenName,
         iconUrl = metadata.logoUrl,
-        totalInUsd = metadata.balance.fromLamports(metadata.decimals).times(metadata.price).scaleMedium(),
+        totalInUsd = metadata.balance.fromLamports(metadata.decimals).times(metadata.price),
         total = metadata.balance.fromLamports(metadata.decimals),
         rate = metadata.price,
     )

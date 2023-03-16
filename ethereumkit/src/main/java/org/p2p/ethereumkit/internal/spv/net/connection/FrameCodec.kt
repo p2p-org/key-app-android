@@ -2,8 +2,8 @@ package org.p2p.ethereumkit.internal.spv.net.connection
 
 import org.p2p.ethereumkit.internal.crypto.AESCipher
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLPList
 import org.bouncycastle.crypto.digests.KeccakDigest
 import java.io.InputStream
 import java.io.OutputStream

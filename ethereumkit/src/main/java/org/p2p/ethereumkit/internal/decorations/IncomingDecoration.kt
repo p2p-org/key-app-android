@@ -1,6 +1,6 @@
 package org.p2p.ethereumkit.internal.decorations
 
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.TransactionTag
 import java.math.BigInteger
 

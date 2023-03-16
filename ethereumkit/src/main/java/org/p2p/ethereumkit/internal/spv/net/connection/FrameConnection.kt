@@ -1,6 +1,6 @@
 package org.p2p.ethereumkit.internal.spv.net.connection
 
-import org.p2p.ethereumkit.internal.crypto.ECKey
+import org.p2p.core.wrapper.eth.ECKey
 import org.p2p.ethereumkit.internal.spv.net.Node
 
 

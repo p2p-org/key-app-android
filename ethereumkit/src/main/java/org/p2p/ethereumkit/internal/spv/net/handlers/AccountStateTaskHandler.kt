@@ -2,9 +2,9 @@ package org.p2p.ethereumkit.internal.spv.net.handlers
 
 import org.p2p.ethereumkit.internal.core.toRawHexString
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.spv.core.*
-import org.p2p.ethereumkit.internal.spv.helpers.RandomHelper
+import org.p2p.core.wrapper.eth.helpers.RandomHelper
 import org.p2p.ethereumkit.internal.spv.models.AccountStateSpv
 import org.p2p.ethereumkit.internal.spv.models.BlockHeader
 import org.p2p.ethereumkit.internal.spv.net.IInMessage
@@ -12,8 +12,8 @@ import org.p2p.ethereumkit.internal.spv.net.les.TrieNode
 import org.p2p.ethereumkit.internal.spv.net.les.messages.GetProofsMessage
 import org.p2p.ethereumkit.internal.spv.net.les.messages.ProofsMessage
 import org.p2p.ethereumkit.internal.spv.net.tasks.AccountStateTask
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLPList
 
 class AccountStateTaskHandler(private var listener: Listener? = null) : ITaskHandler, IMessageHandler {
 

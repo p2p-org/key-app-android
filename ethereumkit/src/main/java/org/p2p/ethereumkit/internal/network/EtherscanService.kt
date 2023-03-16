@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 import org.p2p.ethereumkit.internal.api.models.EtherscanResponse
 import org.p2p.ethereumkit.internal.core.retryWhenError
 import org.p2p.ethereumkit.internal.core.toHexString
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import io.reactivex.Single
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

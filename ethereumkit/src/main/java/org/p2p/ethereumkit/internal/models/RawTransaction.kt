@@ -2,6 +2,7 @@ package org.p2p.ethereumkit.internal.models
 
 import org.p2p.ethereumkit.internal.core.toHexString
 import java.math.BigInteger
+import org.p2p.core.wrapper.eth.EthAddress
 
 class RawTransaction(
     val gasPrice: GasPrice,

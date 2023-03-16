@@ -4,7 +4,7 @@ import org.p2p.ethereumkit.internal.contracts.ContractEventInstance
 import org.p2p.ethereumkit.internal.contracts.ContractMethod
 import org.p2p.ethereumkit.internal.contracts.EmptyMethod
 import org.p2p.ethereumkit.internal.core.ITransactionDecorator
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.InternalTransaction
 import java.math.BigInteger
 

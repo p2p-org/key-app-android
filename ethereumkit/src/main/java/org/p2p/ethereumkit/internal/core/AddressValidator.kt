@@ -1,6 +1,6 @@
 package org.p2p.ethereumkit.internal.core
 
-import org.p2p.ethereumkit.internal.utils.EIP55
+import org.p2p.core.wrapper.eth.EIP55
 import java.math.BigInteger
 
 class AddressValidator {

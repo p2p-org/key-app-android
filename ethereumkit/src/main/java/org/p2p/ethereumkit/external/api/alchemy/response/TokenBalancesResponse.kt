@@ -2,7 +2,7 @@ package org.p2p.ethereumkit.external.api.alchemy.response
 
 import com.google.gson.annotations.SerializedName
 import java.math.BigInteger
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 
 internal data class TokenBalancesResponse(
     @SerializedName("address")

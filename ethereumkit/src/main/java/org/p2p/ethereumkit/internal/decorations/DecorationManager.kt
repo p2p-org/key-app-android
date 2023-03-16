@@ -1,5 +1,6 @@
 package org.p2p.ethereumkit.internal.decorations
 
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.contracts.ContractEventInstance
 import org.p2p.ethereumkit.internal.contracts.ContractMethod
 import org.p2p.ethereumkit.internal.contracts.EmptyMethod

@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.api.storage
 
 import androidx.room.TypeConverter
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import java.math.BigInteger
 
 class RoomTypeConverters {

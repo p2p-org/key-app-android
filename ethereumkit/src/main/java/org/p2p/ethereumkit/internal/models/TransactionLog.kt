@@ -1,6 +1,7 @@
 package org.p2p.ethereumkit.internal.models
 
 import java.util.*
+import org.p2p.core.wrapper.eth.EthAddress
 
 data class TransactionLog(
     val transactionHash: ByteArray,

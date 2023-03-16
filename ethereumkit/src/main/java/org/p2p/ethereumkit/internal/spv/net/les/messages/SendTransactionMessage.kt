@@ -4,7 +4,7 @@ import org.p2p.ethereumkit.internal.core.toHexString
 import org.p2p.ethereumkit.internal.models.RawTransaction
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.ethereumkit.internal.spv.net.IOutMessage
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLP
 import java.math.BigInteger
 
 class SendTransactionMessage(val requestID: Long, val rawTransaction: RawTransaction, val signature: Signature) : IOutMessage {
