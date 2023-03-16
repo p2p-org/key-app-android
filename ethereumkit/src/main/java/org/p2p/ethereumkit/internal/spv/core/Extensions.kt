@@ -1,6 +1,6 @@
 package org.p2p.ethereumkit.internal.spv.core
 
-import org.p2p.ethereumkit.internal.spv.rlp.RLPElement
+import org.p2p.core.wrapper.eth.rlp.RLPElement
 import java.math.BigInteger
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

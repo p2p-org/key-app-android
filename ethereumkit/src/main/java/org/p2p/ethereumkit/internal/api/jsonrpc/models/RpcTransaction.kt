@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.api.jsonrpc.models
 
 import com.google.gson.annotations.SerializedName
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import java.math.BigInteger
 
 class RpcTransaction(

@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.spv.core
 
-import org.p2p.ethereumkit.internal.api.core.IRpcApiProvider
-import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
+import org.p2p.core.rpc.IRpcApiProvider
+import org.p2p.core.rpc.JsonRpc
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcBlock
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransaction
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransactionReceipt
@@ -12,10 +12,10 @@ import org.p2p.ethereumkit.internal.core.IBlockchain
 import org.p2p.ethereumkit.internal.core.IBlockchainListener
 import org.p2p.ethereumkit.internal.core.ISpvStorage
 import org.p2p.ethereumkit.internal.core.TransactionBuilder
-import org.p2p.ethereumkit.internal.crypto.ECKey
+import org.p2p.core.wrapper.eth.ECKey
 import org.p2p.ethereumkit.internal.models.*
 import org.p2p.ethereumkit.internal.network.INetwork
-import org.p2p.ethereumkit.internal.spv.helpers.RandomHelper
+import org.p2p.core.wrapper.eth.helpers.RandomHelper
 import org.p2p.ethereumkit.internal.spv.models.AccountStateSpv
 import org.p2p.ethereumkit.internal.spv.models.BlockHeader
 import org.p2p.ethereumkit.internal.spv.net.BlockHelper
@@ -26,6 +26,7 @@ import org.p2p.ethereumkit.internal.spv.net.handlers.*
 import org.p2p.ethereumkit.internal.spv.net.tasks.HandshakeTask
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
+import org.p2p.core.wrapper.eth.EthAddress
 import java.math.BigInteger
 import java.util.logging.Logger
 
@@ -122,7 +123,7 @@ class SpvBlockchain(
         TODO("not implemented")
     }
 
-    override fun <P,T> rpcSingle(rpc: JsonRpc<P,T>): Single<T> {
+    override fun <P,T> rpcSingle(rpc: JsonRpc<P, T>): Single<T> {
         TODO("not implemented")
     }
 

@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.spv.helpers
 
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils.CURVE
-import org.p2p.ethereumkit.internal.crypto.ECKey
+import org.p2p.core.wrapper.eth.ECKey
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator
 import org.bouncycastle.crypto.params.ECKeyGenerationParameters
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters

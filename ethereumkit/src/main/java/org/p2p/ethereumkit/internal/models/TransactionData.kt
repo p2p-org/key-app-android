@@ -3,6 +3,7 @@ package org.p2p.ethereumkit.internal.models
 import org.p2p.ethereumkit.internal.core.toHexString
 import java.math.BigInteger
 import java.util.*
+import org.p2p.core.wrapper.eth.EthAddress
 
 data class TransactionData(
     val to: EthAddress,

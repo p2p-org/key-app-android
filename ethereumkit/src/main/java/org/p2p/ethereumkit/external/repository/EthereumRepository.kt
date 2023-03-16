@@ -2,8 +2,7 @@ package org.p2p.ethereumkit.external.repository
 
 import java.math.BigInteger
 import org.p2p.core.token.Token
-import org.p2p.ethereumkit.external.model.EthTokenMetadata
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 
 interface EthereumRepository {
     fun init(seedPhrase: List<String>)

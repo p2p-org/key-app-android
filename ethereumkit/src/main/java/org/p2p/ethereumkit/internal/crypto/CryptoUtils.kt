@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.crypto
 
 import org.p2p.ethereumkit.internal.spv.core.toBytes
-import org.p2p.ethereumkit.internal.spv.helpers.RandomHelper
+import org.p2p.core.wrapper.eth.helpers.RandomHelper
 import org.bouncycastle.asn1.sec.SECNamedCurves
 import org.bouncycastle.asn1.x9.X9IntegerConverter
 import org.bouncycastle.crypto.BufferedBlockCipher
@@ -20,9 +20,8 @@ import org.bouncycastle.math.ec.ECCurve
 import org.bouncycastle.math.ec.ECPoint
 import org.bouncycastle.util.BigIntegers
 import java.math.BigInteger
-import java.security.MessageDigest
 import java.util.*
-import org.p2p.ethereumkit.internal.crypto.digest.Keccak256
+import org.p2p.core.wrapper.eth.ECKey
 
 object CryptoUtils {
 

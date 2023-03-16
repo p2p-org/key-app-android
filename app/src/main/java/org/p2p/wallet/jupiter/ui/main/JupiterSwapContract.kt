@@ -40,5 +40,7 @@ interface JupiterSwapContract {
         fun reloadFeature()
         fun changeSlippage(newSlippageValue: Slippage)
         fun onTryAgainClick()
+        fun pauseStateManager()
+        fun resumeStateManager()
     }
 }

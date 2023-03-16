@@ -3,7 +3,7 @@ package org.p2p.ethereumkit.internal.spv.models
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.p2p.ethereumkit.internal.core.toHexString
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import java.math.BigInteger
 
 @Entity

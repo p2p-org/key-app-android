@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.spv.net.les
 
 import org.p2p.ethereumkit.internal.spv.core.toLong
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLPList
 
 class MaxCost(rlpList: RLPList) {
 

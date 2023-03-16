@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.spv.net.handlers
 
 import org.p2p.ethereumkit.internal.spv.core.*
-import org.p2p.ethereumkit.internal.spv.helpers.RandomHelper
+import org.p2p.core.wrapper.eth.helpers.RandomHelper
 import org.p2p.ethereumkit.internal.spv.models.BlockHeader
 import org.p2p.ethereumkit.internal.spv.net.IInMessage
 import org.p2p.ethereumkit.internal.spv.net.les.messages.BlockHeadersMessage

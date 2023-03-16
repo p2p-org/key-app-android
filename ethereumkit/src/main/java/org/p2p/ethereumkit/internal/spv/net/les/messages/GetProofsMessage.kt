@@ -3,7 +3,7 @@ package org.p2p.ethereumkit.internal.spv.net.les.messages
 import org.p2p.ethereumkit.internal.core.toHexString
 import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.spv.net.IOutMessage
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLP
 import java.math.BigInteger
 
 class GetProofsMessage : IOutMessage {

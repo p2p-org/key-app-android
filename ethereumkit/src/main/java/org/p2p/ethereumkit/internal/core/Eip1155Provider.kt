@@ -1,10 +1,10 @@
 package org.p2p.ethereumkit.internal.core
 
-import org.p2p.ethereumkit.internal.api.core.IRpcApiProvider
+import org.p2p.core.rpc.IRpcApiProvider
 import org.p2p.ethereumkit.internal.api.core.NodeApiProvider
 import org.p2p.ethereumkit.internal.api.core.RpcBlockchain
 import org.p2p.ethereumkit.internal.contracts.ContractMethod
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import org.p2p.ethereumkit.internal.models.RpcSource
 import org.p2p.ethereumkit.internal.spv.core.toBigInteger

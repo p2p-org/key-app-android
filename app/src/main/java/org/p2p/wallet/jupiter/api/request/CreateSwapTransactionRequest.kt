@@ -88,6 +88,8 @@ data class SwapRouteRequest(
     data class KeyAppFees(
         @SerializedName("fee")
         val fee: String,
+        @SerializedName("refundableFee")
+        val refundableFee: String,
         @SerializedName("_hash")
         val hash: String
     )

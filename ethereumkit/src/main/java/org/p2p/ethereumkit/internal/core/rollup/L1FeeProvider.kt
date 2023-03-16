@@ -3,7 +3,7 @@ package org.p2p.ethereumkit.internal.core.rollup
 import org.p2p.ethereumkit.internal.contracts.ContractMethod
 import org.p2p.ethereumkit.internal.core.EthereumKit
 import org.p2p.ethereumkit.internal.core.TransactionBuilder
-import org.p2p.ethereumkit.internal.models.EthAddress
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.GasPrice
 import org.p2p.ethereumkit.internal.models.RawTransaction
 import org.p2p.ethereumkit.internal.spv.core.toBigInteger

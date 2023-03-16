@@ -4,8 +4,8 @@ import org.p2p.ethereumkit.internal.spv.core.asString
 import org.p2p.ethereumkit.internal.spv.core.toInt
 import org.p2p.ethereumkit.internal.spv.core.toLong
 import org.p2p.ethereumkit.internal.spv.net.IInMessage
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
-import org.p2p.ethereumkit.internal.spv.rlp.RLPList
+import org.p2p.core.wrapper.eth.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLPList
 
 class TransactionStatusMessage(payload: ByteArray) : IInMessage {
     val requestID: Long

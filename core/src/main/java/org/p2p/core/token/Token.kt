@@ -20,6 +20,7 @@ import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toPowerValue
+import org.p2p.core.wrapper.eth.EthAddress
 
 sealed class Token constructor(
     open val publicKey: String?,
@@ -142,6 +143,11 @@ sealed class Token constructor(
             } else {
                 total.formatToken(decimals)
             }
+
+        fun getEthAddress(): EthAddress {
+            return EthAddress(publicKey)
+        }
+
     }
 
     @Parcelize

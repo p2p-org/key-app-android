@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.statemanager
 
+import retrofit2.HttpException
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.coroutines.CoroutineContext
@@ -87,6 +88,9 @@ class SwapStateManager(
         activeActionHandleJob?.cancel()
         when (action) {
             is SwapStateAction.CancelSwapLoading -> return
+            is SwapStateAction.InitialLoading -> {
+                state.value = SwapState.InitialLoading
+            }
             is SwapStateAction.TokenAChanged -> {
                 handleTokenAChange(action.newTokenA)
                 return
@@ -116,11 +120,11 @@ class SwapStateManager(
     }
 
     private fun handleHandlerError(action: SwapStateAction, exception: Throwable) {
-        when (exception) {
-            is CancellationException -> {
+        when {
+            exception is CancellationException -> {
                 Timber.tag(TAG).i(exception)
             }
-            is SwapFeatureException -> {
+            exception is SwapFeatureException -> {
                 if (exception is SwapFeatureException.RoutesNotFound) {
                     Timber.tag(TAG).e(exception)
                 } else {
@@ -130,6 +134,15 @@ class SwapStateManager(
                 state.value = SwapState.SwapException.FeatureExceptionWrapper(
                     previousFeatureState = actualStaticState,
                     featureException = exception,
+                )
+            }
+            exception is HttpException && exception.message()
+                .contains("The value \"NaN\" cannot be converted to a number.") -> {
+                Timber.tag(TAG).i(exception)
+                val actualStaticState = checkInNotLoadingOldNoErrorState(actualNoErrorState(), exception)
+                state.value = SwapState.SwapException.FeatureExceptionWrapper(
+                    previousFeatureState = actualStaticState,
+                    featureException = SwapFeatureException.SmallTokenAAmount,
                 )
             }
             else -> {

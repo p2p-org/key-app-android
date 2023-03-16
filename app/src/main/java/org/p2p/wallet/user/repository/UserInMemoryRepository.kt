@@ -86,7 +86,10 @@ class UserInMemoryRepository : UserLocalRepository {
     private fun findTokensBySearchText(searchText: String): List<TokenData> {
         return allTokensFlow.value
             .asSequence()
-            .filter { token -> searchText == token.symbol || token.name.startsWith(searchText, ignoreCase = true) }
+            .filter { token ->
+                token.symbol.contains(searchText, ignoreCase = true) ||
+                    token.name.startsWith(searchText, ignoreCase = true)
+            }
             .toList()
     }
 

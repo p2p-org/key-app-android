@@ -1,5 +1,6 @@
 package org.p2p.ethereumkit.internal.models
 
+import org.p2p.core.wrapper.eth.EthAddress
 import java.math.BigInteger
 
 data class ProviderTransaction(

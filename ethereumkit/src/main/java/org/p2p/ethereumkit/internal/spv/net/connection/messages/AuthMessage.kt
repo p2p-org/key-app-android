@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.spv.net.connection.messages
 
 import org.p2p.ethereumkit.internal.core.toHexString
-import org.p2p.ethereumkit.internal.spv.rlp.RLP
+import org.p2p.core.wrapper.eth.rlp.RLP
 import org.bouncycastle.math.ec.ECPoint
 
 class AuthMessage(val signature: ByteArray, val publicKeyPoint: ECPoint, val nonce: ByteArray) {

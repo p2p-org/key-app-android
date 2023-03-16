@@ -1,6 +1,6 @@
 package org.p2p.ethereumkit.internal.core
 
-import org.p2p.ethereumkit.internal.api.jsonrpc.JsonRpc
+import org.p2p.core.rpc.JsonRpc
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcBlock
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransaction
 import org.p2p.ethereumkit.internal.api.jsonrpc.models.RpcTransactionReceipt
@@ -12,6 +12,7 @@ import org.p2p.ethereumkit.internal.models.*
 import org.p2p.ethereumkit.internal.spv.models.AccountStateSpv
 import org.p2p.ethereumkit.internal.spv.models.BlockHeader
 import io.reactivex.Single
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.ProviderEip1155Transaction
 import org.p2p.ethereumkit.internal.models.ProviderEip721Transaction
 import org.p2p.ethereumkit.internal.models.ProviderInternalTransaction
@@ -61,7 +62,7 @@ interface IBlockchain {
     fun getStorageAt(contractAddress: EthAddress, position: ByteArray, defaultBlockParameter: DefaultBlockParameter): Single<ByteArray>
     fun call(contractAddress: EthAddress, data: ByteArray, defaultBlockParameter: DefaultBlockParameter): Single<ByteArray>
 
-    fun <P,T> rpcSingle(rpc: JsonRpc<P,T>): Single<T>
+    fun <P,T> rpcSingle(rpc: JsonRpc<P, T>): Single<T>
 }
 
 interface IBlockchainListener {
