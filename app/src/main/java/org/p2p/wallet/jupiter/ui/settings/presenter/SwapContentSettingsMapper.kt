@@ -20,6 +20,7 @@ import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.model.findTokenByMint
+import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.utils.Base58String
@@ -45,8 +46,22 @@ class SwapContentSettingsMapper(
         jupiterTokens = jupiterTokens,
         tokenBAmount = null,
         tokenB = tokenB,
-        tokenA = tokenA,
         solTokenForFee = solTokenForFee,
+    )
+
+    suspend fun mapForRoutesLoadedState(
+        state: SwapState.RoutesLoaded,
+        jupiterTokens: List<JupiterSwapToken>,
+        solTokenForFee: JupiterSwapToken?,
+    ): List<AnyCellItem> = mapList(
+        slippage = state.slippage,
+        routes = state.routes,
+        activeRoute = state.activeRoute,
+        jupiterTokens = jupiterTokens,
+        tokenBAmount = null,
+        tokenB = state.tokenB,
+        solTokenForFee = solTokenForFee,
+        showMinimumReceivedAmount = false,
     )
 
     suspend fun mapForSwapLoadedState(
@@ -65,7 +80,6 @@ class SwapContentSettingsMapper(
         jupiterTokens = jupiterTokens,
         tokenBAmount = tokenBAmount,
         tokenB = tokenB,
-        tokenA = tokenA,
         solTokenForFee = solTokenForFee,
     )
 
@@ -76,8 +90,8 @@ class SwapContentSettingsMapper(
         jupiterTokens: List<JupiterSwapToken>,
         tokenBAmount: BigDecimal?,
         tokenB: SwapTokenModel,
-        tokenA: SwapTokenModel,
         solTokenForFee: JupiterSwapToken?,
+        showMinimumReceivedAmount: Boolean = true,
     ): List<AnyCellItem> = buildList {
         addRouteCell(routes, activeRoute, jupiterTokens)
         this += commonMapper.getNetworkFeeCell()
@@ -87,7 +101,7 @@ class SwapContentSettingsMapper(
         addAccountFeeCell(accountFee)
         addLiquidityFeeCell(routes, activeRoute, jupiterTokens, liquidityFeeList)
         addEstimatedFeeCell(accountFee, liquidityFeeList)
-        addMinimumReceivedCell(slippage, tokenBAmount, tokenB)
+        addMinimumReceivedCell(slippage, tokenBAmount, tokenB, showMinimumReceivedAmount)
     }
 
     private fun MutableList<AnyCellItem>.addRouteCell(
@@ -139,8 +153,10 @@ class SwapContentSettingsMapper(
     private fun MutableList<AnyCellItem>.addMinimumReceivedCell(
         slippage: Slippage,
         tokenBAmount: BigDecimal?,
-        tokenB: SwapTokenModel
+        tokenB: SwapTokenModel,
+        showMinimumReceivedAmount: Boolean
     ) {
+        if (!showMinimumReceivedAmount) return
         val secondLineText = if (tokenBAmount == null) {
             TextViewCellModel.Skeleton(skeleton = leftSubtitleSkeleton())
         } else {

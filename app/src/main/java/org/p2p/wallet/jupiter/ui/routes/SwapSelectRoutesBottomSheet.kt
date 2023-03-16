@@ -82,6 +82,7 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
         is SwapState.TokenANotZero,
         is SwapState.LoadingRoutes -> mapper.mapLoadingList()
         is SwapState.LoadingTransaction -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)
+        is SwapState.RoutesLoaded -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)
         is SwapState.SwapLoaded -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)
 
         is SwapState.SwapException -> getRoutesList(state.previousFeatureState)
