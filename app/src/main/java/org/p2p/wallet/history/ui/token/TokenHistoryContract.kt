@@ -13,10 +13,16 @@ interface TokenHistoryContract {
         fun showError(@StringRes resId: Int, argument: String)
         fun showDetailsScreen(transactionId: String)
         fun openSellTransactionDetails(transactionId: String)
+        fun openOldReceiveInSolana()
+        fun showReceiveNetworkDialog()
+        fun openReceiveInSolana()
+        fun openReceiveInEthereum()
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun closeAccount()
+
+        fun onReceiveClicked()
 
         fun onTransactionClicked(transactionId: String)
         fun onSellTransactionClicked(transactionId: String)

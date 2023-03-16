@@ -51,13 +51,21 @@
 
     </FrameLayout>
 
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_snow_rounded_16"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutUsername"
+        app:layout_constraintEnd_toEndOf="@id/containerAddress"
+        app:layout_constraintStart_toStartOf="@id/containerAddress"
+        app:layout_constraintTop_toTopOf="@+id/containerAddress" />
+
     <LinearLayout
         android:id="@+id/containerAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="24dp"
-        android:background="@drawable/bg_banner_top_rounded"
         android:backgroundTint="@color/bg_snow"
         android:orientation="vertical"
         android:padding="16dp"
@@ -89,6 +97,8 @@
         android:layout_height="1dp"
         android:layout_marginHorizontal="32dp"
         android:background="@color/bg_rain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/containerAddress" />
 
     <LinearLayout
@@ -96,7 +106,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:background="@drawable/bg_snow_bottom_rounded_16"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/separator">
