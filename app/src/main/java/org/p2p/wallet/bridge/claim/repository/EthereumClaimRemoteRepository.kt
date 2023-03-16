@@ -36,7 +36,7 @@ class EthereumClaimRemoteRepository(
     override suspend fun getEthereumBundle(
         ethAddress: EthAddress,
         recipientAddress: SolAddress,
-        erc20Token: EthAddress,
+        erc20Token: EthAddress?,
         amount: String,
         @IntRange(0, 100)
         slippage: Int?,

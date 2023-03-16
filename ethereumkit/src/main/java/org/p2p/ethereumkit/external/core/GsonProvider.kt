@@ -18,6 +18,8 @@ import org.p2p.ethereumkit.internal.network.OptionalTypeAdapter
 import java.math.BigInteger
 import java.util.Optional
 import org.p2p.core.token.SolAddress
+import org.p2p.core.wrapper.HexString
+import org.p2p.ethereumkit.internal.network.HexStringTypeAdapter
 import org.p2p.ethereumkit.internal.network.SolAddressTypeAdapter
 
 class GsonProvider {
@@ -39,6 +41,7 @@ class GsonProvider {
             registerTypeHierarchyAdapter(DefaultBlockParameter::class.java, DefaultBlockParameterTypeAdapter())
             registerTypeAdapter(EthAddress::class.java, AddressTypeAdapter())
             registerTypeAdapter(SolAddress::class.java, SolAddressTypeAdapter())
+            registerTypeAdapter(HexString::class.java, HexStringTypeAdapter())
             registerTypeAdapter(
                 object : TypeToken<Optional<RpcTransaction>>() {}.type,
                 OptionalTypeAdapter<RpcTransaction>(RpcTransaction::class.java)

@@ -1,6 +1,5 @@
 package org.p2p.wallet.infrastructure.network
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -17,7 +16,6 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
-import org.p2p.ethereumkit.external.api.QUALIFIER_RPC_GSON
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -102,8 +100,7 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = url.loadBridgesServiceEnvironment().baseUrl,
                 tag = "RpcBridge",
-                interceptor = null,
-                gson = get(named(QUALIFIER_RPC_GSON))
+                interceptor = null
             )
         }
 
@@ -148,12 +145,11 @@ object NetworkModule : InjectionModule {
         baseUrl: String,
         tag: String? = "OkHttpClient",
         interceptor: Interceptor?,
-        gson: Gson? = null,
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create(gson ?: get()))
             .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(get()))
             .client(getClient(tag, interceptor))
             .build()
     }

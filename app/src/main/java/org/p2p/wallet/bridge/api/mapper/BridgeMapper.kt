@@ -16,7 +16,7 @@ class BridgeMapper {
             userWallet = response.userWallet,
             recipient = response.recipient,
             token = response.erc20TokenAddress,
-            expiresAt = response.expiresAt.orEmpty(),
+            expiresAt = response.expiresAt ?: System.currentTimeMillis(),
             transactions = response.transactions,
             signatures = response.signatures.orEmpty(),
             fees = fromNetwork(response.fees)

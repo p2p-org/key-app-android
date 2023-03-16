@@ -16,7 +16,7 @@ interface EthereumClaimRepository {
     suspend fun getEthereumBundle(
         ethAddress: EthAddress,
         recipientAddress: SolAddress,
-        erc20Token: EthAddress,
+        erc20Token: EthAddress?,
         amount: String,
         slippage: Int?,
     ): BridgeBundle

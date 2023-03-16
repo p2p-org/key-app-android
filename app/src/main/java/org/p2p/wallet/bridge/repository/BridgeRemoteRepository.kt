@@ -26,8 +26,6 @@ class BridgeRemoteRepository(
         } catch (e: JsonRpc.ResponseError.RpcError) {
             val errorCode = e.error.code
             throw errorMapper.parseError(errorCode)
-        } catch (e: Throwable) {
-            throw BridgeResult.Error.InternalServiceError
         }
     }
 }
