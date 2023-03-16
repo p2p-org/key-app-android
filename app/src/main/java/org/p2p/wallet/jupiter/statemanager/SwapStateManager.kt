@@ -321,9 +321,9 @@ class SwapStateManager(
                 val isNewTotalAmount = updatedTokenA?.totalInLamports != tokenA.tokenAmountInLamports
 
                 when {
-                    updatedTokenA == null -> onUserTokenGone(jupiterToken)
+                    updatedTokenA == null -> onUserTokenGone(state.value, jupiterToken)
                         ?.let { newState -> state.value = newState }
-                    isNewTotalAmount -> onUserTokenChangeBalance(updatedTokenA)
+                    isNewTotalAmount -> onUserTokenChangeBalance(state.value, updatedTokenA)
                         ?.let { newState -> state.value = newState }
                 }
             }
@@ -331,36 +331,36 @@ class SwapStateManager(
             .launchIn(this)
     }
 
-    private fun onUserTokenChangeBalance(newUserToken: Token.Active): SwapState? {
+    private fun onUserTokenChangeBalance(featureState: SwapState, newUserToken: Token.Active): SwapState? {
         val newUserSwapToken = SwapTokenModel.UserToken(newUserToken)
-        val newState: SwapState? = when (val state = state.value) {
-            SwapState.InitialLoading -> state
+        val newState: SwapState? = when (featureState) {
+            SwapState.InitialLoading -> featureState
 
-            is SwapState.LoadingRoutes -> state.copy(tokenA = newUserSwapToken)
-            is SwapState.LoadingTransaction -> state.copy(tokenA = newUserSwapToken)
-            is SwapState.SwapLoaded -> state.copy(tokenA = newUserSwapToken)
-            is SwapState.TokenANotZero -> state.copy(tokenA = newUserSwapToken)
-            is SwapState.TokenAZero -> state.copy(tokenA = newUserSwapToken)
-            is SwapState.RoutesLoaded -> state.copy(tokenA = newUserSwapToken)
+            is SwapState.LoadingRoutes -> featureState.copy(tokenA = newUserSwapToken)
+            is SwapState.LoadingTransaction -> featureState.copy(tokenA = newUserSwapToken)
+            is SwapState.SwapLoaded -> featureState.copy(tokenA = newUserSwapToken)
+            is SwapState.TokenANotZero -> featureState.copy(tokenA = newUserSwapToken)
+            is SwapState.TokenAZero -> featureState.copy(tokenA = newUserSwapToken)
+            is SwapState.RoutesLoaded -> featureState.copy(tokenA = newUserSwapToken)
 
-            is SwapState.SwapException -> onUserTokenChangeBalance(newUserToken)
+            is SwapState.SwapException -> onUserTokenChangeBalance(featureState.previousFeatureState, newUserToken)
         }
         return newState
     }
 
-    private fun onUserTokenGone(newJupiterToken: JupiterSwapToken): SwapState? {
+    private fun onUserTokenGone(featureState: SwapState, newJupiterToken: JupiterSwapToken): SwapState? {
         val newJupiterSwapToken = SwapTokenModel.JupiterToken(newJupiterToken)
-        val newState: SwapState? = when (val state = state.value) {
-            SwapState.InitialLoading -> state
+        val newState: SwapState? = when (featureState) {
+            SwapState.InitialLoading -> featureState
 
-            is SwapState.LoadingRoutes -> state.copy(tokenA = newJupiterSwapToken)
-            is SwapState.LoadingTransaction -> state.copy(tokenA = newJupiterSwapToken)
-            is SwapState.SwapLoaded -> state.copy(tokenA = newJupiterSwapToken)
-            is SwapState.TokenANotZero -> state.copy(tokenA = newJupiterSwapToken)
-            is SwapState.TokenAZero -> state.copy(tokenA = newJupiterSwapToken)
-            is SwapState.RoutesLoaded -> state.copy(tokenA = newJupiterSwapToken)
+            is SwapState.LoadingRoutes -> featureState.copy(tokenA = newJupiterSwapToken)
+            is SwapState.LoadingTransaction -> featureState.copy(tokenA = newJupiterSwapToken)
+            is SwapState.SwapLoaded -> featureState.copy(tokenA = newJupiterSwapToken)
+            is SwapState.TokenANotZero -> featureState.copy(tokenA = newJupiterSwapToken)
+            is SwapState.TokenAZero -> featureState.copy(tokenA = newJupiterSwapToken)
+            is SwapState.RoutesLoaded -> featureState.copy(tokenA = newJupiterSwapToken)
 
-            is SwapState.SwapException -> onUserTokenGone(newJupiterToken)
+            is SwapState.SwapException -> onUserTokenGone(featureState.previousFeatureState, newJupiterToken)
         }
         return newState
     }
