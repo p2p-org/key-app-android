@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.core.wrapper.HexString
+import org.p2p.ethereumkit.internal.models.Signature
 
 data class BridgeBundle(
     @SerializedName("bundle_id")
@@ -19,7 +20,7 @@ data class BridgeBundle(
     @SerializedName("transactions")
     val transactions: List<HexString>,
     @SerializedName("signatures")
-    val signatures: List<HexString>,
+    var signatures: List<Signature>,
     @SerializedName("fees")
     val fees: BridgeBundleFees,
 )

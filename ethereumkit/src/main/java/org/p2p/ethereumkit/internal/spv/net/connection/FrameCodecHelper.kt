@@ -1,8 +1,8 @@
 package org.p2p.ethereumkit.internal.spv.net.connection
 
 import org.p2p.ethereumkit.internal.spv.core.xor
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.bouncycastle.crypto.digests.KeccakDigest
+import org.p2p.core.wrapper.eth.CryptoUtils
 
 class FrameCodecHelper(val cryptoUtils: CryptoUtils) {
 

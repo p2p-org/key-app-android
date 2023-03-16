@@ -1,16 +1,21 @@
 package org.p2p.ethereumkit.internal.spv.net.connection
 
 import org.p2p.ethereumkit.internal.spv.core.xor
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
-import org.p2p.ethereumkit.internal.crypto.ECIESEncryptedMessage
 import org.p2p.core.wrapper.eth.ECKey
 import org.p2p.core.wrapper.eth.helpers.RandomHelper
 import org.p2p.ethereumkit.internal.spv.net.connection.messages.AuthAckMessage
 import org.p2p.ethereumkit.internal.spv.net.connection.messages.AuthMessage
 import org.bouncycastle.crypto.digests.KeccakDigest
 import org.bouncycastle.math.ec.ECPoint
+import org.p2p.core.wrapper.eth.CryptoUtils
+import org.p2p.core.wrapper.eth.ECIESEncryptedMessage
 
-class EncryptionHandshake(private val myKey: ECKey, private val remotePublicKeyPoint: ECPoint, private val cryptoUtils: CryptoUtils, private val randomHelper: RandomHelper) {
+class EncryptionHandshake(
+    private val myKey: ECKey,
+    private val remotePublicKeyPoint: ECPoint,
+    private val cryptoUtils: CryptoUtils,
+    private val randomHelper: RandomHelper,
+) {
 
     open class HandshakeError : Exception() {
         class InvalidAuthAckPayload : HandshakeError()

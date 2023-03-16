@@ -5,7 +5,6 @@ import org.p2p.ethereumkit.internal.core.TransactionSigner
 import org.p2p.ethereumkit.internal.core.hexStringToByteArrayOrNull
 import org.p2p.ethereumkit.internal.core.signer.Signer.PrivateKeyValidationError.InvalidDataLength
 import org.p2p.ethereumkit.internal.core.signer.Signer.PrivateKeyValidationError.InvalidDataString
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.crypto.EIP712Encoder
 import org.p2p.ethereumkit.internal.crypto.TypedData
 import org.p2p.ethereumkit.internal.models.*
@@ -13,6 +12,7 @@ import org.p2p.ethereumkit.internal.spv.core.toBigInteger
 import io.horizontalsystems.hdwalletkit.HDWallet
 import io.horizontalsystems.hdwalletkit.Mnemonic
 import java.math.BigInteger
+import org.p2p.core.wrapper.eth.CryptoUtils
 import org.p2p.core.wrapper.eth.EthAddress
 
 class Signer(

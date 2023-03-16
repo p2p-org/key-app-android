@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.spv.net.handlers
 
+import org.p2p.core.wrapper.eth.CryptoUtils
 import org.p2p.ethereumkit.internal.core.toRawHexString
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.spv.core.*
 import org.p2p.core.wrapper.eth.helpers.RandomHelper

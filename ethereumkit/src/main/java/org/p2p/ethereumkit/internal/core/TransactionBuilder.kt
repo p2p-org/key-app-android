@@ -1,14 +1,14 @@
 package org.p2p.ethereumkit.internal.core
 
+import org.p2p.core.wrapper.eth.CryptoUtils
 import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.models.*
 import org.p2p.ethereumkit.internal.spv.core.toBigInteger
 import org.p2p.core.wrapper.eth.rlp.RLP
 
 class TransactionBuilder(
     private val address: EthAddress,
-    private val chainId: Int
+    private val chainId: Int,
 ) {
 
     fun transaction(rawTransaction: RawTransaction, signature: Signature): Transaction {
@@ -22,66 +22,58 @@ class TransactionBuilder(
         }
 
         return Transaction(
-                hash = transactionHash,
-                timestamp = System.currentTimeMillis() / 1000,
-                nonce = rawTransaction.nonce,
-                input = rawTransaction.data,
-                from = address,
-                to = rawTransaction.to,
-                value = rawTransaction.value,
-                gasPrice = rawTransaction.gasPrice.max,
-                maxFeePerGas = maxFeePerGas,
-                maxPriorityFeePerGas = maxPriorityFeePerGas,
-                gasLimit = rawTransaction.gasLimit,
-                isFailed = false,
+            hash = transactionHash,
+            timestamp = System.currentTimeMillis() / 1000,
+            nonce = rawTransaction.nonce,
+            input = rawTransaction.data,
+            from = address,
+            to = rawTransaction.to,
+            value = rawTransaction.value,
+            gasPrice = rawTransaction.gasPrice.max,
+            maxFeePerGas = maxFeePerGas,
+            maxPriorityFeePerGas = maxPriorityFeePerGas,
+            gasLimit = rawTransaction.gasLimit,
+            isFailed = false,
         )
     }
 
     fun encode(rawTransaction: RawTransaction, signature: Signature): ByteArray =
-            encode(rawTransaction, signature, chainId)
+        encode(rawTransaction, signature, chainId)
 
     companion object {
 
         fun encode(rawTransaction: RawTransaction, signature: Signature?, chainId: Int = 1): ByteArray {
             val signatureArray = signature?.let {
                 arrayOf(
-                        RLP.encodeInt(it.v),
-                        RLP.encodeBigInteger(it.r.toBigInteger()),
-                        RLP.encodeBigInteger(it.s.toBigInteger())
+                    RLP.encodeInt(it.v),
+                    RLP.encodeBigInteger(it.r.toBigInteger()),
+                    RLP.encodeBigInteger(it.s.toBigInteger())
                 )
             } ?: arrayOf()
 
-            return when (rawTransaction.gasPrice) {
-                is GasPrice.Eip1559 -> {
-                    val elements = arrayOf(
-                            RLP.encodeInt(chainId),
-                            RLP.encodeLong(rawTransaction.nonce),
-                            RLP.encodeLong(rawTransaction.gasPrice.maxPriorityFeePerGas),
-                            RLP.encodeLong(rawTransaction.gasPrice.maxFeePerGas),
-                            RLP.encodeLong(rawTransaction.gasLimit),
-                            RLP.encodeElement(rawTransaction.to.raw),
-                            RLP.encodeBigInteger(rawTransaction.value),
-                            RLP.encodeElement(rawTransaction.data),
-                            RLP.encode(arrayOf<Any>())
-                    ) + signatureArray
+            val elements = arrayOf(
+                RLP.encodeInt(chainId),
+                RLP.encodeLong(rawTransaction.nonce),
+                RLP.encodeLong(rawTransaction.gasPrice.value),
+                RLP.encodeLong(rawTransaction.gasLimit),
+                RLP.encodeElement(rawTransaction.to.raw),
+                RLP.encodeBigInteger(rawTransaction.value),
+                RLP.encodeElement(rawTransaction.data)
+            ) + signatureArray
 
-                    val encodedTransaction = RLP.encodeList(*elements)
-                    "0x02".hexStringToByteArray() + encodedTransaction
-                }
-                is GasPrice.Legacy -> {
-                    val elements = arrayOf(
-                            RLP.encodeLong(rawTransaction.nonce),
-                            RLP.encodeLong(rawTransaction.gasPrice.legacyGasPrice),
-                            RLP.encodeLong(rawTransaction.gasLimit),
-                            RLP.encodeElement(rawTransaction.to.raw),
-                            RLP.encodeBigInteger(rawTransaction.value),
-                            RLP.encodeElement(rawTransaction.data)
-                    ) + signatureArray
-
-                    RLP.encodeList(*elements)
-                }
-            }
+            return RLP.encodeList(*elements)
         }
-
     }
+}
+
+fun decode(transaction: ByteArray, address: EthAddress): RawTransaction {
+    val ar1 = transaction[0]
+    return RawTransaction(
+        nonce = RLP.decodeLong(transaction, 0),
+        gasPrice = GasPrice.Legacy(RLP.decodeLong(transaction, 1)),
+        gasLimit = RLP.decodeLong(transaction, 2),
+        to = address,
+        value = RLP.decodeInt(RLP.decodeToOneItem(transaction, 4)).toBigInteger(),
+        data = RLP.decodeToOneItem(transaction, 5).rlpData ?: byteArrayOf()
+    )
 }

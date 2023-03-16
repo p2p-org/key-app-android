@@ -30,4 +30,8 @@ class ClaimInteractor(
             }
         )
     }
+
+    suspend fun sendEthereumBundle(bundle: BridgeBundle) {
+        return ethereumClaimRepository.sendEthereumBundle(bundle)
+    }
 }

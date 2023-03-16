@@ -16,10 +16,12 @@ import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isConnectionError
-import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
+import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
@@ -29,6 +31,7 @@ import org.p2p.wallet.bridge.model.BridgeAmount
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.model.BridgeBundleFee
 import org.p2p.wallet.bridge.model.BridgeBundleFees
+import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -41,7 +44,8 @@ class ClaimPresenter(
     private val tokenToClaim: Token.Eth,
     private val claimInteractor: ClaimInteractor,
     private val userInteractor: UserInteractor,
-    private val resources: Resources
+    private val ethereumRepository: EthereumRepository,
+    private val resources: Resources,
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
     private var refreshJob: Job? = null
@@ -110,7 +114,7 @@ class ClaimPresenter(
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals
         val feeList = listOf(fees.arbiterFee, fees.gasEth, fees.createAccount)
-        val fee: BigDecimal = feeList.sumOf { it.amountInUsd }
+        val fee: BigDecimal = feeList.sumOf { it?.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
         val feeValue = if (fee == BigDecimal.ZERO) {
             resources.getString(R.string.bridge_claim_fees_free)
         } else {
@@ -130,20 +134,20 @@ class ClaimPresenter(
             ),
             bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
         )
-        val totalFees = feeList.sumOf { it.amountInToken(decimals) }
+        val totalFees = feeList.sumOf { it?.amountInToken(decimals) ?: BigDecimal.ZERO }
         val finalValue = tokenToClaim.total - totalFees
         view?.showClaimButtonValue("${finalValue.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}")
         view?.setClaimButtonState(isButtonEnabled = true)
     }
 
-    private fun BridgeBundleFee.toBridgeAmount(
+    private fun BridgeBundleFee?.toBridgeAmount(
         tokenSymbol: String,
-        decimals: Int
+        decimals: Int,
     ): BridgeAmount {
         return BridgeAmount(
             tokenSymbol = tokenSymbol,
-            tokenAmount = amountInToken(decimals).takeIf { it.isNotZero() },
-            fiatAmount = amountInUsd.takeIf { it.isNotZero() }
+            tokenAmount = this?.amountInToken(decimals).takeIf { !it.isNullOrZero() },
+            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
         )
     }
 
@@ -154,7 +158,16 @@ class ClaimPresenter(
     }
 
     override fun onSendButtonClicked() {
-        // TODO implement claim logic
+        launch {
+            try {
+                val lastBundle = latestBundle ?: return@launch
+                val signedTransactions = lastBundle.transactions.map { ethereumRepository.signTransaction(it) }
+                lastBundle.signatures = signedTransactions.map { it.first }
+                claimInteractor.sendEthereumBundle(lastBundle)
+            } catch (e: BridgeResult.Error) {
+                Timber.e(e)
+            }
+        }
     }
 
     override fun detach() {

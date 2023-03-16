@@ -1,9 +1,9 @@
 package org.p2p.ethereumkit.internal.core.signer
 
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.crypto.EIP712Encoder
 import org.p2p.ethereumkit.internal.crypto.TypedData
 import java.math.BigInteger
+import org.p2p.core.wrapper.eth.CryptoUtils
 
 class EthSigner(
     private val privateKey: BigInteger,

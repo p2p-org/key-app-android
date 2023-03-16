@@ -16,7 +16,6 @@ import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.core.storage.Eip20Storage
 import org.p2p.ethereumkit.internal.core.storage.TransactionStorage
 import org.p2p.ethereumkit.internal.core.storage.TransactionSyncerStateStorage
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.decorations.DecorationManager
 import org.p2p.ethereumkit.internal.decorations.EthereumDecorator
 import org.p2p.ethereumkit.internal.decorations.TransactionDecoration
@@ -39,6 +38,7 @@ import java.security.Security
 import java.util.*
 import java.util.logging.Logger
 import org.p2p.core.rpc.IRpcSyncer
+import org.p2p.core.wrapper.eth.CryptoUtils
 import org.p2p.core.wrapper.eth.EthAddress
 
 class EthereumKit(

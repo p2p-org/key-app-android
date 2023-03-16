@@ -1,14 +1,16 @@
 package org.p2p.ethereumkit.external.repository
 
+import org.web3j.crypto.TransactionDecoder
+import org.web3j.crypto.TransactionEncoder
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlin.math.log
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
+import org.p2p.core.wrapper.HexString
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -20,6 +22,9 @@ import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
+import org.p2p.ethereumkit.internal.core.toHexString
+import org.p2p.ethereumkit.internal.models.Signature
 
 private val MINIMAL_DUST = BigInteger("1")
 
@@ -36,6 +41,21 @@ internal class EthereumKitRepository(
             publicKey = Signer.address(words = seedPhrase, chain = Chain.Ethereum),
             privateKey = Signer.privateKey(words = seedPhrase, chain = Chain.Ethereum)
         )
+    }
+
+    override fun getPrivateKey(): BigInteger {
+        return tokenKeyProvider?.privateKey ?: throwInitError()
+    }
+
+    override fun signTransaction(transaction: HexString): Pair<Signature, String> {
+        val decodedTransaction = TransactionDecoder.decode(transaction.rawValue)
+        val signer = TransactionSignerLegacy(
+            privateKey = tokenKeyProvider?.privateKey ?: throwInitError(),
+            chainId = Chain.Ethereum.id
+        )
+        val hex = TransactionEncoder.encode(decodedTransaction, 1L)
+        val signature = signer.signatureLegacy(decodedTransaction)
+        return signature to hex.toHexString()
     }
 
     override suspend fun getBalance(): BigInteger {

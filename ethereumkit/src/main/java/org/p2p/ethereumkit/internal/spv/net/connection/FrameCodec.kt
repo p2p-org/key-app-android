@@ -1,7 +1,6 @@
 package org.p2p.ethereumkit.internal.spv.net.connection
 
 import org.p2p.ethereumkit.internal.crypto.AESCipher
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.core.wrapper.eth.rlp.RLP
 import org.p2p.core.wrapper.eth.rlp.RLPList
 import org.bouncycastle.crypto.digests.KeccakDigest
@@ -9,6 +8,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
 import java.util.logging.Logger
+import org.p2p.core.wrapper.eth.CryptoUtils
 
 class FrameCodec(private val secrets: Secrets,
                  private val frameCodecHelper: FrameCodecHelper = FrameCodecHelper(CryptoUtils),
