@@ -230,7 +230,7 @@ class HomePresenter(
 
     override fun onSendClicked() {
         launch {
-            val isEmptyAccount = state.tokens.all { it.isZero }
+            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethereumTokens.isEmpty()
             if (isEmptyAccount) {
                 // this cannot be empty
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
@@ -250,7 +250,7 @@ class HomePresenter(
             username = usernameInteractor.getUsername(),
         )
 
-        val isAccountEmpty = userTokens.all(Token.Active::isZero)
+        val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethereumTokens.isEmpty()
         when {
             isAccountEmpty -> {
                 view?.showEmptyState(isEmpty = true)
