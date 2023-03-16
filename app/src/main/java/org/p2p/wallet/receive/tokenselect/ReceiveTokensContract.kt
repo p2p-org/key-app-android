@@ -1,6 +1,5 @@
 package org.p2p.wallet.receive.tokenselect
 
-import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.MvpPresenter
@@ -15,7 +14,7 @@ interface ReceiveTokensContract {
         fun showEmptyState(isEmpty: Boolean)
         fun setBannerVisibility(isVisible: Boolean)
         fun resetView()
-        fun showSelectNetworkDialog(tokensToShowNetworks: List<Token>)
+        fun showSelectNetworkDialog()
         fun openReceiveInSolana(tokenData: TokenData)
         fun openReceiveInEthereum(tokenData: TokenData)
     }
