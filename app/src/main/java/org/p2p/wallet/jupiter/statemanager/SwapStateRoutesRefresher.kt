@@ -5,7 +5,6 @@ import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toLamports
-import org.p2p.solanaj.utils.crypto.toBase64String
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
@@ -72,10 +71,10 @@ class SwapStateRoutesRefresher(
             slippage = slippage,
         )
 
-//        val freshSwapTransaction = swapTransactionRepository.createSwapTransactionForRoute(
-//            route = activeRoute,
-//            userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
-//        )
+        val freshSwapTransaction = swapTransactionRepository.createSwapTransactionForRoute(
+            route = activeRoute,
+            userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
+        )
         Timber.i("Fresh swap transaction fetched")
 
         state.value = SwapState.SwapLoaded(
@@ -85,7 +84,7 @@ class SwapStateRoutesRefresher(
             lamportsTokenB = activeRoute.outAmountInLamports,
             routes = updatedRoutes,
             activeRoute = activeRouteIndex,
-            jupiterSwapTransaction = "freshSwapTransaction".toBase64String(),
+            jupiterSwapTransaction = freshSwapTransaction,
             slippage = slippage
         )
     }
