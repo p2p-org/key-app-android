@@ -43,7 +43,6 @@ class TokenBalancesTest : KoinTest {
     @Test
     fun getBalance() = runTest {
         repository.init(seedPhrase = "apart approve black comfort steel spin real renew tone primary key cherry".split(" "))
-        repository.signTransaction()
     }
 }
 

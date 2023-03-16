@@ -57,12 +57,6 @@ internal class EthereumKitRepository(
         return tokenKeyProvider?.publicKey ?: throwInitError()
     }
 
-    override suspend fun signTransaction() {
-        val result = Signer.getInstance(tokenKeyProvider!!.privateKey, Chain.Ethereum)
-
-        println(result)
-    }
-
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {
         return priceRepository.getTokenPrice(tokenAddresses = tokenAddresses)
             .mapValues { it.value.priceInUsd }
@@ -104,6 +98,3 @@ internal class EthereumKitRepository(
     private fun throwInitError(): Nothing =
         error("You must call EthereumKitRepostory.init() method, before interact with this repository")
 }
-
-val bundle =
-    "0xf8aa8085174876e800830144d9943ee18b2214aff97000d974cf647e7c347e8fa58580b8849981509f00000000000000000000000000000000000000000000000000000000000000014eeaa58f326f13b7f3df4dd50f4f093cf6040c0cbae465546b70fcdaf7f661ae000000000000000000000000000000000000000000000000000446db017ce94c0000000000000000000000000000000000000000000000000000000000000c94018080"
