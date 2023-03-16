@@ -184,6 +184,7 @@ class SwapStateManager(
             SwapState.InitialLoading,
             is SwapState.TokenANotZero,
             is SwapState.TokenAZero,
+            is SwapState.RoutesLoaded,
             is SwapState.SwapLoaded -> actualNoErrorState
             is SwapState.LoadingRoutes ->
                 SwapState.TokenANotZero(
@@ -253,6 +254,7 @@ class SwapStateManager(
             is SwapState.SwapLoaded -> with(state) { mapState(tokenA, tokenB, slippage) }
             is SwapState.SwapException -> getOldTokenAZeroState(state.previousFeatureState)
             is SwapState.TokenANotZero -> with(state) { mapState(tokenA, tokenB, slippage) }
+            is SwapState.RoutesLoaded -> with(state) { mapState(tokenA, tokenB, slippage) }
         }
     }
 
@@ -262,6 +264,7 @@ class SwapStateManager(
             is SwapState.TokenAZero,
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes -> null
+            is SwapState.RoutesLoaded -> state.amountTokenB
             is SwapState.LoadingTransaction -> state.amountTokenB
             is SwapState.SwapLoaded -> state.amountTokenB
             is SwapState.SwapException -> getOldTokenBAmount(state.previousFeatureState)
@@ -328,6 +331,7 @@ class SwapStateManager(
             is SwapState.SwapLoaded -> state.copy(tokenA = newUserSwapToken)
             is SwapState.TokenANotZero -> state.copy(tokenA = newUserSwapToken)
             is SwapState.TokenAZero -> state.copy(tokenA = newUserSwapToken)
+            is SwapState.RoutesLoaded -> state.copy(tokenA = newUserSwapToken)
 
             is SwapState.SwapException -> onUserTokenChangeBalance(newUserToken)
         }
@@ -344,6 +348,7 @@ class SwapStateManager(
             is SwapState.SwapLoaded -> state.copy(tokenA = newJupiterSwapToken)
             is SwapState.TokenANotZero -> state.copy(tokenA = newJupiterSwapToken)
             is SwapState.TokenAZero -> state.copy(tokenA = newJupiterSwapToken)
+            is SwapState.RoutesLoaded -> state.copy(tokenA = newJupiterSwapToken)
 
             is SwapState.SwapException -> onUserTokenGone(newJupiterToken)
         }

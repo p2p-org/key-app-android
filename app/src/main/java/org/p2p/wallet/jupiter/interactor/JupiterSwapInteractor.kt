@@ -70,6 +70,7 @@ class JupiterSwapInteractor(
                 is SwapState.SwapLoaded -> tokenA to tokenB
                 is SwapState.TokenAZero -> tokenA to tokenB
                 is SwapState.TokenANotZero -> tokenA to tokenB
+                is SwapState.RoutesLoaded -> tokenA to tokenB
             }
         }
     }
@@ -81,6 +82,7 @@ class JupiterSwapInteractor(
             is SwapState.SwapLoaded -> state.tokenA
             is SwapState.TokenAZero -> state.tokenA
             is SwapState.TokenANotZero -> state.tokenA
+            is SwapState.RoutesLoaded -> state.tokenA
             SwapState.InitialLoading,
             is SwapState.SwapException.FeatureExceptionWrapper,
             is SwapState.SwapException.OtherException -> null
@@ -98,6 +100,7 @@ class JupiterSwapInteractor(
             is SwapState.SwapException -> getPriceImpact(state.previousFeatureState)
 
             is SwapState.LoadingTransaction -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
+            is SwapState.RoutesLoaded -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
             is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
         }
     }

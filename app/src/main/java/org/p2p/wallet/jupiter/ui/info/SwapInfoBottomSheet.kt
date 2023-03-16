@@ -142,9 +142,13 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
             is SwapState.TokenANotZero,
             is SwapState.TokenAZero -> flowOf(mapper.mapEmptyLiquidityFee())
             is SwapState.SwapException -> handleFeatureState(state.previousFeatureState, tokens)
+            is SwapState.RoutesLoaded,
             is SwapState.SwapLoaded -> {
-                val route: JupiterSwapRoute = state.routes.getOrNull(state.activeRoute)
-                    ?: return flowOf(mapper.mapEmptyLiquidityFee())
+                val route: JupiterSwapRoute = when (state) {
+                    is SwapState.RoutesLoaded -> state.routes.getOrNull(state.activeRoute)
+                    is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRoute)
+                    else -> null
+                } ?: return flowOf(mapper.mapEmptyLiquidityFee())
                 flow {
                     val rateLoaderList = mutableListOf<Flow<LoadRateBox>>()
                     val feeCells = route.marketInfos.map { marketInfo ->
