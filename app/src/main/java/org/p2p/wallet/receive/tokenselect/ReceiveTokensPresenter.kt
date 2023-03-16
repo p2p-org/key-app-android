@@ -1,5 +1,6 @@
 package org.p2p.wallet.receive.tokenselect
 
+import androidx.annotation.StringRes
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,11 +8,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.p2p.core.token.Token
+import org.p2p.core.common.TextContainer
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.receive.tokenselect.ReceiveTokensMapper.toTokenFinanceCellModel
@@ -29,9 +32,6 @@ class ReceiveTokensPresenter(
 
     private var searchText = emptyString()
     private var scrollToUp = false
-
-    private var solToken: Token? = null
-    private var ethToken: Token? = null
 
     private var lastSelectedTokenPayload: ReceiveTokenPayload? = null
     private var searchJob: Job? = null
@@ -51,11 +51,9 @@ class ReceiveTokensPresenter(
                     Constants.ETH_SYMBOL
                 )
             )
-            solToken = tokensForReceiveBanner[0]
-            ethToken = tokensForReceiveBanner[1]
             view.setBannerTokens(
-                firstTokenUrl = solToken?.iconUrl.orEmpty(),
-                secondTokenUrl = ethToken?.iconUrl.orEmpty()
+                firstTokenUrl = ERC20Tokens.SOL.tokenIconUrl.orEmpty(),
+                secondTokenUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty()
             )
             observeTokens()
             observeMappedTokens()
@@ -63,21 +61,23 @@ class ReceiveTokensPresenter(
     }
 
     private fun preparePinedWormholeTokens(): List<TokenData> {
-        return ERC20Tokens.values().mapNotNull { erc20Token ->
-            interactor.findTokenDataByAddress(erc20Token.mintAddress)?.let { token ->
-                TokenData(
-                    mintAddress = token.mintAddress,
-                    name = erc20Token.replaceTokenName ?: token.tokenName,
-                    symbol = erc20Token.replaceTokenSymbol ?: token.tokenSymbol,
-                    iconUrl = erc20Token.tokenIconUrl ?: token.iconUrl,
-                    decimals = token.decimals,
-                    coingeckoId = erc20Token.coingeckoId,
-                    isWrapped = false,
-                    serumV3Usdc = null,
-                    serumV3Usdt = null
-                )
+        return ERC20Tokens.values().toMutableList()
+            .apply { removeAll(listOf(ERC20Tokens.LUNA, ERC20Tokens.UST)) }
+            .mapNotNull { erc20Token ->
+                interactor.findTokenDataByAddress(erc20Token.mintAddress)?.let { token ->
+                    TokenData(
+                        mintAddress = token.mintAddress,
+                        name = erc20Token.replaceTokenName ?: token.tokenName,
+                        symbol = erc20Token.replaceTokenSymbol ?: token.tokenSymbol,
+                        iconUrl = erc20Token.tokenIconUrl ?: token.iconUrl,
+                        decimals = token.decimals,
+                        coingeckoId = erc20Token.coingeckoId,
+                        isWrapped = false,
+                        serumV3Usdc = null,
+                        serumV3Usdt = null
+                    )
+                }
             }
-        }
     }
 
     override fun load(isRefresh: Boolean, scrollToUp: Boolean) {
@@ -106,7 +106,7 @@ class ReceiveTokensPresenter(
     override fun onTokenClicked(tokenDataPayload: ReceiveTokenPayload) {
         if (tokenDataPayload.isErc20Token) {
             lastSelectedTokenPayload = tokenDataPayload
-            view?.showSelectNetworkDialog(listOfNotNull(solToken, ethToken))
+            view?.showSelectNetworkDialog()
         } else {
             view?.openReceiveInSolana(tokenDataPayload.tokenData)
         }
@@ -138,9 +138,9 @@ class ReceiveTokensPresenter(
                 view?.showEmptyState(isEmpty)
                 view?.setBannerVisibility(!isEmpty && searchText.isEmpty())
 
-                val isPinnedItemsNeeded = searchText.isEmpty()
+                val isSearching = searchText.isNotEmpty()
                 val dropSize = tokensFlow.value.size
-                val oldItems = if (isPinnedItemsNeeded && dropSize == 0) {
+                val oldItems = if (!isSearching && dropSize == 0) {
                     tokensFlow.value + mapTokenToCellItem(pinnedWormholeTokens)
                 } else {
                     tokensFlow.value
@@ -148,22 +148,37 @@ class ReceiveTokensPresenter(
 
                 val newItems = data.result
                     .drop(dropSize)
-                    .takeIf { isPinnedItemsNeeded }
+                    .takeIf { !isSearching }
                     ?.filter { it.mintAddress !in pinnedWormholeTokensAddresses }
                     ?: data.result
 
-                val result = oldItems + mapTokenToCellItem(newItems)
+                val startItems = if (isSearching) {
+                    listOf(
+                        createSectionHeader(R.string.receive_token_search_found_header),
+                        *oldItems.toTypedArray()
+                    )
+                } else {
+                    oldItems
+                }
+                val result = startItems + mapTokenToCellItem(newItems)
                 tokensFlow.emit(result)
             }
         }
+    }
+
+    private fun createSectionHeader(@StringRes stringRes: Int): SectionHeaderCellModel {
+        return SectionHeaderCellModel(
+            sectionTitle = TextContainer(stringRes),
+            isShevronVisible = false
+        )
     }
 
     private suspend fun mapTokenToCellItem(items: List<TokenData>): List<AnyCellItem> {
         return withContext(dispatchers.io) {
             items.map {
                 it.toTokenFinanceCellModel(
-                    solTokenUrl = solToken?.iconUrl.orEmpty(),
-                    ethTokenUrl = ethToken?.iconUrl.orEmpty()
+                    solTokenUrl = ERC20Tokens.SOL.tokenIconUrl.orEmpty(),
+                    ethTokenUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty()
                 )
             }
         }
