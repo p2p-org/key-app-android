@@ -47,7 +47,6 @@ import org.p2p.wallet.jupiter.ui.tokens.SwapTokensFragment
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
 import org.p2p.wallet.root.ActivityVisibility
 import org.p2p.wallet.root.AppActivityVisibility
-import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.transaction.ui.JupiterTransactionBottomSheetDismissListener
 import org.p2p.wallet.transaction.ui.JupiterTransactionDismissResult
@@ -262,9 +261,12 @@ class JupiterSwapFragment :
                 openSwapSettingsScreen()
             }
             is JupiterTransactionDismissResult.SlippageChangeNeeded -> {
-                presenter.changeSlippage(Slippage.parse(result.newSlippageValue))
+                presenter.changeSlippage(result.newSlippageValue)
                 showUiKitSnackBar(
-                    message = getString(R.string.swap_main_slippage_changed, result.newSlippageValue.toString()),
+                    message = getString(
+                        R.string.swap_main_slippage_changed,
+                        result.newSlippageValue.percentValue
+                    ),
                     actionButtonResId = R.string.swap_main_slippage_changed_details_button,
                     actionBlock = { openSwapSettingsScreen() }
                 )

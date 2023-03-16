@@ -32,7 +32,7 @@ import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
-import org.p2p.wallet.swap.ui.settings.SwapSettingsFragment
+import org.p2p.wallet.swap.ui.settings.OrcaSwapSettingsFragment
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
@@ -310,7 +310,7 @@ class OrcaSwapFragment :
         tokens: List<Token.Active>,
         currentFeePayerToken: Token.Active
     ) {
-        val target = SwapSettingsFragment.create(currentSlippage, tokens, currentFeePayerToken, EXTRA_SETTINGS)
+        val target = OrcaSwapSettingsFragment.create(currentSlippage, tokens, currentFeePayerToken, EXTRA_SETTINGS)
         addFragment(target)
     }
 
