@@ -31,6 +31,7 @@ import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.jupiter.statemanager.SwapStateRoutesRefresher
+import org.p2p.wallet.jupiter.statemanager.SwapUserTokensChangeHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateInitialLoadingHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateLoadingRoutesHandler
@@ -86,6 +87,7 @@ object JupiterModule : InjectionModule {
         singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
 
         factoryOf(::JupiterSwapInteractor)
+        factoryOf(::SwapUserTokensChangeHandler)
         factoryOf(::MinimumSolAmountValidator)
         factoryOf(::SwapValidator)
         factoryOf(::SwapStateRoutesRefresher)
@@ -174,7 +176,7 @@ object JupiterModule : InjectionModule {
                     analytics = get(),
                     swapTokensRepository = get(),
                     homeLocalRepository = get(),
-                    swapInteractor = get(),
+                    userTokensChangeHandler = get(),
                 )
             }
         }

@@ -16,19 +16,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
-import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
@@ -49,7 +47,7 @@ class SwapStateManager(
     private val swapValidator: SwapValidator,
     private val analytics: JupiterSwapMainScreenAnalytics,
     private val homeLocalRepository: HomeLocalRepository,
-    private val swapInteractor: JupiterSwapInteractor,
+    private val userTokensChangeHandler: SwapUserTokensChangeHandler,
 ) : CoroutineScope {
 
     companion object {
@@ -306,62 +304,11 @@ class SwapStateManager(
 
     private fun observeUserTokens() {
         homeLocalRepository.getTokensFlow()
-            .onEach { userTokens ->
-                val (tokenA, _) = swapInteractor.getSwapTokenPair(state.value)
-                if (tokenA == null) return@onEach
-                if (tokenA !is SwapTokenModel.UserToken) return@onEach
-                // org/p2p/wallet/user/interactor/UserInteractor.kt:128
-                // tokens cleared each time on update, emit empty list
-                if (userTokens.isEmpty()) return@onEach
-
-                val updatedTokenA = userTokens.find { it.mintAddress == tokenA.mintAddress.base58Value }
-                val jupiterToken = swapTokensRepository.getTokens()
-                    .find { it.tokenMint == tokenA.mintAddress } ?: return@onEach
-
-                val isNewTotalAmount = updatedTokenA?.totalInLamports != tokenA.tokenAmountInLamports
-
-                when {
-                    updatedTokenA == null -> onUserTokenGone(state.value, jupiterToken)
-                        ?.let { newState -> state.value = newState }
-                    isNewTotalAmount -> onUserTokenChangeBalance(state.value, updatedTokenA)
-                        ?.let { newState -> state.value = newState }
-                }
+            .mapLatest { userTokens ->
+                userTokensChangeHandler.handleUserTokensChange(state.value, userTokens)
             }
+            .onEach { newState -> state.value = newState }
             .flowOn(dispatchers.io)
             .launchIn(this)
-    }
-
-    private fun onUserTokenChangeBalance(featureState: SwapState, newUserToken: Token.Active): SwapState? {
-        val newUserSwapToken = SwapTokenModel.UserToken(newUserToken)
-        val newState: SwapState? = when (featureState) {
-            SwapState.InitialLoading -> featureState
-
-            is SwapState.LoadingRoutes -> featureState.copy(tokenA = newUserSwapToken)
-            is SwapState.LoadingTransaction -> featureState.copy(tokenA = newUserSwapToken)
-            is SwapState.SwapLoaded -> featureState.copy(tokenA = newUserSwapToken)
-            is SwapState.TokenANotZero -> featureState.copy(tokenA = newUserSwapToken)
-            is SwapState.TokenAZero -> featureState.copy(tokenA = newUserSwapToken)
-            is SwapState.RoutesLoaded -> featureState.copy(tokenA = newUserSwapToken)
-
-            is SwapState.SwapException -> onUserTokenChangeBalance(featureState.previousFeatureState, newUserToken)
-        }
-        return newState
-    }
-
-    private fun onUserTokenGone(featureState: SwapState, newJupiterToken: JupiterSwapToken): SwapState? {
-        val newJupiterSwapToken = SwapTokenModel.JupiterToken(newJupiterToken)
-        val newState: SwapState? = when (featureState) {
-            SwapState.InitialLoading -> featureState
-
-            is SwapState.LoadingRoutes -> featureState.copy(tokenA = newJupiterSwapToken)
-            is SwapState.LoadingTransaction -> featureState.copy(tokenA = newJupiterSwapToken)
-            is SwapState.SwapLoaded -> featureState.copy(tokenA = newJupiterSwapToken)
-            is SwapState.TokenANotZero -> featureState.copy(tokenA = newJupiterSwapToken)
-            is SwapState.TokenAZero -> featureState.copy(tokenA = newJupiterSwapToken)
-            is SwapState.RoutesLoaded -> featureState.copy(tokenA = newJupiterSwapToken)
-
-            is SwapState.SwapException -> onUserTokenGone(featureState.previousFeatureState, newJupiterToken)
-        }
-        return newState
     }
 }
