@@ -100,7 +100,25 @@ class JupiterSwapSettingsPresenter(
                     solTokenForFee = solToken,
                 )
             }
-            is SwapState.SwapException,
+            is SwapState.RoutesLoaded -> {
+                val solToken = tokens.firstOrNull { it.isSol() }
+                currentContentList = contentMapper.mapForLoadingTransactionState(
+                    slippage = state.slippage,
+                    routes = state.routes,
+                    activeRoute = state.activeRoute,
+                    jupiterTokens = tokens,
+                    tokenB = state.tokenB,
+                    tokenA = state.tokenA,
+                    solTokenForFee = solToken,
+                )
+            }
+            is SwapState.SwapException -> {
+                val previousState = state.previousFeatureState
+                if (previousState is SwapState.RoutesLoaded) {
+                    val solToken = tokens.firstOrNull { it.isSol() }
+                    currentContentList = contentMapper.mapForRoutesLoadedState(previousState, tokens, solToken)
+                }
+            }
             SwapState.InitialLoading,
             is SwapState.TokenAZero,
             is SwapState.TokenANotZero -> Unit
@@ -139,13 +157,13 @@ class JupiterSwapSettingsPresenter(
     private fun onDetailsClick(settingsPayload: SwapSettingsPayload) {
         when (settingsPayload) {
             SwapSettingsPayload.ROUTE ->
-                if (canOpenDetails()) view?.showRouteDialog()
+                if (canOpenDetails(featureState)) view?.showRouteDialog()
             SwapSettingsPayload.NETWORK_FEE ->
                 view?.showDetailsDialog(SwapInfoType.NETWORK_FEE)
             SwapSettingsPayload.CREATION_FEE ->
                 view?.showDetailsDialog(SwapInfoType.ACCOUNT_FEE)
             SwapSettingsPayload.LIQUIDITY_FEE ->
-                if (canOpenDetails()) view?.showDetailsDialog(SwapInfoType.LIQUIDITY_FEE)
+                if (canOpenDetails(featureState)) view?.showDetailsDialog(SwapInfoType.LIQUIDITY_FEE)
             SwapSettingsPayload.MINIMUM_RECEIVED ->
                 view?.showDetailsDialog(SwapInfoType.MINIMUM_RECEIVED)
             SwapSettingsPayload.ESTIMATED_FEE ->
@@ -153,9 +171,19 @@ class JupiterSwapSettingsPresenter(
         }
     }
 
-    private fun canOpenDetails(): Boolean {
-        return featureState is SwapState.SwapLoaded || featureState is SwapState.LoadingTransaction
-    }
+    private fun canOpenDetails(currentState: SwapState): Boolean =
+        when (currentState) {
+            SwapState.InitialLoading,
+            is SwapState.LoadingRoutes,
+            is SwapState.TokenANotZero,
+            is SwapState.TokenAZero -> false
+
+            is SwapState.LoadingTransaction,
+            is SwapState.RoutesLoaded,
+            is SwapState.SwapLoaded -> true
+
+            is SwapState.SwapException -> canOpenDetails(currentState.previousFeatureState)
+        }
 
     override fun onCustomSlippageChange(slippage: Double?) {
         debounceInputJob?.cancel()
@@ -179,6 +207,7 @@ class JupiterSwapSettingsPresenter(
             is SwapState.SwapLoaded -> slippage
             is SwapState.TokenAZero -> slippage
             is SwapState.TokenANotZero -> slippage
+            is SwapState.RoutesLoaded -> slippage
             is SwapState.SwapException -> previousFeatureState.getCurrentSlippage()
         }
     }
@@ -199,6 +228,7 @@ class JupiterSwapSettingsPresenter(
             }
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction,
+            is SwapState.RoutesLoaded,
             is SwapState.SwapLoaded -> {
                 loadingMapper.mapLoadingList()
             }

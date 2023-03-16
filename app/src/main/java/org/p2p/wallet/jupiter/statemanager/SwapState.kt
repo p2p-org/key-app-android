@@ -31,6 +31,16 @@ sealed interface SwapState {
         val slippage: Slippage
     ) : SwapState
 
+    data class RoutesLoaded(
+        val tokenA: SwapTokenModel,
+        val tokenB: SwapTokenModel,
+        val amountTokenA: BigDecimal,
+        val routes: List<JupiterSwapRoute>,
+        val activeRoute: Int,
+        val amountTokenB: BigDecimal,
+        val slippage: Slippage
+    ) : SwapState
+
     data class LoadingTransaction(
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,

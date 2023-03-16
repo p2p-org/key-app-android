@@ -35,6 +35,7 @@ import org.p2p.wallet.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateInitialLoadingHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateLoadingRoutesHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateLoadingTransactionHandler
+import org.p2p.wallet.jupiter.statemanager.handler.SwapStateRoutesLoadedHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateSwapLoadedHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateTokenANotZeroHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
@@ -141,6 +142,7 @@ object JupiterModule : InjectionModule {
         }
         factoryOf(::SwapStateLoadingRoutesHandler)
         factoryOf(::SwapStateLoadingTransactionHandler)
+        factoryOf(::SwapStateRoutesLoadedHandler)
         factoryOf(::SwapStateSwapLoadedHandler)
         factoryOf(::SwapStateTokenAZeroHandler)
         factoryOf(::SwapStateTokenANotZeroHandler)
@@ -152,6 +154,7 @@ object JupiterModule : InjectionModule {
                 get<SwapStateLoadingTransactionHandler>(),
                 get<SwapStateSwapLoadedHandler>(),
                 get<SwapStateTokenAZeroHandler>(),
+                get<SwapStateRoutesLoadedHandler>(),
                 get<SwapStateTokenANotZeroHandler>(),
             )
         }
