@@ -2,9 +2,10 @@ package org.p2p.wallet.bridge.model
 
 import com.google.gson.annotations.SerializedName
 import org.p2p.core.token.SolAddress
-import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.core.wrapper.HexString
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.Signature
+import org.p2p.wallet.bridge.claim.model.ClaimStatus
 
 data class BridgeBundle(
     @SerializedName("bundle_id")
@@ -23,4 +24,6 @@ data class BridgeBundle(
     var signatures: List<Signature>,
     @SerializedName("fees")
     val fees: BridgeBundleFees,
+    @SerializedName("status")
+    val status: ClaimStatus? = null
 )

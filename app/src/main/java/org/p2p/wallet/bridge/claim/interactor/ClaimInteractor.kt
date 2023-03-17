@@ -30,4 +30,9 @@ class ClaimInteractor(
     suspend fun sendEthereumBundle(bundle: BridgeBundle) {
         return ethereumClaimRepository.sendEthereumBundle(bundle)
     }
+
+    suspend fun getListOfEthereumBundleStatuses(): List<BridgeBundle> {
+        val ethereumAddress = ethereumRepository.getAddress()
+        return ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress)
+    }
 }

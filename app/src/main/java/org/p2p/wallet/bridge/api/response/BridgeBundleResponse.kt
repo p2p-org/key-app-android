@@ -2,9 +2,10 @@ package org.p2p.wallet.bridge.api.response
 
 import com.google.gson.annotations.SerializedName
 import org.p2p.core.token.SolAddress
-import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.core.wrapper.HexString
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.Signature
+import org.p2p.wallet.bridge.claim.model.ClaimStatus
 
 class BridgeBundleResponse(
     @SerializedName("bundle_id")
@@ -22,5 +23,7 @@ class BridgeBundleResponse(
     @SerializedName("signatures")
     val signatures: List<Signature>? = null,
     @SerializedName("fees")
-    val fees: BridgeBundleFeesResponse
+    val fees: BridgeBundleFeesResponse,
+    @SerializedName("status")
+    val status: ClaimStatus? = null
 )

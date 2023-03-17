@@ -8,5 +8,5 @@ data class BridgeBundleFees(
     @SerializedName("arbiter")
     val arbiterFee: BridgeBundleFee,
     @SerializedName("create_account")
-    var createAccount: BridgeBundleFee?,
+    val createAccount: BridgeBundleFee? = null,
 )
