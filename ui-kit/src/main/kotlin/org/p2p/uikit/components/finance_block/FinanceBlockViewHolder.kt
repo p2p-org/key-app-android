@@ -11,10 +11,11 @@ class FinanceBlockViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
-        val DEFAULT_VIEW_TYPE: Int = R.layout.item_finance_block
+        val DEFAULT_VIEW_TYPE: Int = R.layout.item_finance_block.plus(FinanceBlockStyle.FINANCE_BLOCK.ordinal)
     }
 
     init {
+        binding.root.bindViewStyle(FinanceBlockStyle.FINANCE_BLOCK)
         inflateListener?.invoke(binding.root)
     }
 
@@ -25,4 +26,10 @@ class FinanceBlockViewHolder(
         binding.root.bind(model)
         onBindListener?.invoke(binding.root, model)
     }
+
+    inline fun <reified T : Any> getPayload(): T = this.item.payload as T
+    inline fun <reified T : Any> getPayloadOrNull(): T? = this.item.payload as? T
 }
+
+val RecyclerView.ViewHolder?.asFinanceCell: FinanceBlockViewHolder?
+    get() = this as? FinanceBlockViewHolder

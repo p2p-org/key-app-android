@@ -1,11 +1,12 @@
 package org.p2p.wallet.swap.ui.orca
 
+import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.toast
@@ -20,7 +21,6 @@ import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import timber.log.Timber
 
 private const val EXTRA_DATA = "EXTRA_DATA"
 
@@ -53,7 +53,7 @@ class SwapConfirmBottomSheet(
         )
     }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_swap_confirm, container, false)

@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import org.p2p.core.utils.KeyboardListener
 import org.p2p.uikit.natives.showSnackbarIndefinite
@@ -46,6 +47,7 @@ class RootActivity :
     BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
     RootContract.View,
     RootListener,
+    AppActivityVisibility,
     KeyboardListener {
 
     companion object {
@@ -65,6 +67,7 @@ class RootActivity :
 
     private val networkObserver: SolanaNetworkObserver by inject()
     private val decorSystemBarsDelegate by lazy { DecorSystemBarsDelegate(this) }
+    private val visibilityDelegate by lazy { ActivityVisibilityDelegate(this) }
     override val keyboardState: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     private lateinit var binding: ActivityRootBinding
@@ -248,4 +251,6 @@ class RootActivity :
             }
         )
     }
+
+    override val visibilityState: StateFlow<ActivityVisibility> = visibilityDelegate.getState()
 }

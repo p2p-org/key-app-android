@@ -1,6 +1,8 @@
 package org.p2p.wallet
 
 import org.koin.core.component.KoinComponent
+import timber.log.Timber
+import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.di.AppScope
@@ -11,8 +13,6 @@ import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.solend.repository.SolendConfigurationRepository
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
-import kotlinx.coroutines.launch
 
 /**
  * Entity to perform some actions / loading needed when app is created
@@ -58,8 +58,12 @@ class AppCreatedAction(
         appScope.launch {
             try {
                 val pushToken = pushTokenRepository.getPushToken()
-                intercomPushService.registerForPush(pushToken.value)
-                Timber.tag("App:device_token").d(pushToken.value)
+                if (pushToken != null) {
+                    intercomPushService.registerForPush(pushToken.value)
+                    Timber.tag("App:device_token").d(pushToken.value)
+                } else {
+                    Timber.tag("App:device_token").d("Push token is null, skipping intercom registration")
+                }
             } catch (error: Throwable) {
                 Timber.e(error, "Failed to fetch push token")
             }

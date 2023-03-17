@@ -12,13 +12,16 @@ import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
+import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule.REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER
+import org.p2p.wallet.bridge.BridgeModule
 import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Base58TypeAdapter
@@ -35,10 +38,9 @@ import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
+import org.p2p.wallet.jupiter.JupiterModule.JUPITER_RETROFIT_QUALIFIER
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
-import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
-import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
 
@@ -93,6 +95,15 @@ object NetworkModule : InjectionModule {
             )
         }
 
+        single(named(BridgeModule.BRIDGE_RETROFIT_QUALIFIER)) {
+            val url = get<NetworkServicesUrlProvider>()
+            getRetrofit(
+                baseUrl = url.loadBridgesServiceEnvironment().baseUrl,
+                tag = "RpcBridge",
+                interceptor = null
+            )
+        }
+
         single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
             val url = get<NetworkServicesUrlProvider>().loadNotificationServiceEnvironment().baseUrl
             getRetrofit(
@@ -120,7 +131,7 @@ object NetworkModule : InjectionModule {
             )
         }
 
-        single(named(SwapModule.JUPITER_RETROFIT_QUALIFIER)) {
+        single(named(JUPITER_RETROFIT_QUALIFIER)) {
             val baseUrl = androidContext().getString(R.string.jupiterQuoteBaseUrl)
             getRetrofit(
                 baseUrl = baseUrl,
@@ -133,10 +144,11 @@ object NetworkModule : InjectionModule {
     fun Scope.getRetrofit(
         baseUrl: String,
         tag: String? = "OkHttpClient",
-        interceptor: Interceptor?
+        interceptor: Interceptor?,
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
+            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(get()))
             .client(getClient(tag, interceptor))
             .build()

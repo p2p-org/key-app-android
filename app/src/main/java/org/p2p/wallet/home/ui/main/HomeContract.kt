@@ -1,13 +1,13 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.DefaultLifecycleObserver
+import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
-import java.math.BigDecimal
 
 interface HomeContract {
 
@@ -43,7 +43,6 @@ interface HomeContract {
         fun clearTokensCache()
         fun onProfileClick()
         fun onAddressClicked()
-
         fun updateTokensIfNeeded()
         fun load()
     }

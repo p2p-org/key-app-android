@@ -17,7 +17,7 @@ data class RpcMapRequest(
     val id: String = UUID.randomUUID().toString()
 ) {
 
-    constructor(method: String, params: Map<String, kotlin.Any?>) : this(
+    constructor(method: String, params: Map<String, Any?>) : this(
         method = method, params = params, jsonrpc = "2.0"
     )
 }

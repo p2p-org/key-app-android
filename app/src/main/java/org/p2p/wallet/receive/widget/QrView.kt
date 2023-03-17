@@ -1,5 +1,8 @@
 package org.p2p.wallet.receive.widget
 
+import androidx.annotation.DrawableRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.Bitmap
 import android.text.Spannable
@@ -8,9 +11,6 @@ import android.view.LayoutInflater
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
-import androidx.annotation.DrawableRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import org.p2p.uikit.utils.createBitmap
 import org.p2p.uikit.utils.toast
@@ -76,19 +76,19 @@ class QrView @JvmOverloads constructor(
     fun getName(): String = binding.nameTextView.text.toString()
 
     fun setImage(bitmap: Bitmap) {
-        binding.qrImageView.setImageBitmap(bitmap)
+        binding.imageViewQr.setImageBitmap(bitmap)
     }
 
     fun hideWatermark() {
-        binding.watermarkImageViewBackground.isVisible = false
+        binding.containerWatermark.isVisible = false
     }
 
     fun setWatermarkIcon(@DrawableRes iconResId: Int) {
-        binding.watermarkImageView.setImageResource(iconResId)
+        binding.imageViewWatermark.setImageResource(iconResId)
     }
 
     fun setWatermarkIcon(iconUrl: String?) {
-        Glide.with(this).load(iconUrl).into(binding.watermarkImageView)
+        Glide.with(this).load(iconUrl).into(binding.imageViewWatermark)
     }
 
     fun setTokenSymbol(symbol: String) {
@@ -96,7 +96,7 @@ class QrView @JvmOverloads constructor(
     }
 
     fun showLoading(isLoading: Boolean) {
-        binding.qrImageView.isVisible = !isLoading
+        binding.imageViewQr.isVisible = !isLoading
         binding.progressBar.isVisible = isLoading
     }
 

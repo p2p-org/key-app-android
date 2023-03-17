@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
 import org.koin.android.ext.android.inject
+import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
@@ -28,7 +29,6 @@ import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
-import java.math.BigDecimal
 
 private const val ARG_TRANSACTION_ID = "ARG_TRANSACTION_ID"
 
@@ -53,7 +53,7 @@ class SellTransactionDetailsBottomSheet :
 
     private val transactionId: String by args(ARG_TRANSACTION_ID)
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

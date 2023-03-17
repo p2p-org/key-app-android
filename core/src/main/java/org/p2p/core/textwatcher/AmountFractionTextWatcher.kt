@@ -48,7 +48,7 @@ class AmountFractionTextWatcher(
 
     private val field = WeakReference(editText)
 
-    private var valueText: String by Delegates.observable(emptyString()) { _, oldValue, newValue ->
+    private var valueText: String by Delegates.observable(editText.text?.toString().orEmpty()) { _, oldValue, newValue ->
         if (oldValue != newValue) onValueChanged.invoke(newValue.dropSpaces())
     }
 

@@ -1,15 +1,15 @@
 package org.p2p.wallet.push_notifications.ineractor
 
+import androidx.core.content.edit
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.core.content.edit
+import timber.log.Timber
 import kotlinx.coroutines.delay
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.push_notifications.model.DeviceInfo
 import org.p2p.wallet.push_notifications.model.DeviceToken
 import org.p2p.wallet.push_notifications.repository.DeviceTokenRepository
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
-import timber.log.Timber
 
 private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
 private const val TOKEN_SEND_RETRY_DELAY_MS = 60000L
@@ -26,7 +26,7 @@ class PushNotificationsInteractor(
     suspend fun updateDeviceToken(retries: Int = DEFAULT_RETRIES_NUMBER) {
         if (retries < 0) return
 
-        val token = pushTokenRepository.getPushToken().value
+        val token = pushTokenRepository.getPushToken()?.value
 
         sharedPreferences.edit { putString(KEY_DEVICE_TOKEN, token) }
 
@@ -55,7 +55,7 @@ class PushNotificationsInteractor(
         sharedPreferences.edit { remove(KEY_DEVICE_TOKEN) }
 
         val deviceToken = DeviceToken(
-            deviceToken = pushTokenRepository.getPushToken().value,
+            deviceToken = pushTokenRepository.getPushToken()?.value,
             clientId = publicKey
         )
 

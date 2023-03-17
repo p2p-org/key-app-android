@@ -1,15 +1,35 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.LifecycleOwner
+import timber.log.Timber
+import java.math.BigDecimal
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
+import org.p2p.core.utils.Constants.BTC_COINGECKO_ID
+import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
+import org.p2p.core.utils.Constants.ETH_SYMBOL
+import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
+import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
+import org.p2p.core.utils.Constants.USDC_SYMBOL
+import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
+import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -19,36 +39,25 @@ import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
-import timber.log.Timber
-import java.math.BigDecimal
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import org.p2p.core.utils.Constants
-import org.p2p.core.utils.Constants.SOL_SYMBOL
-import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.wallet.intercom.IntercomDeeplinkManager
-import org.p2p.wallet.user.repository.prices.TokenId
 
-val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, Constants.BTC_SYMBOL, Constants.ETH_SYMBOL, Constants.USDT_SYMBOL)
+val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
-    Constants.SOL_COINGECKO_ID,
-    Constants.BTC_COINGECKO_ID,
-    Constants.ETH_COINGECKO_ID,
-    Constants.USDC_COINGECKO_ID
+    SOL_COINGECKO_ID,
+    BTC_COINGECKO_ID,
+    ETH_COINGECKO_ID,
+    USDC_COINGECKO_ID
 ).map { TokenId(it) }
 val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
@@ -69,14 +78,23 @@ class HomePresenter(
     private val networkObserver: SolanaNetworkObserver,
     private val sellInteractor: SellInteractor,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
+    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val metadataInteractor: MetadataInteractor,
-    private val intercomDeeplinkManager: IntercomDeeplinkManager
+    private val ethereumRepository: EthereumRepository,
+    private val intercomDeeplinkManager: IntercomDeeplinkManager,
+    seedPhraseProvider: SeedPhraseProvider,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
 
+    private var pollingJob: Job? = null
+
     init {
         // TODO maybe we can find better place to start this service
+        if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
+            ethereumRepository.init(seedPhrase = userSeedPhrase)
+        }
         launch {
             awaitAll(
                 async { networkObserver.start() },
@@ -87,6 +105,7 @@ class HomePresenter(
 
     private data class ViewState(
         val tokens: List<Token.Active> = emptyList(),
+        val ethereumTokens: List<Token.Eth> = emptyList(),
         val visibilityState: VisibilityState = VisibilityState.Hidden,
         val username: Username? = null,
         val areZerosHidden: Boolean
@@ -109,8 +128,10 @@ class HomePresenter(
         if (state.tokens.isEmpty()) {
             initialLoadTokens()
         } else {
-            initializeActionButtons()
-            handleUserTokensLoaded(state.tokens)
+            launch {
+                handleUserTokensLoaded(state.tokens)
+                initializeActionButtons()
+            }
         }
         startPollingForTokens()
 
@@ -209,7 +230,7 @@ class HomePresenter(
 
     override fun onSendClicked() {
         launch {
-            val isEmptyAccount = state.tokens.all { it.isZero }
+            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethereumTokens.isEmpty()
             if (isEmptyAccount) {
                 // this cannot be empty
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
@@ -220,33 +241,49 @@ class HomePresenter(
         }
     }
 
-    private fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
-        launch {
-            Timber.d("local tokens change arrived")
-            state = state.copy(
-                tokens = userTokens,
-                username = usernameInteractor.getUsername(),
-            )
+    private suspend fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
+        val ethereumTokens = loadEthTokens()
+        Timber.d("local tokens change arrived")
+        state = state.copy(
+            tokens = userTokens,
+            ethereumTokens = ethereumTokens,
+            username = usernameInteractor.getUsername(),
+        )
 
-            val isAccountEmpty = userTokens.all { it.isZero }
-            when {
-                isAccountEmpty -> {
-                    handleEmptyAccount()
-                }
-                userTokens.isNotEmpty() -> {
-                    view?.showEmptyState(isEmpty = false)
-                    showTokensAndBalance()
-                }
+        val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethereumTokens.isEmpty()
+        when {
+            isAccountEmpty -> {
+                view?.showEmptyState(isEmpty = true)
+                handleEmptyAccount()
             }
+            userTokens.isNotEmpty() -> {
+                view?.showEmptyState(isEmpty = false)
+                showTokensAndBalance()
+            }
+        }
+    }
+
+    private suspend fun loadEthTokens(): List<Token.Eth> {
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return emptyList()
+        }
+        return try {
+            ethereumRepository.loadWalletTokens()
+        } catch (cancelled: CancellationException) {
+            Timber.i(cancelled)
+            emptyList()
+        } catch (throwable: Throwable) {
+            Timber.e(throwable, "Error on loading ethereumTokens")
+            emptyList()
         }
     }
 
     private fun handleEmptyAccount() {
         launch {
-            view?.showEmptyState(isEmpty = true)
+            val tokensForBuy =
+                userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
+                    .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
-            val tokensForBuy = userInteractor.findMultipleTokenData(POPULAR_TOKENS.toList())
-                .sortedBy { tokenToBuy -> POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol) }
             val homeBannerItem = HomeBannerItem(
                 id = R.id.home_banner_top_up,
                 titleTextId = R.string.main_banner_title,
@@ -330,7 +367,10 @@ class HomePresenter(
             /* Mapping elements according to visibility settings */
             val areZerosHidden = settingsInteractor.areZerosHidden()
             val mappedTokens = homeElementItemMapper.mapToItems(
-                tokens = state.tokens, visibilityState = state.visibilityState, isZerosHidden = areZerosHidden
+                tokens = state.tokens,
+                ethereumTokens = state.ethereumTokens,
+                visibilityState = state.visibilityState,
+                isZerosHidden = areZerosHidden
             )
 
             view?.showTokens(mappedTokens, areZerosHidden)
@@ -365,12 +405,20 @@ class HomePresenter(
     }
 
     private fun startPollingForTokens() {
-        tokensPolling.startPolling(onTokensLoaded = ::handleUserTokensLoaded)
+        if (pollingJob?.isActive == true) return
+
+        pollingJob = launch {
+            tokensPolling.startPolling(onTokensLoaded = ::handleUserTokensLoaded)
+        }
     }
 
     private fun getUserBalance(): BigDecimal =
         state.tokens
             .mapNotNull(Token.Active::totalInUsd)
+            .plus(
+                state.ethereumTokens
+                    .mapNotNull(Token.Eth::totalInUsd)
+            )
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 
