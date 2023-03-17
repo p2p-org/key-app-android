@@ -24,7 +24,6 @@ abstract class BaseBottomSheet : BottomSheetDialogFragment() {
         requireDialog().window?.let { decorSystemBars = DecorSystemBarsDelegate(it) }
         decorSystemBars?.onCreate()
         updateSystemBarsStyle(customStatusBarStyle, customNavigationBarStyle)
-        setExpanded(isExpanded = true)
         applyWindowInsets(view)
     }
 
