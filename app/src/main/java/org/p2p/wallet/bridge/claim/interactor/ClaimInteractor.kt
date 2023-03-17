@@ -23,7 +23,7 @@ class ClaimInteractor(
             recipientAddress = solanaAddress,
             erc20Token = erc20Token,
             amount = amount,
-            slippage = null//DEFAULT_ERC20_TOKEN_SLIPPAGE
+            slippage = null // DEFAULT_ERC20_TOKEN_SLIPPAGE
         )
     }
 
