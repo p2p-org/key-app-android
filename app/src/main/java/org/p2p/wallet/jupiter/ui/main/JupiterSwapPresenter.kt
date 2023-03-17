@@ -165,19 +165,20 @@ class JupiterSwapPresenter(
                 )
             )
 
-            analytics.logApproveSwapClicked(
-                tokenA = currentState.tokenA,
-                tokenB = currentState.tokenB,
-                tokenAAmount = currentState.amountTokenA.toString(),
-                tokenBAmountUsd = tokenBUsdAmount.toString()
-            )
-
             view?.showProgressDialog(internalTransactionId, progressDetails)
 
             val swapTransaction = currentState.jupiterSwapTransaction
 
             when (val result = swapInteractor.swapTokens(swapTransaction)) {
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Success -> {
+                    analytics.logApproveSwapClicked(
+                        tokenA = currentState.tokenA,
+                        tokenB = currentState.tokenB,
+                        tokenAAmount = currentState.amountTokenA.toString(),
+                        tokenBAmountUsd = tokenBUsdAmount.toString(),
+                        signature = result.signature
+                    )
+
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                     val transactionState = TransactionState.JupiterSwapSuccess
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
@@ -211,7 +212,13 @@ class JupiterSwapPresenter(
             null -> null
         }
         if (allTokenAAmount != null) {
-            analytics.logTokenAAllClicked(allTokenAAmount.toString())
+            currentFeatureState?.getTokensPair()?.first?.tokenSymbol?.let {
+                analytics.logTokenAAllClicked(
+                    tokenAName = it,
+                    tokenAAmount = allTokenAAmount.toString()
+                )
+            }
+
             cancelRateJobs()
             onTokenAmountChange(allTokenAAmount.toPlainString())
         }
@@ -396,11 +403,14 @@ class JupiterSwapPresenter(
         val priceImpact = swapInteractor.getPriceImpact(currentFeatureState)
         when (val type = priceImpact?.toPriceImpactType()) {
             null, SwapPriceImpactView.NORMAL -> {
-                priceImpact?.also { analytics.logPriceImpactLow(priceImpact) }
                 view?.showPriceImpact(SwapPriceImpactView.NORMAL)
             }
             SwapPriceImpactView.YELLOW, SwapPriceImpactView.RED -> {
-                analytics.logPriceImpactHigh(priceImpact)
+                if (type == SwapPriceImpactView.YELLOW) {
+                    analytics.logPriceImpactLow(priceImpact)
+                } else {
+                    analytics.logPriceImpactHigh(priceImpact)
+                }
 
                 widgetBState = widgetMapper.mapPriceImpact(widgetBState, type)
                 view?.showPriceImpact(type)
