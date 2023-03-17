@@ -37,9 +37,13 @@ import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.date.toZonedDateTime
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPx
 
 const val DEFAULT_DELAY_IN_MILLIS = 30_000L
@@ -49,7 +53,9 @@ class ClaimPresenter(
     private val claimInteractor: ClaimInteractor,
     private val userInteractor: UserInteractor,
     private val ethereumRepository: EthereumRepository,
+    private val transactionManager: TransactionManager,
     private val resources: Resources,
+    private val appScope: AppScope,
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
     private var refreshJob: Job? = null
@@ -163,11 +169,10 @@ class ClaimPresenter(
 
     override fun onSendButtonClicked() {
         val lastBundle = latestBundle ?: return
-        launch {
+        appScope.launch {
             try {
                 val signedTransactions = lastBundle.transactions.map { ethereumRepository.signTransaction(it) }
                 lastBundle.signatures = signedTransactions.map { it.first }
-                claimInteractor.sendEthereumBundle(lastBundle)
                 val transactionDate = Date()
                 val amountTokens = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}"
                 val amountUsd = tokenToClaim.totalInUsd.orZero()
@@ -185,7 +190,14 @@ class ClaimPresenter(
                     totalFees = feeList.mapNotNull { it.toTextHighlighting() }
                 )
                 view?.showProgressDialog(lastBundle.bundleId, progressDetails)
+
+                claimInteractor.sendEthereumBundle(lastBundle)
+
+                val transactionState = TransactionState.ClaimSuccess(lastBundle.bundleId, tokenToClaim.tokenSymbol)
+                transactionManager.emitTransactionState(lastBundle.bundleId, transactionState)
             } catch (e: BridgeResult.Error) {
+                val message = e.getErrorMessage { res -> resources.getString(res) }
+                transactionManager.emitTransactionState(lastBundle.bundleId, TransactionState.Error(message))
                 Timber.e(e)
             }
         }
