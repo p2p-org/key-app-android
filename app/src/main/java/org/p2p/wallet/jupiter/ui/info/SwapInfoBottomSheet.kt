@@ -118,6 +118,7 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
                 observeFeatureState()
             }
         }
+        setExpanded(true)
     }
 
     private fun observeFeatureState() {
