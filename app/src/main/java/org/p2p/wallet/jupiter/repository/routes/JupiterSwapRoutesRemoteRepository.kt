@@ -1,8 +1,11 @@
 package org.p2p.wallet.jupiter.repository.routes
 
+import org.json.JSONObject
+import retrofit2.HttpException
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.withContext
+import org.p2p.core.utils.emptyString
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -10,6 +13,7 @@ import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.SwapFailure
 import org.p2p.wallet.utils.Base58String
 
 private const val TAG = "JupiterSwapRoutesRemoteRepository"
@@ -62,14 +66,24 @@ class JupiterSwapRoutesRemoteRepository(
         jupiterSwapPair: JupiterSwapPair,
         userPublicKey: Base58String
     ): List<JupiterSwapRoute> = with(dispatchers.io) {
-        val response = api.getSwapRoutes(
-            inputMint = jupiterSwapPair.inputMint.base58Value,
-            outputMint = jupiterSwapPair.outputMint.base58Value,
-            amountInLamports = jupiterSwapPair.amountInLamports,
-            userPublicKey = userPublicKey.base58Value,
-            slippageBps = jupiterSwapPair.slippageBasePoints
-        )
-        mapper.fromNetwork(response)
+        try {
+            val response = api.getSwapRoutes(
+                inputMint = jupiterSwapPair.inputMint.base58Value,
+                outputMint = jupiterSwapPair.outputMint.base58Value,
+                amountInLamports = jupiterSwapPair.amountInLamports,
+                userPublicKey = userPublicKey.base58Value,
+                slippageBps = jupiterSwapPair.slippageBasePoints
+            )
+            mapper.fromNetwork(response)
+        } catch (e: HttpException) {
+            val isTooSmallAmountError = try {
+                val json = JSONObject(e.response()?.errorBody()?.string() ?: emptyString())
+                json.getString("message").contains("The value \"NaN\" cannot be converted to a number")
+            } catch (e: Exception) {
+                false
+            }
+            throw if (isTooSmallAmountError) SwapFailure.TooSmallInputAmount(e) else e
+        }
     }
 
     override suspend fun getSwappableTokenMints(sourceTokenMint: Base58String): List<Base58String> {

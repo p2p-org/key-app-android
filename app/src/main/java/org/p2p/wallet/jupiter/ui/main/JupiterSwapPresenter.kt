@@ -20,7 +20,6 @@ import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
-import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -165,19 +164,20 @@ class JupiterSwapPresenter(
                 )
             )
 
-            analytics.logApproveSwapClicked(
-                tokenA = currentState.tokenA,
-                tokenB = currentState.tokenB,
-                tokenAAmount = currentState.amountTokenA.toString(),
-                tokenBAmountUsd = tokenBUsdAmount.toString()
-            )
-
             view?.showProgressDialog(internalTransactionId, progressDetails)
 
             val swapTransaction = currentState.jupiterSwapTransaction
 
             when (val result = swapInteractor.swapTokens(swapTransaction)) {
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Success -> {
+                    analytics.logApproveSwapClicked(
+                        tokenA = currentState.tokenA,
+                        tokenB = currentState.tokenB,
+                        tokenAAmount = currentState.amountTokenA.toString(),
+                        tokenBAmountUsd = tokenBUsdAmount.toString(),
+                        signature = result.signature
+                    )
+
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                     val transactionState = TransactionState.JupiterSwapSuccess
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
@@ -211,7 +211,13 @@ class JupiterSwapPresenter(
             null -> null
         }
         if (allTokenAAmount != null) {
-            analytics.logTokenAAllClicked(allTokenAAmount.toString())
+            currentFeatureState?.getTokensPair()?.first?.tokenSymbol?.let {
+                analytics.logTokenAAllClicked(
+                    tokenAName = it,
+                    tokenAAmount = allTokenAAmount.toString()
+                )
+            }
+
             cancelRateJobs()
             onTokenAmountChange(allTokenAAmount.toPlainString())
         }
@@ -333,11 +339,10 @@ class JupiterSwapPresenter(
             }
             is SwapFeatureException.SmallTokenAAmount -> {
                 val tokenA = state.previousFeatureState.getTokensPair().first
-                val tokenAAmount = swapInteractor.getTokenAAmount(state.previousFeatureState)
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
                     tokenA = tokenA,
                     oldWidgetAState = widgetAState,
-                    notValidAmount = tokenAAmount.orZero()
+                    notValidAmount = featureException.notValidAmount
                 )
                 view?.setButtonState(buttonState = buttonMapper.mapSmallTokenAAmount())
             }
@@ -398,11 +403,14 @@ class JupiterSwapPresenter(
         val priceImpact = swapInteractor.getPriceImpact(currentFeatureState)
         when (val type = priceImpact?.toPriceImpactType()) {
             null, SwapPriceImpactView.NORMAL -> {
-                priceImpact?.also { analytics.logPriceImpactLow(priceImpact) }
                 view?.showPriceImpact(SwapPriceImpactView.NORMAL)
             }
             SwapPriceImpactView.YELLOW, SwapPriceImpactView.RED -> {
-                analytics.logPriceImpactHigh(priceImpact)
+                if (type == SwapPriceImpactView.YELLOW) {
+                    analytics.logPriceImpactLow(priceImpact)
+                } else {
+                    analytics.logPriceImpactHigh(priceImpact)
+                }
 
                 widgetBState = widgetMapper.mapPriceImpact(widgetBState, type)
                 view?.showPriceImpact(type)
