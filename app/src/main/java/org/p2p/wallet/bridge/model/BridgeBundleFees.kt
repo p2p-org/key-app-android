@@ -7,5 +7,6 @@ data class BridgeBundleFees(
     val gasEth: BridgeBundleFee,
     @SerializedName("arbiter")
     val arbiterFee: BridgeBundleFee,
+    @SerializedName("create_account")
     var createAccount: BridgeBundleFee?,
 )
