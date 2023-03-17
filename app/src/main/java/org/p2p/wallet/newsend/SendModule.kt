@@ -9,6 +9,9 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
+import org.p2p.wallet.home.ui.vialink.SendViaLinkReceiveFundsContract
+import org.p2p.wallet.home.ui.vialink.SendViaLinkReceiveFundsPresenter
+import org.p2p.wallet.home.ui.vialink.interactor.SendViaLinkReceiveFundsInteractor
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
@@ -41,8 +44,12 @@ object SendModule : InjectionModule {
         factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class
         factoryOf(::NewSendPresenter) bind NewSendContract.Presenter::class
         factoryOf(::NewSendDetailsPresenter) bind NewSendDetailsContract.Presenter::class
+
         factoryOf(::SendLinkGenerationPresenter) bind SendLinkGenerationContract.Presenter::class
         factoryOf(::SendViaLinkPresenter) bind SendViaLinkContract.Presenter::class
+
+        factoryOf(::SendViaLinkReceiveFundsPresenter) bind SendViaLinkReceiveFundsContract.Presenter::class
+        factoryOf(::SendViaLinkReceiveFundsInteractor)
     }
 
     private fun Module.initDataLayer() {
