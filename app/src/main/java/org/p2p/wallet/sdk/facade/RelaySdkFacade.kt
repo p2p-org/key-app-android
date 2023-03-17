@@ -1,6 +1,7 @@
 package org.p2p.wallet.sdk.facade
 
-import org.p2p.solanaj.model.types.RecentBlockhash
+import kotlinx.coroutines.withContext
+import org.p2p.solanaj.model.types.RecentBlockhashResponse
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.solanaj.utils.crypto.encodeToBase58
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -9,7 +10,6 @@ import org.p2p.wallet.sdk.facade.mapper.SdkMethodResultMapper
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
 import org.p2p.wallet.sdk.facade.model.relay.RelaySignTransactionResponse
 import org.p2p.wallet.utils.Base58String
-import kotlinx.coroutines.withContext
 
 class RelaySdkFacade(
     private val relaySdk: RelaySdk,
@@ -21,23 +21,23 @@ class RelaySdkFacade(
     suspend fun signTransaction(
         transaction: Base58String,
         keyPair: Base58String,
-        recentBlockhash: RecentBlockhash
+        recentBlockhash: RecentBlockhashResponse?
     ): RelaySdkSignedTransaction {
         return actualSignTransaction(
             transaction = transaction.base58Value,
             keyPair = keyPair.decodeToBytes(),
-            recentBlockhash = recentBlockhash.recentBlockhash
+            recentBlockhash = recentBlockhash?.recentBlockhash.orEmpty()
         )
     }
 
     suspend fun signTransaction(
         transaction: Base64String,
         keyPair: Base58String,
-        recentBlockhash: RecentBlockhash
+        recentBlockhash: RecentBlockhashResponse?
     ): RelaySdkSignedTransaction = actualSignTransaction(
         transaction = transaction.base64Value,
         keyPair = keyPair.decodeToBytes(),
-        recentBlockhash = recentBlockhash.recentBlockhash
+        recentBlockhash = recentBlockhash?.recentBlockhash.orEmpty()
     )
 
     private suspend fun actualSignTransaction(

@@ -3,7 +3,9 @@ package org.p2p.wallet.history.ui.token
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.rpc.interactor.TokenInteractor
@@ -11,6 +13,7 @@ import org.p2p.wallet.rpc.interactor.TokenInteractor
 class TokenHistoryPresenter(
     private val token: Token.Active,
     private val tokenInteractor: TokenInteractor,
+    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     override fun attach(view: TokenHistoryContract.View) {
@@ -49,6 +52,18 @@ class TokenHistoryPresenter(
                 Timber.e(e, "Error closing account: ${token.publicKey}")
                 view?.showErrorMessage(e)
             }
+        }
+    }
+
+    override fun onReceiveClicked() {
+        if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            if (token.mintAddress in ERC20Tokens.values().map { it.mintAddress }) {
+                view?.showReceiveNetworkDialog()
+            } else {
+                view?.openReceiveInSolana()
+            }
+        } else {
+            view?.openOldReceiveInSolana()
         }
     }
 }

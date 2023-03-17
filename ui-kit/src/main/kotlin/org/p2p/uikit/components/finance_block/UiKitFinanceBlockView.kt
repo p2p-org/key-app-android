@@ -29,6 +29,8 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
     val item: FinanceBlockCellModel
         get() = _item ?: error("Method ::bind was not called")
 
+    private var styleType = FinanceBlockStyle.FINANCE_BLOCK
+
     init {
         val paddingHorizontal = 16.toPx()
         val paddingVertical = 12.toPx()
@@ -39,13 +41,24 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
             bottom = paddingVertical
         )
         rippleForeground()
-        minHeight = 72.toPx()
+        bindViewStyle(styleType)
     }
+
 
     fun setOnClickAction(onItemClickAction: (view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit) {
         setOnClickListener {
             onItemClickAction.invoke(this, item)
         }
+    }
+
+    fun bindViewStyle(style: FinanceBlockStyle) {
+        styleType = style
+        minHeight = when (style) {
+            FinanceBlockStyle.FINANCE_BLOCK -> 72.toPx()
+            FinanceBlockStyle.BASE_CELL -> 64.toPx()
+        }
+        leftSideView.bindViewStyle(style)
+        rightSideView.bindViewStyle(style)
     }
 
     fun bind(model: FinanceBlockCellModel) = with(binding) {

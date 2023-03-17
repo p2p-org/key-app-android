@@ -13,6 +13,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.math.BigDecimal
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
@@ -31,7 +32,7 @@ import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
-import org.p2p.wallet.swap.ui.settings.SwapSettingsFragment
+import org.p2p.wallet.swap.ui.settings.OrcaSwapSettingsFragment
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
@@ -43,7 +44,6 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import java.math.BigDecimal
 
 const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
 private const val EXTRA_SOURCE_TOKEN = "EXTRA_SOURCE_TOKEN"
@@ -53,21 +53,16 @@ private const val EXTRA_SETTINGS = "EXTRA_SETTINGS"
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_OPENED_FROM = "EXTRA_SOURCE"
 
-enum class SwapOpenedFrom {
-    MAIN_SCREEN,
-    OTHER
-}
-
 class OrcaSwapFragment :
     BaseMvpFragment<OrcaSwapContract.View, OrcaSwapContract.Presenter>(R.layout.fragment_swap_orca),
     OrcaSwapContract.View {
 
     companion object {
-        fun create(source: SwapOpenedFrom = SwapOpenedFrom.OTHER): OrcaSwapFragment =
+        fun create(source: SwapOpenedFrom): OrcaSwapFragment =
             OrcaSwapFragment()
                 .withArgs(EXTRA_OPENED_FROM to source)
 
-        fun create(token: Token.Active, source: SwapOpenedFrom = SwapOpenedFrom.OTHER): OrcaSwapFragment =
+        fun create(token: Token.Active, source: SwapOpenedFrom): OrcaSwapFragment =
             OrcaSwapFragment()
                 .withArgs(
                     EXTRA_TOKEN to token,
@@ -121,14 +116,14 @@ class OrcaSwapFragment :
     private fun setupViews() = with(binding) {
         // in case of MainFragment, back is handled by MainFragment
         when (openedFrom) {
-            SwapOpenedFrom.OTHER -> {
+            SwapOpenedFrom.BOTTOM_NAVIGATION -> {
+                toolbar.navigationIcon = null
+            }
+            else -> {
                 amountEditText.focusAndShowKeyboard(force = true)
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                     presenter.onBackPressed()
                 }
-            }
-            SwapOpenedFrom.MAIN_SCREEN -> {
-                toolbar.navigationIcon = null
             }
         }
 
@@ -315,7 +310,7 @@ class OrcaSwapFragment :
         tokens: List<Token.Active>,
         currentFeePayerToken: Token.Active
     ) {
-        val target = SwapSettingsFragment.create(currentSlippage, tokens, currentFeePayerToken, EXTRA_SETTINGS)
+        val target = OrcaSwapSettingsFragment.create(currentSlippage, tokens, currentFeePayerToken, EXTRA_SETTINGS)
         addFragment(target)
     }
 

@@ -1,16 +1,19 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import java.math.BigDecimal
+import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
+import org.p2p.wallet.bridge.claim.ui.ClaimFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.new.requestPermissionNotification
@@ -34,17 +37,18 @@ import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
+import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
+import org.p2p.wallet.swap.ui.SwapFragmentFactory
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import java.math.BigDecimal
-import org.p2p.wallet.swap.ui.SwapFragmentFactory
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
@@ -67,13 +71,21 @@ class HomeFragment :
 
     private val binding: FragmentHomeBinding by viewBinding()
 
-    private val contentAdapter: TokenAdapter by unsafeLazy { TokenAdapter(this) }
+    private val glideManager: GlideManager by inject()
+
+    private val contentAdapter: TokenAdapter by unsafeLazy {
+        TokenAdapter(
+            glideManager = glideManager,
+            listener = this
+        )
+    }
 
     private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
 
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
     private val swapFragmentFactory: SwapFragmentFactory by inject()
+    private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -108,7 +120,9 @@ class HomeFragment :
             ::onFragmentResult
         )
         lifecycle.addObserver(presenter)
+
         presenter.load()
+
         requestPermissionNotification { permissionState ->
             if (permissionState == PermissionState.GRANTED) {
                 AppNotificationManager.createNotificationChannels(requireContext())
@@ -174,7 +188,7 @@ class HomeFragment :
                 presenter.onBuyClicked()
             }
             ActionButton.RECEIVE_BUTTON -> {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
+                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             }
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked()
@@ -183,7 +197,7 @@ class HomeFragment :
                 replaceFragment(SellPayloadFragment.create())
             }
             ActionButton.SWAP_BUTTON -> {
-                replaceFragment(swapFragmentFactory.swapFragment())
+                replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.MAIN_SCREEN))
             }
         }
     }
@@ -206,8 +220,8 @@ class HomeFragment :
         when (action) {
             HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
             HomeAction.BUY -> presenter.onBuyClicked()
-            HomeAction.RECEIVE -> replaceFragment(ReceiveSolanaFragment.create(token = null))
-            HomeAction.SWAP -> replaceFragment(swapFragmentFactory.swapFragment())
+            HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
+            HomeAction.SWAP -> replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.ACTION_PANEL))
             HomeAction.SEND -> presenter.onSendClicked()
         }
     }
@@ -280,7 +294,7 @@ class HomeFragment :
     override fun onBannerClicked(bannerId: Int) {
         when (bannerId) {
             R.id.home_banner_top_up -> {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
+                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             }
             R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
@@ -307,6 +321,12 @@ class HomeFragment :
 
     override fun onHideClicked(token: Token.Active) {
         presenter.toggleTokenVisibility(token)
+    }
+
+    override fun onClaimTokenClicked(token: Token.Eth) {
+        replaceFragment(
+            ClaimFragment.create(ethereumToken = token)
+        )
     }
 
     override fun onDestroy() {

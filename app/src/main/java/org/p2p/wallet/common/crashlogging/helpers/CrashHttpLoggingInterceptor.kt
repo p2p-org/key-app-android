@@ -5,6 +5,7 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import timber.log.Timber
+import java.net.SocketTimeoutException
 import org.p2p.wallet.utils.bodyAsString
 
 private const val TAG = "CrashHttpLoggingInterceptor"
@@ -19,7 +20,12 @@ class CrashHttpLoggingInterceptor : Interceptor {
         val requestLog = createRequestLog(request)
         Timber.tag(TAG).i(requestLog)
 
-        val response = chain.proceed(request)
+        val response = try {
+            chain.proceed(request)
+        } catch (socketTimeout: SocketTimeoutException) {
+            Timber.i("Failed with socket timeout: ${request.url}")
+            throw socketTimeout
+        }
 
         val responseLog = createResponseLog(response)
         Timber.tag(TAG).i(responseLog)

@@ -3,6 +3,7 @@ package org.p2p.uikit.utils.text
 import androidx.annotation.ColorRes
 import androidx.annotation.Px
 import androidx.annotation.StyleRes
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import android.content.res.ColorStateList
@@ -35,6 +36,7 @@ sealed interface TextViewCellModel {
         val gravity: Int? = null,
         val badgeBackground: TextViewBackgroundModel? = null,
         val autoSizeConfiguration: TextViewAutoSizeConfiguration? = null,
+        val maxLines: Int? = null,
     ) : TextViewCellModel
 
     data class Skeleton(
@@ -71,9 +73,9 @@ data class TextViewBackgroundModel(
 
 fun badgePadding(
     @Px left: Int = 8.toPx(),
-    @Px top: Int = 0.toPx(),
+    @Px top: Int = 1.toPx(),
     @Px right: Int = 8.toPx(),
-    @Px bottom: Int = 0.toPx(),
+    @Px bottom: Int = 3.toPx(),
 ): InitialViewPadding = InitialViewPadding(left, top, right, bottom)
 
 fun badgeRounded(
@@ -89,7 +91,13 @@ fun TextView.bindOrGone(model: TextViewCellModel?) {
     if (model != null) bind(model)
 }
 
+fun TextView.bindOrInvisible(model: TextViewCellModel?) {
+    this.isInvisible = model == null
+    if (model != null) bind(model)
+}
+
 fun TextView.bind(model: TextViewCellModel) {
+    if (equalsNewCellModel(model)) return
     when (model) {
         is TextViewCellModel.Raw -> bind(model)
         is TextViewCellModel.Skeleton -> bindSkeleton(model)
@@ -119,6 +127,7 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
         foreground = null
     }
 
+    maxLines = model.maxLines ?: initialTextStyle.maxLines
     val autoSize = model.autoSizeConfiguration
     val initialAutoSize = initialTextStyle.textViewAutoSizeConfiguration
     val autoSizeTextType =
@@ -160,6 +169,22 @@ private fun TextView.saveAndGetInitialTextStyle(): InitialTextStyle {
     }
 }
 
+private fun TextView.equalsNewCellModel(newModel: TextViewCellModel): Boolean {
+    val previewModel = previewTextViewCellModel()
+    val isEquals = previewModel != null &&
+        newModel.hashCode() == previewModel.hashCode() &&
+        previewModel == newModel
+    if (!isEquals) {
+        setTag(R.id.preview_text_cell_model_tag_id, newModel)
+    }
+    return isEquals
+}
+
+private fun TextView.previewTextViewCellModel(): TextViewCellModel? {
+    val tagKey = R.id.preview_text_cell_model_tag_id
+    return getTag(tagKey) as? TextViewCellModel
+}
+
 private data class InitialTextStyle(
     @Px val textSize: Float,
     val textColors: ColorStateList?,
@@ -170,6 +195,7 @@ private data class InitialTextStyle(
     val backgroundTint: ColorStateList?,
     val gravity: Int,
     val textViewAutoSizeConfiguration: TextViewAutoSizeConfiguration,
+    val maxLines: Int,
 ) {
     constructor(textView: TextView) : this(
         textSize = textView.textSize,
@@ -180,6 +206,7 @@ private data class InitialTextStyle(
         backgroundTint = textView.backgroundTintList,
         gravity = textView.gravity,
         hintTextColors = textView.hintTextColors,
+        maxLines = textView.maxLines,
         textViewAutoSizeConfiguration = TextViewAutoSizeConfiguration(
             autoSizeTextType = textView.autoSizeTextType,
             autoSizeMinTextSize = textView.autoSizeMinTextSize,

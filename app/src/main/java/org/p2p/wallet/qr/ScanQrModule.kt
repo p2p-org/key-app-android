@@ -14,8 +14,8 @@ object ScanQrModule : InjectionModule {
         single {
             val context = androidContext()
             QrParams(
-                contentColor = context.getColor(R.color.night),
-                backgroundColor = context.getColor(R.color.white)
+                contentColor = context.getColor(R.color.bg_night),
+                backgroundColor = context.getColor(R.color.bg_smoke)
             )
         }
     }

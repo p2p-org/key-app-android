@@ -19,10 +19,16 @@ import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.receive.token.ReceiveTokenFragment
+import org.p2p.wallet.receive.eth.EthereumReceiveFragment
+import org.p2p.wallet.receive.solana.NewReceiveSolanaFragment
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
+import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
@@ -30,6 +36,9 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+
+private const val KEY_REQUEST_NETWORK = "KEY_REQUEST_NETWORK"
+private const val KEY_RESULT_NETWORK = "KEY_RESULT_NETWORK"
 
 class TokenHistoryFragment :
     BaseMvpFragment<TokenHistoryContract.View, TokenHistoryContract.Presenter>(R.layout.fragment_token_history),
@@ -78,6 +87,11 @@ class TokenHistoryFragment :
                 mintAddress = tokenForHistory.mintAddress
             )
         }
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_NETWORK,
+            viewLifecycleOwner,
+            ::onFragmentResult
+        )
     }
 
     private fun Toolbar.setupToolbar() {
@@ -97,6 +111,15 @@ class TokenHistoryFragment :
         }
     }
 
+    private fun onFragmentResult(requestKey: String, result: Bundle) {
+        result.getSerializableOrNull<ReceiveNetwork>(KEY_RESULT_NETWORK)?.let { network ->
+            when (network) {
+                ReceiveNetwork.SOLANA -> openReceiveInSolana()
+                ReceiveNetwork.ETHEREUM -> openReceiveInEthereum()
+            }
+        }
+    }
+
     private fun onActionButtonClicked(clickedButton: ActionButton) {
         when (clickedButton) {
             ActionButton.BUY_BUTTON -> {
@@ -110,13 +133,13 @@ class TokenHistoryFragment :
             }
             ActionButton.RECEIVE_BUTTON -> {
                 receiveAnalytics.logTokenReceiveViewed(tokenForHistory.tokenName)
-                replaceFragment(ReceiveTokenFragment.create(tokenForHistory))
+                presenter.onReceiveClicked()
             }
             ActionButton.SEND_BUTTON -> {
                 replaceFragment(NewSearchFragment.create(tokenForHistory))
             }
             ActionButton.SWAP_BUTTON -> {
-                replaceFragment(swapFragmentFactory.swapFragment(tokenForHistory))
+                replaceFragment(swapFragmentFactory.swapFragment(tokenForHistory, SwapOpenedFrom.TOKEN_SCREEN))
             }
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())
@@ -141,5 +164,36 @@ class TokenHistoryFragment :
 
     override fun openSellTransactionDetails(transactionId: String) {
         SellTransactionDetailsBottomSheet.show(childFragmentManager, transactionId)
+    }
+
+    override fun openOldReceiveInSolana() {
+        replaceFragment(ReceiveSolanaFragment.create(token = tokenForHistory))
+    }
+
+    override fun showReceiveNetworkDialog() {
+        SelectReceiveNetworkBottomSheet.show(
+            fm = childFragmentManager,
+            title = getString(R.string.receive_network_dialog_title),
+            requestKey = KEY_REQUEST_NETWORK,
+            resultKey = KEY_RESULT_NETWORK
+        )
+    }
+
+    override fun openReceiveInSolana() = with(tokenForHistory) {
+        replaceFragment(
+            NewReceiveSolanaFragment.create(
+                tokenLogoUrl = iconUrl.orEmpty(),
+                tokenSymbol = tokenSymbol
+            )
+        )
+    }
+
+    override fun openReceiveInEthereum() = with(tokenForHistory) {
+        replaceFragment(
+            EthereumReceiveFragment.create(
+                tokenLogoUrl = iconUrl.orEmpty(),
+                tokenSymbol = tokenSymbol
+            )
+        )
     }
 }

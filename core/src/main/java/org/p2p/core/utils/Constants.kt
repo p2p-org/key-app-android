@@ -24,7 +24,13 @@ object Constants {
     const val USDT_COINGECKO_ID = "tether"
 
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
+    const val WRAPPED_ETH_MINT = "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"
     const val FEE_RELAYER_ACCOUNT = "FG4Y3yX4AAchp1HvNZ7LfzFTewF2f6nDoMDCohTFrdpT"
+    const val SWAP_FEE_RELAYER_ACCOUNT = "JdYkwaUrvoeYsCbPgnt3AAa1qzjV2CtoRqU3bzuAvQu"
+    val FEE_RELAYER_ACCOUNTS = listOf(
+        FEE_RELAYER_ACCOUNT,
+        SWAP_FEE_RELAYER_ACCOUNT
+    )
     const val REN_BTC_DEVNET_MINT = "FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD"
     const val REN_BTC_DEVNET_MINT_ALTERNATE = "CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5"
 
@@ -34,6 +40,7 @@ object Constants {
     const val USDT_MINT = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
 
     const val SOL_NAME = "Solana"
+    const val ETH_NAME = "Ethereum"
 
     const val DEVICE_TYPE = "Android"
 

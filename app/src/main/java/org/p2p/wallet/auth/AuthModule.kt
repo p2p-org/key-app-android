@@ -28,7 +28,6 @@ import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
-import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
@@ -93,7 +92,6 @@ object AuthModule {
 
         factoryOf(::AuthInteractor)
         factoryOf(::AuthRemoteRepository) bind AuthRepository::class
-        factoryOf(::FileRepository)
         factoryOf(::SecurityKeyPresenter) bind SecurityKeyContract.Presenter::class
         factoryOf(::SignInPinPresenter) bind SignInPinContract.Presenter::class
         factoryOf(::ValidatePinPresenter) bind ValidatePinContract.Presenter::class
@@ -116,6 +114,7 @@ object AuthModule {
                 pushNotificationsInteractor = get(),
                 appScope = get(),
                 analytics = get(),
+                jupiterSwapStorage = get()
             )
         }
 

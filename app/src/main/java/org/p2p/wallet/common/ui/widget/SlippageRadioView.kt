@@ -1,15 +1,17 @@
 package org.p2p.wallet.common.ui.widget
 
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSlippageRadioViewBinding
+import org.p2p.wallet.swap.model.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.swap.model.Slippage
 
+@Deprecated("Old Orca swap flow")
 class SlippageRadioView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -27,8 +29,10 @@ class SlippageRadioView @JvmOverloads constructor(
 
         with(binding) {
             customEditText.doAfterTextChanged {
-                val slippage = it.toString().toDoubleOrNull()
-                val result = slippage?.let { Slippage.parse(slippage) } ?: Slippage.Min
+                val slippagePercent = it.toString().toDoubleOrNull()
+                val result = slippagePercent?.let {
+                    Slippage.parse(slippagePercent / PERCENT_DIVIDE_VALUE)
+                } ?: Slippage.Min
                 onSlippageChanged?.invoke(result)
             }
         }

@@ -8,12 +8,12 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
-import org.p2p.wallet.infrastructure.network.data.EmptyDataException
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerError
-import org.p2p.wallet.infrastructure.network.data.ServerException
 import timber.log.Timber
 import java.io.IOException
+import org.p2p.wallet.infrastructure.network.data.EmptyDataException
+import org.p2p.wallet.infrastructure.network.data.ErrorCode
+import org.p2p.wallet.infrastructure.network.data.ServerErrorResponse
+import org.p2p.wallet.infrastructure.network.data.ServerException
 
 open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
 
@@ -95,7 +95,7 @@ open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
 
         Timber.tag("RpcSolanaInterceptor").d("Handling exception: $fullMessage")
 
-        val serverError = gson.fromJson(bodyString, ServerError::class.java)
+        val serverError = gson.fromJson(bodyString, ServerErrorResponse::class.java)
 
         val errorMessage = serverError.error.data?.getErrorLog() ?: serverError.error.message
 

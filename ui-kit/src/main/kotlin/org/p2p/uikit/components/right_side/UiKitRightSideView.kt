@@ -3,8 +3,12 @@ package org.p2p.uikit.components.right_side
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.content.Context
 import android.util.AttributeSet
+import org.p2p.uikit.R
+import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.databinding.WidgetRightSideDoubleTextBinding
+import org.p2p.uikit.databinding.WidgetRightSideIconWrapperBinding
 import org.p2p.uikit.databinding.WidgetRightSideSingleTextTwoIconBinding
+import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.image.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.text.bindOrGone
@@ -15,11 +19,15 @@ class UiKitRightSideView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
+    private var styleType = FinanceBlockStyle.FINANCE_BLOCK
     private var currentModel: RightSideCellModel? = null
     private val viewPool = ComponentViewPool<RightSideCellModel>(this) {
         when (this) {
             RightSideCellModel.TwoLineText::class -> inflateViewBinding<WidgetRightSideDoubleTextBinding>()
+                .apply { updateStyle(styleType) }
             RightSideCellModel.SingleTextTwoIcon::class -> inflateViewBinding<WidgetRightSideSingleTextTwoIconBinding>()
+                .apply { updateStyle(styleType) }
+            RightSideCellModel.IconWrapper::class -> inflateViewBinding<WidgetRightSideIconWrapperBinding>()
             else -> error("No type for viewPool: $this")
         }
     }
@@ -31,6 +39,7 @@ class UiKitRightSideView @JvmOverloads constructor(
         if (isInEditMode) {
             inflateViewBinding<WidgetRightSideDoubleTextBinding>()
         }
+        bindViewStyle(styleType)
     }
 
     fun setOnSwitchAction(
@@ -45,12 +54,27 @@ class UiKitRightSideView @JvmOverloads constructor(
             }*/
     }
 
+    fun bindViewStyle(style: FinanceBlockStyle) {
+        styleType = style
+        viewPool.getViewPool().forEach {
+            when (val binding = it.value.first) {
+                is WidgetRightSideDoubleTextBinding -> binding.updateStyle(style)
+                is WidgetRightSideSingleTextTwoIconBinding -> binding.updateStyle(style)
+            }
+        }
+    }
+
     fun bind(model: RightSideCellModel) {
         val pair = viewPool.updatePoolOfViews(this.currentModel, model)
         when (model) {
-            is RightSideCellModel.TwoLineText -> (pair.first as WidgetRightSideDoubleTextBinding).bind(model)
-            is RightSideCellModel.SingleTextTwoIcon ->
+            is RightSideCellModel.TwoLineText -> {
+                (pair.first as WidgetRightSideDoubleTextBinding).bind(model)
+            }
+            is RightSideCellModel.SingleTextTwoIcon -> {
                 (pair.first as WidgetRightSideSingleTextTwoIconBinding).bind(model)
+            }
+            is RightSideCellModel.IconWrapper ->
+                (pair.first as WidgetRightSideIconWrapperBinding).bind(model)
         }
         this.currentModel = model
     }
@@ -64,5 +88,36 @@ class UiKitRightSideView @JvmOverloads constructor(
         this.textViewFirst.bindOrGone(model.text)
         this.imageViewFirstIcon.bindOrGone(model.firstIcon)
         this.imageViewSecondIcon.bindOrGone(model.secondIcon)
+    }
+
+    private fun WidgetRightSideIconWrapperBinding.bind(model: RightSideCellModel.IconWrapper) {
+        this.iconWrapper.bindOrGone(model.iconWrapper)
+    }
+
+    private fun WidgetRightSideDoubleTextBinding.updateStyle(style: FinanceBlockStyle) {
+        when (style) {
+            FinanceBlockStyle.FINANCE_BLOCK -> {
+                textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_SemiBold_Text3)
+                textViewFirst.setTextColor(getColorStateList(R.color.text_night))
+                textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewSecond.setTextColor(getColorStateList(R.color.text_mountain))
+            }
+            FinanceBlockStyle.BASE_CELL -> {
+                textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Text3)
+                textViewFirst.setTextColor(getColorStateList(R.color.text_night))
+                textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewSecond.setTextColor(getColorStateList(R.color.text_mountain))
+            }
+        }
+    }
+
+    private fun WidgetRightSideSingleTextTwoIconBinding.updateStyle(style: FinanceBlockStyle) {
+        when (style) {
+            FinanceBlockStyle.FINANCE_BLOCK,
+            FinanceBlockStyle.BASE_CELL -> {
+                textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
+                textViewFirst.setTextColor(getColorStateList(R.color.text_mountain))
+            }
+        }
     }
 }

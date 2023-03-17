@@ -15,16 +15,14 @@ class SplashPresenter(
 
     override fun attach(view: SplashContract.View) {
         super.attach(view)
-        launch {
-            loadPricesAndBids()
-        }
+        loadTokensList()
     }
 
     override fun logNotificationPermissionGranted(isGranted: Boolean) {
         onboardingAnalytics.setUserGrantedNotificationPermissions(isGranted = isGranted)
     }
 
-    private fun loadPricesAndBids() {
+    private fun loadTokensList() {
         launch {
             try {
                 userInteractor.loadAllTokensData()

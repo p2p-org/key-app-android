@@ -1,6 +1,8 @@
 package org.p2p.wallet.utils
 
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305
@@ -63,3 +65,5 @@ fun ChaCha20Poly1305.processBytesKt(
 )
 
 fun BigDecimal?.compareTo(other: BigDecimal?): Int = this.orZero().compareTo(other.orZero())
+
+fun JsonArray.getOrNull(index: Int): JsonElement? = if (index >= size()) null else get(index)

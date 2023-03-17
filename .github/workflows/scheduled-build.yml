@@ -37,6 +37,8 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+          secret-memo: ${{ secrets.SECRET_MEMO }}
+          salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: "Generate changelog"
         run: |
           touch CHANGELOG.txt

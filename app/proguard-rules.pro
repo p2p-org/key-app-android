@@ -92,3 +92,7 @@
 -dontwarn com.lokalise.*
 -keep interface io.realm.annotations.RealmModule { *; }
 -keep class io.realm.annotations.RealmModule { *; }
+-keep class org.bouncycastle.jcajce.provider.** { *; }
+-keep class org.bouncycastle.jce.provider.** { *; }
+
+-dontwarn javax.naming.**

@@ -4,6 +4,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
@@ -21,12 +24,41 @@ abstract class BaseBottomSheet : BottomSheetDialogFragment() {
         requireDialog().window?.let { decorSystemBars = DecorSystemBarsDelegate(it) }
         decorSystemBars?.onCreate()
         updateSystemBarsStyle(customStatusBarStyle, customNavigationBarStyle)
+        setExpanded(isExpanded = true)
         applyWindowInsets(view)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         decorSystemBars = null
+    }
+
+    protected fun setExpanded(isExpanded: Boolean) {
+        if (!isExpanded) {
+            dialog?.setOnShowListener(null)
+            return
+        }
+
+        dialog?.setOnShowListener { dialogInterface ->
+            val dialogView = dialogInterface as BottomSheetDialog
+
+            val bottomSheet =
+                dialogView.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) as FrameLayout?
+            val behavior = BottomSheetBehavior.from(bottomSheet!!)
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_SETTLING -> behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        BottomSheetBehavior.STATE_HALF_EXPANDED -> behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                        else -> Unit
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
+        }
     }
 
     protected open fun updateSystemBarsStyle(
