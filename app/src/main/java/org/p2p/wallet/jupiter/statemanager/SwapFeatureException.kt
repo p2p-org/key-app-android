@@ -17,7 +17,9 @@ open class SwapFeatureException : Exception() {
 
     object SameTokens : SwapFeatureException()
 
-    object SmallTokenAAmount : SwapFeatureException()
+    data class SmallTokenAAmount(
+        val notValidAmount: BigDecimal
+    ) : SwapFeatureException()
 
     object RoutesNotFound : SwapFeatureException()
 }

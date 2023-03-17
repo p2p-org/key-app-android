@@ -11,4 +11,7 @@ sealed class SwapFailure(
         val route: JupiterSwapRoute,
         override val cause: Throwable
     ) : SwapFailure("$CREATE_SWAP_TRANSACTION_ERROR ${route.amountInLamports}")
+    data class TooSmallInputAmount(
+        override val cause: Throwable
+    ) : SwapFailure(cause.message.orEmpty())
 }
