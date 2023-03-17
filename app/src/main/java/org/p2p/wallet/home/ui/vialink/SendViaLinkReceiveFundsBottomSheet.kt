@@ -2,9 +2,15 @@ package org.p2p.wallet.home.ui.vialink
 
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.glide.GlideManager
+import org.p2p.uikit.utils.drawable.DrawableCellModel
+import org.p2p.uikit.utils.drawable.applyBackground
+import org.p2p.uikit.utils.drawable.shape.shapeCircle
+import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.loadUrl
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
@@ -37,6 +43,14 @@ class SendViaLinkReceiveFundsBottomSheet :
     private val glideManager: GlideManager by inject()
 
     override val presenter: SendViaLinkReceiveFundsContract.Presenter by inject { parametersOf(link) }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        DrawableCellModel(
+            drawable = shapeDrawable(shapeCircle()),
+            tint = R.color.bg_rain
+        ).applyBackground(binding.layoutClaimSuccess.imageViewIcon)
+    }
 
     override fun renderClaimTokenDetails(
         amountInTokens: String,
