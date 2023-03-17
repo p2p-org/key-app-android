@@ -17,6 +17,7 @@ import java.util.Locale
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogNewTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -185,6 +186,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun handleError(state: TransactionState.Error) {
         with(binding) {
             textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
+            textViewAmountUsd.setTextColorRes(R.color.text_rose)
             progressStateTransaction.setFailedState()
             progressStateTransaction.setDescriptionText(R.string.transaction_description_failed)
             buttonDone.setText(R.string.common_close)

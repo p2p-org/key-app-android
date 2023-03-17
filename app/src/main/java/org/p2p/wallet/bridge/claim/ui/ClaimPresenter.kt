@@ -16,7 +16,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.asApproximateUsd
-import org.p2p.core.utils.asNegativeUsdTransaction
+import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isNullOrZero
@@ -185,7 +185,7 @@ class ClaimPresenter(
                     date = transactionDate,
                     tokenUrl = tokenToClaim.iconUrl.orEmpty(),
                     amountTokens = amountTokens,
-                    amountUsd = amountUsd.asNegativeUsdTransaction(),
+                    amountUsd = amountUsd.asPositiveUsdTransaction(),
                     recipient = null,
                     totalFees = feeList.mapNotNull { it.toTextHighlighting() }
                 )
