@@ -29,4 +29,6 @@
     <string name="send_label">You will send</string>
     <string name="send_buy_or_receive_crypto">Buy or receive to continue</string>
 
+    <string name="emoji_money_bag">💰</string>
+
 </resources>

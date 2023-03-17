@@ -10,9 +10,11 @@ import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.core.R
 
-private const val DEFAULT_IMAGE_SIZE = 56
-
 class GlideManager(context: Context) {
+
+    companion object {
+        const val DEFAULT_IMAGE_SIZE = 56
+    }
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by lazy {
         Glide.with(context)
