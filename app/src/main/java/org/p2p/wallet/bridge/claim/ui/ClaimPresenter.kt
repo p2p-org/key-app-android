@@ -133,6 +133,8 @@ class ClaimPresenter(
         val totalFees: BigDecimal
         if (isFree) {
             totalFees = BigDecimal.ZERO
+        } else {
+            totalFees = feeList.sumOf { it.amountInToken(decimals) }
             claimDetails = ClaimDetails(
                 willGetAmount = BridgeAmount(
                     tokenSymbol,
@@ -148,8 +150,6 @@ class ClaimPresenter(
                 accountCreationFee = fees.createAccount.toBridgeAmount(tokenSymbol, decimals),
                 bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
             )
-        } else {
-            totalFees = feeList.sumOf { it.amountInToken(decimals) }
         }
 
         val finalValue = tokenToClaim.total - totalFees
