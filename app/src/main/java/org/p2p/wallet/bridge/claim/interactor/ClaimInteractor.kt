@@ -3,6 +3,7 @@ package org.p2p.wallet.bridge.claim.interactor
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.repository.EthereumRepository
+import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.claim.repository.EthereumClaimRepository
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -27,8 +28,8 @@ class ClaimInteractor(
         )
     }
 
-    suspend fun sendEthereumBundle(bundle: BridgeBundle) {
-        return ethereumClaimRepository.sendEthereumBundle(bundle)
+    suspend fun sendEthereumBundle(signatures: List<Signature>) {
+        return ethereumClaimRepository.sendEthereumBundle(signatures)
     }
 
     suspend fun getListOfEthereumBundleStatuses(): List<BridgeBundle> {

@@ -10,5 +10,5 @@ class BridgeBundleFeeResponse(
     @SerializedName("chain")
     val chain: String,
     @SerializedName("token")
-    val token: String
+    val tokenName: String
 )

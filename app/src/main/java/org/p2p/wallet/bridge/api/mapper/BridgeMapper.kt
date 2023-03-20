@@ -14,19 +14,22 @@ class BridgeMapper {
             bundleId = response.bundleId,
             userWallet = response.userWallet,
             recipient = response.recipient,
+            resultAmount = fromNetwork(response.resultAmount),
             token = response.erc20TokenAddress,
             expiresAt = response.expiresAt ?: System.currentTimeMillis(),
-            transactions = response.transactions,
+            transactions = response.transactions.orEmpty(),
             signatures = response.signatures.orEmpty(),
-            fees = fromNetwork(response.fees)
+            fees = fromNetwork(response.fees),
+            status = null,
+            compensationDeclineReason = response.compensationDeclineReason.orEmpty()
         )
     }
 
-    fun fromNetwork(response: BridgeBundleFeesResponse): BridgeBundleFees {
+    fun fromNetwork(response: BridgeBundleFeesResponse?): BridgeBundleFees {
         return BridgeBundleFees(
-            gasEth = fromNetwork(response.gasFee),
-            arbiterFee = fromNetwork(response.arbiterFee),
-            createAccount = fromNetwork(response.createAccountFee)
+            gasEth = fromNetwork(response?.gasFee),
+            arbiterFee = fromNetwork(response?.arbiterFee),
+            createAccount = fromNetwork(response?.createAccountFee)
         )
     }
 

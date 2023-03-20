@@ -65,15 +65,3 @@ class TransactionBuilder(
         }
     }
 }
-
-fun decode(transaction: ByteArray, address: EthAddress): RawTransaction {
-    val ar1 = transaction[0]
-    return RawTransaction(
-        nonce = RLP.decodeLong(transaction, 0),
-        gasPrice = GasPrice.Legacy(RLP.decodeLong(transaction, 1)),
-        gasLimit = RLP.decodeLong(transaction, 2),
-        to = address,
-        value = RLP.decodeInt(RLP.decodeToOneItem(transaction, 4)).toBigInteger(),
-        data = RLP.decodeToOneItem(transaction, 5).rlpData ?: byteArrayOf()
-    )
-}

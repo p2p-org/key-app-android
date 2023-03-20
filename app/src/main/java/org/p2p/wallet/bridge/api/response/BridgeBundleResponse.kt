@@ -16,14 +16,18 @@ class BridgeBundleResponse(
     val recipient: SolAddress,
     @SerializedName("token")
     val erc20TokenAddress: EthAddress,
+    @SerializedName("result_amount")
+    val resultAmount: BridgeBundleFeeResponse? = null,
+    @SerializedName("compensation_decline_reason")
+    val compensationDeclineReason: String? = null,
     @SerializedName("expires_at")
     val expiresAt: Long? = null,
     @SerializedName("transactions")
-    val transactions: List<HexString>,
+    val transactions: List<HexString>? = null,
     @SerializedName("signatures")
-    val signatures: List<Signature>? = null,
+    var signatures: List<Signature>? = null,
     @SerializedName("fees")
-    val fees: BridgeBundleFeesResponse,
+    val fees: BridgeBundleFeesResponse? = null,
     @SerializedName("status")
-    val status: ClaimStatus? = null
+    val status: ClaimStatus? = null,
 )

@@ -6,7 +6,6 @@ import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Date
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -24,6 +23,7 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
+import org.p2p.core.wrapper.HexString
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -31,18 +31,17 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.model.BridgeAmount
-import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.model.BridgeBundleFee
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.common.date.dateMilli
-import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPx
 
@@ -60,7 +59,9 @@ class ClaimPresenter(
 
     private var refreshJob: Job? = null
     private var claimDetails: ClaimDetails? = null
-    private var latestBundle: BridgeBundle? = null
+    private var latestTransactions: List<HexString> = emptyList()
+    private var latestBundleId: String = emptyString()
+    private var refreshJobDelayTimeInMillis = DEFAULT_DELAY_IN_MILLIS
     private var sol: Token.Active? = null
 
     override fun attach(view: ClaimContract.View) {
@@ -77,11 +78,11 @@ class ClaimPresenter(
         }
     }
 
-    private fun startRefreshJob(delayMillis: Long? = null) {
+    private fun startRefreshJob(delayMillis: Long = 0) {
         refreshJob?.cancel()
         refreshJob = launch {
-            if (delayMillis != null) delay(delayMillis)
-            latestBundle = null
+            delay(delayMillis)
+            latestTransactions = emptyList()
             claimDetails = null
             view?.setClaimButtonState(isButtonEnabled = false)
             view?.showFee(
@@ -94,18 +95,17 @@ class ClaimPresenter(
                     )
                 )
             )
-            val total = tokenToClaim.total
-            val totalToClaim = total.toLamports(tokenToClaim.decimals)
+            val totalToClaim = tokenToClaim.total.toLamports(tokenToClaim.decimals)
             try {
-                val bundle = claimInteractor.getEthereumBundle(
-                    tokenToClaim.getEthAddress().takeIf { !tokenToClaim.isEth },
-                    totalToClaim.toString()
-                )
-                val timeExpires = bundle.expiresAt.seconds.inWholeMilliseconds.toZonedDateTime().dateMilli()
-                val timerToSet = timeExpires - ZonedDateTime.now().dateMilli()
-                parseFees(bundle.fees)
-                latestBundle = bundle
-                startRefreshJob(timerToSet)
+                claimInteractor.getEthereumBundle(
+                    erc20Token = tokenToClaim.getEthAddress().takeIf { !tokenToClaim.isEth },
+                    amount = totalToClaim.toString()
+                ).apply {
+                    latestBundleId = bundleId
+                    refreshJobDelayTimeInMillis = getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
+                    latestTransactions = transactions
+                    parseFees(fees)
+                }
             } catch (error: Throwable) {
                 if (error.isConnectionError()) {
                     view?.showUiKitSnackBar(messageResId = R.string.common_offline_error)
@@ -113,9 +113,8 @@ class ClaimPresenter(
                 Timber.e(error, "Error on getting bundle for claim")
                 view?.showFee(TextViewCellModel.Raw(TextContainer(R.string.bridge_claim_fees_unavailable)))
                 view?.setClaimButtonState(isButtonEnabled = false)
-                latestBundle = null
-                claimDetails = null
-                startRefreshJob(DEFAULT_DELAY_IN_MILLIS)
+            } finally {
+                startRefreshJob(refreshJobDelayTimeInMillis)
             }
         }
     }
@@ -124,7 +123,7 @@ class ClaimPresenter(
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals
         val feeList = listOf(fees.arbiterFee, fees.gasEth, fees.createAccount)
-        val fee: BigDecimal = feeList.sumOf { it?.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
+        val fee: BigDecimal = feeList.sumOf { it.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
         val feeValue = if (fee == BigDecimal.ZERO) {
             resources.getString(R.string.bridge_claim_fees_free)
         } else {
@@ -144,7 +143,7 @@ class ClaimPresenter(
             ),
             bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
         )
-        val totalFees = feeList.sumOf { it?.amountInToken(decimals) ?: BigDecimal.ZERO }
+        val totalFees = feeList.sumOf { it.amountInToken(decimals) ?: BigDecimal.ZERO }
         val finalValue = tokenToClaim.total - totalFees
         view?.showClaimButtonValue("${finalValue.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}")
         view?.setClaimButtonState(isButtonEnabled = true)
@@ -162,17 +161,13 @@ class ClaimPresenter(
     }
 
     override fun onFeeClicked() {
-        claimDetails?.let {
-            view?.showClaimFeeInfo(it)
-        }
+        view?.showClaimFeeInfo(claimDetails ?: return)
     }
 
     override fun onSendButtonClicked() {
-        val lastBundle = latestBundle ?: return
         appScope.launch {
             try {
-                val signedTransactions = lastBundle.transactions.map { ethereumRepository.signTransaction(it) }
-                lastBundle.signatures = signedTransactions.map { it.first }
+                val signedTransactions = latestTransactions.map { ethereumRepository.signTransaction(it) }
                 val transactionDate = Date()
                 val amountTokens = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}"
                 val amountUsd = tokenToClaim.totalInUsd.orZero()
@@ -189,16 +184,16 @@ class ClaimPresenter(
                     recipient = null,
                     totalFees = feeList.mapNotNull { it.toTextHighlighting() }
                 )
-                view?.showProgressDialog(lastBundle.bundleId, progressDetails)
+                view?.showProgressDialog(latestBundleId, progressDetails)
 
-                claimInteractor.sendEthereumBundle(lastBundle)
+                claimInteractor.sendEthereumBundle(signedTransactions)
 
-                val transactionState = TransactionState.ClaimSuccess(lastBundle.bundleId, tokenToClaim.tokenSymbol)
-                transactionManager.emitTransactionState(lastBundle.bundleId, transactionState)
+                val transactionState = TransactionState.ClaimSuccess(latestBundleId, tokenToClaim.tokenSymbol)
+                transactionManager.emitTransactionState(latestBundleId, transactionState)
             } catch (e: BridgeResult.Error) {
                 val message = e.getErrorMessage { res -> resources.getString(res) }
-                transactionManager.emitTransactionState(lastBundle.bundleId, TransactionState.Error(message))
-                Timber.e(e)
+                transactionManager.emitTransactionState(latestBundleId, TransactionState.Error(message))
+                Timber.e(e, "Failed to send signed bundle")
             }
         }
     }
