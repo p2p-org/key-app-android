@@ -438,10 +438,6 @@ class HomePresenter(
     private fun getUserBalance(): BigDecimal =
         state.tokens
             .mapNotNull(Token.Active::totalInUsd)
-            .plus(
-                state.ethereumTokens
-                    .mapNotNull(Token.Eth::totalInUsd)
-            )
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 
