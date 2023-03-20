@@ -105,6 +105,8 @@ class ClaimPresenter(
                     refreshJobDelayTimeInMillis = getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
                     latestTransactions = transactions
                     parseFees(fees, compensationDeclineReason.isEmpty())
+                    val finalValue = resultAmount.toBridgeAmount(tokenToClaim.tokenSymbol, tokenToClaim.decimals)
+                    view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
                 }
             } catch (error: Throwable) {
                 if (error.isConnectionError()) {
@@ -130,11 +132,7 @@ class ClaimPresenter(
             fee.asApproximateUsd(withBraces = false)
         }
         view?.showFee(TextViewCellModel.Raw(TextContainer(feeValue)))
-        val totalFees: BigDecimal
-        if (isFree) {
-            totalFees = BigDecimal.ZERO
-        } else {
-            totalFees = feeList.sumOf { it.amountInToken(decimals) }
+        if (!isFree) {
             claimDetails = ClaimDetails(
                 willGetAmount = BridgeAmount(
                     tokenSymbol,
@@ -151,9 +149,6 @@ class ClaimPresenter(
                 bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
             )
         }
-
-        val finalValue = tokenToClaim.total - totalFees
-        view?.showClaimButtonValue("${finalValue.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}")
         view?.setClaimButtonState(isButtonEnabled = true)
     }
 
