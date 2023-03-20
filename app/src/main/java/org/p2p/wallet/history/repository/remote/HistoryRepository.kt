@@ -5,11 +5,13 @@ import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 
 class HistoryRepository(
     private val repositories: List<HistoryRemoteRepository>,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val localRepository: TransactionDetailsLocalRepository,
 ) : HistoryRemoteRepository {
 
     override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
@@ -29,7 +31,7 @@ class HistoryRepository(
                 return foundItem
             }
         }
-        return null
+        return localRepository.findPendingTransaction(id)
     }
 
     override fun getPagingState(mintAddress: String?): HistoryPagingState {
@@ -59,7 +61,14 @@ class HistoryRepository(
             if (errorMessage.isNotEmpty()) {
                 return@withContext HistoryPagingResult.Error(Throwable(errorMessage))
             }
-            return@withContext newTransactions.sortedByDescending { transaction ->
+            val newTransactionIds = newTransactions.map { it.getHistoryTransactionId() }
+            localRepository.getAllPendingTransactions().forEach {
+                if (it.getHistoryTransactionId() in newTransactionIds)
+                    localRepository.removePendingTransaction(it.getHistoryTransactionId())
+            }
+            val pendingTransactions = localRepository.getAllPendingTransactions()
+
+            return@withContext (pendingTransactions + newTransactions).sortedByDescending { transaction ->
                 transaction.date.dateMilli()
             }.let(HistoryPagingResult::Success)
         }

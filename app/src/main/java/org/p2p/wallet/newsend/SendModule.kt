@@ -42,7 +42,21 @@ object SendModule : InjectionModule {
             )
         }
         factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class
-        factoryOf(::NewSendPresenter) bind NewSendContract.Presenter::class
+        factory {
+            NewSendPresenter(
+                recipientAddress = get(),
+                userInteractor = get(),
+                sendInteractor = get(),
+                resources = get(),
+                tokenKeyProvider = get(),
+                transactionManager = get(),
+                connectionStateProvider = get(),
+                newSendAnalytics = get(),
+                appScope = get(),
+                sendModeProvider = get(),
+                historyInteractor = get()
+            )
+        } bind NewSendContract.Presenter::class
         factoryOf(::NewSendDetailsPresenter) bind NewSendDetailsContract.Presenter::class
 
         factoryOf(::SendLinkGenerationPresenter) bind SendLinkGenerationContract.Presenter::class

@@ -82,7 +82,7 @@ object HistoryModule : InjectionModule {
                     hiddenSellTransactionsStorageContract = get()
                 )
             )
-            HistoryRepository(remotes, get())
+            HistoryRepository(remotes, get(), get())
         }
     }
 }
