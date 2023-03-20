@@ -1,8 +1,8 @@
 package org.p2p.ethereumkit.internal.models
 
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.spv.core.toInt
 import kotlin.math.floor
+import org.p2p.core.wrapper.eth.CryptoUtils
 import org.p2p.core.wrapper.eth.EthAddress
 
 class BloomFilter(val filter: String) {

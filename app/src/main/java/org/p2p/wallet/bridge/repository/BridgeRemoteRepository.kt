@@ -12,7 +12,7 @@ class BridgeRemoteRepository(
     private val api: RpcApi,
     private val gson: Gson,
     private val errorMapper: BridgeServiceErrorMapper,
-    private val urlProvider: NetworkServicesUrlProvider,
+    urlProvider: NetworkServicesUrlProvider,
 ) : BridgeRepository {
     private val bridgeStringUrl = urlProvider.loadBridgesServiceEnvironment().baseUrl
     private val bridgeUrl = URI(bridgeStringUrl)

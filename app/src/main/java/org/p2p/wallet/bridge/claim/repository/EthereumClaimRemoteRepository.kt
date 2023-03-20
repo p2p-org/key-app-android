@@ -4,10 +4,14 @@ import androidx.annotation.IntRange
 import java.util.Optional
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.api.mapper.BridgeMapper
 import org.p2p.wallet.bridge.api.request.GetEthereumBundleRpcRequest
+import org.p2p.wallet.bridge.api.request.GetEthereumBundleStatusRpcRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumFeesRpcRequest
+import org.p2p.wallet.bridge.api.request.GetListOfEthereumBundleStatusesRpcRequest
 import org.p2p.wallet.bridge.api.request.SendEthereumBundleRpcRequest
+import org.p2p.wallet.bridge.api.response.BridgeBundleResponse
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.repository.BridgeRepository
@@ -33,6 +37,7 @@ class EthereumClaimRemoteRepository(
         return mapper.fromNetwork(result.data)
     }
 
+    private var lastBundle: BridgeBundleResponse? = null
     override suspend fun getEthereumBundle(
         ethAddress: EthAddress,
         recipientAddress: SolAddress,
@@ -49,14 +54,35 @@ class EthereumClaimRemoteRepository(
             slippage = slippage
         )
         val result = bridgeRepository.launch(rpcRequest)
+        lastBundle = result.data
         return mapper.fromNetwork(result.data)
     }
 
-    override suspend fun sendEthereumBundle(bundle: BridgeBundle) {
+    override suspend fun sendEthereumBundle(signatures: List<Signature>) {
+        val signedBundle = lastBundle ?: return
+        signedBundle.signatures = signatures
         val rpcRequest = SendEthereumBundleRpcRequest(
-            bundleRequest = bundle
+            bundleRequest = signedBundle
         )
         val result = bridgeRepository.launch(rpcRequest)
         return result.data
+    }
+
+    override suspend fun getEthereumBundleStatus(bundleId: String): BridgeBundle {
+        val rpcRequest = GetEthereumBundleStatusRpcRequest(
+            bundleId = bundleId
+        )
+        val result = bridgeRepository.launch(rpcRequest)
+        return mapper.fromNetwork(result.data)
+    }
+
+    override suspend fun getListOfEthereumBundleStatuses(
+        ethAddress: EthAddress,
+    ): List<BridgeBundle> {
+        val rpcRequest = GetListOfEthereumBundleStatusesRpcRequest(
+            ethAddress = ethAddress
+        )
+        val result = bridgeRepository.launch(rpcRequest)
+        return result.data.map { mapper.fromNetwork(it) }
     }
 }

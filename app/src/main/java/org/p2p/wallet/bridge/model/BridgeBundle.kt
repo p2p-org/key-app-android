@@ -1,25 +1,28 @@
 package org.p2p.wallet.bridge.model
 
-import com.google.gson.annotations.SerializedName
+import kotlin.time.Duration.Companion.seconds
 import org.p2p.core.token.SolAddress
-import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.core.wrapper.HexString
+import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.internal.models.Signature
+import org.p2p.wallet.common.date.dateMilli
+import org.p2p.wallet.common.date.toZonedDateTime
+import org.p2p.wallet.bridge.claim.model.ClaimStatus
 
 data class BridgeBundle(
-    @SerializedName("bundle_id")
     val bundleId: String,
-    @SerializedName("user_wallet")
     val userWallet: EthAddress,
-    @SerializedName("recipient")
     val recipient: SolAddress,
-    @SerializedName("token")
+    val resultAmount: BridgeBundleFee,
     val token: EthAddress,
-    @SerializedName("expires_at")
+    val compensationDeclineReason: String,
     val expiresAt: Long,
-    @SerializedName("transactions")
     val transactions: List<HexString>,
-    @SerializedName("signatures")
-    val signatures: List<HexString>,
-    @SerializedName("fees")
+    var signatures: List<Signature>,
     val fees: BridgeBundleFees,
-)
+    val status: ClaimStatus? = null
+) {
+    fun getExpirationDateInMillis(): Long {
+        return expiresAt.seconds.inWholeMilliseconds.toZonedDateTime().dateMilli()
+    }
+}

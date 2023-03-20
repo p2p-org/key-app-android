@@ -10,7 +10,8 @@ class RawTransaction(
     val to: EthAddress,
     val value: BigInteger,
     val nonce: Long,
-    val data: ByteArray = ByteArray(0)
+    val data: ByteArray = ByteArray(0),
+    var chainId: Int? = null
 ) {
 
     override fun toString(): String {

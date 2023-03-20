@@ -6,6 +6,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
@@ -13,7 +14,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.interactor.SearchInteractor
-import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SearchState
@@ -205,12 +205,8 @@ class NewSearchPresenter(
         renderCurrentState()
     }
 
-    private fun searchByEthereumAddress(address: String) {
-        // TODO make searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance(), initialToken)
-        val newAddresses = SearchResult.AddressFound(
-            addressState = AddressState(address),
-            networkType = NetworkType.ETHEREUM
-        )
+    private suspend fun searchByEthereumAddress(address: String) {
+        val newAddresses = searchInteractor.searchByEthAddress(EthAddress(address))
         state.updateSearchResult(address, listOf(newAddresses))
         renderCurrentState()
     }

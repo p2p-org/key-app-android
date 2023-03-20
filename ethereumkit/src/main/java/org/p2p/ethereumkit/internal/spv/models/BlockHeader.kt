@@ -4,10 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.p2p.ethereumkit.internal.core.toHexString
 import org.p2p.ethereumkit.internal.spv.core.toLong
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.core.wrapper.eth.rlp.RLP
 import org.p2p.core.wrapper.eth.rlp.RLPList
 import java.math.BigInteger
+import org.p2p.core.wrapper.eth.CryptoUtils
 
 @Entity
 class BlockHeader {

@@ -83,6 +83,7 @@ object HomeModule : InjectionModule {
                 sellEnabledFeatureToggle = get(),
                 ethAddressEnabledFeatureToggle = get(),
                 ethereumRepository = get(),
+                claimInteractor = get(),
                 intercomDeeplinkManager = get(),
                 seedPhraseProvider = get()
             )

@@ -25,7 +25,7 @@ class JupiterSwapInteractor(
     class LowSlippageRpcError(cause: ServerException) : Throwable(cause.message)
 
     sealed interface JupiterSwapTokensResult {
-        object Success : JupiterSwapTokensResult
+        data class Success(val signature: String) : JupiterSwapTokensResult
         data class Failure(override val cause: Throwable) : Throwable(), JupiterSwapTokensResult
     }
 
@@ -44,7 +44,7 @@ class JupiterSwapInteractor(
             encoding = Encoding.BASE58
         )
         Timber.i("Swap tokens success: $firstTransactionSignature")
-        JupiterSwapTokensResult.Success
+        JupiterSwapTokensResult.Success(firstTransactionSignature)
     } catch (error: ServerException) {
         val domainErrorType = error.domainErrorType
         if (domainErrorType != null &&

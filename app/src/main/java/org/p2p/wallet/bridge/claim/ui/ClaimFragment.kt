@@ -1,5 +1,6 @@
 package org.p2p.wallet.bridge.claim.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -16,8 +17,11 @@ import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.dialogs.ClaimInfoBottomSheet
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentClaimBinding
+import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -44,6 +48,13 @@ class ClaimFragment :
     private val glideManager: GlideManager by inject()
 
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
+
+    private var listener: RootListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = context as? RootListener
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -87,6 +98,11 @@ class ClaimFragment :
         binding.buttonBottom.text = getString(R.string.bridge_claim_bottom_button_format, tokenAmountToClaim)
     }
 
+    override fun showProgressDialog(bundleId: String, data: NewShowProgress) {
+        listener?.showTransactionProgress(bundleId, data)
+        popBackStackTo(target = ClaimFragment::class, inclusive = true)
+    }
+
     override fun setClaimButtonState(isButtonEnabled: Boolean) {
         with(binding.buttonBottom) {
             isEnabled = isButtonEnabled
@@ -98,5 +114,10 @@ class ClaimFragment :
                 setBackgroundColor(getColor(R.color.bg_rain))
             }
         }
+    }
+
+    override fun onDetach() {
+        listener = null
+        super.onDetach()
     }
 }
