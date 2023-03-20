@@ -1,5 +1,7 @@
 package org.p2p.wallet.user.repository.prices.impl
 
+import retrofit2.HttpException
+import timber.log.Timber
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.home.api.CoinGeckoApi
 import org.p2p.wallet.home.model.TokenPrice
@@ -11,6 +13,11 @@ class TokenPricesCoinGeckoRepository(
     private val coinGeckoApi: CoinGeckoApi,
     private val dispatchers: CoroutineDispatchers
 ) : TokenPricesRemoteRepository {
+
+    private class RequestRateLimitMet(cause: HttpException) : Throwable(
+        message = "Rate limit for coin_gecko met",
+        cause = cause
+    )
 
     override suspend fun getTokenPriceByIds(
         tokenIds: List<TokenId>,
@@ -30,10 +37,18 @@ class TokenPricesCoinGeckoRepository(
     private suspend fun loadPrices(tokenIds: List<TokenId>, targetCurrencySymbol: String): List<TokenPrice> =
         withContext(dispatchers.io) {
             val tokenIdsForRequest = tokenIds.joinToString(",") { it.id }
-            coinGeckoApi.getTokenPrices(
-                tokenIds = tokenIdsForRequest,
-                targetCurrency = targetCurrencySymbol.lowercase()
-            )
-                .map { TokenPrice(tokenId = it.id, price = it.currentPrice) }
+            try {
+                coinGeckoApi.getTokenPrices(
+                    tokenIds = tokenIdsForRequest,
+                    targetCurrency = targetCurrencySymbol.lowercase()
+                )
+                    .map { TokenPrice(tokenId = it.id, price = it.currentPrice) }
+            } catch (httpException: HttpException) {
+                val errorCode = httpException.code()
+                if (errorCode == 429 || errorCode == 403) {
+                    Timber.e(RequestRateLimitMet(httpException))
+                }
+                throw httpException
+            }
         }
 }
