@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.formatToken
@@ -40,7 +40,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPx
@@ -50,7 +50,7 @@ const val DEFAULT_DELAY_IN_MILLIS = 30_000L
 class ClaimPresenter(
     private val tokenToClaim: Token.Eth,
     private val claimInteractor: ClaimInteractor,
-    private val userInteractor: UserInteractor,
+    private val userLocalRepository: UserLocalRepository,
     private val ethereumRepository: EthereumRepository,
     private val transactionManager: TransactionManager,
     private val resources: Resources,
@@ -62,12 +62,12 @@ class ClaimPresenter(
     private var latestTransactions: List<HexString> = emptyList()
     private var latestBundleId: String = emptyString()
     private var refreshJobDelayTimeInMillis = DEFAULT_DELAY_IN_MILLIS
-    private var sol: Token.Active? = null
+    private var eth: TokenData? = null
 
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
         launch {
-            sol = userInteractor.getUserSolToken()
+            eth = userLocalRepository.findTokenData(Constants.WRAPPED_ETH_MINT)
         }
         startRefreshJob()
         view.apply {
@@ -104,7 +104,7 @@ class ClaimPresenter(
                     latestBundleId = bundleId
                     refreshJobDelayTimeInMillis = getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
                     latestTransactions = transactions
-                    parseFees(fees)
+                    parseFees(fees, compensationDeclineReason.isEmpty())
                 }
             } catch (error: Throwable) {
                 if (error.isConnectionError()) {
@@ -119,31 +119,35 @@ class ClaimPresenter(
         }
     }
 
-    private fun parseFees(fees: BridgeBundleFees) {
+    private fun parseFees(fees: BridgeBundleFees, isFree: Boolean) {
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals
         val feeList = listOf(fees.arbiterFee, fees.gasEth, fees.createAccount)
         val fee: BigDecimal = feeList.sumOf { it.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
-        val feeValue = if (fee == BigDecimal.ZERO) {
+        val feeValue = if (isFree) {
             resources.getString(R.string.bridge_claim_fees_free)
         } else {
             fee.asApproximateUsd(withBraces = false)
         }
         view?.showFee(TextViewCellModel.Raw(TextContainer(feeValue)))
-        claimDetails = ClaimDetails(
-            willGetAmount = BridgeAmount(
-                tokenSymbol,
-                tokenToClaim.total,
-                tokenToClaim.totalInUsd
-            ),
-            networkFee = fees.gasEth.toBridgeAmount(tokenSymbol, decimals),
-            accountCreationFee = fees.createAccount.toBridgeAmount(
-                tokenSymbol = sol?.tokenSymbol ?: Constants.SOL_SYMBOL,
-                decimals = sol?.decimals ?: DEFAULT_DECIMAL
-            ),
-            bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
-        )
-        val totalFees = feeList.sumOf { it.amountInToken(decimals) ?: BigDecimal.ZERO }
+        if (!isFree) {
+            claimDetails = ClaimDetails(
+                willGetAmount = BridgeAmount(
+                    tokenSymbol,
+                    tokenToClaim.total,
+                    tokenToClaim.totalInUsd
+                ),
+                networkFee = eth?.let { ethTokenData ->
+                    fees.gasEth.toBridgeAmount(
+                        tokenSymbol = ethTokenData.symbol,
+                        decimals = ethTokenData.decimals
+                    )
+                } ?: fees.gasEth.toBridgeAmount(tokenSymbol, decimals),
+                accountCreationFee = fees.createAccount.toBridgeAmount(tokenSymbol, decimals),
+                bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
+            )
+        }
+        val totalFees = feeList.sumOf { it.amountInToken(decimals) }
         val finalValue = tokenToClaim.total - totalFees
         view?.showClaimButtonValue("${finalValue.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}")
         view?.setClaimButtonState(isButtonEnabled = true)
