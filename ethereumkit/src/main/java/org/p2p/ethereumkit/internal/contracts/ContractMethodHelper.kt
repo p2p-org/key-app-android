@@ -1,11 +1,11 @@
 package org.p2p.ethereumkit.internal.contracts
 
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.spv.core.toBigInteger
 import org.p2p.ethereumkit.internal.spv.core.toInt
 import java.math.BigInteger
 import kotlin.math.max
+import org.p2p.core.wrapper.eth.CryptoUtils
 
 object ContractMethodHelper {
     fun getMethodId(methodSignature: String): ByteArray {

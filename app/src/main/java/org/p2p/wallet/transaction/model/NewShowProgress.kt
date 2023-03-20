@@ -1,9 +1,9 @@
 package org.p2p.wallet.transaction.model
 
 import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.newsend.model.SendFeeTotal
 import java.util.Date
+import kotlinx.parcelize.Parcelize
+import org.p2p.core.model.TextHighlighting
 
 @Parcelize
 class NewShowProgress(
@@ -11,6 +11,6 @@ class NewShowProgress(
     val tokenUrl: String,
     val amountTokens: String,
     val amountUsd: String,
-    val recipient: String,
-    val totalFee: SendFeeTotal
+    val recipient: String?,
+    val totalFees: List<TextHighlighting>?
 ) : Parcelable

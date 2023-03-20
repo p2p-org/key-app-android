@@ -1,6 +1,5 @@
 package org.p2p.wallet.bridge.api.mapper
 
-import org.p2p.core.utils.orZero
 import org.p2p.wallet.bridge.api.response.BridgeBundleFeesResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleFeeResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleResponse
@@ -15,26 +14,31 @@ class BridgeMapper {
             bundleId = response.bundleId,
             userWallet = response.userWallet,
             recipient = response.recipient,
+            resultAmount = fromNetwork(response.resultAmount),
             token = response.erc20TokenAddress,
             expiresAt = response.expiresAt ?: System.currentTimeMillis(),
-            transactions = response.transactions,
+            transactions = response.transactions.orEmpty(),
             signatures = response.signatures.orEmpty(),
-            fees = fromNetwork(response.fees)
+            fees = fromNetwork(response.fees),
+            status = null,
+            compensationDeclineReason = response.compensationDeclineReason.orEmpty()
         )
     }
 
-    fun fromNetwork(response: BridgeBundleFeesResponse): BridgeBundleFees {
+    fun fromNetwork(response: BridgeBundleFeesResponse?): BridgeBundleFees {
         return BridgeBundleFees(
-            gasEth = fromNetwork(response.gasFee),
-            arbiterFee = fromNetwork(response.arbiterFee),
-            createAccount = fromNetwork(response.createAccountFee)
+            gasEth = fromNetwork(response?.gasFee),
+            arbiterFee = fromNetwork(response?.arbiterFee),
+            createAccount = fromNetwork(response?.createAccountFee)
         )
     }
 
     fun fromNetwork(response: BridgeBundleFeeResponse?): BridgeBundleFee {
         return BridgeBundleFee(
-            amount = response?.amount.orZero(),
-            amountInUsd = response?.usdAmount.orZero()
+            amount = response?.amount,
+            amountInUsd = response?.usdAmount,
+            chain = response?.chain,
+            token = response?.tokenName
         )
     }
 }
