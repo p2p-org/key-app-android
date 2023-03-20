@@ -23,10 +23,3 @@ runs:
     - name: Make gradlew executable
       shell: bash
       run: chmod +x ./gradlew
-
-    - name: Setup version
-      shell: bash
-      run: |
-        ./gradlew setVersionBuild -Pversion=${{ github.run_number }}
-        echo "Set build version to ${{ github.run_number }}"
-

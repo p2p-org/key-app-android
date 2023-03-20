@@ -1,5 +1,12 @@
 package org.p2p.wallet.moonpay.ui.new
 
+import android.content.res.Resources
+import timber.log.Timber
+import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.USD_SYMBOL
@@ -11,7 +18,6 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
@@ -30,12 +36,6 @@ import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
-import timber.log.Timber
-import java.math.BigDecimal
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 500L
 
@@ -44,7 +44,7 @@ class NewBuyPresenter(
     private val buyAnalytics: BuyAnalytics,
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
-    private val resourcesProvider: ResourcesProvider,
+    private val resources: Resources,
     private val buyInteractor: BuyInteractor,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     bankTransferFeatureToggle: BuyWithTransferFeatureToggle,
@@ -323,7 +323,7 @@ class NewBuyPresenter(
             val minAmountWithSymbol = "$symbol ${minAmount.formatFiat()}"
             buyDetailsState = BuyDetailsState.MinAmountError(minAmountWithSymbol)
             showMessage(
-                resourcesProvider.getString(R.string.buy_min_transaction_format).format(minAmountWithSymbol)
+                resources.getString(R.string.buy_min_transaction_format).format(minAmountWithSymbol)
             )
             clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
         }
@@ -336,7 +336,7 @@ class NewBuyPresenter(
             val minAmountWithSymbol = "$symbol ${maxAmount.formatFiat()}"
             buyDetailsState = BuyDetailsState.MaxAmountError(minAmountWithSymbol)
             showMessage(
-                resourcesProvider.getString(R.string.buy_max_transaction_format).format(minAmountWithSymbol)
+                resources.getString(R.string.buy_max_transaction_format).format(minAmountWithSymbol)
             )
             clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
         }
@@ -402,9 +402,9 @@ class NewBuyPresenter(
         val maxAmount = loadedBuyCurrency.maxAmount
         val minAmount = loadedBuyCurrency.minAmount
         val symbol = selectedCurrency.code.symbolFromCode()
-        val minAmountMessage = resourcesProvider.getString(R.string.buy_min_transaction_format)
+        val minAmountMessage = resources.getString(R.string.buy_min_transaction_format)
             .format("$symbol $minAmount")
-        val maxAmountMessage = resourcesProvider.getString(R.string.buy_max_error_format)
+        val maxAmountMessage = resources.getString(R.string.buy_max_error_format)
             .format("$symbol $maxAmount")
         val message = if (isAmountLower) {
             minAmountMessage

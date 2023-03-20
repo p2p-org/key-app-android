@@ -1,6 +1,6 @@
 # Key App (Android)
 
-![](https://cdn.discordapp.com/attachments/737610668726812763/777332771600990259/wallets_android2x.png)
+![Frame 1523524](https://user-images.githubusercontent.com/19359742/219026384-e72e5f10-6905-4459-b6ff-376e614dad0c.png)
 
 ## Getting Started
 - Download the latest Android Studio.

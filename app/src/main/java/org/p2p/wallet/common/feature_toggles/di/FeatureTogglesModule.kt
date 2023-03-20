@@ -11,14 +11,17 @@ import org.p2p.wallet.common.feature_toggles.remote_config.FeatureTogglesValuesS
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDebounceFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSwapEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
@@ -38,11 +41,14 @@ object FeatureTogglesModule : InjectionModule {
                 get<BuyWithTransferFeatureToggle>(),
                 get<SettingsNetworkListFeatureToggle>(),
                 get<NetworkObservationFeatureToggle>(),
+                get<SendViaLinkFeatureToggle>(),
                 get<SolendEnabledFeatureToggle>(),
                 get<UsernameDomainFeatureToggle>(),
                 get<RegisterUsernameEnabledFeatureToggle>(),
                 get<RegisterUsernameSkipEnabledFeatureToggle>(),
-                get<SellEnabledFeatureToggle>()
+                get<SellEnabledFeatureToggle>(),
+                get<NewSwapEnabledFeatureToggle>(),
+                get<EthAddressEnabledFeatureToggle>()
             ).toList()
         }
 
@@ -52,6 +58,7 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::SettingsNetworkListFeatureToggle)
         factoryOf(::SolendEnabledFeatureToggle)
         factoryOf(::NetworkObservationFeatureToggle)
+        factoryOf(::SendViaLinkFeatureToggle)
         factoryOf(::NetworkObservationPercentFeatureToggle)
         factoryOf(::NetworkObservationFrequencyFeatureToggle)
         factoryOf(::NetworkObservationDebounceFeatureToggle)
@@ -59,5 +66,7 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::RegisterUsernameEnabledFeatureToggle)
         factoryOf(::RegisterUsernameSkipEnabledFeatureToggle)
         factoryOf(::SellEnabledFeatureToggle)
+        factoryOf(::NewSwapEnabledFeatureToggle)
+        factoryOf(::EthAddressEnabledFeatureToggle)
     }
 }

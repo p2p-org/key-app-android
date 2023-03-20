@@ -1,0 +1,18 @@
+apply plugin: 'com.android.application'
+
+android {
+    buildTypes {
+        def torusProperties = new PropertiesFile(rootProject.file("torus.properties"), logger)
+
+        debug {
+            resValue "string", "torusVerifier", "${torusProperties.getOrThrow('TORUS_VERIFIER_DEBUG')}"
+        }
+        feature {
+            resValue "string", "torusVerifier", "${torusProperties.getOrThrow('TORUS_VERIFIER_FEATURE')}"
+        }
+        release {
+            resValue "string", "torusVerifier", "${torusProperties.getOrThrow('TORUS_VERIFIER_RELEASE')}"
+            resValue "string", "torusSubVerifier", "${torusProperties.getOrThrow('TORUS_SUB_VERIFIER_RELEASE_STORE')}"
+        }
+    }
+}

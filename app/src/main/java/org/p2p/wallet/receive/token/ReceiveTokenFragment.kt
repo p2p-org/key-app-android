@@ -25,7 +25,7 @@ import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.root.SystemIconsStyle
-import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack

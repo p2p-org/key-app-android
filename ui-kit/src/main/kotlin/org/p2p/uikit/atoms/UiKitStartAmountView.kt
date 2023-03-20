@@ -1,16 +1,17 @@
 package org.p2p.uikit.atoms
 
-import android.content.Context
-import android.util.AttributeSet
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
+import android.content.Context
+import android.util.AttributeSet
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetStartAmountViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.uikit.utils.withTextOrGone
 
+@Deprecated("use [UiKitFinanceBlockView] without [FinanceBlockCellModel.rightSideCellModel]")
 class UiKitStartAmountView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -41,6 +42,15 @@ class UiKitStartAmountView @JvmOverloads constructor(
             binding.subSubtitleTextView.withTextOrGone(value)
             field = value
         }
+
+    fun setSubtitleDrawable(
+        @DrawableRes left: Int = 0,
+        @DrawableRes top: Int = 0,
+        @DrawableRes right: Int = 0,
+        @DrawableRes bottom: Int = 0
+    ) {
+        binding.subtitleTextView.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom)
+    }
 
     private val binding = inflateViewBinding<WidgetStartAmountViewBinding>()
 

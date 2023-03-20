@@ -56,7 +56,7 @@ class TokenHiddenViewHolder(
     fun bindBalance(item: HomeElementItem.Hidden) {
         val token = item.token
         binding.valueTextView withTextOrGone token.getFormattedUsdTotal()
-        binding.totalTextView.text = token.getTotal(includeSymbol = true)
+        binding.totalTextView.text = token.getFormattedTotal(includeSymbol = true)
     }
 
     private fun loadImage(imageView: ImageView, url: String) {

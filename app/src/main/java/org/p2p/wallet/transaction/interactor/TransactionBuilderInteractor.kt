@@ -1,12 +1,14 @@
 package org.p2p.wallet.transaction.interactor
 
-import org.p2p.wallet.history.model.HistoryTransaction
+import org.threeten.bp.ZonedDateTime
 import org.p2p.core.token.Token
-import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toUsd
-import org.threeten.bp.ZonedDateTime
-import java.math.BigInteger
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 
 class TransactionBuilderInteractor {
 
@@ -20,22 +22,21 @@ class TransactionBuilderInteractor {
     ): HistoryTransaction {
         val amountA = sourceAmount.toBigDecimalOrZero()
         val amountB = destinationAmount.toBigDecimalOrZero()
-        return HistoryTransaction.Swap(
+        return RpcHistoryTransaction.Swap(
             signature = transactionId,
             date = ZonedDateTime.now(),
-            blockNumber = null,
+            blockNumber = -1,
             sourceAddress = source.publicKey,
             destinationAddress = destinationAddress,
-            fee = BigInteger.ZERO,
-            amountA = amountA,
-            amountB = amountB,
-            amountSentInUsd = amountA.toUsd(source),
-            amountReceivedInUsd = amountB.toUsd(destination.rate),
+            fees = null,
+            sentAmount = RpcHistoryAmount(amountA, amountA.toUsd(source)),
+            receiveAmount = RpcHistoryAmount(amountB, amountB.toUsd(destination.rate)),
             sourceSymbol = source.tokenSymbol,
             sourceIconUrl = source.iconUrl.orEmpty(),
             destinationSymbol = destination.tokenSymbol,
             destinationIconUrl = destination.iconUrl.orEmpty(),
-            status = TransactionStatus.PENDING
+            status = HistoryTransactionStatus.PENDING,
+            type = RpcHistoryTransactionType.SWAP
         )
     }
 }

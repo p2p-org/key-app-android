@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.ui.verify
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
+@Deprecated("Old onboarding flow, delete someday")
 interface VerifySecurityKeyContract {
     interface View : MvpView {
         fun showKeys(keys: List<SecurityKeyTuple>)

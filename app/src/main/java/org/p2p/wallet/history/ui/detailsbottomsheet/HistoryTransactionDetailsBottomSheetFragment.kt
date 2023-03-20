@@ -1,32 +1,52 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
-import android.view.View
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import androidx.core.text.buildSpannedString
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
+import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
+import java.util.Locale
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.utils.DEFAULT_DECIMAL
+import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.lessThenMinValue
+import org.p2p.core.utils.orZero
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
-import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
+import org.p2p.wallet.common.date.toDateString
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHistoryTransactionDetailsBinding
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.history.model.rpc.RpcFee
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.CUT_7_SYMBOLS
+import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.wallet.utils.setStatus
+import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
+import org.p2p.wallet.utils.unsafeLazy
+import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
-private const val EXTRA_STATE = "EXTRA_STATE"
+private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
+
+private const val IMAGE_SIZE = 64
+private const val TIME_FORMAT = "HH:mm"
 
 class HistoryTransactionDetailsBottomSheetFragment :
     BaseMvpBottomSheet<HistoryTransactionDetailsContract.View, HistoryTransactionDetailsContract.Presenter>(
@@ -35,9 +55,9 @@ class HistoryTransactionDetailsBottomSheetFragment :
     HistoryTransactionDetailsContract.View {
 
     companion object {
-        fun show(fragmentManager: FragmentManager, state: TransactionDetailsLaunchState) {
+        fun show(fragmentManager: FragmentManager, transactionId: String) {
             HistoryTransactionDetailsBottomSheetFragment()
-                .withArgs(EXTRA_STATE to state)
+                .withArgs(EXTRA_TRANSACTION_ID to transactionId)
                 .show(fragmentManager, HistoryTransactionDetailsBottomSheetFragment::javaClass.name)
         }
 
@@ -47,15 +67,21 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
     }
 
-    private val state: TransactionDetailsLaunchState by args(EXTRA_STATE)
+    private val transactionId: String by args(EXTRA_TRANSACTION_ID)
 
     private val binding: DialogHistoryTransactionDetailsBinding by viewBinding()
 
     private val glideManager: GlideManager by inject()
 
-    override val presenter: HistoryTransactionDetailsContract.Presenter by inject { parametersOf(state) }
+    override val presenter: HistoryTransactionDetailsContract.Presenter by inject()
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
+
+    private val timeFormat by unsafeLazy { DateTimeFormatter.ofPattern(TIME_FORMAT, Locale.US) }
+
+    private val titleStateFormat: String by unsafeLazy { getString(R.string.transaction_details_title) }
+
+    private val lessThenMinString by unsafeLazy { getString(R.string.common_less_than_minimum_with_dollar) }
 
     override fun onStart() {
         super.onStart()
@@ -65,100 +91,84 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.load(transactionId)
+    }
+
     override fun showError(@StringRes messageId: Int) {
         showInfoDialog(
             titleRes = R.string.error_general_title,
             messageRes = messageId,
             primaryButtonRes = R.string.common_retry,
-            primaryCallback = presenter::load,
+            primaryCallback = { presenter.load(transactionId) },
+            secondaryButtonRes = R.string.common_ok,
+            secondaryCallback = { dismissAllowingStateLoss() },
             isCancelable = false
         )
     }
 
-    override fun showTransferView(iconRes: Int) = with(binding) {
-        transactionSwapImageView.isVisible = false
-        transactionImageView.isVisible = true
-        transactionImageView.setTransactionIcon(iconRes)
+    override fun showTransferView(tokenIconUrl: String?, placeholderIcon: Int) = with(binding) {
+        imageViewSecondToken.isVisible = false
+        if (tokenIconUrl.isNullOrEmpty()) {
+            imageViewFirstToken.scaleType = ImageView.ScaleType.CENTER
+            imageViewFirstToken.setImageResource(placeholderIcon)
+        } else {
+            imageViewFirstToken.scaleType = ImageView.ScaleType.FIT_CENTER
+            glideManager.load(
+                imageView = imageViewFirstToken,
+                url = tokenIconUrl,
+                size = IMAGE_SIZE,
+                placeholder = placeholderIcon
+            )
+        }
     }
 
-    override fun showSwapView(sourceIconUrl: String, destinationIconUrl: String) = with(binding) {
-        transactionImageView.isVisible = false
-        transactionSwapImageView.isVisible = true
-        transactionSwapImageView.setSourceAndDestinationImages(
-            glideManager = glideManager,
-            sourceIconUrl = sourceIconUrl,
-            destinationIconUrl = destinationIconUrl
+    override fun showSwapView(sourceIconUrl: String?, destinationIconUrl: String?) = with(binding) {
+        glideManager.apply {
+            load(imageViewFirstToken, sourceIconUrl, IMAGE_SIZE)
+            load(imageViewSecondToken, destinationIconUrl, IMAGE_SIZE)
+        }
+        imageViewSecondToken.isVisible = true
+    }
+
+    override fun showDate(date: ZonedDateTime) {
+        binding.textViewSubtitle.text = getString(
+            R.string.transaction_details_date_format,
+            date.toDateString(binding.context),
+            date.format(timeFormat)
         )
     }
 
-    override fun showDate(date: String) {
-        binding.textViewDate.text = date
+    override fun showStatus(@StringRes titleResId: Int, @ColorRes colorId: Int) = with(binding) {
+        textViewTitle.text = titleStateFormat.format(getString(titleResId))
+        textViewAmountUsd.setTextColor(getColor(colorId))
     }
 
-    override fun showStatus(status: TransactionStatus) {
-        binding.textViewStatus.setText(status.resValue)
-        val color = when (status) {
-            TransactionStatus.COMPLETED -> R.color.color_green
-            TransactionStatus.PENDING -> R.color.systemWarningMain
-            TransactionStatus.ERROR -> R.color.systemErrorMain
-        }
-
-        binding.transactionImageView.setStatus(status)
-        binding.textViewStatus.setTextColor(getColor(color))
+    override fun showErrorState(errorMessage: String) = with(binding.progressStateTransaction) {
+        isVisible = true
+        setFailedState()
+        setDescriptionText(errorMessage)
     }
 
     override fun showTransactionId(signature: String) {
         with(binding) {
-            textViewTransactionId.text = signature
-            textViewTransactionId.setOnClickListener {
-                requireContext().copyToClipBoard(signature)
-                showUiKitSnackBar(messageResId = R.string.transaction_details_transaction_id_copied)
+            val url = getString(R.string.solanaExplorer, signature)
+            imageViewShare.setOnClickListener {
+                requireContext().shareText(url)
             }
-            buttonDone.setOnClickListener {
-                dismiss()
-            }
-            buttonDetails.setOnClickListener {
-                val url = getString(R.string.solanaExplorer, signature)
+            imageViewExplorer.setOnClickListener {
                 showUrlInCustomTabs(url)
             }
         }
     }
 
-    override fun showAddresses(source: String, destination: String) = with(binding) {
-        containerActor.isVisible = false
-        textViewSourceAddress.setOnClickListener {
-            requireContext().copyToClipBoard(source)
-            showUiKitSnackBar(messageResId = R.string.transaction_details_sender_address_copied)
-        }
-        textViewSourceAddress.text = source
-
-        textViewDestinationAddress.setOnClickListener {
-            requireContext().copyToClipBoard(destination)
-            showUiKitSnackBar(messageResId = R.string.transaction_details_receiver_address_copied)
-        }
-        textViewDestinationAddress.text = destination
-    }
-
     override fun showSenderAddress(senderAddress: Base58String, senderUsername: String?) = with(binding) {
-        containerSource.isVisible = false
-        containerDestination.isVisible = false
-
-        containerActor.isVisible = true
-
-        textViewActorAddressValue.text = senderAddress.base58Value
-        textViewActorAddressValue.setOnClickListener {
-            requireContext().copyToClipBoard(senderAddress.base58Value)
-            showUiKitSnackBar(
-                messageResId = R.string.transaction_details_sender_address_copied,
-                actionButtonResId = R.string.common_hide,
-                actionBlock = Snackbar::dismiss
-            )
-        }
-
+        textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled, 0)
+        textViewSendReceiveTitle.text = getString(R.string.transaction_details_receive_from)
         if (senderUsername != null) {
-            containerUsername.isVisible = true
-            textViewUsernameValue.text = senderUsername
-            textViewUsernameValue.setOnClickListener {
+            textViewSendReceiveValue.text = senderUsername
+            textViewSendReceiveValue.setOnClickListener {
                 requireContext().copyToClipBoard(senderUsername)
                 showUiKitSnackBar(
                     messageResId = R.string.transaction_details_sender_username_copied,
@@ -166,29 +176,27 @@ class HistoryTransactionDetailsBottomSheetFragment :
                     actionBlock = Snackbar::dismiss
                 )
             }
+        } else {
+            textViewSendReceiveValue.text = senderAddress.base58Value.cutMiddle(CUT_7_SYMBOLS)
+            textViewSendReceiveValue.setOnClickListener {
+                requireContext().copyToClipBoard(senderAddress.base58Value)
+                showUiKitSnackBar(
+                    messageResId = R.string.transaction_details_sender_address_copied,
+                    actionButtonResId = R.string.common_hide,
+                    actionBlock = Snackbar::dismiss
+                )
+            }
         }
+        textViewFeeTitle.isGone = true
+        textViewFeeValue.isGone = true
     }
 
     override fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?) = with(binding) {
-        containerSource.isVisible = false
-        containerDestination.isVisible = false
-
-        containerActor.isVisible = true
-
-        textViewActorAddressValue.text = receiverAddress.base58Value
-        textViewActorAddressValue.setOnClickListener {
-            requireContext().copyToClipBoard(receiverAddress.base58Value)
-            showUiKitSnackBar(
-                messageResId = R.string.transaction_details_receiver_address_copied,
-                actionButtonResId = R.string.common_hide,
-                actionBlock = Snackbar::dismiss
-            )
-        }
-
+        textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled, 0)
+        textViewSendReceiveTitle.text = getString(R.string.transaction_details_send_to)
         if (receiverUsername != null) {
-            containerUsername.isVisible = true
-            textViewUsernameValue.text = receiverUsername
-            textViewUsernameValue.setOnClickListener {
+            textViewSendReceiveValue.text = receiverUsername
+            textViewSendReceiveValue.setOnClickListener {
                 requireContext().copyToClipBoard(receiverUsername)
                 showUiKitSnackBar(
                     messageResId = R.string.transaction_details_receiver_username_copied,
@@ -197,28 +205,78 @@ class HistoryTransactionDetailsBottomSheetFragment :
                 )
             }
         } else {
-            containerUsername.isVisible = false
+            textViewSendReceiveValue.text = receiverAddress.base58Value.cutMiddle(CUT_7_SYMBOLS)
+            textViewSendReceiveValue.setOnClickListener {
+                requireContext().copyToClipBoard(receiverAddress.base58Value)
+                showUiKitSnackBar(
+                    messageResId = R.string.transaction_details_receiver_address_copied,
+                    actionButtonResId = R.string.common_hide,
+                    actionBlock = Snackbar::dismiss
+                )
+            }
         }
     }
 
-    override fun showAmount(amountToken: String, amountUsd: String?) = with(binding) {
-        amountTextTokenView.text = amountToken
-        amountTextUsdView.text = amountUsd
-        amountTextUsdView.isVisible = amountUsd != null
+    override fun showStateTitleValue(title: String, value: String) = with(binding) {
+        textViewSendReceiveTitle.text = title
+        textViewSendReceiveValue.text = value
     }
 
-    override fun showFee(renBtcFee: String?) = with(binding) {
-        if (renBtcFee.isNullOrEmpty()) {
-            textViewFees.setTextColorRes(R.color.textIconActive)
-            textViewFees.text = getString(R.string.transaction_details_fee_free)
-        } else {
-            textViewFees.setTextColorRes(R.color.textIconPrimary)
-            textViewFees.text = renBtcFee
-        }
+    override fun hideSendReceiveTitleAndValue() = with(binding) {
+        textViewSendReceiveTitle.isGone = true
+        textViewSendReceiveValue.isGone = true
+    }
+
+    override fun showAmount(amountToken: String?, amountUsd: String?) = with(binding) {
+        textViewAmountTokens.withTextOrGone(amountToken)
+        textViewAmountUsd.withTextOrGone(amountUsd)
+    }
+
+    override fun showFee(fees: List<RpcFee>?) = with(binding) {
+        textViewFeeValue.text = fees.formatFees(lessThenMinString)
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.scrollView.isGone = isLoading
-        binding.progressView.isVisible = isLoading
+        binding.layoutContent.isGone = isLoading
+        binding.viewProgress.isVisible = isLoading
+    }
+
+    private fun List<RpcFee>?.formatFees(lessThenMinString: String): CharSequence {
+        return if (this == null) {
+            getString(R.string.transaction_transaction_fee_free_value)
+        } else {
+            val fees = this
+            buildSpannedString {
+                fees.mapIndexed { index, feeAmount ->
+                    val isNotLast = index != size - 1
+                    val feeInFiat = feeAmount.totalInUsd.orZero()
+                    val formattedUsdAmount = if (feeInFiat.lessThenMinValue()) {
+                        lessThenMinString
+                    } else {
+                        "$${feeInFiat.formatFiat()}"
+                    }
+
+                    val highlightedText = "($formattedUsdAmount)"
+                    val commonText = buildString {
+                        append(feeAmount.totalInTokens.formatToken(feeAmount.tokensDecimals ?: DEFAULT_DECIMAL))
+                        appendWhitespace()
+                        append(feeAmount.tokenSymbol.orEmpty())
+                        appendWhitespace()
+                        append(highlightedText)
+                    }
+
+                    append(
+                        SpanUtils.highlightText(
+                            commonText,
+                            highlightedText,
+                            getColor(R.color.backgroundDisabled)
+                        )
+                    )
+                    if (isNotLast) {
+                        append("\n")
+                    }
+                }
+            }
+        }
     }
 }

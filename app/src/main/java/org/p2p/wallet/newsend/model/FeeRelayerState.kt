@@ -1,7 +1,6 @@
 package org.p2p.wallet.newsend.model
 
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
-import org.p2p.wallet.send.model.SendSolanaFee
 import java.math.BigInteger
 
 sealed interface FeeRelayerState {
@@ -11,7 +10,11 @@ sealed interface FeeRelayerState {
         val solanaFee: SendSolanaFee?,
         val feeLimitInfo: FreeTransactionFeeLimit
     ) : FeeRelayerState
-    data class Failure(val errorStateError: FeeRelayerStateError) : FeeRelayerState
+    data class Failure(val errorStateError: FeeRelayerStateError) : FeeRelayerState {
+        fun isFeeCalculationError(): Boolean {
+            return errorStateError == FeeRelayerStateError.FeesCalculationError
+        }
+    }
 
-    fun isValidState(): Boolean = this is UpdateFee || this is ReduceAmount
+    fun isValidState(): Boolean = this is UpdateFee || this is ReduceAmount || this is Idle
 }

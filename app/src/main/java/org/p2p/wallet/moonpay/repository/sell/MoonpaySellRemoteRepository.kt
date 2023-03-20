@@ -1,5 +1,10 @@
 package org.p2p.wallet.moonpay.repository.sell
 
+import timber.log.Timber
+import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.crashlogging.CrashLogger
@@ -15,11 +20,6 @@ import org.p2p.wallet.moonpay.serversideapi.MoonpayServerSideApi
 import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.utils.Base58String
-import timber.log.Timber
-import java.math.BigDecimal
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.withContext
 
 private const val TAG = "MoonpaySellRemoteRepository"
 

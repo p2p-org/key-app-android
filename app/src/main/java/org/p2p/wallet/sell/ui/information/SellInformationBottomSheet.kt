@@ -9,6 +9,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSellInformationBinding
+import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class SellInformationBottomSheet :
@@ -29,14 +30,20 @@ class SellInformationBottomSheet :
 
     override val presenter: SellInformationContract.Presenter by inject()
     private val binding: DialogSellInformationBinding by viewBinding()
+    private val sellAnalytics: SellAnalytics by inject()
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            imageViewSellClose.setOnClickListener { dismiss() }
-            buttonSellConfirm.setOnClickListener { presenter.closeDialog(!checkBoxSellNotShow.isChecked) }
+            imageViewSellClose.setOnClickListener {
+                dismiss()
+            }
+            buttonSellConfirm.setOnClickListener {
+                sellAnalytics.logSellMoonpayInformationClosed()
+                presenter.closeDialog(shouldShowAgain = !checkBoxSellNotShow.isChecked)
+            }
         }
     }
 

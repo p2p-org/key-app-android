@@ -1,0 +1,19 @@
+android {
+    signingConfigs {
+
+        debug {
+            storeFile file("p2pwallet_debug.keystore")
+            storePassword "Test2RAMzxGb"
+            keyAlias "p2pwallet"
+            keyPassword "Test2RAMzxGb"
+        }
+
+        release {
+            def signingProperties = new PropertiesFile(rootProject.file("signing.properties"), logger)
+            storeFile rootProject.file('p2pwallet.jks')
+            storePassword signingProperties.getOrNull('keystorePassword')
+            keyAlias signingProperties.getOrNull('keyAlias')
+            keyPassword signingProperties.getOrNull('keyPassword')
+        }
+    }
+}

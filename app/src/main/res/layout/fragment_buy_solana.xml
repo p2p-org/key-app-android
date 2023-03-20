@@ -56,7 +56,7 @@
                 android:layout_marginHorizontal="20dp"
                 android:background="@android:color/transparent"
                 android:gravity="end"
-                android:hint="@string/send_zero_usd"
+                android:hint="@string/swap_zero_value"
                 android:inputType="numberDecimal"
                 android:minWidth="72dp"
                 android:singleLine="true"

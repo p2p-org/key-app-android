@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/backgroundPrimary"
+    android:layout_height="72dp"
+    android:layout_marginHorizontal="16dp"
+    android:background="@color/bg_snow"
     android:orientation="horizontal">
 
     <org.p2p.uikit.atoms.UiKitTransactionImageView
@@ -11,13 +14,36 @@
         android:layout_width="@dimen/history_transaction_image_size"
         android:layout_height="@dimen/history_transaction_image_size"
         android:layout_marginVertical="12dp"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <include
-        android:id="@+id/transactionData"
-        layout="@layout/item_transaction_base_part"
-        android:layout_width="match_parent"
+    <org.p2p.uikit.atoms.UiKitStartAmountView
+        android:id="@+id/startAmountView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_marginHorizontal="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/endAmountView"
+        app:layout_constraintStart_toEndOf="@id/transactionTokenImageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_min="80dp"
+        tools:subtitle="From ....S39N"
+        tools:title="Receive" />
 
-</LinearLayout>
+    <org.p2p.uikit.atoms.UiKitEndAmountView
+        android:id="@+id/endAmountView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/startAmountView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:bottomValue="0.014 SOL"
+        tools:topValue="- 10.00$" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

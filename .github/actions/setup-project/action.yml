@@ -1,5 +1,5 @@
-name: "Setup all needed files and properties for project"
-description: "-"
+name: "Setup project properties"
+description: "Setup all needed secret properties for project"
 inputs:
   amplitude-key-debug:
     description: "Amplitude debug key"
@@ -9,22 +9,20 @@ inputs:
     required: true
   torus-verifier-debug:
     description: "Torus verifier - DEBUG"
-    required: true
+    required: false
+    default: ""
   torus-verifier-feature:
     description: "Torus verifier - FEATURE"
-    required: true
+    required: false
+    default: ""
   torus-verifier-release:
     description: "Torus verifier - RELEASE"
-    required: true
-  torus-subverifier-store:
+    required: false
+    default: ""
+  torus-subverifier:
     description: "Torus subverifier - STORE"
-    required: true
-  torus-subverifier-firebase:
-    description: "Torus subverifier - FIREBASE"
-    required: true
-  torus-subverifier-slack:
-    description: "Torus subverifier - SLACK"
-    required: true
+    required: false
+    default: ""
   rpc-pool-key:
     description: "Rpc pool api key"
     required: true
@@ -64,37 +62,21 @@ inputs:
   sentry-auth-dsn:
     description: "Project Sentry DSN"
     required: true
-  firebase-secret:
-    description: "Firebase secret"
-    required: true
-  ssl-certificate:
-    description: "SSL certificate"
-    required: true
-  keystore-secret:
-    description: "Release JKS keystore"
-    required: true
   lokalise-key:
     description: "Lokalise API key"
     required: true
   lokalise-app-id:
     description: "Lokalise App ID"
     required: true
+  secret-memo:
+    description: "Secret memo for generating a send link"
+    required: true
+  salt-prefix:
+    description: "Salt prefix for generating a temporary account for send"
+    required: true
 runs:
   using: composite
   steps:
-    - name: "Create Firebase google-services.json"
-      uses: ./.github/actions/setup-firebase
-      with:
-        firebase-secret: ${{ inputs.firebase-secret }}
-    - name: "Create cert.pem file"
-      env:
-        SSL_CERTIFICATE: ${{ inputs.ssl-certificate }}
-      shell: bash
-      run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
-    - name: "Create keystore .jks"
-      uses: ./.github/actions/setup-keystore-jks
-      with:
-        keystore-secret: ${{ inputs.keystore-secret }}
     - name: "Create analytics properties file"
       shell: bash
       run: |
@@ -109,9 +91,7 @@ runs:
         echo "TORUS_VERIFIER_DEBUG=${{ inputs.torus-verifier-debug }}" >> torus.properties
         echo "TORUS_VERIFIER_FEATURE=${{ inputs.torus-verifier-feature }}" >> torus.properties
         echo "TORUS_VERIFIER_RELEASE=${{ inputs.torus-verifier-release }}" >> torus.properties
-        echo "TORUS_SUB_VERIFIER_RELEASE_STORE=${{ inputs.torus-subverifier-store }}" >> torus.properties
-        echo "TORUS_SUB_VERIFIER_RELEASE_FIREBASE=${{ inputs.torus-subverifier-firebase }}" >> torus.properties
-        echo "TORUS_SUB_VERIFIER_RELEASE_LOCAL=${{ inputs.torus-subverifier-slack }}" >> torus.properties
+        echo "TORUS_SUB_VERIFIER_RELEASE_STORE=${{ inputs.torus-subverifier }}" >> torus.properties
         echo "torus.properties is successfully created"
     - name: "Create api keys properties file"
       shell: bash
@@ -137,5 +117,12 @@ runs:
         echo "auth.token=${{ inputs.sentry-auth-token }}" >> sentry.properties
         echo "auth.dsn=${{ inputs.sentry-auth-dsn }}" >> sentry.properties
         echo "sentry.properties is successfully created"
+    - name: "Create common.properties file"
+      shell: bash
+      run: |
+        touch common.properties
+        echo "secretMemo=${{ inputs.secret-memo }}" >> common.properties
+        echo "saltPrefix=${{ inputs.salt-prefix }}" >> common.properties
+        echo "common.properties is successfully created"
     - name: "Setup gradle"
       uses: ./.github/actions/setup-gradle

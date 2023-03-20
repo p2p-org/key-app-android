@@ -1,6 +1,7 @@
 package org.p2p.wallet.swap
 
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
@@ -24,12 +25,14 @@ import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
 
 object SwapModule : InjectionModule {
 
     override fun create() = module {
+
         single {
             val baseUrl = androidContext().getString(R.string.orcaApiBaseUrl)
             getRetrofit(
@@ -38,6 +41,8 @@ object SwapModule : InjectionModule {
                 interceptor = null
             ).create(OrcaApi::class.java)
         }
+
+        factoryOf(::SwapFragmentFactory)
 
         single {
             SerumSwapInteractor(

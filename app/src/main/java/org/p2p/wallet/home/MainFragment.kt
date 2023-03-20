@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
+import kotlinx.coroutines.launch
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
@@ -37,17 +38,21 @@ import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
+import org.p2p.wallet.swap.ui.SwapFragmentFactory
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.wallet.swap.ui.orca.OrcaSwapOpenedFrom
+import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import kotlinx.coroutines.launch
 
 private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
-class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
+class MainFragment :
+    BaseFragment(R.layout.fragment_main),
+    MainTabsSwitcher,
+    CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
 
@@ -56,6 +61,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     private val generalAnalytics: GeneralAnalytics by inject()
     private val swapAnalytics: SwapAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val swapFragmentFactory: SwapFragmentFactory by inject()
 
     private val deeplinksManager: AppDeeplinksManager by inject()
     private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
@@ -77,8 +83,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        deeplinksManager.mainTabsSwitcher = this
-
         with(binding) {
             bottomNavigation.setOnItemSelectedListener { tab ->
                 triggerTokensUpdateIfNeeded()
@@ -95,12 +99,14 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         if (tabCachedFragments.isEmpty) {
             createCachedTabFragments()
         }
-        deeplinksManager.handleSavedDeeplinkIntent()
 
         if (onCreateActions?.isNotEmpty() == true) {
             onCreateActions?.forEach(::doOnCreateAction)
             onCreateActions = arrayListOf()
         }
+
+        deeplinksManager.setTabsSwitcher(this)
+        deeplinksManager.executeHomePendingDeeplink()
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -108,7 +114,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             val systemBars = insets.systemBars()
             view.updatePadding(
                 left = initialPadding.left + systemBars.left,
-                top = initialPadding.top + systemBars.top,
+                top = 0,
                 right = initialPadding.right + systemBars.right,
                 bottom = initialPadding.bottom + systemBars.bottom,
             )
@@ -117,7 +123,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             val bottomConsume = if (ime.bottom > bottomNavigationHeight) bottomNavigationHeight else ime.bottom
             insets.inset(
                 systemBars.left,
-                systemBars.top,
+                0,
                 systemBars.right,
                 systemBars.bottom + bottomConsume,
             )
@@ -156,14 +162,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
                 is NewSettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
                 is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
-                is OrcaSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
+                is OrcaSwapFragment,
+                is JupiterSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
             }
         }
         binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
     }
 
     override fun onDestroyView() {
-        deeplinksManager.mainTabsSwitcher = null
+        deeplinksManager.clearTabsSwitcher()
         super.onDestroyView()
     }
 
@@ -188,7 +195,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         val itemId = clickedTab.itemId
 
         // fixme: https://p2pvalidator.atlassian.net/browse/PWN-7051 Refreshing swap every time
-        if (clickedTab == ScreenTab.SWAP_SCREEN) {
+        if (clickedTab == ScreenTab.SWAP_SCREEN && tabCachedFragments.get(itemId) is OrcaSwapFragment) {
             tabCachedFragments.remove(itemId)
         }
 
@@ -198,7 +205,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
-                ScreenTab.SWAP_SCREEN -> OrcaSwapFragment.create(OrcaSwapOpenedFrom.MAIN_SCREEN)
+                ScreenTab.SWAP_SCREEN -> swapFragmentFactory.swapFragment(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
                 else -> error("Can't create fragment for $clickedTab")
             }
             tabCachedFragments[itemId] = fragment

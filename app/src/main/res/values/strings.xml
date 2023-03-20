@@ -43,7 +43,10 @@
     <string name="common_sell_all">Sell all</string>
     <string name="common_sorry">Sorry</string>
     <string name="common_less_than_minimum">Less than 0.01</string>
+    <string name="common_less_than_minimum_with_dollar">Less than $0.01</string>
     <string name="not_available">N/A</string>
+    <string name="common_burn">Burn</string>
+    <string name="common_mint">Mint</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -250,8 +253,6 @@
     <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter the amount</string>
     <string name="main_enter_incorrect_amount">Incorrect amount</string>
-    <string name="main_burn_renbtc">Burn renBTC</string>
-    <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
     <string name="main_key_app_username_sol_address">Username / address</string>
     <string name="main_reserve_username">Reserve your username now</string>
@@ -301,11 +302,9 @@
     <string name="receive_started_session">Created active session</string>
     <string name="receive_transaction_fee_amount">Estimated fee calculated</string>
     <string name="receive_no_statuses_yet">No statuses yet</string>
-    <string name="receive_username_copied">Username copied to clipboard!</string>
     <string name="receive_renbtc_transaction_format">Receiving %s renBTC</string>
     <string name="receive_renbtc_transaction">Receiving renBTC</string>
     <string name="receive_tap_to_read">Tap to read</string>
-    <string name="receive_no_transactions_yet">No transactions yet</string>
     <string name="receive_token_list_info">Each token in this list is available for receiving with this address; you can search for a token by typing its name or ticker.\n\nIf a token is not on this list, we do not recommend sending it to this address.</string>
     <string name="receive_token_list_do_not_recommend">we do not recommend sending it to this address.</string>
     <string name="receive_view_solana_explorer">View in Solana explorer</string>
@@ -322,7 +321,6 @@
     <string name="receive_via_bitcoin_network_info">Make sure you understand these aspects</string>
     <string name="receive_understand">I understand</string>
     <string name="receive_token_list_search">Search for a token</string>
-    <string name="receive_no_transactions_yet_message">After first transaction you will be\nable to view it here</string>
     <string name="receive_btc_buy_info">• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b> You can choose\n\t\twhich currency to pay in below.</string>
     <string name="receive_btc_topup_info">• A <b>renBTC account is required</b> to receive\n\t\tbitcoins over the Bitcoin network.\n\n• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b>\n\n• You <b>don\'t have funds</b> to pay for account\n\t\tcreation, but if someone sends renBTC to\n\t\tyour address, it will be created for you.</string>
     <string name="receive_btc_for_free_info">• You\'re going to create a public Bitcoin\n\t\taddress that will be valid for the next <b>24\n\t\thours</b>. You still can hold and send Bitcoin\n\t\twithout restrictions.\n\n• It\'s a <b>one-time address</b>, so if you send\n\t\tmultiple transactions, your money will be\n\t\tlost.</string>
@@ -337,62 +335,45 @@
     <string name="receive_token_name_lower_case">receive %s</string>
     <string name="receive_amount_in_sol">%s SOL</string>
     <string name="receive_pay_and_countinue">Pay %s SOL &amp; Continue</string>
+    <string name="receive_on_solana">%s on Solana</string>
+    <string name="receive_my_sol_address">My Solana address</string>
+    <string name="receive_my_eth_address">My Ethereum address</string>
+    <string name="receive_my_username">My username</string>
+    <string name="receive_copy_address">Copy address</string>
+    <string name="receive_sol_address_copied">✅ Your Solana address was copied</string>
+    <string name="receive_eth_address_copied">✅ Your Ethereum address was copied</string>
+    <string name="receive_username_copied">✅ Your username was copied</string>
+    <string name="receive_on_ethereum">%s on Ethereum</string>
+    <string name="receive_num_1">1</string>
+    <string name="receive_num_2">2</string>
+    <string name="receive_ethereum_step_1">Send %s to your Ethereum address</string>
+    <string name="receive_ethereum_step_2">We bridge it to Solana with Wormhole</string>
+    <string name="receive_ethereum_banner_text">We refund bridging\ncosts for any transactions over $50</string>
+    <string name="receive_only_need_sign_transaction">You only need to sign a transaction with Key App</string>
+
 
     <!-- send -->
-    <string name="send_enter_address">Enter the recipient\'s address</string>
-    <string name="send_now">Send now</string>
     <string name="send_format">Send %s</string>
     <string name="send_network_destination">Network destination</string>
-    <string name="send_choose_network">Choose the network</string>
     <string name="send_solana_network">Solana</string>
-    <string name="send_solana_network_title">Solana network</string>
-    <string name="send_bitcoin_network_title">Bitcoin network</string>
     <string name="send_bitcoin_network">Bitcoin</string>
-    <string name="send_sol_or_spl">SOL or SPL tokens</string>
-    <string name="send_native_bitcoin">Native bitcoin</string>
     <string name="send_free_transaction">Free</string>
-    <string name="send_transaction_fee">Transaction fee</string>
-    <string name="send_transaction_fees">Transaction fees:</string>
     <string name="send_paste">Paste</string>
-    <string name="send_multiple_accounts">Multiple accounts were found</string>
-    <string name="send_no_tokens">The token not found. Try to change name</string>
-    <string name="send_account_found">Account was found</string>
-    <string name="send_key_app_username_sol_address">Your username / SOL address</string>
-    <string name="send_type_paste">Type or paste</string>
-    <string name="send_no_address">There\'s no address like this</string>
-    <string name="send_current_price">Current price</string>
-    <string name="send_empty_balance">This address has no funds</string>
-    <string name="send_caution_empty_balance">Caution: this address has no funds</string>
-    <string name="send_zero_usd">$0</string>
-    <string name="send_receive_at_least">Receive at least: %s</string>
     <string name="send_account_creation_fee_format">Account creation fee: %s</string>
     <string name="send_account_creation_fee">Account creation fee</string>
-    <string name="send_account_creation_info">This address does not appear to have a %s account. You have to pay a one-time fee to create a %s account for this address. You can choose which currency to pay in below.</string>
     <string name="send_transaction_details">@string/common_transaction_details</string>
     <string name="send_receive_title">Receive</string>
     <string name="send_transaction_being_processed">The transaction is being processed</string>
-    <string name="send_make_another_transaction">Make another transaction</string>
-    <string name="send_error_with_fee_payer">Unexpected error when trying to pay with current token</string>
-    <string name="send_choose_network_info">Key App will automatically match your withdrawal target address to the correct network for most withdrawals. \n\nHowever, before sending your funds, make sure to double-check the selected network.</string>
-    <string name="send_network_limit_info">On the Solana network, the first 100 transactions in a day are paid by Key App. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
-    <string name="send_network_selected_format">%s network selected</string>
     <string name="send_confirm_transaction">Confirm your transaction</string>
-    <string name="send_transfer_confirm_message">You are going to transfer</string>
-    <string name="send_to_address">To address</string>
     <string name="send_confirm_warning">Be sure all details are correct before confirming the transaction. Once confirmed, it cannot be reversed. If everything is correct, tap the button below to continue.</string>
     <string name="send_confirm_warning_highlight">Once confirmed, it cannot be reversed.</string>
     <string name="send_confirm_with_fingerprint">Confirm with fingerprint</string>
-    <string name="send_successful_format">%s is successfully sent!</string>
-    <string name="send_transaction_success">%s is successfully sent!</string>
-    <string name="send_transaction_error">%s send didn\'t complete!</string>
     <string name="send_successfully_format">%s was sent successfully</string>
     <string name="send_using_max_amount">Using the maximum %s amount</string>
     <string name="send_insufficient_funds">Insufficient funds to cover fees</string>
-    <string name="send_not_enough_funds">Not enough funds</string>
-    <string name="send_min_required_amount_warning">You can\'t send less than %s SOL</string>
-    <string name="send_cannot_send_token">Cannot send the selected token</string>
     <string name="send_no_token_message_1">Send crypto in the Solana network instantly and without fees</string>
     <string name="send_no_token_message_2">Effortlessly send tokens with usernames instead of long addresses</string>
+    <string name="send_no_tokens">The token not found. Try to change name</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -500,13 +481,6 @@
     <string name="transaction_details_details_button">@string/common_transaction_details</string>
 
     <!--TransactionHistory-->
-    <string name="transaction_history_unknown">Unknown</string>
-    <string name="transaction_history_swap">Swap</string>
-    <string name="transaction_history_send">Send</string>
-    <string name="transaction_history_receive">Receive</string>
-    <string name="transaction_history_create">Create</string>
-    <string name="transaction_history_closed">Closed</string>
-
     <string name="transaction_history_moonpay_failed_title">You\'ve not sent</string>
     <string name="transaction_history_moonpay_failed_subtitle">SOL to Moonpay</string>
     <string name="transaction_history_moonpay_waiting_for_deposit_title">You need to send SOL</string>

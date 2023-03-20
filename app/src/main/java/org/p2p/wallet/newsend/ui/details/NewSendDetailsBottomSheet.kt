@@ -1,14 +1,14 @@
 package org.p2p.wallet.newsend.ui.details
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.SpanUtils
@@ -17,7 +17,7 @@ import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogNewSendDetailsBinding
-import org.p2p.wallet.send.model.SendFeeTotal
+import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.unsafeLazy
@@ -65,7 +65,7 @@ class NewSendDetailsBottomSheet :
     private val colorMountain by unsafeLazy { getColor(R.color.text_mountain) }
     private val colorMint by unsafeLazy { getColor(R.color.text_mint) }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogNewSendDetailsBinding.inflate(inflater, container, false)
@@ -101,7 +101,7 @@ class NewSendDetailsBottomSheet :
 
     private fun DialogNewSendDetailsBinding.setRecipientAddress() {
         val address = state.recipientAddress
-        with(layoutAddress) {
+        with(containerAddress) {
             imageViewIcon.setImageResource(R.drawable.ic_wallet_24)
             textViewTitle.text = getString(R.string.send_transactions_details_address)
             textViewSubtitle.text = address

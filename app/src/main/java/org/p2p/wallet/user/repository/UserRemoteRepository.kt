@@ -1,25 +1,26 @@
 package org.p2p.wallet.user.repository
 
+import timber.log.Timber
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import org.p2p.solanaj.model.types.Account
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenData
+import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT
+import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
+import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.home.ui.main.POPULAR_TOKENS
+import org.p2p.wallet.home.ui.main.POPULAR_TOKENS_COINGECKO_IDS
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
-import org.p2p.core.token.TokenData
+import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import org.p2p.wallet.user.repository.prices.TokenSymbol
-import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT
-import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
-import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
-import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
-import kotlinx.coroutines.flow.firstOrNull
 
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,
@@ -52,39 +53,45 @@ class UserRemoteRepository(
             val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
 
             // Get token symbols from user accounts plus SOL
-            val tokenSymbols = (
-                accounts.mapNotNull {
-                    userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.symbol
-                } + POPULAR_TOKENS
-                ).distinct()
+            val userTokenIds = accounts.mapNotNull {
+                userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.coingeckoId
+            }
+
+            val allTokenIds = (userTokenIds + POPULAR_TOKENS_COINGECKO_IDS.map(TokenId::id)).distinct()
 
             // Load and save user tokens prices
             if (fetchPrices) {
-                loadAndSaveUserTokens(tokenSymbols)
+                loadAndSaveUserTokens(allTokenIds)
             } else {
-                checkForNewTokens(tokenSymbols)
+                checkForNewTokens(allTokenIds)
             }
 
             // Map accounts to List<Token.Active>
             mapAccountsToTokens(publicKey, accounts)
         }
 
-    private suspend fun checkForNewTokens(tokenSymbols: List<String>) {
+    private suspend fun checkForNewTokens(tokenIds: List<String>) {
         val localPrices = userLocalRepository.getTokenPrices()
             .firstOrNull()
-            ?.map { it.tokenSymbol }
+            ?.map { it.tokenId }
             .orEmpty()
-        val userTokensDiff = tokenSymbols.minus(localPrices.toSet())
+        val userTokensDiff = tokenIds.minus(localPrices.toSet())
         if (userTokensDiff.isNotEmpty()) {
-            loadAndSaveUserTokens(tokenSymbols)
+            loadAndSaveUserTokens(tokenIds)
         }
     }
 
-    private suspend fun loadAndSaveUserTokens(tokenSymbols: List<String>) {
-        val prices = tokenPricesRepository.getTokenPricesBySymbols(
-            tokenSymbols.map { TokenSymbol(it) },
-            USD_READABLE_SYMBOL
-        )
+    private suspend fun loadAndSaveUserTokens(tokenIds: List<String>) {
+        val prices = try {
+            tokenPricesRepository.getTokenPriceByIds(
+                tokenIds = tokenIds.map { tokenId -> TokenId(id = tokenId) },
+                targetCurrency = USD_READABLE_SYMBOL
+            )
+        } catch (priceError: Throwable) {
+            Timber.e(priceError, "Failed to fetch initial prices")
+            emptyList()
+        }
+
         userLocalRepository.setTokenPrices(prices)
     }
 
@@ -102,7 +109,7 @@ class UserRemoteRepository(
             }
 
             val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
-            val price = userLocalRepository.getPriceByToken(token.symbol)
+            val price = userLocalRepository.getPriceByTokenId(token.coingeckoId)
             TokenConverter.fromNetwork(it, token, price)
         }
 
@@ -111,7 +118,7 @@ class UserRemoteRepository(
          * */
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return tokens
-        val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
+        val solPrice = userLocalRepository.getPriceByTokenId(tokenData.coingeckoId)
         val solToken = Token.createSOL(
             publicKey = publicKey,
             tokenData = tokenData,
@@ -133,7 +140,7 @@ class UserRemoteRepository(
 
         if (result == null) return null
 
-        val price = userLocalRepository.getPriceByToken(result.symbol.uppercase())
+        val price = userLocalRepository.getPriceByTokenId(result.coingeckoId)
         return TokenConverter.fromNetwork(account, result, price)
     }
 }

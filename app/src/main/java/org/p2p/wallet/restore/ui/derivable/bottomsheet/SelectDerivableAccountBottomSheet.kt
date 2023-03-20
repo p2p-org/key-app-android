@@ -1,12 +1,12 @@
 package org.p2p.wallet.restore.ui.derivable.bottomsheet
 
+import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
@@ -77,5 +77,5 @@ class SelectDerivableAccountBottomSheet() : BottomSheetDialogFragment() {
         }
     }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 }

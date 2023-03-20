@@ -14,17 +14,8 @@
 
     <declare-styleable name="UiKitEndAmountView">
         <attr name="icon" />
-        <attr name="usdAmount" format="string" />
-        <attr name="tokenAmount" format="string" />
-    </declare-styleable>
-
-    <declare-styleable name="UiKitBadgeView">
-        <attr name="hasStroke" format="boolean" />
-        <attr name="android:textColor" />
-        <attr name="shape" format="enum">
-            <enum name="oval" value="0" />
-            <enum name="rectangle" value="1" />
-        </attr>
+        <attr name="topValue" format="string" />
+        <attr name="bottomValue" format="string" />
     </declare-styleable>
 
     <declare-styleable name="UiKitRoundedImageView">

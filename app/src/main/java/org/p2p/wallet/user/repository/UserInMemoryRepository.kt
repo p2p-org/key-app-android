@@ -1,11 +1,11 @@
 package org.p2p.wallet.user.repository
 
+import timber.log.Timber
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.p2p.core.token.TokenData
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.receive.list.TokenListData
-import org.p2p.core.token.TokenData
-import timber.log.Timber
 
 private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
 
@@ -25,8 +25,8 @@ class UserInMemoryRepository : UserLocalRepository {
 
     override fun getTokenPrices(): Flow<List<TokenPrice>> = pricesFlow
 
-    override fun getPriceByToken(symbol: String): TokenPrice? {
-        return pricesFlow.value.firstOrNull { it.tokenSymbol == symbol }
+    override fun getPriceByTokenId(tokenId: String?): TokenPrice? {
+        return pricesFlow.value.firstOrNull { it.tokenId == tokenId }
     }
 
     override fun setTokenData(data: List<TokenData>) {
@@ -86,7 +86,10 @@ class UserInMemoryRepository : UserLocalRepository {
     private fun findTokensBySearchText(searchText: String): List<TokenData> {
         return allTokensFlow.value
             .asSequence()
-            .filter { token -> searchText == token.symbol || token.name.startsWith(searchText, ignoreCase = true) }
+            .filter { token ->
+                token.symbol.contains(searchText, ignoreCase = true) ||
+                    token.name.startsWith(searchText, ignoreCase = true)
+            }
             .toList()
     }
 
@@ -95,7 +98,7 @@ class UserInMemoryRepository : UserLocalRepository {
     override fun findTokenData(mintAddress: String): TokenData? {
         val resultToken = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
         if (resultToken == null) {
-            Timber.tag(TAG).i("No token found for symbol $mintAddress")
+            Timber.tag(TAG).i("No user token found for mint $mintAddress")
         }
 
         return resultToken

@@ -2,6 +2,7 @@ package org.p2p.uikit.atoms
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
@@ -11,28 +12,37 @@ import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.uikit.utils.withTextOrGone
 
+@Deprecated("use [UiKitFinanceBlockView] without [FinanceBlockCellModel.leftSideCellModel]")
 class UiKitEndAmountView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    var usdAmount: String? = null
+    var topValue: String? = null
         set(value) {
-            binding.usdAmountTextView.withTextOrGone(value)
+            binding.textViewTopValue.withTextOrGone(value)
             field = value
         }
 
-    var tokenAmount: String? = null
+    fun setTopValueTextColor(@ColorInt color: Int) {
+        binding.textViewTopValue.setTextColor(color)
+    }
+
+    var bottomValue: String? = null
         set(value) {
-            binding.tokenAmountTextView.withTextOrGone(value)
+            binding.textViewBottomValue.withTextOrGone(value)
             field = value
         }
+
+    fun setBottomValueTextColor(@ColorInt color: Int) {
+        binding.textViewBottomValue.setTextColor(color)
+    }
 
     @DrawableRes
     var icon: Int? = null
         set(value) {
-            binding.actionImageView.withImageOrGone(value)
+            binding.imageViewAction.withImageOrGone(value)
             field = value
         }
 
@@ -41,8 +51,8 @@ class UiKitEndAmountView @JvmOverloads constructor(
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitEndAmountView).use { typedArray ->
             icon = typedArray.getResourceId(R.styleable.UiKitEndAmountView_icon, 0)
-            usdAmount = typedArray.getString(R.styleable.UiKitEndAmountView_usdAmount)
-            tokenAmount = typedArray.getString(R.styleable.UiKitEndAmountView_tokenAmount)
+            topValue = typedArray.getString(R.styleable.UiKitEndAmountView_topValue)
+            bottomValue = typedArray.getString(R.styleable.UiKitEndAmountView_bottomValue)
         }
     }
 }

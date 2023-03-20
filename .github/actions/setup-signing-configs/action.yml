@@ -1,0 +1,24 @@
+name: "Setup signing configs"
+description: "Create signing.properties file"
+inputs:
+  keystore-password:
+    required: true
+    description: "Keystore password"
+  key-alias:
+    required: true
+    description: "Key alias"
+  key-password:
+    required: true
+    description: "Key password"
+
+runs:
+  using: composite
+  steps:
+    - name: "Create signing properties file"
+      shell: bash
+      run: |
+        touch signing.properties
+        echo "keystorePassword=${{ inputs.keystore-password }}" >> signing.properties
+        echo "keyAlias=${{ inputs.key-alias }}" >> signing.properties
+        echo "keyPassword=${{ inputs.key-password }}" >> signing.properties
+        echo "signing.properties is successfully created"

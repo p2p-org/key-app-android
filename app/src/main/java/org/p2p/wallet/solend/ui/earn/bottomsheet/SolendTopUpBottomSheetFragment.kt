@@ -1,27 +1,27 @@
 package org.p2p.wallet.solend.ui.earn.bottomsheet
 
+import androidx.fragment.app.FragmentManager
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.math.BigDecimal
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.token.Token
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSolendTopUpBinding
-import org.p2p.core.token.Token
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.utils.args
-import org.p2p.core.utils.formatToken
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import java.math.BigDecimal
 
 private const val EXTRA_DEPOSIT = "EXTRA_STATE"
 
@@ -71,7 +71,7 @@ class SolendTopUpBottomSheetFragment :
             amountViewStart.subtitle = depositToTopUp.tokenName
 
             val supplyInterestToShow = depositToTopUp.supplyInterest ?: BigDecimal.ZERO
-            amountViewEnd.usdAmount = "${supplyInterestToShow.scaleShort()}%"
+            amountViewEnd.topValue = "${supplyInterestToShow.scaleShort()}%"
 
             buttonBuy.setOnClickListener {
                 presenter.onBuyClicked()
@@ -82,7 +82,7 @@ class SolendTopUpBottomSheetFragment :
         }
     }
 
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override fun onStart() {
         super.onStart()

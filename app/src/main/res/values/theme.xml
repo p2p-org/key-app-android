@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="WalletTheme.Launcher" parent="WalletTheme">
-<!--        <item name="android:windowBackground">@drawable/bg_splash_screen</item>-->
+    <style name="WalletTheme.Launcher" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/lime</item>
+        <item name="postSplashScreenTheme">@style/WalletTheme</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 
     <style name="WalletTheme" parent="WalletBase.v21" />
@@ -33,11 +38,23 @@
         <item name="snackbarButtonStyle">@style/UiKit.Native.SnackbarButton</item>
 
         <item name="materialAlertDialogTheme">@style/UiKit.MaterialAlertDialog</item>
+
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="WalletTheme.BottomSheet.Rounded" parent="Theme.Design.BottomSheetDialog">
+    <style name="WalletTheme.BottomSheet.RoundedSnow" parent="WalletTheme.BottomSheet">
+        <item name="bottomSheetStyle">@style/AppRoundCornersModalStyleSnow</item>
+    </style>
+
+    <style name="WalletTheme.BottomSheet.RoundedSmoke" parent="WalletTheme.BottomSheet">
+        <item name="bottomSheetStyle">@style/AppRoundCornersModalStyleSmoke</item>
+    </style>
+
+    <style name="WalletTheme.BottomSheet" parent="Theme.Design.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="enableEdgeToEdge">true</item>
-        <item name="bottomSheetStyle">@style/AppRoundCornersModalStyle</item>
     </style>
 </resources>

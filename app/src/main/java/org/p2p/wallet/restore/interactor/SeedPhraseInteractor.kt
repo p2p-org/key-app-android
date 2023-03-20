@@ -4,6 +4,14 @@ import androidx.core.content.edit
 import android.content.SharedPreferences
 import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.crypto.MnemonicException
+import timber.log.Timber
+import java.math.BigDecimal
+import java.math.BigInteger
+import kotlinx.coroutines.withContext
+import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.scaleLong
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
@@ -13,19 +21,12 @@ import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
+import org.p2p.wallet.restore.model.SeedPhraseVerifyResult
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
+import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import org.p2p.wallet.user.repository.prices.TokenSymbol
-import org.p2p.core.utils.Constants.SOL_SYMBOL
-import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
-import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
-import java.math.BigDecimal
-import java.math.BigInteger
-import kotlinx.coroutines.withContext
 
 // duck-taped, extract to storage some day
 const val KEY_IS_AUTH_BY_SEED_PHRASE = "KEY_IS_AUTH_BY_SEED_PHRASE"
@@ -70,14 +71,21 @@ class SeedPhraseInteractor(
         val balance = balances.find { it.first == account.publicKey.toBase58() }
             ?.second
             ?: return@mapNotNull null
-        val tokenSymbol = TokenSymbol(SOL_SYMBOL)
+        val tokenId = TokenId(SOL_COINGECKO_ID)
 
-        val exchangeRate =
-            solRate ?: tokenPricesRepository.getTokenPriceBySymbol(tokenSymbol, USD_READABLE_SYMBOL).price
+        val exchangeRate: BigDecimal = solRate ?: kotlin.runCatching {
+            tokenPricesRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL).price
+        }.getOrDefault(BigDecimal.ZERO)
+
         if (solRate == null) solRate = exchangeRate
 
         val total = balance.fromLamports().scaleLong()
-        DerivableAccount(path, account, total, total.multiply(exchangeRate))
+        DerivableAccount(
+            path = path,
+            account = account,
+            total = total,
+            totalInUsd = total.multiply(exchangeRate)
+        )
     }
 
     suspend fun createAndSaveAccount(
@@ -96,12 +104,8 @@ class SeedPhraseInteractor(
         adminAnalytics.logPasswordCreated()
     }
 
+    @Deprecated("Old onboarding flow, delete someday")
     suspend fun generateSecretKeys(): List<String> = authRepository.generatePhrase()
-
-    sealed interface SeedPhraseVerifyResult {
-        class VerifiedSeedPhrase(val seedPhraseWord: List<SeedPhraseWord>) : SeedPhraseVerifyResult
-        object VerifyByChecksumFailed : SeedPhraseVerifyResult
-    }
 
     fun verifySeedPhrase(secretKeys: List<SeedPhraseWord>): SeedPhraseVerifyResult {
         val validWords = English.INSTANCE.words
@@ -112,26 +116,26 @@ class SeedPhraseInteractor(
             key.copy(isValid = isValid)
         }
 
-        return if (validatedKeys.any { !it.isValid }) {
-            updateSeedPhraseAuthFlag(isAuthSuccess = false)
-            SeedPhraseVerifyResult.VerifiedSeedPhrase(validatedKeys)
-        } else {
-            try {
-                MnemonicCode.INSTANCE.check(seedWords)
-                updateSeedPhraseAuthFlag(isAuthSuccess = true)
+        val isInvalidSeedPhrase = validatedKeys.any { !it.isValid }
+        if (isInvalidSeedPhrase) {
+            setSeedPhraseAuthSuccess(isSuccess = false)
+            return SeedPhraseVerifyResult.Invalid(validatedKeys)
+        }
 
-                SeedPhraseVerifyResult.VerifiedSeedPhrase(validatedKeys)
-            } catch (checkError: MnemonicException) {
-                Timber.i(checkError)
-                updateSeedPhraseAuthFlag(isAuthSuccess = false)
-                SeedPhraseVerifyResult.VerifyByChecksumFailed
-            }
+        return try {
+            MnemonicCode.INSTANCE.check(seedWords)
+            setSeedPhraseAuthSuccess(isSuccess = true)
+            SeedPhraseVerifyResult.Verified(validatedKeys)
+        } catch (checkError: MnemonicException) {
+            Timber.i(checkError)
+            setSeedPhraseAuthSuccess(isSuccess = false)
+            SeedPhraseVerifyResult.VerificationFailed
         }
     }
 
-    private fun updateSeedPhraseAuthFlag(isAuthSuccess: Boolean) {
+    private fun setSeedPhraseAuthSuccess(isSuccess: Boolean) {
         sharedPreferences.edit {
-            putBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, isAuthSuccess)
+            putBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, isSuccess)
         }
     }
 }

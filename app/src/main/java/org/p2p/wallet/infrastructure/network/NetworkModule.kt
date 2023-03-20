@@ -10,13 +10,18 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
-import org.p2p.solanaj.kits.transaction.network.MessageResponseDeserialization
-import org.p2p.solanaj.kits.transaction.network.transaction.MessageResponse
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
+import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule.REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER
+import org.p2p.wallet.bridge.BridgeModule
 import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Base58TypeAdapter
@@ -33,15 +38,11 @@ import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
+import org.p2p.wallet.jupiter.JupiterModule.JUPITER_RETROFIT_QUALIFIER
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
-import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.math.BigDecimal
-import java.util.concurrent.TimeUnit
 
 object NetworkModule : InjectionModule {
 
@@ -66,7 +67,6 @@ object NetworkModule : InjectionModule {
                 .registerTypeAdapter(BigDecimal::class.java, BigDecimalTypeAdapter)
                 .registerTypeAdapter(Base58String::class.java, Base58TypeAdapter)
                 .registerTypeAdapter(Base64String::class.java, Base64TypeAdapter)
-                .registerTypeAdapter(MessageResponse::class.java, MessageResponseDeserialization)
                 .setLenient()
                 .disableHtmlEscaping()
                 .create()
@@ -92,6 +92,15 @@ object NetworkModule : InjectionModule {
                 baseUrl = rpcApiUrl,
                 tag = "RpcSolana",
                 interceptor = RpcSolanaInterceptor(get())
+            )
+        }
+
+        single(named(BridgeModule.BRIDGE_RETROFIT_QUALIFIER)) {
+            val url = get<NetworkServicesUrlProvider>()
+            getRetrofit(
+                baseUrl = url.loadBridgesServiceEnvironment().baseUrl,
+                tag = "RpcBridge",
+                interceptor = null
             )
         }
 
@@ -121,22 +130,32 @@ object NetworkModule : InjectionModule {
                 interceptor = null
             )
         }
+
+        single(named(JUPITER_RETROFIT_QUALIFIER)) {
+            val baseUrl = androidContext().getString(R.string.jupiterQuoteBaseUrl)
+            getRetrofit(
+                baseUrl = baseUrl,
+                tag = "JupiterQuoteService",
+                interceptor = null
+            )
+        }
     }
 
     fun Scope.getRetrofit(
         baseUrl: String,
         tag: String? = "OkHttpClient",
-        interceptor: Interceptor?
+        interceptor: Interceptor?,
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
+            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(get()))
             .client(getClient(tag, interceptor))
             .build()
     }
 
     fun Scope.httpLoggingInterceptor(logTag: String): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor(DebugHttpLoggingLogger(get(), logTag)).apply {
+        return HttpLoggingInterceptor(DebugHttpLoggingLogger(gson = get(), logTag = logTag)).apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
     }
@@ -146,9 +165,6 @@ object NetworkModule : InjectionModule {
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply {
-                val certificateManager: CertificateManager = get()
-                certificateManager.setCertificate(this)
-
                 if (interceptor != null) {
                     addInterceptor(interceptor)
                 }

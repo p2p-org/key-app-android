@@ -1,9 +1,17 @@
 package org.p2p.wallet.feerelayer.interactor
 
+import java.math.BigInteger
+import kotlinx.coroutines.withContext
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.isLessThan
+import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.programs.SystemProgram
+import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
@@ -14,14 +22,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
-import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.core.utils.isLessThan
-import org.p2p.core.utils.isNotZero
-import org.p2p.core.utils.isZero
-import org.p2p.core.utils.orZero
 import org.p2p.wallet.utils.retryRequest
-import java.math.BigInteger
-import kotlinx.coroutines.withContext
 
 class FeeRelayerInteractor(
     private val feeRelayerRepository: FeeRelayerRepository,
@@ -66,12 +67,20 @@ class FeeRelayerInteractor(
     suspend fun calculateFeeInPayingToken(
         feeInSOL: FeeAmount,
         payingFeeTokenMint: String
-    ): FeeAmount {
-        val tradableTopUpPoolsPair = orcaPoolInteractor.getTradablePoolsPairs(payingFeeTokenMint, WRAPPED_SOL_MINT)
-        val topUpPools = orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(feeInSOL.total, tradableTopUpPoolsPair)
+    ): FeePoolsState {
+        val tradableTopUpPoolsPair = try {
+            orcaPoolInteractor.getTradablePoolsPairs(payingFeeTokenMint, WRAPPED_SOL_MINT)
+        } catch (e: Throwable) {
+            return FeePoolsState.Failed(feeInSOL)
+        }
+        val topUpPools = try {
+            orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(feeInSOL.total, tradableTopUpPoolsPair)
+        } catch (e: Throwable) {
+            return FeePoolsState.Failed(feeInSOL)
+        }
 
         if (topUpPools.isNullOrEmpty()) {
-            throw IllegalStateException("Swap pools not found")
+            return FeePoolsState.Failed(feeInSOL)
         }
 
         val transactionFee = topUpPools.getInputAmount(
@@ -83,7 +92,8 @@ class FeeRelayerInteractor(
             slippage = Slippage.TopUpSlippage.doubleValue
         )
 
-        return FeeAmount(transactionFee.orZero(), accountCreationFee.orZero())
+        val fee = FeeAmount(transactionFee.orZero(), accountCreationFee.orZero())
+        return FeePoolsState.Calculated(fee)
     }
 
     /*

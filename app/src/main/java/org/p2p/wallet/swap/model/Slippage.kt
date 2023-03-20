@@ -25,22 +25,26 @@ sealed class Slippage(val doubleValue: Double, val percentValue: String) : Parce
     object Medium : Slippage(0.005, "0.5%")
 
     @Parcelize
+    object One : Slippage(0.01, "1%")
+
+    @Parcelize
     object TopUpSlippage : Slippage(0.03, "3%")
 
     @Parcelize
     object Five : Slippage(0.05, "5%")
 
     @Parcelize
-    data class Custom(val value: Double) : Slippage(value / PERCENT_DIVIDE_VALUE, "$value")
+    data class Custom(val value: Double) : Slippage(doubleValue = value, "${value.times(PERCENT_DIVIDE_VALUE)}%")
 
     companion object {
-        fun parse(slippage: Double): Slippage =
-            when (slippage) {
+        fun parse(slippageDoubleValue: Double): Slippage =
+            when (slippageDoubleValue) {
                 Min.doubleValue -> Min
                 Medium.doubleValue -> Medium
+                One.doubleValue -> One
                 TopUpSlippage.doubleValue -> TopUpSlippage
                 Five.doubleValue -> Five
-                else -> if (slippage == 0.0) Min else Custom(slippage)
+                else -> if (slippageDoubleValue == 0.0) Min else Custom(slippageDoubleValue)
             }
     }
 }

@@ -4,13 +4,14 @@ import androidx.annotation.StringRes
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchResult
 
 interface NewSearchContract {
 
     interface View : MvpView {
         fun updateSearchInput(recentQuery: String, submit: Boolean)
         fun showUsers(result: List<SearchResult>)
+        fun showSendViaLink(isVisible: Boolean)
         fun clearUsers()
         fun showUsersMessage(@StringRes textRes: Int?)
         fun showLoading(isLoading: Boolean)

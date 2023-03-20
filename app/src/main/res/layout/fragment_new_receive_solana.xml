@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="@string/receive_on_solana" />
+
+    <FrameLayout
+        android:id="@+id/containerQr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <ImageView
+            android:id="@+id/imageViewQr"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_gravity="center"
+            tools:ignore="ContentDescription"
+            tools:src="@tools:sample/avatars" />
+
+        <FrameLayout
+            android:id="@+id/containerWatermark"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_smoke_circle">
+
+            <org.p2p.uikit.atoms.UiKitRoundedImageView
+                android:id="@+id/imageViewWatermark"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_sol"
+                app:cornerRadius="16dp" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_snow_rounded_16"
+        app:layout_constraintBottom_toBottomOf="@+id/layoutUsername"
+        app:layout_constraintEnd_toEndOf="@id/containerAddress"
+        app:layout_constraintStart_toStartOf="@id/containerAddress"
+        app:layout_constraintTop_toTopOf="@+id/containerAddress" />
+
+    <LinearLayout
+        android:id="@+id/containerAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/bg_snow"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/containerQr">
+
+        <TextView
+            android:id="@+id/textViewAddressTitle"
+            style="@style/UiKit.TextAppearance.SemiBold.Text3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/receive_my_sol_address"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewAddress"
+            style="@style/UiKit.TextAppearance.Regular.Label1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintTop_toBottomOf="@id/textViewAddressTitle"
+            tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="32dp"
+        android:background="@color/bg_rain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/containerAddress" />
+
+    <LinearLayout
+        android:id="@+id/layoutUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/separator">
+
+        <TextView
+            android:id="@+id/textViewUsernameTitle"
+            style="@style/UiKit.TextAppearance.SemiBold.Text3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/receive_my_username"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separator" />
+
+        <TextView
+            android:id="@+id/textViewUsername"
+            style="@style/UiKit.TextAppearance.Regular.Label1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintTop_toBottomOf="@id/textViewUsernameTitle"
+            tools:text="username.key" />
+
+    </LinearLayout>
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonAction"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/receive_copy_address"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutUsername"
+        app:layout_constraintVertical_bias="1" />
+
+    <org.p2p.wallet.common.ui.widget.ProgressView
+        android:id="@+id/progressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        tools:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

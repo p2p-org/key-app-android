@@ -12,12 +12,18 @@ class IntercomDeeplinkManager {
     private val intercomClient: Intercom
         get() = Intercom.client()
 
-    fun handleBackgroundDeeplink(data: Uri) {
+    /**
+     * @return true if deeplink was correct and used
+     * */
+    fun handleBackgroundDeeplink(data: Uri): Boolean {
         val uriQueryParams = data.queryParameterNames
         if (QUERY_SURVEY_ID in uriQueryParams) {
             val surveyId = data.getQueryParameter(QUERY_SURVEY_ID).orEmpty()
             deeplinkStack.push(surveyId)
+            return true
         }
+
+        return false
     }
 
     fun handleForegroundDeeplink(params: Map<String, String>) {

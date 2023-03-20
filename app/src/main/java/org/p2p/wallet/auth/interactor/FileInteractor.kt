@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.interactor
 
 import android.content.Context
-import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.common.storage.FileRepository
 import java.io.File
 
 private const val TERMS_OF_USE_PDF = "p2p_terms_of_service.pdf"

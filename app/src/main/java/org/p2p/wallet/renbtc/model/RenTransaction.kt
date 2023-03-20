@@ -3,9 +3,9 @@ package org.p2p.wallet.renbtc.model
 import android.content.Context
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.R
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.scaleMedium
+import org.p2p.wallet.R
 import org.p2p.wallet.renbtc.model.RenTransactionStatus.WaitingDepositConfirm
 
 @Parcelize
@@ -22,7 +22,7 @@ data class RenTransaction(
             val scaleMedium = if (amount.isNotZero()) amount.scaleMedium() else "N/A"
             context.getString(R.string.receive_renbtc_format, scaleMedium)
         } else {
-            context.getString(R.string.main_mint_renbtc)
+            context.getString(R.string.common_mint)
         }
     }
 

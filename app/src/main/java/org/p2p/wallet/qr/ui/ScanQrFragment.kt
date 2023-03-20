@@ -25,8 +25,8 @@ import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.PermissionsDialog
 import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.root.SystemIconsStyle
-import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutMiddle
@@ -66,7 +66,7 @@ class ScanQrFragment :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private var isPermissionsRequested = false
     private var isCameraStarted = false
-    private val sendAnalytics: SendAnalytics by inject()
+    private val sendAnalytics: NewSendAnalytics by inject()
 
     override val presenter = NoOpPresenter<ScanQrContract.View>()
 
@@ -221,7 +221,7 @@ class ScanQrFragment :
         sendAnalytics.logSendQrGoingBack(
             qrCameraIsAvailable = isCameraStarted,
             qrGalleryIsAvailable = false,
-            SendAnalytics.QrTab.CAMERA
+            NewSendAnalytics.QrTab.CAMERA
         )
         popBackStack()
     }

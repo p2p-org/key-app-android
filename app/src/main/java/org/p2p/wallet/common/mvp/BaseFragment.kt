@@ -3,8 +3,6 @@ package org.p2p.wallet.common.mvp
 import androidx.annotation.AnimRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
@@ -14,6 +12,8 @@ import android.view.animation.AnimationUtils
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.common.TextContainer
+import org.p2p.core.utils.insets.appleInsetPadding
+import org.p2p.core.utils.insets.consume
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.natives.UiKitSnackbarStyle
@@ -31,14 +31,13 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.SystemIconsStyle
-import org.p2p.wallet.send.ui.main.SendFragment
-import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
@@ -110,15 +109,15 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     }
 
     protected open fun applyWindowInsets(rootView: View) {
-        rootView.doOnApplyWindowInsets { view, insets, initialPadding ->
-            val systemAndIme = insets.systemAndIme()
-            view.updatePadding(
-                left = initialPadding.left + systemAndIme.left,
-                top = initialPadding.top + systemAndIme.top,
-                right = initialPadding.right + systemAndIme.right,
-                bottom = initialPadding.bottom + systemAndIme.bottom,
-            )
-            WindowInsetsCompat.CONSUMED
+        rootView.doOnApplyWindowInsets { view, insets, _ ->
+            insets.systemAndIme().consume {
+                view.appleInsetPadding(
+                    left = this.left,
+                    top = this.top,
+                    right = this.right,
+                    bottom = this.bottom,
+                )
+            }
         }
     }
 
@@ -143,14 +142,13 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is NewSettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
         is SecurityFragment -> ScreenNames.Settings.SECURITY
-        is NetworkSelectionFragment -> ScreenNames.Send.NETWORK
         is OrcaSwapFragment -> ScreenNames.Swap.MAIN
         is TokenHistoryFragment -> ScreenNames.Token.TOKEN_SCREEN
         is SignInPinFragment -> ScreenNames.Lock.SCREEN
         is HistoryFragment -> ScreenNames.Main.MAIN_HISTORY
         is ReceiveSolanaFragment -> ScreenNames.Receive.SOLANA
         is ReceiveNetworkTypeFragment -> ScreenNames.Receive.NETWORK
-        is SendFragment -> ScreenNames.Send.MAIN
+        is NewSendFragment -> ScreenNames.Send.MAIN
         else -> emptyString()
     }
 

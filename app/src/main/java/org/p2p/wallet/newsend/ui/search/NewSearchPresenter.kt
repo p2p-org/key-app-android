@@ -1,22 +1,25 @@
 package org.p2p.wallet.newsend.ui.search
 
-import org.p2p.core.token.Token
-import org.p2p.solanaj.core.PublicKey
-import org.p2p.wallet.R
-import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.newsend.model.SearchState
-import org.p2p.wallet.send.interactor.SearchInteractor
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.SearchTarget
-import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.newsend.interactor.SearchInteractor
+import org.p2p.wallet.newsend.model.AddressState
+import org.p2p.wallet.newsend.model.NetworkType
+import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchState
+import org.p2p.wallet.newsend.model.SearchTarget
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.toBase58Instance
 
 private const val DELAY_IN_MS = 250L
 
@@ -25,7 +28,8 @@ class NewSearchPresenter(
     private val searchInteractor: SearchInteractor,
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val userInteractor: UserInteractor,
-    private val newSendAnalytics: NewSendAnalytics
+    private val newSendAnalytics: NewSendAnalytics,
+    private val sendViaLinkFeatureToggle: SendViaLinkFeatureToggle
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
     private var state = SearchState()
@@ -54,28 +58,33 @@ class NewSearchPresenter(
     private fun renderCurrentState() {
         when (val currentState = state.state) {
             is SearchState.State.UsersFound -> {
+                showSendViaLinkContainer(isVisible = false)
                 view?.showUsers(currentState.users)
                 view?.showUsersMessage(R.string.search_found)
                 view?.updateSearchInput(currentState.query, submit = false)
                 view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.UsersNotFound -> {
+                showSendViaLinkContainer(isVisible = false)
                 view?.showNotFound()
                 view?.showUsersMessage(null)
                 view?.updateSearchInput(currentState.query, submit = false)
                 view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.ShowInvalidAddresses -> {
+                showSendViaLinkContainer(isVisible = false)
                 view?.showUsers(currentState.users)
                 view?.showUsersMessage(R.string.search_found)
                 view?.showBackgroundVisible(isVisible = false)
             }
             is SearchState.State.ShowRecipients -> {
+                showSendViaLinkContainer(isVisible = true)
                 view?.showUsers(currentState.recipients)
                 view?.showUsersMessage(R.string.search_recently)
                 view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.ShowEmptyState -> {
+                showSendViaLinkContainer(isVisible = true)
                 view?.showEmptyState(isEmpty = true)
                 view?.showUsersMessage(null)
                 view?.clearUsers()
@@ -130,11 +139,11 @@ class NewSearchPresenter(
         view?.showScanner()
     }
 
-    fun checkPreselectedTokenAndSubmitResult(result: SearchResult) {
+    private fun checkPreselectedTokenAndSubmitResult(result: SearchResult) {
         launch {
             val finalResult: SearchResult
             val preselectedToken: Token.Active?
-            if (result is SearchResult.AddressFound) {
+            if (result is SearchResult.AddressFound && result.networkType == NetworkType.SOLANA) {
                 val balance = userInteractor.getBalance(result.addressState.address.toBase58Instance())
                 finalResult = result.copyWithBalance(balance)
                 preselectedToken = result.sourceToken ?: initialToken
@@ -149,10 +158,16 @@ class NewSearchPresenter(
         }
     }
 
+    private fun showSendViaLinkContainer(isVisible: Boolean) {
+        val isEnabledAndVisible = sendViaLinkFeatureToggle.isFeatureEnabled && isVisible
+        view?.showSendViaLink(isVisible = isEnabledAndVisible)
+    }
+
     private suspend fun validateAndSearch(target: SearchTarget) {
         when (target.validation) {
             SearchTarget.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
             SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.ETHEREUM_TYPE_ADDRESS -> searchByEthereumAddress(target.value)
             SearchTarget.Validation.EMPTY -> renderCurrentState()
             else -> showNotFound()
         }
@@ -161,6 +176,7 @@ class NewSearchPresenter(
     private suspend fun validateOnlyAddress(target: SearchTarget) {
         when (target.validation) {
             SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.ETHEREUM_TYPE_ADDRESS -> searchByEthereumAddress(target.value)
             else -> {
                 view?.showErrorState()
                 view?.showUsersMessage(textRes = null)
@@ -185,6 +201,16 @@ class NewSearchPresenter(
         }
 
         val newAddresses = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance(), initialToken)
+        state.updateSearchResult(address, listOf(newAddresses))
+        renderCurrentState()
+    }
+
+    private fun searchByEthereumAddress(address: String) {
+        // TODO make searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance(), initialToken)
+        val newAddresses = SearchResult.AddressFound(
+            addressState = AddressState(address),
+            networkType = NetworkType.ETHEREUM
+        )
         state.updateSearchResult(address, listOf(newAddresses))
         renderCurrentState()
     }

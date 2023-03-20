@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/bg_smoke"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageViewClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/common_close"
+        android:padding="16dp"
+        android:src="@drawable/ic_close" />
+
+    <LinearLayout
+        android:id="@+id/viewContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/send_via_link_ready"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title1" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerSendViaLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@color/bg_snow"
+            android:foreground="?selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <org.p2p.uikit.atoms.UiKitRoundedImageView
+                android:id="@+id/imageViewLink"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginVertical="12dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/bg_rain"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_copy_link"
+                app:cornerRadius="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
+                app:layout_constraintBottom_toTopOf="@id/textViewSubtitle"
+                app:layout_constraintEnd_toStartOf="@id/imageViewCopy"
+                app:layout_constraintStart_toEndOf="@+id/imageViewLink"
+                app:layout_constraintTop_toTopOf="@+id/imageViewLink"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="7.12 SOL" />
+
+            <TextView
+                android:id="@+id/textViewSubtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="6dp"
+                android:drawablePadding="8dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+                android:textColor="@color/text_mountain"
+                app:layout_constraintBottom_toBottomOf="@+id/imageViewLink"
+                app:layout_constraintEnd_toStartOf="@id/imageViewCopy"
+                app:layout_constraintStart_toEndOf="@+id/imageViewLink"
+                app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+                tools:text="key.app/Ro8Andswf" />
+
+            <ImageView
+                android:id="@+id/imageViewCopy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/amp_label_copy"
+                android:padding="16dp"
+                android:src="@drawable/ic_copy"
+                app:layout_constraintBottom_toBottomOf="@id/imageViewLink"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/textViewTitle"
+                app:layout_constraintTop_toTopOf="@id/imageViewLink" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:gravity="center"
+            android:text="@string/send_via_link_return_back"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textColor="@color/text_mountain" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/viewError"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/common_sorry"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            app:drawableTopCompat="@drawable/ic_cat" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/sell_error_body_message"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1" />
+
+    </LinearLayout>
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonAction"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="@string/common_go_back" />
+</FrameLayout>

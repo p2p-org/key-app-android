@@ -3,52 +3,57 @@ package org.p2p.wallet.history.analytics
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 
+private const val HISTORY_OPENED = "History_Opened"
 private const val HISTORY_SEND_CLICKED = "History_Send_Clicked"
 
 class HistoryAnalytics(
     private val tracker: Analytics,
-    private val sendAnalytics: SendAnalytics,
+    private val sendAnalytics: NewSendAnalytics,
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
 ) {
 
-    fun logSwapTransactionClicked(transaction: HistoryTransaction.Swap) {
+    fun onScreenOpened() {
+        tracker.logEvent(event = HISTORY_OPENED)
+    }
+
+    fun logSwapTransactionClicked(transaction: RpcHistoryTransaction.Swap) {
         swapAnalytics.logSwapShowingDetails(
             swapStatus = SwapAnalytics.SwapStatus.SUCCESS,
             lastScreenName = analyticsInteractor.getPreviousScreenName(),
             tokenAName = transaction.sourceSymbol,
             tokenBName = transaction.destinationSymbol,
-            swapSum = transaction.amountA,
-            swapUSD = transaction.amountSentInUsd.orZero(),
+            swapSum = transaction.receiveAmount.total,
+            swapUSD = transaction.sentAmount.totalInUsd.orZero(),
             feesSource = SwapAnalytics.FeeSource.UNKNOWN
         )
     }
 
     fun logTransferTransactionClicked(
-        transaction: HistoryTransaction.Transfer,
+        transaction: RpcHistoryTransaction.Transfer,
         isRenBtcSessionActive: Boolean
     ) {
         if (transaction.isSend) {
             val sendNetwork = if (isRenBtcSessionActive) {
-                SendAnalytics.AnalyticsSendNetwork.BITCOIN
+                NewSendAnalytics.AnalyticsSendNetwork.BITCOIN
             } else {
-                SendAnalytics.AnalyticsSendNetwork.SOLANA
+                NewSendAnalytics.AnalyticsSendNetwork.SOLANA
             }
             sendAnalytics.logSendShowingDetails(
-                sendStatus = SendAnalytics.SendStatus.SUCCESS,
+                sendStatus = NewSendAnalytics.SendStatus.SUCCESS,
                 lastScreenName = analyticsInteractor.getPreviousScreenName(),
-                tokenName = transaction.tokenData.symbol,
+                tokenName = transaction.symbol,
                 sendNetwork = sendNetwork,
-                sendSum = transaction.total,
-                sendUSD = transaction.totalInUsd.orZero()
+                sendSum = transaction.amount.total,
+                sendUSD = transaction.amount.totalInUsd.orZero()
             )
         } else {
             val receiveNetwork = if (isRenBtcSessionActive) {
@@ -57,9 +62,9 @@ class HistoryAnalytics(
                 ReceiveAnalytics.ReceiveNetwork.SOLANA
             }
             receiveAnalytics.logReceiveShowingDetails(
-                receiveSum = transaction.total,
-                receiveUSD = transaction.totalInUsd.orZero(),
-                tokenName = transaction.tokenData.symbol,
+                receiveSum = transaction.amount.total,
+                receiveUSD = transaction.amount.totalInUsd.orZero(),
+                tokenName = transaction.symbol,
                 receiveNetwork = receiveNetwork
             )
         }

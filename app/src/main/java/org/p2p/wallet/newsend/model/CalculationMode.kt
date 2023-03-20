@@ -7,6 +7,7 @@ import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isZero
 import org.p2p.core.utils.lessThenMinValue
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
@@ -121,7 +122,7 @@ class CalculationMode(
         return if (token.isSOL) {
             val maxAllowedAmount = token.totalInLamports - minRentExemption
             val amountInLamports = tokenAmount.toLamports(token.decimals)
-            inputAmount.isEmpty() || amountInLamports > maxAllowedAmount && amountInLamports < token.totalInLamports
+            inputAmount.isEmpty() || amountInLamports >= maxAllowedAmount && amountInLamports < token.totalInLamports
         } else {
             inputAmount.isEmpty()
         }
@@ -156,7 +157,7 @@ class CalculationMode(
 
     private fun calculateByToken(inputAmount: String) {
         tokenAmount = inputAmount.toBigDecimalOrZero()
-        usdAmount = tokenAmount.multiply(token.usdRateOrZero)
+        usdAmount = if (tokenAmount.isZero()) BigDecimal.ZERO else tokenAmount.multiply(token.usdRateOrZero)
 
         handleCalculateUsdAmountUpdate()
     }
