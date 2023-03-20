@@ -2,21 +2,21 @@ package org.p2p.wallet.bridge.claim.model
 
 import com.google.gson.annotations.SerializedName
 
-enum class ClaimStatus() {
+enum class ClaimStatus {
     @SerializedName("pending")
-    PENDING(),
+    PENDING,
 
     @SerializedName("failed")
-    FAILED(),
+    FAILED,
 
     @SerializedName("canceled")
-    CANCELED(),
+    CANCELED,
 
     @SerializedName("in_progress")
-    IN_PROGRESS(),
+    IN_PROGRESS,
 
     @SerializedName("completed")
-    COMPLETED();
+    COMPLETED;
 
     fun canBeClaimed() = this != IN_PROGRESS && this != PENDING
 }
