@@ -130,7 +130,9 @@ class ClaimPresenter(
             fee.asApproximateUsd(withBraces = false)
         }
         view?.showFee(TextViewCellModel.Raw(TextContainer(feeValue)))
-        if (!isFree) {
+        val totalFees: BigDecimal
+        if (isFree) {
+            totalFees = BigDecimal.ZERO
             claimDetails = ClaimDetails(
                 willGetAmount = BridgeAmount(
                     tokenSymbol,
@@ -146,8 +148,10 @@ class ClaimPresenter(
                 accountCreationFee = fees.createAccount.toBridgeAmount(tokenSymbol, decimals),
                 bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
             )
+        } else {
+            totalFees = feeList.sumOf { it.amountInToken(decimals) }
         }
-        val totalFees = feeList.sumOf { it.amountInToken(decimals) }
+
         val finalValue = tokenToClaim.total - totalFees
         view?.showClaimButtonValue("${finalValue.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}")
         view?.setClaimButtonState(isButtonEnabled = true)
