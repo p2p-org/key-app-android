@@ -25,6 +25,8 @@ object Constants {
 
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
     const val WRAPPED_ETH_MINT = "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"
+    const val WRAPPED_BTC_MINT = "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh"
+
     const val FEE_RELAYER_ACCOUNT = "FG4Y3yX4AAchp1HvNZ7LfzFTewF2f6nDoMDCohTFrdpT"
     const val SWAP_FEE_RELAYER_ACCOUNT = "JdYkwaUrvoeYsCbPgnt3AAa1qzjV2CtoRqU3bzuAvQu"
     val FEE_RELAYER_ACCOUNTS = listOf(
@@ -41,6 +43,7 @@ object Constants {
 
     const val SOL_NAME = "Solana"
     const val ETH_NAME = "Ethereum"
+    const val BTC_NAME = "Bitcoin"
 
     const val DEVICE_TYPE = "Android"
 
