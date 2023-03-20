@@ -216,7 +216,8 @@ class JupiterSwapPresenter(
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
             is SwapState.RoutesLoaded,
-            is SwapState.LoadingTransaction -> swapInteractor.getTokenAAmount(featureState)
+            is SwapState.LoadingTransaction,
+            -> swapInteractor.getTokenAAmount(featureState)
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
             null -> null
         }
@@ -250,15 +251,13 @@ class JupiterSwapPresenter(
     private fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
         return when (featureState) {
             null,
-            SwapState.InitialLoading,
-            -> false
+            SwapState.InitialLoading -> false
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction,
             is SwapState.SwapLoaded,
             is SwapState.TokenANotZero,
             is SwapState.RoutesLoaded,
-            is SwapState.TokenAZero,
-            -> true
+            is SwapState.TokenAZero -> true
             is SwapState.SwapException ->
                 isChangeTokenScreenAvailable(featureState.previousFeatureState)
         }
