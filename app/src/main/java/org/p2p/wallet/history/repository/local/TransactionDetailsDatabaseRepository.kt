@@ -9,7 +9,7 @@ class TransactionDetailsDatabaseRepository(
     private val daoDelegate: TransactionsDaoDelegate,
     private val mapper: TransactionDetailsEntityMapper,
 ) : TransactionDetailsLocalRepository {
-    private val pendingTransactions = HashMap<String, HistoryTransaction?>()
+    private val pendingTransactions = mutableMapOf<String, HistoryTransaction?>()
 
     override suspend fun getTransactions(signatures: List<String>): List<TransactionDetails> {
         return daoDelegate.getTransactions(signatures)

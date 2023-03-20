@@ -16,12 +16,12 @@ class HistoryRepository(
 
     override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
         val result = repositories.map { it.loadHistory(limit, mintAddress) }
-        return parsePagingResult(result)
+        return parsePagingResult(pagingResult = result, addPendingItems = mintAddress == null)
     }
 
     override suspend fun loadNextPage(limit: Int, mintAddress: String?): HistoryPagingResult {
         val result = repositories.map { it.loadNextPage(limit, mintAddress) }
-        return parsePagingResult(result)
+        return parsePagingResult(pagingResult = result, addPendingItems = mintAddress == null)
     }
 
     override suspend fun findTransactionById(id: String): HistoryTransaction? {
@@ -42,7 +42,10 @@ class HistoryRepository(
         }
     }
 
-    private suspend fun parsePagingResult(pagingResult: List<HistoryPagingResult>): HistoryPagingResult =
+    private suspend fun parsePagingResult(
+        pagingResult: List<HistoryPagingResult>,
+        addPendingItems: Boolean,
+    ): HistoryPagingResult =
         withContext(dispatchers.io) {
             val newTransactions = mutableListOf<HistoryTransaction>()
             val errorMessageBuilder = StringBuilder()
@@ -62,14 +65,20 @@ class HistoryRepository(
                 return@withContext HistoryPagingResult.Error(Throwable(errorMessage))
             }
             val newTransactionIds = newTransactions.map { it.getHistoryTransactionId() }
-            localRepository.getAllPendingTransactions().forEach {
-                if (it.getHistoryTransactionId() in newTransactionIds)
-                    localRepository.removePendingTransaction(it.getHistoryTransactionId())
-            }
-            val pendingTransactions = localRepository.getAllPendingTransactions()
+            val pendingItems = getPendingTransactions(newTransactionIds).takeIf { addPendingItems } ?: emptyList()
 
-            return@withContext (pendingTransactions + newTransactions).sortedByDescending { transaction ->
+            return@withContext (pendingItems + newTransactions).sortedByDescending { transaction ->
                 transaction.date.dateMilli()
             }.let(HistoryPagingResult::Success)
         }
+
+    private suspend fun getPendingTransactions(newTransactionIds: List<String>): List<HistoryTransaction> {
+        localRepository.getAllPendingTransactions().forEach { localItem ->
+            val txSignature = localItem.getHistoryTransactionId()
+            if (txSignature in newTransactionIds) {
+                localRepository.removePendingTransaction(txSignature)
+            }
+        }
+        return localRepository.getAllPendingTransactions()
+    }
 }

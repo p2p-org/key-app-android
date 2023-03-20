@@ -189,22 +189,7 @@ class JupiterSwapPresenter(
                     val transactionState = TransactionState.JupiterSwapSuccess
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
 
-                    val pendingTransaction = RpcHistoryTransaction.Swap(
-                        signature = result.signature,
-                        date = ZonedDateTime.now(),
-                        blockNumber = -1,
-                        status = HistoryTransactionStatus.PENDING,
-                        type = RpcHistoryTransactionType.SWAP,
-                        sourceSymbol = currentState.tokenA.tokenSymbol,
-                        sourceAddress = currentState.tokenA.mintAddress.toString(),
-                        destinationAddress = currentState.tokenB.mintAddress.toString(),
-                        fees = emptyList(),
-                        receiveAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
-                        sentAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
-                        sourceIconUrl = currentState.tokenA.iconUrl,
-                        destinationSymbol = currentState.tokenB.tokenSymbol,
-                        destinationIconUrl = currentState.tokenB.iconUrl
-                    )
+                    val pendingTransaction = buildPendingTransaction(result, currentState)
                     historyInteractor.addPendingTransaction(result.signature, pendingTransaction)
                     view?.showDefaultSlider()
                 }
@@ -231,8 +216,7 @@ class JupiterSwapPresenter(
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
             is SwapState.RoutesLoaded,
-            is SwapState.LoadingTransaction,
-            -> swapInteractor.getTokenAAmount(featureState)
+            is SwapState.LoadingTransaction -> swapInteractor.getTokenAAmount(featureState)
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
             null -> null
         }
@@ -663,5 +647,27 @@ class JupiterSwapPresenter(
 
     private fun SwapState.getTokensPair(): Pair<SwapTokenModel?, SwapTokenModel?> {
         return swapInteractor.getSwapTokenPair(this)
+    }
+
+    private fun buildPendingTransaction(
+        result: JupiterSwapInteractor.JupiterSwapTokensResult.Success,
+        currentState: SwapState.SwapLoaded,
+    ): RpcHistoryTransaction.Swap {
+        return RpcHistoryTransaction.Swap(
+            signature = result.signature,
+            date = ZonedDateTime.now(),
+            blockNumber = -1,
+            status = HistoryTransactionStatus.PENDING,
+            type = RpcHistoryTransactionType.SWAP,
+            sourceSymbol = currentState.tokenA.tokenSymbol,
+            sourceAddress = currentState.tokenA.mintAddress.toString(),
+            destinationAddress = currentState.tokenB.mintAddress.toString(),
+            fees = emptyList(),
+            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
+            sentAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            sourceIconUrl = currentState.tokenA.iconUrl,
+            destinationSymbol = currentState.tokenB.tokenSymbol,
+            destinationIconUrl = currentState.tokenB.iconUrl
+        )
     }
 }
