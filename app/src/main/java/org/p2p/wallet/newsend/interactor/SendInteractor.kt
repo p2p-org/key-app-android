@@ -48,7 +48,7 @@ class SendInteractor(
     private val transactionInteractor: TransactionInteractor,
     private val amountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val dispatchers: CoroutineDispatchers,
+    private val dispatchers: CoroutineDispatchers
 ) {
 
     /*
@@ -84,7 +84,7 @@ class SendInteractor(
         feePayerToken: Token.Active,
         token: Token.Active,
         recipient: String,
-        useCache: Boolean = true,
+        useCache: Boolean = true
     ): FeeCalculationState {
         try {
             val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
@@ -146,7 +146,7 @@ class SendInteractor(
         userTokens: List<Token.Active>,
         feePayerToExclude: Token.Active,
         transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
     ): List<Token.Active> = withContext(dispatchers.io) {
         val tokenToExclude = feePayerToExclude.tokenSymbol
         val fees = userTokens
@@ -180,7 +180,7 @@ class SendInteractor(
         destinationAddress: PublicKey,
         token: Token.Active,
         lamports: BigInteger,
-        memo: String? = null,
+        memo: String? = null
     ): String = withContext(dispatchers.io) {
 
         val preparedTransaction = prepareForSending(
@@ -225,7 +225,7 @@ class SendInteractor(
     private suspend fun getFeesInPayingTokeNullable(
         token: Token.Active,
         transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
     ): Pair<String, FeeAmount>? = try {
         val feeInSpl = getFeesInPayingToken(
             feePayerToken = token,
@@ -246,7 +246,7 @@ class SendInteractor(
     private suspend fun getFeesInPayingToken(
         feePayerToken: Token.Active,
         transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
     ): FeePoolsState {
         if (feePayerToken.isSOL) {
             val fee = FeeAmount(
@@ -269,7 +269,7 @@ class SendInteractor(
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null,
         minRentExemption: BigInteger? = null,
-        memo: String?,
+        memo: String?
     ): PreparedTransaction {
         val sender = token.publicKey
 
@@ -314,7 +314,7 @@ class SendInteractor(
         lamports: BigInteger,
         feePayerPublicKey: PublicKey? = null,
         recentBlockhash: String? = null,
-        lamportsPerSignature: BigInteger? = null,
+        lamportsPerSignature: BigInteger? = null
     ): PreparedTransaction {
         val account = Account(tokenKeyProvider.keyPair)
 
@@ -347,7 +347,7 @@ class SendInteractor(
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null,
         minBalanceForRentExemption: BigInteger? = null,
-        memo: String? = null,
+        memo: String? = null
     ): Pair<PreparedTransaction, String> {
         val account = Account(tokenKeyProvider.keyPair)
 

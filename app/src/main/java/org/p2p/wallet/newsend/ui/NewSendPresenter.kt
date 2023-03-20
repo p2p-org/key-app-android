@@ -61,7 +61,7 @@ class NewSendPresenter(
     private val newSendAnalytics: NewSendAnalytics,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
-    private val historyInteractor: HistoryInteractor,
+    private val historyInteractor: HistoryInteractor
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private var token: Token.Active? by observable(null) { _, _, newToken ->
@@ -178,7 +178,7 @@ class NewSendPresenter(
 
     private fun handleUpdateFee(
         feeRelayerState: FeeRelayerState.UpdateFee,
-        view: NewSendContract.View,
+        view: NewSendContract.View
     ) {
         val sourceToken = requireToken()
         val total = feeRelayerManager.buildTotalFee(
@@ -196,7 +196,7 @@ class NewSendPresenter(
 
     private fun handleFeeRelayerStateUpdate(
         newState: FeeRelayerState,
-        view: NewSendContract.View,
+        view: NewSendContract.View
     ) {
         when (newState) {
             is FeeRelayerState.UpdateFee -> {
@@ -218,7 +218,7 @@ class NewSendPresenter(
     private suspend fun initializeFeeRelayer(
         view: NewSendContract.View,
         initialToken: Token.Active,
-        solToken: Token.Active,
+        solToken: Token.Active
     ) {
         view.setFeeLabel(resources.getString(R.string.send_fees))
         view.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
@@ -422,7 +422,7 @@ class NewSendPresenter(
         token: Token.Active,
         feePayerToken: Token.Active?,
         strategy: FeePayerSelectionStrategy,
-        useCache: Boolean = true,
+        useCache: Boolean = true
     ) {
         feePayerJob?.cancel()
         feePayerJob = launch {
