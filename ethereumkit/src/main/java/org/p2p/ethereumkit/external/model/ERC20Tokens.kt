@@ -82,20 +82,6 @@ enum class ERC20Tokens(
         coingeckoId = "curve-dao-token",
         tokenIconUrl = "https://assets.coingecko.com/coins/images/12124/large/Curve.png?1597369484",
         replaceTokenName = "Curve DAO Token"
-    ),
-    UST(
-        contractAddress = "0xa693b19d2931d498c5b318df961919bb4aee87a5",
-        mintAddress = "9vMJfxuKxXBoEa7rM12mYLMwTacLMLDJqHozw96WQL8i",
-        coingeckoId = "terrausd",
-        replaceTokenName = "UST",
-        tokenIconUrl = null // TODO!
-    ),
-    LUNA(
-        contractAddress = "0xbd31ea8212119f94a611fa969881cba3ea06fa3d",
-        mintAddress = "F6v4wfAdJB8D8p77bMXZgYt8TDKsYxLYxH5AFhUkYx9W",
-        coingeckoId = "terra-luna",
-        replaceTokenName = "LUNA",
-        tokenIconUrl = null // TODO!
     );
 
     companion object {
