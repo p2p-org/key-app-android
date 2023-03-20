@@ -308,8 +308,6 @@ class JupiterSwapPresenter(
     }
 
     private fun handleOtherException(state: SwapState.SwapException.OtherException) {
-        Timber.e(state.exception)
-
         rateTickerManager.handleSwapException(state)
         mapWidgetStates(state)
         retryAction = {

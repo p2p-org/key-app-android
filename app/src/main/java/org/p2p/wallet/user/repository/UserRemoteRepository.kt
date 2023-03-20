@@ -1,5 +1,6 @@
 package org.p2p.wallet.user.repository
 
+import timber.log.Timber
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
@@ -81,10 +82,16 @@ class UserRemoteRepository(
     }
 
     private suspend fun loadAndSaveUserTokens(tokenIds: List<String>) {
-        val prices = tokenPricesRepository.getTokenPriceByIds(
-            tokenIds.map { tokenId -> TokenId(id = tokenId) },
-            USD_READABLE_SYMBOL
-        )
+        val prices = try {
+            tokenPricesRepository.getTokenPriceByIds(
+                tokenIds = tokenIds.map { tokenId -> TokenId(id = tokenId) },
+                targetCurrency = USD_READABLE_SYMBOL
+            )
+        } catch (priceError: Throwable) {
+            Timber.e(priceError, "Failed to fetch initial prices")
+            emptyList()
+        }
+
         userLocalRepository.setTokenPrices(prices)
     }
 

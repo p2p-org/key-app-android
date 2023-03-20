@@ -20,12 +20,13 @@ class SwapTokensBMapper(private val commonMapper: SwapTokensCommonMapper) {
         allTokens: List<SwapTokenModel>
     ): List<AnyCellItem> = buildList {
         with(commonMapper) {
-            val usdcToken = allTokens.find { it.tokenSymbol.equals(Constants.USDC_SYMBOL, ignoreCase = true) }
-            val usdtToken = allTokens.find { it.tokenSymbol.equals(Constants.USDT_SYMBOL, ignoreCase = true) }
-            val solToken = allTokens.find { it.tokenSymbol.equals(Constants.SOL_SYMBOL, ignoreCase = true) }
-            val ethToken = allTokens.find { it.tokenSymbol.equals(Constants.ETH_SYMBOL, ignoreCase = true) }
+            val usdcToken = allTokens.find { it.mintAddress.base58Value == Constants.USDC_MINT }
+            val usdtToken = allTokens.find { it.mintAddress.base58Value == Constants.USDT_MINT }
+            val solToken = allTokens.find { it.mintAddress.base58Value == Constants.WRAPPED_SOL_MINT }
+            val btcToken = allTokens.find { it.mintAddress.base58Value == Constants.WRAPPED_BTC_MINT }
+            val ethToken = allTokens.find { it.mintAddress.base58Value == Constants.WRAPPED_ETH_MINT }
 
-            val popularTokens = listOfNotNull(usdcToken, usdtToken, solToken, ethToken)
+            val popularTokens = listOfNotNull(usdcToken, usdtToken, solToken, btcToken, ethToken)
             // order matters
             val popularTokensModels = popularTokens
                 .filterNot { it.isSelectedToken(selectedTokenModel) }
