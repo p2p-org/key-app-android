@@ -21,6 +21,7 @@ enum class ERC20Tokens(
     val tokenIconUrl: String? = null,
     val replaceTokenName: String? = null,
     val replaceTokenSymbol: String? = null,
+    val receiveFromTokens: List<String> = listOf(mintAddress),
 ) {
     USDC(
         contractAddress = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -28,7 +29,11 @@ enum class ERC20Tokens(
         coingeckoId = USDC_COINGECKO_ID,
         tokenIconUrl = "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png?1547042389",
         replaceTokenName = "USD Coin",
-        replaceTokenSymbol = USDC_SYMBOL
+        replaceTokenSymbol = USDC_SYMBOL,
+        receiveFromTokens = listOf(
+            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM"
+        )
     ),
     USDT(
         contractAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -36,7 +41,11 @@ enum class ERC20Tokens(
         coingeckoId = USDT_COINGECKO_ID,
         tokenIconUrl = "https://assets.coingecko.com/coins/images/325/large/Tether.png?1668148663",
         replaceTokenName = "Tether USD",
-        replaceTokenSymbol = USDT_SYMBOL
+        replaceTokenSymbol = USDT_SYMBOL,
+        receiveFromTokens = listOf(
+            "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+            "Dn4noZ5jgGfkntzcQSUZ8czkreiZ1ForXYoV2H8Dm7S1"
+        )
     ),
     ETH(
         contractAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -44,7 +53,11 @@ enum class ERC20Tokens(
         coingeckoId = ETH_COINGECKO_ID,
         tokenIconUrl = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
         replaceTokenName = ETH_NAME,
-        replaceTokenSymbol = ETH_SYMBOL
+        replaceTokenSymbol = ETH_SYMBOL,
+        receiveFromTokens = listOf(
+            "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk",
+            WRAPPED_ETH_MINT
+        )
     ),
     SOL(
         contractAddress = "0xD31a59c85aE9D8edEFeC411D448f90841571b89c",
