@@ -1,49 +1,34 @@
 package org.p2p.wallet.bridge.claim.ui
 
 import android.content.res.Resources
-import android.view.Gravity
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
-import java.math.BigDecimal
-import java.util.Date
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
-import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.asApproximateUsd
-import org.p2p.core.utils.asPositiveUsdTransaction
-import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isConnectionError
-import org.p2p.core.utils.isNullOrZero
-import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleMedium
-import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
 import org.p2p.core.wrapper.HexString
 import org.p2p.ethereumkit.external.repository.EthereumRepository
-import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
-import org.p2p.wallet.bridge.model.BridgeAmount
-import org.p2p.wallet.bridge.model.BridgeBundleFee
+import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
-import org.p2p.wallet.utils.toPx
 
 const val DEFAULT_DELAY_IN_MILLIS = 30_000L
 
@@ -53,6 +38,7 @@ class ClaimPresenter(
     private val userLocalRepository: UserLocalRepository,
     private val ethereumRepository: EthereumRepository,
     private val transactionManager: TransactionManager,
+    private val claimUiMapper: ClaimUiMapper,
     private val resources: Resources,
     private val appScope: AppScope,
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
@@ -71,10 +57,12 @@ class ClaimPresenter(
         }
         startRefreshJob()
         view.apply {
-            setTitle(resources.getString(R.string.bridge_claim_title_format, tokenToClaim.tokenSymbol))
-            setTokenIconUrl(tokenToClaim.iconUrl)
-            setTokenAmount("${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}")
-            setFiatAmount(tokenToClaim.totalInUsd.orZero().asApproximateUsd(withBraces = false))
+            claimUiMapper.mapScreenData(tokenToClaim).apply {
+                setTitle(title)
+                setTokenIconUrl(tokenIconUrl)
+                setTokenAmount(tokenFormattedAmount)
+                setFiatAmount(fiatFormattedAmount)
+            }
         }
     }
 
@@ -85,16 +73,7 @@ class ClaimPresenter(
             latestTransactions = emptyList()
             claimDetails = null
             view?.setClaimButtonState(isButtonEnabled = false)
-            view?.showFee(
-                TextViewCellModel.Skeleton(
-                    SkeletonCellModel(
-                        height = 24.toPx(),
-                        width = 100.toPx(),
-                        radius = 4f.toPx(),
-                        gravity = Gravity.END
-                    )
-                )
-            )
+            view?.showFee(claimUiMapper.getTextSkeleton())
             val totalToClaim = tokenToClaim.total.toLamports(tokenToClaim.decimals)
             try {
                 claimInteractor.getEthereumBundle(
@@ -104,8 +83,8 @@ class ClaimPresenter(
                     latestBundleId = bundleId
                     refreshJobDelayTimeInMillis = getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
                     latestTransactions = transactions
-                    parseFees(fees, compensationDeclineReason.isEmpty())
-                    val finalValue = resultAmount.toBridgeAmount(tokenToClaim.tokenSymbol, tokenToClaim.decimals)
+                    showFees(fees, compensationDeclineReason.isEmpty())
+                    val finalValue = claimUiMapper.makeResultAmount(resultAmount, tokenToClaim)
                     view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
                 }
             } catch (error: Throwable) {
@@ -121,46 +100,12 @@ class ClaimPresenter(
         }
     }
 
-    private fun parseFees(fees: BridgeBundleFees, isFree: Boolean) {
-        val tokenSymbol = tokenToClaim.tokenSymbol
-        val decimals = tokenToClaim.decimals
-        val feeList = listOf(fees.arbiterFee, fees.gasEth, fees.createAccount)
-        val fee: BigDecimal = feeList.sumOf { it.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
-        val feeValue = if (isFree) {
-            resources.getString(R.string.bridge_claim_fees_free)
-        } else {
-            fee.asApproximateUsd(withBraces = false)
-        }
-        view?.showFee(TextViewCellModel.Raw(TextContainer(feeValue)))
+    private fun showFees(fees: BridgeBundleFees, isFree: Boolean) {
+        view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
         if (!isFree) {
-            claimDetails = ClaimDetails(
-                willGetAmount = BridgeAmount(
-                    tokenSymbol,
-                    tokenToClaim.total,
-                    tokenToClaim.totalInUsd
-                ),
-                networkFee = eth?.let { ethTokenData ->
-                    fees.gasEth.toBridgeAmount(
-                        tokenSymbol = ethTokenData.symbol,
-                        decimals = ethTokenData.decimals
-                    )
-                } ?: fees.gasEth.toBridgeAmount(tokenSymbol, decimals),
-                accountCreationFee = fees.createAccount.toBridgeAmount(tokenSymbol, decimals),
-                bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
-            )
+            claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, fees, eth)
         }
         view?.setClaimButtonState(isButtonEnabled = true)
-    }
-
-    private fun BridgeBundleFee?.toBridgeAmount(
-        tokenSymbol: String,
-        decimals: Int,
-    ): BridgeAmount {
-        return BridgeAmount(
-            tokenSymbol = tokenSymbol,
-            tokenAmount = this?.amountInToken(decimals).takeIf { !it.isNullOrZero() },
-            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
-        )
     }
 
     override fun onFeeClicked() {
@@ -171,22 +116,7 @@ class ClaimPresenter(
         appScope.launch {
             try {
                 val signedTransactions = latestTransactions.map { ethereumRepository.signTransaction(it) }
-                val transactionDate = Date()
-                val amountTokens = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}"
-                val amountUsd = tokenToClaim.totalInUsd.orZero()
-                val feeList = listOfNotNull(
-                    claimDetails?.networkFee,
-                    claimDetails?.accountCreationFee,
-                    claimDetails?.bridgeFee
-                )
-                val progressDetails = NewShowProgress(
-                    date = transactionDate,
-                    tokenUrl = tokenToClaim.iconUrl.orEmpty(),
-                    amountTokens = amountTokens,
-                    amountUsd = amountUsd.asPositiveUsdTransaction(),
-                    recipient = null,
-                    totalFees = feeList.mapNotNull { it.toTextHighlighting() }
-                )
+                val progressDetails = claimUiMapper.prepareShowProgress(tokenToClaim, claimDetails)
                 view?.showProgressDialog(latestBundleId, progressDetails)
 
                 claimInteractor.sendEthereumBundle(signedTransactions)
@@ -199,16 +129,6 @@ class ClaimPresenter(
                 Timber.e(e, "Failed to send signed bundle")
             }
         }
-    }
-
-    private fun BridgeAmount.toTextHighlighting(): TextHighlighting? {
-        if (isFree) return null
-        val usdText = formattedFiatAmount.orEmpty()
-        val commonText = "$formattedTokenAmount $usdText"
-        return TextHighlighting(
-            commonText = commonText,
-            highlightedText = usdText
-        )
     }
 
     override fun detach() {
