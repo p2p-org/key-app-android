@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.LifecycleOwner
+import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.time.DurationUnit
@@ -13,7 +14,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
-import org.p2p.core.utils.Constants.BTC_COINGECKO_ID
 import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
 import org.p2p.core.utils.Constants.ETH_SYMBOL
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
@@ -31,7 +31,6 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -58,7 +57,7 @@ import org.p2p.wallet.utils.ellipsizeAddress
 val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
     SOL_COINGECKO_ID,
-    BTC_COINGECKO_ID,
+    USDT_SYMBOL,
     ETH_COINGECKO_ID,
     USDC_COINGECKO_ID
 ).map { TokenId(it) }
@@ -75,7 +74,7 @@ class HomePresenter(
     private val environmentManager: NetworkEnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper,
-    private val resourcesProvider: ResourcesProvider,
+    private val resources: Resources,
     private val tokensPolling: UserTokensPolling,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val networkObserver: SolanaNetworkObserver,
@@ -248,12 +247,8 @@ class HomePresenter(
 
     private suspend fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
         val ethereumTokens = loadEthTokens()
-        val ethereumBundleStatuses = try {
-            loadEthBundles().associate { it.token.hex to it.status }
-        } catch (error: Throwable) {
-            Timber.d(error, "Error on loadEthBundles")
-            emptyMap()
-        }
+        val ethereumBundleStatuses = loadEthBundles().associate { it.token.hex to it.status }
+
         Timber.d("local tokens change arrived")
         state = state.copy(
             tokens = userTokens,
@@ -322,7 +317,7 @@ class HomePresenter(
             view?.showEmptyViewData(
                 listOf(
                     homeBannerItem,
-                    resourcesProvider.getString(R.string.main_popular_tokens_header),
+                    resources.getString(R.string.main_popular_tokens_header),
                     *tokensForBuy.toTypedArray()
                 )
             )
