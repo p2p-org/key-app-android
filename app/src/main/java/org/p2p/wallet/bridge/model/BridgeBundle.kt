@@ -14,7 +14,7 @@ data class BridgeBundle(
     val userWallet: EthAddress,
     val recipient: SolAddress,
     val resultAmount: BridgeBundleFee,
-    val token: EthAddress,
+    val token: EthAddress?,
     val compensationDeclineReason: String,
     val expiresAt: Long,
     val transactions: List<HexString>,

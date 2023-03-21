@@ -1,7 +1,7 @@
 package org.p2p.wallet.bridge.api.mapper
 
-import org.p2p.wallet.bridge.api.response.BridgeBundleFeesResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleFeeResponse
+import org.p2p.wallet.bridge.api.response.BridgeBundleFeesResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleResponse
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.model.BridgeBundleFee
@@ -20,7 +20,7 @@ class BridgeMapper {
             transactions = response.transactions.orEmpty(),
             signatures = response.signatures.orEmpty(),
             fees = fromNetwork(response.fees),
-            status = null,
+            status = response.status,
             compensationDeclineReason = response.compensationDeclineReason.orEmpty()
         )
     }

@@ -23,6 +23,7 @@ import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
@@ -112,7 +113,7 @@ class HomePresenter(
         val ethereumBundleStatuses: Map<String, ClaimStatus?> = emptyMap(),
         val visibilityState: VisibilityState = VisibilityState.Hidden,
         val username: Username? = null,
-        val areZerosHidden: Boolean
+        val areZerosHidden: Boolean,
     )
 
     private var state = ViewState(
@@ -247,7 +248,8 @@ class HomePresenter(
 
     private suspend fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
         val ethereumTokens = loadEthTokens()
-        val ethereumBundleStatuses = loadEthBundles().associate { it.token.hex to it.status }
+        val ethereumBundleStatuses =
+            loadEthBundles().associate { (it.token?.hex ?: ERC20Tokens.ETH.contractAddress) to it.status }
 
         Timber.d("local tokens change arrived")
         state = state.copy(
