@@ -37,6 +37,7 @@ import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
+import org.p2p.wallet.push_notifications.analytics.PushAnalytics
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
@@ -72,6 +73,7 @@ class HomeFragment :
     private val binding: FragmentHomeBinding by viewBinding()
 
     private val glideManager: GlideManager by inject()
+    private val analytics: PushAnalytics by inject()
 
     private val contentAdapter: TokenAdapter by unsafeLazy {
         TokenAdapter(
@@ -125,6 +127,7 @@ class HomeFragment :
 
         requestPermissionNotification { permissionState ->
             if (permissionState == PermissionState.GRANTED) {
+                analytics.pushPermissionsAllowed()
                 AppNotificationManager.createNotificationChannels(requireContext())
             }
         }
