@@ -9,6 +9,7 @@ import org.p2p.wallet.bridge.claim.repository.EthereumClaimRemoteRepository
 import org.p2p.wallet.bridge.claim.repository.EthereumClaimRepository
 import org.p2p.wallet.bridge.claim.ui.ClaimContract
 import org.p2p.wallet.bridge.claim.ui.ClaimPresenter
+import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.common.di.InjectionModule
 
 object ClaimModule : InjectionModule {
@@ -16,6 +17,7 @@ object ClaimModule : InjectionModule {
     override fun create() = module {
         singleOf(::EthereumClaimRemoteRepository) bind EthereumClaimRepository::class
         factoryOf(::ClaimInteractor)
+        factoryOf(::ClaimUiMapper)
         factoryOf(::ClaimPresenter) bind ClaimContract.Presenter::class
     }
 }
