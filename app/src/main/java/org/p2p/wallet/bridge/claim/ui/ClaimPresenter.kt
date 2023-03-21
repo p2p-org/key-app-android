@@ -88,8 +88,12 @@ class ClaimPresenter(
                     view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
                 }
             } catch (error: Throwable) {
-                if (error.isConnectionError()) {
-                    view?.showUiKitSnackBar(messageResId = R.string.common_offline_error)
+                when {
+                    error is BridgeResult.Error.NotEnoughAmount -> R.string.bridge_claim_fees_bigger_error
+                    error.isConnectionError() -> R.string.common_offline_error
+                    else -> null
+                }?.let { messageResId ->
+                    view?.showUiKitSnackBar(messageResId = messageResId)
                 }
                 Timber.e(error, "Error on getting bundle for claim")
                 view?.showFee(TextViewCellModel.Raw(TextContainer(R.string.bridge_claim_fees_unavailable)))
