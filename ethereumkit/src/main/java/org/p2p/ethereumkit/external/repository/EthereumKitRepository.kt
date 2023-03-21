@@ -64,10 +64,10 @@ internal class EthereumKitRepository(
         val walletTokens = loadTokensMetadata()
 
         val tokensPrice = getPriceForTokens(tokenAddresses = walletTokens.map { it.contractAddress.toString() })
-        tokensPrice.forEach { (address, price) ->
+          tokensPrice.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
         }
-        return@withContext (listOf(getWalletMetadata()) + walletTokens)
+        (listOf(getWalletMetadata()) + walletTokens)
             .filter { it.balance.isMoreThan(MINIMAL_DUST) }
             .map { EthTokenConverter.ethMetadataToToken(it) }
     }
@@ -77,12 +77,13 @@ internal class EthereumKitRepository(
     }
 
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {
-        return priceRepository.getTokenPrice(tokenAddresses = tokenAddresses)
+        return kotlin.runCatching { priceRepository.getTokenPrice(tokenAddresses) }
+            .getOrDefault(emptyMap())
             .mapValues { it.value.priceInUsd }
     }
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
-        val publicKey = tokenKeyProvider?.publicKey ?: error("")
+        val publicKey = tokenKeyProvider?.publicKey ?: error("tokenKeyProvider was not initialized")
         val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
         return@withContext balanceRepository.getTokenBalances(address = publicKey, tokenAddresses = tokenAddresses)
             .balances
