@@ -109,7 +109,8 @@ object JupiterModule : InjectionModule {
                 swapInteractor = get(),
                 transactionManager = get(),
                 userLocalRepository = get(),
-                analytics = get()
+                analytics = get(),
+                historyInteractor = get()
             )
         } bind JupiterSwapContract.Presenter::class
 

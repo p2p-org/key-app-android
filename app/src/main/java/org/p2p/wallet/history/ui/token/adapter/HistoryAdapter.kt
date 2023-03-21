@@ -111,7 +111,7 @@ class HistoryAdapter(
         override fun areContentsTheSame(oldItem: HistoryItem, newItem: HistoryItem): Boolean {
             return when {
                 oldItem is TransactionItem && newItem is TransactionItem ->
-                    oldItem.transactionId == newItem.transactionId
+                    oldItem.transactionId == newItem.transactionId && oldItem.statusIcon == newItem.statusIcon
                 oldItem is DateItem && newItem is DateItem ->
                     oldItem.date.isSameAs(newItem.date)
                 else ->
@@ -120,7 +120,7 @@ class HistoryAdapter(
         }
 
         override fun areItemsTheSame(oldItem: HistoryItem, newItem: HistoryItem): Boolean {
-            return oldItem.transactionId == newItem.transactionId
+            return oldItem.transactionId == newItem.transactionId && oldItem.date.isSameAs(newItem.date)
         }
     }
 
