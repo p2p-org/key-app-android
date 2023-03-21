@@ -25,8 +25,8 @@ class MoonpayHistoryRemoteRepository(
         return historyPagingState
     }
 
-    override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
-        if (!sellEnabledFeatureToggle.isFeatureEnabled || !mintAddress.isNullOrEmpty()) {
+    override suspend fun loadHistory(limit: Int, mintAddress: String): HistoryPagingResult {
+        if (!sellEnabledFeatureToggle.isFeatureEnabled || !mintAddress.isEmpty()) {
             historyPagingState = HistoryPagingState.INACTIVE
             return HistoryPagingResult.Success(emptyList())
         }
@@ -49,7 +49,7 @@ class MoonpayHistoryRemoteRepository(
         }
     }
 
-    override suspend fun loadNextPage(limit: Int, mintAddress: String?): HistoryPagingResult {
+    override suspend fun loadNextPage(limit: Int, mintAddress: String): HistoryPagingResult {
         return HistoryPagingResult.Success(emptyList())
     }
 

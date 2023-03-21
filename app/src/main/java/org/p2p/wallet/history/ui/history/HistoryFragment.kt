@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistoryBinding
@@ -29,7 +30,8 @@ class HistoryFragment :
         binding.layoutHistoryList.apply {
             bind(
                 onTransactionClicked = presenter::onTransactionClicked,
-                onSellTransactionClicked = presenter::onSellTransactionClicked
+                onSellTransactionClicked = presenter::onSellTransactionClicked,
+                mintAddress = Constants.WRAPPED_SOL_MINT
             )
         }
         listenForSellTransactionDialogDismiss()
