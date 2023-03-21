@@ -5,6 +5,6 @@ import com.google.gson.annotations.SerializedName
 data class RpcHistoryAccountResponse(
     @SerializedName("address")
     val address: String,
-    @SerializedName("username")
+    @SerializedName("name")
     val username: String? = null
 )
