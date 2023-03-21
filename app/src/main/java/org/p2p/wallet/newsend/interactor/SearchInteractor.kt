@@ -8,6 +8,7 @@ import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.AddressState
+import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -74,17 +75,18 @@ class SearchInteractor(
         return SearchResult.AddressFound(
             addressState = AddressState(address),
             sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
+            networkType = NetworkType.ETHEREUM
         )
     }
 
-    suspend fun isInvalidAddress(tokenData: TokenData?, sourceToken: Token.Active?): Boolean {
+    private suspend fun isInvalidAddress(tokenData: TokenData?, sourceToken: Token.Active?): Boolean {
         val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
         val hasNoTokensToSend = tokenData != null && userToken == null
         val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
         return hasNoTokensToSend || sendToOtherDirectToken
     }
 
-    suspend fun isOwnAddress(publicKey: String): Boolean {
+    private suspend fun isOwnAddress(publicKey: String): Boolean {
         val isOwnSolAddress = publicKey == tokenKeyProvider.publicKey
         val isOwnSplAddress = userInteractor.hasAccount(publicKey)
         return isOwnSolAddress || isOwnSplAddress
