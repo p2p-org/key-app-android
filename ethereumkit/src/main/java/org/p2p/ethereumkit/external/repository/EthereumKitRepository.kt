@@ -1,7 +1,6 @@
 package org.p2p.ethereumkit.external.repository
 
 import org.web3j.crypto.TransactionDecoder
-import org.web3j.crypto.TransactionEncoder
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.async
@@ -11,6 +10,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -19,10 +19,9 @@ import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
 import org.p2p.ethereumkit.external.price.PriceRepository
+import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
-import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.models.Signature
 
 private val MINIMAL_DUST = BigInteger("1")
@@ -62,13 +61,15 @@ internal class EthereumKitRepository(
 
     override suspend fun loadWalletTokens(): List<Token.Eth> = withContext(dispatchers.io) {
 
-        val walletTokens = loadTokensMetadata().filter { it.balance.isMoreThan(MINIMAL_DUST) }
+        val walletTokens = loadTokensMetadata()
 
         val tokensPrice = getPriceForTokens(tokenAddresses = walletTokens.map { it.contractAddress.toString() })
         tokensPrice.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
         }
-        return@withContext (listOf(getWalletMetadata()) + walletTokens).map { EthTokenConverter.ethMetadataToToken(it) }
+        return@withContext (listOf(getWalletMetadata()) + walletTokens)
+            .filter { it.balance.isMoreThan(MINIMAL_DUST) }
+            .map { EthTokenConverter.ethMetadataToToken(it) }
     }
 
     override suspend fun getAddress(): EthAddress {

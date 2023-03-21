@@ -248,7 +248,12 @@ class HomePresenter(
 
     private suspend fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
         val ethereumTokens = loadEthTokens()
-        val ethereumBundleStatuses = loadEthBundles().associate { it.token.hex to it.status }
+        val ethereumBundleStatuses = try {
+            loadEthBundles().associate { it.token.hex to it.status }
+        } catch (error: Throwable) {
+            Timber.d(error, "Error on loadEthBundles")
+            emptyMap()
+        }
         Timber.d("local tokens change arrived")
         state = state.copy(
             tokens = userTokens,
