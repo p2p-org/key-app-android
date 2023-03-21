@@ -1,12 +1,12 @@
 package org.p2p.wallet.history.ui.historylist
 
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.content.Context
 import android.util.AttributeSet
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.doOnAttach
-import androidx.core.view.doOnDetach
 import com.google.android.material.snackbar.Snackbar
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -78,7 +78,7 @@ class HistoryListView @JvmOverloads constructor(
                 addItemDecoration(RoundedDecoration(16f.toPx()))
             }
             refreshLayout.setOnRefreshListener {
-                presenter.refreshHistory()
+                presenter.refreshHistory(tokenMintAddress)
                 scrollListener.reset()
             }
         }

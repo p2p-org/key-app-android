@@ -12,9 +12,9 @@ object Versions {
 
     const val VERSION_NAME = "$VERSION_MAJOR.$VERSION_MINOR.$VERSION_HOTFIX"
 
-    const val VERSION_CODE = 1_000_00 * (VERSION_MAJOR) +
-        1_000 * (VERSION_MINOR) +
-        1_0 * (VERSION_HOTFIX) +
+    const val VERSION_CODE = 1_000_000 * (VERSION_MAJOR) +
+        10_000 * (VERSION_MINOR) +
+        100 * (VERSION_HOTFIX) +
         (VERSION_PATCH)
 
     const val CURRENT_APP_NAME = "key-app-$VERSION_NAME.$VERSION_BUILD"
