@@ -46,7 +46,6 @@ import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
 
@@ -61,7 +60,7 @@ class NewSendPresenter(
     private val newSendAnalytics: NewSendAnalytics,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
-    private val historyInteractor: HistoryInteractor
+    private val historyInteractor: HistoryInteractor,
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private var token: Token.Active? by observable(null) { _, _, newToken ->
@@ -178,7 +177,7 @@ class NewSendPresenter(
 
     private fun handleUpdateFee(
         feeRelayerState: FeeRelayerState.UpdateFee,
-        view: NewSendContract.View
+        view: NewSendContract.View,
     ) {
         val sourceToken = requireToken()
         val total = feeRelayerManager.buildTotalFee(
@@ -196,7 +195,7 @@ class NewSendPresenter(
 
     private fun handleFeeRelayerStateUpdate(
         newState: FeeRelayerState,
-        view: NewSendContract.View
+        view: NewSendContract.View,
     ) {
         when (newState) {
             is FeeRelayerState.UpdateFee -> {
@@ -218,7 +217,7 @@ class NewSendPresenter(
     private suspend fun initializeFeeRelayer(
         view: NewSendContract.View,
         initialToken: Token.Active,
-        solToken: Token.Active
+        solToken: Token.Active,
     ) {
         view.setFeeLabel(resources.getString(R.string.send_fees))
         view.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
@@ -391,9 +390,13 @@ class NewSendPresenter(
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
                 userInteractor.addRecipient(recipientAddress, transactionDate)
-                val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
+                val transactionState = TransactionState.SendSuccess(buildTransaction(result, token), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
-                historyInteractor.addPendingTransaction(txSignature = result, transaction = buildTransaction(result))
+                historyInteractor.addPendingTransaction(
+                    txSignature = result,
+                    transaction = buildTransaction(result, token),
+                    mintAddress = token.mintAddress
+                )
             } catch (e: Throwable) {
                 Timber.e(e)
                 val message = e.getErrorMessage { res -> resources.getString(res) }
@@ -422,7 +425,7 @@ class NewSendPresenter(
         token: Token.Active,
         feePayerToken: Token.Active?,
         strategy: FeePayerSelectionStrategy,
-        useCache: Boolean = true
+        useCache: Boolean = true,
     ) {
         feePayerJob?.cancel()
         feePayerJob = launch {
@@ -441,7 +444,7 @@ class NewSendPresenter(
         view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
-    private fun buildTransaction(transactionId: String): HistoryTransaction =
+    private fun buildTransaction(transactionId: String, token: Token.Active): HistoryTransaction =
         RpcHistoryTransaction.Transfer(
             signature = transactionId,
             date = ZonedDateTime.now(),
@@ -453,8 +456,8 @@ class NewSendPresenter(
             counterPartyUsername = recipientAddress.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
-            iconUrl = emptyString(),
-            symbol = emptyString()
+            iconUrl = token.iconUrl,
+            symbol = token.tokenSymbol
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {
