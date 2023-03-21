@@ -22,6 +22,8 @@ import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRemoteRepositor
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensInMemoryRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensLocalRepository
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensPricesInMemoryRepository
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensPricesLocalRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRemoteRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionMapper
@@ -85,6 +87,7 @@ object JupiterModule : InjectionModule {
 
         factoryOf(::JupiterSwapTokensRemoteRepository) bind JupiterSwapTokensRepository::class
         singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
+        singleOf(::JupiterSwapTokensPricesInMemoryRepository) bind JupiterSwapTokensPricesLocalRepository::class
 
         factoryOf(::JupiterSwapInteractor)
         factoryOf(::SwapUserTokensChangeHandler)
@@ -202,20 +205,8 @@ object JupiterModule : InjectionModule {
         factoryOf(::SwapSelectRoutesMapper)
         factoryOf(::SwapEmptySettingsMapper)
         factoryOf(::SwapLoadingSettingsMapper)
-        factory { (stateManagerHolderKey: String) ->
-            SwapContentSettingsMapper(
-                commonMapper = get(),
-                swapFeeLoader = get(parameters = { parametersOf(stateManagerHolderKey) }),
-            )
-        }
-        factory { (stateManagerHolderKey: String) ->
-            val managerHolder: SwapStateManagerHolder = get()
-            val stateManager = managerHolder.get(stateManagerHolderKey)
-            SwapFeeLoader(
-                dispatchers = get(),
-                swapStateManager = stateManager,
-            )
-        }
+        factoryOf(::SwapContentSettingsMapper)
+        factoryOf(::SwapFeeLoader)
         factory { (stateManagerHolderKey: String) ->
             val managerHolder: SwapStateManagerHolder = get()
             val stateManager = managerHolder.get(stateManagerHolderKey)
@@ -226,7 +217,7 @@ object JupiterModule : InjectionModule {
                 commonMapper = get(),
                 rateTickerManager = get(),
                 rateTickerMapper = get(),
-                contentMapper = get(parameters = { parametersOf(stateManagerHolderKey) }),
+                contentMapper = get(),
                 swapTokensRepository = get(),
                 analytics = get()
             )
