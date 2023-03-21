@@ -73,12 +73,19 @@ class SeedPhraseInteractor(
             ?: return@mapNotNull null
         val tokenId = TokenId(SOL_COINGECKO_ID)
 
-        val exchangeRate =
-            solRate ?: tokenPricesRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL).price
+        val exchangeRate: BigDecimal = solRate ?: kotlin.runCatching {
+            tokenPricesRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL).price
+        }.getOrDefault(BigDecimal.ZERO)
+
         if (solRate == null) solRate = exchangeRate
 
         val total = balance.fromLamports().scaleLong()
-        DerivableAccount(path, account, total, total.multiply(exchangeRate))
+        DerivableAccount(
+            path = path,
+            account = account,
+            total = total,
+            totalInUsd = total.multiply(exchangeRate)
+        )
     }
 
     suspend fun createAndSaveAccount(

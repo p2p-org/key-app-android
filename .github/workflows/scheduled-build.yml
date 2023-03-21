@@ -45,7 +45,7 @@ jobs:
           echo "daily build \n branch - develop" >> CHANGELOG.txt
           echo "changelog.txt created"
       - name: "Send start deploy message to slack"
-        run: bash bash_scripts/slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+        run: bash bash_scripts/slack_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Generate a unique version build"
         uses: ./.github/actions/setup-version-build
       - name: "Build feature APK"
@@ -74,7 +74,7 @@ jobs:
       - name: "Send finish deploy message to slack"
         run: |
           value=`cat timestamp.txt`
-          bash bash_scripts/slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          bash bash_scripts/slack_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
       - name: "Commit and Push changes"
         uses: ./.github/actions/setup-commit
         with:
