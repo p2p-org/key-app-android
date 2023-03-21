@@ -21,6 +21,8 @@ import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeResult
+import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
+import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -89,7 +91,7 @@ class ClaimPresenter(
                 }
             } catch (error: Throwable) {
                 when {
-                    error is BridgeResult.Error.NotEnoughAmount -> R.string.bridge_claim_fees_bigger_error
+                    error is NotEnoughAmount || error is ContractError -> R.string.bridge_claim_fees_bigger_error
                     error.isConnectionError() -> R.string.common_offline_error
                     else -> null
                 }?.let { messageResId ->
