@@ -136,12 +136,13 @@ class BridgeSendPresenter(
     private fun setupInitialToken(view: BridgeSendContract.View) {
         launch {
             // We should find SOL anyway because SOL is needed for Selection Mechanism
-            var userTokens = userInteractor.getNonZeroUserTokens().filter { it.mintAddress in supportedTokensMints }
-            if (userTokens.isEmpty()) {
-                // TODO PWN-7613 also block button as we can't send we do not have funds
-                val usdCet = userInteractor.findTokenDataByAddress(ERC20Tokens.USDC.mintAddress) as Token.Other
-                userTokens = listOf(sendUiMapper.toTokenActiveStub(usdCet))
-            }
+            val userTokens = userInteractor.getNonZeroUserTokens()
+                .filter { it.mintAddress in supportedTokensMints }
+                .ifEmpty {
+                    // TODO PWN-7613 also block button as we can't send we do not have funds
+                    val usdCet = userInteractor.findTokenDataByAddress(ERC20Tokens.USDC.mintAddress) as Token.Other
+                    listOf(sendUiMapper.toTokenActiveStub(usdCet))
+                }
 
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
