@@ -10,6 +10,7 @@ import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import timber.log.Timber
 import kotlinx.coroutines.withContext
 
+// TODO: Move cache to repositories and remove singleton from this class in koin tree
 class OrcaInfoInteractor(
     private val orcaRepository: OrcaSwapRepository,
     private val dispatchers: CoroutineDispatchers
@@ -18,6 +19,7 @@ class OrcaInfoInteractor(
     private var info: OrcaSwapInfo? = null
 
     fun getInfo(): OrcaSwapInfo? = info
+
 
     // Prepare all needed infos for swapping
     suspend fun load() {

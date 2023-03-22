@@ -179,15 +179,13 @@ class SendInteractor(
     suspend fun sendTransaction(
         destinationAddress: PublicKey,
         token: Token.Active,
-        lamports: BigInteger,
-        memo: String? = null
+        lamports: BigInteger
     ): String = withContext(dispatchers.io) {
 
         val preparedTransaction = prepareForSending(
             token = token,
             receiver = destinationAddress.toBase58(),
-            amount = lamports,
-            memo = memo
+            amount = lamports
         )
 
         return@withContext if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
@@ -268,8 +266,7 @@ class SendInteractor(
         amount: BigInteger,
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null,
-        minRentExemption: BigInteger? = null,
-        memo: String?
+        minRentExemption: BigInteger? = null
     ): PreparedTransaction {
         val sender = token.publicKey
 
@@ -303,8 +300,7 @@ class SendInteractor(
                 transferChecked = useFeeRelayer, // create transferChecked instruction when using fee relayer
                 recentBlockhash = recentBlockhash,
                 lamportsPerSignature = lamportsPerSignature,
-                minBalanceForRentExemption = minRentExemption,
-                memo = memo
+                minBalanceForRentExemption = minRentExemption
             ).first
         }
     }

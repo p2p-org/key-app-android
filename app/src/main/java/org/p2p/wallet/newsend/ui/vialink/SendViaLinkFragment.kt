@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
@@ -29,7 +28,6 @@ import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 
 private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
-private const val ARG_INPUT_AMOUNT = "ARG_INPUT_AMOUNT"
 
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
@@ -40,17 +38,14 @@ class SendViaLinkFragment :
 
     companion object {
         fun create(
-            initialToken: Token.Active? = null,
-            inputAmount: BigDecimal? = null
+            initialToken: Token.Active? = null
         ): SendViaLinkFragment = SendViaLinkFragment()
             .withArgs(
-                ARG_INITIAL_TOKEN to initialToken,
-                ARG_INPUT_AMOUNT to inputAmount
+                ARG_INITIAL_TOKEN to initialToken
             )
     }
 
     private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
-    private val inputAmount: BigDecimal? by args(ARG_INPUT_AMOUNT)
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
@@ -65,7 +60,7 @@ class SendViaLinkFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter.setInitialData(initialToken, inputAmount)
+        presenter.setInitialData(initialToken)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,9 +72,7 @@ class SendViaLinkFragment :
             maxButtonClickListener = presenter::onMaxButtonClicked
             switchListener = presenter::switchCurrencyMode
             feeButtonClickListener = presenter::onFeeInfoClicked
-            if (inputAmount == null) {
-                focusAndShowKeyboard()
-            }
+            focusAndShowKeyboard()
         }
         binding.sliderSend.onSlideCompleteListener = { presenter.checkInternetConnection() }
         binding.sliderSend.onSlideCollapseCompleted = { presenter.generateLink() }
