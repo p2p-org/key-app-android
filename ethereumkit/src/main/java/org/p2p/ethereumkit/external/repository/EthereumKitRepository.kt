@@ -67,8 +67,8 @@ internal class EthereumKitRepository(
         tokensPrices.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
         }
-        (listOf(getWalletMetadata(tokensPrices[erc20TokenAddress].orZero())) + walletTokens)
-            .filter { it.balance.isMoreThan(MINIMAL_DUST) }
+        val finalTokens = listOf(getWalletMetadata(tokensPrices[erc20TokenAddress].orZero())) + walletTokens
+        finalTokens.filter { it.balance.isMoreThan(MINIMAL_DUST) }
             .map { EthTokenConverter.ethMetadataToToken(it) }
     }
 
