@@ -190,7 +190,11 @@ class JupiterSwapPresenter(
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
 
                     val pendingTransaction = buildPendingTransaction(result, currentState)
-                    historyInteractor.addPendingTransaction(result.signature, pendingTransaction)
+                    historyInteractor.addPendingTransaction(
+                        txSignature = result.signature,
+                        mintAddress = currentState.tokenA.mintAddress.base58Value,
+                        transaction = pendingTransaction
+                    )
                     view?.showDefaultSlider()
                 }
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
@@ -216,8 +220,7 @@ class JupiterSwapPresenter(
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
             is SwapState.RoutesLoaded,
-            is SwapState.LoadingTransaction,
-            -> swapInteractor.getTokenAAmount(featureState)
+            is SwapState.LoadingTransaction -> swapInteractor.getTokenAAmount(featureState)
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
             null -> null
         }

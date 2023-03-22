@@ -12,6 +12,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.core.common.TextContainer
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.utils.emptyString
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.recycler.RoundedDecoration
@@ -25,12 +26,12 @@ import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 class HistoryListView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyleAttr), KoinComponent, HistoryListViewContract.View {
 
     private val binding = inflateViewBinding<LayoutHistoryListBinding>()
 
-    private var tokenMintAddress: String? = null
+    private var tokenMintAddress: String = emptyString()
 
     private val glideManager: GlideManager by inject()
 
@@ -38,7 +39,7 @@ class HistoryListView @JvmOverloads constructor(
         HistoryAdapter(
             glideManager = glideManager,
             onHistoryItemClicked = presenter::onItemClicked,
-            onRetryClicked = presenter::loadNextHistoryPage,
+            onRetryClicked = { presenter.loadHistory(tokenMintAddress) },
         )
     }
 
@@ -55,7 +56,7 @@ class HistoryListView @JvmOverloads constructor(
     fun bind(
         onTransactionClicked: (String) -> Unit,
         onSellTransactionClicked: (String) -> Unit,
-        mintAddress: String? = null
+        mintAddress: String,
     ) {
         tokenMintAddress = mintAddress
         onTransactionClickListener = onTransactionClicked
@@ -65,6 +66,7 @@ class HistoryListView @JvmOverloads constructor(
 
     private fun bindView() {
         with(binding) {
+            presenter.attach(tokenMintAddress)
             errorStateLayout.buttonRetry.setOnClickListener {
                 presenter.refreshHistory(tokenMintAddress)
             }
@@ -167,7 +169,7 @@ class HistoryListView @JvmOverloads constructor(
         messageResId: Int?,
         onDismissed: () -> Unit,
         actionButtonResId: Int?,
-        actionBlock: ((Snackbar) -> Unit)?
+        actionBlock: ((Snackbar) -> Unit)?,
     ) = Unit
     //endregion
 }
