@@ -20,7 +20,6 @@ class OrcaInfoInteractor(
 
     fun getInfo(): OrcaSwapInfo? = info
 
-
     // Prepare all needed infos for swapping
     suspend fun load() {
         withContext(dispatchers.io) {

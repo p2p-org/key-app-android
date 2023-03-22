@@ -1,6 +1,5 @@
 package org.p2p.wallet.newsend.interactor
 
-import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.Account
@@ -17,7 +16,6 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
-import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
 
