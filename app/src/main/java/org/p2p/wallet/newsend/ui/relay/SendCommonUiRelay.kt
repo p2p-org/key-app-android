@@ -5,6 +5,9 @@ import org.p2p.core.model.CurrencyMode
 import org.p2p.wallet.newsend.statemachine.SendState
 import org.p2p.wallet.newsend.ui.NewSendContract
 
+/**
+ * support bridge send
+ */
 class SendCommonUiRelay constructor(
     private val resources: Resources,
 ) : SendUiRelay {
