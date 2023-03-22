@@ -21,7 +21,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.model.ClaimScreenData
 import org.p2p.wallet.bridge.model.BridgeAmount
-import org.p2p.wallet.bridge.model.BridgeBundleFee
+import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.toPx
@@ -74,7 +74,7 @@ class ClaimUiMapper(private val resources: Resources) {
         )
     }
 
-    fun makeResultAmount(resultAmount: BridgeBundleFee, tokenToClaim: Token.Eth): BridgeAmount {
+    fun makeResultAmount(resultAmount: BridgeFee, tokenToClaim: Token.Eth): BridgeAmount {
         return resultAmount.toBridgeAmount(tokenToClaim.tokenSymbol, tokenToClaim.decimals)
     }
 
@@ -109,7 +109,7 @@ class ClaimUiMapper(private val resources: Resources) {
         )
     }
 
-    private fun BridgeBundleFee?.toBridgeAmount(
+    private fun BridgeFee?.toBridgeAmount(
         tokenSymbol: String,
         decimals: Int,
     ): BridgeAmount {

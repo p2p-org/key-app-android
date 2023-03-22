@@ -64,7 +64,7 @@ internal class EthereumKitRepository(
         val walletTokens = loadTokensMetadata()
 
         val tokensPrice = getPriceForTokens(tokenAddresses = walletTokens.map { it.contractAddress.toString() })
-          tokensPrice.forEach { (address, price) ->
+        tokensPrice.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
         }
         (listOf(getWalletMetadata()) + walletTokens)

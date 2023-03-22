@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toPowerValue
 
-data class BridgeBundleFee(
+data class BridgeFee(
     val amount: String?,
     val amountInUsd: String?,
     val chain: String?,
