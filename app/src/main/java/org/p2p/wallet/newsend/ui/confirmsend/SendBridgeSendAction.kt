@@ -1,8 +1,10 @@
 package org.p2p.wallet.newsend.ui.confirmsend
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.p2p.wallet.newsend.statemachine.SendBridgeState
 import org.p2p.wallet.newsend.statemachine.SendFeatureAction
 import org.p2p.wallet.newsend.statemachine.SendState
 import org.p2p.wallet.newsend.statemachine.SendStateMachine
@@ -15,13 +17,14 @@ class SendBridgeSendAction(
     private val stateMachine: SendStateMachine,
 ) {
 
-    private var featureState: SendState? = null
+    private var featureState: SendBridgeState? = null
     private var catchReadyToSwap: Boolean = false
     private var view: NewSendContract.View? = null
 
     fun attach(presenterScope: CoroutineScope, view: NewSendContract.View) {
         this.view = view
         stateMachine.observe()
+            .filterIsInstance<SendBridgeState>()
             .onEach {
                 featureState = it
                 if (it is SendState.Static.ReadyToSend && catchReadyToSwap) {
