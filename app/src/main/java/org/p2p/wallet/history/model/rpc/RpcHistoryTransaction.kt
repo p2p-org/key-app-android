@@ -207,9 +207,9 @@ sealed class RpcHistoryTransaction(
             resources.getString(R.string.details_transfer_format, destination.cutMiddle(), symbol)
         }
 
-        fun getUsernameOrAddress(): String = getUserName() ?: getAddress()
+        fun getUsernameOrAddress(): String = getUsername() ?: getAddress()
 
-        private fun getUserName(): String? = counterPartyUsername?.let { if (isSend) "To $it" else "From $it" }
+        private fun getUsername(): String? = counterPartyUsername?.let { if (isSend) "To $it" else "From $it" }
 
         private fun getAddress(): String {
             return if (isSend) "To ${destination.cutStart()}" else "From ${senderAddress.cutStart()}"
