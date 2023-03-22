@@ -5,10 +5,13 @@ import java.math.BigDecimal
 sealed interface SendFee {
 
     companion object {
-        fun mockBridge() = Bridge(BigDecimal.valueOf(0.4665), System.currentTimeMillis())
+        fun mockCommon() = Common(BigDecimal.valueOf(0.4665), System.currentTimeMillis())
     }
 
-    data class Bridge(
+    /**
+     * support bridge send
+     */
+    data class Common(
         val fee: BigDecimal,
         val updateTimeMs: Long
     ) : SendFee

@@ -16,8 +16,8 @@ val SendState.lastStaticState: SendState.Static
         }
     }
 
-val SendState.Static.bridgeToken: SendToken.Bridge?
-    get() = token as? SendToken.Bridge
+val SendState.Static.commonToken: SendToken.Common?
+    get() = token as? SendToken.Common
 
 val SendState.Static.token: SendToken?
     get() = when (this) {
@@ -27,8 +27,8 @@ val SendState.Static.token: SendToken?
         is SendState.Static.TokenZero -> token
     }
 
-val SendState.Static.bridgeFee: SendFee.Bridge?
-    get() = fee as? SendFee.Bridge
+val SendState.Static.commonFee: SendFee.Common?
+    get() = fee as? SendFee.Common
 
 val SendState.Static.fee: SendFee?
     get() = when (this) {

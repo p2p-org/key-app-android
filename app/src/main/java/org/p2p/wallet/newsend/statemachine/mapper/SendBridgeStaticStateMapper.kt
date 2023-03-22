@@ -6,7 +6,7 @@ import org.p2p.wallet.newsend.statemachine.model.SendFee
 
 class SendBridgeStaticStateMapper {
 
-    fun updateFee(oldState: SendState.Static, newFee: SendFee.Bridge): SendState.Static {
+    fun updateFee(oldState: SendState.Static, newFee: SendFee.Common): SendState.Static {
         return when (oldState) {
             SendState.Static.Empty -> oldState
             is SendState.Static.ReadyToSend -> oldState.copy(fee = newFee)

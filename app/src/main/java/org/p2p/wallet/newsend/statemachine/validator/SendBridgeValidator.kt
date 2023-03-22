@@ -7,13 +7,13 @@ import org.p2p.wallet.newsend.statemachine.model.SendToken
 
 class SendBridgeValidator {
 
-    fun validateInputAmount(token: SendToken.Bridge, newAmount: BigDecimal) {
+    fun validateInputAmount(token: SendToken.Common, newAmount: BigDecimal) {
         val maxAmount = token.tokenAmount
         // todo
 //        throw SendFeatureException.NotEnoughAmount(newAmount)
     }
 
-    fun isFeeValid(oldFee: SendFee.Bridge?): Boolean {
+    fun isFeeValid(oldFee: SendFee.Common?): Boolean {
         val now = System.currentTimeMillis()
         return when {
             oldFee == null -> false

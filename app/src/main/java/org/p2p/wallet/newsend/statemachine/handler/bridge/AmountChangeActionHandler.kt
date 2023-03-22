@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.statemachine.handler
+package org.p2p.wallet.newsend.statemachine.handler.bridge
 
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -6,7 +6,7 @@ import org.p2p.core.utils.isZero
 import org.p2p.wallet.newsend.statemachine.SendActionHandler
 import org.p2p.wallet.newsend.statemachine.SendFeatureAction
 import org.p2p.wallet.newsend.statemachine.SendState
-import org.p2p.wallet.newsend.statemachine.bridgeToken
+import org.p2p.wallet.newsend.statemachine.commonToken
 import org.p2p.wallet.newsend.statemachine.fee
 import org.p2p.wallet.newsend.statemachine.fee.SendBridgeFeeLoader
 import org.p2p.wallet.newsend.statemachine.mapper.SendBridgeStaticStateMapper
@@ -28,7 +28,7 @@ class AmountChangeActionHandler(
         staticState: SendState.Static,
         newAction: SendFeatureAction
     ) {
-        val token = staticState.bridgeToken ?: return
+        val token = staticState.commonToken ?: return
         val newAmount = when (newAction) {
             is SendFeatureAction.AmountChange -> newAction.amount
             SendFeatureAction.MaxAmount -> token.tokenAmount

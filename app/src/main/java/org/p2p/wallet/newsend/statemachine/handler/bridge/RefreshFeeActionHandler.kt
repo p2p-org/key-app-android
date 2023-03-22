@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.statemachine.handler
+package org.p2p.wallet.newsend.statemachine.handler.bridge
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.newsend.statemachine.SendActionHandler

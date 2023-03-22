@@ -5,8 +5,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.newsend.statemachine.SendFeatureException
 import org.p2p.wallet.newsend.statemachine.SendState
-import org.p2p.wallet.newsend.statemachine.bridgeFee
-import org.p2p.wallet.newsend.statemachine.bridgeToken
+import org.p2p.wallet.newsend.statemachine.commonFee
+import org.p2p.wallet.newsend.statemachine.commonToken
 import org.p2p.wallet.newsend.statemachine.lastStaticState
 import org.p2p.wallet.newsend.statemachine.mapper.SendBridgeStaticStateMapper
 import org.p2p.wallet.newsend.statemachine.model.SendFee
@@ -23,8 +23,8 @@ class SendBridgeFeeLoader constructor(
     ) {
 
         val staticState = stateFlow.lastStaticState
-        val token = staticState.bridgeToken ?: return
-        val oldFee = staticState.bridgeFee
+        val token = staticState.commonToken ?: return
+        val oldFee = staticState.commonFee
 
         val isNeedRefresh = !validator.isFeeValid(oldFee)
 
@@ -40,18 +40,18 @@ class SendBridgeFeeLoader constructor(
     ) {
 
         val staticState = stateFlow.lastStaticState
-        val token = staticState.bridgeToken ?: return
+        val token = staticState.commonToken ?: return
 
         stateFlow.value = SendState.Loading.Fee(staticState)
         val fee = loadFee(token)
         stateFlow.value = mapper.updateFee(staticState, fee)
     }
 
-    suspend fun loadFee(token: SendToken.Bridge): SendFee.Bridge {
+    suspend fun loadFee(token: SendToken.Common): SendFee.Common {
         return try {
             // todo loading
             delay(2000)
-            SendFee.mockBridge()
+            SendFee.mockCommon()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
