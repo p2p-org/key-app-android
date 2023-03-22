@@ -1,6 +1,7 @@
 package org.p2p.wallet.jupiter.ui.main
 
 import android.view.Gravity
+import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Date
@@ -23,6 +24,10 @@ import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
@@ -43,6 +48,7 @@ import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
@@ -63,7 +69,8 @@ class JupiterSwapPresenter(
     private val transactionManager: TransactionManager,
     private val rateTickerManager: SwapRateTickerManager,
     private val dispatchers: CoroutineDispatchers,
-    private val userLocalRepository: UserLocalRepository
+    private val userLocalRepository: UserLocalRepository,
+    private val historyInteractor: HistoryInteractor
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true
@@ -164,22 +171,30 @@ class JupiterSwapPresenter(
                 )
             )
 
-            analytics.logApproveSwapClicked(
-                tokenA = currentState.tokenA,
-                tokenB = currentState.tokenB,
-                tokenAAmount = currentState.amountTokenA.toString(),
-                tokenBAmountUsd = tokenBUsdAmount.toString()
-            )
-
             view?.showProgressDialog(internalTransactionId, progressDetails)
 
             val swapTransaction = currentState.jupiterSwapTransaction
 
             when (val result = swapInteractor.swapTokens(swapTransaction)) {
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Success -> {
+                    analytics.logApproveSwapClicked(
+                        tokenA = currentState.tokenA,
+                        tokenB = currentState.tokenB,
+                        tokenAAmount = currentState.amountTokenA.toString(),
+                        tokenBAmountUsd = tokenBUsdAmount.toString(),
+                        signature = result.signature
+                    )
+
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                     val transactionState = TransactionState.JupiterSwapSuccess
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
+
+                    val pendingTransaction = buildPendingTransaction(result, currentState)
+                    historyInteractor.addPendingTransaction(
+                        txSignature = result.signature,
+                        mintAddress = currentState.tokenA.mintAddress.base58Value,
+                        transaction = pendingTransaction
+                    )
                     view?.showDefaultSlider()
                 }
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
@@ -210,7 +225,13 @@ class JupiterSwapPresenter(
             null -> null
         }
         if (allTokenAAmount != null) {
-            analytics.logTokenAAllClicked(allTokenAAmount.toString())
+            currentFeatureState?.getTokensPair()?.first?.tokenSymbol?.let {
+                analytics.logTokenAAllClicked(
+                    tokenAName = it,
+                    tokenAAmount = allTokenAAmount.toString()
+                )
+            }
+
             cancelRateJobs()
             onTokenAmountChange(allTokenAAmount.toPlainString())
         }
@@ -394,11 +415,14 @@ class JupiterSwapPresenter(
         val priceImpact = swapInteractor.getPriceImpact(currentFeatureState)
         when (val type = priceImpact?.toPriceImpactType()) {
             null, SwapPriceImpactView.NORMAL -> {
-                priceImpact?.also { analytics.logPriceImpactLow(priceImpact) }
                 view?.showPriceImpact(SwapPriceImpactView.NORMAL)
             }
             SwapPriceImpactView.YELLOW, SwapPriceImpactView.RED -> {
-                analytics.logPriceImpactHigh(priceImpact)
+                if (type == SwapPriceImpactView.YELLOW) {
+                    analytics.logPriceImpactLow(priceImpact)
+                } else {
+                    analytics.logPriceImpactHigh(priceImpact)
+                }
 
                 widgetBState = widgetMapper.mapPriceImpact(widgetBState, type)
                 view?.showPriceImpact(type)
@@ -623,5 +647,27 @@ class JupiterSwapPresenter(
 
     private fun SwapState.getTokensPair(): Pair<SwapTokenModel?, SwapTokenModel?> {
         return swapInteractor.getSwapTokenPair(this)
+    }
+
+    private fun buildPendingTransaction(
+        result: JupiterSwapInteractor.JupiterSwapTokensResult.Success,
+        currentState: SwapState.SwapLoaded,
+    ): RpcHistoryTransaction.Swap {
+        return RpcHistoryTransaction.Swap(
+            signature = result.signature,
+            date = ZonedDateTime.now(),
+            blockNumber = -1,
+            status = HistoryTransactionStatus.PENDING,
+            type = RpcHistoryTransactionType.SWAP,
+            sourceSymbol = currentState.tokenA.tokenSymbol,
+            sourceAddress = currentState.tokenA.mintAddress.toString(),
+            destinationAddress = currentState.tokenB.mintAddress.toString(),
+            fees = emptyList(),
+            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
+            sentAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            sourceIconUrl = currentState.tokenA.iconUrl,
+            destinationSymbol = currentState.tokenB.tokenSymbol,
+            destinationIconUrl = currentState.tokenB.iconUrl
+        )
     }
 }

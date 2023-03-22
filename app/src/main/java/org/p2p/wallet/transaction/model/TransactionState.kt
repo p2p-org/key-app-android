@@ -15,6 +15,11 @@ sealed class TransactionState {
         val sourceTokenSymbol: String
     ) : TransactionState()
 
+    data class ClaimSuccess(
+        val bundleId: String,
+        val sourceTokenSymbol: String
+    ) : TransactionState()
+
     data class SwapSuccess(
         val transaction: HistoryTransaction,
         val fromToken: String,

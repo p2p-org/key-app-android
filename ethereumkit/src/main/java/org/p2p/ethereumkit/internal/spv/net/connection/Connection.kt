@@ -1,9 +1,7 @@
 package org.p2p.ethereumkit.internal.spv.net.connection
 
+import org.bitcoinj.core.ECKey.CURVE
 import org.p2p.ethereumkit.internal.spv.core.toShort
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils.CURVE
-import org.p2p.ethereumkit.internal.crypto.ECIESEncryptedMessage
 import org.p2p.core.wrapper.eth.ECKey
 import org.p2p.core.wrapper.eth.helpers.RandomHelper
 import org.p2p.ethereumkit.internal.spv.net.Node
@@ -19,7 +17,8 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
-
+import org.p2p.core.wrapper.eth.CryptoUtils
+import org.p2p.core.wrapper.eth.ECIESEncryptedMessage
 
 class Connection(private val connectionKey: ECKey, private val node: Node) : Thread() {
     interface Listener {

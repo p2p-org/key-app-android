@@ -20,6 +20,8 @@
     <string name="bridge_info_account_creation_fee">Account creation Fee</string>
     <string name="bridge_info_bridge_fee">Wormhole Bridge and Transaction Fee</string>
 
+    <string name="bridge_claim_success_state">The transaction has been successfully completed 🤟</string>
+
     <!--Receive-->
     <string name="receive_token_title">Supported tokens</string>
     <string name="receive_token_search_not_found">Token not found. Try another one</string>

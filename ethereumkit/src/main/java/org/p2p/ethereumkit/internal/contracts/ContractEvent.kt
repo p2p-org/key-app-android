@@ -1,6 +1,6 @@
 package org.p2p.ethereumkit.internal.contracts
 
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
+import org.p2p.core.wrapper.eth.CryptoUtils
 
 class ContractEvent(
     private val name: String,

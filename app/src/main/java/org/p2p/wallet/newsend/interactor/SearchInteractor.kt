@@ -2,12 +2,16 @@ package org.p2p.wallet.newsend.interactor
 
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import org.p2p.core.utils.Constants
+import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 
@@ -15,6 +19,8 @@ class SearchInteractor(
     private val usernameRepository: UsernameRepository,
     private val userInteractor: UserInteractor,
     private val transactionAddressInteractor: TransactionAddressInteractor,
+    private val userLocalRepository: UserLocalRepository,
+    private val ethereumRepository: EthereumRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -57,6 +63,20 @@ class SearchInteractor(
         )
     }
 
+    suspend fun searchByEthAddress(wrappedAddress: EthAddress): SearchResult {
+        val tokenData = userLocalRepository.findTokenData(Constants.WRAPPED_ETH_MINT)
+
+        val address = wrappedAddress.hex
+        if (isOwnEthAddress(address)) {
+            return SearchResult.OwnAddressError(address, tokenData)
+        }
+
+        return SearchResult.AddressFound(
+            addressState = AddressState(address),
+            sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
+        )
+    }
+
     suspend fun isInvalidAddress(tokenData: TokenData?, sourceToken: Token.Active?): Boolean {
         val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
         val hasNoTokensToSend = tokenData != null && userToken == null
@@ -68,5 +88,9 @@ class SearchInteractor(
         val isOwnSolAddress = publicKey == tokenKeyProvider.publicKey
         val isOwnSplAddress = userInteractor.hasAccount(publicKey)
         return isOwnSolAddress || isOwnSplAddress
+    }
+
+    private suspend fun isOwnEthAddress(publicKey: String): Boolean {
+        return publicKey == ethereumRepository.getAddress().hex
     }
 }

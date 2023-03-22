@@ -1,7 +1,7 @@
 package org.p2p.wallet.history.ui.historylist
 
-import timber.log.Timber
 import kotlinx.coroutines.flow.filterNotNull
+import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -17,18 +17,19 @@ private const val PAGE_SIZE = 20
 class HistoryListViewPresenter(
     private val historyInteractor: HistoryInteractor,
     private val environmentManager: NetworkEnvironmentManager,
-    private val historyItemMapper: HistoryItemMapper
+    private val historyItemMapper: HistoryItemMapper,
 ) : BasePresenter<HistoryListViewContract.View>(), HistoryListViewContract.Presenter {
 
     override fun attach(view: HistoryListViewContract.View) {
         super.attach(view)
-        environmentManager.addEnvironmentListener(this::class) {
-            refreshHistory(mintAddress = null)
-        }
         attachToHistoryFlow()
     }
 
-    override fun loadNextHistoryPage(mintAddress: String?) {
+    override fun attach(mintAddress: String) {
+        environmentManager.addEnvironmentListener(this::class) { refreshHistory(mintAddress) }
+    }
+
+    override fun loadNextHistoryPage(mintAddress: String) {
         launch {
             try {
                 view?.showPagingState(PagingState.Loading)
@@ -42,7 +43,7 @@ class HistoryListViewPresenter(
         }
     }
 
-    override fun loadHistory(mintAddress: String?) {
+    override fun loadHistory(mintAddress: String) {
         launch {
             try {
                 view?.showPagingState(PagingState.InitialLoading)
@@ -56,7 +57,7 @@ class HistoryListViewPresenter(
         }
     }
 
-    override fun refreshHistory(mintAddress: String?) {
+    override fun refreshHistory(mintAddress: String) {
         launch {
             try {
                 view?.showRefreshing(isRefreshing = true)
