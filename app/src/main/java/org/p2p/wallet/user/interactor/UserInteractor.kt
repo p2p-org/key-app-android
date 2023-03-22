@@ -162,11 +162,7 @@ class UserInteractor(
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
-    fun findTokenDataByAddress(mintAddress: String): Token? {
-        val tokenData = userLocalRepository.findTokenData(mintAddress)
-        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.coingeckoId) }
-        return tokenData?.let { TokenConverter.fromNetwork(it, price) }
-    }
+    fun findTokenDataByAddress(mintAddress: String): Token? = userLocalRepository.findTokenByMint(mintAddress)
 
     suspend fun addRecipient(searchResult: SearchResult, date: Date) {
         recipientsLocalRepository.addRecipient(searchResult, date)
