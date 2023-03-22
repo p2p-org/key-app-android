@@ -37,7 +37,7 @@ class HistoryPresenter(
         launch {
             try {
                 val links = userSendLinksRepository.getUserLinks()
-                if (links.isNotEmpty()) { // don't forget to revert
+                if (links.isNotEmpty()) {
                     view?.showSendViaLinkBlock(createUserLinksBlock(links.size))
                 }
             } catch (error: Throwable) {
