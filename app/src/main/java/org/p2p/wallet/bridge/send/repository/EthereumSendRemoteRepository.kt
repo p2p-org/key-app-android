@@ -53,7 +53,7 @@ class EthereumSendRemoteRepository(
         userWallet: SolAddress,
         recipient: SolAddress,
         mint: SolAddress?,
-        amount: String
+        amount: String,
     ): BridgeSendFees {
         val request = GetSolanaFeesRpcRequest(userWallet, recipient, mint, amount)
         val result = bridgeRepository.launch(request)
