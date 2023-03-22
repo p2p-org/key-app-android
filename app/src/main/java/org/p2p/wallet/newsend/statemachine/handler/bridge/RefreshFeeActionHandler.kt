@@ -1,6 +1,6 @@
 package org.p2p.wallet.newsend.statemachine.handler.bridge
 
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import org.p2p.wallet.newsend.statemachine.SendActionHandler
 import org.p2p.wallet.newsend.statemachine.SendFeatureAction
 import org.p2p.wallet.newsend.statemachine.SendState
@@ -13,12 +13,8 @@ class RefreshFeeActionHandler(
     override fun canHandle(newEvent: SendFeatureAction, staticState: SendState): Boolean =
         newEvent is SendFeatureAction.RefreshFee
 
-    override suspend fun handle(
-        stateFlow: MutableStateFlow<SendState>,
-        staticState: SendState.Static,
+    override fun handle(
+        lastStaticState: SendState.Static,
         newAction: SendFeatureAction
-    ) {
-        val action = newAction as SendFeatureAction.RefreshFee
-        feeLoader.updateFee(stateFlow)
-    }
+    ): Flow<SendState> = feeLoader.updateFee(lastStaticState)
 }

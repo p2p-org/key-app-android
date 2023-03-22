@@ -11,11 +11,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 
 class SendStateMachine(
-    private val handlers: List<SendActionHandler>,
+    private val handlers: Set<SendActionHandler>,
     private val dispatchers: CoroutineDispatchers,
 ) : CoroutineScope {
 
@@ -41,15 +44,21 @@ class SendStateMachine(
         refreshFeeTimer?.cancel()
         lastAction = action
 
-        handleJob = launch {
-            try {
-                val staticState = state.lastStaticState
-                val actionHandler = handlers.firstOrNull { it.canHandle(action, staticState) } ?: return@launch
-                actionHandler.handle(state, staticState, action)
-            } catch (e: CancellationException) {
-                Timber.i(e)
-            } catch (e: SendFeatureException) {
-                if (e is SendFeatureException.FeeLoadingError) {
+        val staticState = state.lastStaticState
+        val actionHandler = handlers.firstOrNull { it.canHandle(action, staticState) } ?: return
+
+        handleJob = actionHandler.handle(staticState, action)
+            .flowOn(dispatchers.io)
+            .catch { catchException(it) }
+            .launchIn(this)
+    }
+
+    private fun catchException(throwable: Throwable) {
+        when (throwable) {
+            is CancellationException -> Timber.i(throwable)
+            is SendFeatureException -> {
+                Timber.e(throwable)
+                if (throwable is SendFeatureException.FeeLoadingError) {
                     startFeeReloadTimer()
                 }
                 val lastStaticState = state.value.lastStaticState
@@ -57,7 +66,8 @@ class SendStateMachine(
                     lastStaticState,
                     SendFeatureException.FeeLoadingError,
                 )
-            } catch (e: Exception) {
+            }
+            is Exception -> {
                 val lastStaticState = state.value.lastStaticState
                 state.value = SendState.Exception.Other(
                     lastStaticState,

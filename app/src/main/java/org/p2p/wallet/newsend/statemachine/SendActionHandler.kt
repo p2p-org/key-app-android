@@ -1,6 +1,6 @@
 package org.p2p.wallet.newsend.statemachine
 
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 
 interface SendActionHandler {
 
@@ -9,9 +9,8 @@ interface SendActionHandler {
         staticState: SendState,
     ): Boolean
 
-    suspend fun handle(
-        stateFlow: MutableStateFlow<SendState>,
-        staticState: SendState.Static,
+    fun handle(
+        lastStaticState: SendState.Static,
         newAction: SendFeatureAction,
-    )
+    ): Flow<SendState>
 }
