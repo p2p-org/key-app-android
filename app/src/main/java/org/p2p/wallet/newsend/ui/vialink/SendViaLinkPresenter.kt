@@ -73,6 +73,15 @@ class SendViaLinkPresenter(
         } else {
             setupInitialToken(view)
         }
+
+        launch {
+            try {
+                sendViaLinkInteractor.initialize()
+            } catch (e: Throwable) {
+                Timber.e(e, "Error initializing send via link")
+                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+            }
+        }
     }
 
     private fun restoreSelectedToken(view: SendViaLinkContract.View, token: Token.Active) {

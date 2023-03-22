@@ -7,6 +7,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.home.ui.vialink.SendViaLinkReceiveFundsContract
@@ -68,5 +69,6 @@ object SendModule : InjectionModule {
 
     private fun Module.initDataLayer() {
         factoryOf(::RecipientsDatabaseRepository) bind RecipientsLocalRepository::class
+        factoryOf(::FeeRelayerViaLinkInteractor)
     }
 }
