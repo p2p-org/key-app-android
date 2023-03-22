@@ -77,9 +77,7 @@ internal class EthereumKitRepository(
     }
 
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {
-        return kotlin.runCatching { priceRepository.getTokenPrice(tokenAddresses) }
-            .getOrDefault(emptyMap())
-            .mapValues { it.value.priceInUsd }
+        return kotlin.runCatching { priceRepository.getTokenPrices(tokenAddresses) }.getOrDefault(emptyMap())
     }
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
@@ -102,7 +100,7 @@ internal class EthereumKitRepository(
         val erc20TokenAddress = ERC20Tokens.ETH.contractAddress.lowercase()
         val contractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
         val balance = getBalance()
-        val price = priceRepository.getTokenPrice(listOf(erc20TokenAddress))
+        val price = priceRepository.getTokenPrices(listOf(erc20TokenAddress))
         return EthTokenMetadata(
             contractAddress = contractAddress,
             mintAddress = ERC20Tokens.ETH.mintAddress,
@@ -111,7 +109,7 @@ internal class EthereumKitRepository(
             logoUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty(),
             tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
             symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
-            price = price[erc20TokenAddress]?.priceInUsd.orZero()
+            price = price[erc20TokenAddress].orZero()
         )
     }
 
