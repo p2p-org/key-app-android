@@ -1,8 +1,10 @@
 package org.p2p.wallet.user.repository.prices.di
 
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import timber.log.Timber
+import org.p2p.core.pricecache.PriceCacheRepository
 import org.p2p.wallet.R
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.InjectionModule
@@ -26,6 +28,7 @@ object TokenPricesModule : InjectionModule {
 
             TokenPricesCryptoCompareRepository(cryptoCompareApi = compareApi, dispatchers = get())
         }
+        singleOf(::PriceCacheRepository)
         single {
             val baseUrl = androidContext().getString(R.string.coinGeckoBaseUrl)
             val coinGeckoApi = getRetrofit(
@@ -37,6 +40,7 @@ object TokenPricesModule : InjectionModule {
 
             TokenPricesCoinGeckoRepository(
                 coinGeckoApi = coinGeckoApi,
+                priceCacheRepository = get(),
                 dispatchers = get()
             )
         }
