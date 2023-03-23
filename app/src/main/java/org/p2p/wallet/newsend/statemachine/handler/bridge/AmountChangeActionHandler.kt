@@ -1,7 +1,9 @@
 package org.p2p.wallet.newsend.statemachine.handler.bridge
 
 import java.math.BigDecimal
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flow
 import org.p2p.core.utils.isZero
 import org.p2p.wallet.newsend.statemachine.SendActionHandler
 import org.p2p.wallet.newsend.statemachine.SendFeatureAction
@@ -23,27 +25,25 @@ class AmountChangeActionHandler(
             newEvent is SendFeatureAction.MaxAmount ||
             newEvent is SendFeatureAction.ZeroAmount
 
-    override suspend fun handle(
-        stateFlow: MutableStateFlow<SendState>,
-        staticState: SendState.Static,
+    override fun handle(
+        lastStaticState: SendState.Static,
         newAction: SendFeatureAction
-    ) {
-        val token = staticState.commonToken ?: return
+    ): Flow<SendState> = flow {
+        val token = lastStaticState.commonToken ?: return@flow
         val newAmount = when (newAction) {
             is SendFeatureAction.AmountChange -> newAction.amount
             SendFeatureAction.MaxAmount -> token.tokenAmount
             SendFeatureAction.ZeroAmount -> BigDecimal.ZERO
             is SendFeatureAction.NewToken,
             is SendFeatureAction.RefreshFee,
-            SendFeatureAction.InitFeature -> return
+            SendFeatureAction.InitFeature -> return@flow
         }
 
         if (newAmount.isZero()) {
-            stateFlow.value = SendState.Static.TokenZero(token, staticState.fee)
+            emit(SendState.Static.TokenZero(token, lastStaticState.fee))
         } else {
             validator.validateInputAmount(token, newAmount)
-            stateFlow.value = mapper.updateInputAmount(staticState, newAmount)
-            feeLoader.updateFeeIfNeed(stateFlow)
+            emit(mapper.updateInputAmount(lastStaticState, newAmount))
         }
-    }
+    }.flatMapMerge { feeLoader.updateFeeIfNeed(lastStaticState) }
 }

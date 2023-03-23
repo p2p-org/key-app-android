@@ -2,12 +2,12 @@ package org.p2p.wallet.newsend.statemachine.fee
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import org.p2p.wallet.newsend.statemachine.SendFeatureException
 import org.p2p.wallet.newsend.statemachine.SendState
 import org.p2p.wallet.newsend.statemachine.commonFee
 import org.p2p.wallet.newsend.statemachine.commonToken
-import org.p2p.wallet.newsend.statemachine.lastStaticState
 import org.p2p.wallet.newsend.statemachine.mapper.SendBridgeStaticStateMapper
 import org.p2p.wallet.newsend.statemachine.model.SendFee
 import org.p2p.wallet.newsend.statemachine.model.SendToken
@@ -18,33 +18,31 @@ class SendBridgeFeeLoader constructor(
     private val validator: SendBridgeValidator,
 ) {
 
-    suspend fun updateFeeIfNeed(
-        stateFlow: MutableStateFlow<SendState>,
-    ) {
+    fun updateFeeIfNeed(
+        lastStaticState: SendState.Static
+    ): Flow<SendState> = flow {
 
-        val staticState = stateFlow.lastStaticState
-        val token = staticState.commonToken ?: return
-        val oldFee = staticState.commonFee
+        val token = lastStaticState.commonToken ?: return@flow
+        val oldFee = lastStaticState.commonFee
 
         val isNeedRefresh = !validator.isFeeValid(oldFee)
 
         if (isNeedRefresh) {
-            stateFlow.value = SendState.Loading.Fee(staticState)
+            emit(SendState.Loading.Fee(lastStaticState))
             val fee = loadFee(token)
-            stateFlow.value = mapper.updateFee(staticState, fee)
+            emit(mapper.updateFee(lastStaticState, fee))
         }
     }
 
-    suspend fun updateFee(
-        stateFlow: MutableStateFlow<SendState>,
-    ) {
+    fun updateFee(
+        lastStaticState: SendState.Static
+    ): Flow<SendState> = flow {
 
-        val staticState = stateFlow.lastStaticState
-        val token = staticState.commonToken ?: return
+        val token = lastStaticState.commonToken ?: return@flow
 
-        stateFlow.value = SendState.Loading.Fee(staticState)
+        emit(SendState.Loading.Fee(lastStaticState))
         val fee = loadFee(token)
-        stateFlow.value = mapper.updateFee(staticState, fee)
+        emit(mapper.updateFee(lastStaticState, fee))
     }
 
     suspend fun loadFee(token: SendToken.Common): SendFee.Common {
