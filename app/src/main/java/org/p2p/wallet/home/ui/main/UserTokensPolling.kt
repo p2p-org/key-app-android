@@ -9,7 +9,7 @@ import org.p2p.core.token.Token
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
-import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.home.ui.main.models.EthereumState
@@ -53,9 +53,7 @@ class UserTokensPolling(
             return EthereumState()
         }
         val ethereumTokens = loadEthTokens()
-        val ethereumBundleStatuses = loadEthBundles().associate {
-            (it.token?.hex ?: ERC20Tokens.ETH.contractAddress) to it.status
-        }
+        val ethereumBundleStatuses = loadEthBundles()
         return EthereumState(ethereumTokens, ethereumBundleStatuses)
     }
 
@@ -71,7 +69,7 @@ class UserTokensPolling(
         }
     }
 
-    private suspend fun loadEthBundles(): List<BridgeBundle> {
+    private suspend fun loadEthBundles(): Map<String, ClaimStatus?> {
         return try {
             claimInteractor.getListOfEthereumBundleStatuses()
         } catch (cancelled: CancellationException) {
@@ -80,6 +78,8 @@ class UserTokensPolling(
         } catch (throwable: Throwable) {
             Timber.e(throwable, "Error on loading loadEthBundles")
             emptyList()
+        }.associate {
+            (it.token?.hex ?: ERC20Tokens.ETH.contractAddress) to it.status
         }
     }
 }

@@ -32,7 +32,6 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimStatus
-import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -116,8 +115,10 @@ class HomePresenter(
         val username: Username? = null,
         val areZerosHidden: Boolean,
     ) {
-        val ethereumTokens: List<Token.Eth> = ethereumState.ethereumTokens
-        val ethereumBundleStatuses: Map<String, ClaimStatus?> = ethereumState.ethereumBundleStatuses
+        val ethereumTokens: List<Token.Eth>
+            get() = ethereumState.ethereumTokens
+        val ethereumBundleStatuses: Map<String, ClaimStatus?>
+            get() = ethereumState.ethereumBundleStatuses
     }
 
     private var state = ViewState(
@@ -278,17 +279,15 @@ class HomePresenter(
     }
 
     private suspend fun getEthereumState(): EthereumState {
-        val ethereumTokens = loadEthTokens()
-        val ethereumBundleStatuses = loadEthBundles().associate {
-            (it.token?.hex ?: ERC20Tokens.ETH.contractAddress) to it.status
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return EthereumState()
         }
+        val ethereumTokens = loadEthTokens()
+        val ethereumBundleStatuses = loadEthBundles()
         return EthereumState(ethereumTokens, ethereumBundleStatuses)
     }
 
     private suspend fun loadEthTokens(): List<Token.Eth> {
-        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return emptyList()
-        }
         return try {
             ethereumRepository.loadWalletTokens()
         } catch (cancelled: CancellationException) {
@@ -300,10 +299,7 @@ class HomePresenter(
         }
     }
 
-    private suspend fun loadEthBundles(): List<BridgeBundle> {
-        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return emptyList()
-        }
+    private suspend fun loadEthBundles(): Map<String, ClaimStatus?> {
         return try {
             claimInteractor.getListOfEthereumBundleStatuses()
         } catch (cancelled: CancellationException) {
@@ -312,6 +308,8 @@ class HomePresenter(
         } catch (throwable: Throwable) {
             Timber.e(throwable, "Error on loading loadEthBundles")
             emptyList()
+        }.associate {
+            (it.token?.hex ?: ERC20Tokens.ETH.contractAddress) to it.status
         }
     }
 
