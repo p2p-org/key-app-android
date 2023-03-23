@@ -27,10 +27,13 @@ class SendBridgeSendAction(
             .filterIsInstance<SendBridgeState>()
             .onEach {
                 featureState = it
-                if (it is SendState.Static.ReadyToSend && catchReadyToSwap) {
+                if (catchReadyToSwap) {
                     catchReadyToSwap = false
-                    send()
+                    if (it is SendState.Static.ReadyToSend) {
+                        send()
+                    }
                 }
+
             }
             .launchIn(presenterScope)
     }
