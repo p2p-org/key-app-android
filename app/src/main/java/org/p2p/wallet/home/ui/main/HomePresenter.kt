@@ -253,7 +253,7 @@ class HomePresenter(
         }
     }
 
-    private suspend fun handleUserTokensLoaded(
+    private fun handleUserTokensLoaded(
         userTokens: List<Token.Active>,
         ethereumState: EthereumState
     ) {
