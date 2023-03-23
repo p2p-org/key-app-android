@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
@@ -62,18 +61,18 @@ class SwapRateTickerManager private constructor(
         val newTokenA = state.tokenA.also { currentTokenA = it }
         val newTokenB = state.tokenB.also { currentTokenB = it }
 
-        val result = when {
+        val rateText = when {
             !newTokenA.isStableCoin() && newTokenB.isStableCoin() -> {
-                val newRate = (state.amountTokenB / state.amountTokenA).scaleLong(newTokenB.decimals)
-                "1 ${newTokenA.tokenSymbol} ≈ $newRate ${newTokenB.tokenSymbol}"
+                val newRate = (state.amountTokenB / state.amountTokenA).formatToken(newTokenB.decimals)
+                formatRateString(newTokenA.tokenSymbol, newRate, newTokenB.tokenSymbol)
             }
             else -> {
-                val newRate = (state.amountTokenA / state.amountTokenB).scaleLong(newTokenA.decimals)
-                "1 ${newTokenB.tokenSymbol} ≈ $newRate ${newTokenA.tokenSymbol}"
+                val newRate = (state.amountTokenA / state.amountTokenB).formatToken(newTokenA.decimals)
+                formatRateString(newTokenB.tokenSymbol, newRate, newTokenA.tokenSymbol)
             }
         }
 
-        currentRateState.value = SwapRateTickerState.Shown(result)
+        currentRateState.value = SwapRateTickerState.Shown(rateText)
     }
 
     fun onInitialTokensSelected(
@@ -126,8 +125,7 @@ class SwapRateTickerManager private constructor(
 
         val newRate = (amountFrom / amountTo).formatToken(to.decimals)
 
-        val result = "1 ${from.tokenSymbol} ≈ $newRate ${to.tokenSymbol}"
-        return SwapRateTickerState.Shown(result)
+        return SwapRateTickerState.Shown(formatRateString(from.tokenSymbol, newRate, to.tokenSymbol))
     }
 
     private suspend fun findJupiterTokenRate(to: SwapTokenModel.JupiterToken): BigDecimal? {
@@ -135,6 +133,10 @@ class SwapRateTickerManager private constructor(
         val coingeckoId = tokenData?.coingeckoId ?: return null
         val cachedPrice = userLocalRepository.getPriceByTokenId(coingeckoId)
         return cachedPrice?.price ?: swapTokensRepository.getTokenRate(to.details)?.price
+    }
+
+    private fun formatRateString(tokenASymbol: String, tokenBRate: String, tokenBSymbol: String): String {
+        return "1 $tokenASymbol ≈ $tokenBRate $tokenBSymbol"
     }
 
     fun stopAll() {
