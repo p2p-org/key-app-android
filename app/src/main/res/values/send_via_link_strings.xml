@@ -15,5 +15,8 @@
     <string name="send_via_link_receive_funds_success_subtitle">Spend them wisely</string>
     <string name="send_via_link_receive_funds_success_button">Got it 👍</string>
 
+    <string name="send_via_link_error_already_claimed_title">This one-time link is already claimed</string>
+    <string name="send_via_link_error_already_claimed_subtitle">You can\'t receive funds with it</string>
+    <string name="send_via_link_error_already_claimed_button">Okay 🙈</string>
 
 </resources>

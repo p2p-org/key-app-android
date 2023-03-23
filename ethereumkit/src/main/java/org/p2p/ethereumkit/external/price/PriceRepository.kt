@@ -1,13 +1,13 @@
 package org.p2p.ethereumkit.external.price
 
-import org.p2p.ethereumkit.external.api.coingecko.response.CoinGeckoPriceResponse
+import java.math.BigDecimal
 
 private const val USD_READABLE_SYMBOL = "usd"
 
 internal interface PriceRepository {
 
-    suspend fun getTokenPrice(
+    suspend fun getTokenPrices(
         tokenAddresses: List<String>,
         targetCurrency: String = USD_READABLE_SYMBOL
-    ): Map<String, CoinGeckoPriceResponse>
+    ): Map<String, BigDecimal>
 }

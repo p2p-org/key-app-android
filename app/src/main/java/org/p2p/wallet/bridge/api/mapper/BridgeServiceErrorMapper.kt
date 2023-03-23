@@ -8,7 +8,7 @@ class BridgeServiceErrorMapper {
             32001 -> BridgeResult.Error.UnableUnwrapContractCall
             32002 -> BridgeResult.Error.TransactionGasIsNotSet
             32003 -> BridgeResult.Error.EthereumProviderError
-            32004 -> BridgeResult.Error.ContractError
+            -32004 -> BridgeResult.Error.ContractError
             32005 -> BridgeResult.Error.WalletError
             32006 -> BridgeResult.Error.TransactionNotInBundle
             32007 -> BridgeResult.Error.NotEnoughAmount

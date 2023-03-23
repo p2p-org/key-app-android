@@ -4,7 +4,6 @@ import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.ethereumkit.internal.models.RawTransaction
 import org.p2p.ethereumkit.internal.models.Signature
 
 interface EthereumRepository {

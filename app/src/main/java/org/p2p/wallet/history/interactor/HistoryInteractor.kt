@@ -12,12 +12,12 @@ class HistoryInteractor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val localRepository: TransactionDetailsLocalRepository,
 ) {
-    suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult =
+    suspend fun loadHistory(limit: Int, mintAddress: String): HistoryPagingResult =
         withContext(coroutineDispatchers.io) {
             return@withContext historyServiceRepository.loadHistory(limit, mintAddress)
         }
 
-    suspend fun loadNextPage(limit: Int, mintAddress: String?): HistoryPagingResult =
+    suspend fun loadNextPage(limit: Int, mintAddress: String): HistoryPagingResult =
         withContext(coroutineDispatchers.io) {
             return@withContext historyServiceRepository.loadNextPage(limit, mintAddress)
         }
@@ -26,7 +26,11 @@ class HistoryInteractor(
         return historyServiceRepository.findTransactionById(id)
     }
 
-    suspend fun addPendingTransaction(txSignature: String, transaction: HistoryTransaction) {
-        localRepository.savePendingTransaction(txSignature, transaction)
+    suspend fun addPendingTransaction(txSignature: String, mintAddress: String, transaction: HistoryTransaction) {
+        localRepository.savePendingTransaction(
+            mintAddress = mintAddress,
+            txSignature = txSignature,
+            transaction = transaction
+        )
     }
 }
