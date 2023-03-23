@@ -33,7 +33,6 @@ class SendBridgeSendAction(
                         send()
                     }
                 }
-
             }
             .launchIn(presenterScope)
     }
