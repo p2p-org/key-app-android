@@ -1,6 +1,7 @@
 package org.p2p.wallet.newsend.statemachine
 
 import kotlinx.coroutines.flow.StateFlow
+import org.p2p.core.token.Token
 import org.p2p.wallet.newsend.statemachine.model.SendFee
 import org.p2p.wallet.newsend.statemachine.model.SendToken
 
@@ -25,6 +26,12 @@ val SendState.Static.token: SendToken?
         is SendState.Static.ReadyToSend -> token
         is SendState.Static.TokenNotZero -> token
         is SendState.Static.TokenZero -> token
+    }
+
+val SendState.Static.tokenActive: Token.Active?
+    get() = when (val sendToken = token) {
+        is SendToken.Common -> sendToken.token
+        null -> null
     }
 
 val SendState.Static.commonFee: SendFee.Common?

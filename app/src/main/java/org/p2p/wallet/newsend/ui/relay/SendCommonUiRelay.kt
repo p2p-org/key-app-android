@@ -23,6 +23,11 @@ class SendCommonUiRelay constructor(
         }
     }
 
+    override fun switchCurrencyMode() {
+        currencyMode
+        TODO("Not yet implemented")
+    }
+
     private fun handleException(state: SendState.Exception, view: NewSendContract.View) {
         handleStatic(state.lastStaticState, view)
     }

@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.ui.confirmsend
+package org.p2p.wallet.newsend.ui.sendtransaction
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filterIsInstance
@@ -12,16 +12,16 @@ import org.p2p.wallet.newsend.statemachine.commonFee
 import org.p2p.wallet.newsend.statemachine.validator.SendBridgeValidator
 import org.p2p.wallet.newsend.ui.NewSendContract
 
-class SendBridgeSendAction(
+class SendBridgeTransactionDelegate(
     private val validator: SendBridgeValidator,
     private val stateMachine: SendStateMachine,
-) {
+) : SendTransactionDelegate {
 
     private var featureState: SendBridgeState? = null
     private var catchReadyToSwap: Boolean = false
     private var view: NewSendContract.View? = null
 
-    fun attach(presenterScope: CoroutineScope, view: NewSendContract.View) {
+    override fun attach(presenterScope: CoroutineScope, view: NewSendContract.View) {
         this.view = view
         stateMachine.observe()
             .filterIsInstance<SendBridgeState>()
@@ -37,11 +37,11 @@ class SendBridgeSendAction(
             .launchIn(presenterScope)
     }
 
-    fun detach() {
+    override fun detach() {
         view = null
     }
 
-    fun send() {
+    override fun send() {
         val view = this.view ?: return
         val state = featureState as? SendState.Static.ReadyToSend ?: return
         val isValid = validator.isFeeValid(state.commonFee)

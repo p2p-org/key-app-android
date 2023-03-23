@@ -6,4 +6,5 @@ import org.p2p.wallet.newsend.ui.NewSendContract
 interface SendUiRelay {
 
     fun handleFeatureState(state: SendState, view: NewSendContract.View?)
+    fun switchCurrencyMode()
 }
