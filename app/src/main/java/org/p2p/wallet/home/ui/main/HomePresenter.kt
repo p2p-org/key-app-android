@@ -41,7 +41,7 @@ import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.home.ui.main.models.EthereumState
+import org.p2p.wallet.home.ui.main.models.EthereumHomeState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -110,7 +110,7 @@ class HomePresenter(
 
     private data class ViewState(
         val tokens: List<Token.Active> = emptyList(),
-        val ethereumState: EthereumState = EthereumState(),
+        val ethereumState: EthereumHomeState = EthereumHomeState(),
         val visibilityState: VisibilityState = VisibilityState.Hidden,
         val username: Username? = null,
         val areZerosHidden: Boolean,
@@ -256,7 +256,7 @@ class HomePresenter(
 
     private fun handleUserTokensLoaded(
         userTokens: List<Token.Active>,
-        ethereumState: EthereumState
+        ethereumState: EthereumHomeState
     ) {
         Timber.d("local tokens change arrived")
         state = state.copy(
@@ -278,13 +278,13 @@ class HomePresenter(
         }
     }
 
-    private suspend fun getEthereumState(): EthereumState {
+    private suspend fun getEthereumState(): EthereumHomeState {
         if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return EthereumState()
+            return EthereumHomeState()
         }
         val ethereumTokens = loadEthTokens()
         val ethereumBundleStatuses = loadEthBundles()
-        return EthereumState(ethereumTokens, ethereumBundleStatuses)
+        return EthereumHomeState(ethereumTokens, ethereumBundleStatuses)
     }
 
     private suspend fun loadEthTokens(): List<Token.Eth> {

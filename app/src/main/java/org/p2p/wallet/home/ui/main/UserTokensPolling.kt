@@ -12,7 +12,7 @@ import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
-import org.p2p.wallet.home.ui.main.models.EthereumState
+import org.p2p.wallet.home.ui.main.models.EthereumHomeState
 import org.p2p.wallet.user.interactor.UserInteractor
 
 private val POLLING_DELAY = 10.toDuration(DurationUnit.SECONDS)
@@ -28,7 +28,7 @@ class UserTokensPolling(
     private val isPollingEnabled: Boolean
         get() = appFeatureFlags.isPollingEnabled.featureValue
 
-    suspend fun startPolling(onTokensLoaded: suspend (List<Token.Active>, EthereumState) -> Unit) {
+    suspend fun startPolling(onTokensLoaded: suspend (List<Token.Active>, EthereumHomeState) -> Unit) {
         if (isPollingEnabled) {
             try {
                 while (true) {
@@ -48,13 +48,13 @@ class UserTokensPolling(
         }
     }
 
-    private suspend fun getEthereumState(): EthereumState {
+    private suspend fun getEthereumState(): EthereumHomeState {
         if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return EthereumState()
+            return EthereumHomeState()
         }
         val ethereumTokens = loadEthTokens()
         val ethereumBundleStatuses = loadEthBundles()
-        return EthereumState(ethereumTokens, ethereumBundleStatuses)
+        return EthereumHomeState(ethereumTokens, ethereumBundleStatuses)
     }
 
     private suspend fun loadEthTokens(): List<Token.Eth> {
