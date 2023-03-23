@@ -1,5 +1,7 @@
 package org.p2p.wallet.jupiter.ui.settings.presenter
 
+import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -22,10 +24,10 @@ import org.p2p.wallet.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.jupiter.ui.info.SwapInfoType
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.settings.JupiterSwapSettingsContract
-import org.p2p.wallet.swap.model.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.model.Slippage.Companion.PERCENT_DIVIDE_VALUE
 
-private const val AMOUNT_INPUT_DELAY = 400L
+private val AMOUNT_INPUT_DELAY = 1.seconds
 
 class JupiterSwapSettingsPresenter(
     private val stateManager: SwapStateManager,
@@ -191,10 +193,11 @@ class JupiterSwapSettingsPresenter(
             return
         }
         val newCustomSlippage = Slippage.parse(slippage / PERCENT_DIVIDE_VALUE)
+        Timber.i("Jupiter swap slippage changed: ${newCustomSlippage.percentValue}")
         debounceInputJob = launch {
             stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
+            delay(AMOUNT_INPUT_DELAY.inWholeMilliseconds)
             analytics.logSlippageChangedClicked(newCustomSlippage)
-            delay(AMOUNT_INPUT_DELAY)
             stateManager.onNewAction(SwapStateAction.SlippageChanged(newCustomSlippage))
         }
     }
