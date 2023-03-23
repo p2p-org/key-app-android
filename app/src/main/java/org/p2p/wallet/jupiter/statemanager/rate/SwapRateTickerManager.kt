@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.statemanager.rate
 
+import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.Executors
 import kotlinx.coroutines.CoroutineDispatcher
@@ -8,8 +9,10 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
@@ -17,6 +20,8 @@ import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.user.repository.UserLocalRepository
+
+private const val TAG = "SwapRateTickerManager"
 
 class SwapRateTickerManager private constructor(
     swapScope: SwapCoroutineScope,
@@ -41,7 +46,9 @@ class SwapRateTickerManager private constructor(
 
     private val currentRateState = MutableStateFlow<SwapRateTickerState>(SwapRateTickerState.Loading)
 
-    fun observe(): Flow<SwapRateTickerState> = currentRateState
+    fun observe(): Flow<SwapRateTickerState> =
+        currentRateState
+            .onEach { Timber.tag(TAG).i("SwapRateTickerState changed: $it") }
 
     fun handleRoutesLoading(state: SwapState.LoadingRoutes) {
         currentRateState.value = SwapRateTickerState.Loading
@@ -101,9 +108,10 @@ class SwapRateTickerManager private constructor(
      *
      * */
     private suspend fun findTokensRatesState(tokenA: SwapTokenModel, tokenB: SwapTokenModel): SwapRateTickerState {
-        val (from, to) = when {
-            !tokenA.isStableCoin() && tokenB.isStableCoin() -> tokenA to tokenB
-            else -> tokenB to tokenA
+        val (from, to) = if (!tokenA.isStableCoin() && tokenB.isStableCoin()) {
+            tokenA to tokenB
+        } else {
+            tokenB to tokenA
         }
 
         val amountFrom = when (from) {
@@ -116,7 +124,7 @@ class SwapRateTickerManager private constructor(
             is SwapTokenModel.JupiterToken -> findJupiterTokenRate(to)
         } ?: return SwapRateTickerState.Hidden
 
-        val newRate = (amountFrom / amountTo).scaleLong(to.decimals)
+        val newRate = (amountFrom / amountTo).formatToken(to.decimals)
 
         val result = "1 ${from.tokenSymbol} ≈ $newRate ${to.tokenSymbol}"
         return SwapRateTickerState.Shown(result)

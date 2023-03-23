@@ -333,11 +333,12 @@ class JupiterSwapPresenter(
     }
 
     private fun handleRateTickerChanges(state: SwapRateTickerState) {
-        when (state) {
-            is SwapRateTickerState.Shown -> view?.setRatioState(rateTickerMapper.mapRateLoaded(state))
-            is SwapRateTickerState.Loading -> view?.setRatioState(rateTickerMapper.mapRateSkeleton(state))
-            is SwapRateTickerState.Hidden -> view?.setRatioState(state = null)
+        val ratioState: TextViewCellModel? = when (state) {
+            is SwapRateTickerState.Shown -> rateTickerMapper.mapRateLoaded(state)
+            is SwapRateTickerState.Loading -> rateTickerMapper.mapRateSkeleton(state)
+            is SwapRateTickerState.Hidden -> null
         }
+        view?.setRatioState(ratioState)
     }
 
     private fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
