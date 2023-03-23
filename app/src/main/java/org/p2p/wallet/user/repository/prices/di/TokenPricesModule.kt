@@ -10,7 +10,6 @@ import org.p2p.wallet.home.api.CoinGeckoApi
 import org.p2p.wallet.home.api.CryptoCompareApi
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.CompareTokenInterceptor
-import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.impl.TokenPricesCoinGeckoRepository
 import org.p2p.wallet.user.repository.prices.impl.TokenPricesCryptoCompareRepository
 
@@ -42,7 +41,7 @@ object TokenPricesModule : InjectionModule {
             )
         }
 
-        factory<TokenPricesRemoteRepository> {
+        single {
             val shouldInjectCoinGeckoApi = get<InAppFeatureFlags>().useCoinGeckoForPrices.featureValue
             Timber.i("Injecting TokenPricesRemoteRepository, useCoinGeckoForPrices=$shouldInjectCoinGeckoApi")
             if (shouldInjectCoinGeckoApi) {
