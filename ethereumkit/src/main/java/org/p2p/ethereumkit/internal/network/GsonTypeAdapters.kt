@@ -20,7 +20,7 @@ import org.p2p.ethereumkit.internal.core.hexStringToLongOrNull
 import org.p2p.ethereumkit.internal.core.toHexString
 import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 
-internal class BigIntegerTypeAdapter(private val isHex: Boolean = false) : TypeAdapter<BigInteger?>() {
+internal class BigIntegerTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<BigInteger?>() {
     override fun write(writer: JsonWriter, value: BigInteger?) {
         if (value == null) {
             writer.nullValue()
