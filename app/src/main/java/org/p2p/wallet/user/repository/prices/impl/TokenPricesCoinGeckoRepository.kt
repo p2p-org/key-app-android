@@ -13,8 +13,9 @@ import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
 class TokenPricesCoinGeckoRepository(
     private val coinGeckoApi: CoinGeckoApi,
+    private val priceCacheRepository: PriceCacheRepository,
     private val dispatchers: CoroutineDispatchers
-) : TokenPricesRemoteRepository, PriceCacheRepository() {
+) : TokenPricesRemoteRepository {
 
     private class RequestRateLimitMet(cause: HttpException) : Throwable(
         message = "Rate limit for coin_gecko met",
@@ -38,7 +39,7 @@ class TokenPricesCoinGeckoRepository(
 
     private suspend fun loadPrices(tokenIds: List<TokenId>, targetCurrencySymbol: String): List<TokenPrice> =
         withContext(dispatchers.io) {
-            val filteredTokenIds = filterKeysForExpiredPrices(tokenIds.map { it.id })
+            val filteredTokenIds = priceCacheRepository.filterKeysForExpiredPrices(tokenIds.map { it.id })
             if (filteredTokenIds.isNotEmpty()) {
                 val tokenIdsForRequest = tokenIds.joinToString(",") { it.id }
                 try {
@@ -46,7 +47,7 @@ class TokenPricesCoinGeckoRepository(
                         tokenIds = tokenIdsForRequest,
                         targetCurrency = targetCurrencySymbol.lowercase()
                     ).associate { it.id to TokenPriceWithMark(it.currentPrice) }
-                    mergeCache(response)
+                    priceCacheRepository.mergeCache(response)
                 } catch (httpException: HttpException) {
                     val errorCode = httpException.code()
                     if (errorCode == 429 || errorCode == 403) {
@@ -55,6 +56,6 @@ class TokenPricesCoinGeckoRepository(
                     throw httpException
                 }
             }
-            cachedPrices.entries.map { TokenPrice(tokenId = it.key, price = it.value.priceInUsd) }
+            priceCacheRepository.getPrices().entries.map { TokenPrice(tokenId = it.key, price = it.value.priceInUsd) }
         }
 }
