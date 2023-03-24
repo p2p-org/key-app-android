@@ -27,6 +27,8 @@ import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewPresenter
+import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksContract
+import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.push_notifications.PushNotificationsModule
@@ -53,6 +55,8 @@ object HistoryModule : InjectionModule {
         } bind HistoryListViewContract.Presenter::class
         factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) bind
             HistoryTransactionDetailsContract.Presenter::class
+
+        factoryOf(::HistorySendLinksPresenter) bind HistorySendLinksContract.Presenter::class
     }
 
     private fun Module.dataLayer() {
