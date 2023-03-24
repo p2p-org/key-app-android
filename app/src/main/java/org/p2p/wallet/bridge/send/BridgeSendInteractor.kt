@@ -46,7 +46,6 @@ class BridgeSendInteractor(
         val signedTransaction = relaySdkFacade.signTransaction(
             transaction = sendTransaction.transaction.toBase58Instance(),
             keyPair = userAccount.getEncodedKeyPair().toBase58Instance(),
-            // todo need it?
             recentBlockhash = null
         )
         val firstTransactionSignature = rpcSolanaRepository.sendTransaction(
