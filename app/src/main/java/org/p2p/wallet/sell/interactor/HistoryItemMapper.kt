@@ -80,7 +80,7 @@ class HistoryItemMapper(
                 tokenIconUrl = getTokenIconUrl()
                 iconRes = getIcon()
 
-                startTitle = getUsernameOrAddress()
+                startTitle = getFormattedUsernameOrAddress()
                 startSubtitle = resources.getString(getTypeName())
                 endTopValue = getValue()
                 endTopValueTextColor = getTextColor()
