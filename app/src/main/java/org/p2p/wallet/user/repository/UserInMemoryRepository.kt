@@ -13,7 +13,9 @@ private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
 
 private const val TAG = "UserInMemoryRepository"
 
-class UserInMemoryRepository : UserLocalRepository {
+class UserInMemoryRepository(
+    private val tokenConverter: TokenConverter
+) : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
     private val allTokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
@@ -129,7 +131,7 @@ class UserInMemoryRepository : UserLocalRepository {
         val tokenData: TokenData? = findTokenData(mintAddress)
         return if (tokenData != null) {
             val price = getPriceByTokenId(tokenData.coingeckoId)
-            TokenConverter.fromNetwork(tokenData, price)
+            tokenConverter.fromNetwork(tokenData, price)
         } else {
             null
         }
