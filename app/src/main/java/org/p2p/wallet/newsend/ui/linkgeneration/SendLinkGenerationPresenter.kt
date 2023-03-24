@@ -8,17 +8,14 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
 import org.p2p.wallet.infrastructure.sendvialink.model.UserSendLink
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.newsend.model.TemporaryAccount
-import org.p2p.wallet.utils.toBase58Instance
 
 class SendLinkGenerationPresenter(
     private val sendInteractor: SendInteractor,
-    private val tokenKeyProvider: TokenKeyProvider,
     private val userSendLinksRepository: UserSendLinksLocalRepository
 ) : BasePresenter<SendLinkGenerationContract.View>(),
     SendLinkGenerationContract.Presenter {
@@ -39,7 +36,6 @@ class SendLinkGenerationPresenter(
                 val tokenAmount = lamports.fromLamports(token.decimals)
                 val formattedAmount = "$tokenAmount ${token.tokenSymbol}"
                 userSendLinksRepository.saveUserLink(
-                    currentUserAddress = tokenKeyProvider.publicKey.toBase58Instance(),
                     link = UserSendLink(
                         link = recipient.generateFormattedLink(),
                         token = token,

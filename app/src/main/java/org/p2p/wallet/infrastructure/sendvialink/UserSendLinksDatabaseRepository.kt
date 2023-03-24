@@ -1,6 +1,7 @@
 package org.p2p.wallet.infrastructure.sendvialink
 
 import timber.log.Timber
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinkEntity
 import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinksDao
 import org.p2p.wallet.infrastructure.sendvialink.model.UserSendLink
@@ -10,15 +11,20 @@ import org.p2p.wallet.utils.toBase58Instance
 
 class UserSendLinksDatabaseRepository(
     private val userSendLinksDao: UserSendLinksDao,
-    private val userRepository: UserLocalRepository
+    private val userRepository: UserLocalRepository,
+    private val tokenKeyProvider: TokenKeyProvider
 ) : UserSendLinksLocalRepository {
 
-    override suspend fun getUserLinks(userAddress: Base58String): List<UserSendLink> =
-        userSendLinksDao.getLinks(userAddress.base58Value)
-            .mapNotNull { it.toDomain() }
+    private val userAddress: Base58String
+        get() = tokenKeyProvider.publicKey.toBase58Instance()
 
-    override suspend fun saveUserLink(currentUserAddress: Base58String, link: UserSendLink) {
-        val entity = link.toEntity(currentUserAddress)
+    override suspend fun getUserLinks(): List<UserSendLink> {
+        return userSendLinksDao.getLinks(userAddress.base58Value)
+            .mapNotNull { it.toDomain() }
+    }
+
+    override suspend fun saveUserLink(link: UserSendLink) {
+        val entity = link.toEntity(userAddress)
         userSendLinksDao.addLink(entity)
     }
 
