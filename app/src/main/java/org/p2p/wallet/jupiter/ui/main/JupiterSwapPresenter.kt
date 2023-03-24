@@ -70,7 +70,7 @@ class JupiterSwapPresenter(
     private val rateTickerManager: SwapRateTickerManager,
     private val dispatchers: CoroutineDispatchers,
     private val userLocalRepository: UserLocalRepository,
-    private val historyInteractor: HistoryInteractor
+    private val historyInteractor: HistoryInteractor,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true
@@ -220,7 +220,8 @@ class JupiterSwapPresenter(
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
             is SwapState.RoutesLoaded,
-            is SwapState.LoadingTransaction -> swapInteractor.getTokenAAmount(featureState)
+            is SwapState.LoadingTransaction,
+            -> swapInteractor.getTokenAAmount(featureState)
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
             null -> null
         }
@@ -254,13 +255,15 @@ class JupiterSwapPresenter(
     private fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
         return when (featureState) {
             null,
-            SwapState.InitialLoading -> false
+            SwapState.InitialLoading,
+            -> false
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction,
             is SwapState.SwapLoaded,
             is SwapState.TokenANotZero,
             is SwapState.RoutesLoaded,
-            is SwapState.TokenAZero -> true
+            is SwapState.TokenAZero,
+            -> true
             is SwapState.SwapException ->
                 isChangeTokenScreenAvailable(featureState.previousFeatureState)
         }
@@ -662,13 +665,13 @@ class JupiterSwapPresenter(
             type = RpcHistoryTransactionType.SWAP,
             sourceSymbol = currentState.tokenA.tokenSymbol,
             sourceAddress = currentState.tokenA.mintAddress.toString(),
-            destinationAddress = currentState.tokenB.mintAddress.toString(),
             fees = emptyList(),
-            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
-            sentAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            sentAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
             sourceIconUrl = currentState.tokenA.iconUrl,
             destinationSymbol = currentState.tokenB.tokenSymbol,
-            destinationIconUrl = currentState.tokenB.iconUrl
+            destinationIconUrl = currentState.tokenB.iconUrl,
+            destinationAddress = currentState.tokenB.mintAddress.toString()
         )
     }
 }
