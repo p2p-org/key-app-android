@@ -16,6 +16,7 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenAccount
@@ -32,7 +33,8 @@ class BridgeSendInteractor(
     private val relaySdkFacade: RelaySdkFacade,
     private val feeRelayerInteractor: FeeRelayerInteractor,
     private val dispatchers: CoroutineDispatchers,
-    private val rpcSolanaRepository: RpcSolanaRepository
+    private val rpcSolanaRepository: RpcSolanaRepository,
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
 ) {
 
     suspend fun sendTransaction(
@@ -45,8 +47,8 @@ class BridgeSendInteractor(
         val userPublicKey = tokenKeyProvider.publicKey
         val userWallet = SolAddress(userPublicKey)
 
-        // todo who pay?
-        val feePayer = SolAddress(userPublicKey)
+        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
+        val feePayer = SolAddress(relayAccount.publicKey.toBase58())
 
         val sendTransaction = repository.transferFromSolana(
             userWallet = userWallet,
