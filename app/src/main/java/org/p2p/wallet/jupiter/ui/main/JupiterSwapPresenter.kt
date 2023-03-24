@@ -665,13 +665,13 @@ class JupiterSwapPresenter(
             type = RpcHistoryTransactionType.SWAP,
             sourceSymbol = currentState.tokenA.tokenSymbol,
             sourceAddress = currentState.tokenA.mintAddress.toString(),
-            destinationAddress = currentState.tokenB.mintAddress.toString(),
             fees = emptyList(),
-            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
-            sentAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            sentAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
             sourceIconUrl = currentState.tokenA.iconUrl,
             destinationSymbol = currentState.tokenB.tokenSymbol,
-            destinationIconUrl = currentState.tokenB.iconUrl
+            destinationIconUrl = currentState.tokenB.iconUrl,
+            destinationAddress = currentState.tokenB.mintAddress.toString()
         )
     }
 }
