@@ -8,29 +8,47 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
+import org.p2p.wallet.infrastructure.sendvialink.model.UserSendLink
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.newsend.model.TemporaryAccount
 
 class SendLinkGenerationPresenter(
-    private val sendInteractor: SendInteractor
+    private val sendInteractor: SendInteractor,
+    private val userSendLinksRepository: UserSendLinksLocalRepository
 ) : BasePresenter<SendLinkGenerationContract.View>(),
     SendLinkGenerationContract.Presenter {
 
     override fun generateLink(recipient: TemporaryAccount, token: Token.Active, lamports: BigInteger) {
         launch {
-            try {
+            val result = try {
                 val memo = BuildConfig.sendViaLinkMemo
                 delay(2000L)
-                sendInteractor.sendTransaction(recipient.publicKey, token, lamports, memo)
+
+                sendInteractor.sendTransaction(
+                    destinationAddress = recipient.publicKey,
+                    token = token,
+                    lamports = lamports,
+                    memo = memo
+                )
+
                 val tokenAmount = lamports.fromLamports(token.decimals)
                 val formattedAmount = "$tokenAmount ${token.tokenSymbol}"
-                val state = LinkGenerationState.Success(recipient.generateFormattedLink(), formattedAmount)
-                view?.showResult(state)
+                userSendLinksRepository.saveUserLink(
+                    link = UserSendLink(
+                        link = recipient.generateFormattedLink(),
+                        token = token,
+                        amount = tokenAmount,
+                        dateCreated = System.currentTimeMillis()
+                    )
+                )
+                LinkGenerationState.Success(recipient.generateFormattedLink(), formattedAmount)
             } catch (e: Throwable) {
                 Timber.e(e, "Error generating send link")
-                view?.showResult(LinkGenerationState.Error)
+                LinkGenerationState.Error
             }
+            view?.showResult(result)
         }
     }
 }

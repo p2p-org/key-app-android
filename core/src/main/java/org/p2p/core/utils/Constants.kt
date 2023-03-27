@@ -16,6 +16,8 @@ object Constants {
     const val USDT_SYMBOL = "USDT"
     const val BTC_SYMBOL = "BTC"
     const val ETH_SYMBOL = "ETH"
+    const val WETH_SYMBOL = "WETH"
+    const val WBTC_SYMBOL = "WBTC"
 
     const val SOL_COINGECKO_ID = "solana"
     const val USDC_COINGECKO_ID = "usd-coin"

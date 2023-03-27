@@ -7,14 +7,18 @@ import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
-import org.p2p.ethereumkit.internal.core.*
-import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import java.lang.reflect.Type
 import java.math.BigInteger
-import java.util.*
+import java.util.Optional
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.HexString
+import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.internal.core.hexStringToBigIntegerOrNull
+import org.p2p.ethereumkit.internal.core.hexStringToByteArrayOrNull
+import org.p2p.ethereumkit.internal.core.hexStringToIntOrNull
+import org.p2p.ethereumkit.internal.core.hexStringToLongOrNull
+import org.p2p.ethereumkit.internal.core.toHexString
+import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 
 internal class BigIntegerTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<BigInteger?>() {
     override fun write(writer: JsonWriter, value: BigInteger?) {
@@ -36,7 +40,7 @@ internal class BigIntegerTypeAdapter(private val isHex: Boolean = true) : TypeAd
     }
 }
 
-internal class LongTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<Long?>() {
+internal class LongTypeAdapter(private val isHex: Boolean = false) : TypeAdapter<Long?>() {
     override fun write(writer: JsonWriter, value: Long?) {
         if (value == null) {
             writer.nullValue()
@@ -56,7 +60,7 @@ internal class LongTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<
     }
 }
 
-internal class IntTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<Int?>() {
+internal class IntTypeAdapter(private val isHex: Boolean = false) : TypeAdapter<Int?>() {
     override fun write(writer: JsonWriter, value: Int?) {
         if (value == null) {
             writer.nullValue()

@@ -21,6 +21,8 @@ import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeResult
+import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
+import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -88,9 +90,12 @@ class ClaimPresenter(
                     view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
                 }
             } catch (error: Throwable) {
-                if (error.isConnectionError()) {
-                    view?.showUiKitSnackBar(messageResId = R.string.common_offline_error)
+                val messageResId = when {
+                    error is NotEnoughAmount || error is ContractError -> R.string.bridge_claim_fees_bigger_error
+                    error.isConnectionError() -> R.string.common_offline_error
+                    else -> null
                 }
+                if (messageResId != null) view?.showUiKitSnackBar(messageResId = messageResId)
                 Timber.e(error, "Error on getting bundle for claim")
                 view?.showFee(TextViewCellModel.Raw(TextContainer(R.string.bridge_claim_fees_unavailable)))
                 view?.setClaimButtonState(isButtonEnabled = false)
@@ -102,9 +107,7 @@ class ClaimPresenter(
 
     private fun showFees(fees: BridgeBundleFees, isFree: Boolean) {
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
-        if (!isFree) {
-            claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, fees, eth)
-        }
+        claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, fees, eth)
         view?.setClaimButtonState(isButtonEnabled = true)
     }
 

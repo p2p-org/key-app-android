@@ -70,7 +70,7 @@ class JupiterSwapPresenter(
     private val rateTickerManager: SwapRateTickerManager,
     private val dispatchers: CoroutineDispatchers,
     private val userLocalRepository: UserLocalRepository,
-    private val historyInteractor: HistoryInteractor,
+    private val historyInteractor: HistoryInteractor
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true
@@ -665,13 +665,13 @@ class JupiterSwapPresenter(
             type = RpcHistoryTransactionType.SWAP,
             sourceSymbol = currentState.tokenA.tokenSymbol,
             sourceAddress = currentState.tokenA.mintAddress.toString(),
+            destinationAddress = currentState.tokenB.mintAddress.toString(),
             fees = emptyList(),
-            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
-            sentAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
+            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
+            sentAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
             sourceIconUrl = currentState.tokenA.iconUrl,
             destinationSymbol = currentState.tokenB.tokenSymbol,
-            destinationIconUrl = currentState.tokenB.iconUrl,
-            destinationAddress = currentState.tokenB.mintAddress.toString()
+            destinationIconUrl = currentState.tokenB.iconUrl
         )
     }
 }
