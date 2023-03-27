@@ -27,7 +27,7 @@ class CloseAccountInteractor(
         transaction.addInstruction(instruction)
 
         val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
-        transaction.recentBlockHash = recentBlockhash.recentBlockhash
+        transaction.setRecentBlockhash(recentBlockhash.recentBlockhash)
 
         val signers = Account(tokenKeyProvider.keyPair)
         transaction.sign(signers)

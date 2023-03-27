@@ -1,5 +1,7 @@
 package org.p2p.wallet.swap.interactor.orca
 
+import timber.log.Timber
+import java.math.BigInteger
 import kotlinx.coroutines.delay
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
@@ -21,8 +23,6 @@ import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.transaction.interactor.TransactionStatusInteractor
 import org.p2p.wallet.utils.retryRequest
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
-import java.math.BigInteger
 
 class OrcaNativeSwapInteractor(
     private val rpcBlockhashRepository: RpcBlockhashRepository,
@@ -88,7 +88,7 @@ class OrcaNativeSwapInteractor(
         pool: OrcaPool,
         fromTokenPubkey: String,
         toTokenPubkey: String?,
-        feePayer: PublicKey?,
+        feePayer: PublicKey,
         amount: BigInteger,
         slippage: Double,
         minRenExemption: BigInteger
@@ -112,8 +112,8 @@ class OrcaNativeSwapInteractor(
         val instructions = accountInstructions.instructions + accountInstructions.cleanupInstructions
         transaction.addInstructions(instructions)
         val blockhash = rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
-        transaction.recentBlockHash = blockhash
-        transaction.feePayer = feePayer
+        transaction.setRecentBlockhash(blockhash)
+        transaction.setFeePayer(feePayer)
 
         val signers = listOf(owner) + accountInstructions.signers
         transaction.sign(signers)
@@ -128,7 +128,7 @@ class OrcaNativeSwapInteractor(
         fromWalletPubkey: String,
         toWalletPubkey: String?,
         bestPoolsPair: OrcaPoolsPair,
-        feePayer: PublicKey?,
+        feePayer: PublicKey,
         info: OrcaSwapInfo,
         owner: Account,
         lamports: BigInteger,
@@ -150,7 +150,7 @@ class OrcaNativeSwapInteractor(
     private suspend fun swapTransitiveSeparated(
         bestPoolsPair: OrcaPoolsPair,
         toWalletPubkey: String?,
-        feePayer: PublicKey?,
+        feePayer: PublicKey,
         info: OrcaSwapInfo,
         owner: Account,
         fromWalletPubkey: String,
@@ -241,22 +241,22 @@ class OrcaNativeSwapInteractor(
         transaction.addInstructions(accountInstructions.instructions)
         transaction.addInstructions(accountInstructions.cleanupInstructions)
 
-        transaction.feePayer = feePayer
+        transaction.setFeePayer(feePayer)
         val transactionId = retryRequest {
             val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
-            transaction.recentBlockHash = recentBlockhash.recentBlockhash
+            transaction.setRecentBlockhash(recentBlockhash.recentBlockhash)
             transaction.sign(accountInstructions.signers)
             rpcTransactionRepository.sendTransaction(transaction)
         }
 
-        val signature = transaction.signature
-        return OrcaSwapResult.Finished(transactionId, signature.signature)
+        val signature = transaction.signature?.signature.orEmpty()
+        return OrcaSwapResult.Finished(transactionId, signature)
     }
 
     private suspend fun swapTransitiveSingle(
         bestPoolsPair: OrcaPoolsPair,
         toWalletPubkey: String?,
-        feePayer: PublicKey?,
+        feePayer: PublicKey,
         info: OrcaSwapInfo,
         owner: Account,
         fromWalletPubkey: String,
@@ -324,16 +324,16 @@ class OrcaNativeSwapInteractor(
         val transaction = Transaction()
         transaction.addInstructions(accountInstructions.instructions)
         transaction.addInstructions(accountInstructions.cleanupInstructions)
-        transaction.feePayer = feePayer
+        transaction.setFeePayer(feePayer)
 
         val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
-        transaction.recentBlockHash = recentBlockhash.recentBlockhash
+        transaction.setRecentBlockhash(recentBlockhash.recentBlockhash)
         transaction.sign(accountInstructions.signers)
 
-        val signature = transaction.signature
+        val signature = transaction.signature?.signature.orEmpty()
 
         val transactionId = rpcTransactionRepository.sendTransaction(transaction)
-        return OrcaSwapResult.Finished(transactionId, signature.signature)
+        return OrcaSwapResult.Finished(transactionId, signature)
     }
 
     private suspend fun constructIntermediaryAccountInstructions(
@@ -380,7 +380,7 @@ class OrcaNativeSwapInteractor(
         pool0: OrcaPool,
         pool1: OrcaPool,
         toWalletPubkey: String?,
-        feePayer: PublicKey?,
+        feePayer: PublicKey,
         onConfirmed: () -> Unit
     ): List<OrcaInstructionsData> {
         val info = orcaInfoInteractor.getInfo()
@@ -422,10 +422,10 @@ class OrcaNativeSwapInteractor(
         }
 
         // if creating transaction is needed
-        transaction.feePayer = feePayer
+        transaction.setFeePayer(feePayer)
 
         val blockhash = rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
-        transaction.recentBlockHash = blockhash
+        transaction.setRecentBlockhash(blockhash)
 
         val signers = listOf(Account(tokenKeyProvider.keyPair))
         transaction.sign(signers)

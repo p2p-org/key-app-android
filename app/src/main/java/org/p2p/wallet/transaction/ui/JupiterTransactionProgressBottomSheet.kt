@@ -20,8 +20,8 @@ import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogJupiterSwapTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
-import org.p2p.wallet.swap.model.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.model.Slippage.Companion.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
 import org.p2p.wallet.updates.ConnectionStateProvider
