@@ -26,7 +26,7 @@ private const val TAG = "SendViaLinkInteractor"
 class SendViaLinkInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionInteractor: TransactionInteractor,
-    private val feeRelayerInteractor: FeeRelayerViaLinkInteractor,
+    private val feeRelayerLinkInteractor: FeeRelayerViaLinkInteractor,
     private val addressInteractor: TransactionAddressInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val amountRepository: RpcAmountRepository,
@@ -37,7 +37,7 @@ class SendViaLinkInteractor(
      * Initialize fee payer token
      * */
     suspend fun initialize() {
-        feeRelayerInteractor.load()
+        feeRelayerLinkInteractor.load()
         orcaInfoInteractor.load()
     }
 
@@ -61,7 +61,7 @@ class SendViaLinkInteractor(
             memo = memo
         )
 
-        return feeRelayerInteractor.signAndSendTransaction(
+        return feeRelayerLinkInteractor.signAndSendTransaction(
             preparedTransaction = preparedTransaction,
             statistics = statistics,
             isRetryEnabled = false
