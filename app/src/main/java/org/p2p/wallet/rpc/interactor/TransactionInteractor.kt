@@ -35,8 +35,8 @@ class TransactionInteractor(
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)
-        transaction.recentBlockHash = recentBlockhash ?: rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
-        transaction.feePayer = feePayer
+        transaction.setRecentBlockhash(recentBlockhash ?: rpcBlockhashRepository.getRecentBlockhash().recentBlockhash)
+        transaction.setFeePayer(feePayer)
 
         // calculate fee first
         val expectedFee = FeeAmount(
@@ -50,14 +50,22 @@ class TransactionInteractor(
     }
 
     suspend fun serializeAndSend(
-        preparedTransaction: PreparedTransaction,
+        transaction: Transaction,
         isSimulation: Boolean
     ): String {
 
         return if (isSimulation) {
-            rpcTransactionRepository.simulateTransaction(preparedTransaction.transaction)
+            rpcTransactionRepository.simulateTransaction(transaction)
         } else {
-            rpcTransactionRepository.sendTransaction(preparedTransaction.transaction)
+            rpcTransactionRepository.sendTransaction(transaction)
+        }
+    }
+
+    suspend fun sendTransaction(signedTransaction: String, isSimulation: Boolean): String {
+        return if (isSimulation) {
+            rpcTransactionRepository.simulateTransaction(signedTransaction)
+        } else {
+            rpcTransactionRepository.sendTransaction(signedTransaction)
         }
     }
 
@@ -81,7 +89,7 @@ class TransactionInteractor(
         val transaction = Transaction().apply {
             addInstructions(instructions)
             setFeePayer(feePayerPublicKey)
-            recentBlockHash = blockhash
+            setRecentBlockhash(blockhash)
             sign(signers)
         }
 
