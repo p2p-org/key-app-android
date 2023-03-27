@@ -20,9 +20,9 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
 import org.p2p.wallet.swap.analytics.SwapAnalytics
+import org.p2p.wallet.swap.model.MAX_ALLOWED_SLIPPAGE
+import org.p2p.wallet.swap.model.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.swap.model.Slippage.Companion.MAX_ALLOWED_SLIPPAGE
-import org.p2p.wallet.swap.model.Slippage.Companion.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.ui.orca.KEY_REQUEST_SWAP
 import org.p2p.wallet.utils.args

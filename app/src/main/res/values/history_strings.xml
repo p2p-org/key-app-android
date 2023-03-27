@@ -9,11 +9,11 @@
 
     <string name="transaction_history_unknown">Unknown</string>
     <string name="transaction_history_swap">Swap</string>
-    <string name="transaction_history_swap_pending">Swap…</string>
+    <string name="transaction_history_swap_pending">Swapping…</string>
     <string name="transaction_history_send">Send</string>
     <string name="transaction_history_stake">Stake</string>
     <string name="transaction_history_unstake">Unstake</string>
-    <string name="transaction_history_send_pending">Send…</string>
+    <string name="transaction_history_send_pending">Sending…</string>
     <string name="transaction_history_receive">Receive</string>
     <string name="transaction_history_receive_pending">Receiving…</string>
     <string name="transaction_history_create">Create account</string>

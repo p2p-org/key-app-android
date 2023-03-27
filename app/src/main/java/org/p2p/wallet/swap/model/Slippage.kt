@@ -14,6 +14,9 @@ import kotlinx.parcelize.Parcelize
 * 50 percent is 0.5 value
 * etc.
 * */
+const val PERCENT_DIVIDE_VALUE = 100
+const val MAX_ALLOWED_SLIPPAGE = 50
+
 sealed class Slippage(val doubleValue: Double, val percentValue: String) : Parcelable {
     @Parcelize
     object Min : Slippage(0.001, "0.1%")
@@ -34,9 +37,6 @@ sealed class Slippage(val doubleValue: Double, val percentValue: String) : Parce
     data class Custom(val value: Double) : Slippage(doubleValue = value, "${value.times(PERCENT_DIVIDE_VALUE)}%")
 
     companion object {
-        const val PERCENT_DIVIDE_VALUE = 100
-        const val MAX_ALLOWED_SLIPPAGE = 50
-
         fun parse(slippageDoubleValue: Double): Slippage =
             when (slippageDoubleValue) {
                 Min.doubleValue -> Min
