@@ -16,7 +16,7 @@ private const val SWAP_SWITCH_TOKENS = "Swap_Switch_Tokens"
 private const val SWAP_PRICE_IMPACT_LOW = "Swap_Price_Impact_Low"
 private const val SWAP_PRICE_IMPACT_HIGH = "Swap_Price_Impact_High"
 private const val SWAP_SETTINGS_CLICK = "Swap_Settings_Click"
-private const val SWAP_CLICK_APPROVE_BUTTON = "Swap_Click_Approve_Button"
+private const val SWAP_CLICK_APPROVE_BUTTON = "Swap_Click_Approve_Button_New"
 private const val SWAP_ERROR_TOKEN_A_INSUFFICIENT_AMOUNT = "Swap_Error_Token_A_Insufficient_Amount"
 private const val SWAP_ERROR_TOKEN_A_MIN = "Swap_Error_Token_A_Min"
 private const val SWAP_ERROR_TOKEN_PAIR_NOT_EXIST = "Swap_Error_Token_Pair_Not_Exist"
@@ -36,8 +36,8 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
             event = SWAP_START_SCREEN,
             params = mapOf(
                 "Last_Screen" to openedFrom.toAnalyticsValue().value,
-                "From" to initialTokenA.tokenName,
-                "To" to initialTokenB.tokenName
+                "From" to initialTokenA.tokenSymbol,
+                "To" to initialTokenB.tokenSymbol
             )
         )
     }
@@ -45,14 +45,14 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
     fun logChangeTokenA(tokenA: SwapTokenModel) {
         tracker.logEvent(
             event = SWAP_CHANGING_TOKEN_A_CLICK,
-            params = mapOf("Token_A_Name" to tokenA.tokenName)
+            params = mapOf("Token_A_Name" to tokenA.tokenSymbol)
         )
     }
 
     fun logChangeTokenB(tokenB: SwapTokenModel) {
         tracker.logEvent(
             event = SWAP_CHANGING_TOKEN_B_CLICK,
-            params = mapOf("Token_B_Name" to tokenB.tokenName)
+            params = mapOf("Token_B_Name" to tokenB.tokenSymbol)
         )
     }
 
@@ -60,7 +60,7 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
         tracker.logEvent(
             event = SWAP_CHANGING_VALUE_TOKEN_A,
             params = mapOf(
-                "Token_A_Name" to tokenA.tokenName,
+                "Token_A_Name" to tokenA.tokenSymbol,
                 "Token_A_Value" to newAmount
             )
         )
@@ -70,16 +70,19 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
         tracker.logEvent(
             event = SWAP_CHANGING_VALUE_TOKEN_B,
             params = mapOf(
-                "Token_B_Name" to tokenB.tokenName,
+                "Token_B_Name" to tokenB.tokenSymbol,
                 "Token_B_Value" to newAmount
             )
         )
     }
 
-    fun logTokenAAllClicked(tokenAAmount: String) {
+    fun logTokenAAllClicked(tokenAName: String, tokenAAmount: String) {
         tracker.logEvent(
             event = SWAP_CHANGING_VALUE_TOKEN_A_ALL,
-            params = mapOf("Token_A_Value" to tokenAAmount)
+            params = mapOf(
+                "Token_A_Name" to tokenAName,
+                "Token_A_Value" to tokenAAmount
+            )
         )
     }
 
@@ -87,8 +90,8 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
         tracker.logEvent(
             event = SWAP_SWITCH_TOKENS,
             params = mapOf(
-                "Token_A_Name" to newTokenA.tokenName,
-                "Token_B_Name" to newTokenB.tokenName
+                "Token_A_Name" to newTokenA.tokenSymbol,
+                "Token_B_Name" to newTokenB.tokenSymbol
             )
         )
     }
@@ -115,15 +118,17 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
         tokenA: SwapTokenModel,
         tokenB: SwapTokenModel,
         tokenAAmount: String,
-        tokenBAmountUsd: String
+        tokenBAmountUsd: String,
+        signature: String
     ) {
         tracker.logEvent(
             event = SWAP_CLICK_APPROVE_BUTTON,
             params = mapOf(
-                "Token_A" to tokenA.tokenName,
-                "Token_B" to tokenB.tokenName,
+                "Token_A" to tokenA.tokenSymbol,
+                "Token_B" to tokenB.tokenSymbol,
                 "Swap_Sum" to tokenAAmount,
-                "Swap_USD" to tokenBAmountUsd
+                "Swap_USD" to tokenBAmountUsd,
+                "Signature" to signature
             )
         )
     }
@@ -146,13 +151,13 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
         if (listMode == SwapTokensListMode.TOKEN_A) {
             eventName = SWAP_CHANGING_TOKEN_A
             params = mapOf(
-                "Token_A_Name" to token.tokenName,
+                "Token_A_Name" to token.tokenSymbol,
                 "Token_A_Value" to if (token is SwapTokenModel.UserToken) token.tokenAmount else 0
             )
         } else {
             eventName = SWAP_CHANGING_TOKEN_B
             params = mapOf(
-                "Token_B_Name" to token.tokenName,
+                "Token_B_Name" to token.tokenSymbol,
                 "Token_B_Value" to if (token is SwapTokenModel.UserToken) token.tokenAmount else 0
             )
         }

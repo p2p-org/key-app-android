@@ -61,8 +61,7 @@ class ReceiveTokensPresenter(
     }
 
     private fun preparePinedWormholeTokens(): List<TokenData> {
-        return ERC20Tokens.values().toMutableList()
-            .apply { removeAll(listOf(ERC20Tokens.LUNA, ERC20Tokens.UST)) }
+        return ERC20Tokens.values()
             .mapNotNull { erc20Token ->
                 interactor.findTokenDataByAddress(erc20Token.mintAddress)?.let { token ->
                     TokenData(

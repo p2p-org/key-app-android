@@ -1,5 +1,7 @@
 package org.p2p.wallet.transaction.ui
 
+import androidx.core.text.buildSpannedString
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
@@ -13,7 +15,9 @@ import org.koin.android.ext.android.inject
 import java.text.SimpleDateFormat
 import java.util.Locale
 import org.p2p.core.glide.GlideManager
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogNewTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -90,10 +94,26 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
             glideManager.load(imageViewToken, data.tokenUrl, IMAGE_SIZE)
             textViewAmountUsd.text = data.amountUsd
             textViewAmountTokens.text = data.amountTokens
-            textViewSendToValue.text = data.recipient
-            val total = data.totalFee
-            textViewFeeValue.text = if (total.sendFee != null) {
-                total.getFeesCombined(colorMountain, checkFeePayer = false)
+            if (data.recipient == null) {
+                textViewSendToTitle.isVisible = false
+                textViewSendToValue.isVisible = false
+            } else {
+                textViewSendToValue.text = data.recipient
+            }
+            val totalFees = data.totalFees
+            textViewFeeValue.text = if (totalFees != null) {
+                buildSpannedString {
+                    totalFees.forEach { textToHighlight ->
+                        append(
+                            SpanUtils.highlightText(
+                                commonText = textToHighlight.commonText,
+                                highlightedText = textToHighlight.highlightedText,
+                                color = colorMountain
+                            )
+                        )
+                        append("\n")
+                    }
+                }
             } else {
                 resources.getString(R.string.transaction_transaction_fee_free_value)
             }
@@ -121,6 +141,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                     is TransactionState.Progress -> handleProgress(state)
                     is TransactionState.SendSuccess -> handleSendSuccess(state)
                     is TransactionState.SwapSuccess -> handleSwapSuccess(state)
+                    is TransactionState.ClaimSuccess -> handleClaimSuccess(state)
                     is TransactionState.Error -> handleError(state)
                 }
             }
@@ -136,6 +157,12 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun handleSendSuccess(state: TransactionState.SendSuccess) {
         val message = getString(R.string.send_successfully_format, state.sourceTokenSymbol)
         val signature = state.transaction.getHistoryTransactionId()
+        setSuccessState(message, signature)
+    }
+
+    private fun handleClaimSuccess(state: TransactionState.ClaimSuccess) {
+        val message = getString(R.string.bridge_claim_success_state)
+        val signature = state.bundleId
         setSuccessState(message, signature)
     }
 
@@ -159,6 +186,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun handleError(state: TransactionState.Error) {
         with(binding) {
             textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
+            textViewAmountUsd.setTextColorRes(R.color.text_rose)
             progressStateTransaction.setFailedState()
             progressStateTransaction.setDescriptionText(R.string.transaction_description_failed)
             buttonDone.setText(R.string.common_close)

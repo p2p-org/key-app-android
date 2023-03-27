@@ -67,6 +67,13 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "release"
           artifact-type: "bundle"
+      - name: "Upload release APK to Slack Channel"
+        uses: ./.github/actions/setup-slack
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "release"
+          artifact-type: "apk"
       - name: "Upload APK to BrowserStack (Release)"
         run: |
           credentials=${{ secrets.BROWSER_STACK_CREDENTIALS }}

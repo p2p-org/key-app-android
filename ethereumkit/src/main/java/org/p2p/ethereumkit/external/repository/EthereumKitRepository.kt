@@ -1,5 +1,6 @@
 package org.p2p.ethereumkit.external.repository
 
+import org.web3j.crypto.TransactionDecoder
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.async
@@ -8,6 +9,8 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
+import org.p2p.core.wrapper.HexString
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -16,9 +19,10 @@ import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
 import org.p2p.ethereumkit.external.price.PriceRepository
+import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
-import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.internal.models.Signature
 
 private val MINIMAL_DUST = BigInteger("1")
 
@@ -37,20 +41,35 @@ internal class EthereumKitRepository(
         )
     }
 
+    override fun getPrivateKey(): BigInteger {
+        return tokenKeyProvider?.privateKey ?: throwInitError()
+    }
+
+    override fun signTransaction(transaction: HexString): Signature {
+        val decodedTransaction = TransactionDecoder.decode(transaction.rawValue)
+        val signer = TransactionSignerLegacy(
+            privateKey = tokenKeyProvider?.privateKey ?: throwInitError(),
+            chainId = Chain.Ethereum.id
+        )
+        return signer.signatureLegacy(decodedTransaction)
+    }
+
     override suspend fun getBalance(): BigInteger {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
         return balanceRepository.getWalletBalance(publicKey)
     }
 
     override suspend fun loadWalletTokens(): List<Token.Eth> = withContext(dispatchers.io) {
-
-        val walletTokens = loadTokensMetadata().filter { it.balance.isMoreThan(MINIMAL_DUST) }
-
-        val tokensPrice = getPriceForTokens(tokenAddresses = walletTokens.map { it.contractAddress.toString() })
-        tokensPrice.forEach { (address, price) ->
+        val walletTokens = loadTokensMetadata()
+        val erc20TokenAddress = ERC20Tokens.ETH.contractAddress.lowercase()
+        val tokenAddressesForPrices = walletTokens.map { it.contractAddress.toString() }.plus(erc20TokenAddress)
+        val tokensPrices = getPriceForTokens(tokenAddresses = tokenAddressesForPrices)
+        tokensPrices.forEach { (address, price) ->
             walletTokens.find { it.contractAddress.hex == address }?.price = price
         }
-        return@withContext (listOf(getWalletMetadata()) + walletTokens).map { EthTokenConverter.ethMetadataToToken(it) }
+        val finalTokens = listOf(getWalletMetadata(tokensPrices[erc20TokenAddress].orZero())) + walletTokens
+        finalTokens.filter { it.balance.isMoreThan(MINIMAL_DUST) }
+            .map { EthTokenConverter.ethMetadataToToken(it) }
     }
 
     override suspend fun getAddress(): EthAddress {
@@ -58,12 +77,11 @@ internal class EthereumKitRepository(
     }
 
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {
-        return priceRepository.getTokenPrice(tokenAddresses = tokenAddresses)
-            .mapValues { it.value.priceInUsd }
+        return kotlin.runCatching { priceRepository.getTokenPrices(tokenAddresses) }.getOrDefault(emptyMap())
     }
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
-        val publicKey = tokenKeyProvider?.publicKey ?: error("")
+        val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
         val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
         return@withContext balanceRepository.getTokenBalances(address = publicKey, tokenAddresses = tokenAddresses)
             .balances
@@ -78,11 +96,9 @@ internal class EthereumKitRepository(
     }
 
     //Temporary solution of creating ETH wallet
-    private suspend fun getWalletMetadata(): EthTokenMetadata {
-        val erc20TokenAddress = ERC20Tokens.ETH.contractAddress.lowercase()
+    private suspend fun getWalletMetadata(ethPrice: BigDecimal): EthTokenMetadata {
         val contractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
         val balance = getBalance()
-        val price = priceRepository.getTokenPrice(listOf(erc20TokenAddress))
         return EthTokenMetadata(
             contractAddress = contractAddress,
             mintAddress = ERC20Tokens.ETH.mintAddress,
@@ -91,7 +107,7 @@ internal class EthereumKitRepository(
             logoUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty(),
             tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
             symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
-            price = price[erc20TokenAddress]?.priceInUsd.orZero()
+            price = ethPrice
         )
     }
 

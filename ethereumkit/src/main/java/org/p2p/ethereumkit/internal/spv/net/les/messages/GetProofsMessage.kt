@@ -1,17 +1,23 @@
 package org.p2p.ethereumkit.internal.spv.net.les.messages
 
 import org.p2p.ethereumkit.internal.core.toHexString
-import org.p2p.ethereumkit.internal.crypto.CryptoUtils
 import org.p2p.ethereumkit.internal.spv.net.IOutMessage
 import org.p2p.core.wrapper.eth.rlp.RLP
 import java.math.BigInteger
+import org.p2p.core.wrapper.eth.CryptoUtils
 
 class GetProofsMessage : IOutMessage {
 
     var requestID: Long = 0
     var proofRequests: List<ProofRequest> = listOf()
 
-    constructor(requestID: Long, blockHash: ByteArray, key: ByteArray, key2: ByteArray = byteArrayOf(), fromLevel: Int = 0) {
+    constructor(
+        requestID: Long,
+        blockHash: ByteArray,
+        key: ByteArray,
+        key2: ByteArray = byteArrayOf(),
+        fromLevel: Int = 0,
+    ) {
         this.requestID = requestID
         this.proofRequests = listOf(ProofRequest(blockHash, key, key2, fromLevel))
     }
@@ -46,10 +52,10 @@ class GetProofsMessage : IOutMessage {
 
         fun asRLPEncoded(): ByteArray {
             return RLP.encodeList(
-                    RLP.encodeElement(blockHash),
-                    RLP.encodeElement(key2Hash),
-                    RLP.encodeElement(keyHash),
-                    RLP.encodeInt(fromLevel)
+                RLP.encodeElement(blockHash),
+                RLP.encodeElement(key2Hash),
+                RLP.encodeElement(keyHash),
+                RLP.encodeInt(fromLevel)
             )
         }
 

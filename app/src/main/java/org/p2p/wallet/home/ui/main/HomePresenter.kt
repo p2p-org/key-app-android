@@ -13,13 +13,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
-import org.p2p.core.utils.Constants.BTC_COINGECKO_ID
 import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
 import org.p2p.core.utils.Constants.ETH_SYMBOL
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDC_SYMBOL
+import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
@@ -28,6 +28,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
+import org.p2p.wallet.bridge.claim.model.ClaimStatus
+import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
@@ -55,7 +58,7 @@ import org.p2p.wallet.utils.ellipsizeAddress
 val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
     SOL_COINGECKO_ID,
-    BTC_COINGECKO_ID,
+    USDT_COINGECKO_ID,
     ETH_COINGECKO_ID,
     USDC_COINGECKO_ID
 ).map { TokenId(it) }
@@ -81,6 +84,7 @@ class HomePresenter(
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val metadataInteractor: MetadataInteractor,
     private val ethereumRepository: EthereumRepository,
+    private val claimInteractor: ClaimInteractor,
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
     seedPhraseProvider: SeedPhraseProvider,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
@@ -106,6 +110,7 @@ class HomePresenter(
     private data class ViewState(
         val tokens: List<Token.Active> = emptyList(),
         val ethereumTokens: List<Token.Eth> = emptyList(),
+        val ethereumBundleStatuses: Map<String, ClaimStatus?> = emptyMap(),
         val visibilityState: VisibilityState = VisibilityState.Hidden,
         val username: Username? = null,
         val areZerosHidden: Boolean
@@ -243,10 +248,17 @@ class HomePresenter(
 
     private suspend fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
         val ethereumTokens = loadEthTokens()
+        val ethereumBundleStatuses = try {
+            loadEthBundles().associate { it.token.hex to it.status }
+        } catch (error: Throwable) {
+            Timber.d(error, "Error on loadEthBundles")
+            emptyMap()
+        }
         Timber.d("local tokens change arrived")
         state = state.copy(
             tokens = userTokens,
             ethereumTokens = ethereumTokens,
+            ethereumBundleStatuses = ethereumBundleStatuses,
             username = usernameInteractor.getUsername(),
         )
 
@@ -274,6 +286,21 @@ class HomePresenter(
             emptyList()
         } catch (throwable: Throwable) {
             Timber.e(throwable, "Error on loading ethereumTokens")
+            emptyList()
+        }
+    }
+
+    private suspend fun loadEthBundles(): List<BridgeBundle> {
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return emptyList()
+        }
+        return try {
+            claimInteractor.getListOfEthereumBundleStatuses()
+        } catch (cancelled: CancellationException) {
+            Timber.i(cancelled)
+            emptyList()
+        } catch (throwable: Throwable) {
+            Timber.e(throwable, "Error on loading loadEthBundles")
             emptyList()
         }
     }
@@ -369,6 +396,7 @@ class HomePresenter(
             val mappedTokens = homeElementItemMapper.mapToItems(
                 tokens = state.tokens,
                 ethereumTokens = state.ethereumTokens,
+                ethereumBundleStatuses = state.ethereumBundleStatuses,
                 visibilityState = state.visibilityState,
                 isZerosHidden = areZerosHidden
             )
@@ -415,10 +443,6 @@ class HomePresenter(
     private fun getUserBalance(): BigDecimal =
         state.tokens
             .mapNotNull(Token.Active::totalInUsd)
-            .plus(
-                state.ethereumTokens
-                    .mapNotNull(Token.Eth::totalInUsd)
-            )
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 

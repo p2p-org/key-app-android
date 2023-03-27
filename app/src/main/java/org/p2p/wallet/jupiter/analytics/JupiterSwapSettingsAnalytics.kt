@@ -2,8 +2,9 @@ package org.p2p.wallet.jupiter.analytics
 
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
-import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.jupiter.ui.info.SwapInfoType
+import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.model.Slippage.Companion.PERCENT_DIVIDE_VALUE
 
 private const val SWAP_SETTINGS_FEE_CLICK = "Swap_Settings_Fee_Click"
 private const val SWAP_SETTINGS_SLIPPAGE = "Swap_Settings_Slippage"
@@ -32,7 +33,7 @@ class JupiterSwapSettingsAnalytics(private val tracker: Analytics) {
         }
         tracker.logEvent(
             event = eventName,
-            params = mapOf("Slippage_Level_Percent" to newValue.percentValue)
+            params = mapOf("Slippage_Level_Percent" to newValue.doubleValue * PERCENT_DIVIDE_VALUE)
         )
     }
 
