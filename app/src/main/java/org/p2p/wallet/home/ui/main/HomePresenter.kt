@@ -32,9 +32,6 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimStatus
-import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
-import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -313,21 +310,6 @@ class HomePresenter(
             emptyList()
         }.associate {
             (it.token?.hex ?: ERC20Tokens.ETH.contractAddress) to it.status
-        }
-    }
-
-    private suspend fun loadEthBundles(): List<BridgeBundle> {
-        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return emptyList()
-        }
-        return try {
-            claimInteractor.getListOfEthereumBundleStatuses()
-        } catch (cancelled: CancellationException) {
-            Timber.i(cancelled)
-            emptyList()
-        } catch (throwable: Throwable) {
-            Timber.e(throwable, "Error on loading loadEthBundles")
-            emptyList()
         }
     }
 

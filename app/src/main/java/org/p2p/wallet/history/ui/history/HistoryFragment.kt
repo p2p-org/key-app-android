@@ -6,7 +6,6 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.Constants
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
