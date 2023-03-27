@@ -16,8 +16,8 @@ class EthereumSendInteractor(
         sendTokenMint: SolAddress?,
         amount: String
     ): BridgeSendFees {
-        val solanaAddress = SolAddress(tokenKeyProvider.publicKey)
+        val userAddress = SolAddress(tokenKeyProvider.publicKey)
         val ethereumAddress = ethereumRepository.getAddress()
-        return ethereumSendRepository.getSendFee(solanaAddress, ethereumAddress, sendTokenMint, amount)
+        return ethereumSendRepository.getSendFee(userAddress, ethereumAddress, sendTokenMint, amount)
     }
 }
