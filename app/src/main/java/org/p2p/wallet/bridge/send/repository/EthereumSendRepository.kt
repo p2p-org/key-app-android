@@ -19,7 +19,7 @@ interface EthereumSendRepository {
     suspend fun getSendTransactionsDetail(userWallet: SolAddress): List<BridgeSendTransactionDetails>
     suspend fun getSendFee(
         userWallet: SolAddress,
-        recipient: SolAddress,
+        recipient: EthAddress,
         mint: SolAddress?,
         amount: String
     ): BridgeSendFees
