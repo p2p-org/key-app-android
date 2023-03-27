@@ -94,6 +94,7 @@ class SendViaLinkPresenter(
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
             view.setFeeLabel(resources.getString(R.string.send_fees_free))
+            view.showFeeViewLoading(isLoading = false)
         }
     }
 
@@ -122,6 +123,7 @@ class SendViaLinkPresenter(
             }
 
             view.setFeeLabel(resources.getString(R.string.send_fees_free))
+            view.showFeeViewLoading(isLoading = false)
         }
     }
 

@@ -19,7 +19,7 @@ class SendLinkGenerationPresenter(
     override fun generateLink(recipient: TemporaryAccount, token: Token.Active, lamports: BigInteger) {
         launch {
             try {
-                sendViaLinkInteractor.generateLink(
+                sendViaLinkInteractor.sendTransaction(
                     destinationAddress = recipient.publicKey,
                     token = token,
                     lamports = lamports,

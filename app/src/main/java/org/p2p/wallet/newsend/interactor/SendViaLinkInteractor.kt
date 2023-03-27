@@ -10,12 +10,14 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.MemoProgram
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
 
@@ -27,6 +29,7 @@ class SendViaLinkInteractor(
     private val feeRelayerInteractor: FeeRelayerViaLinkInteractor,
     private val addressInteractor: TransactionAddressInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
+    private val amountRepository: RpcAmountRepository,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) {
 
@@ -38,7 +41,7 @@ class SendViaLinkInteractor(
         orcaInfoInteractor.load()
     }
 
-    suspend fun generateLink(
+    suspend fun sendTransaction(
         destinationAddress: PublicKey,
         token: Token.Active,
         lamports: BigInteger,
@@ -58,10 +61,11 @@ class SendViaLinkInteractor(
             memo = memo
         )
 
-        return feeRelayerInteractor.relayTransaction(
+        return feeRelayerInteractor.signAndSendTransaction(
             preparedTransaction = preparedTransaction,
-            statistics = statistics
-        ).firstOrNull().orEmpty()
+            statistics = statistics,
+            isRetryEnabled = false
+        )
     }
 
     private suspend fun createSendTransaction(
@@ -155,6 +159,8 @@ class SendViaLinkInteractor(
             feePayer
         )
 
+        val accountCreationFee = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
+
         instructions += TokenProgram.createTransferCheckedInstruction(
             TokenProgram.PROGRAM_ID,
             fromPublicKey.toPublicKey(),
@@ -169,7 +175,7 @@ class SendViaLinkInteractor(
             instructions = instructions,
             signers = listOf(account),
             feePayer = feePayer,
-            accountsCreationFee = BigInteger.ZERO
+            accountsCreationFee = accountCreationFee
         )
     }
 }

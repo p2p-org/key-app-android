@@ -14,7 +14,6 @@ import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
-import org.p2p.solanaj.programs.MemoProgram
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
@@ -191,7 +190,7 @@ class SendInteractor(
         return@withContext if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             // send normally, paid by SOL
             transactionInteractor.serializeAndSend(
-                preparedTransaction = preparedTransaction,
+                transaction = preparedTransaction.transaction,
                 isSimulation = false
             )
         } else {
@@ -342,8 +341,7 @@ class SendInteractor(
         feePayerPublicKey: PublicKey? = null,
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null,
-        minBalanceForRentExemption: BigInteger? = null,
-        memo: String? = null
+        minBalanceForRentExemption: BigInteger? = null
     ): Pair<PreparedTransaction, String> {
         val account = Account(tokenKeyProvider.keyPair)
 
@@ -361,10 +359,6 @@ class SendInteractor(
         val toPublicKey = splDestinationAddress.destinationAddress
 
         val instructions = mutableListOf<TransactionInstruction>()
-
-        if (!memo.isNullOrEmpty()) {
-            instructions += MemoProgram.createMemoInstruction(signer = feePayer, memo = memo)
-        }
 
         var accountsCreationFee: BigInteger = BigInteger.ZERO
         // create associated token address

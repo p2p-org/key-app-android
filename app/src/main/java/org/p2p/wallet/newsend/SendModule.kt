@@ -14,6 +14,7 @@ import org.p2p.wallet.home.ui.vialink.SendViaLinkReceiveFundsContract
 import org.p2p.wallet.home.ui.vialink.SendViaLinkReceiveFundsPresenter
 import org.p2p.wallet.home.ui.vialink.interactor.SendViaLinkReceiveFundsInteractor
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
+import org.p2p.wallet.newsend.interactor.SendViaLinkInteractor
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.ui.NewSendContract
@@ -70,5 +71,6 @@ object SendModule : InjectionModule {
     private fun Module.initDataLayer() {
         factoryOf(::RecipientsDatabaseRepository) bind RecipientsLocalRepository::class
         factoryOf(::FeeRelayerViaLinkInteractor)
+        factoryOf(::SendViaLinkInteractor)
     }
 }
