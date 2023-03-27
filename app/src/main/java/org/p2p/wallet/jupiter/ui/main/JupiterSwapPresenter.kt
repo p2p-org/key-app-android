@@ -220,8 +220,7 @@ class JupiterSwapPresenter(
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
             is SwapState.RoutesLoaded,
-            is SwapState.LoadingTransaction,
-            -> swapInteractor.getTokenAAmount(featureState)
+            is SwapState.LoadingTransaction -> swapInteractor.getTokenAAmount(featureState)
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
             null -> null
         }
@@ -255,15 +254,13 @@ class JupiterSwapPresenter(
     private fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
         return when (featureState) {
             null,
-            SwapState.InitialLoading,
-            -> false
+            SwapState.InitialLoading -> false
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction,
             is SwapState.SwapLoaded,
             is SwapState.TokenANotZero,
             is SwapState.RoutesLoaded,
-            is SwapState.TokenAZero,
-            -> true
+            is SwapState.TokenAZero -> true
             is SwapState.SwapException ->
                 isChangeTokenScreenAvailable(featureState.previousFeatureState)
         }
@@ -336,12 +333,11 @@ class JupiterSwapPresenter(
     }
 
     private fun handleRateTickerChanges(state: SwapRateTickerState) {
-        val ratioState: TextViewCellModel? = when (state) {
-            is SwapRateTickerState.Shown -> rateTickerMapper.mapRateLoaded(state)
-            is SwapRateTickerState.Loading -> rateTickerMapper.mapRateSkeleton(state)
-            is SwapRateTickerState.Hidden -> null
+        when (state) {
+            is SwapRateTickerState.Shown -> view?.setRatioState(rateTickerMapper.mapRateLoaded(state))
+            is SwapRateTickerState.Loading -> view?.setRatioState(rateTickerMapper.mapRateSkeleton(state))
+            is SwapRateTickerState.Hidden -> view?.setRatioState(state = null)
         }
-        view?.setRatioState(ratioState)
     }
 
     private fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
