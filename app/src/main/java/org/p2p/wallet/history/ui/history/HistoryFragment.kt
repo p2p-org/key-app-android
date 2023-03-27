@@ -1,14 +1,17 @@
 package org.p2p.wallet.history.ui.history
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
+import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
+import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.utils.replaceFragment
@@ -52,6 +55,14 @@ class HistoryFragment :
             fragmentManager = parentFragmentManager,
             transactionId = transactionId
         )
+    }
+
+    override fun showSendViaLinkBlock(model: FinanceBlockCellModel) {
+        binding.viewUserSendLinks.isVisible = true
+        binding.viewUserSendLinks.bind(model)
+        binding.viewUserSendLinks.setOnClickListener {
+            replaceFragment(HistorySendLinksFragment.create())
+        }
     }
 
     override fun openSellTransactionDetails(transactionId: String) {

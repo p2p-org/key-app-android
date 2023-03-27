@@ -13,7 +13,7 @@ data class BridgeBundle(
     val bundleId: String,
     val userWallet: EthAddress,
     val recipient: SolAddress,
-    val resultAmount: BridgeBundleFee,
+    val resultAmount: BridgeFee,
     val token: EthAddress?,
     val compensationDeclineReason: String,
     val expiresAt: Long,

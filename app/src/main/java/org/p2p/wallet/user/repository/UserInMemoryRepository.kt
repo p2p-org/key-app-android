@@ -3,7 +3,9 @@ package org.p2p.wallet.user.repository
 import timber.log.Timber
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.receive.list.TokenListData
 
@@ -11,7 +13,9 @@ private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
 
 private const val TAG = "UserInMemoryRepository"
 
-class UserInMemoryRepository : UserLocalRepository {
+class UserInMemoryRepository(
+    private val tokenConverter: TokenConverter
+) : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
     private val allTokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
@@ -121,5 +125,15 @@ class UserInMemoryRepository : UserLocalRepository {
             if (token != null) popularTokens.add(token)
         }
         return popularTokens
+    }
+
+    override fun findTokenByMint(mintAddress: String): Token? {
+        val tokenData: TokenData? = findTokenData(mintAddress)
+        return if (tokenData != null) {
+            val price = getPriceByTokenId(tokenData.coingeckoId)
+            tokenConverter.fromNetwork(tokenData, price)
+        } else {
+            null
+        }
     }
 }

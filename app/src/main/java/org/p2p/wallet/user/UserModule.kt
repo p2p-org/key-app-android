@@ -2,6 +2,7 @@ package org.p2p.wallet.user
 
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
@@ -28,9 +29,9 @@ object UserModule : InjectionModule {
                 .create(SolanaApi::class.java)
         }
 
-        factory { UserRemoteRepository(get(), get(), get(), get(), get(), get(), get()) } bind UserRepository::class
-        single { UserAccountRemoteRepository(get()) } bind UserAccountRepository::class
-        single { UserInMemoryRepository() } bind UserLocalRepository::class
+        factoryOf(::UserRemoteRepository) bind UserRepository::class
+        singleOf(::UserAccountRemoteRepository) bind UserAccountRepository::class
+        singleOf(::UserInMemoryRepository) bind UserLocalRepository::class
 
         factoryOf(::UserInteractor)
     }
