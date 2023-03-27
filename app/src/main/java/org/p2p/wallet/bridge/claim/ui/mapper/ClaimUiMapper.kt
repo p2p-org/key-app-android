@@ -21,8 +21,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.model.ClaimScreenData
 import org.p2p.wallet.bridge.model.BridgeAmount
-import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeBundleFees
+import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.toPx
 
@@ -52,7 +52,7 @@ class ClaimUiMapper(private val resources: Resources) {
 
     fun makeClaimDetails(
         tokenToClaim: Token.Eth,
-        fees: BridgeBundleFees,
+        fees: BridgeBundleFees?,
         ethToken: TokenData?
     ): ClaimDetails {
         val tokenSymbol = tokenToClaim.tokenSymbol
@@ -64,13 +64,13 @@ class ClaimUiMapper(private val resources: Resources) {
                 tokenToClaim.totalInUsd
             ),
             networkFee = ethToken?.let { ethTokenData ->
-                fees.gasEth.toBridgeAmount(
+                fees?.gasEth.toBridgeAmount(
                     tokenSymbol = ethTokenData.symbol,
                     decimals = ethTokenData.decimals
                 )
-            } ?: fees.gasEth.toBridgeAmount(tokenSymbol, decimals),
-            accountCreationFee = fees.createAccount.toBridgeAmount(tokenSymbol, decimals),
-            bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
+            } ?: fees?.gasEth.toBridgeAmount(tokenSymbol, decimals),
+            accountCreationFee = fees?.createAccount.toBridgeAmount(tokenSymbol, decimals),
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
         )
     }
 
