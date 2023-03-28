@@ -1,10 +1,11 @@
-package org.p2p.wallet.home.ui.vialink
+package org.p2p.wallet.svl.ui.receive
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.svl.model.SendViaLinkClaimingState
 import org.p2p.wallet.utils.Base58String
 
-interface SendViaLinkReceiveFundsContract {
+interface ReceiveViaLinkContract {
     interface View : MvpView {
         fun renderClaimTokenDetails(
             amountInTokens: String,

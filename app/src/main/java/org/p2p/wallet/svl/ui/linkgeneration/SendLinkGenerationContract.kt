@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.ui.linkgeneration
+package org.p2p.wallet.svl.ui.linkgeneration
 
 import java.math.BigInteger
 import org.p2p.core.token.Token

@@ -1,4 +1,4 @@
-package org.p2p.wallet.home.ui.vialink
+package org.p2p.wallet.svl.model
 
 sealed interface SendViaLinkClaimingState {
     object ReadyToClaim : SendViaLinkClaimingState
