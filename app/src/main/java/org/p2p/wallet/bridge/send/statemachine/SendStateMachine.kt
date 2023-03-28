@@ -31,21 +31,18 @@ class SendStateMachine(
     }
 
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
-    private val state = MutableStateFlow<SendState>(SendState.Static.Empty)
+    private val state = MutableStateFlow<SendState>(SendState.Event.Empty)
     private val actions = MutableSharedFlow<Pair<SendFeatureAction, SendActionHandler>>()
 
     private var refreshFeeTimer: Job? = null
-    private var lastAction: SendFeatureAction = SendFeatureAction.InitFeature
 
     fun observe(): StateFlow<SendState> = state.asStateFlow()
 
     init {
-        newAction(SendFeatureAction.InitFeature)
         actions
             .flatMapLatest {
                 val (action, actionHandler) = it
-                val staticState = state.lastStaticState
-                actionHandler.handle(staticState, action)
+                actionHandler.handle(action)
             }
             .flowOn(dispatchers.io)
             .catch { catchException(it, this) }
@@ -55,10 +52,8 @@ class SendStateMachine(
 
     fun newAction(action: SendFeatureAction) {
         refreshFeeTimer?.cancel()
-        lastAction = action
 
-        val staticState = state.lastStaticState
-        val actionHandler = handlers.firstOrNull { it.canHandle(action, staticState) } ?: return
+        val actionHandler = handlers.firstOrNull { it.canHandle(action) } ?: return
 
         actions.tryEmit(action to actionHandler)
     }
@@ -71,18 +66,14 @@ class SendStateMachine(
                 if (throwable is SendFeatureException.FeeLoadingError) {
                     startFeeReloadTimer()
                 }
-                val lastStaticState = state.value.lastStaticState
                 val wrappedState = SendState.Exception.Feature(
-                    lastStaticState,
-                    SendFeatureException.FeeLoadingError,
+                    SendFeatureException.FeeLoadingError
                 )
                 flowCollector.emit(wrappedState)
             }
             is Exception -> {
-                val lastStaticState = state.value.lastStaticState
                 val wrappedState = SendState.Exception.Other(
-                    lastStaticState,
-                    SendFeatureException.FeeLoadingError,
+                    SendFeatureException.FeeLoadingError
                 )
                 flowCollector.emit(wrappedState)
             }
