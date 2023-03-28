@@ -18,7 +18,7 @@ import org.p2p.wallet.user.repository.prices.impl.TokenPricesCryptoCompareReposi
 
 object TokenPricesModule : InjectionModule {
 
-    private const val COINGECKO_TIMEOUT = 10L
+    private const val COINGECKO_TIMEOUT = 5L
 
     override fun create() = module {
         single {

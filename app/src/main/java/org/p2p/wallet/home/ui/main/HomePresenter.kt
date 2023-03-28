@@ -19,6 +19,7 @@ import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.R
@@ -325,6 +326,8 @@ class HomePresenter(
                 )
             )
             logBalance(BigDecimal.ZERO)
+
+            view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
         }
     }
 
@@ -386,7 +389,12 @@ class HomePresenter(
     private fun showTokensAndBalance() {
         launch {
             val balance = getUserBalance()
-            view?.showBalance(homeMapper.mapBalance(balance))
+
+            if (balance != null) {
+                view?.showBalance(homeMapper.mapBalance(balance))
+            } else {
+                view?.showBalance(null)
+            }
 
             logBalance(balance)
 
@@ -404,10 +412,10 @@ class HomePresenter(
         }
     }
 
-    private fun logBalance(balance: BigDecimal) {
-        val hasPositiveBalance = balance.isMoreThan(BigDecimal.ZERO)
+    private fun logBalance(balance: BigDecimal?) {
+        val hasPositiveBalance = balance != null && balance.isMoreThan(BigDecimal.ZERO)
         analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
-        analytics.logUserAggregateBalanceProperty(balance)
+        analytics.logUserAggregateBalanceProperty(balance.orZero())
     }
 
     private fun loadTokenRates(loadedTokens: List<Token.Active>) {
@@ -454,11 +462,16 @@ class HomePresenter(
         }
     }
 
-    private fun getUserBalance(): BigDecimal =
-        state.tokens
+    private fun getUserBalance(): BigDecimal? {
+        val tokens = state.tokens
+
+        if (tokens.none { it.totalInUsd != null }) return null
+
+        return tokens
             .mapNotNull(Token.Active::totalInUsd)
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
+    }
 
     private fun getBanners(): List<Banner> {
         val usernameExists = state.username != null
