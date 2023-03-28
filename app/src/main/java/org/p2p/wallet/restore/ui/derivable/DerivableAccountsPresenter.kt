@@ -3,10 +3,8 @@ package org.p2p.wallet.restore.ui.derivable
 import timber.log.Timber
 import kotlin.properties.Delegates
 import kotlinx.coroutines.launch
-import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
