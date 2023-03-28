@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.statemachine.model
+package org.p2p.wallet.bridge.send.statemachine.model
 
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
 

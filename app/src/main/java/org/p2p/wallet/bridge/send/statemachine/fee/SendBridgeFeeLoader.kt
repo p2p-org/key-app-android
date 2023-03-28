@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.statemachine.fee
+package org.p2p.wallet.bridge.send.statemachine.fee
 
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
@@ -8,16 +8,16 @@ import org.p2p.core.token.SolAddress
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.newsend.statemachine.SendFeatureException
-import org.p2p.wallet.newsend.statemachine.SendState
-import org.p2p.wallet.newsend.statemachine.bridgeFee
-import org.p2p.wallet.newsend.statemachine.bridgeToken
-import org.p2p.wallet.newsend.statemachine.inputAmount
-import org.p2p.wallet.newsend.statemachine.mapper.SendBridgeStaticStateMapper
-import org.p2p.wallet.newsend.statemachine.model.SendFee
-import org.p2p.wallet.newsend.statemachine.model.SendInitialData
-import org.p2p.wallet.newsend.statemachine.model.SendToken
-import org.p2p.wallet.newsend.statemachine.validator.SendBridgeValidator
+import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
+import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.bridgeFee
+import org.p2p.wallet.bridge.send.statemachine.bridgeToken
+import org.p2p.wallet.bridge.send.statemachine.inputAmount
+import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
+import org.p2p.wallet.bridge.send.statemachine.model.SendFee
+import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
+import org.p2p.wallet.bridge.send.statemachine.model.SendToken
+import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 
 class SendBridgeFeeLoader constructor(
     private val mapper: SendBridgeStaticStateMapper,
