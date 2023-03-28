@@ -31,7 +31,7 @@ object UserModule : InjectionModule {
 
         factoryOf(::UserRemoteRepository) bind UserRepository::class
         singleOf(::UserAccountRemoteRepository) bind UserAccountRepository::class
-        singleOf(::UserInMemoryRepository) bind UserLocalRepository ::class
+        singleOf(::UserInMemoryRepository) bind UserLocalRepository::class
 
         factoryOf(::UserInteractor)
     }
