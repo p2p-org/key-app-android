@@ -107,8 +107,7 @@ class ClaimPresenter(
 
     private fun showFees(fees: BridgeBundleFees, isFree: Boolean) {
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
-        val feesToShow = if (isFree) null else fees
-        claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, feesToShow, eth)
+        claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, fees.takeUnless { isFree }, eth)
         view?.setClaimButtonState(isButtonEnabled = true)
     }
 
