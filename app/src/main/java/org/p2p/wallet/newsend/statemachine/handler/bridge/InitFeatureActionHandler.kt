@@ -11,7 +11,7 @@ import org.p2p.wallet.newsend.statemachine.model.SendInitialData
 
 class InitFeatureActionHandler(
     private val feeLoader: SendBridgeFeeLoader,
-    private val initialData: SendInitialData.Common,
+    private val initialData: SendInitialData.Bridge,
 ) : SendActionHandler {
 
     override fun canHandle(

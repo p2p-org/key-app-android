@@ -8,7 +8,7 @@ import org.p2p.core.utils.isZero
 import org.p2p.wallet.newsend.statemachine.SendActionHandler
 import org.p2p.wallet.newsend.statemachine.SendFeatureAction
 import org.p2p.wallet.newsend.statemachine.SendState
-import org.p2p.wallet.newsend.statemachine.commonToken
+import org.p2p.wallet.newsend.statemachine.bridgeToken
 import org.p2p.wallet.newsend.statemachine.fee
 import org.p2p.wallet.newsend.statemachine.fee.SendBridgeFeeLoader
 import org.p2p.wallet.newsend.statemachine.mapper.SendBridgeStaticStateMapper
@@ -29,7 +29,7 @@ class AmountChangeActionHandler(
         lastStaticState: SendState.Static,
         newAction: SendFeatureAction
     ): Flow<SendState> = flow {
-        val token = lastStaticState.commonToken ?: return@flow
+        val token = lastStaticState.bridgeToken ?: return@flow
         val newAmount = when (newAction) {
             is SendFeatureAction.AmountChange -> newAction.amount
             SendFeatureAction.MaxAmount -> token.tokenAmount

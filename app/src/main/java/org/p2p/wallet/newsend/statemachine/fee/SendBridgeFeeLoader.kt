@@ -1,35 +1,44 @@
 package org.p2p.wallet.newsend.statemachine.fee
 
+import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.p2p.core.token.SolAddress
+import org.p2p.core.utils.orZero
+import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.statemachine.SendFeatureException
 import org.p2p.wallet.newsend.statemachine.SendState
-import org.p2p.wallet.newsend.statemachine.commonFee
-import org.p2p.wallet.newsend.statemachine.commonToken
+import org.p2p.wallet.newsend.statemachine.bridgeFee
+import org.p2p.wallet.newsend.statemachine.bridgeToken
+import org.p2p.wallet.newsend.statemachine.inputAmount
 import org.p2p.wallet.newsend.statemachine.mapper.SendBridgeStaticStateMapper
 import org.p2p.wallet.newsend.statemachine.model.SendFee
+import org.p2p.wallet.newsend.statemachine.model.SendInitialData
 import org.p2p.wallet.newsend.statemachine.model.SendToken
 import org.p2p.wallet.newsend.statemachine.validator.SendBridgeValidator
 
 class SendBridgeFeeLoader constructor(
     private val mapper: SendBridgeStaticStateMapper,
     private val validator: SendBridgeValidator,
+    private val repository: EthereumSendRepository,
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val initialData: SendInitialData.Bridge,
 ) {
 
     fun updateFeeIfNeed(
         lastStaticState: SendState.Static
     ): Flow<SendState> = flow {
 
-        val token = lastStaticState.commonToken ?: return@flow
-        val oldFee = lastStaticState.commonFee
+        val token = lastStaticState.bridgeToken ?: return@flow
+        val oldFee = lastStaticState.bridgeFee
 
         val isNeedRefresh = !validator.isFeeValid(oldFee)
 
         if (isNeedRefresh) {
             emit(SendState.Loading.Fee(lastStaticState))
-            val fee = loadFee(token)
+            val fee = loadFee(token, lastStaticState.inputAmount.orZero())
             emit(mapper.updateFee(lastStaticState, fee))
         }
     }
@@ -38,18 +47,27 @@ class SendBridgeFeeLoader constructor(
         lastStaticState: SendState.Static
     ): Flow<SendState> = flow {
 
-        val token = lastStaticState.commonToken ?: return@flow
+        val token = lastStaticState.bridgeToken ?: return@flow
 
         emit(SendState.Loading.Fee(lastStaticState))
-        val fee = loadFee(token)
+        val fee = loadFee(token, lastStaticState.inputAmount.orZero())
         emit(mapper.updateFee(lastStaticState, fee))
     }
 
-    suspend fun loadFee(token: SendToken.Common): SendFee.Common {
+    suspend fun loadFee(
+        token: SendToken.Bridge,
+        amount: BigDecimal,
+    ): SendFee.Bridge {
         return try {
-            // todo loading
-            delay(2000)
-            SendFee.mockCommon()
+            val userWallet = SolAddress(tokenKeyProvider.publicKey)
+            val mint = SolAddress(token.token.mintAddress)
+            val fee = repository.getSendFee(
+                userWallet = userWallet,
+                recipient = initialData.recipient,
+                mint = mint,
+                amount.toPlainString()
+            )
+            SendFee.Bridge(fee)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

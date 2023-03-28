@@ -1,5 +1,6 @@
 package org.p2p.wallet.newsend.statemachine
 
+import java.math.BigDecimal
 import kotlinx.coroutines.flow.StateFlow
 import org.p2p.wallet.newsend.statemachine.model.SendFee
 import org.p2p.wallet.newsend.statemachine.model.SendToken
@@ -16,8 +17,8 @@ val SendState.lastStaticState: SendState.Static
         }
     }
 
-val SendState.Static.commonToken: SendToken.Common?
-    get() = token as? SendToken.Common
+val SendState.Static.bridgeToken: SendToken.Bridge?
+    get() = token as? SendToken.Bridge
 
 val SendState.Static.token: SendToken?
     get() = when (this) {
@@ -27,8 +28,8 @@ val SendState.Static.token: SendToken?
         is SendState.Static.TokenZero -> token
     }
 
-val SendState.Static.commonFee: SendFee.Common?
-    get() = fee as? SendFee.Common
+val SendState.Static.bridgeFee: SendFee.Bridge?
+    get() = fee as? SendFee.Bridge
 
 val SendState.Static.fee: SendFee?
     get() = when (this) {
@@ -36,4 +37,12 @@ val SendState.Static.fee: SendFee?
         is SendState.Static.ReadyToSend -> fee
         is SendState.Static.TokenNotZero -> fee
         is SendState.Static.TokenZero -> fee
+    }
+
+val SendState.Static.inputAmount: BigDecimal?
+    get() = when (this) {
+        SendState.Static.Empty -> null
+        is SendState.Static.ReadyToSend -> amount
+        is SendState.Static.TokenNotZero -> amount
+        is SendState.Static.TokenZero -> null
     }

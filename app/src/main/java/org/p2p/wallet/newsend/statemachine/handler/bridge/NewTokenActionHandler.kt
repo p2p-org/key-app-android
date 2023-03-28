@@ -14,14 +14,14 @@ class NewTokenActionHandler(
 ) : SendActionHandler {
 
     override fun canHandle(newEvent: SendFeatureAction, staticState: SendState): Boolean =
-        newEvent is SendFeatureAction.NewToken && newEvent.token is SendToken.Common
+        newEvent is SendFeatureAction.NewToken && newEvent.token is SendToken.Bridge
 
     override fun handle(
         lastStaticState: SendState.Static,
         newAction: SendFeatureAction
     ): Flow<SendState> = flow {
         val action = newAction as SendFeatureAction.NewToken
-        val newToken = action.token as SendToken.Common
+        val newToken = action.token as SendToken.Bridge
 
         emit(SendState.Static.TokenZero(newToken, null))
     }.flatMapMerge { feeLoader.updateFee(lastStaticState) }

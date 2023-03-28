@@ -5,10 +5,7 @@ import org.p2p.core.utils.fromLamports
 
 sealed interface SendToken {
 
-    /**
-     * support bridge send
-     */
-    data class Common(
+    data class Bridge(
         val token: Token.Active,
     ) : SendToken {
 
