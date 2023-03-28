@@ -4,18 +4,23 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import org.p2p.core.pricecache.PriceCacheRepository
 import org.p2p.wallet.R
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.api.CoinGeckoApi
 import org.p2p.wallet.home.api.CryptoCompareApi
+import org.p2p.wallet.infrastructure.network.NetworkModule.getClient
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.CompareTokenInterceptor
 import org.p2p.wallet.user.repository.prices.impl.TokenPricesCoinGeckoRepository
 import org.p2p.wallet.user.repository.prices.impl.TokenPricesCryptoCompareRepository
 
 object TokenPricesModule : InjectionModule {
+
+    private const val COINGECKO_TIMEOUT = 10L
+
     override fun create() = module {
         single {
             val baseUrl = androidContext().getString(R.string.compareBaseUrl)
@@ -31,10 +36,15 @@ object TokenPricesModule : InjectionModule {
         singleOf(::PriceCacheRepository)
         single {
             val baseUrl = androidContext().getString(R.string.coinGeckoBaseUrl)
-            val coinGeckoApi = getRetrofit(
-                baseUrl = baseUrl,
+            val client = getClient(
+                connectTimeOut = COINGECKO_TIMEOUT,
+                readTimeOut = COINGECKO_TIMEOUT,
                 tag = "CoinGecko",
                 interceptor = null
+            )
+            val coinGeckoApi = getRetrofit(
+                baseUrl = baseUrl,
+                client = client
             )
                 .create(CoinGeckoApi::class.java)
 

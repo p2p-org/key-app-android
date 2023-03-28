@@ -24,7 +24,7 @@ class UserTokensPolling(
             while (true) {
                 delay(POLLING_DELAY.inWholeMilliseconds)
                 if (isPollingEnabled) {
-                    val newTokens = userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = false)
+                    val newTokens = userInteractor.loadUserTokensAndUpdateLocal()
                     onTokensLoaded.invoke(newTokens)
                     Timber.d("Successfully auto-updated loaded tokens")
                 } else {
