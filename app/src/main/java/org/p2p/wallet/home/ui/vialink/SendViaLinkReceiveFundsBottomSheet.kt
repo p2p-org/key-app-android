@@ -18,8 +18,8 @@ import org.p2p.wallet.databinding.DialogSendViaLinkRecieveFundsBinding
 import org.p2p.wallet.home.ui.vialink.interactor.SendViaLinkWrapper
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.doOnAnimationEnd
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -42,6 +42,8 @@ class SendViaLinkReceiveFundsBottomSheet :
     private val binding: DialogSendViaLinkRecieveFundsBinding by viewBinding()
     private val glideManager: GlideManager by inject()
 
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
+
     override val presenter: SendViaLinkReceiveFundsContract.Presenter by inject { parametersOf(link) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,44 +58,50 @@ class SendViaLinkReceiveFundsBottomSheet :
         amountInTokens: String,
         tokenSymbol: String,
         sentFromAddress: Base58String,
-        addressAsUsername: String?,
         tokenIconUrl: String,
         linkCreationDate: String
     ) = with(binding) {
         textViewSubtitle.text = linkCreationDate
-        imageViewTokenIcon.loadUrl(glideManager, tokenIconUrl)
+        imageViewTokenIcon.loadUrl(glideManager, tokenIconUrl, circleCrop = true)
         textViewTokenAmount.text = "$amountInTokens $tokenSymbol"
-        textViewSentFromValue.text = addressAsUsername ?: sentFromAddress.base58Value.cutMiddle()
     }
 
-    override fun renderState(state: SendViaLinkReceiveFundsState) = with(binding) {
+    override fun renderState(state: SendViaLinkClaimingState) = with(binding) {
         when (state) {
-            is SendViaLinkReceiveFundsState.ReadyToClaim -> {
+            is SendViaLinkClaimingState.ReadyToClaim -> {
                 groupContent.isVisible = true
                 progressStateTransaction.isVisible = false
                 buttonDone.setText(R.string.common_confirm)
                 buttonDone.setOnClickListener { presenter.claimToken() }
             }
-            is SendViaLinkReceiveFundsState.ClaimingInProcess -> {
-                groupContent.isVisible = true
+            is SendViaLinkClaimingState.ClaimingInProcess -> {
+                layoutClaimSuccess.root.isVisible = false
                 progressStateTransaction.isVisible = true
+                groupContent.isVisible = true
                 progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
                 buttonDone.setText(R.string.common_close)
                 buttonDone.setOnClickListener { dismiss() }
             }
-            is SendViaLinkReceiveFundsState.ClaimSuccess -> {
+            is SendViaLinkClaimingState.ClaimSuccess -> {
                 groupContent.isVisible = false
                 layoutClaimSuccess.root.isVisible = true
+                progressStateTransaction.isVisible = false
+                layoutClaimSuccess.textViewTitle.text = getString(
+                    R.string.send_via_link_receive_funds_success_title,
+                    state.tokenAmount,
+                    state.tokenSymbol
+                )
                 playApplauseAnimation()
                 buttonDone.setText(R.string.send_via_link_receive_funds_success_button)
-                buttonDone.setOnClickListener { dismiss() }
+                buttonDone.setOnClickListener { presenter.claimToken() }
             }
-            is SendViaLinkReceiveFundsState.ClaimFailed -> {
+            is SendViaLinkClaimingState.ClaimFailed -> {
                 groupContent.isVisible = true
                 progressStateTransaction.isVisible = true
                 progressStateTransaction.setDescriptionText(R.string.transaction_description_failed)
+                progressStateTransaction.setFailedState()
                 buttonDone.setText(R.string.common_close)
-                buttonDone.setOnClickListener { dismiss() }
+                buttonDone.setOnClickListener { presenter.claimToken() }
             }
         }
     }

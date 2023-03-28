@@ -4,14 +4,15 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
-import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendLinkGenerationResultBinding
+import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -35,7 +36,7 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
         with(binding) {
             renderState()
 
-            imageViewClose.setOnClickListener { popBackStack() }
+            imageViewClose.setOnClickListener { popBackStackTo(MainFragment::class) }
         }
     }
 
@@ -54,7 +55,7 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
 
                 imageViewCopy.setOnClickListener {
                     requireContext().copyToClipBoard(state.formattedLink)
-                    toast(R.string.common_copied)
+                    showUiKitSnackBar(messageResId = R.string.send_via_link_generation_copied)
                 }
             }
             is LinkGenerationState.Error -> {
