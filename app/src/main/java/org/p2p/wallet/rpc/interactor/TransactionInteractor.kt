@@ -10,14 +10,15 @@ import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
-import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
+import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
+import org.p2p.solanaj.utils.crypto.Base64String
 
 class TransactionInteractor(
     private val rpcBlockhashRepository: RpcBlockhashRepository,
-    private val rpcTransactionRepository: RpcHistoryRepository,
+    private val rpcTransactionRepository: RpcTransactionRepository,
     private val rpcAmountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -61,11 +62,11 @@ class TransactionInteractor(
         }
     }
 
-    suspend fun sendTransaction(signedTransaction: String, isSimulation: Boolean): String {
+    suspend fun sendTransaction(signedTransaction: Base64String, isSimulation: Boolean): String {
         return if (isSimulation) {
-            rpcTransactionRepository.simulateTransaction(signedTransaction)
+            rpcTransactionRepository.simulateTransaction(signedTransaction.base64Value)
         } else {
-            rpcTransactionRepository.sendTransaction(signedTransaction)
+            rpcTransactionRepository.sendTransaction(signedTransaction.base64Value)
         }
     }
 

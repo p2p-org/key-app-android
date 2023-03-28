@@ -2,6 +2,8 @@ package org.p2p.wallet.feerelayer.interactor
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PreparedTransaction
+import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -34,23 +36,17 @@ class FeeRelayerViaLinkInteractor(
         transaction.sign(preparedTransaction.signers)
 
         // adding fee payer signature
-//        val signature = feeRelayerRepository.signTransaction(transaction, statistics)
-//        val feePayer = feeRelayerAccountInteractor.getRelayInfo().feePayerAddress
-//        transaction.addSignature(
-//            Signature(
-//                publicKey = feePayer,
-//                signature = signature.signature.base58Value
-//            )
-//        )
+        val serializedTransaction = Base64Utils.encode(transaction.serialize()).toBase64Instance()
+        val signedTransaction = feeRelayerRepository.signTransaction(serializedTransaction, statistics)
 
         /*
          * Retrying 3 times to avoid some errors
          * For example: fee relayer balance is not updated yet and request will fail with insufficient balance error
          * */
         return if (isRetryEnabled) {
-            retryRequest { transactionInteractor.serializeAndSend(transaction, isSimulation) }
+            retryRequest { transactionInteractor.sendTransaction(signedTransaction.transaction, isSimulation) }
         } else {
-            transactionInteractor.serializeAndSend(transaction, isSimulation)
+            transactionInteractor.sendTransaction(signedTransaction.transaction, isSimulation)
         }
     }
 }

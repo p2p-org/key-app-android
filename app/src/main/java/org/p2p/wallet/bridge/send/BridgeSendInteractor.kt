@@ -10,7 +10,7 @@ import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.solanaj.utils.crypto.toBase64String
+import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerSignTransaction
@@ -74,7 +74,7 @@ class BridgeSendInteractor(
             currency = token.mintAddress
         )
         return feeRelayerRepository.signTransaction(
-            transaction = signedTransaction.transaction.base58Value.toBase64String(),
+            transaction = signedTransaction.transaction.base58Value.toBase64Instance(),
             statistics = statistics
         )
     }

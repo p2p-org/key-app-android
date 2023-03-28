@@ -50,7 +50,7 @@ object FeeRelayerModule : InjectionModule {
             )
         }
 
-        factory { FeeRelayerInteractor(get(), get(), get(), get(), get(), get(), get()) }
+        factory { FeeRelayerInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { FeeRelayerTopUpInteractor(get(), get(), get(), get(), get(), get()) }
         factory { FeeRelayerInstructionsInteractor(get(), get(), get(), get()) }
         single { FeeRelayerSwapInteractor(get(), get(), get(), get(), get(), get(), get()) }
