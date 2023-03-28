@@ -1,10 +1,10 @@
-package org.p2p.wallet.newsend.statemachine.handler.bridge
+package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 
 import kotlinx.coroutines.flow.Flow
-import org.p2p.wallet.newsend.statemachine.SendActionHandler
-import org.p2p.wallet.newsend.statemachine.SendFeatureAction
-import org.p2p.wallet.newsend.statemachine.SendState
-import org.p2p.wallet.newsend.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
+import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
+import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
 
 class RefreshFeeActionHandler(
     private val feeLoader: SendBridgeFeeLoader,

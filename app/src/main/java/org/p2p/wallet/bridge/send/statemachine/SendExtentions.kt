@@ -1,9 +1,9 @@
-package org.p2p.wallet.newsend.statemachine
+package org.p2p.wallet.bridge.send.statemachine
 
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.StateFlow
-import org.p2p.wallet.newsend.statemachine.model.SendFee
-import org.p2p.wallet.newsend.statemachine.model.SendToken
+import org.p2p.wallet.bridge.send.statemachine.model.SendFee
+import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
 val StateFlow<SendState>.lastStaticState: SendState.Static
     get() = value.lastStaticState

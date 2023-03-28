@@ -1,9 +1,9 @@
-package org.p2p.wallet.newsend.statemachine.validator
+package org.p2p.wallet.bridge.send.statemachine.validator
 
 import java.math.BigDecimal
-import org.p2p.wallet.newsend.statemachine.SendStateMachine.Companion.SEND_FEE_EXPIRED_DURATION
-import org.p2p.wallet.newsend.statemachine.model.SendFee
-import org.p2p.wallet.newsend.statemachine.model.SendToken
+import org.p2p.wallet.bridge.send.statemachine.SendStateMachine.Companion.SEND_FEE_EXPIRED_DURATION
+import org.p2p.wallet.bridge.send.statemachine.model.SendFee
+import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
 class SendBridgeValidator {
 

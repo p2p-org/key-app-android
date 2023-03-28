@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.statemachine
+package org.p2p.wallet.bridge.send.statemachine
 
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext

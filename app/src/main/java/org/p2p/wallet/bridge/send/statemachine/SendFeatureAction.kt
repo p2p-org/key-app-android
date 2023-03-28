@@ -1,7 +1,7 @@
-package org.p2p.wallet.newsend.statemachine
+package org.p2p.wallet.bridge.send.statemachine
 
 import java.math.BigDecimal
-import org.p2p.wallet.newsend.statemachine.model.SendToken
+import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
 sealed interface SendFeatureAction {
 

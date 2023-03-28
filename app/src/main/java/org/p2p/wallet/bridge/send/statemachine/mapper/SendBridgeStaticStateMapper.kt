@@ -1,8 +1,8 @@
-package org.p2p.wallet.newsend.statemachine.mapper
+package org.p2p.wallet.bridge.send.statemachine.mapper
 
 import java.math.BigDecimal
-import org.p2p.wallet.newsend.statemachine.SendState
-import org.p2p.wallet.newsend.statemachine.model.SendFee
+import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 
 class SendBridgeStaticStateMapper {
 
