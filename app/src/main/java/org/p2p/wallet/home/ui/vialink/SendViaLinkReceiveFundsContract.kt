@@ -10,11 +10,10 @@ interface SendViaLinkReceiveFundsContract {
             amountInTokens: String,
             tokenSymbol: String,
             sentFromAddress: Base58String,
-            addressAsUsername: String?,
             tokenIconUrl: String,
             linkCreationDate: String
         )
-        fun renderState(state: SendViaLinkReceiveFundsState)
+        fun renderState(state: SendViaLinkClaimingState)
     }
 
     interface Presenter : MvpPresenter<View> {

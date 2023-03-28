@@ -1,14 +1,14 @@
 package org.p2p.wallet.utils
 
 import android.content.Context
-import android.os.Build
-import org.p2p.wallet.R
+import android.text.format.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
+import org.p2p.wallet.R
 
 object DateTimeUtils {
 
@@ -35,12 +35,7 @@ object DateTimeUtils {
     private const val DAYS_IN_YEAR = 365
 
     private fun getFormatter(pattern: String, contextForLocale: Context? = null): SimpleDateFormat {
-        val locale = when {
-            contextForLocale == null -> Locale.getDefault()
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> contextForLocale.resources.configuration.locales[0]
-            else -> @Suppress("DEPRECATION")
-            contextForLocale.resources.configuration.locale
-        }
+        val locale = contextForLocale?.resources?.configuration?.locales?.get(0) ?: Locale.getDefault()
         val formatterKey = FormatterKey(locale, pattern)
         return formatsCache[formatterKey] ?: run {
             val newVal = SimpleDateFormat(pattern, locale)
@@ -122,13 +117,10 @@ object DateTimeUtils {
     }
 
     fun convertTo12or24Format(time: Long, context: Context): String {
-        val is24HourFormat = android.text.format.DateFormat.is24HourFormat(context)
+        val is24HourFormat = DateFormat.is24HourFormat(context)
 
-        return if (is24HourFormat) {
-            getFormatter(PATTERN_FULL_DAY, context).format(time)
-        } else {
-            getFormatter(PATTERN_AM_PM, context).format(time)
-        }
+        val pattern = if (is24HourFormat) PATTERN_FULL_DAY else PATTERN_AM_PM
+        return getFormatter(pattern, context).format(time)
     }
 
     fun millisToMMSS(millis: Long): String {
@@ -143,9 +135,10 @@ object DateTimeUtils {
         val s = seconds % 60
         val m = seconds / 60 % 60
         val h = seconds / 3600
-        return when {
-            h > 0 -> String.format("%02d:%02d:%02d", h, m, s)
-            else -> String.format("%02d:%02d", m, s)
+        return if (h > 0) {
+            String.format("%02d:%02d:%02d", h, m, s)
+        } else {
+            String.format("%02d:%02d", m, s)
         }
     }
 
@@ -157,3 +150,9 @@ object DateTimeUtils {
 
     data class FormatterKey(val locale: Locale, val pattern: String)
 }
+
+fun Calendar.fill(
+    year: Int = 0,
+    month: Int = 0,
+    day: Int = 0
+): Calendar = apply { set(year, month, day) }

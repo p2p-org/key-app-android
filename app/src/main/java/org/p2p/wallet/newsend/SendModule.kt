@@ -7,6 +7,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.home.ui.vialink.SendViaLinkReceiveFundsContract
@@ -15,6 +16,7 @@ import org.p2p.wallet.home.ui.vialink.interactor.SendViaLinkReceiveFundsInteract
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
+import org.p2p.wallet.newsend.interactor.SendViaLinkInteractor
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.ui.NewSendContract
@@ -70,6 +72,8 @@ object SendModule : InjectionModule {
 
     private fun Module.initDataLayer() {
         factoryOf(::RecipientsDatabaseRepository) bind RecipientsLocalRepository::class
+        factoryOf(::FeeRelayerViaLinkInteractor)
+        factoryOf(::SendViaLinkInteractor)
         factoryOf(::UserSendLinksDatabaseRepository) bind UserSendLinksLocalRepository::class
     }
 }
