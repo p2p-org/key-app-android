@@ -72,6 +72,12 @@ internal class EthereumKitRepository(
             .map { EthTokenConverter.ethMetadataToToken(it) }
     }
 
+    override suspend fun getUserEthToken(): Token.Eth? {
+        return loadWalletTokens().firstOrNull {
+            it.mintAddress == ERC20Tokens.ETH.mintAddress
+        }
+    }
+
     override suspend fun getAddress(): EthAddress {
         return tokenKeyProvider?.publicKey ?: throwInitError()
     }

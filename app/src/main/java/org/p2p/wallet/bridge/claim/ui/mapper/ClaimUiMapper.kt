@@ -32,8 +32,8 @@ class ClaimUiMapper(private val resources: Resources) {
         claimDetails: ClaimDetails?
     ): NewShowProgress {
         val transactionDate = Date()
-        val amountTokens = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}"
-        val amountUsd = tokenToClaim.totalInUsd.orZero()
+        val amountTokens = claimDetails?.willGetAmount?.formattedTokenAmount.orEmpty()
+        val amountUsd = claimDetails?.willGetAmount?.fiatAmount.orZero()
         val feeList = listOfNotNull(
             claimDetails?.networkFee,
             claimDetails?.accountCreationFee,

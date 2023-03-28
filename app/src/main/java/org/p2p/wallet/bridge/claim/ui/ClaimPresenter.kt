@@ -11,7 +11,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.toLamports
 import org.p2p.core.wrapper.HexString
-import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
@@ -56,9 +55,7 @@ class ClaimPresenter(
         super.attach(view)
         launch {
             if (eth == null) {
-                eth = ethereumRepository.loadWalletTokens().firstOrNull {
-                    it.mintAddress == ERC20Tokens.ETH.mintAddress
-                }
+                eth = ethereumRepository.getUserEthToken()
             }
         }
         startRefreshJob()

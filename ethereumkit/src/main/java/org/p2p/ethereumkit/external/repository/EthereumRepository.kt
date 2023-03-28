@@ -10,6 +10,7 @@ interface EthereumRepository {
     fun init(seedPhrase: List<String>)
     suspend fun getBalance(): BigInteger
     suspend fun loadWalletTokens(): List<Token.Eth>
+    suspend fun getUserEthToken(): Token.Eth?
     suspend fun getAddress(): EthAddress
     fun getPrivateKey(): BigInteger
     fun signTransaction(transaction: HexString): Signature
