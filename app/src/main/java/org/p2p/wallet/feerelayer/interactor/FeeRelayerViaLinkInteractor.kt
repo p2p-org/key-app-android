@@ -2,7 +2,6 @@ package org.p2p.wallet.feerelayer.interactor
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PreparedTransaction
-import org.p2p.solanaj.core.Signature
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -35,14 +34,14 @@ class FeeRelayerViaLinkInteractor(
         transaction.sign(preparedTransaction.signers)
 
         // adding fee payer signature
-        val signature = feeRelayerRepository.signTransaction(transaction, statistics)
-        val feePayer = feeRelayerAccountInteractor.getRelayInfo().feePayerAddress
-        transaction.addSignature(
-            Signature(
-                publicKey = feePayer,
-                signature = signature
-            )
-        )
+//        val signature = feeRelayerRepository.signTransaction(transaction, statistics)
+//        val feePayer = feeRelayerAccountInteractor.getRelayInfo().feePayerAddress
+//        transaction.addSignature(
+//            Signature(
+//                publicKey = feePayer,
+//                signature = signature.signature.base58Value
+//            )
+//        )
 
         /*
          * Retrying 3 times to avoid some errors
