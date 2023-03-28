@@ -14,9 +14,11 @@ import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.scaleShort
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.bridge.send.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.mapper.SendUiMapper
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -46,12 +48,12 @@ import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
-import org.p2p.wallet.utils.toPublicKey
 
 class BridgeSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
     private val sendInteractor: SendInteractor,
+    private val bridgeInteractor: BridgeSendInteractor,
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
@@ -391,7 +393,7 @@ class BridgeSendPresenter(
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
-                val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
+                val result = bridgeInteractor.sendTransaction(EthAddress(address), token, lamports)
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)

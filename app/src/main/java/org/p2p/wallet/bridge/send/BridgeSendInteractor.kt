@@ -1,6 +1,6 @@
 package org.p2p.wallet.bridge.send
 
-import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
@@ -10,7 +10,7 @@ import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.solanaj.utils.crypto.toBase64String
+import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerSignTransaction
@@ -34,10 +34,9 @@ class BridgeSendInteractor(
 ) {
 
     suspend fun sendTransaction(
-        source: SolAddress,
         recipient: EthAddress,
         token: Token.Active,
-        amount: BigDecimal
+        amountInLamports: BigInteger
     ): String = withContext(dispatchers.io) {
         val tokenMint = token.mintAddress
         val userPublicKey = tokenKeyProvider.publicKey
@@ -49,10 +48,10 @@ class BridgeSendInteractor(
         val sendTransaction = repository.transferFromSolana(
             userWallet = userWallet,
             feePayer = feePayer,
-            source = source,
+            source = SolAddress(token.publicKey),
             recipient = recipient,
             mint = SolAddress(tokenMint),
-            amount = amount.toPlainString()
+            amount = amountInLamports.toString()
         )
         val userAccount = Account(tokenKeyProvider.keyPair)
 
@@ -74,7 +73,7 @@ class BridgeSendInteractor(
             currency = token.mintAddress
         )
         return feeRelayerRepository.signTransaction(
-            transaction = signedTransaction.transaction.base58Value.toBase64String(),
+            transaction = signedTransaction.transaction.decodeToBytes().toBase64Instance(),
             statistics = statistics
         )
     }
