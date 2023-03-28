@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
@@ -58,11 +57,11 @@ class SwapRateTickerManager private constructor(
 
         val result = when {
             !newTokenA.isStableCoin() && newTokenB.isStableCoin() -> {
-                val newRate = (state.amountTokenB / state.amountTokenA).scaleLong(newTokenB.decimals)
+                val newRate = (state.amountTokenB / state.amountTokenA).formatToken(newTokenB.decimals)
                 "1 ${newTokenA.tokenSymbol} ≈ $newRate ${newTokenB.tokenSymbol}"
             }
             else -> {
-                val newRate = (state.amountTokenA / state.amountTokenB).scaleLong(newTokenA.decimals)
+                val newRate = (state.amountTokenA / state.amountTokenB).formatToken(newTokenA.decimals)
                 "1 ${newTokenB.tokenSymbol} ≈ $newRate ${newTokenA.tokenSymbol}"
             }
         }
