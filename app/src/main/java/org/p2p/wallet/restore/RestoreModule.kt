@@ -20,7 +20,9 @@ object RestoreModule : InjectionModule {
                 secretKeys = secretKeys,
                 seedPhraseInteractor = get(),
                 analytics = get(),
-                restoreWalletAnalytics = get()
+                restoreWalletAnalytics = get(),
+                userLocalRepository = get(),
+                tokenPricesCoinGeckoRepository = get()
             )
         }
     }

@@ -8,5 +8,5 @@ data class DerivableAccount(
     val path: DerivationPath,
     val account: Account,
     val total: BigDecimal,
-    val totalInUsd: BigDecimal
+    val totalInUsd: BigDecimal? = null
 )

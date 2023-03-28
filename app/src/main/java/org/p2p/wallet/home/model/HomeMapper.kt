@@ -21,7 +21,7 @@ class HomeMapper(
     fun mapRateSkeleton(): TextViewCellModel =
         TextViewCellModel.Skeleton(
             SkeletonCellModel(
-                height = 16.toPx(),
+                height = 34.toPx(),
                 width = 160.toPx(),
                 radius = 4f.toPx()
             )
