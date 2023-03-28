@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.ui.vialink
+package org.p2p.wallet.svl.ui.send
 
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token

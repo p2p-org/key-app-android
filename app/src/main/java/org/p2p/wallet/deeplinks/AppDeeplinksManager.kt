@@ -4,6 +4,7 @@ import androidx.core.content.getSystemService
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
@@ -28,6 +29,8 @@ class AppDeeplinksManager(
 
     private var pendingIntent: Intent? = null
 
+    private var transferPendingDeeplink: Uri? = null
+
     fun setTabsSwitcher(mainTabsSwitcher: MainTabsSwitcher) {
         this.mainTabsSwitcher = mainTabsSwitcher
     }
@@ -50,9 +53,13 @@ class AppDeeplinksManager(
                 val data = intent.data ?: return
 
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
+                val isTransferScheme = context.getString(R.string.transfer_app_scheme) == data.scheme
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> {
                         rootListener?.triggerOnboardingDeeplink(data)
+                    }
+                    isTransferScheme -> {
+                        transferPendingDeeplink = data
                     }
                     intercomDeeplinkManager.handleBackgroundDeeplink(data) -> {
                         // do nothing
@@ -95,6 +102,10 @@ class AppDeeplinksManager(
     fun executeHomePendingDeeplink() {
         pendingIntent?.let { switchToMainTabIfPossible(it) }
         pendingIntent = null
+
+        transferPendingDeeplink?.let { deeplink ->
+            rootListener?.executeTransferViaLink(deeplink)
+        }
     }
 
     private fun Intent.addDeeplinkDataToIntent(notificationType: NotificationType) {

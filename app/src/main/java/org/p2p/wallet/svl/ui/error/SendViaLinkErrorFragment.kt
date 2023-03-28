@@ -1,4 +1,4 @@
-package org.p2p.wallet.home.ui.vialink.error
+package org.p2p.wallet.svl.ui.error
 
 import android.os.Bundle
 import android.view.View
