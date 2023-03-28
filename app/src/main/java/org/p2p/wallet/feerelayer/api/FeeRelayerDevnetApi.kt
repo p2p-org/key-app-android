@@ -17,7 +17,7 @@ interface FeeRelayerDevnetApi {
     suspend fun relayTransactionV2(@Body request: SendTransactionRequest): List<String>
 
     @POST("v2/sign_relay_transaction")
-    suspend fun signTransactionV2(@Body request: SignTransactionRequest): List<String>
+    suspend fun signTransactionV2(@Body request: SignTransactionRequest): SignTransactionResponse
 
     @POST("v2/relay_top_up_with_swap")
     suspend fun relayTopUpSwapV2(@Body request: RelayTopUpSwapRequest): List<String>

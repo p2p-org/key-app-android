@@ -1,25 +1,21 @@
 package org.p2p.wallet.bridge.send
 
-import timber.log.Timber
 import java.math.BigDecimal
-import java.math.BigInteger
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.solanaj.core.Account
-import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
-import org.p2p.solanaj.core.PreparedTransaction
-import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.solanaj.utils.crypto.toBase64String
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
+import org.p2p.wallet.feerelayer.model.FeeRelayerSignTransaction
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
-import org.p2p.wallet.feerelayer.model.TokenAccount
+import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
@@ -31,9 +27,9 @@ class BridgeSendInteractor(
     private val ethereumKitRepository: EthereumSendRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val relaySdkFacade: RelaySdkFacade,
-    private val feeRelayerInteractor: FeeRelayerInteractor,
     private val dispatchers: CoroutineDispatchers,
     private val rpcSolanaRepository: RpcSolanaRepository,
+    private val feeRelayerRepository: FeeRelayerRepository,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
 ) {
 
@@ -47,8 +43,8 @@ class BridgeSendInteractor(
         val userPublicKey = tokenKeyProvider.publicKey
         val userWallet = SolAddress(userPublicKey)
 
-        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
-        val feePayer = SolAddress(relayAccount.publicKey.toBase58())
+        val relayAccount = feeRelayerAccountInteractor.getRelayInfo()
+        val feePayer = SolAddress(relayAccount.feePayerAddress.toBase58())
 
         val sendTransaction = repository.transferFromSolana(
             userWallet = userWallet,
@@ -61,45 +57,32 @@ class BridgeSendInteractor(
         val userAccount = Account(tokenKeyProvider.keyPair)
 
         val signedTransaction = relaySdkFacade.signTransaction(
-            transaction = sendTransaction.transaction.toBase58Instance(),
+            transaction = sendTransaction.transaction,
             keyPair = userAccount.getEncodedKeyPair().toBase58Instance(),
             recentBlockhash = null
         )
-        val sendToFeeRelayerJob = async { sendToFeeRelayer(tokenMint, token) }
-        val firstTransactionSignature = sendToBlockchain(signedTransaction)
-        sendToFeeRelayerJob.await()
-        Timber.i("Send bridge transaction success: $firstTransactionSignature")
-        firstTransactionSignature
+        val feeRelayerTransaction = signByFeeRelayer(signedTransaction, token)
+        sendToBlockchain(feeRelayerTransaction.transaction)
     }
 
-    private suspend fun sendToFeeRelayer(tokenMint: String, token: Token.Active) {
-        val signers = Account(tokenKeyProvider.keyPair)
-        val preparedTransaction = PreparedTransaction(
-            transaction = Transaction().apply {
-                sign(signers)
-            },
-            signers = listOf(signers),
-            expectedFee = FeeAmount(),
-        )
-
+    private suspend fun signByFeeRelayer(
+        signedTransaction: RelaySdkSignedTransaction,
+        token: Token.Active
+    ): FeeRelayerSignTransaction {
         val statistics = FeeRelayerStatistics(
             operationType = OperationType.TRANSFER,
-            currency = tokenMint
+            currency = token.mintAddress
         )
-        feeRelayerInteractor.topUpAndRelayTransaction(
-            preparedTransaction = preparedTransaction,
-            payingFeeToken = TokenAccount(token.publicKey, token.mintAddress),
-            additionalPaybackFee = BigInteger.ZERO,
+        return feeRelayerRepository.signTransaction(
+            transaction = signedTransaction.transaction.base58Value.toBase64String(),
             statistics = statistics
         )
-            .firstOrNull()
-            .orEmpty()
     }
 
-    private suspend fun sendToBlockchain(signedTransaction: RelaySdkSignedTransaction): String {
+    private suspend fun sendToBlockchain(transaction: Base64String): String {
         return rpcSolanaRepository.sendTransaction(
-            serializedTransaction = signedTransaction.transaction.base58Value,
-            encoding = Encoding.BASE58
+            serializedTransaction = transaction.base64Value,
+            encoding = Encoding.BASE64
         )
     }
 }
