@@ -4,7 +4,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import org.p2p.core.pricecache.PriceCacheRepository
 import org.p2p.wallet.R
 import org.p2p.wallet.common.InAppFeatureFlags
