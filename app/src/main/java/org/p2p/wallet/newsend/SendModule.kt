@@ -7,26 +7,28 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
-import org.p2p.wallet.home.ui.vialink.SendViaLinkReceiveFundsContract
-import org.p2p.wallet.home.ui.vialink.SendViaLinkReceiveFundsPresenter
-import org.p2p.wallet.home.ui.vialink.interactor.SendViaLinkReceiveFundsInteractor
+import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkContract
+import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkPresenter
+import org.p2p.wallet.svl.interactor.SendViaLinkReceiveFundsInteractor
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
+import org.p2p.wallet.newsend.interactor.SendViaLinkInteractor
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.ui.NewSendContract
 import org.p2p.wallet.newsend.ui.NewSendPresenter
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsPresenter
-import org.p2p.wallet.newsend.ui.linkgeneration.SendLinkGenerationContract
-import org.p2p.wallet.newsend.ui.linkgeneration.SendLinkGenerationPresenter
+import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationContract
+import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
 import org.p2p.wallet.newsend.ui.search.NewSearchPresenter
-import org.p2p.wallet.newsend.ui.vialink.SendViaLinkContract
-import org.p2p.wallet.newsend.ui.vialink.SendViaLinkPresenter
+import org.p2p.wallet.svl.ui.send.SendViaLinkContract
+import org.p2p.wallet.svl.ui.send.SendViaLinkPresenter
 
 object SendModule : InjectionModule {
     override fun create() = module {
@@ -40,7 +42,8 @@ object SendModule : InjectionModule {
                 usernameDomainFeatureToggle = get(),
                 userInteractor = get(),
                 newSendAnalytics = get(),
-                sendViaLinkFeatureToggle = get()
+                sendViaLinkFeatureToggle = get(),
+                feeRelayerAccountInteractor = get()
             )
         }
         factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class
@@ -64,12 +67,14 @@ object SendModule : InjectionModule {
         factoryOf(::SendLinkGenerationPresenter) bind SendLinkGenerationContract.Presenter::class
         factoryOf(::SendViaLinkPresenter) bind SendViaLinkContract.Presenter::class
 
-        factoryOf(::SendViaLinkReceiveFundsPresenter) bind SendViaLinkReceiveFundsContract.Presenter::class
+        factoryOf(::ReceiveViaLinkPresenter) bind ReceiveViaLinkContract.Presenter::class
         factoryOf(::SendViaLinkReceiveFundsInteractor)
     }
 
     private fun Module.initDataLayer() {
         factoryOf(::RecipientsDatabaseRepository) bind RecipientsLocalRepository::class
+        factoryOf(::FeeRelayerViaLinkInteractor)
+        factoryOf(::SendViaLinkInteractor)
         factoryOf(::UserSendLinksDatabaseRepository) bind UserSendLinksLocalRepository::class
     }
 }

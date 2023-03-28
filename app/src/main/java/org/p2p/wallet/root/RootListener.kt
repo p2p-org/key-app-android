@@ -7,4 +7,5 @@ interface RootListener {
     fun showTransactionProgress(internalTransactionId: String, data: NewShowProgress)
     fun popBackStackToMain()
     fun triggerOnboardingDeeplink(deeplink: Uri)
+    fun executeTransferViaLink(deeplink: Uri)
 }

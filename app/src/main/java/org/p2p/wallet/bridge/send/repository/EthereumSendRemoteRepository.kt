@@ -51,7 +51,7 @@ class EthereumSendRemoteRepository(
 
     override suspend fun getSendFee(
         userWallet: SolAddress,
-        recipient: SolAddress,
+        recipient: EthAddress,
         mint: SolAddress?,
         amount: String,
     ): BridgeSendFees {

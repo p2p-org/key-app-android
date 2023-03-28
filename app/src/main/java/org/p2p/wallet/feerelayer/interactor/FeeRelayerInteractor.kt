@@ -182,7 +182,8 @@ class FeeRelayerInteractor(
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount(useCache = false)
 
         // verify fee payer
-        if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
+        val transactionFeePayer = preparedTransaction.transaction.getFeePayer()
+        if (transactionFeePayer == null || !feePayer.equals(transactionFeePayer)) {
             throw IllegalStateException("Invalid fee payer")
         }
 
@@ -239,7 +240,8 @@ class FeeRelayerInteractor(
         val feePayer = info.feePayerAddress
 
         // verify fee payer
-        if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
+        val transactionFeePayer = preparedTransaction.transaction.getFeePayer()
+        if (transactionFeePayer == null || !feePayer.equals(transactionFeePayer)) {
             throw IllegalStateException("Invalid fee payer")
         }
 

@@ -1,0 +1,44 @@
+package org.p2p.wallet.svl.model
+
+import timber.log.Timber
+import kotlin.random.Random
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.utils.emptyString
+
+private const val REGEX_LINK_ALLOWED_SYMBOLS = "[A-Za-z0-9_~-]"
+private const val ASCII_CHARACTERS_COUNT = 128
+private const val SYMBOLS_COUNT = 12
+
+object SendLinkGenerator {
+
+    fun createTemporaryAccount(): TemporaryAccount {
+        val generatedSymbols = generateSymbols()
+
+        Timber.tag("SendLinkGenerator").d("Generated symbols: $generatedSymbols")
+
+        val account = Account.fromBip44Mnemonic(
+            words = generatedSymbols,
+            walletIndex = 0,
+            derivationPath = DerivationPath.BIP44CHANGE,
+            saltPrefix = BuildConfig.saltPrefix,
+            includeSpaces = false
+        )
+
+        return TemporaryAccount(
+            symbols = generatedSymbols.joinToString(emptyString()),
+            address = account.publicKey.toBase58(),
+            keypair = account.getEncodedKeyPair()
+        )
+    }
+
+    private fun generateSymbols(): List<String> {
+        val regex = Regex(REGEX_LINK_ALLOWED_SYMBOLS)
+        val random = Random.Default
+        return (1..SYMBOLS_COUNT)
+            .map { random.nextInt(ASCII_CHARACTERS_COUNT).toString() }
+            .filter { regex.matches(it) }
+    }
+}
