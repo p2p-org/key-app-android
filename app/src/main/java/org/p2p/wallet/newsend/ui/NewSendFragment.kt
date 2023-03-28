@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
@@ -33,7 +34,6 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
-import java.math.BigDecimal
 
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
@@ -183,6 +183,10 @@ class NewSendFragment :
             binding.sliderSend.isVisible = true
             binding.sliderSend.setActionText(text)
         }
+    }
+
+    override fun disableSwitchAmounts() {
+        binding.widgetSendDetails.disableFiat()
     }
 
     override fun disableInputs() {
