@@ -10,6 +10,9 @@ interface UserSendLinksDao {
     @Query("SELECT * FROM user_send_links WHERE owner_address = :userAddress ORDER BY date_created_in_epoch DESC")
     suspend fun getLinks(userAddress: String): List<UserSendLinkEntity>
 
+    @Query("SELECT * FROM user_send_links WHERE owner_address = :userAddress AND uuid = :uuid")
+    suspend fun getLinkByOrdinal(userAddress: String, uuid: String): UserSendLinkEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addLink(userLink: UserSendLinkEntity)
 }

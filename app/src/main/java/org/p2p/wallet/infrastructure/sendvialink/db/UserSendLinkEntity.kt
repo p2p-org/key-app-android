@@ -2,19 +2,21 @@ package org.p2p.wallet.infrastructure.sendvialink.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import java.math.BigDecimal
 import java.util.Calendar
+import java.util.UUID
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.MillisSinceEpoch
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 
-@Entity(tableName = "user_send_links")
-class UserSendLinkEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "ordinal")
-    val ordinal: Int = 0,
+@Entity(
+    tableName = "user_send_links",
+    primaryKeys = ["uuid", "owner_address"]
+)
+data class UserSendLinkEntity(
+    @ColumnInfo(name = "uuid")
+    val uuid: String,
     @ColumnInfo(name = "link")
     val link: String,
     @ColumnInfo(name = "amount")
@@ -29,7 +31,7 @@ class UserSendLinkEntity(
     companion object {
         fun createStubsForDebug(userAddress: Base58String): List<UserSendLinkEntity> = listOf(
             UserSendLinkEntity(
-                0,
+                UUID.randomUUID().toString(),
                 link = "link",
                 amount = BigDecimal.ONE,
                 tokenMint = Constants.WRAPPED_SOL_MINT.toBase58Instance(),
@@ -41,7 +43,7 @@ class UserSendLinkEntity(
                 userAddress
             ),
             UserSendLinkEntity(
-                0,
+                UUID.randomUUID().toString(),
                 link = "link",
                 amount = BigDecimal.ONE,
                 tokenMint = Constants.WRAPPED_SOL_MINT.toBase58Instance(),
@@ -53,7 +55,7 @@ class UserSendLinkEntity(
                 userAddress
             ),
             UserSendLinkEntity(
-                0,
+                UUID.randomUUID().toString(),
                 link = "link",
                 amount = BigDecimal.ONE,
                 tokenMint = Constants.WRAPPED_SOL_MINT.toBase58Instance(),
@@ -65,7 +67,7 @@ class UserSendLinkEntity(
                 userAddress
             ),
             UserSendLinkEntity(
-                0,
+                UUID.randomUUID().toString(),
                 link = "link",
                 amount = BigDecimal.ONE.multiply(BigDecimal.TEN),
                 tokenMint = Constants.WRAPPED_SOL_MINT.toBase58Instance(),
