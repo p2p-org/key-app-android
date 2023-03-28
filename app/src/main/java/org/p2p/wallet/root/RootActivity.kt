@@ -176,6 +176,11 @@ class RootActivity :
         onboardingRootFragment.triggerOnboadringDeeplink(deeplink)
     }
 
+    override fun executeTransferViaLink(deeplink: Uri) {
+        // start claim bottom sheet
+        toast(deeplink.toString())
+    }
+
     override fun popBackStackToMain() {
         with(supportFragmentManager) {
             if (backStackEntryCount > 1) {

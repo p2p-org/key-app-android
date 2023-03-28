@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.ui.vialink
+package org.p2p.wallet.svl.ui.send
 
 import android.content.res.Resources
 import timber.log.Timber
@@ -18,6 +18,7 @@ import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.newsend.model.toSearchResult
+import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.unsafeLazy

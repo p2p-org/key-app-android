@@ -7,8 +7,9 @@
     <string name="send_via_link_animation_time_text">This will take up to 5 seconds</string>
     <string name="send_via_link_ready">The one-time link is ready! The funds can be claimed</string>
     <string name="send_via_link_return_back">If you want to get your money back just open one-time link by yourself</string>
-    <string name="send_dont_need_the_address">You don\'t need to know the address</string>
+    <string name="send_via_link_limit_exceeded">Limit is 30 one-time links per day. Try tomorrow</string>
     <string name="send_via_link_generation_copied">✅ Your one-time link is copied</string>
+    <string name="send_dont_need_the_address">You don\'t need to know the address</string>
 
     <string name="send_via_link_receive_funds_title">Receive funds via one-time link</string>
     <string name="send_via_link_receive_funds_sent_from">Sent from</string>

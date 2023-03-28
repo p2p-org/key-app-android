@@ -48,7 +48,9 @@ class FeeRelayerRemoteRepository(
             maxUsage = response.limits.maxCount,
             currentUsage = response.processedFee.count,
             maxAmount = response.limits.maxAmount,
-            amountUsed = response.processedFee.totalAmount
+            amountUsed = response.processedFee.totalAmount,
+            maxAccountCreationCount = response.limits.maxAccountCreationCount,
+            accountCreationUsage = response.processedFee.rentCount
         )
     }
 

@@ -7,7 +7,6 @@ import java.util.Date
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.formatToken
@@ -33,8 +32,8 @@ class ClaimUiMapper(private val resources: Resources) {
         claimDetails: ClaimDetails?
     ): NewShowProgress {
         val transactionDate = Date()
-        val amountTokens = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}"
-        val amountUsd = tokenToClaim.totalInUsd.orZero()
+        val amountTokens = claimDetails?.willGetAmount?.formattedTokenAmount.orEmpty()
+        val amountUsd = claimDetails?.willGetAmount?.fiatAmount.orZero()
         val feeList = listOfNotNull(
             claimDetails?.networkFee,
             claimDetails?.accountCreationFee,
@@ -52,20 +51,17 @@ class ClaimUiMapper(private val resources: Resources) {
 
     fun makeClaimDetails(
         tokenToClaim: Token.Eth,
+        resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
-        ethToken: TokenData?
+        ethToken: Token.Eth?
     ): ClaimDetails {
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals
         return ClaimDetails(
-            willGetAmount = BridgeAmount(
-                tokenSymbol,
-                tokenToClaim.total,
-                tokenToClaim.totalInUsd
-            ),
+            willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
             networkFee = ethToken?.let { ethTokenData ->
                 fees?.gasEth.toBridgeAmount(
-                    tokenSymbol = ethTokenData.symbol,
+                    tokenSymbol = ethTokenData.tokenSymbol,
                     decimals = ethTokenData.decimals
                 )
             } ?: fees?.gasEth.toBridgeAmount(tokenSymbol, decimals),

@@ -1,4 +1,4 @@
-package org.p2p.wallet.home.ui.vialink
+package org.p2p.wallet.svl.ui.receive
 
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
@@ -15,7 +15,8 @@ import org.p2p.uikit.utils.loadUrl
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSendViaLinkRecieveFundsBinding
-import org.p2p.wallet.home.ui.vialink.interactor.SendViaLinkWrapper
+import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
+import org.p2p.wallet.svl.model.SendViaLinkClaimingState
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
@@ -26,10 +27,10 @@ import org.p2p.wallet.utils.withArgs
 private const val ARG_LINK = "ARG_LINK"
 
 class SendViaLinkReceiveFundsBottomSheet :
-    BaseMvpBottomSheet<SendViaLinkReceiveFundsContract.View, SendViaLinkReceiveFundsContract.Presenter>(
+    BaseMvpBottomSheet<ReceiveViaLinkContract.View, ReceiveViaLinkContract.Presenter>(
         layoutRes = R.layout.dialog_send_via_link_recieve_funds
     ),
-    SendViaLinkReceiveFundsContract.View {
+    ReceiveViaLinkContract.View {
     companion object {
         fun show(fm: FragmentManager, link: SendViaLinkWrapper) {
             SendViaLinkReceiveFundsBottomSheet()
@@ -44,7 +45,7 @@ class SendViaLinkReceiveFundsBottomSheet :
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
-    override val presenter: SendViaLinkReceiveFundsContract.Presenter by inject { parametersOf(link) }
+    override val presenter: ReceiveViaLinkContract.Presenter by inject { parametersOf(link) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.ui.vialink
+package org.p2p.wallet.svl.ui.send
 
 import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
@@ -17,7 +17,7 @@ import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.newsend.ui.dialogs.FreeTransactionsDetailsBottomSheet
-import org.p2p.wallet.newsend.ui.linkgeneration.SendLinkGenerationFragment
+import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
