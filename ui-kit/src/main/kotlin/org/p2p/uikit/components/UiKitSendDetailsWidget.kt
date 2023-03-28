@@ -9,6 +9,7 @@ import android.content.Context
 import android.util.AttributeSet
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.concurrent.atomic.AtomicInteger
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
@@ -17,7 +18,6 @@ import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
-import java.util.concurrent.atomic.AtomicInteger
 
 private const val MAX_FRACTION_LENGTH = 9
 private const val PROGRESS_DELAY_IN_MS = 200L
@@ -144,11 +144,20 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
     }
 
+    fun disableFiat() {
+        disableSwitchAmounts()
+        binding.textViewSecondAmount.isVisible = false
+    }
+
     fun disableInputs() {
-        binding.imageViewSwitchTo.isVisible = false
-        binding.viewSwitchToClickArea.isInvisible = true
+        disableSwitchAmounts()
         binding.textViewMax.isVisible = false
         binding.editTextAmount.isEnabled = false
+    }
+
+    private fun disableSwitchAmounts() {
+        binding.imageViewSwitchTo.isVisible = false
+        binding.viewSwitchToClickArea.isInvisible = true
         binding.textViewAmountTypeSwitchLabel.isVisible = false
     }
 
