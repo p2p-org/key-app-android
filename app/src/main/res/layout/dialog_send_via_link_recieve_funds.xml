@@ -25,13 +25,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="16dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="@string/send_via_link_receive_funds_title"
         android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/viewPointer" />
+        app:layout_constraintTop_toBottomOf="@+id/viewPointer"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/textViewSubtitle"
@@ -39,26 +42,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="4dp"
         android:gravity="center"
         android:textColor="@color/text_mountain"
+        app:layout_constraintBottom_toTopOf="@+id/layoutTransactionDetails"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
         tools:text="Today @ 15:28" />
 
     <LinearLayout
         android:id="@+id/layoutTransactionDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@color/bg_smoke"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingVertical="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/progressStateTransaction"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewSubtitle">
+        app:layout_constraintTop_toBottomOf="@+id/textViewSubtitle">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageViewTokenIcon"
@@ -80,43 +84,17 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textViewSentFromTitle"
-        style="@style/UiKit.TextAppearance.Regular.Text4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="24dp"
-        android:gravity="center_vertical"
-        android:text="@string/send_via_link_receive_funds_sent_from"
-        android:textColor="@color/text_mountain"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutTransactionDetails" />
-
-    <TextView
-        android:id="@+id/textViewSentFromValue"
-        style="@style/UiKit.TextAppearance.SemiBold.Text4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="24dp"
-        android:gravity="center_vertical|end"
-        android:textColor="@color/text_night"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textViewSentFromTitle"
-        app:layout_constraintTop_toBottomOf="@+id/layoutTransactionDetails"
-        tools:text="Udjn45...u8uvs5" />
-
     <org.p2p.wallet.transaction.ui.ProgressStateWidget
         android:id="@+id/progressStateTransaction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/buttonDone"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewSentFromValue" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutTransactionDetails" />
 
     <include
         android:id="@+id/layoutClaimSuccess"
@@ -146,18 +124,20 @@
         app:iconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressStateTransaction" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/groupContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="textViewTitle,textViewSubtitle,layoutTransactionDetails,textViewSentFromTitle,textViewSentFromValue,progressStateTransaction" />
+        app:constraint_referenced_ids="textViewTitle,textViewSubtitle,layoutTransactionDetails" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

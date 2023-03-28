@@ -28,17 +28,10 @@ class SendLinkGenerationPresenter(
                     lamports = lamports,
                     memo = BuildConfig.sendViaLinkMemo
                 )
+                saveLink(recipient, token, lamports)
 
                 val tokenAmount = lamports.fromLamports(token.decimals)
                 val formattedAmount = "$tokenAmount ${token.tokenSymbol}"
-                userSendLinksRepository.saveUserLink(
-                    link = UserSendLink(
-                        link = recipient.generateFormattedLink(),
-                        token = token,
-                        amount = tokenAmount,
-                        dateCreated = System.currentTimeMillis()
-                    )
-                )
                 LinkGenerationState.Success(recipient.generateFormattedLink(), formattedAmount)
             } catch (e: Throwable) {
                 Timber.e(e, "Error generating send link")
@@ -46,5 +39,16 @@ class SendLinkGenerationPresenter(
             }
             view?.showResult(result)
         }
+    }
+
+    private suspend fun saveLink(link: TemporaryAccount, token: Token.Active, sendAmount: BigInteger) {
+        userSendLinksRepository.saveUserLink(
+            link = UserSendLink(
+                link = link.generateFormattedLink(),
+                token = token,
+                amount = sendAmount.fromLamports(token.decimals),
+                dateCreated = System.currentTimeMillis()
+            )
+        )
     }
 }
