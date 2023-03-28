@@ -52,7 +52,7 @@ class ClaimUiMapper(private val resources: Resources) {
     fun makeClaimDetails(
         tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
-        fees: BridgeBundleFees,
+        fees: BridgeBundleFees?,
         ethToken: Token.Eth?
     ): ClaimDetails {
         val tokenSymbol = tokenToClaim.tokenSymbol
@@ -60,13 +60,13 @@ class ClaimUiMapper(private val resources: Resources) {
         return ClaimDetails(
             willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
             networkFee = ethToken?.let { ethTokenData ->
-                fees.gasEth.toBridgeAmount(
+                fees?.gasEth.toBridgeAmount(
                     tokenSymbol = ethTokenData.tokenSymbol,
                     decimals = ethTokenData.decimals
                 )
-            } ?: fees.gasEth.toBridgeAmount(tokenSymbol, decimals),
-            accountCreationFee = fees.createAccount.toBridgeAmount(tokenSymbol, decimals),
-            bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
+            } ?: fees?.gasEth.toBridgeAmount(tokenSymbol, decimals),
+            accountCreationFee = fees?.createAccount.toBridgeAmount(tokenSymbol, decimals),
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
         )
     }
 
