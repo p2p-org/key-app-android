@@ -88,13 +88,21 @@ class UserInMemoryRepository(
     }
 
     private fun findTokensBySearchText(searchText: String): List<TokenData> {
-        return allTokensFlow.value
-            .asSequence()
-            .filter { token ->
-                token.symbol.contains(searchText, ignoreCase = true) ||
-                    token.name.startsWith(searchText, ignoreCase = true)
-            }
-            .toList()
+        val filteredList = mutableListOf<TokenData>()
+
+        val allTokens = allTokensFlow.value
+
+        // Filter items that start with the query
+        allTokens.filterTo(filteredList) {
+            it.symbol.startsWith(searchText, ignoreCase = true) || it.name.startsWith(searchText, ignoreCase = true)
+        }
+
+        // Filter items that contain the query
+        allTokens.filterTo(filteredList) {
+            it.symbol.contains(searchText, ignoreCase = true) && !it.symbol.startsWith(searchText, ignoreCase = true) ||
+                it.name.contains(searchText, ignoreCase = true) && !it.name.startsWith(searchText, ignoreCase = true)
+        }
+        return filteredList
     }
 
     override fun getTokenListFlow(): Flow<TokenListData> = tokensSearchResultFlow

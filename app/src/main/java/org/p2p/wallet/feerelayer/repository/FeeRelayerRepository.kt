@@ -15,6 +15,8 @@ interface FeeRelayerRepository {
 
     suspend fun relayTransaction(transaction: Transaction, statistics: FeeRelayerStatistics): List<String>
 
+    suspend fun signTransaction(transaction: Transaction, statistics: FeeRelayerStatistics): String
+
     suspend fun relayTopUpSwap(
         userSourceTokenAccountPubkey: String,
         sourceTokenMintPubkey: String,

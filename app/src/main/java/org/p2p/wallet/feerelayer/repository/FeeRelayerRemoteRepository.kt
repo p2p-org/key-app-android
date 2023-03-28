@@ -1,11 +1,13 @@
 package org.p2p.wallet.feerelayer.repository
 
+import java.math.BigInteger
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
+import org.p2p.wallet.feerelayer.api.SignTransactionRequest
 import org.p2p.wallet.feerelayer.model.FeeRelayerConverter
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
@@ -14,7 +16,6 @@ import org.p2p.wallet.feerelayer.model.SwapDataConverter
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.utils.toPublicKey
-import java.math.BigInteger
 
 class FeeRelayerRemoteRepository(
     private val api: FeeRelayerApi,
@@ -47,8 +48,40 @@ class FeeRelayerRemoteRepository(
             maxUsage = response.limits.maxCount,
             currentUsage = response.processedFee.count,
             maxAmount = response.limits.maxAmount,
-            amountUsed = response.processedFee.totalAmount
+            amountUsed = response.processedFee.totalAmount,
+            maxAccountCreationCount = response.limits.maxAccountCreationCount,
+            accountCreationUsage = response.processedFee.rentCount
         )
+    }
+
+    override suspend fun signTransaction(transaction: Transaction, statistics: FeeRelayerStatistics): String {
+        val instructions = transaction.instructions
+        val signatures = transaction.allSignatures
+        val pubkeys = transaction.accountKeys
+        val blockHash = transaction.recentBlockHash
+
+        val keys = pubkeys.map { it.publicKey.toBase58() }
+        val requestInstructions = instructions.map { FeeRelayerConverter.toNetwork(it, keys) }
+
+        val relayTransactionSignatures = mutableMapOf<Int, String>()
+        signatures.forEach { signature ->
+            val index = pubkeys.indexOfFirst { it.publicKey.toBase58() == signature.publicKey.toBase58() }
+            relayTransactionSignatures[index] = signature.signature
+        }
+
+        val infoRequest = FeeRelayerConverter.toNetwork(statistics)
+
+        val request = SignTransactionRequest(
+            instructions = requestInstructions,
+            pubkeys = keys,
+            blockHash = blockHash,
+            info = infoRequest
+        )
+        return if (environmentManager.isDevnet()) {
+            devnetApi.signTransactionV2(request)
+        } else {
+            api.signRelayTransaction(request)
+        }.firstOrNull().orEmpty()
     }
 
     override suspend fun relayTransaction(transaction: Transaction, statistics: FeeRelayerStatistics): List<String> {

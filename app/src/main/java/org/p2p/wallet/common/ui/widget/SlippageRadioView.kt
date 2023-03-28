@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSlippageRadioViewBinding
-import org.p2p.wallet.swap.model.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.model.Slippage.Companion.PERCENT_DIVIDE_VALUE
 
 @Deprecated("Old Orca swap flow")
 class SlippageRadioView @JvmOverloads constructor(

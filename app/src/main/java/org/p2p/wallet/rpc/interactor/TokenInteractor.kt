@@ -38,7 +38,7 @@ class TokenInteractor(
         transaction.addInstruction(instruction)
 
         val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
-        transaction.recentBlockHash = recentBlockhash.recentBlockhash
+        transaction.setRecentBlockhash(recentBlockhash.recentBlockhash)
 
         val signers = Account(tokenKeyProvider.keyPair)
         transaction.sign(signers)
@@ -84,7 +84,7 @@ class TokenInteractor(
 
         val transaction = Transaction().apply {
             addInstruction(instruction)
-            setRecentBlockHash(recentBlockHash.recentBlockhash)
+            setRecentBlockhash(recentBlockHash.recentBlockhash)
             sign(signers)
         }
 
@@ -115,7 +115,7 @@ class TokenInteractor(
 
         val transaction = Transaction().apply {
             addInstruction(instruction)
-            setRecentBlockHash(recentBlockHash.recentBlockhash)
+            setRecentBlockhash(recentBlockHash.recentBlockhash)
             signWithoutSignatures(feePayer)
         }
 

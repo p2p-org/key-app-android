@@ -14,7 +14,7 @@ data class TemporaryAccount(
 ) : Parcelable {
 
     companion object {
-        private const val SEND_LINK_FORMAT = "key.app/transfer/"
+        private const val SEND_LINK_FORMAT = "t.key.app/"
     }
 
     @IgnoredOnParcel
