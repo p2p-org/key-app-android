@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
@@ -116,7 +117,7 @@ class SwapRateTickerManager private constructor(
             is SwapTokenModel.JupiterToken -> findJupiterTokenRate(to)
         } ?: return SwapRateTickerState.Hidden
 
-        val newRate = (amountFrom / amountTo).scaleLong(to.decimals)
+        val newRate = (amountFrom / amountTo).formatToken(to.decimals)
 
         val result = "1 ${from.tokenSymbol} ≈ $newRate ${to.tokenSymbol}"
         return SwapRateTickerState.Shown(result)
