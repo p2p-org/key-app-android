@@ -44,12 +44,19 @@
         android:layout_marginHorizontal="20dp"
         android:gravity="center"
         android:textColor="@color/text_mountain"
-        app:layout_constraintBottom_toTopOf="@+id/layoutTransactionDetails"
+        app:layout_constraintBottom_toTopOf="@+id/barrierContent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
         tools:text="Today @ 15:28" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrierContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="layoutTransactionDetails,imageViewBanner" />
 
     <LinearLayout
         android:id="@+id/layoutTransactionDetails"
@@ -83,6 +90,18 @@
             tools:text="13.95 SOL" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageViewBanner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/details_transaction_not_found"
+        android:src="@drawable/ic_not_found"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/progressStateTransaction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSubtitle" />
 
     <org.p2p.wallet.transaction.ui.ProgressStateWidget
         android:id="@+id/progressStateTransaction"
@@ -129,10 +148,10 @@
         app:layout_constraintTop_toBottomOf="@+id/progressStateTransaction" />
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/groupContent"
+        android:id="@+id/groupTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="textViewTitle,textViewSubtitle,layoutTransactionDetails" />
+        app:constraint_referenced_ids="textViewTitle,textViewSubtitle" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"

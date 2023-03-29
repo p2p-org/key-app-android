@@ -1,6 +1,7 @@
 package org.p2p.wallet.feerelayer.repository
 
 import java.math.BigInteger
+import org.p2p.core.utils.orZero
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.utils.crypto.Base64String
@@ -51,8 +52,8 @@ class FeeRelayerRemoteRepository(
             currentUsage = response.processedFee.count,
             maxAmount = response.limits.maxAmount,
             amountUsed = response.processedFee.totalAmount,
-            maxAccountCreationCount = response.limits.maxAccountCreationCount,
-            accountCreationUsage = response.processedFee.rentCount
+            maxAccountCreationCount = response.limits.maxAccountCreationCount.orZero(),
+            accountCreationUsage = response.processedFee.rentCount.orZero()
         )
     }
 

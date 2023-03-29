@@ -77,6 +77,7 @@ class SendViaLinkFragment :
         binding.sliderSend.onSlideCompleteListener = { presenter.checkInternetConnection() }
         binding.sliderSend.onSlideCollapseCompleted = { presenter.generateLink() }
 
+        binding.switchDebug.isVisible = BuildConfig.DEBUG
         binding.textViewDebug.isVisible = BuildConfig.DEBUG
         binding.textViewMessage.isVisible = true
 
@@ -100,8 +101,13 @@ class SendViaLinkFragment :
         FreeTransactionsDetailsBottomSheet.show(childFragmentManager)
     }
 
-    override fun navigateToLinkGeneration(account: TemporaryAccount, token: Token.Active, lamports: BigInteger) {
-        replaceFragment(SendLinkGenerationFragment.create(account, token, lamports))
+    override fun navigateToLinkGeneration(
+        account: TemporaryAccount,
+        token: Token.Active,
+        lamports: BigInteger
+    ) {
+        val isSimulationEnabled = binding.switchDebug.isChecked
+        replaceFragment(SendLinkGenerationFragment.create(account, token, lamports, isSimulationEnabled))
     }
 
     override fun updateInputValue(textValue: String, forced: Boolean) {

@@ -1,5 +1,7 @@
 package org.p2p.wallet.feerelayer.interactor
 
+import java.util.UUID
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
@@ -32,6 +34,12 @@ class FeeRelayerViaLinkInteractor(
 
         // sign transaction by user
         transaction.sign(preparedTransaction.signers)
+
+        if (isSimulation) {
+            // TODO: REMOVE FAKE TRANSACTION AFTER FEE RELAYER IS FIXED
+            delay(1000L)
+            return UUID.randomUUID().toString()
+        }
 
         // adding fee payer signature
 //        val signature = feeRelayerRepository.signTransaction(transaction, statistics)

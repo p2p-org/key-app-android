@@ -19,14 +19,20 @@ class SendLinkGenerationPresenter(
 ) : BasePresenter<SendLinkGenerationContract.View>(),
     SendLinkGenerationContract.Presenter {
 
-    override fun generateLink(recipient: TemporaryAccount, token: Token.Active, lamports: BigInteger) {
+    override fun generateLink(
+        recipient: TemporaryAccount,
+        token: Token.Active,
+        lamports: BigInteger,
+        isSimulation: Boolean
+    ) {
         launch {
             val result = try {
                 val transactionId = sendViaLinkInteractor.sendTransaction(
                     destinationAddress = recipient.publicKey,
                     token = token,
                     lamports = lamports,
-                    memo = BuildConfig.sendViaLinkMemo
+                    memo = BuildConfig.sendViaLinkMemo,
+                    isSimulation = isSimulation
                 )
                 saveLink(recipient, token, lamports)
 

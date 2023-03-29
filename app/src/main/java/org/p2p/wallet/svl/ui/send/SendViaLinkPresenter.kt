@@ -80,7 +80,6 @@ class SendViaLinkPresenter(
                 sendViaLinkInteractor.initialize()
             } catch (e: Throwable) {
                 Timber.e(e, "Error initializing send via link")
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
             }
         }
     }

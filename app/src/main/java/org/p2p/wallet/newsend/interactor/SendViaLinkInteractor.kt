@@ -45,7 +45,8 @@ class SendViaLinkInteractor(
         destinationAddress: PublicKey,
         token: Token.Active,
         lamports: BigInteger,
-        memo: String
+        memo: String,
+        isSimulation: Boolean
     ): String {
         val statistics = FeeRelayerStatistics(
             operationType = OperationType.TRANSFER,
@@ -64,7 +65,8 @@ class SendViaLinkInteractor(
         return feeRelayerLinkInteractor.signAndSendTransaction(
             preparedTransaction = preparedTransaction,
             statistics = statistics,
-            isRetryEnabled = false
+            isRetryEnabled = false,
+            isSimulation = isSimulation
         )
     }
 
