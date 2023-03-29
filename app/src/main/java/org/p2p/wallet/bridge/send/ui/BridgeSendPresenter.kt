@@ -107,7 +107,7 @@ class BridgeSendPresenter(
                     widgetDelegate?.showFeeViewVisible(true)
                 }
                 val newTextValue = sendAmount?.scaleShort()?.toPlainString() ?: return
-                view?.updateInputValue(newTextValue,forced = true)
+                view?.updateInputValue(newTextValue, forced = true)
                 calculationMode.updateInputAmount(newTextValue)
                 view?.disableInputs()
             }
