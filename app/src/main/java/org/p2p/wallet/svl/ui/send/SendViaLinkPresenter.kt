@@ -109,7 +109,8 @@ class SendViaLinkPresenter(
             val userTokens = userInteractor.getNonZeroUserTokens()
             if (userTokens.isEmpty()) {
                 // we cannot proceed if user tokens are not loaded
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+                view.showUiKitSnackBar(messageResId = R.string.error_general_message)
+                Timber.e(IllegalStateException("SVL: no tokens loaded"))
                 return@launch
             }
 
@@ -123,7 +124,7 @@ class SendViaLinkPresenter(
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                Timber.e(IllegalStateException("Couldn't find user's SOL account!"))
+                Timber.e(IllegalStateException("SVL: Couldn't find user's SOL account!"))
                 return@launch
             }
 
