@@ -7,7 +7,8 @@ import org.p2p.wallet.renbtc.utils.BitcoinAddressValidator
 
 data class SearchTarget(
     val value: String,
-    val keyAppDomainIfUsername: String
+    val keyAppDomainIfUsername: String,
+    val ethAddressEnabled: Boolean
 ) {
 
     companion object {
@@ -61,7 +62,7 @@ data class SearchTarget(
             return when {
                 trimmedUsername.length in 1..USERNAME_MAX_LENGTH -> Validation.USERNAME
                 PublicKeyValidator.isValid(value) -> Validation.SOLANA_TYPE_ADDRESS
-                EthereumUtils.isValidAddress(value) -> Validation.ETHEREUM_TYPE_ADDRESS
+                ethAddressEnabled && EthereumUtils.isValidAddress(value) -> Validation.ETHEREUM_TYPE_ADDRESS
                 BitcoinAddressValidator.isValid(value) -> Validation.BTC_ADDRESS
                 value.isEmpty() -> Validation.EMPTY
                 else -> Validation.INVALID
