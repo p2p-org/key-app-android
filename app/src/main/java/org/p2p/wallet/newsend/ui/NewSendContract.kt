@@ -12,7 +12,6 @@ import java.math.BigDecimal
 interface NewSendContract {
     interface View : MvpView, UiKitSendDetailsWidgetContract {
         fun updateInputValue(textValue: String, forced: Boolean)
-        fun updateInputFraction(newInputFractionLength: Int)
 
         fun showFreeTransactionsInfo()
         fun showTransactionDetails(sendFeeTotal: SendFeeTotal)

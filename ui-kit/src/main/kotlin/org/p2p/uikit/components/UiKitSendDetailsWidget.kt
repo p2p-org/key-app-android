@@ -192,6 +192,7 @@ interface UiKitSendDetailsWidgetContract {
     fun setTokenContainerEnabled(isEnabled: Boolean)
     fun setInputEnabled(isEnabled: Boolean)
     fun showFeeViewVisible(isVisible: Boolean)
+    fun updateInputFraction(newInputFractionLength: Int)
 
     fun restoreSlider()
 }

@@ -1,8 +1,6 @@
 package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 
 import timber.log.Timber
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import org.p2p.core.token.Token
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
@@ -23,9 +21,11 @@ class SetupTokenHandler(
         return newEvent is SendFeatureAction.SetupInitialToken
     }
 
-    override fun handle(newAction: SendFeatureAction): Flow<SendState> = flow {
+    override suspend fun handle(newAction: SendFeatureAction): SendState {
+
         val action = newAction as SendFeatureAction.SetupInitialToken
-        val userTokens = userInteractor.getNonZeroUserTokens().filter { it.mintAddress in supportedTokensMints }
+        val userTokens = userInteractor.getNonZeroUserTokens()
+            .filter { it.mintAddress in supportedTokensMints }
             .ifEmpty {
                 // TODO PWN-7613 also block button as we can't send we do not have funds
                 val usdCet = userInteractor.findTokenDataByAddress(ERC20Tokens.USDC.mintAddress) as Token.Other
@@ -34,8 +34,7 @@ class SetupTokenHandler(
 
         if (userTokens.isEmpty()) {
             val state = SendState.Exception.SnackbarMessage(R.string.error_general_message)
-            emit(state)
-            return@flow
+            return state
         }
 
         val isTokenChangeEnabled = userTokens.size > 1 && action.initialToken == null
@@ -44,9 +43,8 @@ class SetupTokenHandler(
         if (solToken == null) {
             val state = SendState.Exception.SnackbarMessage(R.string.error_general_message)
             Timber.e(IllegalStateException("Couldn't find user's SOL account!"))
-            emit(state)
-            return@flow
+            return state
         }
-        emit(SendState.Event.SetupDefaultFields(token, solToken, isTokenChangeEnabled))
+        return SendState.Event.SetupDefaultFields(token, solToken, isTokenChangeEnabled)
     }
 }

@@ -1,7 +1,9 @@
 package org.p2p.wallet.bridge.send.statemachine
 
 import java.math.BigDecimal
+import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
+import org.p2p.core.wrapper.eth.EthAddress
 
 sealed interface SendFeatureAction {
 
@@ -10,7 +12,12 @@ sealed interface SendFeatureAction {
         val initialToken: Token.Eth,
     ) : SendFeatureAction
 
-    object RefreshFee : SendFeatureAction
+    data class RefreshFee(
+        val userWallet: SolAddress,
+        val recipient: EthAddress,
+        val mintAddress: SolAddress?,
+        val amount: String
+    ) : SendFeatureAction
 
     data class NewToken(
         val token: Token.Eth,

@@ -30,7 +30,7 @@ object BridgeSendModule : InjectionModule {
                 AmountChangeActionHandler(),
                 InitFeatureActionHandler(),
                 NewTokenActionHandler(),
-                RefreshFeeActionHandler(),
+                RefreshFeeActionHandler(get()),
                 SetupTokenHandler(
                     userInteractor = get(),
                     sendUiMapper = get(),

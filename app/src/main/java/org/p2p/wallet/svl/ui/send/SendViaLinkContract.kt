@@ -11,7 +11,6 @@ import org.p2p.wallet.newsend.model.TemporaryAccount
 interface SendViaLinkContract {
     interface View : MvpView, UiKitSendDetailsWidgetContract {
         fun updateInputValue(textValue: String, forced: Boolean)
-        fun updateInputFraction(newInputFractionLength: Int)
 
         fun showFreeTransactionsInfo()
         fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)

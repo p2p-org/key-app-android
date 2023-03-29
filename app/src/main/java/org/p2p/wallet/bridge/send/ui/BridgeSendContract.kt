@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.send.ui
 
 import java.math.BigDecimal
+import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.wallet.common.mvp.MvpPresenter
@@ -10,6 +11,7 @@ interface BridgeSendContract {
     interface View : MvpView {
         fun updateInputValue(textValue: String, forced: Boolean)
         fun disableInputs()
+        fun setBottomButtonText(text: TextContainer?)
     }
 
     interface Presenter : MvpPresenter<View> {

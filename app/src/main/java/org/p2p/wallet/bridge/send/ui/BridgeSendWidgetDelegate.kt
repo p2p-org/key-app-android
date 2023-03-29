@@ -77,6 +77,9 @@ class BridgeSendWidgetDelegate(
         widget.showFeeVisible(isVisible)
     }
 
+    override fun updateInputFraction(newInputFractionLength: Int) {
+        widget.updateFractionLength(newInputFractionLength)
+    }
     override fun restoreSlider() {
         slider.restoreSlider()
     }

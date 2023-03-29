@@ -7,6 +7,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
+import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.uikit.organisms.UiKitToolbar
@@ -24,6 +25,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
@@ -156,5 +158,9 @@ class BridgeSendFragment :
 
     override fun disableInputs() {
         binding.widgetSendDetails.disableInputs()
+    }
+
+    override fun setBottomButtonText(text: TextContainer?) {
+        binding.buttonBottom withTextOrGone text?.getString(requireContext())
     }
 }
