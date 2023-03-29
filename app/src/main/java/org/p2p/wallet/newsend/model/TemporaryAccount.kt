@@ -6,6 +6,8 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.utils.toPublicKey
 
+private const val SEND_LINK_FORMAT = "t.key.app/"
+
 @Parcelize
 data class TemporaryAccount(
     val symbols: String,
@@ -13,14 +15,8 @@ data class TemporaryAccount(
     val keypair: String
 ) : Parcelable {
 
-    companion object {
-        private const val SEND_LINK_FORMAT = "t.key.app/"
-    }
-
     @IgnoredOnParcel
-    val publicKey: PublicKey
-        get() = address.toPublicKey()
+    val publicKey: PublicKey get() = address.toPublicKey()
 
-    fun generateFormattedLink(): String =
-        "$SEND_LINK_FORMAT$symbols"
+    fun generateFormattedLink(): String = "$SEND_LINK_FORMAT$symbols"
 }

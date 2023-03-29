@@ -80,6 +80,7 @@ class Account {
          * @param derivationPath
          * @return Solana account
          */
+        @Throws(AccountCreationFailed::class)
         fun fromBip44Mnemonic(
             words: List<String>,
             walletIndex: Int,
@@ -88,12 +89,13 @@ class Account {
             passphrase: String = emptyString(),
             includeSpaces: Boolean = true
         ): Account {
-            require(derivationPath != DerivationPath.BIP32DEPRECATED) {
-                "Incorrect derivation path for this method: $derivationPath"
-            }
             return try {
+                require(derivationPath != DerivationPath.BIP32DEPRECATED) {
+                    "Incorrect derivation path for this method: $derivationPath"
+                }
+
                 val solanaBip44 = SolanaBip44(walletIndex)
-                val seed = toSeed(
+                val seed: ByteArray = toSeed(
                     words = words,
                     saltPrefix = saltPrefix,
                     passphrase = passphrase,
@@ -115,16 +117,25 @@ class Account {
             val seedPhrase = if (includeSpaces) {
                 Joiner.on(" ").join(words)
             } else {
-                buildString { words.forEach { append(it) } }
+                buildString { words.forEach(::append) }
             }
 
             return toSeedPhrase(seedPhrase, saltPrefix, passphrase)
         }
 
         private fun toSeedPhrase(seedPhrase: String, saltPrefix: String = "mnemonic", passphrase: String): ByteArray {
+            require(seedPhrase.isNotBlank()) {
+                "Passed seed phrase is empty!"
+            }
             val salt = "$saltPrefix$passphrase"
             val watch: Stopwatch = Stopwatch.createStarted()
-            val seed = PBKDF2SHA512.derive(seedPhrase, salt, PBKDF2_ROUNDS, 64)
+
+            val seed = PBKDF2SHA512.derive(
+                seedPhrase,
+                salt,
+                PBKDF2_ROUNDS,
+                64
+            )
             watch.stop()
             return seed
         }
