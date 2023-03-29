@@ -9,6 +9,7 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.SendState.Event.SetupDefaultFields
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
@@ -91,16 +92,16 @@ class BridgeSendPresenter(
         when (newState) {
             is SendState.Exception -> handleException(newState)
             is SendState.Loading -> handleLoading(newState)
-            is SendState.Event -> handleStatic(newState)
+            is SendState.Event -> handleEvent(newState)
         }
     }
 
     private fun handleException(newState: SendState.Exception) {
     }
 
-    private fun handleStatic(newState: SendState.Event) {
-        when (newState) {
-            SendState.Event.SetupDefaultFields -> {
+    private fun handleEvent(state: SendState.Event) {
+        when (state) {
+            is SetupDefaultFields -> {
                 if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat) {
                     val newMode = calculationMode.switchMode()
                     newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
@@ -109,8 +110,19 @@ class BridgeSendPresenter(
                 val newTextValue = sendAmount?.scaleShort()?.toPlainString() ?: return
                 view?.updateInputValue(newTextValue, forced = true)
                 calculationMode.updateInputAmount(newTextValue)
+                setSendToken(state.initToken)
+                widgetDelegate?.setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
+                widgetDelegate?.setFeeLabel(resources.getString(R.string.send_fees))
+                //widgetDelegate?.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
                 view?.disableInputs()
             }
+        }
+    }
+
+    private fun setSendToken(newToken: Token.Active?) {
+        if (newToken != null) {
+            widgetDelegate?.showToken(newToken)
+            calculationMode.updateToken(newToken)
         }
     }
 

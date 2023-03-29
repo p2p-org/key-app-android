@@ -43,6 +43,10 @@ sealed interface SendState {
             val amount: BigDecimal,
         ) : Event
 
-        object SetupDefaultFields : Event
+        data class SetupDefaultFields(
+            val initToken: Token.Active,
+            val solToken: Token.Active,
+            val isTokenChangeEnabled: Boolean
+        ) : Event
     }
 }
