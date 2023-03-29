@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.ui.settings.presenter
 
+import timber.log.Timber
 import java.math.BigDecimal
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
@@ -102,6 +103,7 @@ class SwapContentSettingsMapper(
         val accountFee: SwapSettingFeeBox? = swapFeeBuilder.buildAccountFeeBox(route, solTokenForFee)
         val liquidityFeeList: List<SwapSettingFeeBox>? = swapFeeBuilder.buildLiquidityFeeListBox(route, jupiterTokens)
 
+        Timber.i("SwapContentSettingsMapper: accountFee=$accountFee; liquidityFeeList=${liquidityFeeList?.size}")
         if (accountFee != null) {
             addAccountFeeCell(accountFee)
         }

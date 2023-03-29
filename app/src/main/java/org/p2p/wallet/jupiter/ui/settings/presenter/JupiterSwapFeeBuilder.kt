@@ -1,11 +1,12 @@
 package org.p2p.wallet.jupiter.ui.settings.presenter
 
+import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -34,10 +35,7 @@ class JupiterSwapFeeBuilder(
                 ?: return null
 
         val solTokenRate: BigDecimal? =
-            swapStateManager.getTokenRate(SwapTokenModel.JupiterToken(solToken))
-                .filterIsInstance<SwapRateLoaderState.Loaded>()
-                .firstOrNull()
-                ?.rate
+            loadRateForToken(solToken)?.rate
 
         val feeUsd: BigDecimal? =
             solTokenRate?.let { feeAmountLamports.multiply(it) }
@@ -80,8 +78,8 @@ class JupiterSwapFeeBuilder(
 
     private suspend fun loadRateForToken(token: JupiterSwapToken): SwapRateLoaderState.Loaded? {
         return swapStateManager.getTokenRate(SwapTokenModel.JupiterToken(token))
+            .onEach { Timber.i("JupiterSwapFeeBuilder loading rate for $token") }
             .filterIsInstance<SwapRateLoaderState.Loaded>()
-            .map { it }
             .firstOrNull()
     }
 }
