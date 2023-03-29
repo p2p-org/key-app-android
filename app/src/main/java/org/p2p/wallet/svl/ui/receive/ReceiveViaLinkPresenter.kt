@@ -42,7 +42,7 @@ class ReceiveViaLinkPresenter(
         parseJob?.cancel()
         parseJob = launch {
             try {
-                val state = receiveViaLinkInteractor.parseLink(link)
+                val state = receiveViaLinkInteractor.parseAccountFromLink(link)
                 handleState(state)
             } catch (e: Throwable) {
                 Timber.e(e, "Error parsing link")

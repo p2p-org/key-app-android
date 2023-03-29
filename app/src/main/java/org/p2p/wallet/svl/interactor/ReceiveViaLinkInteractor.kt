@@ -13,8 +13,12 @@ class ReceiveViaLinkInteractor(
     private val userLocalRepository: UserLocalRepository
 ) {
 
-    suspend fun parseLink(link: SendViaLinkWrapper): TemporaryAccountState {
-        val temporaryAccount = SendLinkGenerator.parseTemporaryAccount(link)
+    suspend fun parseAccountFromLink(link: SendViaLinkWrapper): TemporaryAccountState {
+        val temporaryAccount = try {
+            SendLinkGenerator.parseTemporaryAccount(link)
+        } catch (e: Throwable) {
+            return TemporaryAccountState.ParsingFailed
+        }
 
         val tokenAccounts = rpcAccountRepository.getTokenAccountsByOwner(temporaryAccount.publicKey)
         val activeAccount = tokenAccounts.accounts.firstOrNull {
@@ -34,5 +38,6 @@ class ReceiveViaLinkInteractor(
     }
 
     suspend fun receiveTransfer(temporaryAccount: TemporaryAccount) {
+        // todo: implement
     }
 }

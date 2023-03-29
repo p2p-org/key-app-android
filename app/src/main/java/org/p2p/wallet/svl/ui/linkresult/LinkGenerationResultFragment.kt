@@ -1,5 +1,6 @@
 package org.p2p.wallet.svl.ui.linkresult
 
+import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import android.os.Bundle
@@ -37,6 +38,9 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
             renderState()
 
             imageViewClose.setOnClickListener { popBackStackTo(MainFragment::class) }
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                popBackStackTo(MainFragment::class)
+            }
         }
     }
 
