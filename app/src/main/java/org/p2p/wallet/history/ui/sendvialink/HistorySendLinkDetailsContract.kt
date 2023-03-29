@@ -5,14 +5,14 @@ import org.p2p.wallet.common.mvp.MvpView
 
 interface HistorySendLinkDetailsContract {
     sealed interface ViewState {
-        object Loading: ViewState
+        object Loading : ViewState
         data class Content(
             val link: String,
             val iconUrl: String?,
             val formattedAmountUsd: String,
             val formattedTokenAmount: String,
             val formattedDate: String
-        ): ViewState
+        ) : ViewState
     }
 
     interface View : MvpView {
@@ -20,7 +20,5 @@ interface HistorySendLinkDetailsContract {
         fun close()
     }
 
-    interface Presenter : MvpPresenter<View> {
-
-    }
+    interface Presenter : MvpPresenter<View>
 }

@@ -39,7 +39,8 @@ private const val ARG_LINK_UUID = "ARG_LINK_UUID"
 class HistorySendLinkDetailsBottomSheet :
     BaseMvpBottomSheet<HistorySendLinkDetailsContract.View, HistorySendLinkDetailsContract.Presenter>(
         layoutRes = R.layout.dialog_history_send_link_details
-    ), HistorySendLinkDetailsContract.View {
+    ),
+    HistorySendLinkDetailsContract.View {
 
     companion object {
         fun show(fm: FragmentManager, linkUuid: String) {
