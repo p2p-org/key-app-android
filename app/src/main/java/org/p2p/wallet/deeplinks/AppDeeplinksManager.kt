@@ -53,12 +53,11 @@ class AppDeeplinksManager(
                 val data = intent.data ?: return
 
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
-                val isTransferScheme = context.getString(R.string.transfer_app_scheme) == data.scheme
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> {
                         rootListener?.triggerOnboardingDeeplink(data)
                     }
-                    isTransferScheme -> {
+                    context.getString(R.string.transfer_app_scheme) == data.scheme -> {
                         transferPendingDeeplink = data
                     }
                     intercomDeeplinkManager.handleBackgroundDeeplink(data) -> {
@@ -102,9 +101,11 @@ class AppDeeplinksManager(
     fun executeHomePendingDeeplink() {
         pendingIntent?.let { switchToMainTabIfPossible(it) }
         pendingIntent = null
+    }
 
+    fun executeTransferViaLink() {
         transferPendingDeeplink?.let { deeplink ->
-            rootListener?.executeTransferViaLink(deeplink)
+            rootListener?.executeTransferViaLink(deeplink.toString())
         }
     }
 

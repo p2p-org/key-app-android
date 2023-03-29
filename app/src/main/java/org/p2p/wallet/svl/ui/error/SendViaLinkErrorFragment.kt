@@ -16,7 +16,7 @@ import org.p2p.wallet.utils.withArgs
 private const val ARG_ERROR = "ARG_ERROR"
 
 enum class SendViaLinkError {
-    ALREADY_CLAIMED, UNKNOWN
+    ALREADY_CLAIMED, PARSING_FAILED, BROKEN_LINK, UNKNOWN
 }
 
 class SendViaLinkErrorFragment :

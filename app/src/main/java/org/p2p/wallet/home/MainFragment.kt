@@ -130,6 +130,11 @@ class MainFragment :
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        deeplinksManager.executeTransferViaLink()
+    }
+
     private fun doOnCreateAction(action: MainFragmentOnCreateAction) {
         when (action) {
             is MainFragmentOnCreateAction.ShowSnackbar -> {
