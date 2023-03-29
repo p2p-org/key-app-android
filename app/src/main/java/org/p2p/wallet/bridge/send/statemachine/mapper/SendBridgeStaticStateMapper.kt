@@ -6,30 +6,30 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 
 class SendBridgeStaticStateMapper {
 
-    fun updateFee(oldState: SendState.Static, newFee: SendFee.Bridge): SendState.Static {
+    fun updateFee(oldState: SendState.Event, newFee: SendFee.Bridge): SendState.Event {
         return when (oldState) {
-            SendState.Static.Empty -> oldState
-            is SendState.Static.ReadyToSend -> oldState.copy(fee = newFee)
-            is SendState.Static.TokenNotZero -> oldState.copy(fee = newFee)
-            is SendState.Static.TokenZero -> oldState.copy(fee = newFee)
+            SendState.Event.Empty -> oldState
+            is SendState.Event.ReadyToSend -> oldState.copy(fee = newFee)
+            is SendState.Event.TokenNotZero -> oldState.copy(fee = newFee)
+            is SendState.Event.TokenZero -> oldState.copy(fee = newFee)
         }
     }
 
-    fun updateInputAmount(oldState: SendState.Static, newAmount: BigDecimal): SendState.Static {
+    fun updateInputAmount(oldState: SendState.Event, newAmount: BigDecimal): SendState.Event {
         return when (oldState) {
-            SendState.Static.Empty -> oldState
-            is SendState.Static.ReadyToSend -> oldState.copy(amount = newAmount)
-            is SendState.Static.TokenNotZero -> oldState.copy(amount = newAmount)
+            SendState.Event.Empty -> oldState
+            is SendState.Event.ReadyToSend -> oldState.copy(amount = newAmount)
+            is SendState.Event.TokenNotZero -> oldState.copy(amount = newAmount)
 
-            is SendState.Static.TokenZero ->
+            is SendState.Event.TokenZero ->
                 if (oldState.fee == null) {
-                    SendState.Static.TokenNotZero(
+                    SendState.Event.TokenNotZero(
                         token = oldState.token,
                         amount = newAmount,
                         fee = null
                     )
                 } else {
-                    SendState.Static.ReadyToSend(
+                    SendState.Event.ReadyToSend(
                         token = oldState.token,
                         amount = newAmount,
                         fee = oldState.fee

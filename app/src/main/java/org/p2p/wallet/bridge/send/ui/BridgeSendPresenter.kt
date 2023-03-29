@@ -45,14 +45,14 @@ class BridgeSendPresenter(
         when (newState) {
             is SendState.Exception -> handleException(newState)
             is SendState.Loading -> handleLoading(newState)
-            is SendState.Static -> handleStatic(newState)
+            is SendState.Event -> handleStatic(newState)
         }
     }
 
     private fun handleException(newState: SendState.Exception) {
     }
 
-    private fun handleStatic(newState: SendState.Static) {
+    private fun handleStatic(newState: SendState.Event) {
     }
 
     private fun handleLoading(newState: SendState.Loading) {
