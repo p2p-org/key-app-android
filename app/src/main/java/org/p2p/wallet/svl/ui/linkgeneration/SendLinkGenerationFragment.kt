@@ -1,5 +1,6 @@
 package org.p2p.wallet.svl.ui.linkgeneration
 
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
@@ -55,6 +56,10 @@ class SendLinkGenerationFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.generateLink(recipient, token, lamports, isSimulation)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            // do nothing
+        }
     }
 
     override fun showResult(state: LinkGenerationState) {

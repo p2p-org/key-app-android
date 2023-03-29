@@ -3,6 +3,7 @@ package org.p2p.wallet.svl.ui.send
 import android.content.res.Resources
 import timber.log.Timber
 import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
@@ -78,8 +79,10 @@ class SendViaLinkPresenter(
         launch {
             try {
                 sendViaLinkInteractor.initialize()
-            } catch (e: Throwable) {
-                Timber.e(e, "Error initializing send via link")
+            } catch (e: CancellationException) {
+                Timber.d("Initialization was cancelled")
+            } catch (e: Exception) {
+                Timber.e(e)
             }
         }
     }

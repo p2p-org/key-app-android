@@ -9,7 +9,7 @@ import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.utils.emptyString
 
-private const val LINK_ALLOWED_SYMBOLS = "!$'()*+,-.0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~"
+private const val LINK_ALLOWED_SYMBOLS = "!$'()*+-0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~"
 private const val SYMBOLS_COUNT = 16
 
 object SendLinkGenerator {

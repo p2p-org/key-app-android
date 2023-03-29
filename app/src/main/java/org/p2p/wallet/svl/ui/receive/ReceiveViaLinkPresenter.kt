@@ -5,7 +5,6 @@ import timber.log.Timber
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.newsend.interactor.SendViaLinkInteractor
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
@@ -17,10 +16,8 @@ import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.emptyString
 
 class ReceiveViaLinkPresenter(
-    private val link: SendViaLinkWrapper,
     private val context: Context,
-    private val receiveViaLinkInteractor: ReceiveViaLinkInteractor,
-    private val sendViaLinkInteractor: SendViaLinkInteractor
+    private val receiveViaLinkInteractor: ReceiveViaLinkInteractor
 ) : BasePresenter<ReceiveViaLinkContract.View>(),
     ReceiveViaLinkContract.Presenter {
 
