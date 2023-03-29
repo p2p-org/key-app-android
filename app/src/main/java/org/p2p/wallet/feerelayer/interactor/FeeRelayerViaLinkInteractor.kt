@@ -2,7 +2,6 @@ package org.p2p.wallet.feerelayer.interactor
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PreparedTransaction
-import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
@@ -36,7 +35,7 @@ class FeeRelayerViaLinkInteractor(
         transaction.sign(preparedTransaction.signers)
 
         // adding fee payer signature
-        val serializedTransaction =  transaction.serialize().toBase64Instance()
+        val serializedTransaction = transaction.serialize().toBase64Instance()
         val signedTransaction = feeRelayerRepository.signTransaction(serializedTransaction, statistics)
 
         /*

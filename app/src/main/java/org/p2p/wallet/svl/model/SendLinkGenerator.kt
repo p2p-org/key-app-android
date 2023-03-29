@@ -10,7 +10,7 @@ import org.p2p.wallet.utils.emptyString
 
 private const val REGEX_LINK_ALLOWED_SYMBOLS = "[A-Za-z0-9_~-]"
 private const val ASCII_CHARACTERS_COUNT = 128
-private const val SYMBOLS_COUNT = 12
+private const val SYMBOLS_COUNT = 16
 
 object SendLinkGenerator {
 
