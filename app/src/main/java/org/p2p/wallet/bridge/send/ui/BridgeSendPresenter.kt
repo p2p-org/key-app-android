@@ -84,6 +84,10 @@ class BridgeSendPresenter(
     }
 
     private fun handleStatic(newState: SendState.Event) {
+        when (newState) {
+            SendState.Event.SetupDefaultFields -> {
+            }
+        }
     }
 
     private fun handleLoading(newState: SendState.Loading) {

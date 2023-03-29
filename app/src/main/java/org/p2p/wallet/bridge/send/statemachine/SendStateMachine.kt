@@ -72,7 +72,7 @@ class SendStateMachine(
                 flowCollector.emit(wrappedState)
             }
             is Exception -> {
-                val wrappedState = SendState.Exception.Other(
+                val wrappedState = SendState.Exception.Feature(
                     SendFeatureException.FeeLoadingError
                 )
                 flowCollector.emit(wrappedState)

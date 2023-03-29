@@ -22,5 +22,7 @@ sealed interface SendFeatureAction {
 
     data class RestoreSelectedToken(val token: Token.Active) : SendFeatureAction
 
-    object SetupInitialToken : SendFeatureAction
+    data class SetupInitialToken(
+        val initialToken: Token.Eth? = null
+    ) : SendFeatureAction
 }

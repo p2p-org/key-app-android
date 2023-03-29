@@ -13,8 +13,8 @@ sealed interface SendState {
 
     sealed interface Exception : SendState {
 
-        data class Other(
-            val exception: kotlin.Exception,
+        data class SnackbarMessage(
+            val messageResId: Int
         ) : Exception
 
         data class Feature(
@@ -42,5 +42,7 @@ sealed interface SendState {
             val fee: SendFee,
             val amount: BigDecimal,
         ) : Event
+
+        object SetupDefaultFields : Event
     }
 }
