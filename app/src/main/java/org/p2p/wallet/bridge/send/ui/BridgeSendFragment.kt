@@ -138,7 +138,7 @@ class BridgeSendFragment :
 
     private fun showAccountCreationFeeInfo(
         fee: SendSolanaFee,
-        alternativeFeePayerTokens: List<Token.Active>
+        alternativeFeePayerTokens: List<Token.Active>,
     ) {
         val target = SendNoAccountFragment.create(
             tokenSymbol = fee.feePayerSymbol,
@@ -148,5 +148,13 @@ class BridgeSendFragment :
             resultKey = KEY_RESULT_NEW_FEE_PAYER
         )
         replaceFragment(target)
+    }
+
+    override fun updateInputValue(textValue: String, forced: Boolean) {
+        binding.widgetSendDetails.setInput(textValue, forced)
+    }
+
+    override fun disableInputs() {
+        binding.widgetSendDetails.disableInputs()
     }
 }

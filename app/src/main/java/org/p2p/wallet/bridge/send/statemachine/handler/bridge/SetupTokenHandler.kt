@@ -35,5 +35,6 @@ class SetupTokenHandler(
             emit(state)
             return@flow
         }
+        emit(SendState.Event.SetupDefaultFields)
     }
 }

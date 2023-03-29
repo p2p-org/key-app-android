@@ -7,7 +7,10 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
 interface BridgeSendContract {
-    interface View : MvpView
+    interface View : MvpView {
+        fun updateInputValue(textValue: String, forced: Boolean)
+        fun disableInputs()
+    }
 
     interface Presenter : MvpPresenter<View> {
         fun attach(view: UiKitSendDetailsWidgetContract)

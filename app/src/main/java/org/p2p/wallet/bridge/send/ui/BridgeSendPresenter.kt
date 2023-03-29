@@ -1,21 +1,36 @@
 package org.p2p.wallet.bridge.send.ui
 
+import android.content.res.Resources
 import java.math.BigDecimal
 import kotlinx.coroutines.launch
+import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
+import org.p2p.core.utils.scaleShort
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
+import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.newsend.model.CalculationMode
 
 class BridgeSendPresenter(
     private val stateMachine: SendStateMachine,
+    private val resources: Resources,
+    private val newSendAnalytics: NewSendAnalytics,
+    sendModeProvider: SendModeProvider,
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
 
     private var widgetDelegate: UiKitSendDetailsWidgetContract? = null
 
     private var sendToken: Token.Active? = null
     private var sendAmount: BigDecimal? = null
+
+    private val calculationMode = CalculationMode(
+        sendModeProvider = sendModeProvider,
+        lessThenMinString = resources.getString(R.string.common_less_than_minimum)
+    )
 
     override fun attach(view: BridgeSendContract.View) {
         super.attach(view)
@@ -86,6 +101,15 @@ class BridgeSendPresenter(
     private fun handleStatic(newState: SendState.Event) {
         when (newState) {
             SendState.Event.SetupDefaultFields -> {
+                if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat) {
+                    val newMode = calculationMode.switchMode()
+                    newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
+                    widgetDelegate?.showFeeViewVisible(true)
+                }
+                val newTextValue = sendAmount?.scaleShort()?.toPlainString() ?: return
+                view?.updateInputValue(newTextValue,forced = true)
+                calculationMode.updateInputAmount(newTextValue)
+                view?.disableInputs()
             }
         }
     }
