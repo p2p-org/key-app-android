@@ -1,6 +1,6 @@
 package org.p2p.wallet.bridge.send
 
-import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
@@ -34,10 +34,9 @@ class BridgeSendInteractor(
 ) {
 
     suspend fun sendTransaction(
-        source: SolAddress,
         recipient: EthAddress,
         token: Token.Active,
-        amount: BigDecimal
+        amountInLamports: BigInteger
     ): String = withContext(dispatchers.io) {
         val tokenMint = token.mintAddress
         val userPublicKey = tokenKeyProvider.publicKey
@@ -49,10 +48,10 @@ class BridgeSendInteractor(
         val sendTransaction = repository.transferFromSolana(
             userWallet = userWallet,
             feePayer = feePayer,
-            source = source,
+            source = SolAddress(token.publicKey),
             recipient = recipient,
             mint = SolAddress(tokenMint),
-            amount = amount.toPlainString()
+            amount = amountInLamports.toString()
         )
         val userAccount = Account(tokenKeyProvider.keyPair)
 

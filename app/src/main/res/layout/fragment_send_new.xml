@@ -55,6 +55,16 @@
         app:layout_constraintTop_toBottomOf="@id/widgetSendDetails"
         tools:text="Balance account" />
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchDebug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="32dp"
+        android:text="Simulate transaction"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        app:layout_constraintTop_toBottomOf="@id/textViewDebug" />
+
     <org.p2p.uikit.components.UiKitSliderSolidButton
         android:id="@+id/sliderSend"
         android:layout_width="0dp"

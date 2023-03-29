@@ -3,6 +3,7 @@ package org.p2p.wallet.svl.ui.send
 import android.content.res.Resources
 import timber.log.Timber
 import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
@@ -46,7 +47,9 @@ class SendViaLinkPresenter(
     )
     private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
-    private val recipient: TemporaryAccount by unsafeLazy { SendLinkGenerator.createTemporaryAccount() }
+    private val recipient: TemporaryAccount by unsafeLazy {
+        SendLinkGenerator.createTemporaryAccount()
+    }
 
     private var selectedToken: Token.Active? = null
 
@@ -78,9 +81,10 @@ class SendViaLinkPresenter(
         launch {
             try {
                 sendViaLinkInteractor.initialize()
-            } catch (e: Throwable) {
-                Timber.e(e, "Error initializing send via link")
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+            } catch (e: CancellationException) {
+                Timber.d("Initialization was cancelled")
+            } catch (e: Exception) {
+                Timber.e(e)
             }
         }
     }
@@ -105,7 +109,8 @@ class SendViaLinkPresenter(
             val userTokens = userInteractor.getNonZeroUserTokens()
             if (userTokens.isEmpty()) {
                 // we cannot proceed if user tokens are not loaded
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+                view.showUiKitSnackBar(messageResId = R.string.error_general_message)
+                Timber.e(IllegalStateException("SVL: no tokens loaded"))
                 return@launch
             }
 
@@ -119,7 +124,7 @@ class SendViaLinkPresenter(
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                Timber.e(IllegalStateException("Couldn't find user's SOL account!"))
+                Timber.e(IllegalStateException("SVL: Couldn't find user's SOL account!"))
                 return@launch
             }
 

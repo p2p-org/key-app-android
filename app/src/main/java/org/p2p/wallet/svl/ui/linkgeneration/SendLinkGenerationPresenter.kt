@@ -2,6 +2,7 @@ package org.p2p.wallet.svl.ui.linkgeneration
 
 import timber.log.Timber
 import java.math.BigInteger
+import java.util.UUID
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
@@ -19,14 +20,20 @@ class SendLinkGenerationPresenter(
 ) : BasePresenter<SendLinkGenerationContract.View>(),
     SendLinkGenerationContract.Presenter {
 
-    override fun generateLink(recipient: TemporaryAccount, token: Token.Active, lamports: BigInteger) {
+    override fun generateLink(
+        recipient: TemporaryAccount,
+        token: Token.Active,
+        lamports: BigInteger,
+        isSimulation: Boolean
+    ) {
         launch {
             val result = try {
                 val transactionId = sendViaLinkInteractor.sendTransaction(
                     destinationAddress = recipient.publicKey,
                     token = token,
                     lamports = lamports,
-                    memo = BuildConfig.sendViaLinkMemo
+                    memo = BuildConfig.sendViaLinkMemo,
+                    isSimulation = isSimulation
                 )
                 saveLink(recipient, token, lamports)
 
@@ -44,6 +51,7 @@ class SendLinkGenerationPresenter(
     private suspend fun saveLink(link: TemporaryAccount, token: Token.Active, sendAmount: BigInteger) {
         userSendLinksRepository.saveUserLink(
             link = UserSendLink(
+                uuid = UUID.randomUUID().toString(),
                 link = link.generateFormattedLink(),
                 token = token,
                 amount = sendAmount.fromLamports(token.decimals),

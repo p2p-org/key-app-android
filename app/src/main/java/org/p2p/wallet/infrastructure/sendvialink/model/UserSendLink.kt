@@ -4,6 +4,7 @@ import java.math.BigDecimal
 import org.p2p.core.token.Token
 
 data class UserSendLink(
+    val uuid: String,
     val link: String,
     val token: Token,
     val amount: BigDecimal,
