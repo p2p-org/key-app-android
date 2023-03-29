@@ -1,8 +1,11 @@
 package org.p2p.wallet.feerelayer
 
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import retrofit2.Retrofit
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
@@ -16,7 +19,6 @@ import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.feerelayer.FeeRelayerInterceptor
-import retrofit2.Retrofit
 
 object FeeRelayerModule : InjectionModule {
 
@@ -50,9 +52,9 @@ object FeeRelayerModule : InjectionModule {
             )
         }
 
-        factory { FeeRelayerInteractor(get(), get(), get(), get(), get(), get(), get()) }
-        factory { FeeRelayerTopUpInteractor(get(), get(), get(), get(), get(), get()) }
-        factory { FeeRelayerInstructionsInteractor(get(), get(), get(), get()) }
-        single { FeeRelayerSwapInteractor(get(), get(), get(), get(), get(), get(), get()) }
+        factoryOf(::FeeRelayerInteractor)
+        factoryOf(::FeeRelayerTopUpInteractor)
+        factoryOf(::FeeRelayerInstructionsInteractor)
+        singleOf(::FeeRelayerSwapInteractor)
     }
 }
