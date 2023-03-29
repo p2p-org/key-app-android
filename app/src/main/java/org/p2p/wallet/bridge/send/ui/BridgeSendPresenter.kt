@@ -28,9 +28,12 @@ class BridgeSendPresenter(
         widgetDelegate = view
     }
 
-    override fun updateAmount(newAmount: BigDecimal) {
-        sendAmount = newAmount
+    override fun setInitialData(token: Token.Active?, amount: BigDecimal?) {
+        sendToken = token
+        sendAmount = amount
     }
+
+    override fun updateAmount(newAmount: String) {}
 
     override fun updateToken(newToken: Token.Active) {
         sendToken = newToken
@@ -39,6 +42,34 @@ class BridgeSendPresenter(
     override fun detach() {
         super.detach()
         widgetDelegate = null
+    }
+
+    override fun onFeeInfoClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun checkInternetConnection() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onMaxButtonClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onTokenClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun send() {
+        TODO("Not yet implemented")
+    }
+
+    override fun switchCurrencyMode() {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateFeePayerToken(newToken: Token.Active) {
+        TODO("Not yet implemented")
     }
 
     private fun handleState(newState: SendState) {

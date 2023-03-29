@@ -11,7 +11,17 @@ interface BridgeSendContract {
 
     interface Presenter : MvpPresenter<View> {
         fun attach(view: UiKitSendDetailsWidgetContract)
+        fun setInitialData(token: Token.Active?, amount: BigDecimal?)
         fun updateToken(newToken: Token.Active)
-        fun updateAmount(newAmount: BigDecimal)
+        fun updateAmount(newAmount: String)
+        fun updateFeePayerToken(newToken: Token.Active)
+        fun switchCurrencyMode()
+        fun onMaxButtonClicked()
+
+        fun onTokenClicked()
+        fun onFeeInfoClicked()
+
+        fun checkInternetConnection()
+        fun send()
     }
 }

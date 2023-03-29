@@ -10,7 +10,7 @@ class SetupTokenHandler :
     SendActionHandler {
 
     override fun canHandle(newEvent: SendFeatureAction): Boolean {
-        return newEvent == SendFeatureAction.SetupInitialToken
+        return newEvent is SendFeatureAction.SetupInitialToken
     }
 
     override fun handle(newAction: SendFeatureAction): Flow<SendState> = flow {

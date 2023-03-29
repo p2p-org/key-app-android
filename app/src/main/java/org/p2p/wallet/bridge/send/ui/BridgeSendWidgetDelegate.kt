@@ -11,6 +11,20 @@ class BridgeSendWidgetDelegate(
     private val presenter: BridgeSendContract.Presenter
 ) : UiKitSendDetailsWidgetContract {
 
+    init {
+        with(widget) {
+            tokenClickListener = presenter::onTokenClicked
+            amountListener = presenter::updateAmount
+            maxButtonClickListener = presenter::onMaxButtonClicked
+            switchListener = presenter::switchCurrencyMode
+            feeButtonClickListener = presenter::onFeeInfoClicked
+        }
+        with(slider) {
+            onSlideCompleteListener = presenter::checkInternetConnection
+            onSlideCollapseCompleted = presenter::send
+        }
+    }
+
     override fun showToken(token: Token.Active) {
         widget.setToken(token)
     }

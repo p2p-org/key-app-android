@@ -9,14 +9,19 @@ import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
+import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.newsend.ui.SendOpenedFrom
+import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -75,7 +80,73 @@ class BridgeSendFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.textViewDebug.isVisible = BuildConfig.DEBUG
+        with(binding) {
+            toolbar.setupToolbar()
+            if (inputAmount != null) {
+                widgetSendDetails.focusAndShowKeyboard()
+            }
+            textViewDebug.isVisible = BuildConfig.DEBUG
+        }
+        setupResultListeners()
         presenter.attach(widgetDelegate)
+        presenter.setInitialData(initialToken, inputAmount)
+    }
+
+    private fun UiKitToolbar.setupToolbar() {
+        val toolbarTitle = when (val recipient = recipient) {
+            is SearchResult.UsernameFound -> recipient.getFormattedUsername()
+            else -> recipient.formattedAddress
+        }
+        title = toolbarTitle
+        setNavigationOnClickListener { popBackStack() }
+    }
+
+    private fun setupResultListeners() {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SEND,
+            viewLifecycleOwner
+        ) { _, result -> handleFragmentResult(result) }
+
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SEND,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(KEY_RESULT_FEE) && result.containsKey(KEY_RESULT_FEE_PAYER_TOKENS) -> {
+                    val fee = result.getParcelable(KEY_RESULT_FEE, SendSolanaFee::class.java)
+                    val feePayerTokens =
+                        result.getParcelableArrayList(KEY_RESULT_FEE_PAYER_TOKENS, Token.Active::class.java)
+                    if (fee == null || feePayerTokens == null) return@setFragmentResultListener
+                    showAccountCreationFeeInfo(fee, feePayerTokens)
+                }
+            }
+        }
+    }
+
+    private fun handleFragmentResult(result: Bundle) {
+        when {
+            result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
+                val token = result.getParcelable(KEY_RESULT_TOKEN_TO_SEND, Token.Active::class.java)
+                presenter.updateToken(token ?: return)
+            }
+            result.containsKey(KEY_RESULT_NEW_FEE_PAYER) -> {
+                val newFeePayer = result.getParcelable(KEY_RESULT_NEW_FEE_PAYER, Token.Active::class.java)
+                presenter.updateFeePayerToken(newFeePayer ?: return)
+            }
+        }
+    }
+
+    private fun showAccountCreationFeeInfo(
+        fee: SendSolanaFee,
+        alternativeFeePayerTokens: List<Token.Active>
+    ) {
+        val target = SendNoAccountFragment.create(
+            tokenSymbol = fee.feePayerSymbol,
+            approximateFeeUsd = fee.getApproxAccountCreationFeeUsd(withBraces = false).orEmpty(),
+            alternativeFeePayerTokens = alternativeFeePayerTokens,
+            requestKey = KEY_REQUEST_SEND,
+            resultKey = KEY_RESULT_NEW_FEE_PAYER
+        )
+        replaceFragment(target)
     }
 }
