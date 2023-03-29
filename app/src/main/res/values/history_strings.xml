@@ -9,11 +9,11 @@
 
     <string name="transaction_history_unknown">Unknown</string>
     <string name="transaction_history_swap">Swap</string>
-    <string name="transaction_history_swap_pending">Swapping…</string>
+    <string name="transaction_history_swap_pending">Swap…</string>
     <string name="transaction_history_send">Send</string>
     <string name="transaction_history_stake">Stake</string>
     <string name="transaction_history_unstake">Unstake</string>
-    <string name="transaction_history_send_pending">Sending…</string>
+    <string name="transaction_history_send_pending">Send…</string>
     <string name="transaction_history_receive">Receive</string>
     <string name="transaction_history_receive_pending">Receiving…</string>
     <string name="transaction_history_create">Create account</string>
@@ -41,4 +41,7 @@
 
     <string name="transaction_details_status_message_format">There was a problem with the %s, your funds were refunded</string>
 
+    <string name="transaction_history_send_via_link_title">Sent via one-time link</string>
+    <string name="transaction_history_send_via_link_subtitle">%d transactions</string>
+    <string name="transaction_history_send_via_link_info">Unique one-time link works only once</string>
 </resources>

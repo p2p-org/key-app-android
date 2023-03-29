@@ -11,6 +11,9 @@ import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.notification.FcmPushNotificationData
 import org.p2p.wallet.notification.NotificationType
 import timber.log.Timber
+import kotlinx.coroutines.launch
+import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
 import org.p2p.wallet.push_notifications.analytics.PushAnalytics
 import org.p2p.wallet.push_notifications.analytics.PushChannel
 
@@ -21,11 +24,14 @@ class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     private val appNotificationManager: AppNotificationManager by inject()
     private val appsFlyerService: AppsFlyerService by inject()
     private val intercomPushService: IntercomPushService by inject()
+    private val pushNotificationsInteractor: PushNotificationsInteractor by inject()
+    private val appScope: AppScope by inject()
     private val analytics: PushAnalytics by inject()
 
     override fun onNewToken(token: String) {
         appsFlyerService.onNewToken(token)
         intercomPushService.registerForPush(token)
+        appScope.launch { pushNotificationsInteractor.updateDeviceToken() }
         super.onNewToken(token)
     }
 

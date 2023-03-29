@@ -28,6 +28,7 @@ import org.p2p.wallet.jupiter.ui.settings.adapter.SwapSettingsDecorator
 import org.p2p.wallet.jupiter.ui.settings.view.swapCustomSlippageDelegate
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -43,9 +44,7 @@ class JupiterSwapSettingsFragment :
     companion object {
         fun create(stateManagerKey: String): JupiterSwapSettingsFragment =
             JupiterSwapSettingsFragment()
-                .withArgs(
-                    ARG_STATE_MANAGE_KEY to stateManagerKey,
-                )
+                .withArgs(ARG_STATE_MANAGE_KEY to stateManagerKey)
     }
 
     private val binding: FragmentJupiterSwapSettingsBinding by viewBinding()
@@ -56,13 +55,15 @@ class JupiterSwapSettingsFragment :
 
     private val analytics: JupiterSwapSettingsAnalytics by inject()
 
-    private val adapter = CommonAnyCellAdapter(
-        swapCustomSlippageDelegate { presenter.onCustomSlippageChange(it) },
-        sectionHeaderCellDelegate(),
-        baseCellDelegate(inflateListener = { financeBlock ->
-            financeBlock.setOnClickAction { _, item -> presenter.onSettingItemClick(item) }
-        }),
-    )
+    private val adapter by unsafeLazy {
+        CommonAnyCellAdapter(
+            swapCustomSlippageDelegate(presenter::onCustomSlippageChange),
+            sectionHeaderCellDelegate(),
+            baseCellDelegate(inflateListener = { financeBlock ->
+                financeBlock.setOnClickAction { _, item -> presenter.onSettingItemClick(item) }
+            }),
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

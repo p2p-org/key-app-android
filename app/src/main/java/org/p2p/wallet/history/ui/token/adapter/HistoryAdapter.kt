@@ -1,9 +1,9 @@
 package org.p2p.wallet.history.ui.token.adapter
 
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
-import androidx.recyclerview.widget.ListAdapter
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.recycler.RoundedItem
 import org.p2p.uikit.utils.recycler.RoundedItemAdapterInterface
@@ -32,7 +32,7 @@ class HistoryAdapter(
     private val glideManager: GlideManager,
     private val onHistoryItemClicked: (HistoryItem) -> Unit,
     private val onRetryClicked: () -> Unit,
-) : ListAdapter<HistoryItem, HistoryTransactionViewHolder>(HistoryItemComparataor), RoundedItemAdapterInterface {
+) : ListAdapter<HistoryItem, HistoryTransactionViewHolder>(HistoryItemComparator), RoundedItemAdapterInterface {
 
     private val pagingController = HistoryAdapterPagingController(this)
 
@@ -107,11 +107,11 @@ class HistoryAdapter(
         }
     }
 
-    object HistoryItemComparataor : DiffUtil.ItemCallback<HistoryItem>() {
+    private object HistoryItemComparator : DiffUtil.ItemCallback<HistoryItem>() {
         override fun areContentsTheSame(oldItem: HistoryItem, newItem: HistoryItem): Boolean {
             return when {
                 oldItem is TransactionItem && newItem is TransactionItem ->
-                    oldItem.transactionId == newItem.transactionId
+                    oldItem.transactionId == newItem.transactionId && oldItem.statusIcon == newItem.statusIcon
                 oldItem is DateItem && newItem is DateItem ->
                     oldItem.date.isSameAs(newItem.date)
                 else ->
@@ -120,7 +120,7 @@ class HistoryAdapter(
         }
 
         override fun areItemsTheSame(oldItem: HistoryItem, newItem: HistoryItem): Boolean {
-            return oldItem.transactionId == newItem.transactionId
+            return oldItem.transactionId == newItem.transactionId && oldItem.date.isSameAs(newItem.date)
         }
     }
 
@@ -128,7 +128,7 @@ class HistoryAdapter(
         pagingController.setPagingState(newState)
     }
 
-    fun isEmpty() = currentList.isEmpty()
+    fun isEmpty(): Boolean = currentList.isEmpty()
 
     override fun getRoundedItem(adapterPosition: Int): RoundedItem? {
         val position = if (adapterPosition == currentList.size && needToShowAdditionalItem()) {

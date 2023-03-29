@@ -9,7 +9,7 @@ import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 
 class HomeElementItemMapper(
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
 ) {
 
     suspend fun mapToItems(
@@ -17,7 +17,7 @@ class HomeElementItemMapper(
         ethereumTokens: List<Token.Eth>,
         ethereumBundleStatuses: Map<String, ClaimStatus?>,
         visibilityState: VisibilityState,
-        isZerosHidden: Boolean
+        isZerosHidden: Boolean,
     ): List<HomeElementItem> = withContext(dispatchers.io) {
         val groups: Map<Boolean, List<Token.Active>> = tokens.groupBy { it.isDefinitelyHidden(isZerosHidden) }
 
@@ -28,7 +28,7 @@ class HomeElementItemMapper(
 
         result += ethereumTokens.map {
             val claimStatus = ethereumBundleStatuses[it.publicKey]
-            HomeElementItem.Claim(it, isClaimEnabled = claimStatus?.canBeClaimed() == true)
+            HomeElementItem.Claim(it, isClaimEnabled = claimStatus?.canBeClaimed() ?: true)
         }
 
         result += visibleTokens.map { HomeElementItem.Shown(it) }

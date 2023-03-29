@@ -9,7 +9,7 @@ import org.p2p.wallet.utils.toPx
 class SwapRateTickerMapper {
 
     fun mapRateLoaded(newState: SwapRateTickerState.Shown): TextViewCellModel =
-        TextViewCellModel.Raw(TextContainer(newState.newRate))
+        TextViewCellModel.Raw(TextContainer(newState.formattedNewRate))
 
     fun mapRateSkeleton(newState: SwapRateTickerState.Loading): TextViewCellModel =
         TextViewCellModel.Skeleton(

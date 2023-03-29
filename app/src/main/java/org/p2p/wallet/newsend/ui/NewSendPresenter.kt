@@ -22,6 +22,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
+import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
@@ -45,7 +46,6 @@ import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
 
@@ -59,7 +59,8 @@ class NewSendPresenter(
     private val connectionStateProvider: ConnectionStateProvider,
     private val newSendAnalytics: NewSendAnalytics,
     private val appScope: AppScope,
-    sendModeProvider: SendModeProvider
+    sendModeProvider: SendModeProvider,
+    private val historyInteractor: HistoryInteractor
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private var token: Token.Active? by observable(null) { _, _, newToken ->
@@ -389,8 +390,13 @@ class NewSendPresenter(
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
                 userInteractor.addRecipient(recipientAddress, transactionDate)
-                val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
+                val transactionState = TransactionState.SendSuccess(buildTransaction(result, token), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
+                historyInteractor.addPendingTransaction(
+                    txSignature = result,
+                    transaction = buildTransaction(result, token),
+                    mintAddress = token.mintAddress
+                )
             } catch (e: Throwable) {
                 Timber.e(e)
                 val message = e.getErrorMessage { res -> resources.getString(res) }
@@ -438,7 +444,7 @@ class NewSendPresenter(
         view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
-    private fun buildTransaction(transactionId: String): HistoryTransaction =
+    private fun buildTransaction(transactionId: String, token: Token.Active): HistoryTransaction =
         RpcHistoryTransaction.Transfer(
             signature = transactionId,
             date = ZonedDateTime.now(),
@@ -450,8 +456,8 @@ class NewSendPresenter(
             counterPartyUsername = recipientAddress.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
-            iconUrl = emptyString(),
-            symbol = emptyString()
+            iconUrl = token.iconUrl,
+            symbol = token.tokenSymbol
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {

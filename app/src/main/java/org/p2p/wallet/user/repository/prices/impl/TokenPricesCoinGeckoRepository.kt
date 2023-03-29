@@ -3,6 +3,8 @@ package org.p2p.wallet.user.repository.prices.impl
 import retrofit2.HttpException
 import timber.log.Timber
 import kotlinx.coroutines.withContext
+import org.p2p.core.model.TokenPriceWithMark
+import org.p2p.core.pricecache.PriceCacheRepository
 import org.p2p.wallet.home.api.CoinGeckoApi
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -11,6 +13,7 @@ import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
 class TokenPricesCoinGeckoRepository(
     private val coinGeckoApi: CoinGeckoApi,
+    private val priceCacheRepository: PriceCacheRepository,
     private val dispatchers: CoroutineDispatchers
 ) : TokenPricesRemoteRepository {
 
@@ -36,19 +39,23 @@ class TokenPricesCoinGeckoRepository(
 
     private suspend fun loadPrices(tokenIds: List<TokenId>, targetCurrencySymbol: String): List<TokenPrice> =
         withContext(dispatchers.io) {
-            val tokenIdsForRequest = tokenIds.joinToString(",") { it.id }
-            try {
-                coinGeckoApi.getTokenPrices(
-                    tokenIds = tokenIdsForRequest,
-                    targetCurrency = targetCurrencySymbol.lowercase()
-                )
-                    .map { TokenPrice(tokenId = it.id, price = it.currentPrice) }
-            } catch (httpException: HttpException) {
-                val errorCode = httpException.code()
-                if (errorCode == 429 || errorCode == 403) {
-                    Timber.e(RequestRateLimitMet(httpException))
+            val filteredTokenIds = priceCacheRepository.filterKeysForExpiredPrices(tokenIds.map { it.id })
+            if (filteredTokenIds.isNotEmpty()) {
+                val tokenIdsForRequest = tokenIds.joinToString(",") { it.id }
+                try {
+                    val response = coinGeckoApi.getTokenPrices(
+                        tokenIds = tokenIdsForRequest,
+                        targetCurrency = targetCurrencySymbol.lowercase()
+                    ).associate { it.id to TokenPriceWithMark(it.currentPrice) }
+                    priceCacheRepository.mergeCache(response)
+                } catch (httpException: HttpException) {
+                    val errorCode = httpException.code()
+                    if (errorCode == 429 || errorCode == 403) {
+                        Timber.e(RequestRateLimitMet(httpException))
+                    }
+                    throw httpException
                 }
-                throw httpException
             }
+            priceCacheRepository.getPricesList().map { TokenPrice(tokenId = it.key, price = it.value.priceInUsd) }
         }
 }

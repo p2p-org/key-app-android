@@ -8,6 +8,7 @@ import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
@@ -19,8 +20,8 @@ import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
-import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.toPublicKey
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
@@ -69,7 +70,7 @@ class UserInteractor(
         return allTokens
     }
 
-    suspend fun getBalance(address: Base58String): Long = rpcRepository.getBalance(address.base58Value)
+    suspend fun getBalance(address: PublicKey): Long = rpcRepository.getBalance(address)
 
     suspend fun loadAllTokensData() {
         val file = externalStorageRepository.readJsonFile(TOKENS_FILE_NAME)
@@ -111,7 +112,7 @@ class UserInteractor(
     }
 
     suspend fun loadUserTokensAndUpdateLocal(fetchPrices: Boolean): List<Token.Active> {
-        val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey, fetchPrices)
+        val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey(), fetchPrices)
         val cachedTokens = mainLocalRepository.getUserTokens()
 
         updateLocalTokens(cachedTokens, newTokens)
@@ -162,11 +163,7 @@ class UserInteractor(
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
-    fun findTokenDataByAddress(mintAddress: String): Token? {
-        val tokenData = userLocalRepository.findTokenData(mintAddress)
-        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.coingeckoId) }
-        return tokenData?.let { TokenConverter.fromNetwork(it, price) }
-    }
+    fun findTokenDataByAddress(mintAddress: String): Token? = userLocalRepository.findTokenByMint(mintAddress)
 
     suspend fun addRecipient(searchResult: SearchResult, date: Date) {
         recipientsLocalRepository.addRecipient(searchResult, date)

@@ -38,6 +38,8 @@ import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
+import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
+import org.p2p.wallet.svl.ui.receive.SendViaLinkReceiveFundsBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
@@ -174,6 +176,10 @@ class RootActivity :
         }
 
         onboardingRootFragment.triggerOnboadringDeeplink(deeplink)
+    }
+
+    override fun executeTransferViaLink(deeplink: String) {
+        SendViaLinkReceiveFundsBottomSheet.show(supportFragmentManager, SendViaLinkWrapper(deeplink))
     }
 
     override fun popBackStackToMain() {

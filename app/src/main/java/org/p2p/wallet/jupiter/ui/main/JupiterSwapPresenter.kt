@@ -1,6 +1,7 @@
 package org.p2p.wallet.jupiter.ui.main
 
 import android.view.Gravity
+import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Date
@@ -23,6 +24,10 @@ import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
@@ -43,6 +48,7 @@ import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
@@ -63,7 +69,8 @@ class JupiterSwapPresenter(
     private val transactionManager: TransactionManager,
     private val rateTickerManager: SwapRateTickerManager,
     private val dispatchers: CoroutineDispatchers,
-    private val userLocalRepository: UserLocalRepository
+    private val userLocalRepository: UserLocalRepository,
+    private val historyInteractor: HistoryInteractor
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true
@@ -181,6 +188,13 @@ class JupiterSwapPresenter(
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                     val transactionState = TransactionState.JupiterSwapSuccess
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
+
+                    val pendingTransaction = buildPendingTransaction(result, currentState)
+                    historyInteractor.addPendingTransaction(
+                        txSignature = result.signature,
+                        mintAddress = currentState.tokenA.mintAddress.base58Value,
+                        transaction = pendingTransaction
+                    )
                     view?.showDefaultSlider()
                 }
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
@@ -206,7 +220,8 @@ class JupiterSwapPresenter(
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
             is SwapState.RoutesLoaded,
-            is SwapState.LoadingTransaction -> swapInteractor.getTokenAAmount(featureState)
+            is SwapState.LoadingTransaction,
+            -> swapInteractor.getTokenAAmount(featureState)
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
             null -> null
         }
@@ -240,13 +255,15 @@ class JupiterSwapPresenter(
     private fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
         return when (featureState) {
             null,
-            SwapState.InitialLoading -> false
+            SwapState.InitialLoading,
+            -> false
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction,
             is SwapState.SwapLoaded,
             is SwapState.TokenANotZero,
             is SwapState.RoutesLoaded,
-            is SwapState.TokenAZero -> true
+            is SwapState.TokenAZero,
+            -> true
             is SwapState.SwapException ->
                 isChangeTokenScreenAvailable(featureState.previousFeatureState)
         }
@@ -319,11 +336,12 @@ class JupiterSwapPresenter(
     }
 
     private fun handleRateTickerChanges(state: SwapRateTickerState) {
-        when (state) {
-            is SwapRateTickerState.Shown -> view?.setRatioState(rateTickerMapper.mapRateLoaded(state))
-            is SwapRateTickerState.Loading -> view?.setRatioState(rateTickerMapper.mapRateSkeleton(state))
-            is SwapRateTickerState.Hidden -> view?.setRatioState(state = null)
+        val ratioState: TextViewCellModel? = when (state) {
+            is SwapRateTickerState.Shown -> rateTickerMapper.mapRateLoaded(state)
+            is SwapRateTickerState.Loading -> rateTickerMapper.mapRateSkeleton(state)
+            is SwapRateTickerState.Hidden -> null
         }
+        view?.setRatioState(ratioState)
     }
 
     private fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
@@ -633,5 +651,27 @@ class JupiterSwapPresenter(
 
     private fun SwapState.getTokensPair(): Pair<SwapTokenModel?, SwapTokenModel?> {
         return swapInteractor.getSwapTokenPair(this)
+    }
+
+    private fun buildPendingTransaction(
+        result: JupiterSwapInteractor.JupiterSwapTokensResult.Success,
+        currentState: SwapState.SwapLoaded,
+    ): RpcHistoryTransaction.Swap {
+        return RpcHistoryTransaction.Swap(
+            signature = result.signature,
+            date = ZonedDateTime.now(),
+            blockNumber = -1,
+            status = HistoryTransactionStatus.PENDING,
+            type = RpcHistoryTransactionType.SWAP,
+            sourceSymbol = currentState.tokenA.tokenSymbol,
+            sourceAddress = currentState.tokenA.mintAddress.toString(),
+            fees = emptyList(),
+            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            sentAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
+            sourceIconUrl = currentState.tokenA.iconUrl,
+            destinationSymbol = currentState.tokenB.tokenSymbol,
+            destinationIconUrl = currentState.tokenB.iconUrl,
+            destinationAddress = currentState.tokenB.mintAddress.toString()
+        )
     }
 }
