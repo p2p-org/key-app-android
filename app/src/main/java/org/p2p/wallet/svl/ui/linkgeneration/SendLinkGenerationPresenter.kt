@@ -2,6 +2,7 @@ package org.p2p.wallet.svl.ui.linkgeneration
 
 import timber.log.Timber
 import java.math.BigInteger
+import java.util.UUID
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
@@ -44,6 +45,7 @@ class SendLinkGenerationPresenter(
     private suspend fun saveLink(link: TemporaryAccount, token: Token.Active, sendAmount: BigInteger) {
         userSendLinksRepository.saveUserLink(
             link = UserSendLink(
+                uuid = UUID.randomUUID().toString(),
                 link = link.generateFormattedLink(),
                 token = token,
                 amount = sendAmount.fromLamports(token.decimals),

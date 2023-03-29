@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@drawable/bg_rounded_transparent_8"
+    android:backgroundTint="@color/backgroundPrimary">
+
+    <View
+        android:id="@+id/viewPointer"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="16dp"
+        android:gravity="center"
+        android:text="@string/transaction_history_send_via_link_title"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewPointer" />
+
+    <TextView
+        android:id="@+id/textViewSubtitle"
+        style="@style/UiKit.TextAppearance.Regular.Text3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        tools:text="Today @ 15:28" />
+
+    <LinearLayout
+        android:id="@+id/layoutTransactionDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/bg_smoke"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingVertical="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitle">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewSecondIcon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:duplicateParentState="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/textViewAmountUsd"
+            style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textColor="@color/text_night"
+            tools:text="$ 571.95" />
+
+        <TextView
+            android:id="@+id/textViewAmountTokens"
+            style="@style/UiKit.TextAppearance.Regular.Text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:textColor="@color/text_mountain"
+            tools:text="1 Wth" />
+
+    </LinearLayout>
+
+    <org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
+        android:id="@+id/financeBlockLinkValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/progressStateTransaction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutTransactionDetails" />
+
+    <LinearLayout
+        android:id="@+id/progressStateTransaction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_rounded_solid_smoke_14"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/buttonShare"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/imageViewLinkDetails"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginVertical="12dp"
+            android:layout_marginStart="16dp"
+            android:padding="12dp"
+            app:srcCompat="@drawable/ic_info_solid"
+            app:tint="@color/icons_night" />
+
+        <TextView
+            style="@style/UiKit.TextAppearance.Regular.Text4"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="4dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_vertical"
+            android:text="The one-time link can be used to send funds to anyone without needing an address. The funds can be claimed by anyone with a link." />
+    </LinearLayout>
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonShare"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/common_share"
+        android:textColor="@color/snow"
+        app:iconSize="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonDone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonDone"
+        style="@style/UiKit.Components.Button.Large.Text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:text="@string/common_done"
+        android:textColor="@color/text_night"
+        app:iconSize="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
