@@ -5,7 +5,7 @@ import org.p2p.solanaj.utils.crypto.Base64String
 
 data class BridgeSendTransactionResponse(
     @SerializedName("transaction")
-    val transaction: Base64String,
+    val transaction: String,
     @SerializedName("message")
     val message: String?
 )
