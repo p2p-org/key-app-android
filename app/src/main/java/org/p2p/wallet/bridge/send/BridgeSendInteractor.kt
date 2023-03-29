@@ -74,7 +74,7 @@ class BridgeSendInteractor(
             currency = token.mintAddress
         )
         return feeRelayerRepository.signTransaction(
-            transaction = signedTransaction.transaction.base58Value.toBase64Instance(),
+            transaction = signedTransaction.transaction.decodeToBytes().toBase64Instance(),
             statistics = statistics
         )
     }

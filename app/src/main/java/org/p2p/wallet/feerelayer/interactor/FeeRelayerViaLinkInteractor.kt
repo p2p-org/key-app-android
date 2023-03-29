@@ -36,7 +36,7 @@ class FeeRelayerViaLinkInteractor(
         transaction.sign(preparedTransaction.signers)
 
         // adding fee payer signature
-        val serializedTransaction = Base64Utils.encode(transaction.serialize()).toBase64Instance()
+        val serializedTransaction =  transaction.serialize().toBase64Instance()
         val signedTransaction = feeRelayerRepository.signTransaction(serializedTransaction, statistics)
 
         /*
