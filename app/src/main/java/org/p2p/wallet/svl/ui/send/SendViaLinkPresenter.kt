@@ -46,7 +46,9 @@ class SendViaLinkPresenter(
     )
     private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
-    private val recipient: TemporaryAccount by unsafeLazy { SendLinkGenerator.createTemporaryAccount() }
+    private val recipient: TemporaryAccount by unsafeLazy {
+        SendLinkGenerator.createTemporaryAccount()
+    }
 
     private var selectedToken: Token.Active? = null
 
