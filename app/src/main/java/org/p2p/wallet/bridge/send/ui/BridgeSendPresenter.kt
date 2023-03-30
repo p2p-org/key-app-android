@@ -4,6 +4,7 @@ import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
@@ -13,8 +14,8 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
-import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -27,10 +28,10 @@ import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
-import org.p2p.wallet.bridge.send.statemachine.fee
 import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
+import org.p2p.wallet.bridge.send.statemachine.token
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -74,17 +75,11 @@ class BridgeSendPresenter(
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
 
     private var currentState: SendState = SendState.Static.Empty
-    private val sendUiMapper = SendUiMapper()
     private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
-    private val selectedToken: Token.Active
-        get() = currentState.lastStaticState.bridgeToken?.token ?: initialData.initialToken.token
-    private val initialAmount: BigDecimal?
-        get() = initialData.initialAmount
 
     override fun attach(view: BridgeSendContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
-
         initialize(view)
         stateMachine.observe()
             .onEach {
@@ -103,7 +98,6 @@ class BridgeSendPresenter(
     }
 
     private fun handleStaticState(state: SendState.Static) {
-        view?.setInputColor(R.color.text_night)
         when (state) {
             SendState.Static.Empty -> {}
             is SendState.Static.ReadyToSend -> {
@@ -138,11 +132,10 @@ class BridgeSendPresenter(
             }
             is SendState.Static.Initialize -> {
                 view?.setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
-                initialData.initialAmount?.let { inputAmount ->
-                    setupDefaultFields(inputAmount)
-                }
             }
         }
+        view?.setInputColor(R.color.text_night)
+        showMaxButtonIfNeeded()
     }
 
     private fun handleLoadingState(state: SendState.Loading) {
@@ -204,22 +197,8 @@ class BridgeSendPresenter(
             view.setSwitchLabel(switchSymbol)
             view.setMainAmountLabel(mainSymbol)
         }
-
-        if (token != null) {
-            restoreSelectedToken(view, token!!)
-        } else {
-            setupInitialToken(view)
-        }
-    }
-
-    private fun restoreSelectedToken(view: BridgeSendContract.View, token: Token.Active) {
-        launch {
-            view.showToken(token)
-            calculationMode.updateToken(token)
-
-            val userTokens = userInteractor.getNonZeroUserTokens().filter { it.mintAddress in supportedTokensMints }
-            val isTokenChangeEnabled = userTokens.size > 1
-            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
+        initialData.initialAmount?.let { inputAmount ->
+            setupDefaultFields(inputAmount)
         }
     }
 
@@ -239,7 +218,7 @@ class BridgeSendPresenter(
         feeRelayerState: FeeRelayerState.UpdateFee,
         view: BridgeSendContract.View
     ) {
-        val sourceToken = requireToken()
+        /*val sourceToken = requireToken()
         val total = feeRelayerManager.buildTotalFee(
             sourceToken = sourceToken,
             calculationMode = calculationMode
@@ -250,12 +229,13 @@ class BridgeSendPresenter(
         updateButton(sourceToken, feeRelayerState)
 
         // FIXME: only for debug needs, remove after release
-        if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
+        if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)*/
     }
 
     override fun onTokenClicked() {
         newSendAnalytics.logTokenSelectionClicked()
         launch {
+            val token = currentState.lastStaticState.bridgeToken?.token
             val tokens = userInteractor.getUserTokens().filter { it.mintAddress in supportedTokensMints }
             val result = tokens.filterNot(Token.Active::isZero)
             view?.showTokenSelection(tokens = result, selectedToken = token)
@@ -296,8 +276,7 @@ class BridgeSendPresenter(
     }
 
     override fun onMaxButtonClicked() {
-        val token = token ?: return
-        val totalAvailable = calculationMode.getMaxAvailableAmount() ?: return
+        val token = currentState.lastStaticState.bridgeToken?.token ?: return
         stateMachine.newAction(SendFeatureAction.MaxAmount)
         newSendAnalytics.setMaxButtonClicked(isClicked = true)
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
@@ -305,7 +284,7 @@ class BridgeSendPresenter(
     }
 
     override fun onFeeInfoClicked() {
-        val currentState = feeRelayerManager.getState()
+        /*val currentState = feeRelayerManager.getState()
         if (currentState !is FeeRelayerState.UpdateFee) return
 
         val solanaFee = currentState.solanaFee
@@ -318,7 +297,7 @@ class BridgeSendPresenter(
                 calculationMode = calculationMode
             )
             view?.showTransactionDetails(total)
-        }
+        }*/
     }
 
     override fun checkInternetConnection() {
@@ -335,7 +314,7 @@ class BridgeSendPresenter(
     }
 
     override fun send() {
-        val token = token ?: error("Token cannot be null!")
+        val token = currentState.lastStaticState.bridgeToken?.token ?: error("Token cannot be null!")
 
         val address = initialData.recipient
         val currentAmount = calculationMode.getCurrentAmount()
@@ -347,11 +326,6 @@ class BridgeSendPresenter(
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
 
-        val total = feeRelayerManager.buildTotalFee(
-            sourceToken = requireToken(),
-            calculationMode = calculationMode
-        )
-
         appScope.launch {
             val transactionDate = Date()
             try {
@@ -361,7 +335,7 @@ class BridgeSendPresenter(
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
                     recipient = recipientAddress.nicknameOrAddress(),
-                    totalFees = total.getFeesCombined(checkFeePayer = false)?.let { listOf(it) }
+                    totalFees = null // todo
                 )
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)
@@ -384,7 +358,7 @@ class BridgeSendPresenter(
     }
 
     private fun showMaxButtonIfNeeded() {
-        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(feeRelayerManager.getMinRentExemption())
+        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(BigInteger.ZERO)
         view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
@@ -404,50 +378,17 @@ class BridgeSendPresenter(
             symbol = emptyString()
         )
 
-    private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {
-        val sendButton = NewSendButtonState(
-            sourceToken = sourceToken,
-            searchResult = recipientAddress,
-            calculationMode = calculationMode,
-            feeRelayerState = feeRelayerState,
-            minRentExemption = feeRelayerManager.getMinRentExemption(),
-            resources = resources
-        )
-
-        when (val state = sendButton.currentState) {
-            is NewSendButtonState.State.Disabled -> {
-                view?.setBottomButtonText(state.textContainer)
-                view?.setSliderText(null)
-                view?.setInputColor(state.totalAmountTextColor)
-            }
-            is NewSendButtonState.State.Enabled -> {
-                view?.setSliderText(resources.getString(state.textResId, state.value))
-                view?.setBottomButtonText(null)
-                view?.setInputColor(state.totalAmountTextColor)
-            }
-        }
-    }
-
-    private fun buildDebugInfo(solanaFee: SendSolanaFee?) {
-        launch {
-            val debugInfo = feeRelayerManager.buildDebugInfo(solanaFee)
-            view?.showDebugInfo(debugInfo)
-        }
-    }
-
     private fun isInternetConnectionEnabled(): Boolean =
         connectionStateProvider.hasConnection()
 
-    private fun requireToken(): Token.Active =
-        token ?: error("Source token cannot be empty!")
 
     private fun logSendClicked(token: Token.Active, amountInToken: String, amountInUsd: String) {
-        val solanaFee = (feeRelayerManager.getState() as? FeeRelayerState.UpdateFee)?.solanaFee
+        val solanaFee = true // todo
         newSendAnalytics.logSendConfirmButtonClicked(
             tokenName = token.tokenName,
             amountInToken = amountInToken,
             amountInUsd = amountInUsd,
-            isFeeFree = solanaFee?.isTransactionFree ?: false,
+            isFeeFree = solanaFee,
             mode = calculationMode.getCurrencyMode()
         )
     }

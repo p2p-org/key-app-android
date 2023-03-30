@@ -3,6 +3,7 @@ package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import org.p2p.core.token.Token
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.bridge.send.mapper.SendUiMapper
@@ -10,6 +11,7 @@ import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -50,5 +52,9 @@ class InitFeatureActionHandler(
             SendState.Static.TokenNotZero(initialToken, initialData.initialAmount)
         }
         emit(initialState)
-    }.flatMapMerge { feeLoader.updateFee(lastStaticState) }
+    }.flatMapMerge { state ->
+        if (state.lastStaticState is SendState.Static.TokenZero)
+            feeLoader.updateFee(state.lastStaticState)
+        else flowOf(state)
+    }
 }

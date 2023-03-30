@@ -27,22 +27,6 @@ class SendBridgeFeeLoader constructor(
     private val initialData: SendInitialData.Bridge,
 ) {
 
-    fun updateFeeIfNeed(
-        lastStaticState: SendState.Static
-    ): Flow<SendState> = flow {
-
-        val token = lastStaticState.bridgeToken ?: return@flow
-        val oldFee = lastStaticState.bridgeFee
-
-        val isNeedRefresh = !validator.isFeeValid(oldFee)
-
-        if (isNeedRefresh) {
-            emit(SendState.Loading.Fee(lastStaticState))
-            val fee = loadFee(token, lastStaticState.inputAmount.orZero())
-            emit(mapper.updateFee(lastStaticState, fee))
-        }
-    }
-
     fun updateFee(
         lastStaticState: SendState.Static
     ): Flow<SendState> = flow {
@@ -54,7 +38,7 @@ class SendBridgeFeeLoader constructor(
         emit(mapper.updateFee(lastStaticState, fee))
     }
 
-    suspend fun loadFee(
+    private suspend fun loadFee(
         token: SendToken.Bridge,
         amount: BigDecimal,
     ): SendFee.Bridge {
