@@ -6,7 +6,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Date
 import java.util.UUID
-import kotlin.properties.Delegates
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -14,6 +13,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
+import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -22,6 +22,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.mapper.SendUiMapper
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
+import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
@@ -125,19 +126,45 @@ class BridgeSendPresenter(
 
     private fun handleLoadingState(state: SendState.Loading) {
         handleStaticState(state.lastStaticState)
-        when (state) {
-            is SendState.Loading.Fee -> {
-                view?.setFeeLabel(resources.getString(R.string.send_fees))
-                view?.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
+        view?.apply {
+            when (state) {
+                is SendState.Loading.Fee -> {
+                    showFeeViewVisible(isVisible = true)
+                    setFeeLabel(resources.getString(R.string.send_fees))
+                    showFeeViewLoading(isLoading = false)
+                    setSliderText(null)
+                    setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
+                }
             }
         }
     }
 
     private fun handleErrorState(state: SendState.Exception) {
         handleStaticState(state.lastStaticState)
-        when (state) {
-            is SendState.Exception.Feature -> TODO()
-            is SendState.Exception.Other -> TODO()
+        view?.apply {
+            when (state) {
+                is SendState.Exception.Feature -> {
+                    val isLoadingFeeError = state.featureException is SendFeatureException.FeeLoadingError
+                    setFeeLabel(resources.getString(R.string.send_fees))
+                    showFeeViewVisible(isVisible = !isLoadingFeeError)
+                    showFeeViewLoading(isLoading = false)
+                    setSliderText(null)
+                    val errorTextRes = if (isLoadingFeeError) {
+                        R.string.send_cant_calculate_fees_error
+                    } else {
+                        R.string.error_insufficient_funds
+                    }
+                    setBottomButtonText(TextContainer.Res(errorTextRes))
+                }
+                is SendState.Exception.Other -> if (state.exception.isConnectionError()) {
+                    view?.showUiKitSnackBar(
+                        message = resources.getString(R.string.error_no_internet_message),
+                        actionButtonResId = R.string.common_hide
+                    )
+                } else {
+                    view?.showUiKitSnackBar(message = state.exception.message)
+                }
+            }
         }
     }
 
