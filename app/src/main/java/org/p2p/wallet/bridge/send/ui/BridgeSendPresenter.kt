@@ -8,11 +8,14 @@ import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
+import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -20,6 +23,11 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.mapper.SendUiMapper
+import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
+import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
+import org.p2p.wallet.bridge.send.statemachine.bridgeToken
+import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
@@ -60,11 +68,69 @@ class BridgeSendPresenter(
     private val connectionStateProvider: ConnectionStateProvider,
     private val newSendAnalytics: NewSendAnalytics,
     private val appScope: AppScope,
-    sendModeProvider: SendModeProvider
+    sendModeProvider: SendModeProvider,
+
+    private val initialData: SendInitialData.Bridge,
+    private val stateMachine: SendStateMachine,
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
 
     private val sendUiMapper = SendUiMapper()
     private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
+
+    init {
+        stateMachine.observe()
+            .onEach { handleState(it) }
+            .launchIn(this)
+    }
+
+    private fun handleState(state: SendState) {
+        when (state) {
+            is SendState.Exception -> handleErrorState(state)
+            is SendState.Loading -> handleLoadingState(state)
+            is SendState.Static -> handleStaticState(state)
+        }
+    }
+
+    private fun handleStaticState(state: SendState.Static) = view?.also {
+        when (state) {
+            SendState.Static.Empty -> TODO()
+            is SendState.Static.ReadyToSend -> {
+            }
+            is SendState.Static.TokenNotZero -> {
+                val bridgeToken = state.bridgeToken ?: return@also
+                calculationMode.updateToken(bridgeToken.token)
+                calculationMode.updateInputAmount(state.amount.toPlainString())
+                it.showToken(bridgeToken.token)
+                it.setFeeLabel(resources.getString(R.string.send_fees))
+                it.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
+            }
+            is SendState.Static.TokenZero -> {
+                val bridgeToken = state.bridgeToken ?: return@also
+                it.showToken(bridgeToken.token)
+                it.setFeeLabel(resources.getString(R.string.send_fees))
+                it.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
+                state.fee
+            }
+        }
+    }
+
+    private fun handleLoadingState(state: SendState.Loading) {
+        handleStaticState(state.lastStaticState)
+        when (state) {
+            is SendState.Loading.Fee -> {
+                view?.setFeeLabel(resources.getString(R.string.send_fees))
+                view?.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
+            }
+        }
+    }
+
+    private fun handleErrorState(state: SendState.Exception) {
+        handleStaticState(state.lastStaticState)
+        when (state) {
+            is SendState.Exception.Feature -> TODO()
+            is SendState.Exception.Other -> TODO()
+        }
+    }
 
     private var token: Token.Active? by Delegates.observable(null) { _, _, newToken ->
         if (newToken != null) {
@@ -79,8 +145,8 @@ class BridgeSendPresenter(
     )
     private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
-    private var selectedToken: Token.Active? = null
-    private var initialAmount: BigDecimal? = null
+//    private var selectedToken: Token.Active? = null
+//    private var initialAmount: BigDecimal? = null
 
     private var feePayerJob: Job? = null
 
@@ -91,10 +157,8 @@ class BridgeSendPresenter(
         initialize(view)
     }
 
-    override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) {
-        this.selectedToken = selectedToken
-        this.initialAmount = inputAmount
-    }
+    // di inject initialData
+    override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) = Unit
 
     private fun initialize(view: BridgeSendContract.View) {
         calculationMode.onCalculationCompleted = { view.showAroundValue(it) }
@@ -279,6 +343,12 @@ class BridgeSendPresenter(
 
     override fun updateInputAmount(amount: String) {
         calculationMode.updateInputAmount(amount)
+        val currentAmount = calculationMode.getCurrentAmount()
+        if (currentAmount.isZero()) {
+            stateMachine.newAction(SendFeatureAction.ZeroAmount)
+        } else {
+            stateMachine.newAction(SendFeatureAction.AmountChange(currentAmount))
+        }
         view?.showFeeViewVisible(isVisible = true)
         showMaxButtonIfNeeded()
         updateButton(requireToken(), feeRelayerManager.getState())

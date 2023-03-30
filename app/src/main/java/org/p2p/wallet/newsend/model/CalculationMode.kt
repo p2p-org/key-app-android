@@ -1,5 +1,7 @@
 package org.p2p.wallet.newsend.model
 
+import java.math.BigDecimal
+import java.math.BigInteger
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
@@ -16,8 +18,6 @@ import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.utils.divideSafe
-import java.math.BigDecimal
-import java.math.BigInteger
 
 class CalculationMode(
     private val sendModeProvider: SendModeProvider,
@@ -42,6 +42,7 @@ class CalculationMode(
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
     fun updateToken(newToken: Token.Active) {
+        if (::token.isInitialized && newToken.mintAddress == this.token.mintAddress) return
         this.token = newToken
 
         if (currencyMode is CurrencyMode.Token) {

@@ -73,7 +73,9 @@ class BridgeSendFragment :
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
-    override val presenter: BridgeSendContract.Presenter by inject { parametersOf(recipient) }
+    override val presenter: BridgeSendContract.Presenter by inject {
+        parametersOf(recipient, initialToken, inputAmount)
+    }
 
     private var listener: RootListener? = null
 
