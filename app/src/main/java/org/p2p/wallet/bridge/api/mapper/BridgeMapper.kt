@@ -9,12 +9,12 @@ import org.p2p.wallet.bridge.api.response.BridgeSendStatusResponse
 import org.p2p.wallet.bridge.api.response.BridgeSendTransactionResponse
 import org.p2p.wallet.bridge.api.response.BridgeTransactionStatusResponse
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeBundleFees
+import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
-import org.p2p.wallet.bridge.send.model.BridgeSendTransactionStatus
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionStatus
 
 class BridgeMapper {
 
