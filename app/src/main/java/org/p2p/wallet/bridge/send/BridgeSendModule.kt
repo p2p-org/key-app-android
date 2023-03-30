@@ -35,7 +35,7 @@ object BridgeSendModule : InjectionModule {
         factoryOf(::SendBridgeValidator)
 
         factory { (recipientAddress: SearchResult, initialToken: Token.Active?, inputAmount: BigDecimal?) ->
-            val initialBridgeToken = SendToken.Bridge(initialToken!!)
+            val initialBridgeToken = initialToken?.let { SendToken.Bridge(it) }
             val recipient = EthAddress(recipientAddress.addressState.address)
             val initialData = SendInitialData.Bridge(
                 initialToken = initialBridgeToken,
