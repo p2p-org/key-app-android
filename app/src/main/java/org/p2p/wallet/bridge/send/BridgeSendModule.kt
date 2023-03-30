@@ -25,7 +25,7 @@ object BridgeSendModule : InjectionModule {
         factoryOf(::EthereumSendRemoteRepository) bind EthereumSendRepository::class
         factoryOf(::BridgeSendInteractor)
         factoryOf(::SendUiMapper)
-        single {
+        factory {
             val handlers = setOf(
                 AmountChangeActionHandler(),
                 InitFeatureActionHandler(),

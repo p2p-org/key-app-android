@@ -96,7 +96,6 @@ class BridgeSendPresenter(
 
     override fun detach() {
         super.detach()
-        stateMachine.stop()
         widgetDelegate = null
     }
 
