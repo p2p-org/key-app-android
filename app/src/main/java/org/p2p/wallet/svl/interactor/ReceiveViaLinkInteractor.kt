@@ -11,7 +11,6 @@ import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
-import org.p2p.wallet.svl.model.SendLinkGenerator.SYMBOLS_COUNT
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
@@ -25,10 +24,6 @@ class ReceiveViaLinkInteractor(
 
     suspend fun parseAccountFromLink(link: SendViaLinkWrapper): TemporaryAccountState {
         val seedCode = link.link.substringAfterLast(SEND_LINK_FORMAT).toList().map { it.toString() }
-
-        if (seedCode.size < SYMBOLS_COUNT) {
-            return TemporaryAccountState.BrokenLink
-        }
 
         if (!SendLinkGenerator.isValidSeedCode(seedCode)) {
             return TemporaryAccountState.BrokenLink

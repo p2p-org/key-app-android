@@ -11,10 +11,9 @@ import org.p2p.wallet.utils.emptyString
 
 private const val REGEX_LINK_ALLOWED_SYMBOLS = "[A-Za-z0-9_~-]"
 private const val ASCII_CHARACTERS_COUNT = 128
+private const val SYMBOLS_COUNT = 16
 
 object SendLinkGenerator {
-
-    const val SYMBOLS_COUNT = 16
 
     fun createTemporaryAccount(): TemporaryAccount {
         val generatedSymbols = generateSymbols()
@@ -58,6 +57,10 @@ object SendLinkGenerator {
     }
 
     fun isValidSeedCode(symbols: List<String>): Boolean {
+        if (symbols.size < SYMBOLS_COUNT) {
+            return false
+        }
+
         val regex = Regex(REGEX_LINK_ALLOWED_SYMBOLS)
         return symbols.all { regex.matches(it) }
     }
