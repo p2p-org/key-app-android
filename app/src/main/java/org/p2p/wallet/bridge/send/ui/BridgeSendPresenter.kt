@@ -19,10 +19,8 @@ import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.ethereumkit.external.model.ERC20Tokens
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
-import org.p2p.wallet.bridge.send.mapper.SendUiMapper
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
@@ -45,9 +43,7 @@ import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeRelayerState
-import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
@@ -380,7 +376,6 @@ class BridgeSendPresenter(
 
     private fun isInternetConnectionEnabled(): Boolean =
         connectionStateProvider.hasConnection()
-
 
     private fun logSendClicked(token: Token.Active, amountInToken: String, amountInUsd: String) {
         val solanaFee = true // todo

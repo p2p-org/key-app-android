@@ -9,7 +9,6 @@ import org.p2p.core.utils.orZero
 import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
