@@ -29,7 +29,6 @@ import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
-import org.p2p.wallet.bridge.send.statemachine.token
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -127,6 +126,8 @@ class BridgeSendPresenter(
                 view?.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
             }
             is SendState.Static.Initialize -> {
+                val bridgeToken = state.bridgeToken ?: return
+                calculationMode.updateToken(bridgeToken.token)
                 view?.setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
             }
         }
