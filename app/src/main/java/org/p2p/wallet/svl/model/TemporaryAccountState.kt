@@ -1,24 +1,21 @@
 package org.p2p.wallet.svl.model
 
-import java.math.BigInteger
-import org.p2p.core.utils.fromLamports
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import org.p2p.core.token.Token
 import org.p2p.wallet.newsend.model.TemporaryAccount
 
-sealed interface TemporaryAccountState {
+sealed interface TemporaryAccountState : Parcelable {
 
+    @Parcelize
     data class Active(
         val account: TemporaryAccount,
-        val amountInLamports: BigInteger,
-        val tokenSymbol: String,
-        val tokenDecimals: Int,
-        val tokenIconUrl: String?
-    ) : TemporaryAccountState {
+        val token: Token.Active
+    ) : TemporaryAccountState
 
-        val amountInTokens: String
-            get() = amountInLamports.fromLamports(tokenDecimals).toPlainString()
-    }
-
+    @Parcelize
     object EmptyBalance : TemporaryAccountState
 
+    @Parcelize
     object ParsingFailed : TemporaryAccountState
 }

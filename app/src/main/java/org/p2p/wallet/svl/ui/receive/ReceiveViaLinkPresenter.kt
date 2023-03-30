@@ -2,34 +2,32 @@ package org.p2p.wallet.svl.ui.receive
 
 import android.content.Context
 import timber.log.Timber
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
-import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
+import org.p2p.wallet.svl.model.ReceiveViaLinkMapper
 import org.p2p.wallet.svl.model.SendViaLinkClaimingState
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.emptyString
 
 class ReceiveViaLinkPresenter(
     private val context: Context,
-    private val receiveViaLinkInteractor: ReceiveViaLinkInteractor
+    private val receiveViaLinkInteractor: ReceiveViaLinkInteractor,
+    private val receiveViaLinkMapper: ReceiveViaLinkMapper
 ) : BasePresenter<ReceiveViaLinkContract.View>(),
     ReceiveViaLinkContract.Presenter {
 
-    private var parseJob: Job? = null
-
-    override fun claimToken(temporaryAccount: TemporaryAccount, amountInToken: String, tokenSymbol: String) {
+    override fun claimToken(temporaryAccount: TemporaryAccount, token: Token.Active) {
         launch {
             try {
                 view?.renderState(SendViaLinkClaimingState.ClaimingInProcess)
-                receiveViaLinkInteractor.receiveTransfer(temporaryAccount)
+                receiveViaLinkInteractor.receiveTransfer(temporaryAccount, token)
 
-                val state = SendViaLinkClaimingState.ClaimSuccess(amountInToken, tokenSymbol)
+                val successMessage = receiveViaLinkMapper.mapClaimSuccessMessage(context, token)
+                val state = SendViaLinkClaimingState.ClaimSuccess(successMessage)
                 view?.renderState(state)
             } catch (e: Throwable) {
                 Timber.e(e, "Error claiming token")
@@ -38,35 +36,20 @@ class ReceiveViaLinkPresenter(
         }
     }
 
-    override fun parseLink(link: SendViaLinkWrapper) {
-        parseJob?.cancel()
-        parseJob = launch {
-            try {
-                val state = receiveViaLinkInteractor.parseAccountFromLink(link)
-                handleState(state)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error parsing link")
-                view?.renderState(SendViaLinkClaimingState.ParsingFailed)
-            }
-        }
-    }
-
-    private fun handleState(state: TemporaryAccountState) {
+    override fun handleState(state: TemporaryAccountState) {
         when (state) {
             is TemporaryAccountState.Active -> {
                 val claimState = SendViaLinkClaimingState.ReadyToClaim(
                     temporaryAccount = state.account,
-                    amountInTokens = state.amountInTokens,
-                    tokenSymbol = state.tokenSymbol
+                    token = state.token
                 )
                 view?.renderState(claimState)
                 view?.renderClaimTokenDetails(
-                    amountInTokens = state.amountInTokens,
-                    tokenSymbol = state.tokenSymbol,
+                    tokenAmount = receiveViaLinkMapper.mapTokenAmount(state.token),
                     // TODO: get address from account
-                    sentFromAddress = Base58String(emptyString()),
-                    tokenIconUrl = state.tokenIconUrl.orEmpty(),
-                    linkCreationDate = DateTimeUtils.getDateFormatted(System.currentTimeMillis(), context)
+                    sentFromAddress = receiveViaLinkMapper.mapSenderAddress(emptyString()),
+                    tokenIcon = receiveViaLinkMapper.mapTokenIcon(state.token),
+                    linkCreationDate = receiveViaLinkMapper.mapLinkCreationDate(context)
                 )
             }
             is TemporaryAccountState.EmptyBalance -> {

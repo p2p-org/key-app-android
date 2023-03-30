@@ -1,6 +1,6 @@
 package org.p2p.wallet.bridge.api.mapper
 
-import org.p2p.solanaj.utils.crypto.toBase64String
+import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.bridge.api.response.BridgeAmountResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleFeesResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleResponse
@@ -75,7 +75,7 @@ class BridgeMapper {
 
     fun fromNetwork(response: BridgeSendTransactionResponse): BridgeSendTransaction {
         return BridgeSendTransaction(
-            transaction = response.transaction.toBase64String(),
+            transaction = response.transaction.toBase64Instance(),
             message = response.message
         )
     }
