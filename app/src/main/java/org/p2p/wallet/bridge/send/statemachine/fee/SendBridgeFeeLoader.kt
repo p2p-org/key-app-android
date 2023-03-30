@@ -51,15 +51,21 @@ class SendBridgeFeeLoader constructor(
     }
 
     private suspend fun loadFee(
-        token: SendToken.Bridge,
+        bridgeToken: SendToken.Bridge,
         amount: BigDecimal,
     ): SendFee.Bridge {
         return try {
-            val mint = SolAddress(token.token.mintAddress)
+            val sendTokenMint = if (bridgeToken.token.isSOL) {
+                null
+            } else {
+                SolAddress(bridgeToken.token.mintAddress)
+            }
+
             val fee = ethereumSendInteractor.getSendFee(
-                sendTokenMint = mint,
+                sendTokenMint = sendTokenMint,
                 amount.toPlainString()
             )
+
             SendFee.Bridge(fee)
         } catch (e: CancellationException) {
             throw e
