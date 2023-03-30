@@ -124,7 +124,6 @@ class ClaimPresenter(
                 view?.showProgressDialog(latestBundleId, progressDetails)
 
                 claimInteractor.sendEthereumBundle(signedTransactions)
-
                 val transactionState = TransactionState.ClaimSuccess(latestBundleId, tokenToClaim.tokenSymbol)
                 transactionManager.emitTransactionState(latestBundleId, transactionState)
             } catch (e: BridgeResult.Error) {

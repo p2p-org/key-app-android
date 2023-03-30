@@ -48,7 +48,7 @@ enum class ERC20Tokens(
         )
     ),
     ETH(
-        contractAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        contractAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".lowercase(),
         mintAddress = WRAPPED_ETH_MINT,
         coingeckoId = ETH_COINGECKO_ID,
         tokenIconUrl = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",

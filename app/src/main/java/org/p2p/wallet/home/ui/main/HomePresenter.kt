@@ -117,7 +117,7 @@ class HomePresenter(
     ) {
         val ethereumTokens: List<Token.Eth>
             get() = ethereumState.ethereumTokens
-        val ethereumBundleStatuses: Map<String, ClaimStatus?>
+        val ethereumBundleStatuses: Map<String, List<ClaimStatus?>>
             get() = ethereumState.ethereumBundleStatuses
     }
 
@@ -256,7 +256,7 @@ class HomePresenter(
 
     private fun handleUserTokensLoaded(
         userTokens: List<Token.Active>,
-        ethereumState: EthereumHomeState
+        ethereumState: EthereumHomeState,
     ) {
         Timber.d("local tokens change arrived")
         state = state.copy(
@@ -299,17 +299,23 @@ class HomePresenter(
         }
     }
 
-    private suspend fun loadEthBundles(): Map<String, ClaimStatus?> {
+    private suspend fun loadEthBundles(): Map<String, List<ClaimStatus?>> {
         return try {
-            claimInteractor.getListOfEthereumBundleStatuses()
+            val bundles = claimInteractor.getListOfEthereumBundleStatuses()
+            val resultMap = mutableMapOf<String, List<ClaimStatus>>()
+            val ethAddress = ERC20Tokens.ETH.contractAddress
+            bundles.map { it.token?.hex ?: ethAddress }
+                .forEach { token ->
+                    val tokenBundles = bundles.filter { token == (it.token?.hex ?: ethAddress) }.map { it.status }
+                    resultMap[token] = tokenBundles.filterNotNull()
+                }
+            resultMap
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
-            emptyList()
+            emptyMap()
         } catch (throwable: Throwable) {
             Timber.e(throwable, "Error on loading loadEthBundles")
-            emptyList()
-        }.associate {
-            (it.token?.hex ?: ERC20Tokens.ETH.contractAddress) to it.status
+            emptyMap()
         }
     }
 

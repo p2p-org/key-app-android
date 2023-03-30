@@ -47,7 +47,7 @@ class BridgeMapper {
             amount = response?.amount,
             amountInUsd = response?.usdAmount,
             chain = response?.chain,
-            token = response?.tokenName
+            token = response?.token
         )
     }
 
