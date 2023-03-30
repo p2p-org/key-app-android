@@ -10,6 +10,12 @@
     <string name="send_via_link_limit_exceeded">Limit is 30 one-time links per day. Try tomorrow</string>
     <string name="send_via_link_generation_copied">✅ Your one-time link is copied</string>
     <string name="send_dont_need_the_address">You don\'t need to know the address</string>
+    
+    <string name="send_via_link_free_transactions_title">Enjoy free transactions!</string>
+    <string name="send_via_link_free_transactions_subtitle">
+        With Key App, all transactions you make on the Solana network are free
+    </string>
+    <string name="send_via_link_free_transactions_button">Got it 👍</string>
 
     <string name="send_via_link_receive_funds_title">Receive funds via one-time link</string>
     <string name="send_via_link_receive_funds_sent_from">Sent from</string>
