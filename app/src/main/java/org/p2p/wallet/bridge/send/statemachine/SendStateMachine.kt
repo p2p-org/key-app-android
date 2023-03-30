@@ -7,19 +7,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -50,21 +48,23 @@ class SendStateMachine(
         actions
             .flatMapLatest {
                 val (action, actionHandler) = it
-                flowOf(actionHandler.handle(action))
+                actionHandler.handle(action)
             }
             .flowOn(dispatchers.io)
-            .catch { catchException(it, this) }
+            .catch { catchException(it) }
             .onEach { newState -> state.value = newState }
-            .launchIn(this)
+            .produceIn(this)
     }
 
     fun newAction(action: SendFeatureAction) {
-        refreshFeeTimer?.cancel()
-        val actionHandler = handlers.firstOrNull { it.canHandle(action) } ?: return
-        actions.tryEmit(action to actionHandler)
+        launch {
+            Timber.tag("_______").d("Action = $action")
+            val actionHandler = handlers.firstOrNull { it.canHandle(action) } ?: return@launch
+            actions.emit(action to actionHandler)
+        }
     }
 
-    private fun catchException(throwable: Throwable, flowCollector: FlowCollector<SendState>) {
+    private fun catchException(throwable: Throwable) {
         when (throwable) {
             is CancellationException -> Timber.i(throwable)
             is Exception -> {}
@@ -79,9 +79,5 @@ class SendStateMachine(
                 delay(withDelay)
             }
         }
-    }
-
-    fun stop() {
-        coroutineContext.cancelChildren()
     }
 }

@@ -141,14 +141,16 @@ class BridgeSendPresenter(
                 onSetupDefaultState(state)
                 stateMachine.startRecurringAction(buildRefreshFeeAction())
             }
-            is SendState.Event.UpdateFee -> {}
+            is SendState.Event.UpdateFee -> {
+                onUpdateFeeState(state)
+            }
         }
     }
 
     private fun handleLoading(newState: SendState.Loading) {
         when (newState) {
             is SendState.Loading.Fee -> {
-                widgetDelegate?.showFeeViewLoading(true)
+                widgetDelegate?.showFeeViewLoading(newState.isVisible)
             }
         }
     }

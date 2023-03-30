@@ -9,7 +9,7 @@ sealed interface SendState {
 
     sealed interface Loading : SendState {
 
-        object Fee : Loading
+        data class Fee(val isVisible: Boolean) : Loading
     }
 
     sealed interface Exception : SendState {

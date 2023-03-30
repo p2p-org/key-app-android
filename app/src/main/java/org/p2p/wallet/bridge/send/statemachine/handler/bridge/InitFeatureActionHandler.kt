@@ -1,5 +1,7 @@
 package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
@@ -10,7 +12,9 @@ class InitFeatureActionHandler : SendActionHandler {
         newEvent: SendFeatureAction,
     ): Boolean = newEvent is SendFeatureAction.InitFeature
 
-    override suspend fun handle(newAction: SendFeatureAction): SendState {
+    override fun handle(
+        newAction: SendFeatureAction,
+    ): Flow<SendState> = flow {
         val action = newAction as SendFeatureAction.InitFeature
         val token = action.initialToken
         val amount = action.initialAmount
@@ -20,6 +24,6 @@ class InitFeatureActionHandler : SendActionHandler {
         } else {
             SendState.Event.TokenNotZero(token, amount)
         }
-        return state
+        emit(state)
     }
 }
