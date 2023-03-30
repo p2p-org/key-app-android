@@ -9,8 +9,6 @@ import org.koin.android.ext.android.inject
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.drawable.UiKitDrawableCellModels
 import org.p2p.uikit.utils.drawable.applyBackground
-import org.p2p.uikit.utils.drawable.shape.shapeCircle
-import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.image.bind
 import org.p2p.uikit.utils.text.TextViewCellModel
