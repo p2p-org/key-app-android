@@ -6,8 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.p2p.core.token.SolAddress
 import org.p2p.core.utils.orZero
-import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
@@ -15,16 +14,13 @@ import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
-import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 
 class SendBridgeFeeLoader constructor(
     private val mapper: SendBridgeStaticStateMapper,
     private val validator: SendBridgeValidator,
-    private val repository: EthereumSendRepository,
-    private val tokenKeyProvider: TokenKeyProvider,
-    private val initialData: SendInitialData.Bridge,
+    private val ethereumSendInteractor: EthereumSendInteractor,
 ) {
 
     fun updateFeeIfNeed(
@@ -54,17 +50,14 @@ class SendBridgeFeeLoader constructor(
         emit(mapper.updateFee(lastStaticState, fee))
     }
 
-    suspend fun loadFee(
+    private suspend fun loadFee(
         token: SendToken.Bridge,
         amount: BigDecimal,
     ): SendFee.Bridge {
         return try {
-            val userWallet = SolAddress(tokenKeyProvider.publicKey)
             val mint = SolAddress(token.token.mintAddress)
-            val fee = repository.getSendFee(
-                userWallet = userWallet,
-                recipient = initialData.recipient,
-                mint = mint,
+            val fee = ethereumSendInteractor.getSendFee(
+                sendTokenMint = mint,
                 amount.toPlainString()
             )
             SendFee.Bridge(fee)
