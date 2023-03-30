@@ -205,8 +205,6 @@ class SendInteractor(
                 additionalPaybackFee = BigInteger.ZERO,
                 statistics = statistics
             )
-                .firstOrNull()
-                .orEmpty()
         }
     }
 

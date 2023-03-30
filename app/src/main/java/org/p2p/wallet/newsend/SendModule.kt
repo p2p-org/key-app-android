@@ -10,9 +10,6 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
-import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkContract
-import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkPresenter
-import org.p2p.wallet.svl.interactor.SendViaLinkReceiveFundsInteractor
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
@@ -23,10 +20,13 @@ import org.p2p.wallet.newsend.ui.NewSendContract
 import org.p2p.wallet.newsend.ui.NewSendPresenter
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsPresenter
-import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationContract
-import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
 import org.p2p.wallet.newsend.ui.search.NewSearchPresenter
+import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
+import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationContract
+import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationPresenter
+import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkContract
+import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkPresenter
 import org.p2p.wallet.svl.ui.send.SendViaLinkContract
 import org.p2p.wallet.svl.ui.send.SendViaLinkPresenter
 
@@ -43,7 +43,8 @@ object SendModule : InjectionModule {
                 userInteractor = get(),
                 newSendAnalytics = get(),
                 sendViaLinkFeatureToggle = get(),
-                feeRelayerAccountInteractor = get()
+                feeRelayerAccountInteractor = get(),
+                ethAddressEnabledFeatureToggle = get()
             )
         }
         factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class
@@ -68,7 +69,7 @@ object SendModule : InjectionModule {
         factoryOf(::SendViaLinkPresenter) bind SendViaLinkContract.Presenter::class
 
         factoryOf(::ReceiveViaLinkPresenter) bind ReceiveViaLinkContract.Presenter::class
-        factoryOf(::SendViaLinkReceiveFundsInteractor)
+        factoryOf(::ReceiveViaLinkInteractor)
     }
 
     private fun Module.initDataLayer() {

@@ -11,6 +11,8 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.programs.SystemProgram
+import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenAccount
@@ -19,6 +21,7 @@ import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
@@ -31,6 +34,7 @@ class FeeRelayerInteractor(
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: NetworkEnvironmentManager,
+    private val transactionInteractor: TransactionInteractor,
     private val dispatchers: CoroutineDispatchers
 ) {
 
@@ -104,13 +108,13 @@ class FeeRelayerInteractor(
         payingFeeToken: TokenAccount,
         additionalPaybackFee: BigInteger,
         statistics: FeeRelayerStatistics
-    ): List<String> {
+    ): String {
         checkAndTopUp(
             expectedFee = preparedTransaction.expectedFee,
             payingFeeToken = payingFeeToken
         )
 
-        return relayTransaction(
+        return signAndSendTransaction(
             preparedTransaction = preparedTransaction,
             payingFeeToken = payingFeeToken,
             additionalPaybackFee = additionalPaybackFee,
@@ -169,12 +173,12 @@ class FeeRelayerInteractor(
         )
     }
 
-    private suspend fun relayTransaction(
+    private suspend fun signAndSendTransaction(
         preparedTransaction: PreparedTransaction,
         payingFeeToken: TokenAccount,
         additionalPaybackFee: BigInteger,
         statistics: FeeRelayerStatistics
-    ): List<String> {
+    ): String {
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = info.feePayerAddress
@@ -223,13 +227,10 @@ class FeeRelayerInteractor(
         // resign transaction
         transaction.sign(preparedTransaction.signers)
 
-        /*
-        * Retrying 3 times to avoid some errors
-        * For example: fee relayer balance is not updated yet and request will fail with insufficient balance error
-        * */
-        return retryRequest {
-            feeRelayerRepository.relayTransaction(transaction, statistics)
-        }
+        val serializedTransaction = Base64Utils.encode(transaction.serialize()).toBase64Instance()
+        val signedTransaction = feeRelayerRepository.signTransaction(serializedTransaction, statistics)
+
+        return transactionInteractor.sendTransaction(signedTransaction.transaction, isSimulation = false)
     }
 
     suspend fun relayTransactionWithoutPayback(

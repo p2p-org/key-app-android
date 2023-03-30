@@ -12,12 +12,15 @@ import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.loadUrl
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
-import org.p2p.wallet.databinding.DialogSendViaLinkRecieveFundsBinding
+import org.p2p.wallet.databinding.DialogSendViaLinkReceiveFundsBinding
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.svl.model.SendViaLinkClaimingState
+import org.p2p.wallet.svl.ui.error.SendViaLinkError
+import org.p2p.wallet.svl.ui.error.SendViaLinkErrorFragment
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -26,7 +29,7 @@ private const val ARG_LINK = "ARG_LINK"
 
 class SendViaLinkReceiveFundsBottomSheet :
     BaseMvpBottomSheet<ReceiveViaLinkContract.View, ReceiveViaLinkContract.Presenter>(
-        layoutRes = R.layout.dialog_send_via_link_recieve_funds
+        layoutRes = R.layout.dialog_send_via_link_receive_funds
     ),
     ReceiveViaLinkContract.View {
     companion object {
@@ -38,7 +41,7 @@ class SendViaLinkReceiveFundsBottomSheet :
     }
 
     private val link: SendViaLinkWrapper by args(ARG_LINK)
-    private val binding: DialogSendViaLinkRecieveFundsBinding by viewBinding()
+    private val binding: DialogSendViaLinkReceiveFundsBinding by viewBinding()
     private val glideManager: GlideManager by inject()
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
@@ -66,23 +69,31 @@ class SendViaLinkReceiveFundsBottomSheet :
     override fun renderState(state: SendViaLinkClaimingState) = with(binding) {
         when (state) {
             is SendViaLinkClaimingState.ReadyToClaim -> {
-                groupContent.isVisible = true
+                groupTitle.isVisible = true
+                layoutTransactionDetails.isVisible = true
                 progressStateTransaction.isVisible = false
+                imageViewBanner.isVisible = false
                 buttonDone.setText(R.string.common_confirm)
-                buttonDone.setOnClickListener { presenter.claimToken() }
+                buttonDone.setOnClickListener {
+                    presenter.claimToken(state.temporaryAccount, state.amountInTokens, state.tokenSymbol)
+                }
             }
             is SendViaLinkClaimingState.ClaimingInProcess -> {
                 layoutClaimSuccess.root.isVisible = false
                 progressStateTransaction.isVisible = true
-                groupContent.isVisible = true
+                groupTitle.isVisible = true
+                layoutTransactionDetails.isVisible = true
+                imageViewBanner.isVisible = false
                 progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
                 buttonDone.setText(R.string.common_close)
-                buttonDone.setOnClickListener { dismiss() }
+                buttonDone.setOnClickListener { dismissAllowingStateLoss() }
             }
             is SendViaLinkClaimingState.ClaimSuccess -> {
-                groupContent.isVisible = false
                 layoutClaimSuccess.root.isVisible = true
+                groupTitle.isVisible = false
+                layoutTransactionDetails.isVisible = false
                 progressStateTransaction.isVisible = false
+                imageViewBanner.isVisible = false
                 layoutClaimSuccess.textViewTitle.text = getString(
                     R.string.send_via_link_receive_funds_success_title,
                     state.tokenAmount,
@@ -90,17 +101,33 @@ class SendViaLinkReceiveFundsBottomSheet :
                 )
                 playApplauseAnimation()
                 buttonDone.setText(R.string.send_via_link_receive_funds_success_button)
-                buttonDone.setOnClickListener { presenter.claimToken() }
+                buttonDone.setOnClickListener { dismissAllowingStateLoss() }
             }
             is SendViaLinkClaimingState.ClaimFailed -> {
-                groupContent.isVisible = true
+                groupTitle.isVisible = true
+                layoutTransactionDetails.isVisible = true
                 progressStateTransaction.isVisible = true
+                imageViewBanner.isVisible = false
                 progressStateTransaction.setDescriptionText(R.string.transaction_description_failed)
                 progressStateTransaction.setFailedState()
                 buttonDone.setText(R.string.common_close)
-                buttonDone.setOnClickListener { presenter.claimToken() }
+                buttonDone.setOnClickListener { dismissAllowingStateLoss() }
+            }
+            is SendViaLinkClaimingState.ParsingFailed -> {
+                groupTitle.isVisible = true
+                imageViewBanner.isVisible = true
+                progressStateTransaction.isVisible = false
+                layoutClaimSuccess.root.isVisible = false
+
+                buttonDone.setText(R.string.common_reload)
+                buttonDone.setOnClickListener { presenter.parseLink(link) }
             }
         }
+    }
+
+    override fun navigateToErrorScreen(error: SendViaLinkError) {
+        dismissAllowingStateLoss()
+        replaceFragment(SendViaLinkErrorFragment.create(error))
     }
 
     private fun playApplauseAnimation() {

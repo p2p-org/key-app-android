@@ -35,7 +35,7 @@ import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.push_notifications.PushNotificationsModule
-import org.p2p.wallet.rpc.api.RpcHistoryApi
+import org.p2p.wallet.rpc.api.RpcTransactionApi
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
 
 object HistoryModule : InjectionModule {
@@ -71,8 +71,7 @@ object HistoryModule : InjectionModule {
         singleOf(::HistoryServiceSignatureFieldGenerator)
 
         singleOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
-
-        single { get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java) }
+        single { get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcTransactionApi::class.java) }
         factoryOf(::HistoryInteractor)
         single<HistoryRemoteRepository> {
             val remotes = listOf(
