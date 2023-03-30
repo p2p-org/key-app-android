@@ -43,4 +43,5 @@
 
     <string name="transaction_history_send_via_link_title">Sent via one-time link</string>
     <string name="transaction_history_send_via_link_subtitle">%d transactions</string>
+    <string name="transaction_history_send_via_link_info">Unique one-time link works only once</string>
 </resources>

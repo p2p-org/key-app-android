@@ -22,7 +22,7 @@ import org.p2p.wallet.newsend.model.SearchState
 import org.p2p.wallet.newsend.model.SearchTarget
 import org.p2p.wallet.svl.model.SvlWidgetState
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.wallet.utils.toPublicKey
 
 private const val DELAY_IN_MS = 250L
 
@@ -152,7 +152,7 @@ class NewSearchPresenter(
             val finalResult: SearchResult
             val preselectedToken: Token.Active?
             if (result is SearchResult.AddressFound && result.networkType == NetworkType.SOLANA) {
-                val balance = userInteractor.getBalance(result.addressState.address.toBase58Instance())
+                val balance = userInteractor.getBalance(result.addressState.address.toPublicKey())
                 finalResult = result.copyWithBalance(balance)
                 preselectedToken = result.sourceToken ?: initialToken
             } else {
@@ -212,7 +212,7 @@ class NewSearchPresenter(
             return
         }
 
-        val newAddresses = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance(), initialToken)
+        val newAddresses = searchInteractor.searchByAddress(publicKey, initialToken)
         state.updateSearchResult(address, listOf(newAddresses))
         renderCurrentState()
     }

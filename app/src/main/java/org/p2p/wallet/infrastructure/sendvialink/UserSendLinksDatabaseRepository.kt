@@ -23,6 +23,10 @@ class UserSendLinksDatabaseRepository(
             .mapNotNull { it.toDomain() }
     }
 
+    override suspend fun getUserLinkById(uuid: String): UserSendLink? {
+        return userSendLinksDao.getLinkByOrdinal(userAddress.base58Value, uuid)?.toDomain()
+    }
+
     override suspend fun saveUserLink(link: UserSendLink) {
         val entity = link.toEntity(userAddress)
         userSendLinksDao.addLink(entity)
@@ -30,6 +34,7 @@ class UserSendLinksDatabaseRepository(
 
     private fun UserSendLink.toEntity(userAddress: Base58String): UserSendLinkEntity =
         UserSendLinkEntity(
+            uuid = uuid,
             link = link,
             amount = amount,
             dateCreated = dateCreated,
@@ -45,6 +50,7 @@ class UserSendLinksDatabaseRepository(
         }
 
         return UserSendLink(
+            uuid = uuid,
             link = link,
             token = tokenDetails,
             amount = amount,

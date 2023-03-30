@@ -16,7 +16,8 @@ interface SendLinkGenerationContract {
         fun generateLink(
             recipient: TemporaryAccount,
             token: Token.Active,
-            lamports: BigInteger
+            lamports: BigInteger,
+            isSimulation: Boolean
         )
     }
 }

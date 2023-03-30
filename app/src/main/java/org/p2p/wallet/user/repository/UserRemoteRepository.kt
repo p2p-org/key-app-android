@@ -10,6 +10,7 @@ import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.ui.main.POPULAR_TOKENS_COINGECKO_IDS
@@ -46,7 +47,7 @@ class UserRemoteRepository(
      * Load user tokens
      * @param fetchPrices if true then fetch prices as well
      */
-    override suspend fun loadUserTokens(publicKey: String, fetchPrices: Boolean): List<Token.Active> =
+    override suspend fun loadUserTokens(publicKey: PublicKey, fetchPrices: Boolean): List<Token.Active> =
         withContext(dispatchers.io) {
             val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
 
@@ -93,7 +94,7 @@ class UserRemoteRepository(
         }
     }
 
-    private suspend fun mapAccountsToTokens(publicKey: String, accounts: List<Account>): List<Token.Active> {
+    private suspend fun mapAccountsToTokens(publicKey: PublicKey, accounts: List<Account>): List<Token.Active> {
         val tokens = accounts.mapNotNull {
             val mintAddress = it.account.data.parsed.info.mint
 
@@ -118,7 +119,7 @@ class UserRemoteRepository(
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return tokens
         val solPrice = userLocalRepository.getPriceByTokenId(tokenData.coingeckoId)
         val solToken = Token.createSOL(
-            publicKey = publicKey,
+            publicKey = publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
             exchangeRate = solPrice?.getScaledValue()
