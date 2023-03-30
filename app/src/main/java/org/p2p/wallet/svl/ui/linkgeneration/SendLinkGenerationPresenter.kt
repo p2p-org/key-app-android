@@ -10,9 +10,9 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
 import org.p2p.wallet.infrastructure.sendvialink.model.UserSendLink
-import org.p2p.wallet.newsend.interactor.SendViaLinkInteractor
 import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 
 class SendLinkGenerationPresenter(
     private val sendViaLinkInteractor: SendViaLinkInteractor,

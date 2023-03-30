@@ -9,6 +9,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -32,6 +33,7 @@ class NewSearchPresenter(
     private val userInteractor: UserInteractor,
     private val newSendAnalytics: NewSendAnalytics,
     private val sendViaLinkFeatureToggle: SendViaLinkFeatureToggle,
+    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
@@ -116,7 +118,8 @@ class NewSearchPresenter(
 
         val target = SearchTarget(
             value = newQuery,
-            keyAppDomainIfUsername = usernameDomainFeatureToggle.value
+            keyAppDomainIfUsername = usernameDomainFeatureToggle.value,
+            isEthAddressEnabled = ethAddressEnabledFeatureToggle.isFeatureEnabled
         )
 
         searchJob?.cancel()
@@ -229,6 +232,7 @@ class NewSearchPresenter(
     private fun loadFeeLimits() {
         launch {
             try {
+                view?.showLoading(isLoading = true)
                 val feeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
                 val isSendViaLinkAvailable = feeLimits.hasFreeAccountCreationUsages()
                 val state = if (isSendViaLinkAvailable) SvlWidgetState.ENABLED else SvlWidgetState.DISABLED
@@ -236,6 +240,8 @@ class NewSearchPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading free transaction limits")
                 view?.updateLinkWidgetState(SvlWidgetState.DISABLED)
+            } finally {
+                view?.showLoading(isLoading = false)
             }
         }
     }

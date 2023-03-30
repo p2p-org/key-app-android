@@ -26,6 +26,7 @@ import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
+import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.FragmentLoggingLifecycleListener
@@ -39,6 +40,7 @@ import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
+import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.svl.ui.receive.SendViaLinkReceiveFundsBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
@@ -178,8 +180,19 @@ class RootActivity :
         onboardingRootFragment.triggerOnboadringDeeplink(deeplink)
     }
 
-    override fun executeTransferViaLink(deeplink: String) {
-        SendViaLinkReceiveFundsBottomSheet.show(supportFragmentManager, SendViaLinkWrapper(deeplink))
+    override fun parseTransferViaLink(deeplink: SendViaLinkWrapper): Boolean {
+        val fragment = supportFragmentManager.findFragmentById(R.id.rootContainer)
+        if (fragment is SignInPinFragment || fragment is OnboardingRootFragment) {
+            Timber.i("Cannot execute transfer via link, the user is not in the main screen")
+            return false
+        }
+
+        presenter.parseTransferAppLink(deeplink)
+        return true
+    }
+
+    override fun showTransferLinkBottomSheet(state: TemporaryAccountState, deeplink: SendViaLinkWrapper) {
+        SendViaLinkReceiveFundsBottomSheet.show(supportFragmentManager, state, deeplink)
     }
 
     override fun popBackStackToMain() {

@@ -6,6 +6,7 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.AccountCreationFailed
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.utils.emptyString
@@ -42,7 +43,7 @@ object SendLinkGenerator {
     }
 
     fun parseTemporaryAccount(link: SendViaLinkWrapper): TemporaryAccount {
-        val seedCode = link.link.substringAfterLast("/").toList()
+        val seedCode = link.link.substringAfterLast(SEND_LINK_FORMAT).toList()
         val account = Account.fromBip44Mnemonic(
             words = seedCode.map { it.toString() },
             walletIndex = 0,

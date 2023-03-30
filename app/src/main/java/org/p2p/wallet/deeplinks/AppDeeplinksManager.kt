@@ -11,6 +11,7 @@ import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.notification.NotificationType
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.utils.toStringMap
 
 private const val EXTRA_TAB_SCREEN = "EXTRA_TAB_SCREEN"
@@ -53,12 +54,18 @@ class AppDeeplinksManager(
                 val data = intent.data ?: return
 
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
+                val isTransferScheme = context.getString(R.string.transfer_app_scheme) == data.host
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> {
                         rootListener?.triggerOnboardingDeeplink(data)
                     }
-                    context.getString(R.string.transfer_app_scheme) == data.scheme -> {
-                        transferPendingDeeplink = data
+                    isTransferScheme -> {
+                        val deeplink = SendViaLinkWrapper(data.toString())
+                        val isExecuted = rootListener?.parseTransferViaLink(deeplink) ?: false
+                        if (!isExecuted) {
+                            // postpone deeplink execution until app will be ready
+                            transferPendingDeeplink = data
+                        }
                     }
                     intercomDeeplinkManager.handleBackgroundDeeplink(data) -> {
                         // do nothing
@@ -101,12 +108,6 @@ class AppDeeplinksManager(
     fun executeHomePendingDeeplink() {
         pendingIntent?.let { switchToMainTabIfPossible(it) }
         pendingIntent = null
-    }
-
-    fun executeTransferViaLink() {
-        transferPendingDeeplink?.let { deeplink ->
-            rootListener?.executeTransferViaLink(deeplink.toString())
-        }
     }
 
     private fun Intent.addDeeplinkDataToIntent(notificationType: NotificationType) {

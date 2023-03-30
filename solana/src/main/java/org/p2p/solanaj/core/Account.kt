@@ -25,6 +25,10 @@ class Account {
         this.keyPair = TweetNaclFast.Signature.keyPair_fromSecretKey(keyPair)
     }
 
+    constructor(keypair: String) {
+        this.keyPair = TweetNaclFast.Signature.keyPair_fromSecretKey(Base58Utils.decode(keypair))
+    }
+
     private constructor(keyPair: TweetNaclFast.Signature.KeyPair) {
         this.keyPair = keyPair
     }
