@@ -119,7 +119,7 @@ class NewSearchPresenter(
         val target = SearchTarget(
             value = newQuery,
             keyAppDomainIfUsername = usernameDomainFeatureToggle.value,
-            ethAddressEnabled = ethAddressEnabledFeatureToggle.isFeatureEnabled
+            isEthAddressEnabled = ethAddressEnabledFeatureToggle.isFeatureEnabled
         )
 
         searchJob?.cancel()
