@@ -18,4 +18,7 @@ sealed interface TemporaryAccountState : Parcelable {
 
     @Parcelize
     object ParsingFailed : TemporaryAccountState
+
+    @Parcelize
+    object BrokenLink : TemporaryAccountState
 }

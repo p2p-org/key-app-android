@@ -7,6 +7,7 @@ import org.p2p.solanaj.core.Account
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
@@ -22,10 +23,16 @@ class ReceiveViaLinkInteractor(
 ) {
 
     suspend fun parseAccountFromLink(link: SendViaLinkWrapper): TemporaryAccountState {
+        val seedCode = link.link.substringAfterLast(SEND_LINK_FORMAT).toList().map { it.toString() }
+
+        if (!SendLinkGenerator.isValidSeedCode(seedCode)) {
+            return TemporaryAccountState.BrokenLink
+        }
+
         val temporaryAccount = try {
-            SendLinkGenerator.parseTemporaryAccount(link)
+            SendLinkGenerator.parseTemporaryAccount(seedCode)
         } catch (e: Throwable) {
-            return TemporaryAccountState.ParsingFailed
+            return TemporaryAccountState.BrokenLink
         }
 
         val tokenAccounts = rpcAccountRepository.getTokenAccountsByOwner(temporaryAccount.publicKey)

@@ -16,7 +16,7 @@ import org.p2p.wallet.utils.withArgs
 private const val ARG_ERROR = "ARG_ERROR"
 
 enum class SendViaLinkError {
-    ALREADY_CLAIMED, PARSING_FAILED, BROKEN_LINK, UNKNOWN
+    ALREADY_CLAIMED, BROKEN_LINK, UNKNOWN
 }
 
 class SendViaLinkErrorFragment :
@@ -39,6 +39,7 @@ class SendViaLinkErrorFragment :
 
         when (error) {
             SendViaLinkError.ALREADY_CLAIMED -> renderAlreadyClaimed()
+            SendViaLinkError.BROKEN_LINK -> renderBrokenLink()
             SendViaLinkError.UNKNOWN -> renderUnknown()
         }
         binding.buttonAction.setOnClickListener {
@@ -50,7 +51,14 @@ class SendViaLinkErrorFragment :
         imageViewBanner.setImageResource(R.drawable.sms_error)
         textViewTitle.setText(R.string.send_via_link_error_already_claimed_title)
         textViewSubtitle.setText(R.string.send_via_link_error_already_claimed_subtitle)
-        buttonAction.setText(R.string.send_via_link_error_already_claimed_button)
+        buttonAction.setText(R.string.send_via_link_error_okay_button)
+    }
+
+    private fun renderBrokenLink() = with(binding) {
+        imageViewBanner.setImageResource(R.drawable.ic_not_found)
+        textViewTitle.setText(R.string.send_via_link_error_broken_link_title)
+        textViewSubtitle.setText(R.string.send_via_link_error_broken_link_subtitle)
+        buttonAction.setText(R.string.send_via_link_error_okay_button)
     }
 
     private fun renderUnknown() = with(binding) {
