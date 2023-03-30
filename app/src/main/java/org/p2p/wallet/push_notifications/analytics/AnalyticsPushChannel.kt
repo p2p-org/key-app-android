@@ -10,7 +10,7 @@ enum class PushChannel(val value: String) {
     BACKEND("Backend_Push_Service"), INTERCOM("Intercom")
 }
 
-class PushAnalytics(private val tracker: Analytics) {
+class AnalyticsPushChannel(private val tracker: Analytics) {
 
     fun pushPermissionsAllowed() {
         tracker.logEvent(

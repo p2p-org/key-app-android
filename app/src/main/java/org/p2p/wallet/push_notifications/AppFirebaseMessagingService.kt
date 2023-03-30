@@ -14,7 +14,7 @@ import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
-import org.p2p.wallet.push_notifications.analytics.PushAnalytics
+import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.push_notifications.analytics.PushChannel
 
 private const val TAG = "AppFirebaseMessagingService"
@@ -26,7 +26,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     private val intercomPushService: IntercomPushService by inject()
     private val pushNotificationsInteractor: PushNotificationsInteractor by inject()
     private val appScope: AppScope by inject()
-    private val analytics: PushAnalytics by inject()
+    private val analytics: AnalyticsPushChannel by inject()
 
     override fun onNewToken(token: String) {
         appsFlyerService.onNewToken(token)
