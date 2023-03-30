@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.ui.history
 
+import android.content.res.Resources
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.core.common.DrawableContainer
@@ -9,6 +10,7 @@ import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.utils.drawable.DrawableCellModel
+import org.p2p.uikit.utils.drawable.UiKitDrawableCellModels
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.image.ImageViewCellModel
@@ -24,7 +26,8 @@ import org.p2p.wallet.utils.toPx
 class HistoryPresenter(
     private val userInteractor: UserInteractor,
     private val historyAnalytics: HistoryAnalytics,
-    private val userSendLinksRepository: UserSendLinksLocalRepository
+    private val userSendLinksRepository: UserSendLinksLocalRepository,
+    private val resources: Resources
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     override fun attach(view: HistoryContract.View) {
@@ -47,7 +50,11 @@ class HistoryPresenter(
     }
 
     private fun createUserLinksBlock(linksCount: Int): FinanceBlockCellModel {
-        val copyLink = ImageViewCellModel(DrawableContainer(R.drawable.ic_copy_link))
+        val copyLink = ImageViewCellModel(
+            icon = DrawableContainer(R.drawable.ic_copy_link),
+            background = UiKitDrawableCellModels.shapeCircleWithTint(R.color.bg_rain)
+        )
+        val transactionsPlural = resources.getQuantityString(R.plurals.plural_transaction, linksCount, linksCount)
         val leftSide = LeftSideCellModel.IconWithText(
             icon = IconWrapperCellModel.SingleIcon(
                 icon = copyLink
@@ -56,7 +63,7 @@ class HistoryPresenter(
                 text = TextContainer(R.string.transaction_history_send_via_link_title)
             ),
             secondLineText = TextViewCellModel.Raw(
-                text = TextContainer(R.string.transaction_history_send_via_link_subtitle, linksCount)
+                text = TextContainer(transactionsPlural)
             ),
         )
         val arrowRightIcon = ImageViewCellModel(DrawableContainer(R.drawable.ic_chevron_right))
