@@ -17,7 +17,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
-import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -28,9 +27,9 @@ import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
+import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
@@ -38,11 +37,9 @@ import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
-import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
@@ -74,12 +71,24 @@ class BridgeSendPresenter(
     private val stateMachine: SendStateMachine,
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
 
+    private var currentState: SendState = SendState.Static.Empty
     private val sendUiMapper = SendUiMapper()
     private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
+    private val selectedToken: Token.Active
+        get() = initialData.initialToken.token
+    private val initialAmount: BigDecimal?
+        get() = initialData.initialAmount
 
-    init {
+    override fun attach(view: BridgeSendContract.View) {
+        super.attach(view)
+        newSendAnalytics.logNewSendScreenOpened()
+
+        initialize(view)
         stateMachine.observe()
-            .onEach { handleState(it) }
+            .onEach {
+                handleState(it)
+                this.currentState = it
+            }
             .launchIn(this)
     }
 
@@ -143,19 +152,6 @@ class BridgeSendPresenter(
         sendModeProvider = sendModeProvider,
         lessThenMinString = resources.getString(R.string.common_less_than_minimum)
     )
-    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
-
-//    private var selectedToken: Token.Active? = null
-//    private var initialAmount: BigDecimal? = null
-
-    private var feePayerJob: Job? = null
-
-    override fun attach(view: BridgeSendContract.View) {
-        super.attach(view)
-        newSendAnalytics.logNewSendScreenOpened()
-
-        initialize(view)
-    }
 
     // di inject initialData
     override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) = Unit
@@ -166,16 +162,6 @@ class BridgeSendPresenter(
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
             view.setSwitchLabel(switchSymbol)
             view.setMainAmountLabel(mainSymbol)
-        }
-
-        feeRelayerManager.onStateUpdated = { newState ->
-            handleFeeRelayerStateUpdate(newState, view)
-        }
-        feeRelayerManager.onFeeLoading = { loadingState ->
-            when (loadingState) {
-                is FeeLoadingState.Instant -> view.showFeeViewLoading(isLoading = loadingState.isLoading)
-                is FeeLoadingState.Delayed -> view.showDelayedFeeViewLoading(isLoading = loadingState.isLoading)
-            }
         }
 
         if (token != null) {
@@ -191,11 +177,8 @@ class BridgeSendPresenter(
             calculationMode.updateToken(token)
 
             val userTokens = userInteractor.getNonZeroUserTokens().filter { it.mintAddress in supportedTokensMints }
-            val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
+            val isTokenChangeEnabled = userTokens.size > 1
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
-
-            val currentState = feeRelayerManager.getState()
-            handleFeeRelayerStateUpdate(currentState, view)
         }
     }
 
@@ -224,8 +207,7 @@ class BridgeSendPresenter(
                 return@launch
             }
 
-            initializeFeeRelayer(view, initialToken, solToken)
-            initialAmount?.let { inputAmount ->
+            initialData.initialAmount?.let { inputAmount ->
                 setupDefaultFields(inputAmount)
             }
         }
@@ -261,46 +243,6 @@ class BridgeSendPresenter(
         if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
     }
 
-    private fun handleFeeRelayerStateUpdate(
-        newState: FeeRelayerState,
-        view: BridgeSendContract.View
-    ) {
-        when (newState) {
-            is FeeRelayerState.UpdateFee -> {
-                handleUpdateFee(newState, view)
-            }
-            is FeeRelayerState.ReduceAmount -> {
-                val inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
-                view.updateInputValue(inputAmount, forced = true)
-                view.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
-            }
-            is FeeRelayerState.Failure -> {
-                if (newState.isFeeCalculationError()) view.showFeeViewVisible(isVisible = false)
-                updateButton(requireToken(), newState)
-            }
-            is FeeRelayerState.Idle -> Unit
-        }
-    }
-
-    private suspend fun initializeFeeRelayer(
-        view: BridgeSendContract.View,
-        initialToken: Token.Active,
-        solToken: Token.Active
-    ) {
-        view.setFeeLabel(resources.getString(R.string.send_fees))
-        view.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
-
-        feeRelayerManager.initialize(initialToken, solToken, recipientAddress)
-        executeSmartSelection(
-            token = requireToken(),
-            feePayerToken = requireToken(),
-            strategy = FeePayerSelectionStrategy.SELECT_FEE_PAYER,
-            useCache = false
-        )
-
-        updateButton(sourceToken = initialToken, feeRelayerState = feeRelayerManager.getState())
-    }
-
     override fun onTokenClicked() {
         newSendAnalytics.logTokenSelectionClicked()
         launch {
@@ -311,34 +253,11 @@ class BridgeSendPresenter(
     }
 
     override fun updateToken(newToken: Token.Active) {
-        token = newToken
-        showMaxButtonIfNeeded()
-        view?.showFeeViewVisible(isVisible = true)
-        updateButton(requireToken(), feeRelayerManager.getState())
-
-        /*
-         * Calculating if we can pay with current token instead of already selected fee payer token
-         * */
-        executeSmartSelection(
-            token = requireToken(),
-            feePayerToken = requireToken(),
-            strategy = FeePayerSelectionStrategy.CORRECT_AMOUNT,
-            useCache = false
-        )
+        stateMachine.newAction(SendFeatureAction.NewToken(SendToken.Bridge(newToken)))
     }
 
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
-        newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
-        view?.showFeeViewVisible(isVisible = true)
-        /*
-         * Trigger recalculation for USD input
-         * */
-        executeSmartSelection(
-            token = requireToken(),
-            feePayerToken = requireToken(),
-            strategy = FeePayerSelectionStrategy.SELECT_FEE_PAYER
-        )
     }
 
     override fun updateInputAmount(amount: String) {
@@ -349,24 +268,12 @@ class BridgeSendPresenter(
         } else {
             stateMachine.newAction(SendFeatureAction.AmountChange(currentAmount))
         }
-        view?.showFeeViewVisible(isVisible = true)
-        showMaxButtonIfNeeded()
-        updateButton(requireToken(), feeRelayerManager.getState())
 
         newSendAnalytics.setMaxButtonClicked(isClicked = false)
-
-        /*
-         * Calculating if we can pay with current token instead of already selected fee payer token
-         * */
-        executeSmartSelection(
-            token = requireToken(),
-            feePayerToken = requireToken(),
-            strategy = FeePayerSelectionStrategy.SELECT_FEE_PAYER
-        )
     }
 
     override fun updateFeePayerToken(feePayerToken: Token.Active) {
-        try {
+        /*try {
             sendInteractor.setFeePayerToken(feePayerToken)
             executeSmartSelection(
                 token = requireToken(),
@@ -375,30 +282,16 @@ class BridgeSendPresenter(
             )
         } catch (e: Throwable) {
             Timber.e(e, "Error updating fee payer token")
-        }
+        }*/
     }
 
     override fun onMaxButtonClicked() {
         val token = token ?: return
         val totalAvailable = calculationMode.getMaxAvailableAmount() ?: return
-        view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
-        view?.showFeeViewVisible(isVisible = true)
-
-        showMaxButtonIfNeeded()
-
+        stateMachine.newAction(SendFeatureAction.MaxAmount)
         newSendAnalytics.setMaxButtonClicked(isClicked = true)
-
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showToast(TextContainer.Raw(message))
-
-        /*
-        * Calculating if we can pay with current token instead of already selected fee payer token
-        * */
-        executeSmartSelection(
-            token = requireToken(),
-            feePayerToken = requireToken(),
-            strategy = FeePayerSelectionStrategy.CORRECT_AMOUNT
-        )
     }
 
     override fun onFeeInfoClicked() {
@@ -434,7 +327,7 @@ class BridgeSendPresenter(
     override fun send() {
         val token = token ?: error("Token cannot be null!")
 
-        val address = recipientAddress.addressState.address
+        val address = initialData.recipient
         val currentAmount = calculationMode.getCurrentAmount()
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
         val lamports = calculationMode.getCurrentAmountLamports()
@@ -463,7 +356,7 @@ class BridgeSendPresenter(
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
-                val result = bridgeInteractor.sendTransaction(EthAddress(address), token, lamports)
+                val result = bridgeInteractor.sendTransaction(address, token, lamports)
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
@@ -478,35 +371,6 @@ class BridgeSendPresenter(
     private fun SearchResult.nicknameOrAddress(): String {
         return if (this is SearchResult.UsernameFound) getFormattedUsername()
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
-    }
-
-    /**
-     * The smart selection of the Fee Payer token is being executed in the following cases:
-     * 1. When the screen initializes. It checks if we need to create an account for the recipient
-     * 2. When user is typing the amount. We are checking what token we can choose for fee payment
-     * 3. When user updates the fee payer token manually. We don't do anything, only updating the info
-     * 4. When user clicks on MAX button. We are verifying if we need to reduce the amount for valid transaction
-     * 5. When user updated the source token. We are checking for valid fee payer and if the entered amount is not much
-     *
-     * @param useCache is responsible for checking the recipient account info.
-     * We are checking if we need to create an account for a user when initially loaded
-     * */
-    private fun executeSmartSelection(
-        token: Token.Active,
-        feePayerToken: Token.Active?,
-        strategy: FeePayerSelectionStrategy,
-        useCache: Boolean = true
-    ) {
-        feePayerJob?.cancel()
-        feePayerJob = launch {
-            feeRelayerManager.executeSmartSelection(
-                sourceToken = token,
-                feePayerToken = feePayerToken,
-                strategy = strategy,
-                tokenAmount = calculationMode.getCurrentAmount(),
-                useCache = useCache
-            )
-        }
     }
 
     private fun showMaxButtonIfNeeded() {
