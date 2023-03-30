@@ -6,7 +6,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Date
 import java.util.UUID
-import kotlin.properties.Delegates
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -14,6 +13,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -100,25 +100,39 @@ class BridgeSendPresenter(
         }
     }
 
-    private fun handleStaticState(state: SendState.Static) = view?.also {
+    private fun handleStaticState(state: SendState.Static) {
+        view?.setInputColor(R.color.text_night)
         when (state) {
-            SendState.Static.Empty -> TODO()
+            SendState.Static.Empty -> {}
             is SendState.Static.ReadyToSend -> {
-            }
-            is SendState.Static.TokenNotZero -> {
-                val bridgeToken = state.bridgeToken ?: return@also
+                val bridgeToken = state.bridgeToken ?: return
+                val token = bridgeToken.token
                 calculationMode.updateToken(bridgeToken.token)
                 calculationMode.updateInputAmount(state.amount.toPlainString())
-                it.showToken(bridgeToken.token)
-                it.setFeeLabel(resources.getString(R.string.send_fees))
-                it.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
+                view?.setBottomButtonText(null)
+                val textResId = R.string.send_format
+                val value = "${state.amount.formatToken(token.decimals)} ${token.tokenSymbol}"
+                view?.setSliderText(resources.getString(textResId, value))
+            }
+            is SendState.Static.TokenNotZero -> {
+                val bridgeToken = state.bridgeToken ?: return
+                calculationMode.updateToken(bridgeToken.token)
+                calculationMode.updateInputAmount(state.amount.toPlainString())
+
+                view?.setSliderText(null)
+                view?.showToken(bridgeToken.token)
+                view?.setFeeLabel(resources.getString(R.string.send_fees))
+                view?.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
             }
             is SendState.Static.TokenZero -> {
-                val bridgeToken = state.bridgeToken ?: return@also
-                it.showToken(bridgeToken.token)
-                it.setFeeLabel(resources.getString(R.string.send_fees))
-                it.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
-                state.fee
+                val bridgeToken = state.bridgeToken ?: return
+                calculationMode.updateToken(bridgeToken.token)
+                calculationMode.updateInputAmount("")
+
+                view?.setSliderText(null)
+                view?.showToken(bridgeToken.token)
+                view?.setFeeLabel(resources.getString(R.string.send_fees))
+                view?.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
             }
         }
     }
@@ -172,37 +186,6 @@ class BridgeSendPresenter(
             val userTokens = userInteractor.getNonZeroUserTokens().filter { it.mintAddress in supportedTokensMints }
             val isTokenChangeEnabled = userTokens.size > 1
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
-        }
-    }
-
-    private fun setupInitialToken(view: BridgeSendContract.View) {
-        launch {
-            // We should find SOL anyway because SOL is needed for Selection Mechanism
-            val userTokens = userInteractor.getNonZeroUserTokens()
-                .filter { it.mintAddress in supportedTokensMints }
-                .ifEmpty {
-                    // TODO PWN-7613 also block button as we can't send we do not have funds
-                    val usdCet = userInteractor.findTokenDataByAddress(ERC20Tokens.USDC.mintAddress) as Token.Other
-                    listOf(sendUiMapper.toTokenActiveStub(usdCet))
-                }
-
-            val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
-            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
-
-            val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
-            token = initialToken
-
-            val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
-            if (solToken == null) {
-                // we cannot proceed without SOL.
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                Timber.e(IllegalStateException("Couldn't find user's SOL account!"))
-                return@launch
-            }
-
-            initialData.initialAmount?.let { inputAmount ->
-                setupDefaultFields(inputAmount)
-            }
         }
     }
 
