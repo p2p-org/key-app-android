@@ -13,7 +13,6 @@ import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.image.bind
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bind
-import org.p2p.uikit.utils.loadUrl
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSendViaLinkReceiveFundsBinding
