@@ -20,6 +20,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SeedPhraseVerifyResult
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
+import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.toBase58Instance
 
@@ -40,12 +41,11 @@ class SeedPhraseInteractor(
         val paths = listOf(DerivationPath.BIP44CHANGE, DerivationPath.BIP44, DerivationPath.BIP32DEPRECATED)
         val derivableAccounts = mutableMapOf<DerivationPath, List<Account>>()
         paths.forEach { path ->
-            val data = authRepository.getDerivableAccounts(path, keys)
+            val data: Map<DerivationPath, List<Account>> = authRepository.getDerivableAccounts(path, keys)
             derivableAccounts += data
         }
-        /* Loading balances */
-        val balanceAccounts = derivableAccounts.values.flatten().map { it.publicKey.toBase58() }
-        val balances = if (balanceAccounts.isNotEmpty()) rpcRepository.getBalances(balanceAccounts) else emptyList()
+
+        val balances = loadBalances(derivableAccounts.values.toList())
 
         /* Map derivable accounts with balances */
         val result: List<DerivableAccount> = derivableAccounts.flatMap { (path, accounts) ->
@@ -53,6 +53,16 @@ class SeedPhraseInteractor(
         }
 
         result
+    }
+
+    private suspend fun loadBalances(derivableAccounts: List<List<Account>>): List<Pair<String, BigInteger>> {
+        val accountToGetBalance: List<Base58String> = derivableAccounts.flatten()
+            .map { it.publicKey.toBase58Instance() }
+        if (accountToGetBalance.isEmpty()) {
+            return emptyList()
+        }
+
+        return rpcRepository.getBalances(accountToGetBalance.map(Base58String::base58Value))
     }
 
     private fun mapDerivableAccounts(
@@ -68,7 +78,7 @@ class SeedPhraseInteractor(
         DerivableAccount(
             path = path,
             account = account,
-            total = total
+            totalInSol = total
         )
     }
 

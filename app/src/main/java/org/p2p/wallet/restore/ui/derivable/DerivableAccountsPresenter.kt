@@ -1,7 +1,7 @@
 package org.p2p.wallet.restore.ui.derivable
 
 import timber.log.Timber
-import kotlin.properties.Delegates
+import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
@@ -14,7 +14,6 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.impl.TokenPricesCoinGeckoRepository
 
@@ -23,22 +22,36 @@ class DerivableAccountsPresenter(
     private val seedPhraseInteractor: SeedPhraseInteractor,
     private val analytics: OnboardingAnalytics,
     private val restoreWalletAnalytics: RestoreWalletAnalytics,
-    private val userLocalRepository: UserLocalRepository,
     private val tokenPricesCoinGeckoRepository: TokenPricesCoinGeckoRepository
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
 
-    private var path: DerivationPath by Delegates.observable(DerivationPath.BIP44CHANGE) { _, _, newValue ->
-        filterAccountsByPath(newValue)
+    private var path: DerivationPath by observable(DerivationPath.BIP44CHANGE) { _, _, newValue ->
+        filterAccountsByPathAndShow(newValue)
     }
 
-    private val allAccounts = mutableListOf<DerivableAccount>()
+    private var allAccounts = mutableListOf<DerivableAccount>()
 
-    private var solPrice: TokenPrice? = null
+    private var solRate: TokenPrice? = null
 
     override fun attach(view: DerivableAccountsContract.View) {
         super.attach(view)
         loadSolRate()
+    }
+
+    private fun loadSolRate() {
+        launch {
+            try {
+                val tokenId = TokenId(SOL_COINGECKO_ID)
+                val solRate = tokenPricesCoinGeckoRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL)
+                    .also { solRate = it }
+
+                allAccounts = allAccounts.updateWithTotalInUsd(solRate).toMutableList()
+                filterAccountsByPathAndShow(path)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading SOL rate")
+            }
+        }
     }
 
     override fun setNewPath(path: DerivationPath) {
@@ -48,20 +61,19 @@ class DerivableAccountsPresenter(
     override fun loadData() {
         if (allAccounts.isNotEmpty()) return
 
-        view?.showLoading(true)
+        view?.showLoading(isLoading = true)
 
         launch {
             try {
                 val accounts = seedPhraseInteractor.getDerivableAccounts(secretKeys)
 
-                val updatedAccounts = if (solPrice != null) {
-                    accounts.map { it.copy(totalInUsd = solPrice!!.price) }
-                } else {
-                    accounts
-                }
+                val updatedWithRateAccounts = solRate?.let {
+                    accounts.updateWithTotalInUsd(it)
+                } ?: accounts
 
-                allAccounts += updatedAccounts
-                filterAccountsByPath(path)
+                allAccounts += updatedWithRateAccounts
+                filterAccountsByPathAndShow(path)
+
                 if (allAccounts.size > 1) {
                     analytics.logManyWalletFound(ScreenNames.OnBoarding.IMPORT_MANUAL)
                 } else {
@@ -73,6 +85,13 @@ class DerivableAccountsPresenter(
             } finally {
                 view?.showLoading(false)
             }
+        }
+    }
+
+    private fun List<DerivableAccount>.updateWithTotalInUsd(solRate: TokenPrice): List<DerivableAccount> {
+        return map {
+            val totalInUsd = it.totalInSol.multiply(solRate.price)
+            it.copy(totalInUsd = totalInUsd)
         }
     }
 
@@ -94,26 +113,7 @@ class DerivableAccountsPresenter(
         }
     }
 
-    private fun filterAccountsByPath(path: DerivationPath) {
-        launch {
-            val accounts = allAccounts.filter { it.path == path }
-            view?.showAccounts(accounts)
-        }
-    }
-
-    private fun loadSolRate() {
-        launch {
-            try {
-                val tokenId = TokenId(SOL_COINGECKO_ID)
-                val solRate = tokenPricesCoinGeckoRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL).also {
-                    solPrice = it
-                }
-
-                val updatedAccounts = allAccounts.map { it.copy(totalInUsd = solRate.price) }
-                view?.showAccounts(updatedAccounts)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error loading SOL rate")
-            }
-        }
+    private fun filterAccountsByPathAndShow(path: DerivationPath) {
+        view?.showAccounts(allAccounts.filter { it.path == path })
     }
 }

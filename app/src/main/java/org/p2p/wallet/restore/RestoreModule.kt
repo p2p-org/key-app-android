@@ -21,7 +21,6 @@ object RestoreModule : InjectionModule {
                 seedPhraseInteractor = get(),
                 analytics = get(),
                 restoreWalletAnalytics = get(),
-                userLocalRepository = get(),
                 tokenPricesCoinGeckoRepository = get()
             )
         }
