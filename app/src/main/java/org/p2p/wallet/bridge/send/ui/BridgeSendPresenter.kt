@@ -7,7 +7,6 @@ import java.math.BigDecimal
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -26,6 +25,7 @@ import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
+import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.common.di.AppScope
@@ -75,7 +75,7 @@ class BridgeSendPresenter(
     private val sendUiMapper = SendUiMapper()
     private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
     private val selectedToken: Token.Active
-        get() = initialData.initialToken.token
+        get() = currentState.lastStaticState.bridgeToken?.token ?: initialData.initialToken.token
     private val initialAmount: BigDecimal?
         get() = initialData.initialAmount
 
@@ -138,13 +138,6 @@ class BridgeSendPresenter(
         when (state) {
             is SendState.Exception.Feature -> TODO()
             is SendState.Exception.Other -> TODO()
-        }
-    }
-
-    private var token: Token.Active? by Delegates.observable(null) { _, _, newToken ->
-        if (newToken != null) {
-            view?.showToken(newToken)
-            calculationMode.updateToken(newToken)
         }
     }
 
