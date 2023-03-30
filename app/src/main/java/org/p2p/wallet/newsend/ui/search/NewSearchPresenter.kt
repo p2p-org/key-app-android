@@ -229,6 +229,7 @@ class NewSearchPresenter(
     private fun loadFeeLimits() {
         launch {
             try {
+                view?.showLoading(isLoading = true)
                 val feeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
                 val isSendViaLinkAvailable = feeLimits.hasFreeAccountCreationUsages()
                 val state = if (isSendViaLinkAvailable) SvlWidgetState.ENABLED else SvlWidgetState.DISABLED
@@ -236,6 +237,8 @@ class NewSearchPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading free transaction limits")
                 view?.updateLinkWidgetState(SvlWidgetState.DISABLED)
+            } finally {
+                view?.showLoading(isLoading = false)
             }
         }
     }

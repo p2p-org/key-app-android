@@ -21,7 +21,7 @@ class ReceiveViaLinkMapper {
             text = TextContainer(address)
         )
 
-    fun mapLinkCreationDate(context: Context): TextViewCellModel {
+    fun mapCurrentDate(context: Context): TextViewCellModel {
         val dateText = DateTimeUtils.getDateFormatted(System.currentTimeMillis(), context)
         return TextViewCellModel.Raw(
             text = TextContainer(dateText)

@@ -16,7 +16,6 @@ import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
-import org.p2p.wallet.newsend.interactor.SendViaLinkInteractor
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.ui.NewSendContract
@@ -27,6 +26,7 @@ import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationContract
 import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
 import org.p2p.wallet.newsend.ui.search.NewSearchPresenter
+import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 import org.p2p.wallet.svl.ui.send.SendViaLinkContract
 import org.p2p.wallet.svl.ui.send.SendViaLinkPresenter
 
@@ -70,7 +70,6 @@ object SendModule : InjectionModule {
         factoryOf(::ReceiveViaLinkPresenter) bind ReceiveViaLinkContract.Presenter::class
         factoryOf(::ReceiveViaLinkInteractor)
     }
-
     private fun Module.initDataLayer() {
         factoryOf(::RecipientsDatabaseRepository) bind RecipientsLocalRepository::class
         factoryOf(::FeeRelayerViaLinkInteractor)

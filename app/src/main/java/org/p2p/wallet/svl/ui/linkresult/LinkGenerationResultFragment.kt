@@ -5,10 +5,13 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendLinkGenerationResultBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -31,6 +34,11 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
     private val state: LinkGenerationState by args(EXTRA_STATE)
 
     private val binding: FragmentSendLinkGenerationResultBinding by viewBinding()
+
+    // TODO: If complex logic will be needed,
+    // TODO: consider adding presenter class and move logic and these dependencies there
+    private val usernameInteractor: UsernameInteractor by inject()
+    private val tokenKeyProvider: TokenKeyProvider by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,10 +63,14 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
                 textViewSubtitle.text = state.formattedLink
 
                 buttonAction.setText(R.string.main_share)
-                buttonAction.setOnClickListener { shareLink(state.formattedLink) }
+                buttonAction.setOnClickListener {
+                    val link = buildShareLink(state.formattedLink, state.amount)
+                    shareLink(link)
+                }
 
                 imageViewCopy.setOnClickListener {
-                    requireContext().copyToClipBoard(state.formattedLink)
+                    val link = buildShareLink(state.formattedLink, state.amount)
+                    requireContext().copyToClipBoard(link)
                     showUiKitSnackBar(messageResId = R.string.send_via_link_generation_copied)
                 }
             }
@@ -75,5 +87,15 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
 
     private fun shareLink(formattedLink: String) {
         requireContext().shareText(formattedLink)
+    }
+
+    private fun buildShareLink(formattedLink: String, amount: String): String {
+        val username = usernameInteractor.getUsername()
+        val sender = username?.fullUsername ?: tokenKeyProvider.publicKey
+        return if (username != null) {
+            getString(R.string.send_via_link_share_message, sender, amount, formattedLink)
+        } else {
+            getString(R.string.send_via_link_share_message_no_username, sender, amount, formattedLink)
+        }
     }
 }

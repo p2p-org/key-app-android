@@ -49,7 +49,7 @@ class ReceiveViaLinkPresenter(
                     // TODO: get address from account
                     sentFromAddress = receiveViaLinkMapper.mapSenderAddress(emptyString()),
                     tokenIcon = receiveViaLinkMapper.mapTokenIcon(state.token),
-                    linkCreationDate = receiveViaLinkMapper.mapLinkCreationDate(context)
+                    currentDate = receiveViaLinkMapper.mapCurrentDate(context)
                 )
             }
             is TemporaryAccountState.EmptyBalance -> {

@@ -9,6 +9,8 @@
     <string name="send_via_link_return_back">If you want to get your money back just open one-time link by yourself</string>
     <string name="send_via_link_limit_exceeded">Limit is 30 one-time links per day. Try tomorrow</string>
     <string name="send_via_link_generation_copied">✅ Your one-time link is copied</string>
+    <string name="send_via_link_share_message">%1s sent you %2s via Key App. Follow the link to claim your funds: %3s</string>
+    <string name="send_via_link_share_message_no_username">The user %1s sent you %2s via Key App. Follow the link to claim your funds: %3s</string>
     <string name="send_dont_need_the_address">You don\'t need to know the address</string>
 
     <string name="send_via_link_receive_funds_title">Receive funds via one-time link</string>
@@ -20,5 +22,8 @@
     <string name="send_via_link_error_already_claimed_title">This one-time link is already claimed</string>
     <string name="send_via_link_error_already_claimed_subtitle">You can\'t receive funds with it</string>
     <string name="send_via_link_error_already_claimed_button">Okay</string>
+
+    <string name="send_via_link_error_failed_parsing_title">Failed to get data</string>
+    <string name="send_via_link_error_failed_parsing_subtitle">Refresh the page or check back later</string>
 
 </resources>

@@ -37,12 +37,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="60dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewMessage"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.13" />
 
     <TextView
         android:id="@+id/textViewDebug"
@@ -55,6 +54,7 @@
         app:layout_constraintTop_toBottomOf="@id/widgetSendDetails"
         tools:text="Balance account" />
 
+    <!-- For debug purposes only -->
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switchDebug"
         android:layout_width="match_parent"
@@ -63,7 +63,9 @@
         android:paddingHorizontal="32dp"
         android:text="Simulate transaction"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
-        app:layout_constraintTop_toBottomOf="@id/textViewDebug" />
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/textViewDebug"
+        tools:ignore="HardcodedText" />
 
     <org.p2p.uikit.components.UiKitSliderSolidButton
         android:id="@+id/sliderSend"

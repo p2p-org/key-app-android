@@ -80,9 +80,9 @@ class SendViaLinkReceiveFundsBottomSheet :
         tokenAmount: TextViewCellModel,
         sentFromAddress: TextViewCellModel,
         tokenIcon: ImageViewCellModel,
-        linkCreationDate: TextViewCellModel
+        currentDate: TextViewCellModel
     ) = with(binding) {
-        textViewSubtitle.bind(linkCreationDate)
+        textViewSubtitle.bind(currentDate)
         imageViewTokenIcon.bind(tokenIcon)
         textViewTokenAmount.bind(tokenAmount)
     }
@@ -91,6 +91,7 @@ class SendViaLinkReceiveFundsBottomSheet :
         when (state) {
             is SendViaLinkClaimingState.ReadyToClaim -> {
                 groupTitle.isVisible = true
+
                 layoutTransactionDetails.isVisible = true
                 progressStateTransaction.isVisible = false
                 imageViewBanner.isVisible = false
@@ -132,6 +133,9 @@ class SendViaLinkReceiveFundsBottomSheet :
             }
             is SendViaLinkClaimingState.ParsingFailed -> {
                 groupTitle.isVisible = true
+                textViewTitle.setText(R.string.send_via_link_error_failed_parsing_title)
+                textViewSubtitle.setText(R.string.send_via_link_error_failed_parsing_subtitle)
+
                 imageViewBanner.isVisible = true
                 progressStateTransaction.isVisible = false
                 layoutClaimSuccess.root.isVisible = false

@@ -16,7 +16,7 @@ interface ReceiveViaLinkContract {
             tokenAmount: TextViewCellModel,
             sentFromAddress: TextViewCellModel,
             tokenIcon: ImageViewCellModel,
-            linkCreationDate: TextViewCellModel
+            currentDate: TextViewCellModel
         )
 
         fun renderState(state: SendViaLinkClaimingState)
