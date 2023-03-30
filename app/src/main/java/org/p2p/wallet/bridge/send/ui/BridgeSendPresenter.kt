@@ -131,6 +131,8 @@ class BridgeSendPresenter(
                 view?.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
             }
             is SendState.Static.Initialize -> {
+                val bridgeToken = state.bridgeToken ?: return
+                calculationMode.updateToken(bridgeToken.token)
                 view?.setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
             }
         }
