@@ -21,7 +21,11 @@
 
     <string name="send_via_link_error_already_claimed_title">This one-time link is already claimed</string>
     <string name="send_via_link_error_already_claimed_subtitle">You can\'t receive funds with it</string>
-    <string name="send_via_link_error_already_claimed_button">Okay</string>
+
+    <string name="send_via_link_error_broken_link_title">This link is broken</string>
+    <string name="send_via_link_error_broken_link_subtitle">You can\'t receive funds with it</string>
+
+    <string name="send_via_link_error_okay_button">Okay</string>
 
     <string name="send_via_link_error_failed_parsing_title">Failed to get data</string>
     <string name="send_via_link_error_failed_parsing_subtitle">Refresh the page or check back later</string>

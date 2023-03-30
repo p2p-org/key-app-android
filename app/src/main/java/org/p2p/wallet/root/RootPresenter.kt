@@ -18,6 +18,7 @@ import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.svl.model.TemporaryAccountState
+import org.p2p.wallet.svl.ui.error.SendViaLinkError
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.user.worker.TokensDataWorker
 
@@ -89,7 +90,12 @@ class RootPresenter(
         parseJob = launch {
             try {
                 val state = receiveViaLinkInteractor.parseAccountFromLink(link)
-                view?.showTransferLinkBottomSheet(state, link)
+
+                if (state is TemporaryAccountState.BrokenLink) {
+                    view?.showLinkError(SendViaLinkError.BROKEN_LINK)
+                } else {
+                    view?.showTransferLinkBottomSheet(state, link)
+                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error parsing link")
                 view?.showTransferLinkBottomSheet(TemporaryAccountState.ParsingFailed, link)
