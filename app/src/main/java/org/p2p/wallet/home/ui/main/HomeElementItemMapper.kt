@@ -28,7 +28,7 @@ class HomeElementItemMapper(
 
         result += ethereumTokens.map { it ->
             val claimStatus = ethereumBundleStatuses[it.publicKey]
-            HomeElementItem.Claim(it, isClaimEnabled = claimStatus?.all { it?.canBeClaimed() == true } ?: false)
+            HomeElementItem.Claim(it, isClaimEnabled = claimStatus?.all { it?.canBeClaimed() == true } ?: true)
         }
 
         result += visibleTokens.map { HomeElementItem.Shown(it) }
