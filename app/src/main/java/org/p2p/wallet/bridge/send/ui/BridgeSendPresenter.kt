@@ -29,7 +29,6 @@ import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
-import org.p2p.wallet.bridge.send.statemachine.token
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -72,6 +71,11 @@ class BridgeSendPresenter(
 
     private var currentState: SendState = SendState.Static.Empty
     private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
+
+    private val calculationMode = CalculationMode(
+        sendModeProvider = sendModeProvider,
+        lessThenMinString = resources.getString(R.string.common_less_than_minimum)
+    )
 
     override fun attach(view: BridgeSendContract.View) {
         super.attach(view)
@@ -178,11 +182,6 @@ class BridgeSendPresenter(
         }
     }
 
-    private val calculationMode = CalculationMode(
-        sendModeProvider = sendModeProvider,
-        lessThenMinString = resources.getString(R.string.common_less_than_minimum)
-    )
-
     // di inject initialData
     override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) = Unit
 
@@ -193,6 +192,9 @@ class BridgeSendPresenter(
             view.setSwitchLabel(switchSymbol)
             view.setMainAmountLabel(mainSymbol)
         }
+        val token = initialData.initialToken?.token
+        token?.let { calculationMode.updateToken(token) }
+
         initialData.initialAmount?.let { inputAmount ->
             setupDefaultFields(inputAmount)
         }
