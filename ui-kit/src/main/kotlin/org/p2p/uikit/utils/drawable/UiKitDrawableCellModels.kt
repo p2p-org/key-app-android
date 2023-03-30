@@ -4,9 +4,9 @@ import androidx.annotation.ColorRes
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
 
 object UiKitDrawableCellModels {
-    fun shapeCircleWithTint(@ColorRes colorRes: Int): DrawableCellModel =
+    fun shapeCircleWithTint(@ColorRes tint: Int): DrawableCellModel =
         DrawableCellModel(
             drawable = shapeDrawable(shapeCircle()),
-            tint = colorRes
+            tint = tint
         )
 }
