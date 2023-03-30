@@ -7,6 +7,7 @@ import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
 class NewTokenActionHandler(
@@ -24,5 +25,5 @@ class NewTokenActionHandler(
         val newToken = action.token as SendToken.Bridge
 
         emit(SendState.Static.TokenZero(newToken, null))
-    }.flatMapMerge { feeLoader.updateFee(lastStaticState) }
+    }.flatMapMerge { feeLoader.updateFee(it.lastStaticState) }
 }
