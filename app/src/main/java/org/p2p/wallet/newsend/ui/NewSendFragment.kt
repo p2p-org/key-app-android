@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
@@ -20,7 +21,8 @@ import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsBottomSheet
-import org.p2p.wallet.newsend.ui.dialogs.FreeTransactionsDetailsBottomSheet
+import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
+import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
@@ -33,7 +35,6 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
-import java.math.BigDecimal
 
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
@@ -149,7 +150,7 @@ class NewSendFragment :
     }
 
     override fun showFreeTransactionsInfo() {
-        FreeTransactionsDetailsBottomSheet.show(childFragmentManager)
+        SendFreeTransactionsDetailsBottomSheet.show(childFragmentManager, openedFrom = OpenedFrom.SEND)
     }
 
     override fun updateInputValue(textValue: String, forced: Boolean) {
