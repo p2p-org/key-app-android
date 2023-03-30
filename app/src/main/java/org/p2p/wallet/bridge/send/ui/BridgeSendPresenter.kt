@@ -67,7 +67,6 @@ class BridgeSendPresenter(
     private val newSendAnalytics: NewSendAnalytics,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
-
     private val initialData: SendInitialData.Bridge,
     private val stateMachine: SendStateMachine,
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
@@ -120,6 +119,12 @@ class BridgeSendPresenter(
                 it.setFeeLabel(resources.getString(R.string.send_fees))
                 it.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
                 state.fee
+            }
+            is SendState.Static.Initialize -> {
+                view?.setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
+                initialData.initialAmount?.let { inputAmount ->
+                    setupDefaultFields(inputAmount)
+                }
             }
         }
     }
@@ -199,37 +204,6 @@ class BridgeSendPresenter(
             val userTokens = userInteractor.getNonZeroUserTokens().filter { it.mintAddress in supportedTokensMints }
             val isTokenChangeEnabled = userTokens.size > 1
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
-        }
-    }
-
-    private fun setupInitialToken(view: BridgeSendContract.View) {
-        launch {
-            // We should find SOL anyway because SOL is needed for Selection Mechanism
-            val userTokens = userInteractor.getNonZeroUserTokens()
-                .filter { it.mintAddress in supportedTokensMints }
-                .ifEmpty {
-                    // TODO PWN-7613 also block button as we can't send we do not have funds
-                    val usdCet = userInteractor.findTokenDataByAddress(ERC20Tokens.USDC.mintAddress) as Token.Other
-                    listOf(sendUiMapper.toTokenActiveStub(usdCet))
-                }
-
-            val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
-            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
-
-            val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
-            token = initialToken
-
-            val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
-            if (solToken == null) {
-                // we cannot proceed without SOL.
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                Timber.e(IllegalStateException("Couldn't find user's SOL account!"))
-                return@launch
-            }
-
-            initialData.initialAmount?.let { inputAmount ->
-                setupDefaultFields(inputAmount)
-            }
         }
     }
 

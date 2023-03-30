@@ -3,17 +3,25 @@ package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
+import org.p2p.core.token.Token
+import org.p2p.ethereumkit.external.model.ERC20Tokens
+import org.p2p.wallet.bridge.send.mapper.SendUiMapper
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
-import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
+import org.p2p.wallet.bridge.send.statemachine.model.SendToken
+import org.p2p.wallet.user.interactor.UserInteractor
 
 class InitFeatureActionHandler(
     private val feeLoader: SendBridgeFeeLoader,
     private val initialData: SendInitialData.Bridge,
+    private val userInteractor: UserInteractor,
+    private val sendUiMapper: SendUiMapper,
 ) : SendActionHandler {
+
+    private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
 
     override fun canHandle(
         newEvent: SendFeatureAction,
@@ -24,10 +32,22 @@ class InitFeatureActionHandler(
         lastStaticState: SendState.Static,
         newAction: SendFeatureAction
     ): Flow<SendState> = flow {
+        val userTokens = userInteractor.getNonZeroUserTokens()
+            .filter { it.mintAddress in supportedTokensMints }
+            .ifEmpty {
+                // TODO PWN-7613 also block button as we can't send we do not have funds
+                val usdCet = userInteractor.findTokenDataByAddress(ERC20Tokens.USDC.mintAddress) as Token.Other
+                listOf(sendUiMapper.toTokenActiveStub(usdCet))
+            }
+
+        val isTokenChangeEnabled = userTokens.size > 1
+        val initialToken = initialData.initialToken ?: SendToken.Bridge(userTokens.first())
+
+        emit(SendState.Static.Initialize(initialToken, isTokenChangeEnabled))
         val initialState = if (initialData.initialAmount == null) {
-            SendState.Static.TokenZero(initialData.initialToken, null)
+            SendState.Static.TokenZero(initialToken, null)
         } else {
-            SendState.Static.TokenNotZero(initialData.initialToken, initialData.initialAmount)
+            SendState.Static.TokenNotZero(initialToken, initialData.initialAmount)
         }
         emit(initialState)
     }.flatMapMerge { feeLoader.updateFee(lastStaticState) }

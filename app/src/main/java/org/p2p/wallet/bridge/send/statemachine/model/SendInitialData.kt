@@ -6,7 +6,7 @@ import org.p2p.core.wrapper.eth.EthAddress
 sealed interface SendInitialData {
 
     data class Bridge(
-        val initialToken: SendToken.Bridge,
+        val initialToken: SendToken.Bridge?,
         val initialAmount: BigDecimal?,
         val recipient: EthAddress,
     )

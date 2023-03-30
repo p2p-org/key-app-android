@@ -54,7 +54,9 @@ object BridgeSendModule : InjectionModule {
                 add(
                     InitFeatureActionHandler(
                         feeLoader = feeLoader,
-                        initialData = initialData
+                        initialData = initialData,
+                        userInteractor = get(),
+                        sendUiMapper = get()
                     )
                 )
                 add(
