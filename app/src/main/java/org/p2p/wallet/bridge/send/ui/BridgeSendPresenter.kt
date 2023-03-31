@@ -101,52 +101,53 @@ class BridgeSendPresenter(
 
     private fun handleStaticState(state: SendState.Static) {
         when (state) {
-            SendState.Static.Empty -> {}
+            SendState.Static.Empty -> Unit
             is SendState.Static.ReadyToSend -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 val token = bridgeToken.token
-                calculationMode.updateToken(bridgeToken.token)
-                calculationMode.updateTokenAmount(state.amount.toPlainString())
-                setBottomButtonText(null)
+                updateTokenAndInput(bridgeToken, state.amount)
+                handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
+
                 val textResId = R.string.send_format
                 val value = "${state.amount.formatToken(token.decimals)} ${token.tokenSymbol}"
-                setSliderText(resources.getString(textResId, value))
-                handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
+                updateButtons(
+                    errorButton = null,
+                    sliderButton = resources.getString(textResId, value)
+                )
             }
             is SendState.Static.TokenNotZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
-                calculationMode.updateToken(bridgeToken.token)
-                calculationMode.updateTokenAmount(state.amount.toPlainString())
-
-                setSliderText(null)
-                showToken(bridgeToken.token)
-                setFeeLabel(resources.getString(R.string.send_fees))
-                setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
+                updateTokenAndInput(bridgeToken, state.amount)
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
+                updateButtons(
+                    errorButton = TextContainer.Res(R.string.main_enter_the_amount),
+                    sliderButton = null
+                )
             }
             is SendState.Static.TokenZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
-                calculationMode.updateToken(bridgeToken.token)
-                calculationMode.updateTokenAmount(emptyString())
-
-                setSliderText(null)
-                showToken(bridgeToken.token)
-                setFeeLabel(resources.getString(R.string.send_fees))
-                setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
+                updateTokenAndInput(bridgeToken, BigDecimal.ZERO)
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = true)
+                updateButtons(
+                    errorButton = TextContainer.Res(R.string.main_enter_the_amount),
+                    sliderButton = null
+                )
             }
             is SendState.Static.Initialize -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 feeLimit = state.feeLimit
-                calculationMode.updateToken(bridgeToken.token)
-                setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
+                updateTokenAndInput(bridgeToken, BigDecimal.ZERO)
                 handleUpdateFee(sendFee = null, isInputEmpty = true)
+
+                setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
             }
         }
-        view?.showFeeViewLoading(isLoading = false)
-        view?.setInputColor(R.color.text_night)
-        view?.setMaxButtonVisible(isVisible = true)
-        view?.updateInputValue(calculationMode.inputAmount, true)
+        view?.apply {
+            showFeeViewVisible(isVisible = true)
+            setFeeLabel(resources.getString(R.string.send_fees))
+            showFeeViewLoading(isLoading = false)
+            setInputColor(R.color.text_night)
+        }
     }
 
     private fun handleLoadingState(state: SendState.Loading) {
@@ -157,8 +158,10 @@ class BridgeSendPresenter(
                     showFeeViewVisible(isVisible = true)
                     setFeeLabel(resources.getString(R.string.send_fees))
                     showFeeViewLoading(isLoading = true)
-                    setSliderText(null)
-                    setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
+                    updateButtons(
+                        errorButton = TextContainer.Res(R.string.send_calculating_fees),
+                        sliderButton = null
+                    )
                 }
             }
         }
@@ -175,13 +178,20 @@ class BridgeSendPresenter(
                     when (val featureException = state.featureException) {
                         is SendFeatureException.FeeLoadingError -> {
                             showFeeViewVisible(false)
-                            setBottomButtonText(TextContainer.Res(R.string.send_cant_calculate_fees_error))
+                            updateButtons(
+                                errorButton = TextContainer.Res(R.string.send_cant_calculate_fees_error),
+                                sliderButton = null
+                            )
                         }
                         is SendFeatureException.NotEnoughAmount -> {
                             setInputColor(R.color.text_rose)
-                            calculationMode.updateTokenAmount(featureException.invalidAmount.toPlainString())
-                            view?.updateInputValue(calculationMode.inputAmount, true)
-                            setBottomButtonText(TextContainer.Res(R.string.error_insufficient_funds))
+
+                            val bridgeToken = state.lastStaticState.bridgeToken ?: return
+                            updateTokenAndInput(bridgeToken, featureException.invalidAmount)
+                            updateButtons(
+                                errorButton = TextContainer.Res(R.string.error_insufficient_funds),
+                                sliderButton = null
+                            )
                         }
                     }
                 }
@@ -225,6 +235,18 @@ class BridgeSendPresenter(
             calculationMode.updateInputAmount(newTextValue)
             disableInputs()
         }
+    }
+
+    private fun BridgeSendContract.View.updateButtons(errorButton: TextContainer?, sliderButton: String?) {
+        setSliderText(sliderButton)
+        setBottomButtonText(errorButton)
+    }
+
+    private fun BridgeSendContract.View.updateTokenAndInput(token: SendToken.Bridge, amount: BigDecimal) {
+        showToken(token.token)
+        calculationMode.updateToken(token.token)
+        calculationMode.updateTokenAmount(amount.toPlainString())
+        updateInputValue(calculationMode.inputAmount, true)
     }
 
     private fun BridgeSendContract.View.handleUpdateFee(sendFee: SendFee?, isInputEmpty: Boolean) {
