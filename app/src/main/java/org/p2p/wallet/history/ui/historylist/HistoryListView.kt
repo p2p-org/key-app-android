@@ -12,7 +12,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.core.common.TextContainer
 import org.p2p.core.glide.GlideManager
-import org.p2p.core.utils.emptyString
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.recycler.RoundedDecoration
@@ -20,8 +19,11 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.LayoutHistoryListBinding
+import org.p2p.wallet.history.ui.historylist.HistoryListViewContract.HistoryListViewType
+import org.p2p.wallet.history.ui.historylist.HistoryListViewContract.View.HistoryListViewClickListener
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
+import org.p2p.wallet.utils.unsafeLazy
 
 class HistoryListView @JvmOverloads constructor(
     context: Context,
@@ -31,22 +33,21 @@ class HistoryListView @JvmOverloads constructor(
 
     private val binding = inflateViewBinding<LayoutHistoryListBinding>()
 
-    private var tokenMintAddress: String = emptyString()
+    private var listViewType: HistoryListViewType = HistoryListViewType.AllHistory
 
     private val glideManager: GlideManager by inject()
 
-    private val historyAdapter: HistoryAdapter by lazy {
+    private val historyAdapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
             glideManager = glideManager,
             onHistoryItemClicked = presenter::onItemClicked,
-            onRetryClicked = { presenter.loadHistory(tokenMintAddress) },
+            onRetryClicked = { presenter.loadHistory(listViewType) },
         )
     }
 
     private val presenter: HistoryListViewContract.Presenter by inject()
 
-    private var onTransactionClickListener: (String) -> Unit = {}
-    private var onSellTransactionClickListener: (String) -> Unit = {}
+    private var clickListener: HistoryListViewClickListener? = null
 
     init {
         doOnAttach { presenter.attach(this) }
@@ -54,73 +55,68 @@ class HistoryListView @JvmOverloads constructor(
     }
 
     fun bind(
-        onTransactionClicked: (String) -> Unit,
-        onSellTransactionClicked: (String) -> Unit,
-        mintAddress: String,
+        clickListener: HistoryListViewClickListener,
+        listType: HistoryListViewType,
     ) {
-        tokenMintAddress = mintAddress
-        onTransactionClickListener = onTransactionClicked
-        onSellTransactionClickListener = onSellTransactionClicked
+        this.listViewType = listType
+        this.clickListener = clickListener
         bindView()
     }
 
-    private fun bindView() {
-        with(binding) {
-            presenter.attach(tokenMintAddress)
-            errorStateLayout.buttonRetry.setOnClickListener {
-                presenter.refreshHistory(tokenMintAddress)
-            }
-            val scrollListener = EndlessScrollListener(
-                layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
-                loadNextPage = { presenter.loadNextHistoryPage(tokenMintAddress) }
-            )
-            with(historyRecyclerView) {
-                addOnScrollListener(scrollListener)
-                attachAdapter(historyAdapter)
-                addItemDecoration(RoundedDecoration(16f.toPx()))
-            }
-            refreshLayout.setOnRefreshListener {
-                presenter.refreshHistory(tokenMintAddress)
-                scrollListener.reset()
-            }
+    private fun bindView() = with(binding) {
+        presenter.attach(listViewType)
+        errorStateLayout.buttonRetry.setOnClickListener {
+            presenter.refreshHistory(listViewType)
         }
-        presenter.loadHistory(tokenMintAddress)
+        val scrollListener = EndlessScrollListener(
+            layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
+            loadNextPage = { presenter.loadNextHistoryPage(listViewType) }
+        )
+        with(historyRecyclerView) {
+            addOnScrollListener(scrollListener)
+            attachAdapter(historyAdapter)
+            addItemDecoration(RoundedDecoration(16f.toPx()))
+        }
+        refreshLayout.setOnRefreshListener {
+            presenter.refreshHistory(listViewType)
+            scrollListener.reset()
+        }
+        loadHistory()
     }
 
     fun loadHistory() {
-        presenter.loadHistory(tokenMintAddress)
+        presenter.loadHistory(listViewType)
     }
 
-    override fun showPagingState(state: PagingState) {
+    override fun showPagingState(state: PagingState) = with(binding) {
         historyAdapter.setPagingState(state)
         val isHistoryEmpty = historyAdapter.isEmpty()
-        with(binding) {
-            when (state) {
-                is PagingState.InitialLoading -> {
-                    shimmerView.root.isVisible = true
-                    refreshLayout.isVisible = false
-                }
-                is PagingState.Idle -> {
-                    shimmerView.root.isVisible = false
-                    refreshLayout.isVisible = true
-                    errorStateLayout.root.isVisible = false
-                    emptyStateLayout.root.isVisible = isHistoryEmpty
-                    historyRecyclerView.isVisible = !isHistoryEmpty
-                }
-                is PagingState.Loading -> {
-                    shimmerView.root.isVisible = isHistoryEmpty
-                    refreshLayout.isVisible = true
-                    errorStateLayout.root.isVisible = false
-                    emptyStateLayout.root.isVisible = false
-                    historyRecyclerView.isVisible = !isHistoryEmpty
-                }
-                is PagingState.Error -> {
-                    shimmerView.root.isVisible = false
-                    refreshLayout.isVisible = true
-                    errorStateLayout.root.isVisible = isHistoryEmpty
-                    emptyStateLayout.root.isVisible = false
-                    historyRecyclerView.isVisible = !isHistoryEmpty
-                }
+
+        when (state) {
+            is PagingState.InitialLoading -> {
+                shimmerView.root.isVisible = true
+                refreshLayout.isVisible = false
+            }
+            is PagingState.Idle -> {
+                shimmerView.root.isVisible = false
+                refreshLayout.isVisible = true
+                errorStateLayout.root.isVisible = false
+                emptyStateLayout.root.isVisible = isHistoryEmpty
+                historyRecyclerView.isVisible = !isHistoryEmpty
+            }
+            is PagingState.Loading -> {
+                shimmerView.root.isVisible = isHistoryEmpty
+                refreshLayout.isVisible = true
+                errorStateLayout.root.isVisible = false
+                emptyStateLayout.root.isVisible = false
+                historyRecyclerView.isVisible = !isHistoryEmpty
+            }
+            is PagingState.Error -> {
+                shimmerView.root.isVisible = false
+                refreshLayout.isVisible = true
+                errorStateLayout.root.isVisible = isHistoryEmpty
+                emptyStateLayout.root.isVisible = false
+                historyRecyclerView.isVisible = !isHistoryEmpty
             }
         }
     }
@@ -129,6 +125,7 @@ class HistoryListView @JvmOverloads constructor(
         with(binding) {
             historyAdapter.submitList(history)
             historyRecyclerView.invalidateItemDecorations()
+
             val isHistoryEmpty = historyAdapter.isEmpty()
             emptyStateLayout.root.isVisible = isHistoryEmpty
             historyRecyclerView.isVisible = !isHistoryEmpty
@@ -136,11 +133,15 @@ class HistoryListView @JvmOverloads constructor(
     }
 
     override fun onTransactionClicked(transactionId: String) {
-        onTransactionClickListener(transactionId)
+        clickListener?.onTransactionClicked(transactionId)
     }
 
     override fun onSellTransactionClicked(transactionId: String) {
-        onSellTransactionClickListener(transactionId)
+        clickListener?.onSellTransactionClicked(transactionId)
+    }
+
+    override fun onUserSendLinksClicked() {
+        clickListener?.onUserSendLinksClicked()
     }
 
     override fun showRefreshing(isRefreshing: Boolean) = with(binding) {

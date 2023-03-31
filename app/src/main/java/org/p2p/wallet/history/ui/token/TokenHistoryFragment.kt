@@ -14,6 +14,8 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
+import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
+import org.p2p.wallet.history.ui.historylist.HistoryListViewContract.HistoryListViewType
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
@@ -32,6 +34,7 @@ import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
+import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -42,7 +45,8 @@ private const val KEY_RESULT_NETWORK = "KEY_RESULT_NETWORK"
 
 class TokenHistoryFragment :
     BaseMvpFragment<TokenHistoryContract.View, TokenHistoryContract.Presenter>(R.layout.fragment_token_history),
-    TokenHistoryContract.View {
+    TokenHistoryContract.View,
+    HistoryListViewContract.View.HistoryListViewClickListener {
 
     companion object {
         fun create(tokenForHistory: Token.Active): TokenHistoryFragment =
@@ -80,13 +84,10 @@ class TokenHistoryFragment :
         totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
-        binding.layoutHistoryList.apply {
-            bind(
-                onTransactionClicked = presenter::onTransactionClicked,
-                onSellTransactionClicked = presenter::onSellTransactionClicked,
-                mintAddress = tokenForHistory.mintAddress
-            )
-        }
+        binding.layoutHistoryList.bind(
+            clickListener = this@TokenHistoryFragment,
+            listType = HistoryListViewType.HistoryForToken(tokenForHistory.mintAddress.toBase58Instance())
+        )
         childFragmentManager.setFragmentResultListener(
             KEY_REQUEST_NETWORK,
             viewLifecycleOwner,
@@ -146,6 +147,16 @@ class TokenHistoryFragment :
             }
         }
     }
+
+    override fun onTransactionClicked(transactionId: String) {
+        presenter.onTransactionClicked(transactionId)
+    }
+
+    override fun onSellTransactionClicked(transactionId: String) {
+        presenter.onSellTransactionClicked(transactionId)
+    }
+
+    override fun onUserSendLinksClicked() = Unit
 
     override fun showError(@StringRes resId: Int, argument: String) {
         showErrorDialog(getString(resId, argument))
