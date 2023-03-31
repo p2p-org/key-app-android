@@ -41,7 +41,7 @@ class SearchInteractor(
 
     suspend fun searchByAddress(
         wrappedAddress: PublicKey,
-        sourceToken: Token.Active? = null,
+        sourceToken: Token.Active? = null
     ): SearchResult {
         val address = wrappedAddress.toBase58()
         // assuming we are sending direct token and verify the recipient address is valid direct or SOL address
