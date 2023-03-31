@@ -5,11 +5,8 @@ import android.content.SharedPreferences
 import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.crypto.MnemonicException
 import timber.log.Timber
-import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
-import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
-import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.scaleLong
 import org.p2p.solanaj.core.Account
@@ -23,8 +20,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SeedPhraseVerifyResult
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.user.repository.prices.TokenId
-import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
+import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.toBase58Instance
 
@@ -36,24 +32,20 @@ class SeedPhraseInteractor(
     private val rpcRepository: RpcBalanceRepository,
     private val tokenProvider: TokenKeyProvider,
     private val usernameInteractor: UsernameInteractor,
-    private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val dispatchers: CoroutineDispatchers,
     private val adminAnalytics: AdminAnalytics,
     private val sharedPreferences: SharedPreferences
 ) {
 
-    private var solRate: BigDecimal? = null
-
     suspend fun getDerivableAccounts(keys: List<String>): List<DerivableAccount> = withContext(dispatchers.io) {
         val paths = listOf(DerivationPath.BIP44CHANGE, DerivationPath.BIP44, DerivationPath.BIP32DEPRECATED)
         val derivableAccounts = mutableMapOf<DerivationPath, List<Account>>()
         paths.forEach { path ->
-            val data = authRepository.getDerivableAccounts(path, keys)
+            val data: Map<DerivationPath, List<Account>> = authRepository.getDerivableAccounts(path, keys)
             derivableAccounts += data
         }
-        /* Loading balances */
-        val balanceAccounts = derivableAccounts.values.flatten().map { it.publicKey.toBase58() }
-        val balances = if (balanceAccounts.isNotEmpty()) rpcRepository.getBalances(balanceAccounts) else emptyList()
+
+        val balances = loadBalances(derivableAccounts.values.toList())
 
         /* Map derivable accounts with balances */
         val result: List<DerivableAccount> = derivableAccounts.flatMap { (path, accounts) ->
@@ -63,7 +55,17 @@ class SeedPhraseInteractor(
         result
     }
 
-    private suspend fun mapDerivableAccounts(
+    private suspend fun loadBalances(derivableAccounts: List<List<Account>>): List<Pair<String, BigInteger>> {
+        val accountToGetBalance: List<Base58String> = derivableAccounts.flatten()
+            .map { it.publicKey.toBase58Instance() }
+        if (accountToGetBalance.isEmpty()) {
+            return emptyList()
+        }
+
+        return rpcRepository.getBalances(accountToGetBalance.map(Base58String::base58Value))
+    }
+
+    private fun mapDerivableAccounts(
         accounts: List<Account>,
         balances: List<Pair<String, BigInteger>>,
         path: DerivationPath
@@ -71,20 +73,12 @@ class SeedPhraseInteractor(
         val balance = balances.find { it.first == account.publicKey.toBase58() }
             ?.second
             ?: return@mapNotNull null
-        val tokenId = TokenId(SOL_COINGECKO_ID)
-
-        val exchangeRate: BigDecimal = solRate ?: kotlin.runCatching {
-            tokenPricesRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL).price
-        }.getOrDefault(BigDecimal.ZERO)
-
-        if (solRate == null) solRate = exchangeRate
 
         val total = balance.fromLamports().scaleLong()
         DerivableAccount(
             path = path,
             account = account,
-            total = total,
-            totalInUsd = total.multiply(exchangeRate)
+            totalInSol = total
         )
     }
 

@@ -8,11 +8,14 @@ import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.home.ui.main.POPULAR_TOKENS_COINGECKO_IDS
 import org.p2p.wallet.home.ui.main.TOKEN_SYMBOLS_VALID_FOR_BUY
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.SearchResult
@@ -20,6 +23,8 @@ import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
+import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toPublicKey
 
@@ -37,6 +42,7 @@ class UserInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences,
     private val externalStorageRepository: ExternalStorageRepository,
+    private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val gson: Gson
 ) {
 
@@ -111,15 +117,45 @@ class UserInteractor(
         }
     }
 
-    suspend fun loadUserTokensAndUpdateLocal(fetchPrices: Boolean): List<Token.Active> {
-        val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey(), fetchPrices)
-        val cachedTokens = mainLocalRepository.getUserTokens()
+    suspend fun loadUserRates(userTokens: List<Token.Active>) {
+        val tokenIds = userTokens.mapNotNull { token ->
+            val coingeckoId = userLocalRepository.findTokenData(token.mintAddress)?.coingeckoId
+            coingeckoId?.let { TokenId(id = it) }
+        }
 
-        updateLocalTokens(cachedTokens, newTokens)
-        return getUserTokens()
+        val allTokenIds = (tokenIds + POPULAR_TOKENS_COINGECKO_IDS).distinct()
+
+        val prices = tokenPricesRepository.getTokenPriceByIds(
+            tokenIds = allTokenIds,
+            targetCurrency = Constants.USD_READABLE_SYMBOL
+        )
+        userLocalRepository.setTokenPrices(prices)
+
+        updateUserTokenRates(prices)
     }
 
-    private suspend fun updateLocalTokens(cachedTokens: List<Token.Active>, newTokens: List<Token.Active>) {
+    suspend fun loadUserTokensAndUpdateLocal(): List<Token.Active> {
+        val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
+        val cachedTokens = mainLocalRepository.getUserTokens()
+        return updateLocalTokens(cachedTokens, newTokens)
+    }
+
+    private suspend fun updateUserTokenRates(prices: List<TokenPrice>) {
+        val cachedTokens = mainLocalRepository.getUserTokens()
+
+        val newTokens = cachedTokens.map { token ->
+            val price = prices.find { it.tokenId == token.coingeckoId }
+            token.copy(rate = price?.price)
+        }
+
+        mainLocalRepository.clear()
+        mainLocalRepository.updateTokens(newTokens)
+    }
+
+    private suspend fun updateLocalTokens(
+        cachedTokens: List<Token.Active>,
+        newTokens: List<Token.Active>
+    ): List<Token.Active> {
         val newTokensToCache = newTokens
             .map { newToken ->
                 val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }
@@ -128,6 +164,7 @@ class UserInteractor(
             .sortedWith(TokenComparator())
         mainLocalRepository.clear()
         mainLocalRepository.updateTokens(newTokensToCache)
+        return newTokensToCache
     }
 
     suspend fun getUserTokens(): List<Token.Active> =

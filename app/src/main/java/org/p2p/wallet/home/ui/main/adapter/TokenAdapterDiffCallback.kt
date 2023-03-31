@@ -66,9 +66,11 @@ class TokenAdapterDiffCallback(
         when {
             old is HomeElementItem.Shown && new is HomeElementItem.Shown -> {
                 if (old.token.total != new.token.total) fields.add(DIFF_FIELD_TOKEN_BALANCE)
+                if (old.token.totalInUsd != new.token.totalInUsd) fields.add(DIFF_FIELD_TOKEN_BALANCE)
             }
             old is HomeElementItem.Hidden && new is HomeElementItem.Hidden -> {
                 if (old.token.total != new.token.total) fields.add(DIFF_FIELD_HIDDEN_TOKEN_BALANCE)
+                if (old.token.totalInUsd != new.token.totalInUsd) fields.add(DIFF_FIELD_HIDDEN_TOKEN_BALANCE)
             }
             old is HomeElementItem.Action && new is HomeElementItem.Action -> {
                 if (old.state != new.state) fields.add(DIFF_FIELD_TOGGLE_BUTTON)
