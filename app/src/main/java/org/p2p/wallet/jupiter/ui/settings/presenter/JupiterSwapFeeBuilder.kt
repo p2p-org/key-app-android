@@ -1,24 +1,16 @@
 package org.p2p.wallet.jupiter.ui.settings.presenter
 
-import timber.log.Timber
 import java.math.BigDecimal
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.model.findTokenByMint
-import org.p2p.wallet.jupiter.statemanager.SwapStateManager
-import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 
 class JupiterSwapFeeBuilder(
-    private val swapStateManager: SwapStateManager,
+    private val swapTokensRepository: JupiterSwapTokensRepository,
     private val dispatchers: CoroutineDispatchers,
 ) {
 
@@ -34,8 +26,7 @@ class JupiterSwapFeeBuilder(
                 ?.fromLamports(solToken.decimals)
                 ?: return null
 
-        val solTokenRate: BigDecimal? =
-            loadRateForToken(solToken)?.rate
+        val solTokenRate: BigDecimal? = swapTokensRepository.getTokenRate(solToken)?.price
 
         val feeUsd: BigDecimal? =
             solTokenRate?.let { feeAmountLamports.multiply(it) }
@@ -55,16 +46,15 @@ class JupiterSwapFeeBuilder(
 
         val lpTokensRates = activeRoute.marketInfos.map { marketInfo ->
             val lpFee = marketInfo.liquidityFee
-            val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return@withContext null
-            async { loadRateForToken(lpToken) }
+            jupiterTokens.findTokenByMint(lpFee.mint) ?: return@withContext null
         }
-            .awaitAll()
-            .filterNotNull()
+            .distinctBy { it.tokenMint }
+            .let { swapTokensRepository.getTokensRates(it) }
 
         activeRoute.marketInfos.map { marketInfo ->
             val lpFee = marketInfo.liquidityFee
             val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return@withContext null
-            val tokenRate: BigDecimal? = lpTokensRates.find { it.token.mintAddress == lpFee.mint }?.rate
+            val tokenRate: BigDecimal? = lpTokensRates[lpFee.mint]?.price
             val amountLamports = lpFee.amountInLamports.fromLamports(lpToken.decimals)
             val amountUsd = tokenRate?.let { amountLamports.multiply(it) }
 
@@ -74,13 +64,6 @@ class JupiterSwapFeeBuilder(
                 token = lpToken
             )
         }
-    }
-
-    private suspend fun loadRateForToken(token: JupiterSwapToken): SwapRateLoaderState.Loaded? {
-        return swapStateManager.getTokenRate(SwapTokenModel.JupiterToken(token))
-            .onEach { Timber.i("JupiterSwapFeeBuilder loading rate for $token") }
-            .filterIsInstance<SwapRateLoaderState.Loaded>()
-            .firstOrNull()
     }
 }
 

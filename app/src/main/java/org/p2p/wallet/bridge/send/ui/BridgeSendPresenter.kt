@@ -15,9 +15,12 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.bridge.send.BridgeSendInteractor
+import org.p2p.wallet.bridge.send.mapper.SendUiMapper
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
@@ -46,12 +49,12 @@ import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
-import org.p2p.wallet.utils.toPublicKey
 
 class BridgeSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
     private val sendInteractor: SendInteractor,
+    private val bridgeInteractor: BridgeSendInteractor,
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
@@ -60,6 +63,9 @@ class BridgeSendPresenter(
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
+
+    private val sendUiMapper = SendUiMapper()
+    private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
 
     private var token: Token.Active? by Delegates.observable(null) { _, _, newToken ->
         if (newToken != null) {
@@ -121,7 +127,7 @@ class BridgeSendPresenter(
             view.showToken(token)
             calculationMode.updateToken(token)
 
-            val userTokens = userInteractor.getNonZeroUserTokens()
+            val userTokens = userInteractor.getNonZeroUserTokens().filter { it.mintAddress in supportedTokensMints }
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
@@ -134,11 +140,12 @@ class BridgeSendPresenter(
         launch {
             // We should find SOL anyway because SOL is needed for Selection Mechanism
             val userTokens = userInteractor.getNonZeroUserTokens()
-            if (userTokens.isEmpty()) {
-                // we cannot proceed if user tokens are not loaded
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                return@launch
-            }
+                .filter { it.mintAddress in supportedTokensMints }
+                .ifEmpty {
+                    // TODO PWN-7613 also block button as we can't send we do not have funds
+                    val usdCet = userInteractor.findTokenDataByAddress(ERC20Tokens.USDC.mintAddress) as Token.Other
+                    listOf(sendUiMapper.toTokenActiveStub(usdCet))
+                }
 
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
@@ -234,7 +241,6 @@ class BridgeSendPresenter(
     override fun onTokenClicked() {
         newSendAnalytics.logTokenSelectionClicked()
         launch {
-            val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
             val tokens = userInteractor.getUserTokens().filter { it.mintAddress in supportedTokensMints }
             val result = tokens.filterNot(Token.Active::isZero)
             view?.showTokenSelection(tokens = result, selectedToken = token)
@@ -388,7 +394,7 @@ class BridgeSendPresenter(
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
-                val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
+                val result = bridgeInteractor.sendTransaction(EthAddress(address), token, lamports)
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)

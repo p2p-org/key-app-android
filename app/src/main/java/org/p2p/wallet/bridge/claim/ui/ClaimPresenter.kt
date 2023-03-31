@@ -8,8 +8,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
-import org.p2p.core.utils.Constants
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.toLamports
 import org.p2p.core.wrapper.HexString
@@ -20,7 +18,10 @@ import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.model.BridgeBundleFees
+import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeResult
+import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
+import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -48,12 +49,14 @@ class ClaimPresenter(
     private var latestTransactions: List<HexString> = emptyList()
     private var latestBundleId: String = emptyString()
     private var refreshJobDelayTimeInMillis = DEFAULT_DELAY_IN_MILLIS
-    private var eth: TokenData? = null
+    private var eth: Token.Eth? = null
 
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
         launch {
-            eth = userLocalRepository.findTokenData(Constants.WRAPPED_ETH_MINT)
+            if (eth == null) {
+                eth = ethereumRepository.getUserEthToken()
+            }
         }
         startRefreshJob()
         view.apply {
@@ -83,14 +86,17 @@ class ClaimPresenter(
                     latestBundleId = bundleId
                     refreshJobDelayTimeInMillis = getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
                     latestTransactions = transactions
-                    showFees(fees, compensationDeclineReason.isEmpty())
+                    showFees(resultAmount, fees, compensationDeclineReason.isEmpty())
                     val finalValue = claimUiMapper.makeResultAmount(resultAmount, tokenToClaim)
                     view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
                 }
             } catch (error: Throwable) {
-                if (error.isConnectionError()) {
-                    view?.showUiKitSnackBar(messageResId = R.string.common_offline_error)
+                val messageResId = when {
+                    error is NotEnoughAmount || error is ContractError -> R.string.bridge_claim_fees_bigger_error
+                    error.isConnectionError() -> R.string.common_offline_error
+                    else -> null
                 }
+                if (messageResId != null) view?.showUiKitSnackBar(messageResId = messageResId)
                 Timber.e(error, "Error on getting bundle for claim")
                 view?.showFee(TextViewCellModel.Raw(TextContainer(R.string.bridge_claim_fees_unavailable)))
                 view?.setClaimButtonState(isButtonEnabled = false)
@@ -100,11 +106,9 @@ class ClaimPresenter(
         }
     }
 
-    private fun showFees(fees: BridgeBundleFees, isFree: Boolean) {
+    private fun showFees(resultAmount: BridgeFee, fees: BridgeBundleFees, isFree: Boolean) {
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
-        if (!isFree) {
-            claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, fees, eth)
-        }
+        claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, resultAmount, fees.takeUnless { isFree }, eth)
         view?.setClaimButtonState(isButtonEnabled = true)
     }
 

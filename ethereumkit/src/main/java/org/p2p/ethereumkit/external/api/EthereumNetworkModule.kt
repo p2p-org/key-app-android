@@ -7,15 +7,14 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import org.p2p.ethereumkit.external.core.GsonProvider
-import org.p2p.ethereumkit.external.api.coingecko.CoinGeckoService
-import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.logging.Logger
-import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.core.rpc.RpcApi
+import org.p2p.ethereumkit.external.api.coingecko.CoinGeckoService
+import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
+import org.p2p.ethereumkit.external.core.GsonProvider
 
 internal const val QUALIFIER_ETH_HTTP_CLIENT = "eth_http_client"
 internal const val QUALIFIER_ETH_RETROFIT = "eth_alchemy_retrofit"

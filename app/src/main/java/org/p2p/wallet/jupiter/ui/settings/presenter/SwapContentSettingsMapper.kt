@@ -39,7 +39,6 @@ class SwapContentSettingsMapper(
         activeRoute: Int,
         jupiterTokens: List<JupiterSwapToken>,
         tokenB: SwapTokenModel,
-        tokenA: SwapTokenModel,
         solTokenForFee: JupiterSwapToken?,
     ): List<AnyCellItem> = mapList(
         slippage = slippage,
@@ -73,7 +72,6 @@ class SwapContentSettingsMapper(
         jupiterTokens: List<JupiterSwapToken>,
         tokenBAmount: BigDecimal?,
         tokenB: SwapTokenModel,
-        tokenA: SwapTokenModel,
         solTokenForFee: JupiterSwapToken?,
     ): List<AnyCellItem> = mapList(
         slippage = slippage,
@@ -96,7 +94,6 @@ class SwapContentSettingsMapper(
         showMinimumReceivedAmount: Boolean = true,
     ): List<AnyCellItem> = buildList {
         addRouteCell(routes, activeRouteIndex, jupiterTokens)
-
         this += commonMapper.getNetworkFeeCell()
 
         val route: JupiterSwapRoute? = routes.getOrNull(activeRouteIndex)
