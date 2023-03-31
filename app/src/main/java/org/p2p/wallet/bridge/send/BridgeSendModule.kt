@@ -22,11 +22,13 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 import org.p2p.wallet.bridge.send.ui.BridgeSendContract
 import org.p2p.wallet.bridge.send.ui.BridgeSendPresenter
+import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.newsend.model.SearchResult
 
 object BridgeSendModule : InjectionModule {
     override fun create() = module {
+        factoryOf(::BridgeSendUiMapper)
         factoryOf(::SendFragmentFactory)
         factoryOf(::EthereumSendInteractor)
         factoryOf(::EthereumSendRemoteRepository) bind EthereumSendRepository::class
@@ -83,7 +85,6 @@ object BridgeSendModule : InjectionModule {
             BridgeSendPresenter(
                 recipientAddress = recipientAddress,
                 userInteractor = get(),
-                sendInteractor = get(),
                 bridgeInteractor = get(),
                 resources = get(),
                 tokenKeyProvider = get(),
@@ -94,6 +95,7 @@ object BridgeSendModule : InjectionModule {
                 sendModeProvider = get(),
                 initialData = initialData,
                 stateMachine = stateMachine,
+                bridgeSendUiMapper = get()
             )
         } bind BridgeSendContract.Presenter::class
     }

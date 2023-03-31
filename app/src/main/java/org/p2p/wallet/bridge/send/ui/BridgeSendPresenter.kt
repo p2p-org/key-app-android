@@ -27,8 +27,10 @@ import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.lastStaticState
+import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
+import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -39,9 +41,7 @@ import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
-import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -56,7 +56,6 @@ import org.p2p.wallet.utils.getErrorMessage
 class BridgeSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
-    private val sendInteractor: SendInteractor,
     private val bridgeInteractor: BridgeSendInteractor,
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -67,6 +66,7 @@ class BridgeSendPresenter(
     sendModeProvider: SendModeProvider,
     private val initialData: SendInitialData.Bridge,
     private val stateMachine: SendStateMachine,
+    private val bridgeSendUiMapper: BridgeSendUiMapper,
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
 
     private var currentState: SendState = SendState.Static.Empty
@@ -100,40 +100,44 @@ class BridgeSendPresenter(
     private fun handleStaticState(state: SendState.Static) {
         when (state) {
             SendState.Static.Empty -> {}
-            is SendState.Static.ReadyToSend -> {
+            is SendState.Static.ReadyToSend -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 val token = bridgeToken.token
                 calculationMode.updateToken(bridgeToken.token)
                 calculationMode.updateTokenAmount(state.amount.toPlainString())
-                view?.setBottomButtonText(null)
+                setBottomButtonText(null)
                 val textResId = R.string.send_format
                 val value = "${state.amount.formatToken(token.decimals)} ${token.tokenSymbol}"
-                view?.setSliderText(resources.getString(textResId, value))
+                setSliderText(resources.getString(textResId, value))
+                handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
             }
-            is SendState.Static.TokenNotZero -> {
+            is SendState.Static.TokenNotZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 calculationMode.updateToken(bridgeToken.token)
                 calculationMode.updateTokenAmount(state.amount.toPlainString())
 
-                view?.setSliderText(null)
-                view?.showToken(bridgeToken.token)
-                view?.setFeeLabel(resources.getString(R.string.send_fees))
-                view?.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
+                setSliderText(null)
+                showToken(bridgeToken.token)
+                setFeeLabel(resources.getString(R.string.send_fees))
+                setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
+                handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
             }
-            is SendState.Static.TokenZero -> {
+            is SendState.Static.TokenZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 calculationMode.updateToken(bridgeToken.token)
                 calculationMode.updateTokenAmount(emptyString())
 
-                view?.setSliderText(null)
-                view?.showToken(bridgeToken.token)
-                view?.setFeeLabel(resources.getString(R.string.send_fees))
-                view?.setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
+                setSliderText(null)
+                showToken(bridgeToken.token)
+                setFeeLabel(resources.getString(R.string.send_fees))
+                setBottomButtonText(TextContainer.Res(R.string.main_enter_the_amount))
+                handleUpdateFee(sendFee = state.fee, isInputEmpty = true)
             }
-            is SendState.Static.Initialize -> {
+            is SendState.Static.Initialize -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 calculationMode.updateToken(bridgeToken.token)
-                view?.setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
+                setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
+                handleUpdateFee(sendFee = null, isInputEmpty = true)
             }
         }
         view?.showFeeViewLoading(isLoading = false)
@@ -215,22 +219,14 @@ class BridgeSendPresenter(
         }
     }
 
-    private fun handleUpdateFee(
-        feeRelayerState: FeeRelayerState.UpdateFee,
-        view: BridgeSendContract.View
-    ) {
-        /*val sourceToken = requireToken()
-        val total = feeRelayerManager.buildTotalFee(
-            sourceToken = sourceToken,
-            calculationMode = calculationMode
+    private fun BridgeSendContract.View.handleUpdateFee(sendFee: SendFee?, isInputEmpty: Boolean) {
+        val fees = bridgeSendUiMapper.getFeesFormatted(
+            bridgeFee = sendFee as? SendFee.Bridge,
+            isInputEmpty = isInputEmpty
         )
-
-        val feesLabel = total.getFeesInToken(calculationMode.isCurrentInputEmpty()).format(resources)
-        view.setFeeLabel(feesLabel)
-        updateButton(sourceToken, feeRelayerState)
-
+        setFeeLabel(fees)
         // FIXME: only for debug needs, remove after release
-        if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)*/
+        //if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
     }
 
     override fun onTokenClicked() {
