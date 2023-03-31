@@ -246,6 +246,11 @@ class BridgeSendFragment :
         binding.sliderSend.restoreSlider()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.finishFeature()
+    }
+
     private fun showAccountCreationFeeInfo(
         fee: SendSolanaFee,
         alternativeFeePayerTokens: List<Token.Active>

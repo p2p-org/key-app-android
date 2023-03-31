@@ -53,6 +53,7 @@ class SendStateMachine(
             .catch { catchException(it, this) }
             .onEach { newState ->
                 Timber.d("emit newState = $newState")
+                startFeeTimerIfNeed(newState)
                 state.value = newState
             }
             .launchIn(this)
@@ -84,9 +85,26 @@ class SendStateMachine(
         }
     }
 
-    private fun startFeeReloadTimer() {
+    private fun startFeeTimerIfNeed(newState: SendState) {
+        val needStart = when (newState) {
+            SendState.Static.Empty,
+            is SendState.Exception -> false
+            is SendState.Loading.Fee -> {
+                refreshFeeTimer?.cancel()
+                false
+            }
+            is SendState.Static.Initialize,
+            is SendState.Static.ReadyToSend,
+            is SendState.Static.TokenNotZero,
+            is SendState.Static.TokenZero -> true
+        }
+        if (needStart) startFeeReloadTimer()
+    }
+
+    private fun startFeeReloadTimer(delay: Long = SEND_FEE_EXPIRED_DURATION) {
+        refreshFeeTimer?.cancel()
         refreshFeeTimer = launch {
-            delay(SEND_FEE_EXPIRED_DURATION)
+            delay(delay)
             newAction(SendFeatureAction.RefreshFee)
         }
     }

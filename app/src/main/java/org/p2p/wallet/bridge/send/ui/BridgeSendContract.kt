@@ -40,5 +40,6 @@ interface BridgeSendContract {
 
         fun checkInternetConnection()
         fun send()
+        fun finishFeature()
     }
 }
