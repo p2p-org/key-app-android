@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.drawable.UiKitDrawableCellModels
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.image.ImageViewCellModel
@@ -31,19 +30,19 @@ import org.p2p.wallet.utils.withArgs
 private const val ARG_ACCOUNT_STATE = "ARG_ACCOUNT_STATE"
 private const val ARG_LINK = "ARG_LINK"
 
-class SendViaLinkReceiveFundsBottomSheet :
+class ReceiveViaLinkBottomSheet :
     BaseMvpBottomSheet<ReceiveViaLinkContract.View, ReceiveViaLinkContract.Presenter>(
         layoutRes = R.layout.dialog_send_via_link_receive_funds
     ),
     ReceiveViaLinkContract.View {
     companion object {
         fun show(fm: FragmentManager, state: TemporaryAccountState, link: SendViaLinkWrapper) {
-            SendViaLinkReceiveFundsBottomSheet()
+            ReceiveViaLinkBottomSheet()
                 .withArgs(
                     ARG_ACCOUNT_STATE to state,
                     ARG_LINK to link
                 )
-                .show(fm, SendViaLinkReceiveFundsBottomSheet::javaClass.name)
+                .show(fm, ReceiveViaLinkBottomSheet::javaClass.name)
         }
     }
 
@@ -51,7 +50,6 @@ class SendViaLinkReceiveFundsBottomSheet :
     private val link: SendViaLinkWrapper by args(ARG_LINK)
 
     private val binding: DialogSendViaLinkReceiveFundsBinding by viewBinding()
-    private val glideManager: GlideManager by inject()
 
     private var listener: RootListener? = null
 
@@ -76,9 +74,7 @@ class SendViaLinkReceiveFundsBottomSheet :
         tokenAmount: TextViewCellModel,
         sentFromAddress: TextViewCellModel,
         tokenIcon: ImageViewCellModel,
-        currentDate: TextViewCellModel
     ) = with(binding) {
-        textViewSubtitle.bind(currentDate)
         imageViewTokenIcon.bind(tokenIcon)
         textViewTokenAmount.bind(tokenAmount)
     }
@@ -86,8 +82,8 @@ class SendViaLinkReceiveFundsBottomSheet :
     override fun renderState(state: SendViaLinkClaimingState) = with(binding) {
         when (state) {
             is SendViaLinkClaimingState.ReadyToClaim -> {
-                groupTitle.isVisible = true
-
+                textViewTitle.isVisible = true
+                textViewSubtitle.isVisible = false
                 layoutTransactionDetails.isVisible = true
                 progressStateTransaction.isVisible = false
                 imageViewBanner.isVisible = false
@@ -99,7 +95,8 @@ class SendViaLinkReceiveFundsBottomSheet :
             is SendViaLinkClaimingState.ClaimingInProcess -> {
                 layoutClaimSuccess.root.isVisible = false
                 progressStateTransaction.isVisible = true
-                groupTitle.isVisible = true
+                textViewTitle.isVisible = true
+                textViewSubtitle.isVisible = false
                 layoutTransactionDetails.isVisible = true
                 imageViewBanner.isVisible = false
                 progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
@@ -108,7 +105,8 @@ class SendViaLinkReceiveFundsBottomSheet :
             }
             is SendViaLinkClaimingState.ClaimSuccess -> {
                 layoutClaimSuccess.root.isVisible = true
-                groupTitle.isVisible = false
+                textViewTitle.isVisible = false
+                textViewSubtitle.isVisible = false
                 layoutTransactionDetails.isVisible = false
                 progressStateTransaction.isVisible = false
                 imageViewBanner.isVisible = false
@@ -118,7 +116,8 @@ class SendViaLinkReceiveFundsBottomSheet :
                 buttonDone.setOnClickListener { dismissAllowingStateLoss() }
             }
             is SendViaLinkClaimingState.ClaimFailed -> {
-                groupTitle.isVisible = true
+                textViewTitle.isVisible = true
+                textViewSubtitle.isVisible = false
                 layoutTransactionDetails.isVisible = true
                 progressStateTransaction.isVisible = true
                 imageViewBanner.isVisible = false
@@ -128,7 +127,8 @@ class SendViaLinkReceiveFundsBottomSheet :
                 buttonDone.setOnClickListener { dismissAllowingStateLoss() }
             }
             is SendViaLinkClaimingState.ParsingFailed -> {
-                groupTitle.isVisible = true
+                textViewTitle.isVisible = true
+                textViewSubtitle.isVisible = true
                 textViewTitle.setText(R.string.send_via_link_error_failed_parsing_title)
                 textViewSubtitle.setText(R.string.send_via_link_error_failed_parsing_subtitle)
 

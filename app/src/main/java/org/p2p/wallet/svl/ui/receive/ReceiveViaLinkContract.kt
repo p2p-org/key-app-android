@@ -12,15 +12,13 @@ import org.p2p.wallet.svl.ui.error.SendViaLinkError
 
 interface ReceiveViaLinkContract {
     interface View : MvpView {
+        fun renderState(state: SendViaLinkClaimingState)
+        fun navigateToErrorScreen(error: SendViaLinkError)
         fun renderClaimTokenDetails(
             tokenAmount: TextViewCellModel,
             sentFromAddress: TextViewCellModel,
-            tokenIcon: ImageViewCellModel,
-            currentDate: TextViewCellModel
+            tokenIcon: ImageViewCellModel
         )
-
-        fun renderState(state: SendViaLinkClaimingState)
-        fun navigateToErrorScreen(error: SendViaLinkError)
     }
 
     interface Presenter : MvpPresenter<View> {

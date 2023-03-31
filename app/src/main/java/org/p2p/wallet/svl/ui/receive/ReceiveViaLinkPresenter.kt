@@ -1,6 +1,5 @@
 package org.p2p.wallet.svl.ui.receive
 
-import android.content.Context
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
@@ -14,11 +13,9 @@ import org.p2p.wallet.svl.ui.error.SendViaLinkError
 import org.p2p.wallet.utils.emptyString
 
 class ReceiveViaLinkPresenter(
-    private val context: Context,
     private val receiveViaLinkInteractor: ReceiveViaLinkInteractor,
     private val receiveViaLinkMapper: ReceiveViaLinkMapper
-) : BasePresenter<ReceiveViaLinkContract.View>(),
-    ReceiveViaLinkContract.Presenter {
+) : BasePresenter<ReceiveViaLinkContract.View>(), ReceiveViaLinkContract.Presenter {
 
     override fun claimToken(temporaryAccount: TemporaryAccount, token: Token.Active) {
         launch {
@@ -26,7 +23,7 @@ class ReceiveViaLinkPresenter(
                 view?.renderState(SendViaLinkClaimingState.ClaimingInProcess)
                 receiveViaLinkInteractor.receiveTransfer(temporaryAccount, token)
 
-                val successMessage = receiveViaLinkMapper.mapClaimSuccessMessage(context, token)
+                val successMessage = receiveViaLinkMapper.mapClaimSuccessMessage(token)
                 val state = SendViaLinkClaimingState.ClaimSuccess(successMessage)
                 view?.renderState(state)
             } catch (e: Throwable) {
@@ -37,6 +34,7 @@ class ReceiveViaLinkPresenter(
     }
 
     override fun handleState(state: TemporaryAccountState) {
+        Timber.i("Handling receive via link state: ${state::class.simpleName}")
         when (state) {
             is TemporaryAccountState.Active -> {
                 val claimState = SendViaLinkClaimingState.ReadyToClaim(
@@ -49,7 +47,6 @@ class ReceiveViaLinkPresenter(
                     // TODO: get address from account
                     sentFromAddress = receiveViaLinkMapper.mapSenderAddress(emptyString()),
                     tokenIcon = receiveViaLinkMapper.mapTokenIcon(state.token),
-                    currentDate = receiveViaLinkMapper.mapCurrentDate(context)
                 )
             }
             is TemporaryAccountState.EmptyBalance -> {
@@ -58,6 +55,7 @@ class ReceiveViaLinkPresenter(
             is TemporaryAccountState.ParsingFailed -> {
                 view?.renderState(SendViaLinkClaimingState.ParsingFailed)
             }
+            TemporaryAccountState.BrokenLink -> Unit
         }
     }
 }

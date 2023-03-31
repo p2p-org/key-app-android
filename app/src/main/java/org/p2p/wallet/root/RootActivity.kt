@@ -43,7 +43,7 @@ import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError
 import org.p2p.wallet.svl.ui.error.SendViaLinkErrorFragment
-import org.p2p.wallet.svl.ui.receive.SendViaLinkReceiveFundsBottomSheet
+import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
@@ -194,7 +194,7 @@ class RootActivity :
     }
 
     override fun showTransferLinkBottomSheet(state: TemporaryAccountState, deeplink: SendViaLinkWrapper) {
-        SendViaLinkReceiveFundsBottomSheet.show(supportFragmentManager, state, deeplink)
+        ReceiveViaLinkBottomSheet.show(supportFragmentManager, state, deeplink)
     }
 
     override fun showLinkError(error: SendViaLinkError) {
