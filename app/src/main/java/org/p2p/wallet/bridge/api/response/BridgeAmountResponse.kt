@@ -11,7 +11,7 @@ class BridgeAmountResponse(
     @SerializedName("chain")
     val chain: String?,
     @SerializedName("token")
-    val token: EthAddress?,
+    val tokenAddress: EthAddress?,
     @SerializedName("symbol")
     val symbol: String,
     @SerializedName("name")

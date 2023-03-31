@@ -7,6 +7,7 @@ import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
+import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
 
@@ -41,11 +42,7 @@ class EthereumInteractor(
         )
     }
 
-    suspend fun sendEthereumBundle(signatures: List<Signature>) {
-        claimInteractor.sendEthereumBundle(signatures)
-    }
-
-    suspend fun getListOfEthereumBundleStatuses(): List<BridgeBundle> {
+    suspend fun getListOfEthereumBundleStatuses(): Map<String, List<ClaimStatus>> {
         val ethereumAddress: EthAddress = ethereumRepository.getAddress()
         return claimInteractor.getListOfEthereumBundleStatuses(ethereumAddress)
     }
@@ -62,9 +59,10 @@ class EthereumInteractor(
         )
     }
 
-    suspend fun signClaimTransaction(transaction: HexString): Signature {
+    fun signClaimTransaction(transaction: HexString): Signature {
         return ethereumRepository.signTransaction(transaction)
     }
+
     suspend fun sendClaimBundle(signatures: List<Signature>) {
         return claimInteractor.sendEthereumBundle(signatures)
     }

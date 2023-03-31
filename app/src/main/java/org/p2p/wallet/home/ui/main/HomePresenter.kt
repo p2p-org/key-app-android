@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
@@ -22,7 +23,6 @@ import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
-import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -273,45 +273,13 @@ class HomePresenter(
         }
     }
 
-    private suspend fun getEthereumState(): EthereumHomeState {
+    private suspend fun getEthereumState(): EthereumHomeState = supervisorScope {
         if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return EthereumHomeState()
+            return@supervisorScope EthereumHomeState()
         }
-        val ethereumTokens = loadEthTokens()
-        val ethereumBundleStatuses = loadEthBundles()
-        return EthereumHomeState(ethereumTokens, ethereumBundleStatuses)
-    }
-
-    private suspend fun loadEthTokens(): List<Token.Eth> {
-        return try {
-            ethereumInteractor.loadWalletTokens()
-        } catch (cancelled: CancellationException) {
-            Timber.i(cancelled)
-            emptyList()
-        } catch (throwable: Throwable) {
-            Timber.e(throwable, "Error on loading ethereumTokens")
-            emptyList()
-        }
-    }
-
-    private suspend fun loadEthBundles(): Map<String, List<ClaimStatus?>> {
-        return try {
-            val bundles = ethereumInteractor.getListOfEthereumBundleStatuses()
-            val resultMap = mutableMapOf<String, List<ClaimStatus>>()
-            val ethAddress = ERC20Tokens.ETH.contractAddress
-            bundles.map { it.token?.hex ?: ethAddress }
-                .forEach { token ->
-                    val tokenBundles = bundles.filter { token == (it.token?.hex ?: ethAddress) }.map { it.status }
-                    resultMap[token] = tokenBundles.filterNotNull()
-                }
-            resultMap
-        } catch (cancelled: CancellationException) {
-            Timber.i(cancelled)
-            emptyMap()
-        } catch (throwable: Throwable) {
-            Timber.e(throwable, "Error on loading loadEthBundles")
-            emptyMap()
-        }
+        val ethereumTokens = async { ethereumInteractor.loadWalletTokens() }
+        val ethereumBundleStatuses = async { ethereumInteractor.getListOfEthereumBundleStatuses() }
+        EthereumHomeState(ethereumTokens.await(), ethereumBundleStatuses.await())
     }
 
     private fun handleEmptyAccount() {
@@ -431,7 +399,7 @@ class HomePresenter(
 
     private fun loadTokenRates(loadedTokens: List<Token.Active>) {
         ratesJob?.cancel()
-        ratesJob = launch {
+        ratesJob = launchSupervisor {
             try {
                 view?.showBalance(homeMapper.mapRateSkeleton())
                 userInteractor.loadUserRates(loadedTokens)

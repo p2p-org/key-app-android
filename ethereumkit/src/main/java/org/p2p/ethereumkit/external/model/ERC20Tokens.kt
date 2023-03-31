@@ -48,7 +48,7 @@ enum class ERC20Tokens(
         )
     ),
     ETH(
-        contractAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".lowercase(),
+        contractAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         mintAddress = WRAPPED_ETH_MINT,
         coingeckoId = ETH_COINGECKO_ID,
         tokenIconUrl = "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
@@ -60,7 +60,7 @@ enum class ERC20Tokens(
         )
     ),
     SOL(
-        contractAddress = "0xD31a59c85aE9D8edEFeC411D448f90841571b89c",
+        contractAddress = "0xd31a59c85ae9d8edefec411d448f90841571b89c",
         mintAddress = WRAPPED_SOL_MINT,
         coingeckoId = SOL_COINGECKO_ID,
         tokenIconUrl = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
