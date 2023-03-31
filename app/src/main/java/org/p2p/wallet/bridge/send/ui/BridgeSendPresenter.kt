@@ -232,7 +232,7 @@ class BridgeSendPresenter(
         )
         setFeeLabel(fees)
         // FIXME: only for debug needs, remove after release
-        //if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
+        // if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
     }
 
     override fun onTokenClicked() {
