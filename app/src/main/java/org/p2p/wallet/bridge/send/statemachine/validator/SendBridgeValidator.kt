@@ -1,7 +1,6 @@
 package org.p2p.wallet.bridge.send.statemachine.validator
 
 import java.math.BigDecimal
-import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine.Companion.SEND_FEE_EXPIRED_DURATION
