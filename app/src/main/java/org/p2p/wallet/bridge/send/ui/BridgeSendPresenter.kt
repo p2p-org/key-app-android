@@ -17,6 +17,7 @@ import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
@@ -245,7 +246,9 @@ class BridgeSendPresenter(
         showToken(token.token)
         calculationMode.updateToken(token.token)
         calculationMode.updateTokenAmount(amount.toPlainString())
-        updateInputValue(calculationMode.inputAmount, true)
+        val inputAmount = calculationMode.inputAmount
+        updateInputValue(inputAmount, true)
+        view?.setMaxButtonVisible(inputAmount.toBigDecimalOrZero().isZero())
     }
 
     private fun BridgeSendContract.View.handleUpdateFee(sendFee: SendFee?, isInputEmpty: Boolean) {
