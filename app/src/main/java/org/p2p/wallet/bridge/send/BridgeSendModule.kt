@@ -56,7 +56,7 @@ object BridgeSendModule : InjectionModule {
                     InitFeatureActionHandler(
                         feeLoader = feeLoader,
                         initialData = initialData,
-                        userInteractor = get()
+                        interactor = get()
                     )
                 )
                 add(
@@ -87,6 +87,7 @@ object BridgeSendModule : InjectionModule {
                 recipientAddress = recipientAddress,
                 userInteractor = get(),
                 bridgeInteractor = get(),
+                ethereumInteractor = get(),
                 resources = get(),
                 tokenKeyProvider = get(),
                 transactionManager = get(),

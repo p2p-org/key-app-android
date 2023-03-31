@@ -26,7 +26,6 @@ val SendState.Static.token: SendToken?
         is SendState.Static.ReadyToSend -> token
         is SendState.Static.TokenNotZero -> token
         is SendState.Static.TokenZero -> token
-        is SendState.Static.Initialize -> token
     }
 
 val SendState.Static.bridgeFee: SendFee.Bridge?
@@ -38,7 +37,6 @@ val SendState.Static.fee: SendFee?
         is SendState.Static.ReadyToSend -> fee
         is SendState.Static.TokenNotZero -> fee
         is SendState.Static.TokenZero -> fee
-        is SendState.Static.Initialize -> null
     }
 
 val SendState.Static.inputAmount: BigDecimal?
@@ -47,5 +45,4 @@ val SendState.Static.inputAmount: BigDecimal?
         is SendState.Static.ReadyToSend -> amount
         is SendState.Static.TokenNotZero -> amount
         is SendState.Static.TokenZero -> null
-        is SendState.Static.Initialize -> null
     }
