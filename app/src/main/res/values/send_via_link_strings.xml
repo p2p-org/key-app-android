@@ -19,7 +19,7 @@
     </string>
     <string name="send_via_link_free_transactions_button">Got it 👍</string>
 
-    <string name="send_via_link_receive_funds_title">Receive funds via one-time link</string>
+    <string name="send_via_link_receive_funds_title">Receive funds \n via one-time link</string>
     <string name="send_via_link_receive_funds_sent_from">Sent from</string>
     <string name="send_via_link_receive_funds_success_title">You\'ve got %s %s!</string>
     <string name="send_via_link_receive_funds_success_subtitle">Spend them wisely</string>

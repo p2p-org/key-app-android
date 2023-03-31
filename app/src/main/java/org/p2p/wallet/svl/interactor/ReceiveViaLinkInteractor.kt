@@ -1,5 +1,6 @@
 package org.p2p.wallet.svl.interactor
 
+import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
@@ -43,12 +44,10 @@ class ReceiveViaLinkInteractor(
         val info = activeAccount.account.data.parsed.info
         val tokenData = userLocalRepository.findTokenData(info.mint) ?: return TemporaryAccountState.ParsingFailed
 
-        val price = userLocalRepository.getPriceByTokenId(tokenData.coingeckoId)
-
         val token = TokenConverter.fromNetwork(
             account = activeAccount,
             tokenData = tokenData,
-            price = price
+            price = null
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
@@ -58,8 +57,10 @@ class ReceiveViaLinkInteractor(
 
     suspend fun receiveTransfer(temporaryAccount: TemporaryAccount, token: Token.Active) {
         val recipient = tokenKeyProvider.publicKey.toPublicKey()
+        val senderAccount = Account(temporaryAccount.keypair)
+
         sendViaLinkInteractor.sendTransaction(
-            senderAccount = Account(temporaryAccount.keypair),
+            senderAccount = senderAccount,
             destinationAddress = recipient,
             token = token,
             lamports = token.totalInLamports,

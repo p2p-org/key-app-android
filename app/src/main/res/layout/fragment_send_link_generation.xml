@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/creating_wallet_animation"
+        app:lottie_rawRes="@raw/creating_link_animation"
         tools:layout_height="300dp" />
 
     <TextView
@@ -44,8 +44,8 @@
         android:id="@+id/progressBarCreation"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="113dp"
-        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
         android:indeterminate="true"
         android:indeterminateTint="@color/bg_night"
