@@ -1,5 +1,10 @@
 package org.p2p.wallet.swap.interactor.orca
 
+import timber.log.Timber
+import java.math.BigInteger
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.isZero
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
@@ -10,7 +15,6 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
-import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
@@ -18,10 +22,6 @@ import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
-import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.core.utils.isZero
-import timber.log.Timber
-import java.math.BigInteger
 
 class OrcaSwapInteractor(
     private val feeRelayerSwapInteractor: FeeRelayerSwapInteractor,
@@ -158,7 +158,6 @@ class OrcaSwapInteractor(
             additionalPaybackFee = additionalPaybackFee,
             statistics = statistics
         )
-            .firstOrNull().orEmpty()
 
         // todo: find destination address
         return OrcaSwapResult.Finished(transactionId, destinationAddress.orEmpty())

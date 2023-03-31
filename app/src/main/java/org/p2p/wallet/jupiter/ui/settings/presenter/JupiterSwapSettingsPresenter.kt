@@ -86,7 +86,6 @@ class JupiterSwapSettingsPresenter(
                     jupiterTokens = tokens,
                     tokenBAmount = state.amountTokenB,
                     tokenB = state.tokenB,
-                    tokenA = state.tokenA,
                     solTokenForFee = solToken,
                 )
             }
@@ -98,7 +97,6 @@ class JupiterSwapSettingsPresenter(
                     activeRoute = state.activeRoute,
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
-                    tokenA = state.tokenA,
                     solTokenForFee = solToken,
                 )
             }
@@ -110,14 +108,13 @@ class JupiterSwapSettingsPresenter(
                     activeRoute = state.activeRoute,
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
-                    tokenA = state.tokenA,
                     solTokenForFee = solToken,
                 )
             }
             is SwapState.SwapException -> {
                 val previousState = state.previousFeatureState
                 if (previousState is SwapState.RoutesLoaded) {
-                    val solToken = tokens.firstOrNull { it.isSol() }
+                    val solToken = tokens.firstOrNull(JupiterSwapToken::isSol)
                     currentContentList = contentMapper.mapForRoutesLoadedState(previousState, tokens, solToken)
                 }
             }

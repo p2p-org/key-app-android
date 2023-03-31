@@ -22,7 +22,8 @@ import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.newsend.ui.SendOpenedFrom
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsBottomSheet
-import org.p2p.wallet.newsend.ui.dialogs.FreeTransactionsDetailsBottomSheet
+import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
+import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
@@ -150,7 +151,7 @@ class BridgeSendFragment :
     }
 
     override fun showFreeTransactionsInfo() {
-        FreeTransactionsDetailsBottomSheet.show(childFragmentManager)
+        SendFreeTransactionsDetailsBottomSheet.show(childFragmentManager, openedFrom = OpenedFrom.SEND)
     }
 
     override fun updateInputValue(textValue: String, forced: Boolean) {
