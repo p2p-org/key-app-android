@@ -2,7 +2,7 @@ package org.p2p.wallet.swap.repository
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
+import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
 import org.p2p.wallet.swap.api.OrcaApi
 import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.swap.model.orca.OrcaConfigs
@@ -13,7 +13,7 @@ import timber.log.Timber
 
 class OrcaSwapRemoteRepository(
     private val orcaApi: OrcaApi,
-    private val rpcTransactionRepository: RpcHistoryRepository,
+    private val rpcTransactionRepository: RpcTransactionRepository,
     private val rpcTokenRepository: RpcBalanceRepository,
     private val updatesManager: UpdatesManager
 ) : OrcaSwapRepository {

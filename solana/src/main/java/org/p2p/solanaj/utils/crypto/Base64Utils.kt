@@ -23,7 +23,7 @@ fun ByteArray.encodeToBase64(): String = Base64Utils.encode(bytes = this)
 fun String.decodeFromBase64(): ByteArray = Base64Utils.decode(stringToDecode = this)
 
 fun ByteArray.toBase64Instance(): Base64String = Base64String(bytes = this)
-fun String.toBase64String(): Base64String = Base64String(base64Value = this)
+fun String.toBase64Instance(): Base64String = Base64String(base64Value = this)
 
 data class Base64String(val base64Value: String) {
     constructor(bytes: ByteArray) : this(bytes.copyOf().encodeToBase64())

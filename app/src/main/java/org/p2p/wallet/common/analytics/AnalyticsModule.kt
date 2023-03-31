@@ -28,6 +28,7 @@ import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
+import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 
 object AnalyticsModule : InjectionModule {
     override fun create() = module {
@@ -43,6 +44,7 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::GeneralAnalytics)
         factoryOf(::AuthAnalytics)
         factoryOf(::ReceiveAnalytics)
+        factoryOf(::AnalyticsPushChannel)
         factoryOf(::BuyAnalytics)
         factoryOf(::SwapAnalytics)
         factoryOf(::ScreensAnalyticsInteractor)
