@@ -295,7 +295,7 @@ class BridgeSendPresenter(
             newSendAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
-            //TODO pass fees to SendFeeTotal or refactor
+            // TODO pass fees to SendFeeTotal or refactor
             val total = bridgeSendUiMapper.buildTotalFee(
                 sourceToken = token,
                 calculationMode = calculationMode,
