@@ -281,9 +281,9 @@ class HomePresenter(
         if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
             return EthereumHomeState()
         }
-        val ethereumTokens = loadEthTokens()
-        val ethereumBundleStatuses = loadEthBundles()
-        return EthereumHomeState(ethereumTokens, ethereumBundleStatuses)
+        val ethereumTokens = async { loadEthTokens() }
+        val ethereumBundleStatuses = async { loadEthBundles() }
+        return EthereumHomeState(ethereumTokens.await(), ethereumBundleStatuses.await())
     }
 
     private suspend fun loadEthTokens(): List<Token.Eth> {
@@ -433,11 +433,12 @@ class HomePresenter(
             try {
                 view?.showBalance(homeMapper.mapRateSkeleton())
                 userInteractor.loadUserRates(loadedTokens)
-                val updatedTokens = userInteractor.getUserTokens()
-                handleUserTokensLoaded(updatedTokens)
+                val updatedTokens = async { userInteractor.getUserTokens() }
+                val ethereumState = async { getEthereumState() }
+                handleUserTokensLoaded(updatedTokens.await(), ethereumState.await())
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading token rates")
-                view?.showBalance(null)
+                view?.showBalance(cellModel = null)
                 view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
             }
         }
