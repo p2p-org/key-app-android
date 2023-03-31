@@ -26,6 +26,7 @@ import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
+import org.p2p.wallet.bridge.send.statemachine.fee
 import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
@@ -33,6 +34,7 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
@@ -71,6 +73,7 @@ class BridgeSendPresenter(
 
     private var currentState: SendState = SendState.Static.Empty
     private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
+    private var feeLimit: FreeTransactionFeeLimit? = null
 
     private val calculationMode = CalculationMode(
         sendModeProvider = sendModeProvider,
@@ -135,6 +138,7 @@ class BridgeSendPresenter(
             }
             is SendState.Static.Initialize -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
+                feeLimit = state.feeLimit
                 calculationMode.updateToken(bridgeToken.token)
                 setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
                 handleUpdateFee(sendFee = null, isInputEmpty = true)
@@ -283,20 +287,23 @@ class BridgeSendPresenter(
     }
 
     override fun onFeeInfoClicked() {
-        /*val currentState = feeRelayerManager.getState()
-        if (currentState !is FeeRelayerState.UpdateFee) return
-
-        val solanaFee = currentState.solanaFee
-        if (calculationMode.isCurrentInputEmpty() && solanaFee == null) {
+        val feeLimitInfo = feeLimit ?: return
+        val token = currentState.lastStaticState.bridgeToken?.token ?: error("Token cannot be null!")
+        val fees = currentState.lastStaticState.fee
+        if (calculationMode.isCurrentInputEmpty() && fees == null) {
+            // TODO check free state works correct
             newSendAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
-            val total = feeRelayerManager.buildTotalFee(
-                sourceToken = requireToken(),
-                calculationMode = calculationMode
+            //TODO pass fees to SendFeeTotal or refactor
+            val total = bridgeSendUiMapper.buildTotalFee(
+                sourceToken = token,
+                calculationMode = calculationMode,
+                recipient = initialData.recipient,
+                feeLimitInfo = feeLimitInfo
             )
             view?.showTransactionDetails(total)
-        }*/
+        }
     }
 
     override fun checkInternetConnection() {

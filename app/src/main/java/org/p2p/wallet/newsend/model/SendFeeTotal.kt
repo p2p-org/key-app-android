@@ -28,16 +28,6 @@ class SendFeeTotal constructor(
     val recipientAddress: String
 ) : Parcelable {
 
-    @Deprecated("for old send screen, will be removed")
-    fun getTotalFee(resourceDelegate: (res: Int) -> String): String =
-        when (sendFee) {
-            is SendSolanaFee ->
-                if (sourceSymbol == sendFee.feePayerSymbol) totalSum
-                else "$totalFormatted + ${sendFee.accountCreationFormattedFee}"
-            else ->
-                resourceDelegate(R.string.send_fees_free)
-        }
-
     fun getFeesInToken(isInputEmpty: Boolean): FeesStringFormat {
         if (sendFee == null) {
             val textRes = if (isInputEmpty) R.string.send_fees_free else R.string.send_fees_zero
