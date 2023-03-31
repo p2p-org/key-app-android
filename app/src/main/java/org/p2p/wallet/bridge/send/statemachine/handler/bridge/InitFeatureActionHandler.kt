@@ -12,7 +12,6 @@ import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
-import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -53,8 +52,8 @@ class InitFeatureActionHandler(
         }
         emit(initialState)
     }.flatMapMerge { state ->
-        if (state.lastStaticState is SendState.Static.TokenZero)
-            feeLoader.updateFee(state.lastStaticState)
+        if (state is SendState.Static.TokenNotZero)
+            feeLoader.updateFee(state)
         else flowOf(state)
     }
 
