@@ -47,6 +47,8 @@ dependencies {
 //Eip712
     implementation("org.web3j:crypto:4.9.6")
 
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
 // Test helpers
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:3.3.3")
@@ -66,10 +68,10 @@ dependencies {
     androidTestImplementation("com.linkedin.dexmaker:dexmaker-mockito-inline:2.19.1")
     androidTestImplementation("com.nhaarman:mockito-kotlin-kt1.1:1.6.0")
 
-    testImplementation( "io.insert-koin:koin-test:3.1.5")
+    testImplementation("io.insert-koin:koin-test:3.1.5")
     // Needed JUnit version
-    testImplementation( "io.insert-koin:koin-test-junit4:3.1.5")
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("io.insert-koin:koin-test-junit4:3.1.5")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 
 }
 configurations.all {
