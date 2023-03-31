@@ -104,7 +104,7 @@ class BridgeSendPresenter(
                 val bridgeToken = state.bridgeToken ?: return
                 val token = bridgeToken.token
                 calculationMode.updateToken(bridgeToken.token)
-                calculationMode.updateInputAmount(state.amount.toPlainString())
+                calculationMode.updateTokenAmount(state.amount.toPlainString())
                 view?.setBottomButtonText(null)
                 val textResId = R.string.send_format
                 val value = "${state.amount.formatToken(token.decimals)} ${token.tokenSymbol}"
@@ -113,7 +113,7 @@ class BridgeSendPresenter(
             is SendState.Static.TokenNotZero -> {
                 val bridgeToken = state.bridgeToken ?: return
                 calculationMode.updateToken(bridgeToken.token)
-                calculationMode.updateInputAmount(state.amount.toPlainString())
+                calculationMode.updateTokenAmount(state.amount.toPlainString())
 
                 view?.setSliderText(null)
                 view?.showToken(bridgeToken.token)
@@ -123,7 +123,7 @@ class BridgeSendPresenter(
             is SendState.Static.TokenZero -> {
                 val bridgeToken = state.bridgeToken ?: return
                 calculationMode.updateToken(bridgeToken.token)
-                calculationMode.updateInputAmount("")
+                calculationMode.updateTokenAmount(emptyString())
 
                 view?.setSliderText(null)
                 view?.showToken(bridgeToken.token)

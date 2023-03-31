@@ -54,6 +54,22 @@ class CalculationMode(
         updateLabels()
     }
 
+    fun updateTokenAmount(newTokenAmountInput: String) {
+        val newTokenAmount = newTokenAmountInput.toBigDecimalOrZero()
+        val newUsdAmount = newTokenAmount.toUsd(token).orZero()
+        val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
+
+        usdAmount = newUsdAmount
+        tokenAmount = newTokenAmount
+        inputAmount = newAmount.toString()
+
+        if (currencyMode is CurrencyMode.Fiat) {
+            handleCalculateTokenAmountUpdate()
+        } else {
+            handleCalculateUsdAmountUpdate()
+        }
+    }
+
     fun updateInputAmount(newInputAmount: String) {
         this.inputAmount = newInputAmount
         recalculate(inputAmount)

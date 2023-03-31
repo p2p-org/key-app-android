@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.p2p.core.token.SolAddress
 import org.p2p.core.utils.orZero
+import org.p2p.core.utils.toLamports
 import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
@@ -38,15 +39,19 @@ class SendBridgeFeeLoader constructor(
         amount: BigDecimal,
     ): SendFee.Bridge {
         return try {
-            val sendTokenMint = if (bridgeToken.token.isSOL) {
+            val token = bridgeToken.token
+
+            val sendTokenMint = if (token.isSOL) {
                 null
             } else {
-                SolAddress(bridgeToken.token.mintAddress)
+                SolAddress(token.mintAddress)
             }
+
+            val formattedAmount = amount.toLamports(token.decimals)
 
             val fee = ethereumSendInteractor.getSendFee(
                 sendTokenMint = sendTokenMint,
-                amount.toPlainString()
+                amount = formattedAmount.toString()
             )
 
             SendFee.Bridge(fee)
