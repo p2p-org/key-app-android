@@ -1,22 +1,25 @@
-package org.p2p.wallet.common.crashlogging.helpers
+package org.p2p.ethereumkit.external.api.interceptor
 
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import okio.Buffer
 import org.json.JSONObject
 import timber.log.Timber
 import java.net.SocketTimeoutException
-import org.p2p.wallet.utils.bodyAsString
+import kotlin.random.Random
 
-private const val TAG = "CrashHttpLoggingInterceptor"
+private const val TAG = "EthApi"
 
-class CrashHttpLoggingInterceptor : Interceptor {
+class EthereumApiLoggingInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
         val rpcMethodName: String? = getRpcMethodName(request)
-        val requestLog = createRequestLog(request, rpcMethodName)
+        val uniqueNumber: Int = Random.nextInt(request.body?.contentLength()?.toInt() ?: 1)
+
+        val requestLog = createRequestLog(request, rpcMethodName, uniqueNumber)
         Timber.tag(TAG).i(requestLog)
 
         val response = try {
@@ -26,22 +29,14 @@ class CrashHttpLoggingInterceptor : Interceptor {
             throw socketTimeout
         }
 
-        val responseLog = createResponseLog(response, rpcMethodName)
+        val responseLog = createResponseLog(response, rpcMethodName, uniqueNumber)
         Timber.tag(TAG).i(responseLog)
-
-        val responseBody = response.bodyAsString()
-        val responseBodySize = responseBody.length
-        if (responseBodySize < 10_000) {
-            Timber.tag(TAG).d(responseBody)
-        } else {
-            Timber.i("Skipping logging response body, it's too big: $responseBodySize")
-        }
 
         return response
     }
 
-    private fun createRequestLog(request: Request, rpcMethodName: String?): String = buildString {
-        append("NETWORK ${request.url} | ")
+    private fun createRequestLog(request: Request, rpcMethodName: String?, uniqueNumber: Int): String = buildString {
+        append("NETWORK($uniqueNumber) ${request.url} | ")
 
         if (rpcMethodName != null) {
             append("$rpcMethodName | ")
@@ -52,18 +47,22 @@ class CrashHttpLoggingInterceptor : Interceptor {
     }
 
     private fun getRpcMethodName(request: Request): String? = kotlin.runCatching {
-        request.bodyAsString()
+        val requestCopy: Request = request.newBuilder().build()
+        val buffer = Buffer()
+        requestCopy.body?.writeTo(buffer)
+        buffer.readUtf8()
     }
         .mapCatching { JSONObject(it).getString("method") }
         .getOrNull()
 
-    private fun createResponseLog(response: Response, rpcMethodName: String?) = buildString {
-        append("NETWORK ${response.request.url} | ")
+    private fun createResponseLog(response: Response, rpcMethodName: String?, uniqueNumber: Int) = buildString {
+        append("NETWORK($uniqueNumber) ${response.request.url} | ")
+
         if (rpcMethodName != null) {
             append(rpcMethodName)
         }
 
-        append("<-- ")
+        append(" <-- ")
 
         append("{")
         append("code=${response.code}")
