@@ -2,7 +2,6 @@ package org.p2p.wallet.sell.interactor
 
 import android.content.res.Resources
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.withContext
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.wallet.R
@@ -29,28 +28,26 @@ class HistoryItemMapper(
         return historyItemFlow
     }
 
-    suspend fun toAdapterItem(transactions: List<HistoryTransaction>) {
-        withContext(dispatchers.io) {
-            val rpcHistoryItems = mutableListOf<HistoryItem>()
-            val sellHistoryItems = mutableListOf<HistoryItem>()
-            transactions.forEachIndexed { _, item ->
-                when (item) {
-                    is RpcHistoryTransaction -> {
-                        parse(item, rpcHistoryItems)
-                    }
-                    is SellTransaction -> {
-                        // Sell transactions with cancel reason, should not appear in history
-                        if (!item.isCancelled()) {
-                            parse(item, sellHistoryItems)
-                        }
+    suspend fun toAdapterItem(transactions: List<HistoryTransaction>) = with(dispatchers.io) {
+        val rpcHistoryItems = mutableListOf<HistoryItem>()
+        val sellHistoryItems = mutableListOf<HistoryItem>()
+        transactions.forEachIndexed { _, item ->
+            when (item) {
+                is RpcHistoryTransaction -> {
+                    parse(item, rpcHistoryItems)
+                }
+                is SellTransaction -> {
+                    // Sell transactions with cancel reason, should not appear in history
+                    if (!item.isCancelled()) {
+                        parse(item, sellHistoryItems)
                     }
                 }
             }
-            historyItemFlow.emit(sellHistoryItems + rpcHistoryItems)
         }
+        historyItemFlow.emit(sellHistoryItems + rpcHistoryItems)
     }
 
-    fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
+    suspend fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
         val isCurrentAndPreviousTransactionOnSameDay =
             cache.isNotEmpty() && cache.last().date.isSameDayAs(transaction.date)
         var tokenIconUrl: String? = null
@@ -80,7 +77,7 @@ class HistoryItemMapper(
                 tokenIconUrl = getTokenIconUrl()
                 iconRes = getIcon()
 
-                startTitle = getFormattedUsernameOrAddress()
+                startTitle = getUsernameOrAddress()
                 startSubtitle = resources.getString(getTypeName())
                 endTopValue = getValue()
                 endTopValueTextColor = getTextColor()

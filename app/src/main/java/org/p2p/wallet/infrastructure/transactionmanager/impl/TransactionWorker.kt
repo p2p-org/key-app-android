@@ -8,14 +8,14 @@ import org.p2p.wallet.infrastructure.transactionmanager.repository.TransactionQu
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.notification.ErrorTransactionNotification
 import org.p2p.wallet.notification.SwapTransactionNotification
-import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.transaction.model.TransactionExecutionState
 import timber.log.Timber
 
 class TransactionWorker(
     context: Context,
     workerParams: WorkerParameters,
-    private val rpcRepository: RpcTransactionRepository,
+    private val rpcRepository: RpcHistoryRepository,
     private val appNotificationManager: AppNotificationManager,
     private val transactionQueueRepository: TransactionQueueRepository
 ) : CoroutineWorker(context, workerParams), KoinComponent {

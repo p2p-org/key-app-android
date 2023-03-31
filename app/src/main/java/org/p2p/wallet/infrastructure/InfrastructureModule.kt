@@ -9,7 +9,6 @@ import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
 import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
-import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.dispatchers.DefaultDispatchers
 import org.p2p.wallet.infrastructure.update.TransactionSignatureHandler
@@ -50,7 +49,6 @@ object InfrastructureModule : InjectionModule {
 
         singleOf(::IntercomPushService)
         singleOf(::IntercomDeeplinkManager)
-        single { TokenConverter }
 
         includes(StorageModule.create(), RoomModule.create())
     }

@@ -47,7 +47,6 @@ class AuthInteractor(
         val currentHashInHex = secureStorage.getString(KEY_PIN_CODE_HASH)
 
         if (pinHashFromEnteredPin.hashResultInHex == currentHashInHex) {
-            updateDeviceToken()
             SignInResult.Success
         } else {
             SignInResult.WrongPin
@@ -61,7 +60,6 @@ class AuthInteractor(
         if (pinHash.isEmpty()) {
             SignInResult.WrongPin
         } else {
-            updateDeviceToken()
             SignInResult.Success
         }
     }
@@ -147,11 +145,7 @@ class AuthInteractor(
     fun finishSignUp() {
         accountStorage.remove(Key.KEY_IN_SIGN_UP_PROCESS)
 
-        updateDeviceToken()
-    }
-
-    private fun updateDeviceToken() {
-        // Send device push token to NotificationService on signIn, on creation and restoring the wallet
+        // Send device push token to NotificationService on creation and restoring the wallet
         appScope.launch {
             pushNotificationsInteractor.updateDeviceToken()
         }

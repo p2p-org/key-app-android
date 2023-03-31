@@ -9,20 +9,14 @@ import kotlinx.parcelize.Parcelize
 class FreeTransactionFeeLimit(
     val maxUsage: Int,
     val currentUsage: Int,
-
     val maxAmount: BigInteger,
-    val amountUsed: BigInteger,
-
-    val maxAccountCreationCount: Int,
-    val accountCreationUsage: Int
+    val amountUsed: BigInteger
 ) : Parcelable {
 
     @IgnoredOnParcel
     val remaining = maxUsage - currentUsage
 
     fun hasFreeTransactions(): Boolean = remaining != 0
-
-    fun hasFreeAccountCreationUsages(): Boolean = maxAccountCreationCount - accountCreationUsage > 0
 
     fun isFreeTransactionFeeAvailable(transactionFee: BigInteger, forNextTransaction: Boolean = false): Boolean {
         var currentUsage = currentUsage

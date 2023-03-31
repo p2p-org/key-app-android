@@ -351,8 +351,8 @@ class FeeRelayerTopUpInteractor(
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)
-        transaction.setFeePayer(feePayerAddress.toPublicKey())
-        transaction.setRecentBlockhash(blockhash)
+        transaction.feePayer = feePayerAddress.toPublicKey()
+        transaction.recentBlockHash = blockhash
 
         // calculate fee first
         val expectedFeeAmount = FeeAmount(

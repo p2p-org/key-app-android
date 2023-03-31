@@ -15,9 +15,9 @@ class BridgeBundleResponse(
     @SerializedName("recipient")
     val recipient: SolAddress,
     @SerializedName("token")
-    val erc20TokenAddress: EthAddress? = null,
+    val erc20TokenAddress: EthAddress,
     @SerializedName("result_amount")
-    val resultAmount: BridgeAmountResponse? = null,
+    val resultAmount: BridgeBundleFeeResponse? = null,
     @SerializedName("compensation_decline_reason")
     val compensationDeclineReason: String? = null,
     @SerializedName("expires_at")

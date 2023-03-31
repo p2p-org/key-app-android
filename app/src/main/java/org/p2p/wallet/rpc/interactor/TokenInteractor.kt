@@ -12,11 +12,11 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
-import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.utils.toPublicKey
 
 class TokenInteractor(
-    private val rpcRepository: RpcTransactionRepository,
+    private val rpcRepository: RpcHistoryRepository,
     private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
@@ -38,7 +38,7 @@ class TokenInteractor(
         transaction.addInstruction(instruction)
 
         val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
-        transaction.setRecentBlockhash(recentBlockhash.recentBlockhash)
+        transaction.recentBlockHash = recentBlockhash.recentBlockhash
 
         val signers = Account(tokenKeyProvider.keyPair)
         transaction.sign(signers)
@@ -84,7 +84,7 @@ class TokenInteractor(
 
         val transaction = Transaction().apply {
             addInstruction(instruction)
-            setRecentBlockhash(recentBlockHash.recentBlockhash)
+            setRecentBlockHash(recentBlockHash.recentBlockhash)
             sign(signers)
         }
 
@@ -115,7 +115,7 @@ class TokenInteractor(
 
         val transaction = Transaction().apply {
             addInstruction(instruction)
-            setRecentBlockhash(recentBlockHash.recentBlockhash)
+            setRecentBlockHash(recentBlockHash.recentBlockhash)
             signWithoutSignatures(feePayer)
         }
 

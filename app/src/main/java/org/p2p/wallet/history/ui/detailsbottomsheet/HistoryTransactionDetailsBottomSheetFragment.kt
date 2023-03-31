@@ -164,7 +164,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     override fun showSenderAddress(senderAddress: Base58String, senderUsername: String?) = with(binding) {
-        textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled_16, 0)
+        textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled, 0)
         textViewSendReceiveTitle.text = getString(R.string.transaction_details_receive_from)
         if (senderUsername != null) {
             textViewSendReceiveValue.text = senderUsername
@@ -192,7 +192,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     override fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?) = with(binding) {
-        textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled_16, 0)
+        textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled, 0)
         textViewSendReceiveTitle.text = getString(R.string.transaction_details_send_to)
         if (receiverUsername != null) {
             textViewSendReceiveValue.text = receiverUsername

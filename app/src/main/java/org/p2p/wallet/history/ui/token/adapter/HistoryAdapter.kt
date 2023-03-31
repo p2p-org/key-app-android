@@ -1,9 +1,9 @@
 package org.p2p.wallet.history.ui.token.adapter
 
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.recycler.RoundedItem
 import org.p2p.uikit.utils.recycler.RoundedItemAdapterInterface
@@ -32,7 +32,7 @@ class HistoryAdapter(
     private val glideManager: GlideManager,
     private val onHistoryItemClicked: (HistoryItem) -> Unit,
     private val onRetryClicked: () -> Unit,
-) : ListAdapter<HistoryItem, HistoryTransactionViewHolder>(HistoryItemComparator), RoundedItemAdapterInterface {
+) : ListAdapter<HistoryItem, HistoryTransactionViewHolder>(HistoryItemComparataor), RoundedItemAdapterInterface {
 
     private val pagingController = HistoryAdapterPagingController(this)
 
@@ -107,7 +107,7 @@ class HistoryAdapter(
         }
     }
 
-    private object HistoryItemComparator : DiffUtil.ItemCallback<HistoryItem>() {
+    object HistoryItemComparataor : DiffUtil.ItemCallback<HistoryItem>() {
         override fun areContentsTheSame(oldItem: HistoryItem, newItem: HistoryItem): Boolean {
             return when {
                 oldItem is TransactionItem && newItem is TransactionItem ->
@@ -128,7 +128,7 @@ class HistoryAdapter(
         pagingController.setPagingState(newState)
     }
 
-    fun isEmpty(): Boolean = currentList.isEmpty()
+    fun isEmpty() = currentList.isEmpty()
 
     override fun getRoundedItem(adapterPosition: Int): RoundedItem? {
         val position = if (adapterPosition == currentList.size && needToShowAdditionalItem()) {

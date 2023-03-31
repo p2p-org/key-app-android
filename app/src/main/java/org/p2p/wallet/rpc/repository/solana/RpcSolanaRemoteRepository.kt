@@ -26,7 +26,7 @@ class RpcSolanaRemoteRepository(
         encoding: Encoding
     ): String {
         val blockHash = blockHashRepository.getRecentBlockhash().recentBlockhash
-        transaction.setRecentBlockhash(blockHash)
+        transaction.recentBlockHash = blockHash
         transaction.sign(signer)
 
         val serializedTransaction = transaction.serialize()

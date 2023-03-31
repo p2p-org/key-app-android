@@ -22,6 +22,6 @@ internal class EthereumPriceRepository(
             )
             priceCacheRepository.mergeCache(response.entries.associate { it.key to TokenPriceWithMark(it.value.priceInUsd) })
         }
-        return priceCacheRepository.getPricesList().associate { it.key to it.value.priceInUsd }
+        return priceCacheRepository.getPrices().entries.associate { it.key to it.value.priceInUsd }
     }
 }

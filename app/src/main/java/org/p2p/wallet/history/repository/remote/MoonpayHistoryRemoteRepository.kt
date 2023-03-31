@@ -26,7 +26,7 @@ class MoonpayHistoryRemoteRepository(
     }
 
     override suspend fun loadHistory(limit: Int, mintAddress: String): HistoryPagingResult {
-        if (!sellEnabledFeatureToggle.isFeatureEnabled || mintAddress.isNotEmpty()) {
+        if (!sellEnabledFeatureToggle.isFeatureEnabled || !mintAddress.isEmpty()) {
             historyPagingState = HistoryPagingState.INACTIVE
             return HistoryPagingResult.Success(emptyList())
         }

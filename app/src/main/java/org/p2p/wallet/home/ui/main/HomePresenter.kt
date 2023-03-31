@@ -1,7 +1,6 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.LifecycleOwner
-import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
@@ -22,7 +21,6 @@ import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
-import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
@@ -30,6 +28,8 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimStatus
+import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -40,7 +40,6 @@ import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.home.ui.main.models.EthereumHomeState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -73,7 +72,7 @@ class HomePresenter(
     private val environmentManager: NetworkEnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper,
-    private val resources: Resources,
+    private val resourcesProvider: ResourcesProvider,
     private val tokensPolling: UserTokensPolling,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val networkObserver: SolanaNetworkObserver,
@@ -109,16 +108,12 @@ class HomePresenter(
 
     private data class ViewState(
         val tokens: List<Token.Active> = emptyList(),
-        val ethereumState: EthereumHomeState = EthereumHomeState(),
+        val ethereumTokens: List<Token.Eth> = emptyList(),
+        val ethereumBundleStatuses: Map<String, ClaimStatus?> = emptyMap(),
         val visibilityState: VisibilityState = VisibilityState.Hidden,
         val username: Username? = null,
-        val areZerosHidden: Boolean,
-    ) {
-        val ethereumTokens: List<Token.Eth>
-            get() = ethereumState.ethereumTokens
-        val ethereumBundleStatuses: Map<String, ClaimStatus?>
-            get() = ethereumState.ethereumBundleStatuses
-    }
+        val areZerosHidden: Boolean
+    )
 
     private var state = ViewState(
         areZerosHidden = settingsInteractor.areZerosHidden()
@@ -138,10 +133,7 @@ class HomePresenter(
             initialLoadTokens()
         } else {
             launch {
-                handleUserTokensLoaded(
-                    state.tokens,
-                    state.ethereumState
-                )
+                handleUserTokensLoaded(state.tokens)
                 initializeActionButtons()
             }
         }
@@ -253,18 +245,23 @@ class HomePresenter(
         }
     }
 
-    private fun handleUserTokensLoaded(
-        userTokens: List<Token.Active>,
-        ethereumState: EthereumHomeState
-    ) {
+    private suspend fun handleUserTokensLoaded(userTokens: List<Token.Active>) {
+        val ethereumTokens = loadEthTokens()
+        val ethereumBundleStatuses = try {
+            loadEthBundles().associate { it.token.hex to it.status }
+        } catch (error: Throwable) {
+            Timber.d(error, "Error on loadEthBundles")
+            emptyMap()
+        }
         Timber.d("local tokens change arrived")
         state = state.copy(
             tokens = userTokens,
-            ethereumState = ethereumState,
+            ethereumTokens = ethereumTokens,
+            ethereumBundleStatuses = ethereumBundleStatuses,
             username = usernameInteractor.getUsername(),
         )
 
-        val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethereumState.ethereumTokens.isEmpty()
+        val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethereumTokens.isEmpty()
         when {
             isAccountEmpty -> {
                 view?.showEmptyState(isEmpty = true)
@@ -277,16 +274,10 @@ class HomePresenter(
         }
     }
 
-    private suspend fun getEthereumState(): EthereumHomeState {
-        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return EthereumHomeState()
-        }
-        val ethereumTokens = async { loadEthTokens() }
-        val ethereumBundleStatuses = async { loadEthBundles() }
-        return EthereumHomeState(ethereumTokens.await(), ethereumBundleStatuses.await())
-    }
-
     private suspend fun loadEthTokens(): List<Token.Eth> {
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return emptyList()
+        }
         return try {
             ethereumRepository.loadWalletTokens()
         } catch (cancelled: CancellationException) {
@@ -298,7 +289,10 @@ class HomePresenter(
         }
     }
 
-    private suspend fun loadEthBundles(): Map<String, ClaimStatus?> {
+    private suspend fun loadEthBundles(): List<BridgeBundle> {
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return emptyList()
+        }
         return try {
             claimInteractor.getListOfEthereumBundleStatuses()
         } catch (cancelled: CancellationException) {
@@ -307,8 +301,6 @@ class HomePresenter(
         } catch (throwable: Throwable) {
             Timber.e(throwable, "Error on loading loadEthBundles")
             emptyList()
-        }.associate {
-            (it.token?.hex ?: ERC20Tokens.ETH.contractAddress) to it.status
         }
     }
 
@@ -329,7 +321,7 @@ class HomePresenter(
             view?.showEmptyViewData(
                 listOf(
                     homeBannerItem,
-                    resources.getString(R.string.main_popular_tokens_header),
+                    resourcesProvider.getString(R.string.main_popular_tokens_header),
                     *tokensForBuy.toTypedArray()
                 )
             )
@@ -346,8 +338,7 @@ class HomePresenter(
 
                 val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal()
                 loadTokenRates(loadedTokens)
-                val ethereumState = getEthereumState()
-                handleUserTokensLoaded(loadedTokens, ethereumState)
+                handleUserTokensLoaded(loadedTokens)
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
@@ -380,7 +371,7 @@ class HomePresenter(
             )
 
             val updatedTokens = userInteractor.getUserTokens()
-            handleUserTokensLoaded(updatedTokens, state.ethereumState)
+            handleUserTokensLoaded(updatedTokens)
         }
     }
 
@@ -433,12 +424,11 @@ class HomePresenter(
             try {
                 view?.showBalance(homeMapper.mapRateSkeleton())
                 userInteractor.loadUserRates(loadedTokens)
-                val updatedTokens = async { userInteractor.getUserTokens() }
-                val ethereumState = async { getEthereumState() }
-                handleUserTokensLoaded(updatedTokens.await(), ethereumState.await())
+                val updatedTokens = userInteractor.getUserTokens()
+                handleUserTokensLoaded(updatedTokens)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading token rates")
-                view?.showBalance(cellModel = null)
+                view?.showBalance(null)
                 view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
             }
         }
@@ -452,8 +442,7 @@ class HomePresenter(
 
                 val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal()
                 loadTokenRates(loadedTokens)
-                val ethereumState = getEthereumState()
-                handleUserTokensLoaded(loadedTokens, ethereumState)
+                handleUserTokensLoaded(loadedTokens)
                 initializeActionButtons()
             } catch (cancelled: CancellationException) {
                 Timber.i("Cancelled initial tokens remote update")

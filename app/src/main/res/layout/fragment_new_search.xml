@@ -45,15 +45,6 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         tools:visibility="visible" />
 
-    <org.p2p.wallet.svl.ui.send.SendViaLinkWidget
-        android:id="@+id/widgetSvl"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
     <TextView
         android:id="@+id/messageTextView"
         android:layout_width="0dp"
@@ -61,14 +52,75 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp"
         android:text="@string/search_found"
-        android:textAllCaps="true"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/widgetSvl"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toBottomOf="@id/progressBar"
+        tools:visibility="gone" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerSendViaLink"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_rounded_solid_snow_16"
+        android:foreground="@drawable/ripple_button_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <org.p2p.uikit.atoms.UiKitRoundedImageView
+            android:id="@+id/iconImageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginVertical="12dp"
+            android:layout_marginStart="16dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_copy_link"
+            android:background="@color/bg_rain"
+            app:cornerRadius="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/send_via_link"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
+            app:layout_constraintBottom_toTopOf="@id/textViewSubtitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iconImageView"
+            app:layout_constraintTop_toTopOf="@+id/iconImageView"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/textViewSubtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="8dp"
+            android:drawablePadding="8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/send_dont_need_the_address"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintBottom_toBottomOf="@+id/iconImageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iconImageView"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewSearchResults"
@@ -81,13 +133,11 @@
         android:overScrollMode="ifContentScrolls"
         android:visibility="gone"
         app:layout_constrainedHeight="true"
-        tools:itemCount="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/messageTextView"
         app:layout_constraintVertical_bias="0"
-        tools:layout_editor_absoluteX="16dp"
         tools:listitem="@layout/item_search"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/textViewEmptyTitle"
@@ -102,7 +152,7 @@
         app:layout_constraintBottom_toTopOf="@id/textViewEmptySubtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/widgetSvl"
+        app:layout_constraintTop_toBottomOf="@id/containerSendViaLink"
         app:layout_constraintVertical_bias="0"
         app:layout_constraintVertical_chainStyle="packed" />
 
@@ -126,8 +176,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="textViewEmptyTitle,textViewEmptySubtitle"
-        tools:visibility="gone" />
+        app:constraint_referenced_ids="textViewEmptyTitle,textViewEmptySubtitle" />
 
     <TextView
         android:id="@+id/textViewErrorTitle"
