@@ -2,9 +2,7 @@ package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -26,7 +24,7 @@ class InitFeatureActionHandler(
 
     override fun canHandle(
         newEvent: SendFeatureAction,
-        staticState: SendState
+        staticState: SendState.Static
     ): Boolean = newEvent is SendFeatureAction.InitFeature
 
     override fun handle(
@@ -45,16 +43,16 @@ class InitFeatureActionHandler(
         val initialToken = initialData.initialToken ?: SendToken.Bridge(userTokens.first())
 
         emit(SendState.Static.Initialize(initialToken, isTokenChangeEnabled))
-        val initialState = if (initialData.initialAmount == null) {
+        val tokenState = if (initialData.initialAmount == null) {
             SendState.Static.TokenZero(initialToken, null)
         } else {
             SendState.Static.TokenNotZero(initialToken, initialData.initialAmount)
         }
-        emit(initialState)
-    }.flatMapMerge { state ->
-        if (state !is SendState.Static.Initialize)
-            feeLoader.updateFee(state)
-        else flowOf(state)
+        emit(tokenState)
+        feeLoader.updateFee(tokenState)
+            .collect {
+                emit(it)
+            }
     }
 
     private fun toTokenActiveStub(token: Token.Other): Token.Active {

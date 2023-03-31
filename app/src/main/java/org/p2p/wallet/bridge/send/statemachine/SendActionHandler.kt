@@ -6,7 +6,7 @@ interface SendActionHandler {
 
     fun canHandle(
         newEvent: SendFeatureAction,
-        staticState: SendState,
+        staticState: SendState.Static,
     ): Boolean
 
     fun handle(

@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -50,14 +48,13 @@ class SendStateMachine(
 
         val staticState = state.lastStaticState
         val actionHandler = handlers.firstOrNull { it.canHandle(action, staticState) } ?: return
-
-        actionHandleJob = flowOf(action to actionHandler)
-            .flatMapLatest {
-                it.second.handle(state.lastStaticState, it.first)
-            }
+        actionHandleJob = actionHandler.handle(staticState, action)
             .flowOn(dispatchers.io)
             .catch { catchException(it, this) }
-            .onEach { newState -> state.value = newState }
+            .onEach { newState ->
+                Timber.d("emit newState = $newState")
+                state.value = newState
+            }
             .launchIn(this)
     }
 

@@ -10,7 +10,7 @@ class RefreshFeeActionHandler(
     private val feeLoader: SendBridgeFeeLoader,
 ) : SendActionHandler {
 
-    override fun canHandle(newEvent: SendFeatureAction, staticState: SendState): Boolean =
+    override fun canHandle(newEvent: SendFeatureAction, staticState: SendState.Static): Boolean =
         newEvent is SendFeatureAction.RefreshFee
 
     override fun handle(
