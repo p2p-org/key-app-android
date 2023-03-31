@@ -4,7 +4,6 @@ import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import org.p2p.core.utils.isZero
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
@@ -12,6 +11,7 @@ import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.fee
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 
@@ -46,11 +46,5 @@ class AmountChangeActionHandler(
             validator.validateInputAmount(token, newAmount)
             emit(mapper.updateInputAmount(lastStaticState, newAmount))
         }
-    }.flatMapMerge { state ->
-        if (state is SendState.Static.TokenNotZero)
-            feeLoader.updateFee(state)
-        else {
-            flowOf(state)
-        }
-    }
+    }.flatMapMerge { feeLoader.updateFee(it.lastStaticState) }
 }

@@ -52,7 +52,7 @@ class InitFeatureActionHandler(
         }
         emit(initialState)
     }.flatMapMerge { state ->
-        if (state is SendState.Static.TokenNotZero)
+        if (state !is SendState.Static.Initialize)
             feeLoader.updateFee(state)
         else flowOf(state)
     }

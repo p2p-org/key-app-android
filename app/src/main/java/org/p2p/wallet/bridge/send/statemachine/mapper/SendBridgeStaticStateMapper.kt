@@ -20,18 +20,23 @@ class SendBridgeStaticStateMapper {
         return when (oldState) {
             SendState.Static.Empty -> oldState
             is SendState.Static.Initialize -> oldState
-            is SendState.Static.ReadyToSend -> SendState.Static.TokenNotZero(
-                token = oldState.token,
-                amount = newAmount,
-                fee = null
-            )
+            is SendState.Static.ReadyToSend -> oldState.copy(amount = newAmount)
             is SendState.Static.TokenNotZero -> oldState.copy(amount = newAmount)
+
             is SendState.Static.TokenZero ->
-                SendState.Static.TokenNotZero(
-                    token = oldState.token,
-                    amount = newAmount,
-                    fee = null
-                )
+                if (oldState.fee == null) {
+                    SendState.Static.TokenNotZero(
+                        token = oldState.token,
+                        amount = newAmount,
+                        fee = null
+                    )
+                } else {
+                    SendState.Static.ReadyToSend(
+                        token = oldState.token,
+                        amount = newAmount,
+                        fee = oldState.fee
+                    )
+                }
         }
     }
 }

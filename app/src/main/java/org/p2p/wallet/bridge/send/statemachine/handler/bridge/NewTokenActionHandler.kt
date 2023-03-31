@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
@@ -23,5 +24,5 @@ class NewTokenActionHandler(
         val newToken = action.token as SendToken.Bridge
 
         emit(SendState.Static.TokenZero(newToken, null))
-    }
+    }.flatMapMerge { state -> feeLoader.updateFee(state) }
 }
