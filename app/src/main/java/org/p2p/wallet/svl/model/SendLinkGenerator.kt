@@ -33,6 +33,8 @@ object SendLinkGenerator {
             throw failed
         }
 
+        Timber.tag("SendLinkGenerator").d("Account address: ${account.publicKey.toBase58()}")
+
         return TemporaryAccount(
             symbols = generatedSymbols.joinToString(separator = emptyString()),
             address = account.publicKey.toBase58(),
@@ -48,6 +50,8 @@ object SendLinkGenerator {
             saltPrefix = BuildConfig.saltPrefix,
             includeSpaces = false
         )
+
+        Timber.tag("SendLinkGenerator").d("RECEIVER: Account address: ${account.publicKey.toBase58()}")
 
         return TemporaryAccount(
             symbols = seedCode.joinToString(emptyString()),

@@ -14,13 +14,14 @@ interface HistoryListViewContract {
         fun onTransactionClicked(transactionId: String)
 
         fun onSellTransactionClicked(transactionId: String)
+        fun onUserSendLinksClicked()
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun loadHistory(mintAddress: String)
-        fun refreshHistory(mintAddress: String)
-        fun loadNextHistoryPage(mintAddress: String)
-        fun attach(mintAddress: String)
+        fun loadHistory(historyType: HistoryListViewType)
+        fun refreshHistory(historyType: HistoryListViewType)
+        fun loadNextHistoryPage(historyType: HistoryListViewType)
+        fun attach(historyType: HistoryListViewType)
 
         fun onItemClicked(historyItem: HistoryItem)
     }

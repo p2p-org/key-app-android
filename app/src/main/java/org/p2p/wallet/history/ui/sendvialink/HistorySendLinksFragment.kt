@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.R
@@ -25,7 +26,7 @@ class HistorySendLinksFragment :
     }
 
     private val adapter = CommonAnyCellAdapter(
-        financeBlockCellDelegate(),
+        financeBlockCellDelegate(inflateListener = { it.setOnClickAction { _, item -> onItemClicked(item) } }),
         historyDateTextDelegate()
     )
 
@@ -43,5 +44,10 @@ class HistorySendLinksFragment :
 
     override fun showUserLinks(userLinksModels: List<AnyCellItem>) {
         adapter.items = userLinksModels
+    }
+
+    private fun onItemClicked(item: FinanceBlockCellModel) {
+        val linkUuid = item.typedPayload<String>()
+        HistorySendLinkDetailsBottomSheet.show(childFragmentManager, linkUuid)
     }
 }

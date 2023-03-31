@@ -23,11 +23,11 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_STATE = "EXTRA_STATE"
 
-class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_generation_result) {
+class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_generation_result) {
 
     companion object {
         fun create(state: LinkGenerationState): Fragment =
-            LinkGenerationResultFragment()
+            SendLinkGenerationResultFragment()
                 .withArgs(EXTRA_STATE to state)
     }
 
@@ -35,8 +35,8 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
 
     private val binding: FragmentSendLinkGenerationResultBinding by viewBinding()
 
-    // TODO: If complex logic will be needed,
-    // TODO: consider adding presenter class and move logic and these dependencies there
+    // If complex logic will be needed,
+    // consider adding presenter class and move logic and these dependencies there
     private val usernameInteractor: UsernameInteractor by inject()
     private val tokenKeyProvider: TokenKeyProvider by inject()
 
@@ -69,8 +69,7 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
                 }
 
                 imageViewCopy.setOnClickListener {
-                    val link = buildShareLink(state.formattedLink, state.amount)
-                    requireContext().copyToClipBoard(link)
+                    requireContext().copyToClipBoard(state.formattedLink)
                     showUiKitSnackBar(messageResId = R.string.send_via_link_generation_copied)
                 }
             }

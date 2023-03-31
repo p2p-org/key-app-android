@@ -1,5 +1,6 @@
 package org.p2p.wallet.svl.interactor
 
+import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
@@ -22,8 +23,15 @@ class ReceiveViaLinkInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
+    private class ReceiveViaLinkError(
+        override val message: String,
+        override val cause: Throwable? = null
+    ) : Throwable()
+
     suspend fun parseAccountFromLink(link: SendViaLinkWrapper): TemporaryAccountState {
-        val seedCode = link.link.substringAfterLast(SEND_LINK_FORMAT).toList().map { it.toString() }
+        val seedCode = link.link.substringAfterLast(SEND_LINK_FORMAT)
+            .toList()
+            .map(Char::toString)
 
         if (!SendLinkGenerator.isValidSeedCode(seedCode)) {
             return TemporaryAccountState.BrokenLink
@@ -32,6 +40,7 @@ class ReceiveViaLinkInteractor(
         val temporaryAccount = try {
             SendLinkGenerator.parseTemporaryAccount(seedCode)
         } catch (e: Throwable) {
+            Timber.e(ReceiveViaLinkError("Failed to parse temporary account", e))
             return TemporaryAccountState.BrokenLink
         }
 
@@ -41,14 +50,15 @@ class ReceiveViaLinkInteractor(
         } ?: return TemporaryAccountState.EmptyBalance
 
         val info = activeAccount.account.data.parsed.info
-        val tokenData = userLocalRepository.findTokenData(info.mint) ?: return TemporaryAccountState.ParsingFailed
-
-        val price = userLocalRepository.getPriceByTokenId(tokenData.coingeckoId)
+        val tokenData = userLocalRepository.findTokenData(info.mint) ?: run {
+            Timber.e(ReceiveViaLinkError("No token data found for mint ${info.mint}"))
+            return TemporaryAccountState.ParsingFailed
+        }
 
         val token = TokenConverter.fromNetwork(
             account = activeAccount,
             tokenData = tokenData,
-            price = price
+            price = null
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
@@ -58,8 +68,10 @@ class ReceiveViaLinkInteractor(
 
     suspend fun receiveTransfer(temporaryAccount: TemporaryAccount, token: Token.Active) {
         val recipient = tokenKeyProvider.publicKey.toPublicKey()
+        val senderAccount = Account(temporaryAccount.keypair)
+
         sendViaLinkInteractor.sendTransaction(
-            senderAccount = Account(temporaryAccount.keypair),
+            senderAccount = senderAccount,
             destinationAddress = recipient,
             token = token,
             lamports = token.totalInLamports,

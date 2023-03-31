@@ -12,16 +12,16 @@
     <string name="send_via_link_share_message">%1s sent you %2s via Key App. Follow the link to claim your funds: %3s</string>
     <string name="send_via_link_share_message_no_username">The user %1s sent you %2s via Key App. Follow the link to claim your funds: %3s</string>
     <string name="send_dont_need_the_address">You don\'t need to know the address</string>
-    
+
     <string name="send_via_link_free_transactions_title">Enjoy free transactions!</string>
     <string name="send_via_link_free_transactions_subtitle">
         With Key App, all transactions you make on the Solana network are free
     </string>
     <string name="send_via_link_free_transactions_button">Got it 👍</string>
 
-    <string name="send_via_link_receive_funds_title">Receive funds via one-time link</string>
+    <string name="send_via_link_receive_funds_title">Receive funds \n via one-time link</string>
     <string name="send_via_link_receive_funds_sent_from">Sent from</string>
-    <string name="send_via_link_receive_funds_success_title">You\'ve got %s %s!</string>
+    <string name="send_via_link_receive_funds_success_title">You\'ve got \n%s %s!</string>
     <string name="send_via_link_receive_funds_success_subtitle">Spend them wisely</string>
     <string name="send_via_link_receive_funds_success_button">Got it 👍</string>
 

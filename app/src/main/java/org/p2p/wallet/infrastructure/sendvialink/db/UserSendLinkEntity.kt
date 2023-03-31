@@ -33,7 +33,7 @@ data class UserSendLinkEntity(
             UserSendLinkEntity(
                 UUID.randomUUID().toString(),
                 link = "link",
-                amount = BigDecimal.ONE,
+                amount = BigDecimal.valueOf(10301231),
                 tokenMint = Constants.WRAPPED_SOL_MINT.toBase58Instance(),
                 dateCreated = Calendar.getInstance().apply {
                     set(Calendar.YEAR, 1990)

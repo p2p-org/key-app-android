@@ -62,6 +62,7 @@
     <string name="error_network_title">Connection error</string>
     <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
     <string name="error_no_internet_message">🥺 You have no internet connection</string>
+    <string name="error_no_internet_message_no_emoji">You have no internet connection</string>
     <string name="error_invalid_transaction">Invalid transaction, please try again</string>
     <string name="error_amount">Amount error. Please enter valid amount</string>
     <string name="error_fetching_data_about_token">Couldn\'t fetch information for %s</string>

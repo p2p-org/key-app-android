@@ -6,8 +6,8 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.svl.model.SendViaLinkClaimingState
-import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError
 
 interface ReceiveViaLinkContract {
@@ -15,16 +15,16 @@ interface ReceiveViaLinkContract {
         fun renderClaimTokenDetails(
             tokenAmount: TextViewCellModel,
             sentFromAddress: TextViewCellModel,
-            tokenIcon: ImageViewCellModel,
-            currentDate: TextViewCellModel
+            tokenIcon: ImageViewCellModel
         )
 
         fun renderState(state: SendViaLinkClaimingState)
-        fun navigateToErrorScreen(error: SendViaLinkError)
+        fun showButtonLoading(isLoading: Boolean)
+        fun showLinkError(error: SendViaLinkError)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun claimToken(temporaryAccount: TemporaryAccount, token: Token.Active)
-        fun handleState(state: TemporaryAccountState)
+        fun parseAccountFromLink(link: SendViaLinkWrapper, isRetry: Boolean = false)
     }
 }

@@ -2,11 +2,9 @@ package org.p2p.wallet.svl.ui.receive
 
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.drawable.UiKitDrawableCellModels
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.image.ImageViewCellModel
@@ -16,10 +14,8 @@ import org.p2p.uikit.utils.text.bind
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSendViaLinkReceiveFundsBinding
-import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.svl.model.SendViaLinkClaimingState
-import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError
 import org.p2p.wallet.svl.ui.error.SendViaLinkErrorFragment
 import org.p2p.wallet.utils.args
@@ -27,70 +23,63 @@ import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
-private const val ARG_ACCOUNT_STATE = "ARG_ACCOUNT_STATE"
 private const val ARG_LINK = "ARG_LINK"
 
-class SendViaLinkReceiveFundsBottomSheet :
+class ReceiveViaLinkBottomSheet :
     BaseMvpBottomSheet<ReceiveViaLinkContract.View, ReceiveViaLinkContract.Presenter>(
         layoutRes = R.layout.dialog_send_via_link_receive_funds
     ),
     ReceiveViaLinkContract.View {
     companion object {
-        fun show(fm: FragmentManager, state: TemporaryAccountState, link: SendViaLinkWrapper) {
-            SendViaLinkReceiveFundsBottomSheet()
-                .withArgs(
-                    ARG_ACCOUNT_STATE to state,
-                    ARG_LINK to link
-                )
-                .show(fm, SendViaLinkReceiveFundsBottomSheet::javaClass.name)
+        fun show(fm: FragmentManager, link: SendViaLinkWrapper) {
+            ReceiveViaLinkBottomSheet()
+                .withArgs(ARG_LINK to link)
+                .show(fm, ReceiveViaLinkBottomSheet::javaClass.name)
         }
     }
 
-    private val state: TemporaryAccountState by args(ARG_ACCOUNT_STATE)
     private val link: SendViaLinkWrapper by args(ARG_LINK)
 
     private val binding: DialogSendViaLinkReceiveFundsBinding by viewBinding()
-    private val glideManager: GlideManager by inject()
-
-    private var listener: RootListener? = null
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override val presenter: ReceiveViaLinkContract.Presenter by inject()
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = context as? RootListener
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         UiKitDrawableCellModels.shapeCircleWithTint(R.color.bg_rain)
             .applyBackground(binding.layoutClaimSuccess.imageViewIcon)
 
-        presenter.handleState(state)
+        presenter.parseAccountFromLink(link)
     }
 
     override fun renderClaimTokenDetails(
         tokenAmount: TextViewCellModel,
         sentFromAddress: TextViewCellModel,
-        tokenIcon: ImageViewCellModel,
-        currentDate: TextViewCellModel
+        tokenIcon: ImageViewCellModel
     ) = with(binding) {
-        textViewSubtitle.bind(currentDate)
         imageViewTokenIcon.bind(tokenIcon)
         textViewTokenAmount.bind(tokenAmount)
     }
 
     override fun renderState(state: SendViaLinkClaimingState) = with(binding) {
         when (state) {
-            is SendViaLinkClaimingState.ReadyToClaim -> {
-                groupTitle.isVisible = true
-
-                layoutTransactionDetails.isVisible = true
+            is SendViaLinkClaimingState.InitialLoading -> {
+                layoutTransactionDetails.isVisible = false
                 progressStateTransaction.isVisible = false
                 imageViewBanner.isVisible = false
+                progressBar.isVisible = true
+                buttonDone.isVisible = false
+            }
+            is SendViaLinkClaimingState.ReadyToClaim -> {
+                layoutTransactionDetails.isVisible = true
+                progressBar.isVisible = false
+                progressStateTransaction.isVisible = false
+                imageViewBanner.isVisible = false
+                buttonDone.isVisible = true
                 buttonDone.setText(R.string.common_confirm)
                 buttonDone.setOnClickListener {
                     presenter.claimToken(state.temporaryAccount, state.token)
@@ -98,17 +87,16 @@ class SendViaLinkReceiveFundsBottomSheet :
             }
             is SendViaLinkClaimingState.ClaimingInProcess -> {
                 layoutClaimSuccess.root.isVisible = false
-                progressStateTransaction.isVisible = true
-                groupTitle.isVisible = true
                 layoutTransactionDetails.isVisible = true
                 imageViewBanner.isVisible = false
+                progressStateTransaction.isVisible = true
                 progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
                 buttonDone.setText(R.string.common_close)
                 buttonDone.setOnClickListener { dismissAllowingStateLoss() }
             }
             is SendViaLinkClaimingState.ClaimSuccess -> {
                 layoutClaimSuccess.root.isVisible = true
-                groupTitle.isVisible = false
+                textViewTitle.isVisible = false
                 layoutTransactionDetails.isVisible = false
                 progressStateTransaction.isVisible = false
                 imageViewBanner.isVisible = false
@@ -118,34 +106,37 @@ class SendViaLinkReceiveFundsBottomSheet :
                 buttonDone.setOnClickListener { dismissAllowingStateLoss() }
             }
             is SendViaLinkClaimingState.ClaimFailed -> {
-                groupTitle.isVisible = true
                 layoutTransactionDetails.isVisible = true
                 progressStateTransaction.isVisible = true
+                progressBar.isVisible = false
                 imageViewBanner.isVisible = false
                 progressStateTransaction.setDescriptionText(R.string.transaction_description_failed)
                 progressStateTransaction.setFailedState()
+                buttonDone.isVisible = true
                 buttonDone.setText(R.string.common_close)
                 buttonDone.setOnClickListener { dismissAllowingStateLoss() }
             }
             is SendViaLinkClaimingState.ParsingFailed -> {
-                groupTitle.isVisible = true
-                textViewTitle.setText(R.string.send_via_link_error_failed_parsing_title)
-                textViewSubtitle.setText(R.string.send_via_link_error_failed_parsing_subtitle)
-
+                textViewTitle.setText(state.titleRes)
+                textViewSubtitle withTextOrGone state.subTitleRes?.let { getString(it) }
+                imageViewBanner.setImageResource(state.iconRes)
+                progressBar.isVisible = false
                 imageViewBanner.isVisible = true
                 progressStateTransaction.isVisible = false
                 layoutClaimSuccess.root.isVisible = false
 
+                buttonDone.isVisible = true
                 buttonDone.setText(R.string.common_reload)
-                buttonDone.setOnClickListener {
-                    listener?.parseTransferViaLink(link)
-                    dismissAllowingStateLoss()
-                }
+                buttonDone.setOnClickListener { presenter.parseAccountFromLink(link, isRetry = true) }
             }
         }
     }
 
-    override fun navigateToErrorScreen(error: SendViaLinkError) {
+    override fun showButtonLoading(isLoading: Boolean) {
+        binding.buttonDone.isLoadingState = isLoading
+    }
+
+    override fun showLinkError(error: SendViaLinkError) {
         dismissAllowingStateLoss()
         replaceFragment(SendViaLinkErrorFragment.create(error))
     }
