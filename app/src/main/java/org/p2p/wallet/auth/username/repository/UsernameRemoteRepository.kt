@@ -1,5 +1,7 @@
 package org.p2p.wallet.auth.username.repository
 
+import timber.log.Timber
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.auth.model.Username
@@ -10,8 +12,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.isDot
-import timber.log.Timber
-import kotlinx.coroutines.withContext
 
 class UsernameRemoteRepository(
     private val usernameService: RegisterUsernameServiceApi,
@@ -58,13 +58,14 @@ class UsernameRemoteRepository(
         val request = mapper.toResolveUsernameNetwork(username)
         val response = usernameService.resolveUsername(request)
         mapper.fromNetwork(response).map { nameResponse ->
+            val username = Username(
+                value = nameResponse.usernameWithDomain.dropDomain(),
+                domainPrefix = usernameDomainFeatureToggle.value,
+                fullUsername = nameResponse.usernameWithDomain
+            )
             UsernameDetails(
                 ownerAddress = nameResponse.domainOwnerAddress,
-                username = Username(
-                    value = nameResponse.usernameWithDomain.dropLastWhile { !it.isDot() },
-                    domainPrefix = usernameDomainFeatureToggle.value,
-                    fullUsername = nameResponse.usernameWithDomain
-                )
+                username = username
             )
         }
     }
@@ -78,10 +79,14 @@ class UsernameRemoteRepository(
             UsernameDetails(
                 ownerAddress = ownerAddress,
                 username = Username(
-                    value = it.usernameWithoutDomain,
-                    domainPrefix = usernameDomainFeatureToggle.value
+                    value = it.usernameWithDomain.dropDomain(),
+                    domainPrefix = usernameDomainFeatureToggle.value,
+                    fullUsername = it.usernameWithDomain
                 )
             )
         }
+    }
+    private fun String.dropDomain(): String {
+        return dropLastWhile { !it.isDot() }
     }
 }
