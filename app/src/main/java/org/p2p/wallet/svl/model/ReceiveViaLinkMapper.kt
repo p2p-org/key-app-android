@@ -26,7 +26,7 @@ class ReceiveViaLinkMapper {
 
     fun mapClaimSuccessMessage(token: Token.Active): TextViewCellModel {
         return TextViewCellModel.Raw(
-            text = TextContainer.invoke(
+            text = TextContainer(
                 R.string.send_via_link_receive_funds_success_title,
                 token.total, token.tokenSymbol
             )

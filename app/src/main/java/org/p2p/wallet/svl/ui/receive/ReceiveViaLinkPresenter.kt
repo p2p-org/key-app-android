@@ -30,7 +30,7 @@ class ReceiveViaLinkPresenter(
                 view?.renderState(SendViaLinkClaimingState.ClaimingInProcess)
                 receiveViaLinkInteractor.receiveTransfer(temporaryAccount, token)
 
-                val successMessage = receiveViaLinkMapper.mapClaimSuccessMessage(context, token)
+                val successMessage = receiveViaLinkMapper.mapClaimSuccessMessage(token)
                 val state = SendViaLinkClaimingState.ClaimSuccess(successMessage)
                 view?.renderState(state)
             } catch (e: Throwable) {

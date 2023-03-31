@@ -40,7 +40,7 @@ import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
-import org.p2p.wallet.svl.ui.receive.SendViaLinkReceiveFundsBottomSheet
+import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
@@ -186,7 +186,7 @@ class RootActivity :
             return false
         }
 
-        SendViaLinkReceiveFundsBottomSheet.show(supportFragmentManager, deeplink)
+        ReceiveViaLinkBottomSheet.show(supportFragmentManager, deeplink)
         return true
     }
 

@@ -27,16 +27,16 @@ import org.p2p.wallet.utils.withTextOrGone
 
 private const val ARG_LINK = "ARG_LINK"
 
-class SendViaLinkReceiveFundsBottomSheet :
+class ReceiveViaLinkBottomSheet :
     BaseMvpBottomSheet<ReceiveViaLinkContract.View, ReceiveViaLinkContract.Presenter>(
         layoutRes = R.layout.dialog_send_via_link_receive_funds
     ),
     ReceiveViaLinkContract.View {
     companion object {
         fun show(fm: FragmentManager, link: SendViaLinkWrapper) {
-            SendViaLinkReceiveFundsBottomSheet()
+            ReceiveViaLinkBottomSheet()
                 .withArgs(ARG_LINK to link)
-                .show(fm, SendViaLinkReceiveFundsBottomSheet::javaClass.name)
+                .show(fm, ReceiveViaLinkBottomSheet::javaClass.name)
         }
     }
 
