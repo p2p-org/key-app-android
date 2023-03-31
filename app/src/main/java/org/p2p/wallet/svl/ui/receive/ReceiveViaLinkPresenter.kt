@@ -40,7 +40,7 @@ class ReceiveViaLinkPresenter(
         }
     }
 
-    override fun parseAccountFromLink(link: SendViaLinkWrapper) {
+    override fun parseAccountFromLink(link: SendViaLinkWrapper, isRetry: Boolean) {
         if (!isInternetConnectionEnabled()) {
             val state = SendViaLinkClaimingState.ParsingFailed(
                 titleRes = R.string.error_no_internet_message_no_emoji,
@@ -51,12 +51,11 @@ class ReceiveViaLinkPresenter(
             return
         }
 
-        view?.renderState(SendViaLinkClaimingState.InitialLoading)
-        parseAccount(link)
-    }
-
-    override fun retry(link: SendViaLinkWrapper) {
-        view?.showButtonLoading(isLoading = true)
+        if (isRetry) {
+            view?.showButtonLoading(isLoading = true)
+        } else {
+            view?.renderState(SendViaLinkClaimingState.InitialLoading)
+        }
         parseAccount(link)
     }
 

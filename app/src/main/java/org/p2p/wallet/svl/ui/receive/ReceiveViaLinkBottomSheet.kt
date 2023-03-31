@@ -117,8 +117,9 @@ class SendViaLinkReceiveFundsBottomSheet :
                 buttonDone.setOnClickListener { dismissAllowingStateLoss() }
             }
             is SendViaLinkClaimingState.ParsingFailed -> {
-                textViewTitle.setText(R.string.send_via_link_error_failed_parsing_title)
-                textViewSubtitle withTextOrGone getString(R.string.send_via_link_error_failed_parsing_subtitle)
+                textViewTitle.setText(state.titleRes)
+                textViewSubtitle withTextOrGone state.subTitleRes?.let { getString(it) }
+                imageViewBanner.setImageResource(state.iconRes)
                 progressBar.isVisible = false
                 imageViewBanner.isVisible = true
                 progressStateTransaction.isVisible = false
@@ -126,7 +127,7 @@ class SendViaLinkReceiveFundsBottomSheet :
 
                 buttonDone.isVisible = true
                 buttonDone.setText(R.string.common_reload)
-                buttonDone.setOnClickListener { presenter.retry(link) }
+                buttonDone.setOnClickListener { presenter.parseAccountFromLink(link, isRetry = true) }
             }
         }
     }

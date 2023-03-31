@@ -25,7 +25,6 @@ interface ReceiveViaLinkContract {
 
     interface Presenter : MvpPresenter<View> {
         fun claimToken(temporaryAccount: TemporaryAccount, token: Token.Active)
-        fun parseAccountFromLink(link: SendViaLinkWrapper)
-        fun retry(link: SendViaLinkWrapper)
+        fun parseAccountFromLink(link: SendViaLinkWrapper, isRetry: Boolean = false)
     }
 }
