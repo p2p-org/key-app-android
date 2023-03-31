@@ -15,7 +15,6 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 
 internal class JupiterSwapTokensRemoteRepository(
@@ -24,8 +23,7 @@ internal class JupiterSwapTokensRemoteRepository(
     private val dispatchers: CoroutineDispatchers,
     private val userRepository: UserLocalRepository,
     private val pricesRepository: TokenPricesRemoteRepository,
-    private val swapStorage: JupiterSwapStorageContract,
-    private val pricesCache: JupiterSwapTokensPricesLocalRepository
+    private val swapStorage: JupiterSwapStorageContract
 ) : JupiterSwapTokensRepository {
 
     override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.io) {
@@ -75,32 +73,19 @@ internal class JupiterSwapTokensRemoteRepository(
         return (now - fetchTokensDate) <= TimeUnit.DAYS.toMillis(1) // check day has passed
     }
 
-    override suspend fun getTokensRates(tokens: List<JupiterSwapToken>): Map<Base58String, TokenPrice> {
-        val tokenMints = tokens.map(JupiterSwapToken::tokenMint)
-        val tokensCoingeckoIds = tokens.mapNotNull { it.coingeckoId?.let(::TokenId) }
-
-        if (tokensCoingeckoIds.isEmpty()) {
-            return emptyMap()
+    override suspend fun getTokenRate(token: JupiterSwapToken): TokenPrice? =
+        if (token.coingeckoId == null) {
+            null
+        } else {
+            try {
+                pricesRepository.getTokenPriceById(
+                    tokenId = TokenId(token.coingeckoId),
+                    targetCurrency = USD_READABLE_SYMBOL
+                )
+            } catch (error: Throwable) {
+                // coingecko can return empty price: []
+                Timber.i(error)
+                null
+            }
         }
-        val isTokenPricesCachedForMints = tokenMints.all { it in pricesCache }
-        if (isTokenPricesCachedForMints) {
-            return tokenMints.associateWith(pricesCache::requirePriceByMint)
-        }
-        return try {
-            pricesRepository.getTokenPricesByIdsMap(
-                tokenIds = tokensCoingeckoIds,
-                targetCurrency = USD_READABLE_SYMBOL
-            )
-                .mapKeys { (tokenId) -> tokens.first { it.coingeckoId == tokenId.id }.tokenMint }
-                .also(pricesCache::update)
-        } catch (error: Throwable) {
-            // coingecko can return empty price: []
-            Timber.i(error)
-            emptyMap()
-        }
-    }
-
-    override suspend fun getTokenRate(token: JupiterSwapToken): TokenPrice? {
-        return getTokensRates(listOf(token))[token.tokenMint]
-    }
 }

@@ -12,7 +12,7 @@ interface RpcAccountRepository {
     suspend fun getAccountInfo(account: String): AccountInfo?
     suspend fun getAccountsInfo(accounts: List<String>): List<Pair<String, AccountInfo>>
     suspend fun getProgramAccounts(publicKey: PublicKey, config: RequestConfiguration): List<ProgramAccount>
-    suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts
+    suspend fun getTokenAccountsByOwner(owner: String): TokenAccounts
     suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo
     suspend fun getPools(account: PublicKey): List<Pool.PoolInfo>
 }

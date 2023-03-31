@@ -6,7 +6,7 @@ import org.koin.core.component.inject
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.notification.ErrorTransactionNotification
 import org.p2p.wallet.notification.SwapTransactionNotification
-import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.transaction.model.TransactionExecutionState
 import timber.log.Timber
@@ -23,7 +23,7 @@ class TransactionSendExecutor(private val transaction: AppTransaction) : Transac
             .d("New executor created: ${transaction.serializedTransaction}")
     }
 
-    private val rpcRepository: RpcTransactionRepository by inject()
+    private val rpcRepository: RpcHistoryRepository by inject()
     private val appNotificationManager: AppNotificationManager by inject()
 
     private val currentState = MutableStateFlow<TransactionExecutionState>(TransactionExecutionState.Idle)

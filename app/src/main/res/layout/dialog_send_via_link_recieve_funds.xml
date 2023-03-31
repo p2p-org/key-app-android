@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@drawable/bg_rounded_transparent_8"
+    android:backgroundTint="@color/backgroundPrimary">
+
+    <View
+        android:id="@+id/viewPointer"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="16dp"
+        android:gravity="center"
+        android:text="@string/send_via_link_receive_funds_title"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewPointer" />
+
+    <TextView
+        android:id="@+id/textViewSubtitle"
+        style="@style/UiKit.TextAppearance.Regular.Text3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        tools:text="Today @ 15:28" />
+
+    <LinearLayout
+        android:id="@+id/layoutTransactionDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/bg_smoke"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingVertical="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitle">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewTokenIcon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:duplicateParentState="true"
+            tools:src="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/textViewTokenAmount"
+            style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textColor="@color/text_night"
+            tools:text="13.95 SOL" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewSentFromTitle"
+        style="@style/UiKit.TextAppearance.Regular.Text4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="24dp"
+        android:gravity="center_vertical"
+        android:text="@string/send_via_link_receive_funds_sent_from"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutTransactionDetails" />
+
+    <TextView
+        android:id="@+id/textViewSentFromValue"
+        style="@style/UiKit.TextAppearance.SemiBold.Text4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="24dp"
+        android:gravity="center_vertical|end"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/textViewSentFromTitle"
+        app:layout_constraintTop_toBottomOf="@+id/layoutTransactionDetails"
+        tools:text="Udjn45...u8uvs5" />
+
+    <org.p2p.wallet.transaction.ui.ProgressStateWidget
+        android:id="@+id/progressStateTransaction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonDone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSentFromValue" />
+
+    <include
+        android:id="@+id/layoutClaimSuccess"
+        layout="@layout/layout_send_via_link_claim_success"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="64dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/buttonDone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewPointer" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonDone"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/common_confirm"
+        android:textColor="@color/snow"
+        app:iconSize="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="textViewTitle,textViewSubtitle,layoutTransactionDetails,textViewSentFromTitle,textViewSentFromValue,progressStateTransaction" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

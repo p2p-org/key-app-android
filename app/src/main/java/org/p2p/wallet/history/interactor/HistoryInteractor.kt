@@ -14,12 +14,12 @@ class HistoryInteractor(
 ) {
     suspend fun loadHistory(limit: Int, mintAddress: String): HistoryPagingResult =
         withContext(coroutineDispatchers.io) {
-            historyServiceRepository.loadHistory(limit, mintAddress)
+            return@withContext historyServiceRepository.loadHistory(limit, mintAddress)
         }
 
     suspend fun loadNextPage(limit: Int, mintAddress: String): HistoryPagingResult =
         withContext(coroutineDispatchers.io) {
-            historyServiceRepository.loadNextPage(limit, mintAddress)
+            return@withContext historyServiceRepository.loadNextPage(limit, mintAddress)
         }
 
     suspend fun findTransactionById(id: String): HistoryTransaction? {

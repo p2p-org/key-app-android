@@ -41,6 +41,4 @@
 
     <string name="transaction_details_status_message_format">There was a problem with the %s, your funds were refunded</string>
 
-    <string name="transaction_history_send_via_link_title">Sent via one-time link</string>
-    <string name="transaction_history_send_via_link_info">Unique one-time link works only once</string>
 </resources>

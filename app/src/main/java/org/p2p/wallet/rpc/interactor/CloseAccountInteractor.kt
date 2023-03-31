@@ -5,12 +5,12 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
-import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.utils.toPublicKey
 
 class CloseAccountInteractor(
     private val rpcBlockhashRepository: RpcBlockhashRepository,
-    private val rpcTransactionRepository: RpcTransactionRepository,
+    private val rpcTransactionRepository: RpcHistoryRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -27,7 +27,7 @@ class CloseAccountInteractor(
         transaction.addInstruction(instruction)
 
         val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
-        transaction.setRecentBlockhash(recentBlockhash.recentBlockhash)
+        transaction.recentBlockHash = recentBlockhash.recentBlockhash
 
         val signers = Account(tokenKeyProvider.keyPair)
         transaction.sign(signers)

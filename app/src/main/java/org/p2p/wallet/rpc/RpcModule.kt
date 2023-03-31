@@ -17,7 +17,7 @@ import org.p2p.wallet.rpc.api.RpcAmountApi
 import org.p2p.wallet.rpc.api.RpcBalanceApi
 import org.p2p.wallet.rpc.api.RpcBlockhashApi
 import org.p2p.wallet.rpc.api.RpcSignatureApi
-import org.p2p.wallet.rpc.api.RpcTransactionApi
+import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.rpc.interactor.CloseAccountInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
@@ -31,8 +31,8 @@ import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRemoteRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRemoteRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
-import org.p2p.wallet.rpc.repository.history.RpcTransactionRemoteRepository
-import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRemoteRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.rpc.repository.ren.RenPoolApi
 import org.p2p.wallet.rpc.repository.ren.RenPoolRemoteRepository
 import org.p2p.wallet.rpc.repository.solana.RpcSolanaApi
@@ -71,9 +71,9 @@ object RpcModule : InjectionModule {
         } bind RpcSignatureRepository::class
 
         single {
-            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcTransactionApi::class.java)
-            RpcTransactionRemoteRepository(api)
-        } bind RpcTransactionRepository::class
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java)
+            RpcHistoryRemoteRepository(api)
+        } bind RpcHistoryRepository::class
 
         single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcSolanaApi::class.java)

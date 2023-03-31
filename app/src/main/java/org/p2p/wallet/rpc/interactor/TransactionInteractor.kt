@@ -10,15 +10,14 @@ import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
-import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
-import org.p2p.solanaj.utils.crypto.Base64String
 
 class TransactionInteractor(
     private val rpcBlockhashRepository: RpcBlockhashRepository,
-    private val rpcTransactionRepository: RpcTransactionRepository,
+    private val rpcTransactionRepository: RpcHistoryRepository,
     private val rpcAmountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -36,8 +35,8 @@ class TransactionInteractor(
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)
-        transaction.setRecentBlockhash(recentBlockhash ?: rpcBlockhashRepository.getRecentBlockhash().recentBlockhash)
-        transaction.setFeePayer(feePayer)
+        transaction.recentBlockHash = recentBlockhash ?: rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
+        transaction.feePayer = feePayer
 
         // calculate fee first
         val expectedFee = FeeAmount(
@@ -51,22 +50,14 @@ class TransactionInteractor(
     }
 
     suspend fun serializeAndSend(
-        transaction: Transaction,
+        preparedTransaction: PreparedTransaction,
         isSimulation: Boolean
     ): String {
 
         return if (isSimulation) {
-            rpcTransactionRepository.simulateTransaction(transaction)
+            rpcTransactionRepository.simulateTransaction(preparedTransaction.transaction)
         } else {
-            rpcTransactionRepository.sendTransaction(transaction)
-        }
-    }
-
-    suspend fun sendTransaction(signedTransaction: Base64String, isSimulation: Boolean): String {
-        return if (isSimulation) {
-            rpcTransactionRepository.simulateTransaction(signedTransaction.base64Value)
-        } else {
-            rpcTransactionRepository.sendTransaction(signedTransaction.base64Value)
+            rpcTransactionRepository.sendTransaction(preparedTransaction.transaction)
         }
     }
 
@@ -90,7 +81,7 @@ class TransactionInteractor(
         val transaction = Transaction().apply {
             addInstructions(instructions)
             setFeePayer(feePayerPublicKey)
-            setRecentBlockhash(blockhash)
+            recentBlockHash = blockhash
             sign(signers)
         }
 

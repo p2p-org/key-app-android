@@ -9,8 +9,6 @@ class PriceCacheRepository() {
 
     fun getPrices(): Map<String, TokenPriceWithMark> = cachedPrices
 
-    fun getPricesList(): Set<Map.Entry<String, TokenPriceWithMark>> = cachedPrices.entries
-
     fun getPriceByKey(key: String): BigDecimal? {
         return cachedPrices[key]?.priceInUsd
     }
@@ -20,6 +18,8 @@ class PriceCacheRepository() {
     }
 
     fun mergeCache(newItems: Map<String, TokenPriceWithMark>) {
-        cachedPrices.putAll(newItems)
+        for ((k, v) in newItems) {
+            cachedPrices.merge(k, v) { _, newVal -> newVal }
+        }
     }
 }

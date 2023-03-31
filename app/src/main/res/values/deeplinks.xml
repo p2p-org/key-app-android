@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_scheme">keyapp</string>
-    <string name="transfer_app_scheme">t.key.app</string>
 </resources>

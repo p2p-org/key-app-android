@@ -320,8 +320,8 @@ class FeeRelayerSwapInteractor(
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)
-        transaction.setRecentBlockhash(blockhash)
-        transaction.setFeePayer(feePayerAddress)
+        transaction.recentBlockHash = blockhash
+        transaction.feePayer = feePayerAddress
 
         // calculate fee first
         val expectedFee = FeeAmount(

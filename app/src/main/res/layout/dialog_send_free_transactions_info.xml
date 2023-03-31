@@ -15,9 +15,8 @@
     <include
         android:id="@+id/layoutFreeTransactions"
         layout="@layout/item_info_image_double_text"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp" />
 
 </LinearLayout>

@@ -70,7 +70,7 @@ class JupiterSwapPresenter(
     private val rateTickerManager: SwapRateTickerManager,
     private val dispatchers: CoroutineDispatchers,
     private val userLocalRepository: UserLocalRepository,
-    private val historyInteractor: HistoryInteractor
+    private val historyInteractor: HistoryInteractor,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true

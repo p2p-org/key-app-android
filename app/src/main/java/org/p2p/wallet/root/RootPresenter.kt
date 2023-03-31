@@ -3,7 +3,6 @@ package org.p2p.wallet.root
 import android.content.Context
 import timber.log.Timber
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -12,14 +11,10 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSwapEnabledFeatur
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
+import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
-import org.p2p.wallet.sell.interactor.SellInteractor
-import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
-import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
-import org.p2p.wallet.svl.model.TemporaryAccountState
-import org.p2p.wallet.svl.ui.error.SendViaLinkError
-import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.user.worker.TokensDataWorker
 
 private const val TAG = "RootPresenter"
@@ -32,11 +27,8 @@ class RootPresenter(
     private val swapRoutesRepository: JupiterSwapRoutesRepository,
     private val newSwapEnabledFeatureToggle: NewSwapEnabledFeatureToggle,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
-    private val context: Context,
-    private val receiveViaLinkInteractor: ReceiveViaLinkInteractor
+    private val context: Context
 ) : BasePresenter<RootContract.View>(), RootContract.Presenter {
-
-    private var parseJob: Job? = null
 
     override fun attach(view: RootContract.View) {
         super.attach(view)
@@ -83,23 +75,5 @@ class RootPresenter(
      * */
     private fun startPeriodicTokensWorker() {
         TokensDataWorker.schedulePeriodicWorker(context)
-    }
-
-    override fun parseTransferAppLink(link: SendViaLinkWrapper) {
-        parseJob?.cancel()
-        parseJob = launch {
-            try {
-                val state = receiveViaLinkInteractor.parseAccountFromLink(link)
-
-                if (state is TemporaryAccountState.BrokenLink) {
-                    view?.showLinkError(SendViaLinkError.BROKEN_LINK)
-                } else {
-                    view?.showTransferLinkBottomSheet(state, link)
-                }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error parsing link")
-                view?.showTransferLinkBottomSheet(TemporaryAccountState.ParsingFailed, link)
-            }
-        }
     }
 }

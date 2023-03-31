@@ -57,7 +57,7 @@ class TokenHistoryPresenter(
 
     override fun onReceiveClicked() {
         if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            if (token.mintAddress in ERC20Tokens.values().map { it.receiveFromTokens }.flatten()) {
+            if (token.mintAddress in ERC20Tokens.values().map { it.mintAddress }) {
                 view?.showReceiveNetworkDialog()
             } else {
                 view?.openReceiveInSolana()

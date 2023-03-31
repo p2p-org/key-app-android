@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 class BridgeBundleFeesResponse(
     @SerializedName("gas")
-    val gasFee: BridgeAmountResponse? = null,
+    val gasFee: BridgeBundleFeeResponse? = null,
     @SerializedName("arbiter")
-    val arbiterFee: BridgeAmountResponse? = null,
+    val arbiterFee: BridgeBundleFeeResponse? = null,
     @SerializedName("create_account")
-    val createAccountFee: BridgeAmountResponse? = null
+    val createAccountFee: BridgeBundleFeeResponse? = null
 )

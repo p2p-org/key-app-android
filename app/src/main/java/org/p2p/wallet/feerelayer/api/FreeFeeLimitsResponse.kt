@@ -19,10 +19,8 @@ class LimitsResponse(
     val maxAmount: BigInteger,
     @SerializedName("max_count")
     val maxCount: Int,
-    @SerializedName("max_token_account_creation_amount")
-    val maxAccountCreationAmount: BigInteger?,
-    @SerializedName("max_token_account_creation_count")
-    val maxAccountCreationCount: Int?
+    @SerializedName("period")
+    val period: PeriodsResponse
 )
 
 class PeriodsResponse(
@@ -36,7 +34,5 @@ class ProcessedFeeResponse(
     @SerializedName("total_amount")
     val totalAmount: BigInteger,
     @SerializedName("count")
-    val count: Int,
-    @SerializedName("rent_count")
-    val rentCount: Int?
+    val count: Int
 )

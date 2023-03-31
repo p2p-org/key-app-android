@@ -18,9 +18,8 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.search.adapter.SearchAdapter
-import org.p2p.wallet.svl.ui.send.SendViaLinkFragment
+import org.p2p.wallet.newsend.ui.vialink.SendViaLinkFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
-import org.p2p.wallet.svl.model.SvlWidgetState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -81,7 +80,7 @@ class NewSearchFragment :
 
             buttonScanQr.setOnClickListener { presenter.onScanClicked() }
 
-            widgetSvl.setOnClickListener {
+            containerSendViaLink.setOnClickListener {
                 replaceFragment(SendViaLinkFragment.create(initialToken = selectedToken))
             }
 
@@ -102,11 +101,7 @@ class NewSearchFragment :
     }
 
     override fun showSendViaLink(isVisible: Boolean) {
-        binding.widgetSvl.isVisible = isVisible
-    }
-
-    override fun updateLinkWidgetState(state: SvlWidgetState) {
-        binding.widgetSvl.updateState(state)
+        binding.containerSendViaLink.isVisible = isVisible
     }
 
     override fun showNotFound() = with(binding) {

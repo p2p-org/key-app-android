@@ -2,7 +2,6 @@ package org.p2p.wallet.history
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -28,14 +27,10 @@ import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewPresenter
-import org.p2p.wallet.history.ui.sendvialink.HistorySendLinkDetailsContract
-import org.p2p.wallet.history.ui.sendvialink.HistorySendLinkDetailsPresenter
-import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksContract
-import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.push_notifications.PushNotificationsModule
-import org.p2p.wallet.rpc.api.RpcTransactionApi
+import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
 
 object HistoryModule : InjectionModule {
@@ -47,17 +42,17 @@ object HistoryModule : InjectionModule {
         factoryOf(::HistoryItemMapper)
         factoryOf(::HistorySellTransactionMapper)
 
-        factoryOf(::HistoryPresenter) bind
-            HistoryContract.Presenter::class
-        factoryOf(::TokenHistoryPresenter) bind
-            TokenHistoryContract.Presenter::class
-        factoryOf(::HistoryListViewPresenter) bind
-            HistoryListViewContract.Presenter::class
+        factoryOf(::HistoryPresenter) bind HistoryContract.Presenter::class
+        factoryOf(::TokenHistoryPresenter) bind TokenHistoryContract.Presenter::class
+        factory {
+            HistoryListViewPresenter(
+                historyInteractor = get(),
+                environmentManager = get(),
+                historyItemMapper = get()
+            )
+        } bind HistoryListViewContract.Presenter::class
         factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) bind
             HistoryTransactionDetailsContract.Presenter::class
-
-        factoryOf(::HistorySendLinksPresenter) bind HistorySendLinksContract.Presenter::class
-        factoryOf(::HistorySendLinkDetailsPresenter) bind HistorySendLinkDetailsContract.Presenter::class
     }
 
     private fun Module.dataLayer() {
@@ -66,19 +61,28 @@ object HistoryModule : InjectionModule {
                 RpcHistoryServiceApi::class.java
             )
         }
-
         factoryOf(::TransactionDetailsEntityMapper)
         singleOf(::HistoryServiceSignatureFieldGenerator)
-
         singleOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
-        single { get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcTransactionApi::class.java) }
+        single { get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java) }
         factoryOf(::HistoryInteractor)
         single<HistoryRemoteRepository> {
             val remotes = listOf(
-                new(::RpcHistoryRepository),
-                new(::MoonpayHistoryRemoteRepository)
+                RpcHistoryRepository(
+                    historyApi = get(),
+                    tokenKeyProvider = get(),
+                    historyServiceSignatureFieldGenerator = get(),
+                    converter = get(),
+                    coroutineDispatchers = get()
+                ),
+                MoonpayHistoryRemoteRepository(
+                    sellEnabledFeatureToggle = get(),
+                    repository = get(),
+                    tokenKeyProvider = get(),
+                    hiddenSellTransactionsStorageContract = get()
+                )
             )
-            HistoryRepository(repositories = remotes, dispatchers = get(), localRepository = get())
+            HistoryRepository(remotes, get(), get())
         }
     }
 }

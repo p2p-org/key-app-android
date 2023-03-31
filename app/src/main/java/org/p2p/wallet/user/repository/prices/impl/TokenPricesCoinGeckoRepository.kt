@@ -56,6 +56,6 @@ class TokenPricesCoinGeckoRepository(
                     throw httpException
                 }
             }
-            priceCacheRepository.getPricesList().map { TokenPrice(tokenId = it.key, price = it.value.priceInUsd) }
+            priceCacheRepository.getPrices().entries.map { TokenPrice(tokenId = it.key, price = it.value.priceInUsd) }
         }
 }

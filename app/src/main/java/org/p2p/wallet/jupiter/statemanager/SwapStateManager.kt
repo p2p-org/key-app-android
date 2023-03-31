@@ -12,9 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -292,12 +290,6 @@ class SwapStateManager(
         return tokenRatioCache.getOrPut(token.mintAddress) {
             SwapTokenRateLoader(swapTokensRepository)
         }.getRate(token)
-    }
-
-    suspend fun getTokenRateLoadedOrNull(token: SwapTokenModel): SwapRateLoaderState.Loaded? {
-        return getTokenRate(token)
-            .filterIsInstance<SwapRateLoaderState.Loaded>()
-            .firstOrNull()
     }
 
     private fun observeUserTokens() {
