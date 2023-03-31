@@ -5,5 +5,5 @@ import org.p2p.core.token.TokenData
 
 interface UserRepository {
     suspend fun loadAllTokens(): List<TokenData>
-    suspend fun loadUserTokens(publicKey: String, fetchPrices: Boolean): List<Token.Active>
+    suspend fun loadUserTokens(publicKey: String): List<Token.Active>
 }

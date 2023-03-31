@@ -1,9 +1,9 @@
 package org.p2p.wallet.restore.ui.derivable
 
+import androidx.recyclerview.widget.RecyclerView
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
@@ -50,13 +50,13 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 
         @SuppressLint("SetTextI18n")
         fun onBind(account: DerivableAccount) {
-            val total = account.totalInUsd.scaleShort()
-            val tokenTotal = account.total
+            val total = account.totalInUsd?.scaleShort()
+            val tokenTotal = account.totalInSol
 
             startAmountView.title = SOL_SYMBOL
             tokenImageView.setImageResource(R.drawable.ic_solana_card)
             startAmountView.subtitle = cutAddress(account.account.publicKey.toBase58())
-            endAmountView.topValue = "$total $"
+            endAmountView.topValue = total?.let { "$it $" }
 
             endAmountView.bottomValue = if (tokenTotal.isZero()) {
                 null
@@ -64,7 +64,7 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                 "${tokenTotal.toPlainString()} $SOL_SYMBOL"
             }
 
-            root.alpha = if (total.isZero()) HALF_ALPHA else FULL_ALPHA
+            root.alpha = if (total == null || total.isZero()) HALF_ALPHA else FULL_ALPHA
         }
 
         @Suppress("MagicNumber")

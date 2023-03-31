@@ -3,13 +3,10 @@ package org.p2p.wallet.home.ui.main
 import androidx.lifecycle.LifecycleOwner
 import timber.log.Timber
 import java.math.BigDecimal
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
@@ -22,6 +19,7 @@ import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.R
@@ -40,6 +38,7 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
+import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
@@ -64,8 +63,6 @@ val POPULAR_TOKENS_COINGECKO_IDS = setOf(
 ).map { TokenId(it) }
 val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
-private val LOAD_TOKENS_DELAY_MS = 1.toDuration(DurationUnit.SECONDS).inWholeMilliseconds
-
 class HomePresenter(
     private val analytics: HomeAnalytics,
     private val updatesManager: UpdatesManager,
@@ -86,12 +83,14 @@ class HomePresenter(
     private val ethereumRepository: EthereumRepository,
     private val claimInteractor: ClaimInteractor,
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
+    private val homeMapper: HomeMapper,
     seedPhraseProvider: SeedPhraseProvider,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
 
     private var pollingJob: Job? = null
+    private var ratesJob: Job? = null
 
     init {
         // TODO maybe we can find better place to start this service
@@ -327,6 +326,8 @@ class HomePresenter(
                 )
             )
             logBalance(BigDecimal.ZERO)
+
+            view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
         }
     }
 
@@ -335,7 +336,8 @@ class HomePresenter(
             try {
                 view?.showRefreshing(isRefreshing = true)
 
-                val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true)
+                val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal()
+                loadTokenRates(loadedTokens)
                 handleUserTokensLoaded(loadedTokens)
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
@@ -387,7 +389,12 @@ class HomePresenter(
     private fun showTokensAndBalance() {
         launch {
             val balance = getUserBalance()
-            view?.showBalance(balance)
+
+            if (balance != null) {
+                view?.showBalance(homeMapper.mapBalance(balance))
+            } else {
+                view?.showBalance(null)
+            }
 
             logBalance(balance)
 
@@ -405,21 +412,36 @@ class HomePresenter(
         }
     }
 
-    private fun logBalance(balance: BigDecimal) {
-        val hasPositiveBalance = balance.isMoreThan(BigDecimal.ZERO)
+    private fun logBalance(balance: BigDecimal?) {
+        val hasPositiveBalance = balance != null && balance.isMoreThan(BigDecimal.ZERO)
         analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
-        analytics.logUserAggregateBalanceProperty(balance)
+        analytics.logUserAggregateBalanceProperty(balance.orZero())
+    }
+
+    private fun loadTokenRates(loadedTokens: List<Token.Active>) {
+        ratesJob?.cancel()
+        ratesJob = launch {
+            try {
+                view?.showBalance(homeMapper.mapRateSkeleton())
+                userInteractor.loadUserRates(loadedTokens)
+                val updatedTokens = userInteractor.getUserTokens()
+                handleUserTokensLoaded(updatedTokens)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading token rates")
+                view?.showBalance(null)
+                view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
+            }
+        }
     }
 
     private fun initialLoadTokens() {
         launch {
             try {
-                Timber.d("initial token loading")
+                Timber.d("Initial token loading")
                 view?.showRefreshing(isRefreshing = true)
 
-                delay(LOAD_TOKENS_DELAY_MS)
-
-                val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true)
+                val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal()
+                loadTokenRates(loadedTokens)
                 handleUserTokensLoaded(loadedTokens)
                 initializeActionButtons()
             } catch (cancelled: CancellationException) {
@@ -440,11 +462,16 @@ class HomePresenter(
         }
     }
 
-    private fun getUserBalance(): BigDecimal =
-        state.tokens
+    private fun getUserBalance(): BigDecimal? {
+        val tokens = state.tokens
+
+        if (tokens.none { it.totalInUsd != null }) return null
+
+        return tokens
             .mapNotNull(Token.Active::totalInUsd)
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
+    }
 
     private fun getBanners(): List<Banner> {
         val usernameExists = state.username != null

@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -325,7 +326,7 @@ class SendViaLinkPresenter(
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
         val lamports = calculationMode.getCurrentAmountLamports()
 
-        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.toPlainString())
+        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.orZero().toPlainString())
 
         launch {
             try {
