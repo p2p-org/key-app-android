@@ -159,7 +159,8 @@ class SendViaLinkInteractor(
         )
 
         val userTokens = userInteractor.getUserTokens()
-        val shouldCreateAccount = userTokens.none { it.mintAddress == mintAddress }
+        val isTokenAbsent = userTokens.none { it.mintAddress == mintAddress }
+        val shouldCreateAccount = isTokenAbsent && splDestinationAddress.shouldCreateAccount
         if (shouldCreateAccount) {
             // we should always create associated token account, since the recipient is a new temporary account user
             instructions += TokenProgram.createAssociatedTokenAccountInstruction(
