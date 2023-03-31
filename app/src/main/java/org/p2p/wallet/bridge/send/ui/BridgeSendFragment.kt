@@ -13,15 +13,15 @@ import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.bridge.send.ui.dialog.BridgeSendFeeBottomSheet
+import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.newsend.ui.SendOpenedFrom
-import org.p2p.wallet.newsend.ui.details.NewSendDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.FreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
@@ -42,7 +42,6 @@ private const val ARG_INPUT_AMOUNT = "ARG_INPUT_AMOUNT"
 private const val ARG_OPENED_FROM = "ARG_OPENED_FROM"
 
 private const val KEY_RESULT_FEE = "KEY_RESULT_FEE"
-private const val KEY_RESULT_FEE_PAYER_TOKENS = "KEY_RESULT_FEE_PAYER_TOKENS"
 private const val KEY_RESULT_NEW_FEE_PAYER = "KEY_RESULT_APPROXIMATE_FEE_USD"
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
@@ -111,20 +110,6 @@ class BridgeSendFragment :
             KEY_REQUEST_SEND,
             viewLifecycleOwner
         ) { _, result -> handleSupportFragmentResult(result) }
-
-        childFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_SEND,
-            viewLifecycleOwner
-        ) { _, result ->
-            when {
-                result.containsKey(KEY_RESULT_FEE) && result.containsKey(KEY_RESULT_FEE_PAYER_TOKENS) -> {
-                    val fee = result.getParcelable<SendSolanaFee>(KEY_RESULT_FEE)
-                    val feePayerTokens = result.getParcelableArrayList<Token.Active>(KEY_RESULT_FEE_PAYER_TOKENS)
-                    if (fee == null || feePayerTokens == null) return@setFragmentResultListener
-                    showAccountCreationFeeInfo(fee, feePayerTokens)
-                }
-            }
-        }
     }
 
     private fun handleSupportFragmentResult(result: Bundle) {
@@ -141,13 +126,11 @@ class BridgeSendFragment :
         }
     }
 
-    override fun showTransactionDetails(sendFeeTotal: SendFeeTotal) {
-        NewSendDetailsBottomSheet.show(
+    override fun showTransactionDetails(bridgeFeeDetails: BridgeFeeDetails) {
+        BridgeSendFeeBottomSheet.show(
             fm = childFragmentManager,
-            totalFee = sendFeeTotal,
-            requestKey = KEY_REQUEST_SEND,
-            feeResultKey = KEY_RESULT_FEE,
-            feePayerTokensResultKey = KEY_RESULT_FEE_PAYER_TOKENS
+            title = getString(R.string.bridge_send_fee_details_title),
+            bridgeFeeDetails = bridgeFeeDetails
         )
     }
 

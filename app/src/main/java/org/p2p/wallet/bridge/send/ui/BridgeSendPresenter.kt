@@ -20,13 +20,14 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
+import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
+import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
-import org.p2p.wallet.bridge.send.statemachine.fee
 import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
@@ -315,20 +316,25 @@ class BridgeSendPresenter(
     }
 
     override fun onFeeInfoClicked() {
-        val feeLimitInfo = feeLimit ?: return
         val token = currentState.lastStaticState.bridgeToken?.token ?: error("Token cannot be null!")
-        val fees = currentState.lastStaticState.fee
+        val fees = currentState.lastStaticState.bridgeFee?.fee
         if (calculationMode.isCurrentInputEmpty() && fees == null) {
             // TODO check free state works correct
             newSendAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
-            // TODO pass fees to SendFeeTotal or refactor
-            val total = bridgeSendUiMapper.buildTotalFee(
-                sourceToken = token,
-                calculationMode = calculationMode,
-                recipient = initialData.recipient,
-                feeLimitInfo = feeLimitInfo
+            // TODO get result in future from Api!
+            val resultAmount = BridgeFee(
+                calculationMode.inputAmount,
+                calculationMode.getCurrentAmountUsd().toPlainString(),
+                chain = null,
+                token = token.tokenSymbol
+            )
+            val total = bridgeSendUiMapper.makeBridgeFeeDetails(
+                recipientAddress = recipientAddress.addressState.address,
+                tokenToSend = token,
+                resultAmount = resultAmount,
+                fees = fees
             )
             view?.showTransactionDetails(total)
         }

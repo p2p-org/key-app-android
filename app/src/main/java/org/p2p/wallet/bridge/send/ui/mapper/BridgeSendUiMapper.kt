@@ -12,13 +12,33 @@ import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.model.BridgeAmount
 import org.p2p.wallet.bridge.model.BridgeFee
+import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
+import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeesStringFormat
 import org.p2p.wallet.newsend.model.SendFeeTotal
 
 class BridgeSendUiMapper(private val resources: Resources) {
+
+    fun makeBridgeFeeDetails(
+        recipientAddress: String,
+        tokenToSend: Token.Active,
+        resultAmount: BridgeFee,
+        fees: BridgeSendFees?
+    ): BridgeFeeDetails {
+        val tokenSymbol = tokenToSend.tokenSymbol
+        val decimals = tokenToSend.decimals
+        return BridgeFeeDetails(
+            recipientAddress = recipientAddress,
+            willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
+            networkFee = fees?.networkFee.toBridgeAmount(tokenSymbol, decimals),
+            messageAccountRent = fees?.messageAccountRent.toBridgeAmount(tokenSymbol, decimals),
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals),
+            total = resultAmount.toBridgeAmount(tokenSymbol, decimals)
+        )
+    }
 
     fun buildTotalFee(
         sourceToken: Token.Active,
