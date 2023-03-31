@@ -6,6 +6,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.HomeContract
@@ -38,6 +39,7 @@ object HomeModule : InjectionModule {
 
     private fun Module.initDataLayer() {
         factory<HomeLocalRepository> { HomeDatabaseRepository(get()) }
+        factoryOf(::HomeMapper)
     }
 
     private fun Module.initDomainLayer() {
@@ -71,6 +73,7 @@ object HomeModule : InjectionModule {
                 userInteractor = get(),
                 settingsInteractor = get(),
                 usernameInteractor = get(),
+                homeMapper = get(),
                 environmentManager = get(),
                 tokenKeyProvider = get(),
                 homeElementItemMapper = HomeElementItemMapper(get()),
