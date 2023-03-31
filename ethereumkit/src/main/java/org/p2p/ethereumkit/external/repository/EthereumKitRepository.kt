@@ -19,6 +19,7 @@ import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
 import org.p2p.ethereumkit.external.price.PriceRepository
+import org.p2p.ethereumkit.internal.core.TransactionSignerEip1559
 import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
@@ -46,12 +47,18 @@ internal class EthereumKitRepository(
     }
 
     override fun signTransaction(transaction: HexString): Signature {
-        val decodedTransaction = TransactionDecoder.decode(transaction.rawValue)
+        val privateKey = tokenKeyProvider?.privateKey ?: throwInitError()
+        val signer = TransactionSignerEip1559(privateKey = privateKey)
+        return signer.sign(transaction)
+
+    }
+
+    override fun signTransactionLegacy(transaction: HexString): Signature {
         val signer = TransactionSignerLegacy(
             privateKey = tokenKeyProvider?.privateKey ?: throwInitError(),
             chainId = Chain.Ethereum.id
         )
-        return signer.signatureLegacy(decodedTransaction)
+        return signer.signatureLegacy(transaction)
     }
 
     override suspend fun getBalance(): BigInteger {

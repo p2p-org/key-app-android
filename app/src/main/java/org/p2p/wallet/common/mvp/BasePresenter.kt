@@ -7,8 +7,11 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 abstract class BasePresenter<V : MvpView> : MvpPresenter<V>, CoroutineScope {
 
@@ -34,6 +37,12 @@ abstract class BasePresenter<V : MvpView> : MvpPresenter<V>, CoroutineScope {
             Timber.i(throwable)
         } else {
             Timber.tag(this::class.java.simpleName).e(throwable, coroutineContext.toString())
+        }
+    }
+
+    protected fun launchSupervisor(block: suspend CoroutineScope.() -> Unit): Job {
+        return launch {
+            supervisorScope { block() }
         }
     }
 }

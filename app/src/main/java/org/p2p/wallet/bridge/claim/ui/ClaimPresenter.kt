@@ -11,12 +11,12 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.toLamports
 import org.p2p.core.wrapper.HexString
-import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
+import org.p2p.wallet.bridge.interactor.EthereumInteractor
+import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeResult
@@ -27,7 +27,6 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
-import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 
@@ -35,9 +34,7 @@ const val DEFAULT_DELAY_IN_MILLIS = 30_000L
 
 class ClaimPresenter(
     private val tokenToClaim: Token.Eth,
-    private val claimInteractor: ClaimInteractor,
-    private val userLocalRepository: UserLocalRepository,
-    private val ethereumRepository: EthereumRepository,
+    private val ethereumInteractor: EthereumInteractor,
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
     private val resources: Resources,
@@ -49,23 +46,12 @@ class ClaimPresenter(
     private var latestTransactions: List<HexString> = emptyList()
     private var latestBundleId: String = emptyString()
     private var refreshJobDelayTimeInMillis = DEFAULT_DELAY_IN_MILLIS
-    private var eth: Token.Eth? = null
 
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
-        launch {
-            if (eth == null) {
-                eth = ethereumRepository.getUserEthToken()
-            }
-        }
-        startRefreshJob()
-        view.apply {
-            claimUiMapper.mapScreenData(tokenToClaim).apply {
-                setTitle(title)
-                setTokenIconUrl(tokenIconUrl)
-                setTokenAmount(tokenFormattedAmount)
-                setFiatAmount(fiatFormattedAmount)
-            }
+        launchSupervisor {
+            startRefreshJob()
+            setupView()
         }
     }
 
@@ -73,31 +59,33 @@ class ClaimPresenter(
         refreshJob?.cancel()
         refreshJob = launch {
             delay(delayMillis)
-            latestTransactions = emptyList()
-            claimDetails = null
-            view?.setClaimButtonState(isButtonEnabled = false)
-            view?.showFee(claimUiMapper.getTextSkeleton())
-            val totalToClaim = tokenToClaim.total.toLamports(tokenToClaim.decimals)
+            reset()
             try {
-                claimInteractor.getEthereumBundle(
-                    erc20Token = tokenToClaim.getEthAddress().takeIf { !tokenToClaim.isEth },
-                    amount = totalToClaim.toString()
-                ).apply {
-                    latestBundleId = bundleId
-                    refreshJobDelayTimeInMillis = getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
-                    latestTransactions = transactions
-                    showFees(resultAmount, fees, compensationDeclineReason.isEmpty())
-                    val finalValue = claimUiMapper.makeResultAmount(resultAmount, tokenToClaim)
-                    view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
-                }
+                val newBundle = fetchBundle()
+                showFees(
+                    resultAmount = newBundle.resultAmount,
+                    fees = newBundle.fees,
+                    isFree = newBundle.compensationDeclineReason.isEmpty()
+                )
+                val finalValue = claimUiMapper.makeResultAmount(newBundle.resultAmount, tokenToClaim)
+                view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
             } catch (error: Throwable) {
                 val messageResId = when {
-                    error is NotEnoughAmount || error is ContractError -> R.string.bridge_claim_fees_bigger_error
-                    error.isConnectionError() -> R.string.common_offline_error
-                    else -> null
+                    error is NotEnoughAmount || error is ContractError -> {
+                        R.string.bridge_claim_fees_bigger_error
+                    }
+                    error.isConnectionError() -> {
+                        R.string.common_offline_error
+                    }
+                    else -> {
+                        null
+                    }
                 }
-                if (messageResId != null) view?.showUiKitSnackBar(messageResId = messageResId)
+                if (messageResId != null) {
+                    view?.showUiKitSnackBar(messageResId = messageResId)
+                }
                 Timber.e(error, "Error on getting bundle for claim")
+
                 view?.showFee(TextViewCellModel.Raw(TextContainer(R.string.bridge_claim_fees_unavailable)))
                 view?.setClaimButtonState(isButtonEnabled = false)
             } finally {
@@ -106,9 +94,16 @@ class ClaimPresenter(
         }
     }
 
-    private fun showFees(resultAmount: BridgeFee, fees: BridgeBundleFees, isFree: Boolean) {
+    private suspend fun showFees(resultAmount: BridgeFee, fees: BridgeBundleFees, isFree: Boolean) {
+        val ethToken = ethereumInteractor.getEthereumToken()
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
-        claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, resultAmount, fees.takeUnless { isFree }, eth)
+
+        claimDetails = claimUiMapper.makeClaimDetails(
+            tokenToClaim = tokenToClaim,
+            resultAmount = resultAmount,
+            fees = fees.takeUnless { isFree },
+            ethToken = ethToken
+        )
         view?.setClaimButtonState(isButtonEnabled = true)
     }
 
@@ -119,18 +114,64 @@ class ClaimPresenter(
     override fun onSendButtonClicked() {
         appScope.launch {
             try {
-                val signedTransactions = latestTransactions.map { ethereumRepository.signTransaction(it) }
-                val progressDetails = claimUiMapper.prepareShowProgress(tokenToClaim, claimDetails)
-                view?.showProgressDialog(latestBundleId, progressDetails)
+                val signatures = latestTransactions.map { unsignedTransaction ->
+                    ethereumInteractor.signClaimTransaction(transaction = unsignedTransaction)
+                }
+                val progressDetails = claimUiMapper.prepareShowProgress(
+                    tokenToClaim = tokenToClaim,
+                    claimDetails = claimDetails
+                )
+                view?.showProgressDialog(
+                    bundleId = latestBundleId,
+                    data = progressDetails
+                )
 
-                claimInteractor.sendEthereumBundle(signedTransactions)
-                val transactionState = TransactionState.ClaimSuccess(latestBundleId, tokenToClaim.tokenSymbol)
-                transactionManager.emitTransactionState(latestBundleId, transactionState)
+                ethereumInteractor.sendEthereumBundle(signatures = signatures)
+
+                val transactionState = TransactionState.ClaimSuccess(
+                    bundleId = latestBundleId,
+                    sourceTokenSymbol = tokenToClaim.tokenSymbol
+                )
+                transactionManager.emitTransactionState(
+                    transactionId = latestBundleId,
+                    state = transactionState
+                )
             } catch (e: BridgeResult.Error) {
                 val message = e.getErrorMessage { res -> resources.getString(res) }
                 transactionManager.emitTransactionState(latestBundleId, TransactionState.Error(message))
                 Timber.e(e, "Failed to send signed bundle")
             }
+        }
+    }
+
+    private fun reset() {
+        latestTransactions = emptyList()
+        claimDetails = null
+        view?.setClaimButtonState(isButtonEnabled = false)
+        view?.showFee(claimUiMapper.getTextSkeleton())
+    }
+
+    private suspend fun fetchBundle(): BridgeBundle {
+        val totalToClaim = tokenToClaim.total.toLamports(tokenToClaim.decimals)
+
+        return ethereumInteractor.getEthereumBundle(
+            erc20Token = tokenToClaim.getEthAddress().takeIf { !tokenToClaim.isEth },
+            amount = totalToClaim.toString()
+        ).also { newBundle ->
+            latestBundleId = newBundle.bundleId
+            refreshJobDelayTimeInMillis = newBundle.getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
+            latestTransactions = newBundle.transactions
+        }
+    }
+
+    private fun setupView() {
+        val screenData = claimUiMapper.mapScreenData(tokenToClaim)
+        val view = view ?: return
+        with(view) {
+            setTitle(screenData.title)
+            setTokenIconUrl(screenData.tokenIconUrl)
+            setTokenAmount(screenData.tokenFormattedAmount)
+            setFiatAmount(screenData.fiatFormattedAmount)
         }
     }
 

@@ -10,6 +10,9 @@ data class BridgeFee(
     val amountInUsd: String?,
     val chain: String?,
     val token: EthAddress?,
+    val symbol: String,
+    val name: String,
+    val decimals: Int
 ) {
     fun amountInToken(decimals: Int): BigDecimal =
         amount?.toBigDecimal()?.orZero()?.divide(decimals.toPowerValue()) ?: BigDecimal.ZERO

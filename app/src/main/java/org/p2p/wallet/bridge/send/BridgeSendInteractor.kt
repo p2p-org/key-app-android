@@ -24,7 +24,6 @@ import org.p2p.wallet.utils.toBase58Instance
 
 class BridgeSendInteractor(
     private val repository: EthereumSendRepository,
-    private val ethereumKitRepository: EthereumSendRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val relaySdkFacade: RelaySdkFacade,
     private val dispatchers: CoroutineDispatchers,

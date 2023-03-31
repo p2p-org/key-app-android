@@ -7,9 +7,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import org.p2p.core.token.Token
 import org.p2p.ethereumkit.external.model.ERC20Tokens
-import org.p2p.ethereumkit.external.repository.EthereumRepository
-import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimStatus
+import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.home.ui.main.models.EthereumHomeState
@@ -21,8 +20,7 @@ class UserTokensPolling(
     private val appFeatureFlags: InAppFeatureFlags,
     private val userInteractor: UserInteractor,
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
-    private val ethereumRepository: EthereumRepository,
-    private val claimInteractor: ClaimInteractor,
+    private val ethereumInteractor: EthereumInteractor
 ) {
 
     private val isPollingEnabled: Boolean
@@ -59,7 +57,7 @@ class UserTokensPolling(
 
     private suspend fun loadEthTokens(): List<Token.Eth> {
         return try {
-            ethereumRepository.loadWalletTokens()
+            ethereumInteractor.loadWalletTokens()
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
             emptyList()
@@ -71,7 +69,7 @@ class UserTokensPolling(
 
     private suspend fun loadEthBundles(): Map<String, List<ClaimStatus?>> {
         return try {
-            val bundles = claimInteractor.getListOfEthereumBundleStatuses()
+            val bundles = ethereumInteractor.getListOfEthereumBundleStatuses()
             val resultMap = mutableMapOf<String, List<ClaimStatus>>()
             val ethAddress = ERC20Tokens.ETH.contractAddress
             bundles.map { it.token?.hex ?: ethAddress }

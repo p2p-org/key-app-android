@@ -12,4 +12,10 @@ class BridgeAmountResponse(
     val chain: String?,
     @SerializedName("token")
     val token: EthAddress?,
+    @SerializedName("symbol")
+    val symbol: String,
+    @SerializedName("name")
+    val tokenName: String,
+    @SerializedName("decimals")
+    val decimals: Int,
 )

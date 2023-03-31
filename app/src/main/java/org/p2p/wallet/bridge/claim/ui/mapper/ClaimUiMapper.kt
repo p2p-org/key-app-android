@@ -29,7 +29,7 @@ class ClaimUiMapper(private val resources: Resources) {
 
     fun prepareShowProgress(
         tokenToClaim: Token.Eth,
-        claimDetails: ClaimDetails?
+        claimDetails: ClaimDetails?,
     ): NewShowProgress {
         val transactionDate = Date()
         val amountTokens = claimDetails?.willGetAmount?.formattedTokenAmount.orEmpty()
@@ -53,7 +53,7 @@ class ClaimUiMapper(private val resources: Resources) {
         tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
-        ethToken: Token.Eth?
+        ethToken: Token.Eth?,
     ): ClaimDetails {
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals
@@ -112,7 +112,8 @@ class ClaimUiMapper(private val resources: Resources) {
         return BridgeAmount(
             tokenSymbol = tokenSymbol,
             tokenAmount = this?.amountInToken(decimals).takeIf { !it.isNullOrZero() },
-            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
+            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero(),
+            tokenDecimals = decimals
         )
     }
 
