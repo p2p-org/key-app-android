@@ -2,16 +2,42 @@ package org.p2p.wallet.bridge.send.ui.mapper
 
 import android.content.res.Resources
 import java.math.BigDecimal
+import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.core.utils.toUsd
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.model.BridgeAmount
 import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeesStringFormat
+import org.p2p.wallet.newsend.model.SendFeeTotal
 
 class BridgeSendUiMapper(private val resources: Resources) {
+
+    fun buildTotalFee(
+        sourceToken: Token.Active,
+        calculationMode: CalculationMode,
+        recipient: EthAddress,
+        feeLimitInfo: FreeTransactionFeeLimit,
+    ): SendFeeTotal {
+        val currentAmount = calculationMode.getCurrentAmount()
+        return SendFeeTotal(
+            currentAmount = currentAmount,
+            currentAmountUsd = calculationMode.getCurrentAmountUsd(),
+            receive = "${currentAmount.formatToken()} ${sourceToken.tokenSymbol}",
+            receiveUsd = currentAmount.toUsd(sourceToken),
+            sourceSymbol = sourceToken.tokenSymbol,
+            sendFee = null, // TODO fix this
+            recipientAddress = recipient.hex,
+            feeLimit = feeLimitInfo
+        )
+    }
 
     fun getFeesFormatted(bridgeFee: SendFee.Bridge?, isInputEmpty: Boolean): String {
         val feesLabel = getFeesInToken(
