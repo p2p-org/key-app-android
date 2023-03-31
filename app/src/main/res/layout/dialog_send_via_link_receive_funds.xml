@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
     android:background="@drawable/bg_rounded_transparent_8"
     android:backgroundTint="@color/backgroundPrimary">
 
@@ -29,12 +28,9 @@
         android:gravity="center"
         android:text="@string/send_via_link_receive_funds_title"
         android:textColor="@color/text_night"
-        app:layout_constraintBottom_toTopOf="@+id/textViewSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewPointer"
-        app:layout_constraintVertical_chainStyle="spread_inside" />
+        app:layout_constraintTop_toBottomOf="@+id/viewPointer" />
 
     <TextView
         android:id="@+id/textViewSubtitle"
@@ -44,9 +40,8 @@
         android:layout_marginHorizontal="20dp"
         android:gravity="center"
         android:textColor="@color/text_mountain"
-        app:layout_constraintBottom_toTopOf="@+id/barrierContent"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
         tools:text="Today @ 15:28" />
@@ -91,10 +86,24 @@
 
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginVertical="64dp"
+        android:indeterminateTint="@color/icons_night"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/progressStateTransaction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSubtitle" />
+
     <ImageView
         android:id="@+id/imageViewBanner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
         android:contentDescription="@string/details_transaction_not_found"
         android:src="@drawable/ic_not_found"
         android:visibility="gone"
@@ -107,11 +116,8 @@
         android:id="@+id/progressStateTransaction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/buttonDone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutTransactionDetails" />
 
@@ -123,10 +129,16 @@
         android:layout_marginTop="64dp"
         android:layout_marginBottom="64dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/buttonDone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewPointer" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrierContentBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="layoutClaimSuccess,progressStateTransaction"
+        app:barrierDirection="bottom" />
 
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonDone"
@@ -134,18 +146,17 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/ui_kit_button_large_height"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         android:backgroundTint="@color/bg_night"
         android:text="@string/common_confirm"
         android:textColor="@color/snow"
         app:iconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressStateTransaction" />
+        app:layout_constraintTop_toBottomOf="@+id/barrierContentBottom" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"

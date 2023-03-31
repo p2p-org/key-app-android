@@ -55,12 +55,10 @@ class ReceiveViaLinkInteractor(
             return TemporaryAccountState.ParsingFailed
         }
 
-        val price = userLocalRepository.getPriceByTokenId(tokenData.coingeckoId)
-
         val token = TokenConverter.fromNetwork(
             account = activeAccount,
             tokenData = tokenData,
-            price = price
+            price = null
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
@@ -70,8 +68,10 @@ class ReceiveViaLinkInteractor(
 
     suspend fun receiveTransfer(temporaryAccount: TemporaryAccount, token: Token.Active) {
         val recipient = tokenKeyProvider.publicKey.toPublicKey()
+        val senderAccount = Account(temporaryAccount.keypair)
+
         sendViaLinkInteractor.sendTransaction(
-            senderAccount = Account(temporaryAccount.keypair),
+            senderAccount = senderAccount,
             destinationAddress = recipient,
             token = token,
             lamports = token.totalInLamports,

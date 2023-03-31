@@ -107,6 +107,7 @@ class MainFragment :
 
         deeplinksManager.setTabsSwitcher(this)
         deeplinksManager.executeHomePendingDeeplink()
+        deeplinksManager.executeTransferPendingAppLink()
     }
 
     override fun applyWindowInsets(rootView: View) {

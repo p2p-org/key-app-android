@@ -21,8 +21,8 @@ import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
 import org.p2p.wallet.newsend.ui.search.NewSearchPresenter
-import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
 import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
+import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
 import org.p2p.wallet.svl.model.ReceiveViaLinkMapper
 import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationContract
 import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationPresenter
@@ -68,7 +68,6 @@ object SendModule : InjectionModule {
 
         factoryOf(::SendLinkGenerationPresenter) bind SendLinkGenerationContract.Presenter::class
         factoryOf(::SendViaLinkPresenter) bind SendViaLinkContract.Presenter::class
-
         factoryOf(::ReceiveViaLinkPresenter) bind ReceiveViaLinkContract.Presenter::class
         factoryOf(::ReceiveViaLinkInteractor)
         factoryOf(::ReceiveViaLinkMapper)

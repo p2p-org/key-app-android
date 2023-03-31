@@ -40,9 +40,6 @@ import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
-import org.p2p.wallet.svl.model.TemporaryAccountState
-import org.p2p.wallet.svl.ui.error.SendViaLinkError
-import org.p2p.wallet.svl.ui.error.SendViaLinkErrorFragment
 import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
@@ -184,21 +181,13 @@ class RootActivity :
 
     override fun parseTransferViaLink(deeplink: SendViaLinkWrapper): Boolean {
         val fragment = supportFragmentManager.findFragmentById(R.id.rootContainer)
-        if (fragment is SignInPinFragment || fragment is OnboardingRootFragment) {
+        if (fragment == null || fragment is SignInPinFragment || fragment is OnboardingRootFragment) {
             Timber.i("Cannot execute transfer via link, the user is not in the main screen")
             return false
         }
 
-        presenter.parseTransferAppLink(deeplink)
+        ReceiveViaLinkBottomSheet.show(supportFragmentManager, deeplink)
         return true
-    }
-
-    override fun showTransferLinkBottomSheet(state: TemporaryAccountState, deeplink: SendViaLinkWrapper) {
-        ReceiveViaLinkBottomSheet.show(supportFragmentManager, state, deeplink)
-    }
-
-    override fun showLinkError(error: SendViaLinkError) {
-        replaceFragment(SendViaLinkErrorFragment.create(error))
     }
 
     override fun popBackStackToMain() {

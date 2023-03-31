@@ -69,8 +69,7 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
                 }
 
                 imageViewCopy.setOnClickListener {
-                    val link = buildShareLink(state.formattedLink, state.amount)
-                    requireContext().copyToClipBoard(link)
+                    requireContext().copyToClipBoard(state.formattedLink)
                     showUiKitSnackBar(messageResId = R.string.send_via_link_generation_copied)
                 }
             }
