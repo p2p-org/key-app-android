@@ -136,6 +136,7 @@ class BridgeSendPresenter(
                 view?.setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
             }
         }
+        view?.showFeeViewLoading(isLoading = false)
         view?.setInputColor(R.color.text_night)
         showMaxButtonIfNeeded()
     }
@@ -147,7 +148,7 @@ class BridgeSendPresenter(
                 is SendState.Loading.Fee -> {
                     showFeeViewVisible(isVisible = true)
                     setFeeLabel(resources.getString(R.string.send_fees))
-                    showFeeViewLoading(isLoading = false)
+                    showFeeViewLoading(isLoading = true)
                     setSliderText(null)
                     setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
                 }
