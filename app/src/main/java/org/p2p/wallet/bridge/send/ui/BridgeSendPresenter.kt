@@ -4,7 +4,6 @@ import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
@@ -146,7 +145,8 @@ class BridgeSendPresenter(
         }
         view?.showFeeViewLoading(isLoading = false)
         view?.setInputColor(R.color.text_night)
-        showMaxButtonIfNeeded()
+        view?.setMaxButtonVisible(isVisible = true)
+        view?.updateInputValue(calculationMode.inputAmount, true)
     }
 
     private fun handleLoadingState(state: SendState.Loading) {
@@ -172,13 +172,15 @@ class BridgeSendPresenter(
                     setFeeLabel(resources.getString(R.string.send_fees))
                     showFeeViewLoading(isLoading = false)
                     setSliderText(null)
-                    when (state.featureException) {
+                    when (val featureException = state.featureException) {
                         is SendFeatureException.FeeLoadingError -> {
                             showFeeViewVisible(false)
                             setBottomButtonText(TextContainer.Res(R.string.send_cant_calculate_fees_error))
                         }
                         is SendFeatureException.NotEnoughAmount -> {
                             setInputColor(R.color.text_rose)
+                            calculationMode.updateTokenAmount(featureException.invalidAmount.toPlainString())
+                            view?.updateInputValue(calculationMode.inputAmount, true)
                             setBottomButtonText(TextContainer.Res(R.string.error_insufficient_funds))
                         }
                     }
@@ -250,7 +252,7 @@ class BridgeSendPresenter(
     }
 
     override fun switchCurrencyMode() {
-        val newMode = calculationMode.switchMode()
+        view?.updateInputValue(calculationMode.switchAndUpdateInputAmount(), true)
     }
 
     override fun updateInputAmount(amount: String) {
@@ -281,6 +283,8 @@ class BridgeSendPresenter(
     override fun onMaxButtonClicked() {
         val token = currentState.lastStaticState.bridgeToken?.token ?: return
         stateMachine.newAction(SendFeatureAction.MaxAmount)
+        calculationMode.updateTokenAmount(token.total.toPlainString())
+        view?.updateInputValue(calculationMode.inputAmount, true)
         newSendAnalytics.setMaxButtonClicked(isClicked = true)
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showToast(TextContainer.Raw(message))
@@ -361,11 +365,6 @@ class BridgeSendPresenter(
     private fun SearchResult.nicknameOrAddress(): String {
         return if (this is SearchResult.UsernameFound) getFormattedUsername()
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
-    }
-
-    private fun showMaxButtonIfNeeded() {
-        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(BigInteger.ZERO)
-        view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
     private fun buildTransaction(transactionId: String): HistoryTransaction =

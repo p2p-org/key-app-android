@@ -36,7 +36,8 @@ class CalculationMode(
 
     private lateinit var token: Token.Active
 
-    private var inputAmount: String = emptyString()
+    var inputAmount: String = emptyString()
+        private set
 
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
@@ -52,22 +53,6 @@ class CalculationMode(
         handleFractionUpdate(currencyMode)
 
         updateLabels()
-    }
-
-    fun updateTokenAmount(newTokenAmountInput: String) {
-        val newTokenAmount = newTokenAmountInput.toBigDecimalOrZero()
-        val newUsdAmount = newTokenAmount.toUsd(token).orZero()
-        val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
-
-        usdAmount = newUsdAmount
-        tokenAmount = newTokenAmount
-        inputAmount = newAmount.toString()
-
-        if (currencyMode is CurrencyMode.Fiat) {
-            handleCalculateTokenAmountUpdate()
-        } else {
-            handleCalculateUsdAmountUpdate()
-        }
     }
 
     fun updateInputAmount(newInputAmount: String) {
@@ -199,5 +184,59 @@ class CalculationMode(
 
     private fun handleCalculationUpdate(value: String, symbol: String) {
         onCalculationCompleted?.invoke("$value $symbol")
+    }
+
+    /**
+     * For new bridge. Do not call any callback, just update inner amount
+     */
+    fun updateTokenAmount(newTokenAmountInput: String) {
+        val newTokenAmount = newTokenAmountInput.toBigDecimalOrZero()
+        val newUsdAmount = newTokenAmount.multiply(token.rate)
+        val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
+
+        usdAmount = newUsdAmount
+        tokenAmount = newTokenAmount
+        inputAmount = newAmount.toPlainString()
+
+        if (currencyMode is CurrencyMode.Fiat) {
+            handleCalculateTokenAmountUpdate()
+        } else {
+            handleCalculateUsdAmountUpdate()
+        }
+    }
+
+    /**
+     * For new bridge. Do not call any math, just update [currencyMode] and invoke callback. Expect only update UI
+     */
+    fun switchAndUpdateInputAmount(): String {
+        val newMode = when (currencyMode) {
+            is CurrencyMode.Token -> CurrencyMode.Fiat.Usd // only support USD
+            is CurrencyMode.Fiat -> CurrencyMode.Token(token)
+        }
+
+        val (switchSymbol, mainSymbol) = when (newMode) {
+            is CurrencyMode.Token -> USD_READABLE_SYMBOL to token.tokenSymbol
+            is CurrencyMode.Fiat -> token.tokenSymbol to newMode.fiatAbbreviation
+        }
+
+        // update fraction
+        handleFractionUpdate(newMode)
+
+        // update labels
+        onLabelsUpdated?.invoke(switchSymbol, mainSymbol)
+
+        //update around value
+        when (newMode) {
+            is CurrencyMode.Token -> handleCalculateUsdAmountUpdate()
+            is CurrencyMode.Fiat -> handleCalculateTokenAmountUpdate()
+        }
+
+        inputAmount = when (newMode) {
+            is CurrencyMode.Fiat -> usdAmount.toPlainString()
+            is CurrencyMode.Token -> tokenAmount.toPlainString()
+        }
+
+        currencyMode = newMode
+        return inputAmount
     }
 }

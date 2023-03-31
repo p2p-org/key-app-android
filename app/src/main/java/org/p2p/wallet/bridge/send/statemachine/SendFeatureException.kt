@@ -7,7 +7,7 @@ sealed class SendFeatureException(
 ) : Exception(message) {
 
     data class NotEnoughAmount(
-        val amount: BigDecimal,
+        val invalidAmount: BigDecimal,
     ) : SendFeatureException()
 
     data class FeeLoadingError(
