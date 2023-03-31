@@ -3,7 +3,6 @@ package org.p2p.wallet.bridge.send.statemachine
 import java.math.BigDecimal
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 
 sealed interface SendBridgeState
 
@@ -35,7 +34,6 @@ sealed interface SendState {
 
         data class Initialize(
             val token: SendToken,
-            val feeLimit: FreeTransactionFeeLimit,
             val isTokenChangeEnabled: Boolean,
         ) : Static, SendBridgeState
 

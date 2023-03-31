@@ -111,6 +111,7 @@ class ClaimUiMapper(private val resources: Resources) {
     ): BridgeAmount {
         return BridgeAmount(
             tokenSymbol = tokenSymbol,
+            tokenDecimals = decimals,
             tokenAmount = this?.amountInToken(decimals).takeIf { !it.isNullOrZero() },
             fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
         )

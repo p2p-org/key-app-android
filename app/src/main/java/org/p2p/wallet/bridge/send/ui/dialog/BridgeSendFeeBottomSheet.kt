@@ -1,5 +1,6 @@
 package org.p2p.wallet.bridge.send.ui.dialog
 
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -79,6 +80,7 @@ class BridgeSendFeeBottomSheet : BaseDoneBottomSheet() {
     private fun ItemClaimDetailsPartBinding.bindTitleValueLine(title: String, value: String) {
         textViewTitle.text = title
         textViewTokenAmount.text = value
+        textViewFiatAmount.isVisible = false
     }
 
     private fun ItemClaimDetailsPartBinding.bindDetailsLineWithFee(title: String, fee: BridgeAmount) {

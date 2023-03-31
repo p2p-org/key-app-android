@@ -12,14 +12,12 @@ import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
-import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 
 class InitFeatureActionHandler(
     private val feeLoader: SendBridgeFeeLoader,
     private val initialData: SendInitialData.Bridge,
     private val userInteractor: UserInteractor,
-    private val sendInteractor: SendInteractor
 ) : SendActionHandler {
 
     private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
@@ -44,12 +42,9 @@ class InitFeatureActionHandler(
         val isTokenChangeEnabled = userTokens.size > 1
         val initialToken = initialData.initialToken ?: SendToken.Bridge(userTokens.first())
 
-        val feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
-
         emit(
             SendState.Static.Initialize(
                 token = initialToken,
-                feeLimit = feeLimitInfo,
                 isTokenChangeEnabled = isTokenChangeEnabled
             )
         )

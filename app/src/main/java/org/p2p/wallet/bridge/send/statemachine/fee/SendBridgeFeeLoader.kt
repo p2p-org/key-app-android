@@ -17,12 +17,17 @@ import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMappe
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.newsend.interactor.SendInteractor
 
 class SendBridgeFeeLoader constructor(
     private val mapper: SendBridgeStaticStateMapper,
     private val validator: SendBridgeValidator,
     private val ethereumSendInteractor: EthereumSendInteractor,
+    private val sendInteractor: SendInteractor
 ) {
+
+    var freeTransactionFeeLimit: FreeTransactionFeeLimit? = null
 
     fun updateFeeIfNeed(
         lastStaticState: SendState.Static
@@ -66,12 +71,16 @@ class SendBridgeFeeLoader constructor(
 
             val formattedAmount = amount.toLamports(token.decimals)
 
+            if (freeTransactionFeeLimit == null) {
+                freeTransactionFeeLimit = sendInteractor.getFreeTransactionsInfo()
+            }
+
             val fee = ethereumSendInteractor.getSendFee(
                 sendTokenMint = sendTokenMint,
                 amount = formattedAmount.toString()
             )
 
-            SendFee.Bridge(fee)
+            SendFee.Bridge(fee, freeTransactionFeeLimit)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
