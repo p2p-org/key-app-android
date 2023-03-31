@@ -20,7 +20,6 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
-import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
@@ -137,7 +136,6 @@ class BridgeSendPresenter(
             }
             is SendState.Static.Initialize -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
-                feeLimit = state.feeLimit
                 updateTokenAndInput(bridgeToken, BigDecimal.ZERO)
                 handleUpdateFee(sendFee = null, isInputEmpty = true)
 
@@ -323,17 +321,10 @@ class BridgeSendPresenter(
             newSendAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
-            // TODO get result in future from Api!
-            val resultAmount = BridgeFee(
-                calculationMode.inputAmount,
-                calculationMode.getCurrentAmountUsd().toPlainString(),
-                chain = null,
-                token = token.tokenSymbol
-            )
             val total = bridgeSendUiMapper.makeBridgeFeeDetails(
                 recipientAddress = recipientAddress.addressState.address,
                 tokenToSend = token,
-                resultAmount = resultAmount,
+                calculationMode = calculationMode,
                 fees = fees
             )
             view?.showTransactionDetails(total)

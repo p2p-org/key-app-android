@@ -7,12 +7,12 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isNullOrZero
-import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.utils.emptyString
 
 @Parcelize
 data class BridgeAmount(
     val tokenSymbol: String,
+    val tokenDecimals: Int,
     val tokenAmount: BigDecimal?,
     val fiatAmount: BigDecimal?
 ) : Parcelable {
@@ -20,6 +20,7 @@ data class BridgeAmount(
     companion object {
         fun zero(): BridgeAmount = BridgeAmount(
             tokenSymbol = emptyString(),
+            tokenDecimals = 0,
             tokenAmount = null,
             fiatAmount = null
         )
@@ -29,7 +30,7 @@ data class BridgeAmount(
     val isFree: Boolean = tokenAmount.isNullOrZero() || fiatAmount.isNullOrZero()
 
     val formattedTokenAmount: String?
-        get() = tokenAmount?.let { "${it.scaleMedium().formatToken()} $tokenSymbol" }
+        get() = tokenAmount?.let { "${it.formatToken(tokenDecimals)} $tokenSymbol" }
 
     val formattedFiatAmount: String?
         get() = fiatAmount?.asApproximateUsd(withBraces = false)
