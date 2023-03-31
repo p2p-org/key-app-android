@@ -4,9 +4,9 @@ import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
+import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.transaction.model.NewShowProgress
 
 interface BridgeSendContract {
@@ -15,7 +15,7 @@ interface BridgeSendContract {
         fun updateInputFraction(newInputFractionLength: Int)
 
         fun showFreeTransactionsInfo()
-        fun showTransactionDetails(sendFeeTotal: SendFeeTotal)
+        fun showTransactionDetails(bridgeFeeDetails: BridgeFeeDetails)
         fun showProgressDialog(internalTransactionId: String, data: NewShowProgress)
         fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)
         fun showDebugInfo(text: CharSequence)
