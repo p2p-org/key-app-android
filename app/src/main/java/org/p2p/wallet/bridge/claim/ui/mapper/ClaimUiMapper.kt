@@ -7,7 +7,6 @@ import java.util.Date
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.formatToken
@@ -21,8 +20,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.model.ClaimScreenData
 import org.p2p.wallet.bridge.model.BridgeAmount
-import org.p2p.wallet.bridge.model.BridgeBundleFee
 import org.p2p.wallet.bridge.model.BridgeBundleFees
+import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.toPx
 
@@ -33,8 +32,8 @@ class ClaimUiMapper(private val resources: Resources) {
         claimDetails: ClaimDetails?
     ): NewShowProgress {
         val transactionDate = Date()
-        val amountTokens = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}"
-        val amountUsd = tokenToClaim.totalInUsd.orZero()
+        val amountTokens = claimDetails?.willGetAmount?.formattedTokenAmount.orEmpty()
+        val amountUsd = claimDetails?.willGetAmount?.fiatAmount.orZero()
         val feeList = listOfNotNull(
             claimDetails?.networkFee,
             claimDetails?.accountCreationFee,
@@ -52,29 +51,26 @@ class ClaimUiMapper(private val resources: Resources) {
 
     fun makeClaimDetails(
         tokenToClaim: Token.Eth,
-        fees: BridgeBundleFees,
-        ethToken: TokenData?
+        resultAmount: BridgeFee,
+        fees: BridgeBundleFees?,
+        ethToken: Token.Eth?
     ): ClaimDetails {
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals
         return ClaimDetails(
-            willGetAmount = BridgeAmount(
-                tokenSymbol,
-                tokenToClaim.total,
-                tokenToClaim.totalInUsd
-            ),
+            willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
             networkFee = ethToken?.let { ethTokenData ->
-                fees.gasEth.toBridgeAmount(
-                    tokenSymbol = ethTokenData.symbol,
+                fees?.gasEth.toBridgeAmount(
+                    tokenSymbol = ethTokenData.tokenSymbol,
                     decimals = ethTokenData.decimals
                 )
-            } ?: fees.gasEth.toBridgeAmount(tokenSymbol, decimals),
-            accountCreationFee = fees.createAccount.toBridgeAmount(tokenSymbol, decimals),
-            bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
+            } ?: fees?.gasEth.toBridgeAmount(tokenSymbol, decimals),
+            accountCreationFee = fees?.createAccount.toBridgeAmount(tokenSymbol, decimals),
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
         )
     }
 
-    fun makeResultAmount(resultAmount: BridgeBundleFee, tokenToClaim: Token.Eth): BridgeAmount {
+    fun makeResultAmount(resultAmount: BridgeFee, tokenToClaim: Token.Eth): BridgeAmount {
         return resultAmount.toBridgeAmount(tokenToClaim.tokenSymbol, tokenToClaim.decimals)
     }
 
@@ -109,7 +105,7 @@ class ClaimUiMapper(private val resources: Resources) {
         )
     }
 
-    private fun BridgeBundleFee?.toBridgeAmount(
+    private fun BridgeFee?.toBridgeAmount(
         tokenSymbol: String,
         decimals: Int,
     ): BridgeAmount {

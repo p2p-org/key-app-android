@@ -19,6 +19,7 @@ import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleLong
+import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toPowerValue
 import org.p2p.core.wrapper.eth.EthAddress
@@ -71,6 +72,10 @@ sealed class Token constructor(
         @IgnoredOnParcel
         val totalInLamports: BigInteger
             get() = total.toLamports(decimals)
+
+        @IgnoredOnParcel
+        val totalInUsdScaled: BigDecimal?
+            get() = totalInUsd?.scaleShort()
 
         @IgnoredOnParcel
         val isZero: Boolean
@@ -234,7 +239,7 @@ sealed class Token constructor(
                 mintAddress = tokenData.mintAddress,
                 tokenName = SOL_NAME,
                 iconUrl = tokenData.iconUrl,
-                totalInUsd = exchangeRate?.let { total.multiply(it) },
+                totalInUsd = if (amount == 0L) null else exchangeRate?.let { total.multiply(it) },
                 coingeckoId = tokenData.coingeckoId,
                 total = total.scaleLong(tokenData.decimals),
                 rate = exchangeRate,

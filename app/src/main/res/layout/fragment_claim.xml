@@ -61,7 +61,7 @@
 
     <TextView
         android:id="@+id/textViewFiatAmount"
-        style="@style/UiKit.TextAppearance.SemiBold.Text2"
+        style="@style/UiKit.TextAppearance.Regular.Text2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
@@ -101,7 +101,7 @@
 
         <TextView
             android:id="@+id/textViewFeeValue"
-            style="@style/UiKit.TextAppearance.SemiBold.Text4"
+            style="@style/UiKit.TextAppearance.Regular.Text4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="12dp"

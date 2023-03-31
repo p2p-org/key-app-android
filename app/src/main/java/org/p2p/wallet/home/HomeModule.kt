@@ -77,7 +77,7 @@ object HomeModule : InjectionModule {
                 environmentManager = get(),
                 tokenKeyProvider = get(),
                 homeElementItemMapper = HomeElementItemMapper(get()),
-                resourcesProvider = get(),
+                resources = get(),
                 newBuyFeatureToggle = get(),
                 networkObserver = get(),
                 tokensPolling = get(),

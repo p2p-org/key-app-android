@@ -4,12 +4,14 @@ import androidx.core.content.getSystemService
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.notification.NotificationType
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.utils.toStringMap
 
 private const val EXTRA_TAB_SCREEN = "EXTRA_TAB_SCREEN"
@@ -27,6 +29,8 @@ class AppDeeplinksManager(
     private var rootListener: RootListener? = null
 
     private var pendingIntent: Intent? = null
+
+    private var transferPendingDeeplink: Uri? = null
 
     fun setTabsSwitcher(mainTabsSwitcher: MainTabsSwitcher) {
         this.mainTabsSwitcher = mainTabsSwitcher
@@ -50,9 +54,18 @@ class AppDeeplinksManager(
                 val data = intent.data ?: return
 
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
+                val isTransferScheme = context.getString(R.string.transfer_app_scheme) == data.host
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> {
                         rootListener?.triggerOnboardingDeeplink(data)
+                    }
+                    isTransferScheme -> {
+                        val deeplink = SendViaLinkWrapper(data.toString())
+                        val isExecuted = rootListener?.parseTransferViaLink(deeplink) ?: false
+                        if (!isExecuted) {
+                            // postpone deeplink execution until app will be ready
+                            transferPendingDeeplink = data
+                        }
                     }
                     intercomDeeplinkManager.handleBackgroundDeeplink(data) -> {
                         // do nothing
