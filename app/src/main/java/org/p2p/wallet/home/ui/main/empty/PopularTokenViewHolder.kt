@@ -42,7 +42,8 @@ class PopularTokenViewHolder(
         textViewName.text = token.mapTokenToPopularName()
         textViewValue.text = getString(R.string.main_popular_token_action_buy_button)
 
-        textViewTotal.withTextOrGone("$ ${token.usdRateOrZero.formatFiat()}")
+        val fiatText = token.rate?.let { "$ ${it.formatFiat()}" }
+        textViewTotal withTextOrGone fiatText
 
         contentView.setOnClickListener { onPopularTokenClicked(token) }
         textViewValue.setOnClickListener { onPopularTokenClicked(token) }

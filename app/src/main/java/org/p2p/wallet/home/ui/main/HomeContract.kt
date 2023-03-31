@@ -1,8 +1,8 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.DefaultLifecycleObserver
-import java.math.BigDecimal
 import org.p2p.core.token.Token
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
@@ -16,7 +16,7 @@ interface HomeContract {
         fun showTokensForBuy(tokens: List<Token>)
         fun showNewBuyScreen(token: Token)
         fun showOldBuyScreen(token: Token)
-        fun showBalance(balance: BigDecimal)
+        fun showBalance(cellModel: TextViewCellModel?)
         fun showRefreshing(isRefreshing: Boolean)
         fun showEmptyViewData(data: List<Any>)
         fun showEmptyState(isEmpty: Boolean)
