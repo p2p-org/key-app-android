@@ -3,6 +3,7 @@ package org.p2p.wallet.bridge.send.mapper
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
+import org.p2p.wallet.utils.emptyString
 
 class SendUiMapper() {
     fun toTokenActiveStub(token: Token.Other): Token.Active {
@@ -19,7 +20,8 @@ class SendUiMapper() {
             visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = token.serumV3Usdc,
             serumV3Usdt = token.serumV3Usdt,
-            isWrapped = token.isWrapped
+            isWrapped = token.isWrapped,
+            coingeckoId = emptyString()
         )
     }
 }
