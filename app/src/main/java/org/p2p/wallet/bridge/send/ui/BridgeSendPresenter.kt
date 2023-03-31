@@ -345,6 +345,10 @@ class BridgeSendPresenter(
         view?.showSliderCompleteAnimation()
     }
 
+    override fun finishFeature() {
+        stateMachine.finishWork()
+    }
+
     override fun send() {
         val token = currentState.lastStaticState.bridgeToken?.token ?: error("Token cannot be null!")
 
