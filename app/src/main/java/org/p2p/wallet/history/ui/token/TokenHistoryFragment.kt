@@ -14,8 +14,8 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
-import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
-import org.p2p.wallet.history.ui.historylist.HistoryListViewContract.HistoryListViewType
+import org.p2p.wallet.history.ui.historylist.HistoryListViewClickListener
+import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
@@ -46,7 +46,7 @@ private const val KEY_RESULT_NETWORK = "KEY_RESULT_NETWORK"
 class TokenHistoryFragment :
     BaseMvpFragment<TokenHistoryContract.View, TokenHistoryContract.Presenter>(R.layout.fragment_token_history),
     TokenHistoryContract.View,
-    HistoryListViewContract.View.HistoryListViewClickListener {
+    HistoryListViewClickListener {
 
     companion object {
         fun create(tokenForHistory: Token.Active): TokenHistoryFragment =
