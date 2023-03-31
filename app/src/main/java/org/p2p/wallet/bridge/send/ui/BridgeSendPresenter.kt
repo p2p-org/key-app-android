@@ -144,7 +144,6 @@ class BridgeSendPresenter(
         }
         view?.apply {
             showFeeViewVisible(isVisible = true)
-            setFeeLabel(resources.getString(R.string.send_fees))
             showFeeViewLoading(isLoading = false)
             setInputColor(R.color.text_night)
         }
