@@ -13,14 +13,12 @@ class SendBridgeStaticStateMapper {
             is SendState.Static.ReadyToSend -> oldState.copy(fee = newFee)
             is SendState.Static.TokenNotZero -> oldState.copy(fee = newFee)
             is SendState.Static.TokenZero -> oldState.copy(fee = newFee)
-            is SendState.Static.Initialize -> oldState
         }
     }
 
     fun updateInputAmount(oldState: SendState.Static, newAmount: BigDecimal): SendState.Static {
         return when (oldState) {
             SendState.Static.Empty -> oldState
-            is SendState.Static.Initialize -> oldState
             is SendState.Static.ReadyToSend -> oldState.copy(amount = newAmount)
             is SendState.Static.TokenNotZero ->
                 if (oldState.fee == null) {

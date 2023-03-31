@@ -32,11 +32,6 @@ sealed interface SendState {
 
         object Empty : Static, SendBridgeState
 
-        data class Initialize(
-            val token: SendToken,
-            val isTokenChangeEnabled: Boolean,
-        ) : Static, SendBridgeState
-
         data class TokenZero(
             val token: SendToken,
             val fee: SendFee? = null,

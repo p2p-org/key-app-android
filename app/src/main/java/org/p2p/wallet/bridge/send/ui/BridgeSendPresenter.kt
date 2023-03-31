@@ -19,9 +19,9 @@ import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
-import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
+import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
@@ -35,7 +35,6 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
@@ -60,6 +59,7 @@ class BridgeSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
     private val bridgeInteractor: BridgeSendInteractor,
+    private val ethereumInteractor: EthereumSendInteractor,
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
@@ -73,8 +73,6 @@ class BridgeSendPresenter(
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
 
     private var currentState: SendState = SendState.Static.Empty
-    private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
-    private var feeLimit: FreeTransactionFeeLimit? = null
 
     private val calculationMode = CalculationMode(
         sendModeProvider = sendModeProvider,
@@ -85,6 +83,10 @@ class BridgeSendPresenter(
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
         initialize(view)
+        launch {
+            val isTokenChangeEnabled = ethereumInteractor.supportedSendTokens().size > 1
+            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
+        }
         stateMachine.observe()
             .onEach {
                 handleState(it)
@@ -134,13 +136,6 @@ class BridgeSendPresenter(
                     errorButton = TextContainer.Res(R.string.main_enter_the_amount),
                     sliderButton = null
                 )
-            }
-            is SendState.Static.Initialize -> view?.apply {
-                val bridgeToken = state.bridgeToken ?: return
-                updateTokenAndInput(bridgeToken, BigDecimal.ZERO)
-                handleUpdateFee(sendFee = null, isInputEmpty = true)
-
-                setTokenContainerEnabled(isEnabled = state.isTokenChangeEnabled)
             }
         }
         view?.apply {
@@ -265,9 +260,8 @@ class BridgeSendPresenter(
         newSendAnalytics.logTokenSelectionClicked()
         launch {
             val token = currentState.lastStaticState.bridgeToken?.token
-            val tokens = userInteractor.getUserTokens().filter { it.mintAddress in supportedTokensMints }
-            val result = tokens.filterNot(Token.Active::isZero)
-            view?.showTokenSelection(tokens = result, selectedToken = token)
+            val tokens = ethereumInteractor.supportedSendTokens()
+            view?.showTokenSelection(tokens = tokens, selectedToken = token)
         }
     }
 

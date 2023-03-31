@@ -93,7 +93,6 @@ class SendStateMachine(
                 refreshFeeTimer?.cancel()
                 false
             }
-            is SendState.Static.Initialize,
             is SendState.Static.ReadyToSend,
             is SendState.Static.TokenNotZero,
             is SendState.Static.TokenZero -> true
