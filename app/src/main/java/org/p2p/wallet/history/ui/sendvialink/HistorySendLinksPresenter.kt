@@ -77,7 +77,8 @@ class HistorySendLinksPresenter(
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSide,
-            rightSideCellModel = rightSide
+            rightSideCellModel = rightSide,
+            payload = uuid
         )
     }
 

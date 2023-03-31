@@ -4,18 +4,28 @@ import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import org.p2p.uikit.databinding.ItemFinanceBlockBinding
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.inflateViewBinding
+
+private typealias InflateListener = (financeBlock: UiKitFinanceBlockView) -> Unit
+private typealias OnBindListener = (view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit
+private typealias OnItemClickedListener = (item: FinanceBlockCellModel) -> Unit
 
 fun financeBlockCellDelegate(
-    inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
-    onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit)? = null,
+    inflateListener: InflateListener? = null,
+    onBindListener: OnBindListener? = null,
+    onItemClicked: OnItemClickedListener? = null
 ): AdapterDelegate<List<AnyCellItem>> =
     adapterDelegateViewBinding<FinanceBlockCellModel, AnyCellItem, ItemFinanceBlockBinding>(
-        viewBinding = { inflater, parent -> ItemFinanceBlockBinding.inflate(inflater, parent, false) },
+        viewBinding = { _, parent -> parent.inflateViewBinding(attachToRoot = false) },
         on = { item, _, _ -> item is FinanceBlockCellModel && item.styleType == FinanceBlockStyle.FINANCE_BLOCK }
     ) {
 
         binding.root.bindViewStyle(FinanceBlockStyle.FINANCE_BLOCK)
         inflateListener?.invoke(binding.root)
+        if (onItemClicked != null) {
+            binding.root.setOnClickListener { onItemClicked.invoke(item) }
+        }
+
 
         bind {
             binding.root.bind(item)
@@ -24,8 +34,8 @@ fun financeBlockCellDelegate(
     }
 
 fun baseCellDelegate(
-    inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
-    onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit)? = null,
+    inflateListener: InflateListener? = null,
+    onBindListener: OnBindListener? = null,
 ): AdapterDelegate<List<AnyCellItem>> =
     adapterDelegateViewBinding<FinanceBlockCellModel, AnyCellItem, ItemFinanceBlockBinding>(
         viewBinding = { inflater, parent -> ItemFinanceBlockBinding.inflate(inflater, parent, false) },
