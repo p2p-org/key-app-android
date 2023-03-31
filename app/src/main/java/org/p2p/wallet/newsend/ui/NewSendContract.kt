@@ -1,5 +1,6 @@
 package org.p2p.wallet.newsend.ui
 
+import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
@@ -7,7 +8,6 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.transaction.model.NewShowProgress
-import java.math.BigDecimal
 
 interface NewSendContract {
     interface View : MvpView, UiKitSendDetailsWidgetContract {
@@ -22,6 +22,7 @@ interface NewSendContract {
 
         fun setBottomButtonText(text: TextContainer?)
         fun setSliderText(text: String?)
+        fun disableSwitchAmounts()
         fun disableInputs()
     }
 

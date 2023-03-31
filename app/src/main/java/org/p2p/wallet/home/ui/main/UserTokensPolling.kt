@@ -33,7 +33,7 @@ class UserTokensPolling(
             try {
                 while (true) {
                     delay(POLLING_DELAY.inWholeMilliseconds)
-                    val newTokens = userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = false)
+                    val newTokens = userInteractor.loadUserTokensAndUpdateLocal()
                     val ethereumState = getEthereumState()
                     onTokensLoaded.invoke(newTokens, ethereumState)
                     Timber.d("Successfully auto-updated loaded tokens")

@@ -39,6 +39,9 @@ data class TokenEntity(
     @ColumnInfo(name = COLUMN_EXCHANGE_RATE)
     val exchangeRate: String?,
 
+    @ColumnInfo(name = COLUMN_COINGECKO_ID)
+    val coingeckoId: String?,
+
     @ColumnInfo(name = COLUMN_VISIBILITY)
     val visibility: String,
 
@@ -61,7 +64,7 @@ data class TokenEntity(
         const val COLUMN_ICON_URL = "icon_url"
         const val COLUMN_PRICE = "price"
         const val COLUMN_TOTAL = "total"
-        const val COLUMN_COLOR = "color"
+        const val COLUMN_COINGECKO_ID = "coingecko_id"
         const val COLUMN_EXCHANGE_RATE = "exchange_rate"
         const val COLUMN_VISIBILITY = "visibility"
         const val COLUMN_SERUM_V3_USDC = "serumV3Usdc"

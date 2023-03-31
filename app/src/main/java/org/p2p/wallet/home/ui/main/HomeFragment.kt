@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
-import java.math.BigDecimal
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
-import org.p2p.core.utils.formatFiat
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.bindOrGone
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -262,8 +262,8 @@ class HomeFragment :
         )
     }
 
-    override fun showBalance(balance: BigDecimal) {
-        binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatFiat())
+    override fun showBalance(cellModel: TextViewCellModel?) {
+        binding.viewBalance.textViewAmount.bindOrGone(cellModel)
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

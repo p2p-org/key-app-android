@@ -47,4 +47,11 @@ sealed interface HistoryItem {
         val endTopValue: String,
         val endBottomValue: String? = null,
     ) : HistoryItem, RoundedItem
+
+    data class UserSendLinksItem(
+        val linksCount: Int
+    ) : HistoryItem, RoundedItem {
+        override val date: ZonedDateTime = ZonedDateTime.now()
+        override val transactionId: String = emptyString()
+    }
 }
