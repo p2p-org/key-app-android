@@ -225,7 +225,7 @@ class CalculationMode(
         // update labels
         onLabelsUpdated?.invoke(switchSymbol, mainSymbol)
 
-        //update around value
+        // update around value
         when (newMode) {
             is CurrencyMode.Token -> handleCalculateUsdAmountUpdate()
             is CurrencyMode.Fiat -> handleCalculateTokenAmountUpdate()
