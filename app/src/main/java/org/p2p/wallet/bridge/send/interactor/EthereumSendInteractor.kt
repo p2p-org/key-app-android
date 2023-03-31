@@ -49,6 +49,7 @@ class EthereumSendInteractor(
             mintAddress = token.mintAddress,
             tokenName = token.tokenName,
             iconUrl = token.iconUrl,
+            coingeckoId = null,
             rate = null,
             visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = token.serumV3Usdc,

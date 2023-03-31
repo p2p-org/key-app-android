@@ -5,6 +5,7 @@ import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.isNullOrZero
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.model.BridgeAmount
@@ -25,22 +26,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
     ): BridgeFeeDetails {
         val tokenSymbol = tokenToSend.tokenSymbol
         val decimals = tokenToSend.decimals
-        val feesList = listOfNotNull(
-            fees?.arbiterFee,
-            fees?.networkFee,
-            fees?.bridgeFee,
-            fees?.messageAccountRent
-        )
-        val inputAmount = calculationMode.getCurrentAmountLamports().toBigDecimal()
-        val inputAmountUsd = calculationMode.getCurrentAmountUsd()
-        val totalAmount = inputAmount - feesList.sumOf { it.amountInToken(decimals) }
-        val totalAmountUsd = inputAmountUsd - feesList.sumOf { it.amountInUsd.toBigDecimalOrZero() }
-        val resultAmount = BridgeFee(
-            totalAmount.toPlainString(),
-            totalAmountUsd.toPlainString(),
-            chain = null,
-            token = tokenSymbol
-        )
+        val resultAmount = getResultAmount(tokenSymbol, decimals, calculationMode, fees)
         return BridgeFeeDetails(
             recipientAddress = recipientAddress,
             willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
@@ -48,6 +34,38 @@ class BridgeSendUiMapper(private val resources: Resources) {
             messageAccountRent = fees?.messageAccountRent.toBridgeAmount(tokenSymbol, decimals),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals),
             total = resultAmount.toBridgeAmount(tokenSymbol, decimals)
+        )
+    }
+
+    private fun getResultAmount(
+        tokenSymbol: String,
+        decimals: Int,
+        calculationMode: CalculationMode,
+        fees: BridgeSendFees?
+    ): BridgeFee {
+        val feesList = listOfNotNull(
+            fees?.arbiterFee,
+            fees?.networkFee,
+            fees?.bridgeFee,
+            fees?.messageAccountRent
+        )
+        val inputAmount = calculationMode.getCurrentAmountLamports().toBigDecimal()
+        val inputAmountUsd = calculationMode.getCurrentAmountUsd().orZero()
+        val totalAmount = if (calculationMode.isCurrentInputEmpty()) {
+            BigDecimal.ZERO
+        } else {
+            inputAmount - feesList.sumOf { it.amountInToken(decimals) }
+        }
+        val totalAmountUsd = if (calculationMode.isCurrentInputEmpty()) {
+            BigDecimal.ZERO
+        } else {
+            inputAmountUsd - feesList.sumOf { it.amountInUsd.toBigDecimalOrZero() }
+        }
+        return BridgeFee(
+            totalAmount.toPlainString(),
+            totalAmountUsd.toPlainString(),
+            chain = null,
+            token = tokenSymbol
         )
     }
 
