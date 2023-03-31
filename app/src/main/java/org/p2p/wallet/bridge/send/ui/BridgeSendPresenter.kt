@@ -176,7 +176,7 @@ class BridgeSendPresenter(
                     setFeeLabel(resources.getString(R.string.send_fees))
                     showFeeViewLoading(isLoading = false)
                     setSliderText(null)
-                    when (val featureException = state.featureException) {
+                    val unit: Unit = when (val featureException = state.featureException) {
                         is SendFeatureException.FeeLoadingError -> {
                             showFeeViewVisible(false)
                             updateButtons(
