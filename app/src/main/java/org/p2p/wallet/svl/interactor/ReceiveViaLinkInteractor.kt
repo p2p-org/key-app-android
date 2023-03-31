@@ -1,6 +1,5 @@
 package org.p2p.wallet.svl.interactor
 
-import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan

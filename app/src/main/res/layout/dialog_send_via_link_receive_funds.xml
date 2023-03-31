@@ -93,7 +93,7 @@
         android:layout_height="64dp"
         android:layout_marginVertical="64dp"
         android:indeterminateTint="@color/icons_night"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/progressStateTransaction"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -133,6 +133,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewPointer" />
 
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrierContentBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="layoutClaimSuccess,progressStateTransaction"
+        app:barrierDirection="bottom" />
+
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonDone"
         style="@style/UiKit.Components.Button.Large"
@@ -148,9 +155,8 @@
         app:iconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressStateTransaction" />
+        app:layout_constraintTop_toBottomOf="@+id/barrierContentBottom" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"

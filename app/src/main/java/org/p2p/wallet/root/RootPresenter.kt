@@ -3,7 +3,6 @@ package org.p2p.wallet.root
 import android.content.Context
 import timber.log.Timber
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
