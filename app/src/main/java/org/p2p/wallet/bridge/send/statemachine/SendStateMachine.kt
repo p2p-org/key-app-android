@@ -72,7 +72,7 @@ class SendStateMachine(
                 val lastStaticState = state.value.lastStaticState
                 val wrappedState = SendState.Exception.Feature(
                     lastStaticState,
-                    SendFeatureException.FeeLoadingError,
+                    throwable,
                 )
                 flowCollector.emit(wrappedState)
             }
@@ -80,7 +80,7 @@ class SendStateMachine(
                 val lastStaticState = state.value.lastStaticState
                 val wrappedState = SendState.Exception.Other(
                     lastStaticState,
-                    SendFeatureException.FeeLoadingError,
+                    throwable,
                 )
                 flowCollector.emit(wrappedState)
             }

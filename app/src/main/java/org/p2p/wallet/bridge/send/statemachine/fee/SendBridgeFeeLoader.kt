@@ -53,7 +53,7 @@ class SendBridgeFeeLoader constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            throw SendFeatureException.FeeLoadingError
+            throw SendFeatureException.FeeLoadingError(e.message)
         }
     }
 }
