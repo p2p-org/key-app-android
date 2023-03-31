@@ -82,9 +82,6 @@ class UiKitRightSideView @JvmOverloads constructor(
     private fun WidgetRightSideDoubleTextBinding.bind(model: RightSideCellModel.TwoLineText) {
         this.textViewFirst.bindOrGone(model.firstLineText)
         this.textViewSecond.bindOrGone(model.secondLineText)
-        if (model.secondLineText != null) {
-            this.textViewFirst.maxLines = 1
-        }
     }
 
     private fun WidgetRightSideSingleTextTwoIconBinding.bind(model: RightSideCellModel.SingleTextTwoIcon) {

@@ -26,7 +26,7 @@ class HistorySendLinksFragment :
     }
 
     private val adapter = CommonAnyCellAdapter(
-        financeBlockCellDelegate(onItemClicked = ::onItemClicked),
+        financeBlockCellDelegate(inflateListener = { it.setOnClickAction { _, item -> onItemClicked(item) } }),
         historyDateTextDelegate()
     )
 

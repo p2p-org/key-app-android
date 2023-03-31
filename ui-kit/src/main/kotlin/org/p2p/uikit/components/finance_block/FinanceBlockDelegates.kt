@@ -8,12 +8,10 @@ import org.p2p.uikit.utils.inflateViewBinding
 
 private typealias InflateListener = (financeBlock: UiKitFinanceBlockView) -> Unit
 private typealias OnBindListener = (view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit
-private typealias OnItemClickedListener = (item: FinanceBlockCellModel) -> Unit
 
 fun financeBlockCellDelegate(
-    inflateListener: InflateListener? = null,
-    onBindListener: OnBindListener? = null,
-    onItemClicked: OnItemClickedListener? = null
+    inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
+    onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit)? = null,
 ): AdapterDelegate<List<AnyCellItem>> =
     adapterDelegateViewBinding<FinanceBlockCellModel, AnyCellItem, ItemFinanceBlockBinding>(
         viewBinding = { _, parent -> parent.inflateViewBinding(attachToRoot = false) },
@@ -22,10 +20,6 @@ fun financeBlockCellDelegate(
 
         binding.root.bindViewStyle(FinanceBlockStyle.FINANCE_BLOCK)
         inflateListener?.invoke(binding.root)
-        if (onItemClicked != null) {
-            binding.root.setOnClickListener { onItemClicked.invoke(item) }
-        }
-
 
         bind {
             binding.root.bind(item)
