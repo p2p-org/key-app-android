@@ -53,20 +53,13 @@ class HistoryAdapter(
 
     override fun onBindViewHolder(holder: HistoryTransactionViewHolder, position: Int) {
         when (holder) {
-            is TransactionViewHolder ->
-                holder.onBind(getItem(position) as TransactionItem)
-            is TransactionSwapViewHolder ->
-                holder.onBind(getItem(position) as TransactionItem)
-            is DateViewHolder ->
-                holder.onBind(getItem(position) as DateItem)
-            is ErrorViewHolder ->
-                holder.onBind(onRetryClicked)
-            is HistorySellTransactionViewHolder ->
-                holder.onBind(getItem(position) as MoonpayTransactionItem)
-            is ProgressViewHolder ->
-                Unit
-            is HistoryUserSendLinksViewHolder ->
-                holder.onBind(getItem(position) as UserSendLinksItem)
+            is TransactionViewHolder -> holder.onBind(getItem(position) as TransactionItem)
+            is TransactionSwapViewHolder -> holder.onBind(getItem(position) as TransactionItem)
+            is DateViewHolder -> holder.onBind(getItem(position) as DateItem)
+            is ErrorViewHolder -> holder.onBind(onRetryClicked)
+            is HistorySellTransactionViewHolder -> holder.onBind(getItem(position) as MoonpayTransactionItem)
+            is ProgressViewHolder -> Unit
+            is HistoryUserSendLinksViewHolder -> holder.onBind(getItem(position) as UserSendLinksItem)
         }
     }
 

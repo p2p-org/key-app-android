@@ -8,8 +8,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
-import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
-import org.p2p.wallet.history.ui.historylist.HistoryListViewContract.HistoryListViewType
+import org.p2p.wallet.history.ui.historylist.HistoryListViewClickListener
+import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
@@ -19,7 +19,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 class HistoryFragment :
     BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_history),
     HistoryContract.View,
-    HistoryListViewContract.View.HistoryListViewClickListener {
+    HistoryListViewClickListener {
 
     companion object {
         fun create(): HistoryFragment = HistoryFragment()

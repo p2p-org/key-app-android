@@ -9,7 +9,6 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.ui.historylist.HistoryListViewContract.HistoryListViewType
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
@@ -138,10 +137,10 @@ class HistoryListViewPresenter(
         }
     }
 
-    @Throws(IllegalStateException::class)
+    @Throws(HistoryPagingResult.Error::class)
     private fun handlePagingResult(result: HistoryPagingResult): List<HistoryTransaction> {
         return when (result) {
-            is HistoryPagingResult.Error -> error(result.cause)
+            is HistoryPagingResult.Error -> throw result
             is HistoryPagingResult.Success -> result.data
         }
     }
