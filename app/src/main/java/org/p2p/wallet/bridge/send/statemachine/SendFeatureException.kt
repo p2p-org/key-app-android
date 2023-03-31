@@ -2,7 +2,7 @@ package org.p2p.wallet.bridge.send.statemachine
 
 import java.math.BigDecimal
 
-open class SendFeatureException(
+sealed class SendFeatureException(
     override val message: String? = null
 ) : Exception(message) {
 

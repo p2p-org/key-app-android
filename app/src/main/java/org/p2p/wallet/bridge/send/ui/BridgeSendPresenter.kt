@@ -165,17 +165,19 @@ class BridgeSendPresenter(
         view?.apply {
             when (state) {
                 is SendState.Exception.Feature -> {
-                    val isLoadingFeeError = state.featureException is SendFeatureException.FeeLoadingError
                     setFeeLabel(resources.getString(R.string.send_fees))
-                    showFeeViewVisible(isVisible = !isLoadingFeeError)
                     showFeeViewLoading(isLoading = false)
                     setSliderText(null)
-                    val errorTextRes = if (isLoadingFeeError) {
-                        R.string.send_cant_calculate_fees_error
-                    } else {
-                        R.string.error_insufficient_funds
+                    when (state.featureException) {
+                        is SendFeatureException.FeeLoadingError -> {
+                            showFeeViewVisible(false)
+                            setBottomButtonText(TextContainer.Res(R.string.send_cant_calculate_fees_error))
+                        }
+                        is SendFeatureException.NotEnoughAmount -> {
+                            setInputColor(R.color.text_rose)
+                            setBottomButtonText(TextContainer.Res(R.string.error_insufficient_funds))
+                        }
                     }
-                    setBottomButtonText(TextContainer.Res(errorTextRes))
                 }
                 is SendState.Exception.Other -> if (state.exception.isConnectionError()) {
                     view?.showUiKitSnackBar(
