@@ -28,7 +28,7 @@ class FeeRelayerViaLinkInteractor(
         preparedTransaction: PreparedTransaction,
         statistics: FeeRelayerStatistics,
         isRetryEnabled: Boolean = true,
-        isSimulation: Boolean = false
+        isSimulation: Boolean
     ): String {
         // resign transaction
         val transaction = preparedTransaction.transaction

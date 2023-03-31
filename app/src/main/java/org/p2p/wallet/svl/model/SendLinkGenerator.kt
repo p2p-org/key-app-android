@@ -7,7 +7,6 @@ import org.p2p.solanaj.core.AccountCreationFailed
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.newsend.model.TemporaryAccount
-import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.utils.emptyString
 
 private const val REGEX_LINK_ALLOWED_SYMBOLS = "[A-Za-z0-9_~-]"
@@ -34,6 +33,8 @@ object SendLinkGenerator {
             throw failed
         }
 
+        Timber.tag("SendLinkGenerator").d("Account address: ${account.publicKey.toBase58()}")
+
         return TemporaryAccount(
             symbols = generatedSymbols.joinToString(separator = emptyString()),
             address = account.publicKey.toBase58(),
@@ -41,21 +42,31 @@ object SendLinkGenerator {
         )
     }
 
-    fun parseTemporaryAccount(link: SendViaLinkWrapper): TemporaryAccount {
-        val seedCode = link.link.substringAfterLast("/").toList()
+    fun parseTemporaryAccount(seedCode: List<String>): TemporaryAccount {
         val account = Account.fromBip44Mnemonic(
-            words = seedCode.map { it.toString() },
+            words = seedCode,
             walletIndex = 0,
             derivationPath = DerivationPath.BIP44CHANGE,
             saltPrefix = BuildConfig.saltPrefix,
             includeSpaces = false
         )
 
+        Timber.tag("SendLinkGenerator").d("RECEIVER: Account address: ${account.publicKey.toBase58()}")
+
         return TemporaryAccount(
             symbols = seedCode.joinToString(emptyString()),
             address = account.publicKey.toBase58(),
             keypair = account.getEncodedKeyPair()
         )
+    }
+
+    fun isValidSeedCode(symbols: List<String>): Boolean {
+        if (symbols.size < SYMBOLS_COUNT) {
+            return false
+        }
+
+        val regex = Regex(REGEX_LINK_ALLOWED_SYMBOLS)
+        return symbols.all { regex.matches(it) }
     }
 
     private fun generateSymbols(): List<String> {

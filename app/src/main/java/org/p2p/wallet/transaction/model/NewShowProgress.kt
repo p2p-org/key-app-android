@@ -10,7 +10,7 @@ class NewShowProgress(
     val date: Date,
     val tokenUrl: String,
     val amountTokens: String,
-    val amountUsd: String,
+    val amountUsd: String?,
     val recipient: String?,
     val totalFees: List<TextHighlighting>?
 ) : Parcelable

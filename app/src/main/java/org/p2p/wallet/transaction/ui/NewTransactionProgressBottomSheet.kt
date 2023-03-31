@@ -92,8 +92,14 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                 timeFormat.format(data.date)
             )
             glideManager.load(imageViewToken, data.tokenUrl, IMAGE_SIZE)
-            textViewAmountUsd.text = data.amountUsd
-            textViewAmountTokens.text = data.amountTokens
+            val amountInUsd = data.amountUsd
+            if (amountInUsd != null) {
+                textViewAmountUsd.text = data.amountUsd
+                textViewAmountTokens.text = data.amountTokens
+            } else {
+                textViewAmountUsd.text = data.amountTokens
+                textViewAmountTokens.isVisible = false
+            }
             if (data.recipient == null) {
                 textViewSendToTitle.isVisible = false
                 textViewSendToValue.isVisible = false

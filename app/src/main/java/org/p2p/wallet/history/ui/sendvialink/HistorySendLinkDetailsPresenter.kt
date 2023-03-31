@@ -5,6 +5,7 @@ import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
+import org.p2p.wallet.R
 import org.p2p.wallet.common.date.toDateString
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -28,7 +29,7 @@ class HistorySendLinkDetailsPresenter(
                 view.renderState(linkDetails.toContentState())
             } catch (loadFailed: Throwable) {
                 Timber.e(loadFailed, "Failed to fetch info for link")
-                view.close()
+                view.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }

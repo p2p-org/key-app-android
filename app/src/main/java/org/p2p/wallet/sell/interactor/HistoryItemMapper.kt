@@ -29,7 +29,10 @@ class HistoryItemMapper(
         return historyItemFlow
     }
 
-    suspend fun toAdapterItem(transactions: List<HistoryTransaction>) {
+    suspend fun toAdapterItem(
+        transactions: List<HistoryTransaction>,
+        userSendLinksCount: Int
+    ) {
         withContext(dispatchers.io) {
             val rpcHistoryItems = mutableListOf<HistoryItem>()
             val sellHistoryItems = mutableListOf<HistoryItem>()
@@ -45,8 +48,15 @@ class HistoryItemMapper(
                         }
                     }
                 }
+
+                val userSendLinksItem: HistoryItem.UserSendLinksItem? =
+                    HistoryItem.UserSendLinksItem(userSendLinksCount)
+                        .takeIf { userSendLinksCount > 0 }
+                val historyItems = listOfNotNull(userSendLinksItem)
+                    .plus(sellHistoryItems)
+                    .plus(rpcHistoryItems)
+                historyItemFlow.emit(historyItems)
             }
-            historyItemFlow.emit(sellHistoryItems + rpcHistoryItems)
         }
     }
 
@@ -159,7 +169,7 @@ class HistoryItemMapper(
         }
     }
 
-    suspend fun parse(
+    fun parse(
         transaction: SellTransaction,
         cache: MutableList<HistoryItem>
     ) {

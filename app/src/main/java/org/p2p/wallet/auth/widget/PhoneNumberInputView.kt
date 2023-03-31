@@ -1,19 +1,19 @@
 package org.p2p.wallet.auth.widget
 
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
+import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
 import org.p2p.wallet.databinding.WidgetPhoneInputViewBinding
-import org.p2p.core.utils.orZero
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 

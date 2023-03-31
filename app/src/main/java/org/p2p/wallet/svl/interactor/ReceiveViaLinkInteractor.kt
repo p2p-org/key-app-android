@@ -1,23 +1,47 @@
 package org.p2p.wallet.svl.interactor
 
+import timber.log.Timber
 import java.math.BigInteger
+import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
+import org.p2p.solanaj.core.Account
+import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.toPublicKey
 
 class ReceiveViaLinkInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
-    private val userLocalRepository: UserLocalRepository
+    private val userLocalRepository: UserLocalRepository,
+    private val sendViaLinkInteractor: SendViaLinkInteractor,
+    private val tokenKeyProvider: TokenKeyProvider
 ) {
 
+    private class ReceiveViaLinkError(
+        override val message: String,
+        override val cause: Throwable? = null
+    ) : Throwable()
+
     suspend fun parseAccountFromLink(link: SendViaLinkWrapper): TemporaryAccountState {
+        val seedCode = link.link.substringAfterLast(SEND_LINK_FORMAT)
+            .toList()
+            .map(Char::toString)
+
+        if (!SendLinkGenerator.isValidSeedCode(seedCode)) {
+            return TemporaryAccountState.BrokenLink
+        }
+
         val temporaryAccount = try {
-            SendLinkGenerator.parseTemporaryAccount(link)
+            SendLinkGenerator.parseTemporaryAccount(seedCode)
         } catch (e: Throwable) {
-            return TemporaryAccountState.ParsingFailed
+            Timber.e(ReceiveViaLinkError("Failed to parse temporary account", e))
+            return TemporaryAccountState.BrokenLink
         }
 
         val tokenAccounts = rpcAccountRepository.getTokenAccountsByOwner(temporaryAccount.publicKey)
@@ -26,18 +50,33 @@ class ReceiveViaLinkInteractor(
         } ?: return TemporaryAccountState.EmptyBalance
 
         val info = activeAccount.account.data.parsed.info
-        val tokenData = userLocalRepository.findTokenData(info.mint) ?: return TemporaryAccountState.ParsingFailed
+        val tokenData = userLocalRepository.findTokenData(info.mint) ?: run {
+            Timber.e(ReceiveViaLinkError("No token data found for mint ${info.mint}"))
+            return TemporaryAccountState.ParsingFailed
+        }
 
+        val token = TokenConverter.fromNetwork(
+            account = activeAccount,
+            tokenData = tokenData,
+            price = null
+        )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
-            amountInLamports = info.tokenAmount.amount.toBigInteger(),
-            tokenSymbol = tokenData.symbol,
-            tokenDecimals = tokenData.decimals,
-            tokenIconUrl = tokenData.iconUrl
+            token = token
         )
     }
 
-    suspend fun receiveTransfer(temporaryAccount: TemporaryAccount) {
-        // todo: implement
+    suspend fun receiveTransfer(temporaryAccount: TemporaryAccount, token: Token.Active) {
+        val recipient = tokenKeyProvider.publicKey.toPublicKey()
+        val senderAccount = Account(temporaryAccount.keypair)
+
+        sendViaLinkInteractor.sendTransaction(
+            senderAccount = senderAccount,
+            destinationAddress = recipient,
+            token = token,
+            lamports = token.totalInLamports,
+            memo = BuildConfig.sendViaLinkMemo,
+            isSimulation = false
+        )
     }
 }

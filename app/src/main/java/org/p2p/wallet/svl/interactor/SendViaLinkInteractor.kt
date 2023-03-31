@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.interactor
+package org.p2p.wallet.svl.interactor
 
 import java.math.BigInteger
 import org.p2p.core.token.Token
@@ -19,6 +19,7 @@ import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
+import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
 
 private const val TAG = "SendViaLinkInteractor"
@@ -29,6 +30,7 @@ class SendViaLinkInteractor(
     private val feeRelayerLinkInteractor: FeeRelayerViaLinkInteractor,
     private val addressInteractor: TransactionAddressInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
+    private val userInteractor: UserInteractor,
     private val amountRepository: RpcAmountRepository,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) {
@@ -42,6 +44,7 @@ class SendViaLinkInteractor(
     }
 
     suspend fun sendTransaction(
+        senderAccount: Account? = null,
         destinationAddress: PublicKey,
         token: Token.Active,
         lamports: BigInteger,
@@ -55,6 +58,7 @@ class SendViaLinkInteractor(
 
         val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
         val preparedTransaction = createSendTransaction(
+            senderAccount = senderAccount,
             destinationAddress = destinationAddress,
             token = token,
             lamports = lamports,
@@ -71,14 +75,18 @@ class SendViaLinkInteractor(
     }
 
     private suspend fun createSendTransaction(
+        senderAccount: Account?,
         destinationAddress: PublicKey,
         token: Token.Active,
         lamports: BigInteger,
         feePayer: PublicKey,
         memo: String
     ): PreparedTransaction {
+        val account = senderAccount ?: Account(tokenKeyProvider.keyPair)
+
         val preparedTransaction = if (token.isSOL) {
             createSolTransaction(
+                account = account,
                 destinationAddress = destinationAddress,
                 lamports = lamports,
                 feePayer = feePayer,
@@ -86,6 +94,7 @@ class SendViaLinkInteractor(
             )
         } else {
             createSplTransaction(
+                account = account,
                 mintAddress = token.mintAddress,
                 decimals = token.decimals,
                 fromPublicKey = token.publicKey,
@@ -100,13 +109,12 @@ class SendViaLinkInteractor(
     }
 
     private suspend fun createSolTransaction(
+        account: Account,
         destinationAddress: PublicKey,
         lamports: BigInteger,
         feePayer: PublicKey,
         memo: String,
     ): PreparedTransaction {
-        val account = Account(tokenKeyProvider.keyPair)
-
         val instructions = mutableListOf<TransactionInstruction>()
 
         instructions += SystemProgram.transfer(
@@ -129,6 +137,7 @@ class SendViaLinkInteractor(
     }
 
     private suspend fun createSplTransaction(
+        account: Account,
         mintAddress: String,
         decimals: Int,
         fromPublicKey: String,
@@ -137,8 +146,6 @@ class SendViaLinkInteractor(
         feePayer: PublicKey,
         memo: String
     ): PreparedTransaction {
-        val account = Account(tokenKeyProvider.keyPair)
-
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
             destinationAddress = destinationAddress,
             mintAddress = mintAddress
@@ -151,15 +158,20 @@ class SendViaLinkInteractor(
             memo = memo
         )
 
-        // we should always create associated token account, since the recipient is a new temporary account user
-        instructions += TokenProgram.createAssociatedTokenAccountInstruction(
-            TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-            TokenProgram.PROGRAM_ID,
-            mintAddress.toPublicKey(),
-            splDestinationAddress.destinationAddress,
-            destinationAddress,
-            feePayer
-        )
+        val userTokens = userInteractor.getUserTokens()
+        val isTokenAbsent = userTokens.none { it.mintAddress == mintAddress }
+        val shouldCreateAccount = isTokenAbsent && splDestinationAddress.shouldCreateAccount
+        if (shouldCreateAccount) {
+            // we should always create associated token account, since the recipient is a new temporary account user
+            instructions += TokenProgram.createAssociatedTokenAccountInstruction(
+                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                TokenProgram.PROGRAM_ID,
+                mintAddress.toPublicKey(),
+                splDestinationAddress.destinationAddress,
+                destinationAddress,
+                feePayer
+            )
+        }
 
         val accountCreationFee = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 

@@ -16,6 +16,7 @@ import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -356,7 +357,7 @@ class BridgeSendPresenter(
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
         val lamports = calculationMode.getCurrentAmountLamports()
 
-        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.toPlainString())
+        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.orZero().toPlainString())
 
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
@@ -368,7 +369,7 @@ class BridgeSendPresenter(
                     date = transactionDate,
                     tokenUrl = token.iconUrl.orEmpty(),
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
-                    amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
+                    amountUsd = currentAmountUsd?.asNegativeUsdTransaction(),
                     recipient = recipientAddress.nicknameOrAddress(),
                     totalFees = null // todo
                 )

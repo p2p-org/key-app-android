@@ -62,6 +62,7 @@
     <string name="error_network_title">Connection error</string>
     <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
     <string name="error_no_internet_message">🥺 You have no internet connection</string>
+    <string name="error_no_internet_message_no_emoji">You have no internet connection</string>
     <string name="error_invalid_transaction">Invalid transaction, please try again</string>
     <string name="error_amount">Amount error. Please enter valid amount</string>
     <string name="error_fetching_data_about_token">Couldn\'t fetch information for %s</string>
@@ -77,7 +78,7 @@
     <string name="error_country_not_found">Sorry, we don’t know a such country</string>
     <string name="error_wallet_not_found_title">No wallet found</string>
     <string name="error_wallet_not_found_message">Try account or use an another phone number</string>
-
+    <string name="error_token_rates">😢 Token rates are unavailable. Everything works as usual, and all funds are safe.</string>
     <string name="error_too_often_otp_requests_message">You request SMS too often. Try later.</string>
     <string name="error_shares_do_not_matches_title">No wallet found</string>
     <string name="error_shares_do_not_matches_message">Try another option</string>

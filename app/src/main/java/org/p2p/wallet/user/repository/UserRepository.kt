@@ -6,5 +6,5 @@ import org.p2p.solanaj.core.PublicKey
 
 interface UserRepository {
     suspend fun loadAllTokens(): List<TokenData>
-    suspend fun loadUserTokens(publicKey: PublicKey, fetchPrices: Boolean): List<Token.Active>
+    suspend fun loadUserTokens(publicKey: PublicKey): List<Token.Active>
 }
