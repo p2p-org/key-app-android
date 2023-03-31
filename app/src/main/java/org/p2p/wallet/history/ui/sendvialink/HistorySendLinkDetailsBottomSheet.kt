@@ -29,7 +29,6 @@ import org.p2p.wallet.databinding.DialogHistorySendLinkDetailsBinding
 import org.p2p.wallet.history.ui.sendvialink.HistorySendLinkDetailsContract.ViewState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -138,6 +137,6 @@ class HistorySendLinkDetailsBottomSheet :
     }
 
     override fun close() {
-        popBackStack()
+        dismissAllowingStateLoss()
     }
 }

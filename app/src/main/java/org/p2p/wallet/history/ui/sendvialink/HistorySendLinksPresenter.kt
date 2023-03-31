@@ -73,11 +73,12 @@ class HistorySendLinksPresenter(
         val tokenAmount = TextContainer.invoke("${amount.formatToken(token.decimals)} ${token.tokenSymbol}")
 
         val rightSide = RightSideCellModel.TwoLineText(
-            firstLineText = TextViewCellModel.Raw(tokenAmount)
+            firstLineText = TextViewCellModel.Raw(tokenAmount, maxLines = 2)
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSide,
-            rightSideCellModel = rightSide
+            rightSideCellModel = rightSide,
+            payload = uuid
         )
     }
 
