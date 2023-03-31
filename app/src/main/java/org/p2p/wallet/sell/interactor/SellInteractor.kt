@@ -53,7 +53,7 @@ class SellInteractor(
 
     private suspend fun isUserBalancePositive(): Boolean {
         return try {
-            homeLocalRepository.getUserBalance().isNotZero()
+            homeLocalRepository.getUserTokens().any { it.total.isNotZero() }
         } catch (error: Throwable) {
             Timber.tag(TAG).e(error, "Cant get user balance")
             false
