@@ -32,6 +32,7 @@ class EthereumSendInteractor(
     suspend fun supportedSendTokens(): List<Token.Active> {
         return userInteractor.getNonZeroUserTokens()
             .filter { it.mintAddress in supportedTokensMints }
+            .sortedWith(BridgeTokenComparator())
             .ifEmpty {
                 // TODO PWN-7613 also block button as we can't send we do not have funds
                 val usdCet = userInteractor.findTokenDataByAddress(ERC20Tokens.USDC.mintAddress) as Token.Other
