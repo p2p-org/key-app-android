@@ -64,8 +64,7 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
 
                 buttonAction.setText(R.string.main_share)
                 buttonAction.setOnClickListener {
-                    val link = buildShareLink(state.formattedLink, state.amount)
-                    shareLink(link)
+                    requireContext().shareText(state.formattedLink)
                 }
 
                 imageViewCopy.setOnClickListener {
@@ -81,20 +80,6 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
                 buttonAction.setText(R.string.common_go_back)
                 buttonAction.setOnClickListener { popBackStack() }
             }
-        }
-    }
-
-    private fun shareLink(formattedLink: String) {
-        requireContext().shareText(formattedLink)
-    }
-
-    private fun buildShareLink(formattedLink: String, amount: String): String {
-        val username = usernameInteractor.getUsername()
-        val sender = username?.fullUsername ?: tokenKeyProvider.publicKey
-        return if (username != null) {
-            getString(R.string.send_via_link_share_message, sender, amount, formattedLink)
-        } else {
-            getString(R.string.send_via_link_share_message_no_username, sender, amount, formattedLink)
         }
     }
 }
