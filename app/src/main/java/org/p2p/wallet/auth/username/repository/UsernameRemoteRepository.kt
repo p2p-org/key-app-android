@@ -4,20 +4,17 @@ import timber.log.Timber
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.username.api.RegisterUsernameServiceApi
 import org.p2p.wallet.auth.username.repository.mapper.RegisterUsernameServiceApiMapper
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
-import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.isDot
 
 class UsernameRemoteRepository(
     private val usernameService: RegisterUsernameServiceApi,
     private val mapper: RegisterUsernameServiceApiMapper,
     private val rpcSolanaRepository: RpcSolanaRepository,
-    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
+    private val usernameParser: UsernameParser,
     private val dispatchers: CoroutineDispatchers
 ) : UsernameRepository {
 
@@ -58,14 +55,9 @@ class UsernameRemoteRepository(
         val request = mapper.toResolveUsernameNetwork(username)
         val response = usernameService.resolveUsername(request)
         mapper.fromNetwork(response).map { nameResponse ->
-            val username = Username(
-                value = nameResponse.usernameWithDomain.dropDomain(),
-                domainPrefix = usernameDomainFeatureToggle.value,
-                fullUsername = nameResponse.usernameWithDomain
-            )
-            UsernameDetails(
+            usernameParser.parse(
                 ownerAddress = nameResponse.domainOwnerAddress,
-                username = username
+                anyUsername = nameResponse.usernameWithDomain
             )
         }
     }
@@ -76,17 +68,10 @@ class UsernameRemoteRepository(
         val request = mapper.toLookupUsernameNetwork(ownerAddress)
         val response = usernameService.lookupUsername(request)
         mapper.fromNetwork(response).map {
-            UsernameDetails(
+            usernameParser.parse(
                 ownerAddress = ownerAddress,
-                username = Username(
-                    value = it.usernameWithDomain.dropDomain(),
-                    domainPrefix = usernameDomainFeatureToggle.value,
-                    fullUsername = it.usernameWithDomain
-                )
+                anyUsername = it.usernameWithDomain
             )
         }
-    }
-    private fun String.dropDomain(): String {
-        return dropLastWhile { !it.isDot() }
     }
 }
