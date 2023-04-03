@@ -36,12 +36,6 @@ class FeeRelayerViaLinkInteractor(
         // sign transaction by user
         transaction.sign(preparedTransaction.signers)
 
-        if (isSimulation) {
-            // TODO: REMOVE FAKE TRANSACTION AFTER FEE RELAYER IS FIXED
-            delay(1000L)
-            return UUID.randomUUID().toString()
-        }
-
         // adding fee payer signature
         val serializedTransaction = transaction.serialize().toBase64Instance()
         val signedTransaction = feeRelayerRepository.signTransaction(serializedTransaction, statistics)

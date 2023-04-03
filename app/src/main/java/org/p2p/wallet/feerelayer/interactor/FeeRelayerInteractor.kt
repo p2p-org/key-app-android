@@ -1,5 +1,6 @@
 package org.p2p.wallet.feerelayer.interactor
 
+import timber.log.Timber
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
@@ -11,7 +12,6 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.programs.SystemProgram
-import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
@@ -114,7 +114,7 @@ class FeeRelayerInteractor(
             payingFeeToken = payingFeeToken
         )
 
-        return signAndSendTransaction(
+        return relayTransaction(
             preparedTransaction = preparedTransaction,
             payingFeeToken = payingFeeToken,
             additionalPaybackFee = additionalPaybackFee,
@@ -173,7 +173,7 @@ class FeeRelayerInteractor(
         )
     }
 
-    private suspend fun signAndSendTransaction(
+    private suspend fun relayTransaction(
         preparedTransaction: PreparedTransaction,
         payingFeeToken: TokenAccount,
         additionalPaybackFee: BigInteger,
@@ -227,10 +227,16 @@ class FeeRelayerInteractor(
         // resign transaction
         transaction.sign(preparedTransaction.signers)
 
-        val serializedTransaction = Base64Utils.encode(transaction.serialize()).toBase64Instance()
-        val signedTransaction = feeRelayerRepository.signTransaction(serializedTransaction, statistics)
+        val serializedTransaction = transaction.serialize().toBase64Instance()
+        Timber.d("### transaction: ${serializedTransaction.base64Value}")
 
-        return transactionInteractor.sendTransaction(signedTransaction.transaction, isSimulation = false)
+        /*
+        * Retrying 3 times to avoid some errors
+        * For example: fee relayer balance is not updated yet and request will fail with insufficient balance error
+        * */
+        return retryRequest {
+            feeRelayerRepository.relayTransaction(transaction, statistics)
+        }.firstOrNull().orEmpty()
     }
 
     suspend fun relayTransactionWithoutPayback(

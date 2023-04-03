@@ -19,10 +19,7 @@ import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
-
-private const val TAG = "SendViaLinkInteractor"
 
 class SendViaLinkInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
@@ -30,7 +27,6 @@ class SendViaLinkInteractor(
     private val feeRelayerLinkInteractor: FeeRelayerViaLinkInteractor,
     private val addressInteractor: TransactionAddressInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
-    private val userInteractor: UserInteractor,
     private val amountRepository: RpcAmountRepository,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) {
@@ -153,14 +149,7 @@ class SendViaLinkInteractor(
 
         val instructions = mutableListOf<TransactionInstruction>()
 
-        instructions += MemoProgram.createMemoInstruction(
-            signer = account.publicKey,
-            memo = memo
-        )
-
-        val userTokens = userInteractor.getUserTokens()
-        val isTokenAbsent = userTokens.none { it.mintAddress == mintAddress }
-        val shouldCreateAccount = isTokenAbsent && splDestinationAddress.shouldCreateAccount
+        val shouldCreateAccount = splDestinationAddress.shouldCreateAccount
         if (shouldCreateAccount) {
             // we should always create associated token account, since the recipient is a new temporary account user
             instructions += TokenProgram.createAssociatedTokenAccountInstruction(
@@ -183,6 +172,11 @@ class SendViaLinkInteractor(
             account.publicKey,
             amount,
             decimals
+        )
+
+        instructions += MemoProgram.createMemoInstruction(
+            signer = account.publicKey,
+            memo = memo
         )
 
         return transactionInteractor.prepareTransaction(
