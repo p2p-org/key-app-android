@@ -46,13 +46,15 @@ object BridgeSendModule : InjectionModule {
             )
 
             val feeLoader = SendBridgeFeeLoader(
+                initialData = initialData,
                 mapper = get(),
                 validator = get(),
                 ethereumSendInteractor = get(),
+                userInteractor = get(),
                 sendInteractor = get(),
+                feeRelayerAccountInteractor = get(),
                 feeRelayerInteractor = get(),
                 feeRelayerTopUpInteractor = get(),
-                amountRepository = get(),
                 addressInteractor = get(),
             )
             val handlers = mutableSetOf<SendActionHandler>().apply {
