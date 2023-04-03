@@ -45,7 +45,7 @@ class AmountChangeActionHandler(
             mapper.updateInputAmount(lastStaticState, newAmount)
         }
         emit(newState)
-        feeLoader.updateFeeIfNeed(newState).collect {
+        feeLoader.updateFee(newState).collect {
             emit(it)
         }
     }
