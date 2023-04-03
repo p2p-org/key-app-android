@@ -55,7 +55,8 @@ class SendBridgeFeeLoader constructor(
     private val addressInteractor: TransactionAddressInteractor,
 ) {
 
-    private var minRentExemption: BigInteger = BigInteger.ZERO //TODO FIX
+    // TODO FIX minRentExemption - need only for validateFunds remove if not needed
+    private var minRentExemption: BigInteger = BigInteger.ZERO
     private var freeTransactionFeeLimit: FreeTransactionFeeLimit? = null
     private val alternativeTokensMap: HashMap<String, List<Token.Active>> = HashMap()
     private lateinit var tokenToPayFee: Token.Active
