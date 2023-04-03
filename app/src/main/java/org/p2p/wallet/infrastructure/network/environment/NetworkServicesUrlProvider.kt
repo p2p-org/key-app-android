@@ -74,7 +74,7 @@ class NetworkServicesUrlProvider(
     fun loadBridgesServiceEnvironment(): BridgesServiceEnvironment {
         val url = sharedPreferences.getString(
             KEY_BRIDGES_SERVICE_BASE_URL,
-            context.getString(R.string.bridgesServiceBaseUrl)
+            context.getString(R.string.bridgesServiceTestBaseUrl)
         ).orEmpty()
 
         return BridgesServiceEnvironment(url)

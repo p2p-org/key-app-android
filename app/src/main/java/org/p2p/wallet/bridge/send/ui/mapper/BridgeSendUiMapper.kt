@@ -29,11 +29,11 @@ class BridgeSendUiMapper(private val resources: Resources) {
         val resultAmount = getResultAmount(tokenSymbol, decimals, calculationMode, fees)
         return BridgeFeeDetails(
             recipientAddress = recipientAddress,
-            willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
-            networkFee = fees?.networkFee.toBridgeAmount(tokenSymbol, decimals),
-            messageAccountRent = fees?.messageAccountRent.toBridgeAmount(tokenSymbol, decimals),
-            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals),
-            total = resultAmount.toBridgeAmount(tokenSymbol, decimals)
+            willGetAmount = resultAmount.toBridgeAmount(),
+            networkFee = fees?.networkFee.toBridgeAmount(),
+            messageAccountRent = fees?.messageAccountRent.toBridgeAmount(),
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(),
+            total = resultAmount.toBridgeAmount()
         )
     }
 
@@ -54,7 +54,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
         val totalAmount = if (calculationMode.isCurrentInputEmpty()) {
             BigDecimal.ZERO
         } else {
-            inputAmount - feesList.sumOf { it.amountInToken(decimals) }
+            inputAmount - feesList.sumOf { it.amountInToken }
         }
         val totalAmountUsd = if (calculationMode.isCurrentInputEmpty()) {
             BigDecimal.ZERO
@@ -62,10 +62,12 @@ class BridgeSendUiMapper(private val resources: Resources) {
             inputAmountUsd - feesList.sumOf { it.amountInUsd.toBigDecimalOrZero() }
         }
         return BridgeFee(
-            totalAmount.toPlainString(),
-            totalAmountUsd.toPlainString(),
+            amount = totalAmount.toPlainString(),
+            amountInUsd = totalAmountUsd.toPlainString(),
             chain = null,
-            token = tokenSymbol
+            token = tokenSymbol,
+            symbol = tokenSymbol,
+            decimals = decimals,
         )
     }
 
@@ -90,14 +92,11 @@ class BridgeSendUiMapper(private val resources: Resources) {
         return FeesStringFormat(R.string.send_fees_format, feesLabel)
     }
 
-    private fun BridgeFee?.toBridgeAmount(
-        tokenSymbol: String,
-        decimals: Int,
-    ): BridgeAmount {
+    private fun BridgeFee?.toBridgeAmount(): BridgeAmount {
         return BridgeAmount(
-            tokenSymbol = tokenSymbol,
-            tokenDecimals = decimals,
-            tokenAmount = this?.amountInToken(decimals).takeIf { !it.isNullOrZero() },
+            tokenSymbol = this?.symbol.orEmpty(),
+            tokenDecimals = this?.decimals.orZero(),
+            tokenAmount = this?.amountInToken?.takeIf { !it.isNullOrZero() },
             fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
         )
     }
