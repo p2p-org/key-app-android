@@ -9,6 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
@@ -21,16 +22,20 @@ private const val REFRESH_JOB_DELAY_IN_MILLIS = 30_000L
 
 private const val TAG = "EthereumTokenProvider"
 
-internal class EthereumTokensProvider(
+class EthereumTokensProvider(
     private val repository: EthereumRepository,
     private val dispatchers: CoroutineDispatchers,
     private val priceRepository: PriceRepository,
 ) : CoroutineScope {
 
+
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
     private val erC20Tokens: MutableStateFlow<List<Token.Eth>> = MutableStateFlow(emptyList())
     private val ethToken: MutableStateFlow<Token.Eth?> = MutableStateFlow(null)
     private var refreshJob: Job? = null
+
+    val erc20Tokens: StateFlow<List<Token.Eth>> = erC20Tokens
+
 
     fun launch(delayInMillis: Long = REFRESH_JOB_DELAY_IN_MILLIS, claimingTokens: List<EthereumClaimToken>) {
         refreshJob?.cancel()

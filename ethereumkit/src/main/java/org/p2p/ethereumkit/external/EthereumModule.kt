@@ -19,6 +19,7 @@ import org.p2p.ethereumkit.external.price.EthereumPriceRepository
 import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.external.repository.EthereumKitRepository
 import org.p2p.ethereumkit.external.repository.EthereumRepository
+import org.p2p.ethereumkit.external.repository.EthereumTokensProvider
 
 object EthereumModule {
 
@@ -33,5 +34,6 @@ object EthereumModule {
                 gson = get(named(QUALIFIER_RPC_GSON))
             )
         }
+        single { EthereumTokensProvider(get(),get(),get()) }
     }
 }

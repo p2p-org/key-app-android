@@ -83,8 +83,8 @@ internal class EthereumKitRepository(
                     val tokenBundle = claimingTokens.firstOrNull { metadata.contractAddress == it.contractAddress }
                     val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
                     metadata.balance.isMoreThan(MINIMAL_DUST) || isClaimInProgress
-
                 }.map { EthTokenConverter.ethMetadataToToken(it) }
+
             } catch (cancellation: CancellationException) {
                 Timber.i(cancellation)
                 emptyList()
@@ -122,7 +122,7 @@ internal class EthereumKitRepository(
         return balanceRepository.getTokenBalances(address, tokenAddresses).balances
     }
 
-    suspend fun getMetadataAsync(tokenBalance: TokenBalanceResponse, contractAddress: EthAddress) =
+    private suspend fun getMetadataAsync(tokenBalance: TokenBalanceResponse, contractAddress: EthAddress) =
         coroutineScope {
             async {
                 val metadata = balanceRepository.getTokenMetadata(contractAddress)

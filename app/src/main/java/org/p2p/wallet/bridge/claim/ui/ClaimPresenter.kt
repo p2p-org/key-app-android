@@ -88,15 +88,13 @@ class ClaimPresenter(
         }
     }
 
-    private suspend fun showFees(resultAmount: BridgeFee, fees: BridgeBundleFees, isFree: Boolean) {
-        val ethToken = ethereumInteractor.getEthereumToken()
+    private fun showFees(resultAmount: BridgeFee, fees: BridgeBundleFees, isFree: Boolean) {
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
 
         claimDetails = claimUiMapper.makeClaimDetails(
             tokenToClaim = tokenToClaim,
             resultAmount = resultAmount,
-            fees = fees.takeUnless { isFree },
-            ethToken = ethToken
+            fees = fees.takeUnless { isFree }
         )
         view?.setClaimButtonState(isButtonEnabled = true)
     }

@@ -53,7 +53,6 @@ class ClaimUiMapper(private val resources: Resources) {
         tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
-        ethToken: Token.Eth?,
     ): ClaimDetails {
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals

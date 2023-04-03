@@ -4,7 +4,7 @@ import java.math.BigDecimal
 
 private const val USD_READABLE_SYMBOL = "usd"
 
-internal interface PriceRepository {
+interface PriceRepository {
 
     suspend fun getPriceForTokens(
         tokenAddresses: List<String>,
