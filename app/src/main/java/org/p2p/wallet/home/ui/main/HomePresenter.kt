@@ -53,7 +53,6 @@ import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenId
-import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
 
 val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
@@ -188,15 +187,7 @@ class HomePresenter(
     }
 
     override fun onAddressClicked() {
-        // example result: "test-android.key 4vwfPYdvv9vkX5mTC6BBh4cQcWFTQ7Q7WR42JyTfZwi7"
-        val userDataToCopy = buildString {
-            username?.fullUsername?.let {
-                append(it)
-                appendWhitespace()
-            }
-            append(tokenKeyProvider.publicKey)
-        }
-        view?.showAddressCopied(userDataToCopy)
+        view?.showAddressCopied(username?.fullUsername ?: tokenKeyProvider.publicKey)
     }
 
     override fun onBuyClicked() {
