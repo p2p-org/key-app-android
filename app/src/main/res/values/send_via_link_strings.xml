@@ -11,14 +11,27 @@
     <string name="send_via_link_generation_copied">✅ Your one-time link is copied</string>
     <string name="send_dont_need_the_address">You don\'t need to know the address</string>
 
-    <string name="send_via_link_receive_funds_title">Receive funds via one-time link</string>
+    <string name="send_via_link_free_transactions_title">Enjoy free transactions!</string>
+    <string name="send_via_link_free_transactions_subtitle">
+        With Key App, all transactions you make on the Solana network are free
+    </string>
+    <string name="send_via_link_free_transactions_button">Got it 👍</string>
+
+    <string name="send_via_link_receive_funds_title">Receive funds \n via one-time link</string>
     <string name="send_via_link_receive_funds_sent_from">Sent from</string>
-    <string name="send_via_link_receive_funds_success_title">You\'ve got %s %s!</string>
+    <string name="send_via_link_receive_funds_success_title">You\'ve got \n%s %s!</string>
     <string name="send_via_link_receive_funds_success_subtitle">Spend them wisely</string>
     <string name="send_via_link_receive_funds_success_button">Got it 👍</string>
 
     <string name="send_via_link_error_already_claimed_title">This one-time link is already claimed</string>
     <string name="send_via_link_error_already_claimed_subtitle">You can\'t receive funds with it</string>
-    <string name="send_via_link_error_already_claimed_button">Okay</string>
+
+    <string name="send_via_link_error_broken_link_title">This link is broken</string>
+    <string name="send_via_link_error_broken_link_subtitle">You can\'t receive funds with it</string>
+
+    <string name="send_via_link_error_okay_button">Okay</string>
+
+    <string name="send_via_link_error_failed_parsing_title">Failed to get data</string>
+    <string name="send_via_link_error_failed_parsing_subtitle">Refresh the page or check back later</string>
 
 </resources>

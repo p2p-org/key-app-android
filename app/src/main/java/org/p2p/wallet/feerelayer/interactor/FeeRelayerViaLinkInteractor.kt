@@ -1,7 +1,5 @@
 package org.p2p.wallet.feerelayer.interactor
 
-import java.util.UUID
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.utils.crypto.toBase64Instance
@@ -28,19 +26,13 @@ class FeeRelayerViaLinkInteractor(
         preparedTransaction: PreparedTransaction,
         statistics: FeeRelayerStatistics,
         isRetryEnabled: Boolean = true,
-        isSimulation: Boolean = false
+        isSimulation: Boolean
     ): String {
         // resign transaction
         val transaction = preparedTransaction.transaction
 
         // sign transaction by user
         transaction.sign(preparedTransaction.signers)
-
-        if (isSimulation) {
-            // TODO: REMOVE FAKE TRANSACTION AFTER FEE RELAYER IS FIXED
-            delay(1000L)
-            return UUID.randomUUID().toString()
-        }
 
         // adding fee payer signature
         val serializedTransaction = transaction.serialize().toBase64Instance()

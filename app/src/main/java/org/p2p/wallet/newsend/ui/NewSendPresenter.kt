@@ -13,6 +13,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -159,6 +160,12 @@ class NewSendPresenter(
             initializeFeeRelayer(view, initialToken, solToken)
             initialAmount?.let { inputAmount ->
                 setupDefaultFields(inputAmount)
+            }
+            if (token?.rate == null) {
+                if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                    switchCurrencyMode()
+                }
+                view.disableSwitchAmounts()
             }
         }
     }
@@ -365,7 +372,7 @@ class NewSendPresenter(
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
         val lamports = calculationMode.getCurrentAmountLamports()
 
-        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.toPlainString())
+        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.orZero().toPlainString())
 
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
@@ -382,7 +389,7 @@ class NewSendPresenter(
                     date = transactionDate,
                     tokenUrl = token.iconUrl.orEmpty(),
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
-                    amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
+                    amountUsd = currentAmountUsd?.asNegativeUsdTransaction(),
                     recipient = recipientAddress.nicknameOrAddress(),
                     totalFees = total.getFeesCombined(checkFeePayer = false)?.let { listOf(it) }
                 )

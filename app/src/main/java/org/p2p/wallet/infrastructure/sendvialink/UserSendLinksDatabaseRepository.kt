@@ -57,4 +57,6 @@ class UserSendLinksDatabaseRepository(
             dateCreated = dateCreated
         )
     }
+
+    override suspend fun getUserLinksCount(): Int = getUserLinks().size
 }

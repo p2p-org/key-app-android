@@ -5,10 +5,13 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendLinkGenerationResultBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -20,17 +23,22 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_STATE = "EXTRA_STATE"
 
-class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_generation_result) {
+class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_generation_result) {
 
     companion object {
         fun create(state: LinkGenerationState): Fragment =
-            LinkGenerationResultFragment()
+            SendLinkGenerationResultFragment()
                 .withArgs(EXTRA_STATE to state)
     }
 
     private val state: LinkGenerationState by args(EXTRA_STATE)
 
     private val binding: FragmentSendLinkGenerationResultBinding by viewBinding()
+
+    // If complex logic will be needed,
+    // consider adding presenter class and move logic and these dependencies there
+    private val usernameInteractor: UsernameInteractor by inject()
+    private val tokenKeyProvider: TokenKeyProvider by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,7 +63,9 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
                 textViewSubtitle.text = state.formattedLink
 
                 buttonAction.setText(R.string.main_share)
-                buttonAction.setOnClickListener { shareLink(state.formattedLink) }
+                buttonAction.setOnClickListener {
+                    requireContext().shareText(state.formattedLink)
+                }
 
                 imageViewCopy.setOnClickListener {
                     requireContext().copyToClipBoard(state.formattedLink)
@@ -71,9 +81,5 @@ class LinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_link_ge
                 buttonAction.setOnClickListener { popBackStack() }
             }
         }
-    }
-
-    private fun shareLink(formattedLink: String) {
-        requireContext().shareText(formattedLink)
     }
 }

@@ -6,17 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_rounded_transparent_8"
-    android:backgroundTint="@color/backgroundPrimary">
+    android:backgroundTint="@color/backgroundPrimary"
+    android:paddingVertical="96dp">
 
     <TextView
         android:id="@+id/imageViewIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:background="@drawable/bg_rain_circle"
         android:duplicateParentState="true"
         android:gravity="center"
-        android:padding="30dp"
         android:text="@string/emoji_money_bag"
-        android:textSize="45sp"
+        android:textSize="64sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

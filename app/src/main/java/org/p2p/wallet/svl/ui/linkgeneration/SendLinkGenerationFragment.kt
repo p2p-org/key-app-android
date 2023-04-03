@@ -12,7 +12,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendLinkGenerationBinding
 import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.newsend.model.TemporaryAccount
-import org.p2p.wallet.svl.ui.linkresult.LinkGenerationResultFragment
+import org.p2p.wallet.svl.ui.linkresult.SendLinkGenerationResultFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -63,6 +63,6 @@ class SendLinkGenerationFragment :
     }
 
     override fun showResult(state: LinkGenerationState) {
-        popAndReplaceFragment(target = LinkGenerationResultFragment.create(state))
+        popAndReplaceFragment(target = SendLinkGenerationResultFragment.create(state))
     }
 }

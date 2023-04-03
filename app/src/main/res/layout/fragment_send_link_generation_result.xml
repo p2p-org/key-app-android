@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/bg_smoke"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke">
 
     <ImageView
         android:id="@+id/imageViewClose"
@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@color/bg_snow"
+            android:background="@drawable/bg_snow_rounded_16"
             android:foreground="?selectableItemBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,6 +52,7 @@
                 android:background="@color/bg_rain"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_copy_link"
+                android:tint="@color/icons_night"
                 app:cornerRadius="24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -83,13 +84,13 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
                 android:textColor="@color/text_mountain"
                 app:layout_constraintBottom_toBottomOf="@+id/imageViewLink"
                 app:layout_constraintEnd_toStartOf="@id/imageViewCopy"
                 app:layout_constraintStart_toEndOf="@+id/imageViewLink"
                 app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
-                tools:text="key.app/Ro8Andswf" />
+                tools:text="key.app/Ro8Andswfw52zs88" />
 
             <ImageView
                 android:id="@+id/imageViewCopy"
@@ -97,8 +98,10 @@
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/amp_label_copy"
-                android:padding="16dp"
-                android:src="@drawable/ic_copy"
+                android:paddingVertical="16dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="16dp"
+                android:src="@drawable/ic_copy_filled_24"
                 app:layout_constraintBottom_toBottomOf="@id/imageViewLink"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/textViewTitle"

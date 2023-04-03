@@ -144,13 +144,25 @@ object NetworkModule : InjectionModule {
     fun Scope.getRetrofit(
         baseUrl: String,
         tag: String? = "OkHttpClient",
-        interceptor: Interceptor?,
+        interceptor: Interceptor?
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(get()))
-            .client(getClient(tag, interceptor))
+            .client(getClient(tag = tag, interceptor = interceptor))
+            .build()
+    }
+
+    fun Scope.getRetrofit(
+        baseUrl: String,
+        client: OkHttpClient
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(get()))
+            .client(client)
             .build()
     }
 
@@ -160,7 +172,12 @@ object NetworkModule : InjectionModule {
         }
     }
 
-    private fun Scope.getClient(tag: String?, interceptor: Interceptor? = null): OkHttpClient {
+    fun Scope.getClient(
+        readTimeOut: Long = DEFAULT_READ_TIMEOUT_SECONDS,
+        connectTimeOut: Long = DEFAULT_CONNECT_TIMEOUT_SECONDS,
+        tag: String?,
+        interceptor: Interceptor? = null
+    ): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)

@@ -4,5 +4,5 @@ sealed interface HistoryPagingResult {
 
     data class Success(val data: List<HistoryTransaction>) : HistoryPagingResult
 
-    data class Error(val cause: Throwable) : HistoryPagingResult
+    data class Error(override val cause: Throwable) : HistoryPagingResult, Throwable()
 }

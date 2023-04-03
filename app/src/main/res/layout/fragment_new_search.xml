@@ -59,7 +59,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="8dp"
+        android:layout_marginTop="24dp"
         android:text="@string/search_found"
         android:textAllCaps="true"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
@@ -83,7 +83,8 @@
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/messageTextView"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0"
+        tools:itemCount="3"
         tools:layout_editor_absoluteX="16dp"
         tools:listitem="@layout/item_search"
         tools:visibility="visible" />

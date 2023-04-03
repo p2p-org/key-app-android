@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import org.p2p.core.utils.asUsd
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.model.BridgeAmount
@@ -85,7 +86,7 @@ class BridgeSendFeeBottomSheet : BaseDoneBottomSheet() {
 
     private fun ItemClaimDetailsPartBinding.bindDetailsLineWithFee(title: String, fee: BridgeAmount) {
         textViewTitle.text = title
-        textViewFiatAmount.text = fee.formattedFiatAmount ?: getString(R.string.bridge_info_transaction_free)
+        textViewFiatAmount.text = fee.fiatAmount?.asUsd() ?: getString(R.string.bridge_info_transaction_free)
         val formattedTokenAmount = fee.formattedTokenAmount
         if (formattedTokenAmount == null) {
             textViewTokenAmount.text = getString(R.string.bridge_claim_fees_free)

@@ -12,12 +12,11 @@ private const val TAG = "CrashHttpLoggingInterceptor"
 
 class CrashHttpLoggingInterceptor : Interceptor {
 
-    private var rpcMethodName: String? = null
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        val requestLog = createRequestLog(request)
+        val rpcMethodName: String? = getRpcMethodName(request)
+        val requestLog = createRequestLog(request, rpcMethodName)
         Timber.tag(TAG).i(requestLog)
 
         val response = try {
@@ -27,10 +26,10 @@ class CrashHttpLoggingInterceptor : Interceptor {
             throw socketTimeout
         }
 
-        val responseLog = createResponseLog(response)
+        val responseLog = createResponseLog(response, rpcMethodName)
         Timber.tag(TAG).i(responseLog)
 
-        val responseBody = response.peekBody(Long.MAX_VALUE).string()
+        val responseBody = response.bodyAsString()
         val responseBodySize = responseBody.length
         if (responseBodySize < 10_000) {
             Timber.tag(TAG).d(responseBody)
@@ -41,10 +40,9 @@ class CrashHttpLoggingInterceptor : Interceptor {
         return response
     }
 
-    private fun createRequestLog(request: Request): String = buildString {
+    private fun createRequestLog(request: Request, rpcMethodName: String?): String = buildString {
         append("NETWORK ${request.url} | ")
 
-        rpcMethodName = getRpcMethodName(request)
         if (rpcMethodName != null) {
             append("$rpcMethodName | ")
         }
@@ -59,11 +57,10 @@ class CrashHttpLoggingInterceptor : Interceptor {
         .mapCatching { JSONObject(it).getString("method") }
         .getOrNull()
 
-    private fun createResponseLog(response: Response) = buildString {
+    private fun createResponseLog(response: Response, rpcMethodName: String?) = buildString {
         append("NETWORK ${response.request.url} | ")
         if (rpcMethodName != null) {
             append(rpcMethodName)
-            rpcMethodName = null
         }
 
         append("<-- ")

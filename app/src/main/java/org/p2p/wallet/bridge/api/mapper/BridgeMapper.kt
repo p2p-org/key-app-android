@@ -1,5 +1,6 @@
 package org.p2p.wallet.bridge.api.mapper
 
+import org.p2p.core.utils.orZero
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.bridge.api.response.BridgeAmountResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleFeesResponse
@@ -9,12 +10,12 @@ import org.p2p.wallet.bridge.api.response.BridgeSendStatusResponse
 import org.p2p.wallet.bridge.api.response.BridgeSendTransactionResponse
 import org.p2p.wallet.bridge.api.response.BridgeTransactionStatusResponse
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeBundleFees
+import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
-import org.p2p.wallet.bridge.send.model.BridgeSendTransactionStatus
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionStatus
 
 class BridgeMapper {
 
@@ -47,7 +48,9 @@ class BridgeMapper {
             amount = response?.amount,
             amountInUsd = response?.usdAmount,
             chain = response?.chain,
-            token = response?.tokenName
+            token = response?.tokenName,
+            symbol = response?.tokenSymbol.orEmpty(),
+            decimals = response?.tokenDecimals.orZero(),
         )
     }
 

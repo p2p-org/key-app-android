@@ -2,23 +2,24 @@ package org.p2p.wallet.svl.ui.send
 
 import android.content.res.Resources
 import timber.log.Timber
+import java.math.BigInteger
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
-import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.interactor.SendInteractor
-import org.p2p.wallet.newsend.interactor.SendViaLinkInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.newsend.model.toSearchResult
+import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -26,7 +27,7 @@ import org.p2p.wallet.utils.unsafeLazy
 
 class SendViaLinkPresenter(
     private val userInteractor: UserInteractor,
-    sendInteractor: SendInteractor,
+    private val sendInteractor: SendInteractor,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
     private val resources: Resources,
     private val connectionStateProvider: ConnectionStateProvider,
@@ -45,7 +46,8 @@ class SendViaLinkPresenter(
         sendModeProvider = sendModeProvider,
         lessThenMinString = resources.getString(R.string.common_less_than_minimum)
     )
-    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
+
+    private var minRentExemption: BigInteger = BigInteger.ZERO
 
     private val recipient: TemporaryAccount by unsafeLazy {
         SendLinkGenerator.createTemporaryAccount()
@@ -80,6 +82,7 @@ class SendViaLinkPresenter(
 
         launch {
             try {
+                minRentExemption = sendInteractor.getMinRelayRentExemption()
                 sendViaLinkInteractor.initialize()
             } catch (e: CancellationException) {
                 Timber.d("Initialization was cancelled")
@@ -145,19 +148,16 @@ class SendViaLinkPresenter(
     override fun updateToken(newToken: Token.Active) {
         token = newToken
         showMaxButtonIfNeeded()
-        view?.showFeeViewVisible(isVisible = true)
         updateButton(requireToken())
     }
 
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
         newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
-        view?.showFeeViewVisible(isVisible = true)
     }
 
     override fun updateInputAmount(amount: String) {
         calculationMode.updateInputAmount(amount)
-        view?.showFeeViewVisible(isVisible = true)
         showMaxButtonIfNeeded()
         updateButton(requireToken())
 
@@ -168,7 +168,6 @@ class SendViaLinkPresenter(
         val token = token ?: return
         val totalAvailable = calculationMode.getMaxAvailableAmount() ?: return
         view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
-        view?.showFeeViewVisible(isVisible = true)
 
         showMaxButtonIfNeeded()
 
@@ -176,6 +175,8 @@ class SendViaLinkPresenter(
 
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showToast(TextContainer.Raw(message))
+
+        updateButton(requireToken())
     }
 
     override fun onFeeInfoClicked() {
@@ -203,13 +204,13 @@ class SendViaLinkPresenter(
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
         val lamports = calculationMode.getCurrentAmountLamports()
 
-        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.toPlainString())
+        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.orZero().toPlainString())
 
         view?.navigateToLinkGeneration(recipient, token, lamports)
     }
 
     private fun showMaxButtonIfNeeded() {
-        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(feeRelayerManager.getMinRentExemption())
+        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(minRentExemption)
         view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
@@ -219,7 +220,7 @@ class SendViaLinkPresenter(
             searchResult = recipient.toSearchResult(),
             calculationMode = calculationMode,
             feeRelayerState = FeeRelayerState.Idle,
-            minRentExemption = feeRelayerManager.getMinRentExemption(),
+            minRentExemption = minRentExemption,
             resources = resources
         )
 

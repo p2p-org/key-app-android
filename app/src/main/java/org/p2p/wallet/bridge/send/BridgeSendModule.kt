@@ -49,7 +49,11 @@ object BridgeSendModule : InjectionModule {
                 mapper = get(),
                 validator = get(),
                 ethereumSendInteractor = get(),
-                sendInteractor = get()
+                sendInteractor = get(),
+                feeRelayerInteractor = get(),
+                feeRelayerTopUpInteractor = get(),
+                amountRepository = get(),
+                addressInteractor = get(),
             )
             val handlers = mutableSetOf<SendActionHandler>().apply {
                 add(

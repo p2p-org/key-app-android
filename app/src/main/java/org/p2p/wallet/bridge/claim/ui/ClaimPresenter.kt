@@ -27,7 +27,6 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
-import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 
@@ -36,7 +35,6 @@ const val DEFAULT_DELAY_IN_MILLIS = 30_000L
 class ClaimPresenter(
     private val tokenToClaim: Token.Eth,
     private val claimInteractor: ClaimInteractor,
-    private val userLocalRepository: UserLocalRepository,
     private val ethereumRepository: EthereumRepository,
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
@@ -49,15 +47,9 @@ class ClaimPresenter(
     private var latestTransactions: List<HexString> = emptyList()
     private var latestBundleId: String = emptyString()
     private var refreshJobDelayTimeInMillis = DEFAULT_DELAY_IN_MILLIS
-    private var eth: Token.Eth? = null
 
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
-        launch {
-            if (eth == null) {
-                eth = ethereumRepository.getUserEthToken()
-            }
-        }
         startRefreshJob()
         view.apply {
             claimUiMapper.mapScreenData(tokenToClaim).apply {
@@ -87,7 +79,7 @@ class ClaimPresenter(
                     refreshJobDelayTimeInMillis = getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
                     latestTransactions = transactions
                     showFees(resultAmount, fees, compensationDeclineReason.isEmpty())
-                    val finalValue = claimUiMapper.makeResultAmount(resultAmount, tokenToClaim)
+                    val finalValue = claimUiMapper.makeResultAmount(resultAmount)
                     view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
                 }
             } catch (error: Throwable) {
@@ -108,7 +100,7 @@ class ClaimPresenter(
 
     private fun showFees(resultAmount: BridgeFee, fees: BridgeBundleFees, isFree: Boolean) {
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
-        claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, resultAmount, fees.takeUnless { isFree }, eth)
+        claimDetails = claimUiMapper.makeClaimDetails(tokenToClaim, resultAmount, fees.takeUnless { isFree })
         view?.setClaimButtonState(isButtonEnabled = true)
     }
 

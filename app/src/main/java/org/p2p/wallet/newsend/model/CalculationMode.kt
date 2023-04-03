@@ -82,18 +82,18 @@ class CalculationMode(
 
     fun getCurrentAmount(): BigDecimal = tokenAmount
 
-    fun getCurrentAmountUsd(): BigDecimal = usdAmount
+    fun getCurrentAmountUsd(): BigDecimal? = usdAmount.takeIf { token.rate != null }
 
     fun isCurrentInputEmpty(): Boolean = inputAmount.isEmpty()
 
     fun getMaxAvailableAmount(): BigDecimal? {
         tokenAmount = token.total
-        usdAmount = token.totalInUsd.orZero()
+        usdAmount = token.totalInUsdScaled.orZero()
 
         val maxAmount = when (currencyMode) {
             is CurrencyMode.Fiat -> {
                 handleCalculateTokenAmountUpdate()
-                token.totalInUsd
+                token.totalInUsdScaled
             }
             is CurrencyMode.Token -> {
                 handleCalculateUsdAmountUpdate()
