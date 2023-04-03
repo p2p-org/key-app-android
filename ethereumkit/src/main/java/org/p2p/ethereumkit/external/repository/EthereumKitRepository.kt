@@ -1,24 +1,25 @@
 package org.p2p.ethereumkit.external.repository
 
-import org.web3j.crypto.TransactionDecoder
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
-import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalanceResponse
 import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.model.EthTokenConverter
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
+import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
 import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.internal.core.TransactionSignerEip1559
@@ -68,79 +69,67 @@ internal class EthereumKitRepository(
         return balanceRepository.getWalletBalance(publicKey)
     }
 
-    override suspend fun loadWalletTokens(): List<Token.Eth> = withContext(dispatchers.io) {
-        try {
-            val walletTokens = loadTokensMetadata()
-            val erc20TokenAddress = ERC20Tokens.ETH.contractAddress
+    override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> =
+        withContext(dispatchers.io) {
+            try {
+                val tokensMetadata = loadTokensMetadata()
 
-            val tokenAddressesForPrices = walletTokens
-                .map { it.contractAddress.toString() }
-                .plus(erc20TokenAddress)
+                getPriceForTokens(tokensMetadata.map { it.contractAddress.toString() })
+                    .onEach { (address, price) ->
+                        tokensMetadata.find { it.contractAddress.hex == address }?.price = price
+                    }
 
-            val tokensPrices = getPriceForTokens(tokenAddresses = tokenAddressesForPrices)
-                .onEach { (address, price) ->
-                    walletTokens.find { address == it.contractAddress.hex }?.price = price
-                }
+                tokensMetadata.filter { metadata ->
+                    val tokenBundle = claimingTokens.firstOrNull { metadata.contractAddress == it.contractAddress }
+                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
+                    metadata.balance.isMoreThan(MINIMAL_DUST) || isClaimInProgress
 
-            val ethTokenPrice = tokensPrices[erc20TokenAddress].orZero()
-            val finalTokens = getWalletMetadata(ethTokenPrice) + walletTokens
-
-            finalTokens.filter { it.balance.isMoreThan(MINIMAL_DUST) }
-                .map { EthTokenConverter.ethMetadataToToken(it) }
-        } catch (cancellation: CancellationException) {
-            Timber.i(cancellation)
-            emptyList()
-        } catch (e: Throwable) {
-            Timber.e(e, "Error on loading ethereumTokens")
-            emptyList()
+                }.map { EthTokenConverter.ethMetadataToToken(it) }
+            } catch (cancellation: CancellationException) {
+                Timber.i(cancellation)
+                emptyList()
+            } catch (e: Throwable) {
+                Timber.e(e, "Error on loading ethereumTokens")
+                emptyList()
+            }
         }
-    }
-
-    override suspend fun getUserEthToken(): Token.Eth? {
-        return loadWalletTokens().firstOrNull {
-            it.mintAddress == ERC20Tokens.ETH.mintAddress
-        }
-    }
 
     override suspend fun getAddress(): EthAddress {
         return tokenKeyProvider?.publicKey ?: throwInitError()
     }
 
     private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {
-        return kotlin.runCatching { priceRepository.getTokenPrices(tokenAddresses) }
+        return kotlin.runCatching { priceRepository.getPriceForTokens(tokenAddresses) }
             .getOrDefault(emptyMap())
     }
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
         val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
-        return@withContext balanceRepository.getTokenBalances(address = publicKey, tokenAddresses = tokenAddresses)
-            .balances
-            .map { token ->
-                async {
-                    val metadata = balanceRepository.getTokenMetadata(token.contractAddress)
-                    val erc20Token = ERC20Tokens.findToken(token.contractAddress)
-                    mapToTokenMetadata(balanceResponse = token, metadata = metadata, erc20Token = erc20Token)
-                }
-            }
-            .awaitAll()
+
+        loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
+            getMetadataAsync(
+                tokenBalance = tokenBalance,
+                contractAddress = tokenBalance.contractAddress
+            )
+        }.awaitAll()
     }
 
-    //Temporary solution of creating ETH wallet
-    private suspend fun getWalletMetadata(ethPrice: BigDecimal): List<EthTokenMetadata> {
-        val contractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
-        val balance = getBalance()
-        return listOf(EthTokenMetadata(
-            contractAddress = contractAddress,
-            mintAddress = ERC20Tokens.ETH.mintAddress,
-            balance = balance,
-            decimals = 18,
-            logoUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty(),
-            tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
-            symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
-            price = ethPrice
-        ))
+    private suspend fun loadTokenBalances(
+        address: EthAddress,
+        tokenAddresses: List<EthAddress>,
+    ): List<TokenBalanceResponse> {
+        return balanceRepository.getTokenBalances(address, tokenAddresses).balances
     }
+
+    suspend fun getMetadataAsync(tokenBalance: TokenBalanceResponse, contractAddress: EthAddress) =
+        coroutineScope {
+            async {
+                val metadata = balanceRepository.getTokenMetadata(contractAddress)
+                val erc20Token = ERC20Tokens.findToken(contractAddress)
+                mapToTokenMetadata(tokenBalance, metadata, erc20Token)
+            }
+        }
 
     private fun throwInitError(): Nothing =
         error("You must call EthereumKitRepository.init() method, before interact with this repository")

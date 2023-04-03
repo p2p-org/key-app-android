@@ -3,7 +3,7 @@ package org.p2p.ethereumkit.external.core
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
-internal interface CoroutineDispatchers {
+interface CoroutineDispatchers {
     val io: CoroutineDispatcher
     val computation: CoroutineDispatcher
     val ui: CoroutineDispatcher

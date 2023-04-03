@@ -7,7 +7,7 @@ import org.p2p.wallet.bridge.api.response.BridgeBundleResponse
 data class SendEthereumBundleRpcRequest(
     @Transient val bundleRequest: BridgeBundleResponse,
 ) : JsonRpc<Map<String, Any>, Unit>(
-    method = "simulate_ethereum_bundle", // "simulate_ethereum_bundle",
+    method = "send_ethereum_bundle",
     params = buildMap { put("bundle", bundleRequest) }
 ) {
 

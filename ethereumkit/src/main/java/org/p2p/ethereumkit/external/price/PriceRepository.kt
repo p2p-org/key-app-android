@@ -6,8 +6,13 @@ private const val USD_READABLE_SYMBOL = "usd"
 
 internal interface PriceRepository {
 
-    suspend fun getTokenPrices(
+    suspend fun getPriceForTokens(
         tokenAddresses: List<String>,
-        targetCurrency: String = USD_READABLE_SYMBOL
+        targetCurrency: String = USD_READABLE_SYMBOL,
     ): Map<String, BigDecimal>
+
+    suspend fun getPriceForToken(
+        tokenAddress: String,
+        targetCurrency: String = USD_READABLE_SYMBOL,
+    ): BigDecimal
 }

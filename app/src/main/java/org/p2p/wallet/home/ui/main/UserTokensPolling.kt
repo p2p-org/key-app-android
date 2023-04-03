@@ -48,8 +48,8 @@ class UserTokensPolling(
         if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
             return EthereumHomeState()
         }
-        val ethereumTokens = ethereumInteractor.loadWalletTokens()
         val ethereumBundleStatuses = ethereumInteractor.getListOfEthereumBundleStatuses()
-        return EthereumHomeState(ethereumTokens, ethereumBundleStatuses)
+        val ethereumTokens = ethereumInteractor.loadWalletTokens(ethereumBundleStatuses)
+        return EthereumHomeState(ethereumTokens)
     }
 }

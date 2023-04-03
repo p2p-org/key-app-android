@@ -2,19 +2,19 @@ package org.p2p.wallet.bridge.claim.interactor
 
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.internal.models.Signature
-import org.p2p.wallet.bridge.claim.model.ClaimStatus
-import org.p2p.wallet.bridge.claim.repository.EthereumClaimLocalRepository
+import org.p2p.wallet.bridge.claim.mapper.EthereumModuleMapper
 import org.p2p.wallet.bridge.claim.repository.EthereumClaimRepository
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
-const val DEFAULT_ERC20_TOKEN_SLIPPAGE = 5
+const val DEFAULT_ERC20_TOKEN_SLIPPAGE = 15
 
 class ClaimInteractor(
     private val ethereumClaimRepository: EthereumClaimRepository,
-    private val localRepository: EthereumClaimLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val mapper: EthereumModuleMapper,
 ) {
     suspend fun getEthereumBundle(
         erc20Token: EthAddress?,
@@ -36,9 +36,10 @@ class ClaimInteractor(
         return ethereumClaimRepository.sendEthereumBundle(signatures)
     }
 
-    suspend fun getListOfEthereumBundleStatuses(ethereumAddress: EthAddress): Map<String, List<ClaimStatus>> {
-        return ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress).let {
-            localRepository.parseBundles(it)
-        }
+    suspend fun getListOfEthereumBundleStatuses(ethereumAddress: EthAddress): List<EthereumClaimToken> {
+        return ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress)
+            .mapNotNull {
+                mapper.mapBundle(it)
+            }
     }
 }

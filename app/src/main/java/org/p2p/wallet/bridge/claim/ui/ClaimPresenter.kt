@@ -71,15 +71,9 @@ class ClaimPresenter(
                 view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
             } catch (error: Throwable) {
                 val messageResId = when {
-                    error is NotEnoughAmount || error is ContractError -> {
-                        R.string.bridge_claim_fees_bigger_error
-                    }
-                    error.isConnectionError() -> {
-                        R.string.common_offline_error
-                    }
-                    else -> {
-                        null
-                    }
+                    error is NotEnoughAmount || error is ContractError -> R.string.bridge_claim_fees_bigger_error
+                    error.isConnectionError() -> R.string.common_offline_error
+                    else -> null
                 }
                 if (messageResId != null) {
                     view?.showUiKitSnackBar(messageResId = messageResId)
