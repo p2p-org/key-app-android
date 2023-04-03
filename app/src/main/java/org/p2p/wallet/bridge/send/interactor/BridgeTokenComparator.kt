@@ -7,8 +7,6 @@ import org.p2p.ethereumkit.external.model.ERC20Tokens
 class BridgeTokenComparator : Comparator<Token> {
 
     override fun compare(o1: Token, o2: Token): Int = when {
-        o1.isEth() -> -1
-        o2.isEth() -> 1
         o1.isUsdcEt() -> -1
         o2.isUsdcEt() -> 1
         o1.isUSDT -> -1
@@ -30,5 +28,4 @@ class BridgeTokenComparator : Comparator<Token> {
     }
 
     private fun Token.isUsdcEt(): Boolean = mintAddress == ERC20Tokens.USDC.mintAddress
-    private fun Token.isEth(): Boolean = mintAddress == ERC20Tokens.ETH.mintAddress
 }
