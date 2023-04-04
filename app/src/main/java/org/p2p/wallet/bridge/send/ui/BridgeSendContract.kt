@@ -30,7 +30,6 @@ interface BridgeSendContract {
 
         fun updateToken(newToken: Token.Active)
         fun updateInputAmount(amount: String)
-        fun updateFeePayerToken(feePayerToken: Token.Active)
 
         fun switchCurrencyMode()
         fun onMaxButtonClicked()
