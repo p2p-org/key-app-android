@@ -31,12 +31,13 @@ import org.p2p.ethereumkit.internal.models.Signature
 private val MINIMAL_DUST = BigInteger("1")
 
 internal class EthereumKitRepository(
-    private val balanceRepository: EthereumTokensRepository,
+    private val tokensRepository: EthereumTokensRepository,
     private val priceRepository: PriceRepository,
     private val dispatchers: CoroutineDispatchers,
 ) : EthereumRepository {
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
+    private var localTokensMetadata = mutableListOf<EthTokenMetadata>()
 
     override fun init(seedPhrase: List<String>) {
         tokenKeyProvider = EthTokenKeyProvider(
@@ -64,16 +65,22 @@ internal class EthereumKitRepository(
         return signer.signatureLegacy(transaction)
     }
 
+    override suspend fun getPriceForToken(tokenAddress: String): BigDecimal {
+        return priceRepository.getPriceForToken(tokenAddress)
+    }
+
     override suspend fun getBalance(): BigInteger {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
-        return balanceRepository.getWalletBalance(publicKey)
+        return tokensRepository.getWalletBalance(publicKey)
     }
 
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> =
         withContext(dispatchers.io) {
             try {
                 val tokensMetadata = loadTokensMetadata()
-
+                if (localTokensMetadata.isEmpty()) {
+                    localTokensMetadata.addAll(tokensMetadata)
+                }
                 getPriceForTokens(tokensMetadata.map { it.contractAddress.toString() })
                     .onEach { (address, price) ->
                         tokensMetadata.find { it.contractAddress.hex == address }?.price = price
@@ -108,28 +115,30 @@ internal class EthereumKitRepository(
     }
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
-        val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
-        val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
+        localTokensMetadata.ifEmpty {
+            val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
+            val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
 
-        loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
-            getMetadataAsync(
-                tokenBalance = tokenBalance,
-                contractAddress = tokenBalance.contractAddress
-            )
-        }.awaitAll()
+            loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
+                getMetadataAsync(
+                    tokenBalance = tokenBalance,
+                    contractAddress = tokenBalance.contractAddress
+                )
+            }.awaitAll()
+        }
     }
 
     private suspend fun loadTokenBalances(
         address: EthAddress,
         tokenAddresses: List<EthAddress>,
     ): List<TokenBalanceResponse> {
-        return balanceRepository.getTokenBalances(address, tokenAddresses).balances
+        return tokensRepository.getTokenBalances(address, tokenAddresses).balances
     }
 
     private suspend fun getMetadataAsync(tokenBalance: TokenBalanceResponse, contractAddress: EthAddress) =
         coroutineScope {
             async {
-                val metadata = balanceRepository.getTokenMetadata(contractAddress)
+                val metadata = tokensRepository.getTokenMetadata(contractAddress)
                 val erc20Token = ERC20Tokens.findToken(contractAddress)
                 mapToTokenMetadata(tokenBalance, metadata, erc20Token)
             }

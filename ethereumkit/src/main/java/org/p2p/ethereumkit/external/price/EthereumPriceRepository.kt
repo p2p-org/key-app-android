@@ -18,7 +18,6 @@ internal class EthereumPriceRepository(
     ): Map<String, BigDecimal> {
         val localTokenPrices = priceCacheRepository.getPrices().map { it.value }
         if (!isTokenPriceValid(localTokenPrices)) {
-
             val result = loadPriceForEthereumToken(
                 tokenAddress = tokenAddresses.joinToString(","),
                 targetCurrency = targetCurrency

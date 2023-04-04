@@ -36,7 +36,7 @@ import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.home.ui.main.models.ViewState
+import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -78,10 +78,12 @@ class HomePresenter(
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
     private val homeMapper: HomeMapper,
     private val ethereumInteractor: EthereumInteractor,
-    private val seedPhraseProvider: SeedPhraseProvider,
+    private val seedPhraseProvider: SeedPhraseProvider
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
+
+    private var state = HomeScreenViewState(areZerosHidden = settingsInteractor.areZerosHidden())
 
     init {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
@@ -97,21 +99,24 @@ class HomePresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         launch {
-            tokensPolling.shareTokenPollFlowIn(this).onEach {
-                val isRefreshing = it.first.isEmpty()
-                view.showRefreshing(isRefreshing)
+            tokensPolling.shareTokenPollFlowIn(this).onEach { (solTokens, ethTokens) ->
+                view.showRefreshing(isRefreshing(solTokens, ethTokens))
             }.collect { (solTokens, ethTokens) ->
                 state = state.copy(tokens = solTokens, ethTokens = ethTokens)
                 if (solTokens.isEmpty() && ethTokens.isEmpty()) {
                     userInteractor.loadUserRates(userInteractor.loadUserTokensAndUpdateLocal())
+                } else {
+                    handleUserTokensLoaded(solTokens, ethTokens)
+                    initializeActionButtons()
+                    view.showRefreshing(isRefreshing = false)
                 }
-                handleUserTokensLoaded(solTokens, ethTokens)
-                initializeActionButtons()
             }
         }
     }
 
-    private var state = ViewState(areZerosHidden = settingsInteractor.areZerosHidden())
+    private fun isRefreshing(solTokens: List<Token.Active>?, ethTokens: List<Token.Eth>?): Boolean {
+        return (solTokens.isNullOrEmpty() && ethTokens.isNullOrEmpty())
+    }
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)

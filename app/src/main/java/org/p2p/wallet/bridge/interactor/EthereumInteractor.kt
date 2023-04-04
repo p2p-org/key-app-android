@@ -1,5 +1,6 @@
 package org.p2p.wallet.bridge.interactor
 
+import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.wrapper.HexString
@@ -19,6 +20,14 @@ class EthereumInteractor(
 
     fun setup(userSeedPhrase: List<String>) {
         ethereumRepository.init(userSeedPhrase)
+    }
+
+    suspend fun getWalletBalance(): BigInteger {
+        return ethereumRepository.getBalance()
+    }
+
+    suspend fun getPriceForToken(tokenAddress: String): BigDecimal {
+        return ethereumRepository.getPriceForToken(tokenAddress)
     }
 
     suspend fun loadWalletTokens(ethereumBundleStatuses: List<EthereumClaimToken>): List<Token.Eth> {

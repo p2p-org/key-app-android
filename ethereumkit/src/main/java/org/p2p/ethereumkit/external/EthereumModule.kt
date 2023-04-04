@@ -7,7 +7,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.create
-import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.ethereumkit.external.api.QUALIFIER_ETH_RETROFIT
 import org.p2p.ethereumkit.external.api.QUALIFIER_RPC_GSON
 import org.p2p.ethereumkit.external.balance.EthereumTokensRemoteRepository
@@ -19,7 +18,6 @@ import org.p2p.ethereumkit.external.price.EthereumPriceRepository
 import org.p2p.ethereumkit.external.price.PriceRepository
 import org.p2p.ethereumkit.external.repository.EthereumKitRepository
 import org.p2p.ethereumkit.external.repository.EthereumRepository
-import org.p2p.ethereumkit.external.repository.EthereumTokensProvider
 
 object EthereumModule {
 
@@ -34,6 +32,5 @@ object EthereumModule {
                 gson = get(named(QUALIFIER_RPC_GSON))
             )
         }
-        single { EthereumTokensProvider(get(),get(),get()) }
     }
 }

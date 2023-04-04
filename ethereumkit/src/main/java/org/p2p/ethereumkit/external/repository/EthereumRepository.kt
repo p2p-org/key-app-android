@@ -1,5 +1,6 @@
 package org.p2p.ethereumkit.external.repository
 
+import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.wrapper.HexString
@@ -15,4 +16,6 @@ interface EthereumRepository {
     fun getPrivateKey(): BigInteger
     fun signTransaction(transaction: HexString): Signature
     fun signTransactionLegacy(transaction: HexString): Signature
+
+    suspend fun getPriceForToken(tokenAddress: String): BigDecimal
 }
