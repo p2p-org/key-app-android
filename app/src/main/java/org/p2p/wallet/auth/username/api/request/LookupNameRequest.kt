@@ -5,5 +5,7 @@ import org.p2p.wallet.utils.Base58String
 
 class LookupNameRequest(
     @SerializedName("owner")
-    val owner: Base58String
+    val owner: Base58String,
+    @SerializedName("with_tld")
+    val withTld: Boolean = true
 )

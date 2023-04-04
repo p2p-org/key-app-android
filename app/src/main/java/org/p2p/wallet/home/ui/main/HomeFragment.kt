@@ -133,8 +133,8 @@ class HomeFragment :
         }
     }
 
-    override fun showAddressCopied(addressAndUsername: String) {
-        requireContext().copyToClipBoard(addressAndUsername)
+    override fun showAddressCopied(addressOrUsername: String) {
+        requireContext().copyToClipBoard(addressOrUsername)
         showUiKitSnackBar(
             message = getString(R.string.home_address_snackbar_text),
             actionButtonResId = R.string.common_ok,

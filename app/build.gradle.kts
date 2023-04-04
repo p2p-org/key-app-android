@@ -171,11 +171,10 @@ dependencies {
     testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("io.insert-koin:koin-test-junit4:$koinVersion")
 
-    testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
     testImplementation("org.slf4j:slf4j-nop:1.7.30")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation("org.assertj:assertj-core:3.22.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.8.2") {
         because("This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.")
