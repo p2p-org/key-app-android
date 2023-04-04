@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 
 import java.math.BigDecimal
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.p2p.core.utils.isZero
@@ -45,6 +46,10 @@ class AmountChangeActionHandler(
             mapper.updateInputAmount(lastStaticState, newAmount)
         }
         emit(newState)
+        if (newState is SendState.Static.TokenNotZero) {
+            emit(SendState.Loading.Fee(newState))
+            delay(500)
+        }
         feeLoader.updateFee(newState).collect {
             emit(it)
         }
