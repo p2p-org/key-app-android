@@ -9,7 +9,7 @@ sealed interface SendFee {
 
     data class Bridge(
         val fee: BridgeSendFees,
-        val tokenToPayFee: Token.Active,
+        val tokenToPayFee: Token.Active?,
         val feeRelayerFee: FeeRelayerFee?,
         val feeLimitInfo: FreeTransactionFeeLimit?,
         val updateTimeMs: Long = System.currentTimeMillis()

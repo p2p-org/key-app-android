@@ -12,6 +12,7 @@ import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeRelayerCounter
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.AmountChangeActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.InitFeatureActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.NewTokenActionHandler
@@ -35,6 +36,7 @@ object BridgeSendModule : InjectionModule {
         factoryOf(::BridgeSendInteractor)
         factoryOf(::SendBridgeStaticStateMapper)
         factoryOf(::SendBridgeValidator)
+        factoryOf(::SendBridgeFeeRelayerCounter)
 
         factory { (recipientAddress: SearchResult, initialToken: Token.Active?, inputAmount: BigDecimal?) ->
             val initialBridgeToken = initialToken?.let { SendToken.Bridge(it) }
@@ -50,12 +52,8 @@ object BridgeSendModule : InjectionModule {
                 mapper = get(),
                 validator = get(),
                 ethereumSendInteractor = get(),
-                userInteractor = get(),
-                sendInteractor = get(),
                 feeRelayerAccountInteractor = get(),
-                feeRelayerInteractor = get(),
-                feeRelayerTopUpInteractor = get(),
-                addressInteractor = get(),
+                feeRelayerCounter = get()
             )
             val handlers = mutableSetOf<SendActionHandler>().apply {
                 add(
