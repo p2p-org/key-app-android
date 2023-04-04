@@ -19,7 +19,7 @@ sealed interface SendViaLinkClaimingState {
 
     data class ClaimSuccess(val successMessage: TextViewCellModel) : SendViaLinkClaimingState
 
-    data class ClaimFailed(val cause: Throwable) : SendViaLinkClaimingState
+    data class ClaimFailed(@StringRes val errorMessageRes: Int) : SendViaLinkClaimingState
 
     data class ParsingFailed(
         @StringRes val titleRes: Int,

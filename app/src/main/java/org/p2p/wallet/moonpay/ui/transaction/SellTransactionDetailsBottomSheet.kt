@@ -129,7 +129,7 @@ class SellTransactionDetailsBottomSheet :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.layoutDetails.buttonRemoveOrCancel.isLoadingState = isLoading
+        binding.layoutDetails.buttonRemoveOrCancel.setLoading(isLoading)
     }
 
     override fun navigateToSendScreen(

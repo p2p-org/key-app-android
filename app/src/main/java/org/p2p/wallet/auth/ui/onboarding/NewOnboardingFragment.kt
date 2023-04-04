@@ -163,7 +163,7 @@ class NewOnboardingFragment :
         setLoadingAnimationState(isScreenLoading = isScreenLoading)
         with(binding) {
             buttonCreateWalletOnboarding.apply {
-                isLoadingState = isScreenLoading
+                setLoading(isScreenLoading)
                 isEnabled = !isScreenLoading
             }
             buttonRestoreWalletOnboarding.isEnabled = !isScreenLoading
