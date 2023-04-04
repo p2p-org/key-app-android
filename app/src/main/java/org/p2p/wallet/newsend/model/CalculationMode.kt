@@ -198,7 +198,7 @@ class CalculationMode(
      * For new bridge. Do not call any callback, just update inner amount
      */
     fun updateTokenAmount(newTokenAmount: BigDecimal) {
-        val newUsdAmount = newTokenAmount.multiply(token.rate)
+        val newUsdAmount = newTokenAmount.multiply(token.usdRateOrZero)
         val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
 
         usdAmount = newUsdAmount
