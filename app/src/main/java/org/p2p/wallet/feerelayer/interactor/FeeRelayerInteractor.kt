@@ -122,7 +122,7 @@ class FeeRelayerInteractor(
         )
     }
 
-    private suspend fun checkAndTopUp(
+    suspend fun checkAndTopUp(
         expectedFee: FeeAmount,
         payingFeeToken: TokenAccount
     ): List<String>? {

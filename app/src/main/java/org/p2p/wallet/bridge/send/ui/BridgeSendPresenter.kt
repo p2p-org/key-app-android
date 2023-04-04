@@ -358,11 +358,6 @@ class BridgeSendPresenter(
             val transactionDate = Date()
             try {
                 val feeDetails = getFeeDetails(token)
-                val feeList = listOfNotNull(
-                    feeDetails.networkFee,
-                    feeDetails.messageAccountRent,
-                    feeDetails.bridgeFee
-                )
                 val progressDetails = bridgeSendUiMapper.prepareShowProgress(
                     tokenToSend = token,
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
@@ -373,7 +368,15 @@ class BridgeSendPresenter(
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
-                val result = bridgeInteractor.sendTransaction(address, token, lamports)
+                val bridgeFee = currentState.lastStaticState.bridgeFee
+
+                val result = bridgeInteractor.sendTransaction(
+                    recipient = address,
+                    token = token,
+                    feePayerToken = bridgeFee?.tokenToPayFee,
+                    feeRelayerFee = bridgeFee?.feeRelayerFee,
+                    amountInLamports = lamports
+                )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
