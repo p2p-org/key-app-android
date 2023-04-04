@@ -18,8 +18,10 @@ import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.svl.model.SendViaLinkClaimingState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError
 import org.p2p.wallet.svl.ui.error.SendViaLinkErrorFragment
+import org.p2p.wallet.svl.ui.send.SvlReceiveFundsAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -47,9 +49,12 @@ class ReceiveViaLinkBottomSheet :
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override val presenter: ReceiveViaLinkContract.Presenter by inject()
+    private val analytics: SvlReceiveFundsAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analytics.logClaimStartedOpened()
+
         UiKitDrawableCellModels.shapeCircleWithTint(R.color.bg_rain)
             .applyBackground(binding.layoutClaimSuccess.imageViewIcon)
 
@@ -82,6 +87,14 @@ class ReceiveViaLinkBottomSheet :
                 buttonDone.isVisible = true
                 buttonDone.setText(R.string.common_confirm)
                 buttonDone.setOnClickListener {
+                    analytics.logClaimConfirmStarted(
+                        temporaryAccount = state.temporaryAccount,
+                        tokenSymbol = state.token.tokenSymbol,
+                        tokenAmount = state.token.total.toPlainString(),
+                        // TODO https://p2pvalidator.atlassian.net/browse/PWN-8003 pass when we will be able to parse link author
+                        linkAuthor = emptyString()
+                    )
+
                     presenter.claimToken(state.temporaryAccount, state.token)
                 }
             }
@@ -92,9 +105,14 @@ class ReceiveViaLinkBottomSheet :
                 progressStateTransaction.isVisible = true
                 progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
                 buttonDone.setText(R.string.common_close)
-                buttonDone.setOnClickListener { dismissAllowingStateLoss() }
+                buttonDone.setOnClickListener {
+                    analytics.logCloseClicked()
+                    dismissAllowingStateLoss()
+                }
             }
             is SendViaLinkClaimingState.ClaimSuccess -> {
+                analytics.logClaimSuccess()
+
                 layoutClaimSuccess.root.isVisible = true
                 textViewTitle.isVisible = false
                 layoutTransactionDetails.isVisible = false
@@ -103,9 +121,14 @@ class ReceiveViaLinkBottomSheet :
                 layoutClaimSuccess.textViewTitle.bind(state.successMessage)
                 playApplauseAnimation()
                 buttonDone.setText(R.string.send_via_link_receive_funds_success_button)
-                buttonDone.setOnClickListener { dismissAllowingStateLoss() }
+                buttonDone.setOnClickListener {
+                    analytics.logClaimGotItClicked()
+                    dismissAllowingStateLoss()
+                }
             }
             is SendViaLinkClaimingState.ClaimFailed -> {
+                analytics.logClaimFailed()
+
                 layoutTransactionDetails.isVisible = true
                 progressStateTransaction.isVisible = true
                 progressBar.isVisible = false
@@ -114,7 +137,10 @@ class ReceiveViaLinkBottomSheet :
                 progressStateTransaction.setFailedState()
                 buttonDone.isVisible = true
                 buttonDone.setText(R.string.common_close)
-                buttonDone.setOnClickListener { dismissAllowingStateLoss() }
+                buttonDone.setOnClickListener {
+                    analytics.logCloseClicked()
+                    dismissAllowingStateLoss()
+                }
             }
             is SendViaLinkClaimingState.ParsingFailed -> {
                 textViewTitle.setText(state.titleRes)

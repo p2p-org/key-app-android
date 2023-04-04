@@ -29,6 +29,7 @@ import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
+import org.p2p.wallet.svl.ui.send.SvlReceiveFundsAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 
 object AnalyticsModule : InjectionModule {
@@ -60,6 +61,7 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::HistoryAnalytics)
         factoryOf(::SellAnalytics)
         factoryOf(::SendViaLinkAnalytics)
+        factoryOf(::SvlReceiveFundsAnalytics)
 
         factoryOf(::JupiterSwapMainScreenAnalytics)
         factoryOf(::JupiterSwapSettingsAnalytics)
