@@ -41,7 +41,6 @@ internal class EthereumKitRepository(
     private var localTokensMetadata = mutableListOf<EthTokenMetadata>()
 
     override fun init(seedPhrase: List<String>) {
-        Timber.tag("_____seed").d(seedPhrase.joinToString { "," })
         tokenKeyProvider = EthTokenKeyProvider(
             publicKey = Signer.address(words = seedPhrase, chain = Chain.Ethereum),
             privateKey = Signer.privateKey(words = seedPhrase, chain = Chain.Ethereum)
@@ -154,7 +153,7 @@ internal class EthereumKitRepository(
     }
 
     private suspend fun getMetadataAsync(tokenBalance: TokenBalanceResponse, contractAddress: EthAddress) =
-        coroutineScope {
+        withContext(dispatchers.io) {
             async {
                 val metadata = tokensRepository.getTokenMetadata(contractAddress)
                 val erc20Token = ERC20Tokens.findToken(contractAddress)

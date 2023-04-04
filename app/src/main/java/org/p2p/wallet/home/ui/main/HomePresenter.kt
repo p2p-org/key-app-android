@@ -98,9 +98,13 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
+        attachToPollingTokens()
+    }
+
+    private fun attachToPollingTokens() {
         launch {
             tokensPolling.shareTokenPollFlowIn(this).onEach { (solTokens, ethTokens) ->
-                view.showRefreshing(isRefreshing(solTokens, ethTokens))
+                view?.showRefreshing(isRefreshing(solTokens, ethTokens))
             }.collect { (solTokens, ethTokens) ->
                 state = state.copy(tokens = solTokens, ethTokens = ethTokens)
                 if (solTokens.isEmpty() && ethTokens.isEmpty()) {
@@ -108,7 +112,7 @@ class HomePresenter(
                 } else {
                     handleUserTokensLoaded(solTokens, ethTokens)
                     initializeActionButtons()
-                    view.showRefreshing(isRefreshing = false)
+                    view?.showRefreshing(isRefreshing = false)
                 }
             }
         }
