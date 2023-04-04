@@ -5,6 +5,7 @@ import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -14,7 +15,6 @@ import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.toPublicKey
 
 class ReceiveViaLinkInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
@@ -66,11 +66,14 @@ class ReceiveViaLinkInteractor(
         )
     }
 
-    suspend fun receiveTransfer(temporaryAccount: TemporaryAccount, token: Token.Active) {
-        val recipient = tokenKeyProvider.publicKey.toPublicKey()
+    suspend fun receiveTransfer(
+        temporaryAccount: TemporaryAccount,
+        token: Token.Active,
+        recipient: PublicKey
+    ): String {
         val senderAccount = Account(temporaryAccount.keypair)
 
-        sendViaLinkInteractor.sendTransaction(
+        return sendViaLinkInteractor.sendTransaction(
             senderAccount = senderAccount,
             destinationAddress = recipient,
             token = token,

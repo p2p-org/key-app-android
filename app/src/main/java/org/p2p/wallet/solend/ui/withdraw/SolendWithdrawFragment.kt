@@ -97,7 +97,7 @@ class SolendWithdrawFragment :
     override fun showFeeLoading(isLoading: Boolean) {
         binding.sliderDeposit.isVisible = !isLoading
         binding.buttonInfo.isVisible = !isLoading
-        binding.buttonAction.isLoadingState = isLoading
+        binding.buttonAction.setLoading(isLoading)
     }
 
     override fun showTokenToWithdraw(

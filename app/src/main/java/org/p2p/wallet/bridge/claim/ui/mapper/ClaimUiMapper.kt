@@ -29,7 +29,7 @@ class ClaimUiMapper(private val resources: Resources) {
 
     fun prepareShowProgress(
         tokenToClaim: Token.Eth,
-        claimDetails: ClaimDetails?,
+        claimDetails: ClaimDetails?
     ): NewShowProgress {
         val transactionDate = Date()
         val willGetAmount = claimDetails?.willGetAmount

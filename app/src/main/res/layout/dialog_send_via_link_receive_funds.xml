@@ -66,7 +66,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewSubtitle">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <org.p2p.uikit.components.icon_wrapper.UiKitIconWrapper
             android:id="@+id/imageViewTokenIcon"
             android:layout_width="64dp"
             android:layout_height="64dp"
@@ -137,8 +137,8 @@
         android:id="@+id/barrierContentBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="layoutClaimSuccess,progressStateTransaction"
-        app:barrierDirection="bottom" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="layoutClaimSuccess,progressStateTransaction" />
 
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonDone"
@@ -146,17 +146,36 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/ui_kit_button_large_height"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
         android:backgroundTint="@color/bg_night"
         android:text="@string/common_confirm"
         android:textColor="@color/snow"
+        app:iconGravity="textEnd"
+        app:iconSize="24dp"
+        app:iconTint="@color/icons_snow"
+        app:layout_constraintBottom_toTopOf="@id/buttonCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/barrierContentBottom" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonCancel"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/bg_snow"
+        android:text="@string/common_cancel"
+        android:textColor="@color/night"
+        android:visibility="gone"
         app:iconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barrierContentBottom" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonDone"
+        tools:visibility="visible" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"

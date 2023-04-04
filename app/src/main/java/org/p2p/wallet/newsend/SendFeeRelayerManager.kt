@@ -130,6 +130,7 @@ class SendFeeRelayerManager(
             when (feeState) {
                 is FeeCalculationState.NoFees -> {
                     currentState = UpdateFee(solanaFee = null, feeLimitInfo = feeLimitInfo)
+                    sendInteractor.setFeePayerToken(sourceToken)
                 }
                 is FeeCalculationState.PoolsNotFound -> {
                     val solanaFee = buildSolanaFee(solToken, sourceToken, feeState.feeInSol)
@@ -137,6 +138,7 @@ class SendFeeRelayerManager(
                     sendInteractor.setFeePayerToken(solToken)
                 }
                 is FeeCalculationState.Success -> {
+                    sendInteractor.setFeePayerToken(sourceToken)
                     val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
                     showFeeDetails(
                         sourceToken = sourceToken,

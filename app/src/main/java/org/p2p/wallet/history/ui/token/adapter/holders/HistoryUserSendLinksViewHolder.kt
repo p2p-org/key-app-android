@@ -36,6 +36,7 @@ class HistoryUserSendLinksViewHolder(
     private fun HistoryItem.UserSendLinksItem.toFinanceBlock(): FinanceBlockCellModel {
         val copyLink = ImageViewCellModel(
             icon = DrawableContainer(R.drawable.ic_copy_link),
+            iconTint = R.color.bg_night,
             background = UiKitDrawableCellModels.shapeCircleWithTint(R.color.bg_rain)
         )
         val transactionsPlural = binding.resources.getQuantityString(

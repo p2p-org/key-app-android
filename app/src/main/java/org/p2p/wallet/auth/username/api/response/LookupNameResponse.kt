@@ -5,7 +5,7 @@ import org.p2p.wallet.utils.Base58String
 
 class LookupNameResponse(
     @SerializedName("name")
-    val usernameWithoutDomain: String,
+    val usernameWithDomain: String,
     @SerializedName("address")
     val domainAccountAddress: Base58String,
     @SerializedName("parent")
