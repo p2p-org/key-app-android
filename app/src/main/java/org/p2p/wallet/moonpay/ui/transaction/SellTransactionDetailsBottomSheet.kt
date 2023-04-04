@@ -19,7 +19,6 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.NewSendFragment
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.newsend.ui.SendOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -145,7 +144,6 @@ class SellTransactionDetailsBottomSheet :
                 initialToken = tokenToSend,
                 inputAmount = sendAmount,
                 openedFromFlow = SendOpenedFrom.SELL_FLOW,
-                openedFromScreen = SearchOpenedFromScreen.MAIN
             )
         )
         dismissAllowingStateLoss()
