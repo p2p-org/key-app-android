@@ -20,6 +20,6 @@ object ClaimModule : InjectionModule {
         factoryOf(::ClaimInteractor)
         factoryOf(::ClaimUiMapper)
         factoryOf(::ClaimPresenter) bind ClaimContract.Presenter::class
-        single { EthereumModuleMapper() }
+        single { EthereumModuleMapper(get()) }
     }
 }

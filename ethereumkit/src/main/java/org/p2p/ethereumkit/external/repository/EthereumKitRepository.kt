@@ -9,6 +9,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
+import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
@@ -40,6 +41,7 @@ internal class EthereumKitRepository(
     private var localTokensMetadata = mutableListOf<EthTokenMetadata>()
 
     override fun init(seedPhrase: List<String>) {
+        Timber.tag("_____seed").d(seedPhrase.joinToString { "," })
         tokenKeyProvider = EthTokenKeyProvider(
             publicKey = Signer.address(words = seedPhrase, chain = Chain.Ethereum),
             privateKey = Signer.privateKey(words = seedPhrase, chain = Chain.Ethereum)
@@ -85,7 +87,7 @@ internal class EthereumKitRepository(
                     .onEach { (address, price) ->
                         tokensMetadata.find { it.contractAddress.hex == address }?.price = price
                     }
-                tokensMetadata.filter { metadata ->
+                (listOf(getEthToken()) + tokensMetadata).filter { metadata ->
                     val tokenBundle = claimingTokens.firstOrNull { metadata.contractAddress == it.contractAddress }
                     val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
                     metadata.balance.isMoreThan(MINIMAL_DUST) || isClaimInProgress
@@ -104,6 +106,22 @@ internal class EthereumKitRepository(
                 emptyList()
             }
         }
+
+
+    private suspend fun getEthToken(): EthTokenMetadata {
+        val ethContractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
+        val tokenPrice = getPriceForToken(ethContractAddress.hex)
+        return EthTokenMetadata(
+            contractAddress = ethContractAddress,
+            mintAddress = ERC20Tokens.ETH.mintAddress,
+            balance = getBalance(),
+            decimals = ERC20Tokens.ETH_DECIMALS,
+            logoUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty(),
+            tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
+            symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
+            price = tokenPrice,
+        )
+    }
 
     override suspend fun getAddress(): EthAddress {
         return tokenKeyProvider?.publicKey ?: throwInitError()

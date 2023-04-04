@@ -38,7 +38,7 @@ class ClaimInteractor(
 
     suspend fun getListOfEthereumBundleStatuses(ethereumAddress: EthAddress): List<EthereumClaimToken> {
         return ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress)
-            .mapNotNull {
+            .map {
                 mapper.mapBundle(it)
             }
     }

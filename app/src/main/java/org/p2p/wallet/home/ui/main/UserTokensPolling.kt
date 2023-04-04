@@ -19,9 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import org.p2p.core.token.Token
-import org.p2p.core.utils.fromLamports
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
-import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
@@ -68,11 +66,10 @@ class UserTokensPolling(
                             delay(getDelayTimeInMillis(POLLING_ETH_DELAY.inWholeMilliseconds))
                             val newTokens = async { loadSolanaTokens() }
                             val ethBundles = async { ethereumInteractor.getListOfEthereumBundleStatuses() }
-                            val ethTokens = ethereumInteractor.loadWalletTokens(ethBundles.await())
+                            val ethTokens = async { ethereumInteractor.loadWalletTokens(ethBundles.await()) }
                             solTokensFlow.emit(newTokens.await())
-                            ethTokensFlow.emit(listOf(getEthToken()) + ethTokens)
+                            ethTokensFlow.emit(ethTokens.await())
                             Timber.d("Successfully auto-updated loaded tokens")
-                            Timber.tag("_______Polling").d("Polling Tokens")
                         }
                     } catch (e: CancellationException) {
                         Timber.i("Cancelled tokens remote update")
@@ -97,22 +94,4 @@ class UserTokensPolling(
     private fun isForceFetchRequired(): Boolean = ethTokensFlow.value.isEmpty()
 
     private fun getDelayTimeInMillis(defaultValue: Long): Long = if (isForceFetchRequired()) 0L else defaultValue
-
-    private suspend fun getEthToken(): Token.Eth {
-        val walletBalance = ethereumInteractor.getWalletBalance()
-        val ethContractAddress = ERC20Tokens.ETH.contractAddress
-        val tokenPrice = ethereumInteractor.getPriceForToken(ethContractAddress)
-        val totalInUsd = walletBalance.fromLamports(ERC20Tokens.ETH_DECIMALS).times(tokenPrice)
-        return Token.Eth(
-            publicKey = ethContractAddress,
-            totalInUsd = totalInUsd,
-            total = walletBalance.fromLamports(ERC20Tokens.ETH_DECIMALS),
-            tokenSymbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
-            decimals = ERC20Tokens.ETH_DECIMALS,
-            mintAddress = ERC20Tokens.ETH.mintAddress,
-            tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
-            iconUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty(),
-            rate = tokenPrice
-        )
-    }
 }
