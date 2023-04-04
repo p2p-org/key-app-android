@@ -60,6 +60,7 @@ class SendBridgeFeeLoader constructor(
     private var freeTransactionFeeLimit: FreeTransactionFeeLimit? = null
     private val alternativeTokensMap: HashMap<String, List<Token.Active>> = HashMap()
     private lateinit var tokenToPayFee: Token.Active
+    private var feeRelayerFee: FeeRelayerFee? = null
 
     fun updateFeeIfNeed(
         lastStaticState: SendState.Static
@@ -124,7 +125,7 @@ class SendBridgeFeeLoader constructor(
                 bridgeFees = fee,
             )
 
-            SendFee.Bridge(fee, freeTransactionFeeLimit)
+            SendFee.Bridge(fee, tokenToPayFee, feeRelayerFee, freeTransactionFeeLimit)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -162,16 +163,19 @@ class SendBridgeFeeLoader constructor(
 
             when (feeState) {
                 is FeeCalculationState.NoFees -> {
-                    tokenToPayFee = sourceToken
                     Timber.d("All is Ok just NoFees")
+                    tokenToPayFee = sourceToken
+                    feeRelayerFee = null
                 }
                 is FeeCalculationState.PoolsNotFound -> {
                     Timber.d("Error during FeeRelayer PoolsNotFound")
                     tokenToPayFee = solToken
+                    feeRelayerFee = feeState.feeInSol
                     recalculate()
                 }
                 is FeeCalculationState.Success -> {
                     tokenToPayFee = sourceToken
+                    feeRelayerFee = feeState.fee
                     val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
                     val fee = buildSolanaFee(feePayer, sourceToken, feeState.fee)
                     validateAndSelectFeePayer(
