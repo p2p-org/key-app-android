@@ -18,7 +18,6 @@ import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
-import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
@@ -243,10 +242,13 @@ class BridgeSendPresenter(
     private fun BridgeSendContract.View.updateTokenAndInput(token: SendToken.Bridge, amount: BigDecimal) {
         showToken(token.token)
         calculationMode.updateToken(token.token)
-        calculationMode.updateTokenAmount(amount.toPlainString())
-        val inputAmount = calculationMode.inputAmount
-        updateInputValue(inputAmount, true)
-        view?.setMaxButtonVisible(inputAmount.toBigDecimalOrZero().isZero())
+        val oldInputAmount = calculationMode.formatInputAmount
+        calculationMode.updateTokenAmount(amount)
+        val inputAmount = calculationMode.formatInputAmount
+        if (oldInputAmount != inputAmount && calculationMode.getCurrencyMode() !is CurrencyMode.Fiat) {
+            updateInputValue(inputAmount, true)
+        }
+        view?.setMaxButtonVisible(calculationMode.inputAmountDecimal.isZero())
     }
 
     private fun BridgeSendContract.View.handleUpdateFee(sendFee: SendFee?, isInputEmpty: Boolean) {
@@ -291,8 +293,8 @@ class BridgeSendPresenter(
     override fun onMaxButtonClicked() {
         val token = currentState.lastStaticState.bridgeToken?.token ?: return
         stateMachine.newAction(SendFeatureAction.MaxAmount)
-        calculationMode.updateTokenAmount(token.total.toPlainString())
-        view?.updateInputValue(calculationMode.inputAmount, true)
+        calculationMode.updateTokenAmount(token.total)
+        view?.updateInputValue(calculationMode.formatInputAmount, true)
         newSendAnalytics.setMaxButtonClicked(isClicked = true)
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showToast(TextContainer.Raw(message))

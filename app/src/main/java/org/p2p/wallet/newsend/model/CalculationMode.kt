@@ -36,8 +36,16 @@ class CalculationMode(
 
     private lateinit var token: Token.Active
 
-    var inputAmount: String = emptyString()
+    private var inputAmount: String = emptyString()
+
+    var inputAmountDecimal: BigDecimal = BigDecimal.ZERO
         private set
+
+    val formatInputAmount: String
+        get() = when (currencyMode) {
+            is CurrencyMode.Fiat -> inputAmountDecimal.formatFiat()
+            is CurrencyMode.Token -> inputAmountDecimal.formatToken(token.decimals)
+        }
 
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
@@ -189,14 +197,14 @@ class CalculationMode(
     /**
      * For new bridge. Do not call any callback, just update inner amount
      */
-    fun updateTokenAmount(newTokenAmountInput: String) {
-        val newTokenAmount = newTokenAmountInput.toBigDecimalOrZero()
+    fun updateTokenAmount(newTokenAmount: BigDecimal) {
         val newUsdAmount = newTokenAmount.multiply(token.rate)
         val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
 
         usdAmount = newUsdAmount
         tokenAmount = newTokenAmount
-        inputAmount = newAmount.toPlainString()
+        inputAmountDecimal = newAmount
+        inputAmount = formatInputAmount
 
         if (currencyMode is CurrencyMode.Fiat) {
             handleCalculateTokenAmountUpdate()
