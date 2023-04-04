@@ -288,19 +288,6 @@ class BridgeSendPresenter(
         newSendAnalytics.setMaxButtonClicked(isClicked = false)
     }
 
-    override fun updateFeePayerToken(feePayerToken: Token.Active) {
-        /*try {
-            sendInteractor.setFeePayerToken(feePayerToken)
-            executeSmartSelection(
-                token = requireToken(),
-                feePayerToken = feePayerToken,
-                strategy = FeePayerSelectionStrategy.NO_ACTION
-            )
-        } catch (e: Throwable) {
-            Timber.e(e, "Error updating fee payer token")
-        }*/
-    }
-
     override fun onMaxButtonClicked() {
         val token = currentState.lastStaticState.bridgeToken?.token ?: return
         stateMachine.newAction(SendFeatureAction.MaxAmount)
