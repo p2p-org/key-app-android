@@ -1,7 +1,7 @@
 package org.p2p.wallet.svl.ui.receive
 
 import org.p2p.core.token.Token
-import org.p2p.uikit.utils.image.ImageViewCellModel
+import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -15,7 +15,7 @@ interface ReceiveViaLinkContract {
         fun renderClaimTokenDetails(
             tokenAmount: TextViewCellModel,
             sentFromAddress: TextViewCellModel,
-            tokenIcon: ImageViewCellModel
+            tokenIcon: IconWrapperCellModel
         )
 
         fun renderState(state: SendViaLinkClaimingState)

@@ -131,7 +131,7 @@ class PhoneNumberEnterFragment :
     }
 
     override fun setLoadingState(isLoading: Boolean) {
-        binding.buttonConfirmPhone.isLoadingState = isLoading
+        binding.buttonConfirmPhone.setLoading(isLoading)
     }
 
     override fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState) {

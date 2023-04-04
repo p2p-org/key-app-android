@@ -97,7 +97,7 @@ class RestoreErrorScreenFragment :
     }
 
     private fun setRestoreByGoogleLoadingState(isLoading: Boolean) {
-        binding.buttonRestoreByGoogle.isLoadingState = isLoading
+        binding.buttonRestoreByGoogle.setLoading(isLoading)
     }
 
     override fun showState(state: RestoreFailureState.TitleSubtitleError): Unit = with(binding) {
@@ -137,7 +137,7 @@ class RestoreErrorScreenFragment :
 
     override fun setLoadingState(isLoading: Boolean) {
         setLoadingAnimationState(isScreenLoading = isLoading)
-        binding.buttonRestoreByGoogle.isLoadingState = isLoading
+        binding.buttonRestoreByGoogle.setLoading(isLoading)
     }
 
     override fun navigateToPinCreate() {
