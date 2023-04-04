@@ -8,5 +8,10 @@ sealed interface LinkGenerationState : Parcelable {
     object Error : LinkGenerationState
 
     @Parcelize
-    data class Success(val formattedLink: String, val amount: String) : LinkGenerationState
+    data class Success(
+        val tokenSymbol: String,
+        val temporaryAccountPublicKey: String,
+        val formattedLink: String,
+        val amount: String
+    ) : LinkGenerationState
 }

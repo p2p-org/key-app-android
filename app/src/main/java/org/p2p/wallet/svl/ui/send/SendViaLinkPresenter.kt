@@ -19,6 +19,7 @@ import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.newsend.model.toSearchResult
+import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.updates.ConnectionStateProvider
@@ -32,6 +33,7 @@ class SendViaLinkPresenter(
     private val resources: Resources,
     private val connectionStateProvider: ConnectionStateProvider,
     private val newSendAnalytics: NewSendAnalytics,
+    private val svlAnalytics: SendViaLinkAnalytics,
     sendModeProvider: SendModeProvider
 ) : BasePresenter<SendViaLinkContract.View>(), SendViaLinkContract.Presenter {
 
@@ -85,9 +87,9 @@ class SendViaLinkPresenter(
                 minRentExemption = sendInteractor.getMinRelayRentExemption()
                 sendViaLinkInteractor.initialize()
             } catch (e: CancellationException) {
-                Timber.d("Initialization was cancelled")
-            } catch (e: Exception) {
-                Timber.e(e)
+                Timber.i(e, "Initialization was cancelled")
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to initialize send-via-link presenter")
             }
         }
     }
@@ -141,11 +143,13 @@ class SendViaLinkPresenter(
         launch {
             val tokens = userInteractor.getUserTokens()
             val result = tokens.filterNot(Token.Active::isZero)
+            svlAnalytics.logTokenChangeClicked(token?.tokenSymbol.orEmpty())
             view?.showTokenSelection(tokens = result, selectedToken = token)
         }
     }
 
     override fun updateToken(newToken: Token.Active) {
+        svlAnalytics.logTokenChanged(newToken.tokenSymbol)
         token = newToken
         showMaxButtonIfNeeded()
         updateButton(requireToken())
@@ -157,6 +161,7 @@ class SendViaLinkPresenter(
     }
 
     override fun updateInputAmount(amount: String) {
+        svlAnalytics.logTokenAmountChanged(token?.tokenSymbol.orEmpty(), amount)
         calculationMode.updateInputAmount(amount)
         showMaxButtonIfNeeded()
         updateButton(requireToken())
@@ -206,6 +211,7 @@ class SendViaLinkPresenter(
 
         logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.orZero().toPlainString())
 
+        svlAnalytics.logCreateLinkClicked(token.tokenSymbol, currentAmount.toPlainString(), recipient)
         view?.navigateToLinkGeneration(recipient, token, lamports)
     }
 
