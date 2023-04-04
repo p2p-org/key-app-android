@@ -63,7 +63,8 @@ class BridgeSendInteractor(
             source = SolAddress(token.publicKey),
             recipient = recipient,
             mint = SolAddress(tokenMint),
-            amount = amountInLamports.toString()
+            amount = amountInLamports.toString(),
+            true,
         )
         val userAccount = Account(tokenKeyProvider.keyPair)
 

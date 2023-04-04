@@ -13,6 +13,7 @@ data class TransferFromSolanaRpcRequest(
     @Transient val recipient: EthAddress,
     @Transient val mint: SolAddress?,
     @Transient val amount: String,
+    @Transient val needToUseRelay: Boolean,
 ) : JsonRpc<Map<String, Any>, BridgeSendTransactionResponse>(
     method = "transfer_from_solana",
     params = buildMap {
@@ -22,6 +23,7 @@ data class TransferFromSolanaRpcRequest(
         put("recipient", recipient)
         mint?.let { put("mint", it) }
         put("amount", amount)
+        put("need_to_use_relay", needToUseRelay)
     }
 ) {
     @Transient
