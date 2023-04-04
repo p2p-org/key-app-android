@@ -78,12 +78,16 @@ internal class EthereumKitRepository(
                     .onEach { (address, price) ->
                         tokensMetadata.find { it.contractAddress.hex == address }?.price = price
                     }
-
                 tokensMetadata.filter { metadata ->
                     val tokenBundle = claimingTokens.firstOrNull { metadata.contractAddress == it.contractAddress }
                     val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
                     metadata.balance.isMoreThan(MINIMAL_DUST) || isClaimInProgress
-                }.map { EthTokenConverter.ethMetadataToToken(it) }
+                }.map { metadata ->
+                    val isClaiming = claimingTokens.firstOrNull { metadata.contractAddress == it.contractAddress }
+                        ?.isClaiming
+                        ?: false
+                    EthTokenConverter.ethMetadataToToken(metadata, isClaiming)
+                }
 
             } catch (cancellation: CancellationException) {
                 Timber.i(cancellation)

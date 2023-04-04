@@ -27,7 +27,6 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
-import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -75,7 +74,6 @@ class HomePresenter(
     private val networkObserver: SolanaNetworkObserver,
     private val sellInteractor: SellInteractor,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
-    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val metadataInteractor: MetadataInteractor,
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
     private val homeMapper: HomeMapper,
@@ -102,9 +100,7 @@ class HomePresenter(
             tokensPolling.shareTokenPollFlowIn(this).onEach {
                 val isRefreshing = it.first.isEmpty()
                 view.showRefreshing(isRefreshing)
-            }.collect {
-                val solTokens = it.first
-                val ethTokens = it.second
+            }.collect { (solTokens, ethTokens) ->
                 state = state.copy(tokens = solTokens, ethTokens = ethTokens)
                 if (solTokens.isEmpty() && ethTokens.isEmpty()) {
                     userInteractor.loadUserRates(userInteractor.loadUserTokensAndUpdateLocal())

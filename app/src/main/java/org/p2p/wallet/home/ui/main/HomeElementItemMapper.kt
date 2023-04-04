@@ -26,15 +26,13 @@ class HomeElementItemMapper(
         val visibleTokens = groups[false].orEmpty()
 
         val result = mutableListOf<HomeElementItem>(HomeElementItem.Title(R.string.home_tokens))
-//
-//        result += ethereumTokens.map { token ->
-//            val claimStatus = ethereumBundleStatuses[token.publicKey]?.filterNotNull().orEmpty()
-//            val canBeClaimed = claimStatus.all { status -> status.canBeClaimed() }
-//            HomeElementItem.Claim(
-//                token = token,
-//                isClaimEnabled = canBeClaimed
-//            )
-//        }
+
+        result += ethereumTokens.map { token ->
+            HomeElementItem.Claim(
+                token = token,
+                isClaimEnabled = !token.isClaiming
+            )
+        }
 
         result += visibleTokens.map { HomeElementItem.Shown(it) }
 

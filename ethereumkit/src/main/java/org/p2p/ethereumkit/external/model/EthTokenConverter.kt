@@ -5,7 +5,7 @@ import org.p2p.core.utils.fromLamports
 
 object EthTokenConverter {
 
-    fun ethMetadataToToken(metadata: EthTokenMetadata): Token.Eth = Token.Eth(
+    fun ethMetadataToToken(metadata: EthTokenMetadata,isClaiming: Boolean = false): Token.Eth = Token.Eth(
         publicKey = metadata.contractAddress.hex,
         tokenSymbol = metadata.symbol,
         decimals = metadata.decimals,
@@ -15,5 +15,6 @@ object EthTokenConverter {
         totalInUsd = metadata.balance.fromLamports(metadata.decimals).times(metadata.price),
         total = metadata.balance.fromLamports(metadata.decimals),
         rate = metadata.price,
+        isClaiming = isClaiming
     )
 }
