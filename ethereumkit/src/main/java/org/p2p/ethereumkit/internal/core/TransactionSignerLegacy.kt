@@ -1,19 +1,22 @@
 package org.p2p.ethereumkit.internal.core
 
 import org.web3j.crypto.RawTransaction
+import org.web3j.crypto.TransactionDecoder
 import org.web3j.crypto.TransactionEncoder
 import java.math.BigInteger
+import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.CryptoUtils
 import org.p2p.ethereumkit.internal.models.Signature
 
 class TransactionSignerLegacy(
     private val privateKey: BigInteger,
-    private val chainId: Int,
+    private val chainId: Int
 ) {
 
-    fun signatureLegacy(rawTransaction: RawTransaction): Signature {
-        val hex = TransactionEncoder.encode(rawTransaction,1L)
-        val rawTransactionHash = CryptoUtils.sha3(hex)
+    fun signatureLegacy(encodedTransaction: HexString): Signature {
+        val decodedTransaction = TransactionDecoder.decode(encodedTransaction.rawValue)
+        val encodedTransaction = TransactionEncoder.encode(decodedTransaction,chainId.toLong())
+        val rawTransactionHash = CryptoUtils.sha3(encodedTransaction)
         val sign = CryptoUtils.ellipticSign(rawTransactionHash, privateKey)
         return signatureLegacy(sign)
     }

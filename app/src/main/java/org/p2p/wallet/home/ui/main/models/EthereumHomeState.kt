@@ -5,5 +5,5 @@ import org.p2p.wallet.bridge.claim.model.ClaimStatus
 
 data class EthereumHomeState(
     val ethereumTokens: List<Token.Eth> = emptyList(),
-    val ethereumBundleStatuses: Map<String, ClaimStatus?> = emptyMap(),
+    val ethereumBundleStatuses: Map<String, List<ClaimStatus?>> = emptyMap(),
 )

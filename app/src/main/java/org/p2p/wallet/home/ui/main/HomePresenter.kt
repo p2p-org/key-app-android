@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
@@ -22,14 +23,12 @@ import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
-import org.p2p.ethereumkit.external.model.ERC20Tokens
-import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.model.ClaimStatus
+import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -80,11 +79,10 @@ class HomePresenter(
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val metadataInteractor: MetadataInteractor,
-    private val ethereumRepository: EthereumRepository,
-    private val claimInteractor: ClaimInteractor,
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
     private val homeMapper: HomeMapper,
-    seedPhraseProvider: SeedPhraseProvider,
+    private val ethereumInteractor: EthereumInteractor,
+    private val seedPhraseProvider: SeedPhraseProvider,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -94,10 +92,8 @@ class HomePresenter(
 
     init {
         // TODO maybe we can find better place to start this service
-        if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-            ethereumRepository.init(seedPhrase = userSeedPhrase)
-        }
+        val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
+        ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
         launch {
             awaitAll(
                 async { networkObserver.start() },
@@ -115,7 +111,7 @@ class HomePresenter(
     ) {
         val ethereumTokens: List<Token.Eth>
             get() = ethereumState.ethereumTokens
-        val ethereumBundleStatuses: Map<String, ClaimStatus?>
+        val ethereumBundleStatuses: Map<String, List<ClaimStatus?>>
             get() = ethereumState.ethereumBundleStatuses
     }
 
@@ -246,7 +242,7 @@ class HomePresenter(
 
     private fun handleUserTokensLoaded(
         userTokens: List<Token.Active>,
-        ethereumState: EthereumHomeState
+        ethereumState: EthereumHomeState,
     ) {
         Timber.d("local tokens change arrived")
         state = state.copy(
@@ -268,39 +264,13 @@ class HomePresenter(
         }
     }
 
-    private suspend fun getEthereumState(): EthereumHomeState {
+    private suspend fun getEthereumState(): EthereumHomeState = supervisorScope {
         if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return EthereumHomeState()
+            return@supervisorScope EthereumHomeState()
         }
-        val ethereumTokens = async { loadEthTokens() }
-        val ethereumBundleStatuses = async { loadEthBundles() }
-        return EthereumHomeState(ethereumTokens.await(), ethereumBundleStatuses.await())
-    }
-
-    private suspend fun loadEthTokens(): List<Token.Eth> {
-        return try {
-            ethereumRepository.loadWalletTokens()
-        } catch (cancelled: CancellationException) {
-            Timber.i(cancelled)
-            emptyList()
-        } catch (throwable: Throwable) {
-            Timber.e(throwable, "Error on loading ethereumTokens")
-            emptyList()
-        }
-    }
-
-    private suspend fun loadEthBundles(): Map<String, ClaimStatus?> {
-        return try {
-            claimInteractor.getListOfEthereumBundleStatuses()
-        } catch (cancelled: CancellationException) {
-            Timber.i(cancelled)
-            emptyList()
-        } catch (throwable: Throwable) {
-            Timber.e(throwable, "Error on loading loadEthBundles")
-            emptyList()
-        }.associate {
-            (it.token?.hex ?: ERC20Tokens.ETH.contractAddress) to it.status
-        }
+        val ethereumTokens = async { ethereumInteractor.loadWalletTokens() }
+        val ethereumBundleStatuses = async { ethereumInteractor.getListOfEthereumBundleStatuses() }
+        EthereumHomeState(ethereumTokens.await(), ethereumBundleStatuses.await())
     }
 
     private fun handleEmptyAccount() {
@@ -420,7 +390,7 @@ class HomePresenter(
 
     private fun loadTokenRates(loadedTokens: List<Token.Active>) {
         ratesJob?.cancel()
-        ratesJob = launch {
+        ratesJob = launchSupervisor {
             try {
                 view?.showBalance(homeMapper.mapRateSkeleton())
                 userInteractor.loadUserRates(loadedTokens)

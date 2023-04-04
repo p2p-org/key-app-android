@@ -15,20 +15,27 @@ class HomeElementItemMapper(
     suspend fun mapToItems(
         tokens: List<Token.Active>,
         ethereumTokens: List<Token.Eth>,
-        ethereumBundleStatuses: Map<String, ClaimStatus?>,
+        ethereumBundleStatuses: Map<String, List<ClaimStatus?>>,
         visibilityState: VisibilityState,
         isZerosHidden: Boolean,
     ): List<HomeElementItem> = withContext(dispatchers.io) {
-        val groups: Map<Boolean, List<Token.Active>> = tokens.groupBy { it.isDefinitelyHidden(isZerosHidden) }
+
+        val groups: Map<Boolean, List<Token.Active>> = tokens.groupBy { token ->
+            token.isDefinitelyHidden(isZerosHidden)
+        }
 
         val hiddenTokens = groups[true].orEmpty()
         val visibleTokens = groups[false].orEmpty()
 
         val result = mutableListOf<HomeElementItem>(HomeElementItem.Title(R.string.home_tokens))
 
-        result += ethereumTokens.map {
-            val claimStatus = ethereumBundleStatuses[it.publicKey]
-            HomeElementItem.Claim(it, isClaimEnabled = claimStatus?.canBeClaimed() ?: true)
+        result += ethereumTokens.map { token ->
+            val claimStatus = ethereumBundleStatuses[token.publicKey]?.filterNotNull().orEmpty()
+            val canBeClaimed = claimStatus.all { status -> status.canBeClaimed() }
+            HomeElementItem.Claim(
+                token = token,
+                isClaimEnabled = canBeClaimed
+            )
         }
 
         result += visibleTokens.map { HomeElementItem.Shown(it) }

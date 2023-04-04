@@ -72,8 +72,6 @@ dependencies {
     val work_version = "2.7.1"
     implementation("androidx.work:work-runtime-ktx:$work_version")
 
-    // https://github.com/JakeWharton/timber
-    implementation("com.jakewharton.timber:timber:5.0.1")
     // https://github.com/dm77/barcodescanner
     implementation("me.dm7.barcodescanner:zxing:1.9.8")
     // https://github.com/JakeWharton/ThreeTenABP

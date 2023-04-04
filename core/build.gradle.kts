@@ -34,5 +34,7 @@ dependencies {
     implementation("com.tinder.scarlet:stream-adapter-rxjava2:$scarlet_version")
     implementation("com.tinder.scarlet:message-adapter-gson:$scarlet_version")
     implementation("com.tinder.scarlet:lifecycle-android:$scarlet_version")
+    // https://github.com/JakeWharton/timber
+    api("com.jakewharton.timber:timber:5.0.1")
 
 }
