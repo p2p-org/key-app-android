@@ -48,15 +48,14 @@ class HistoryItemMapper(
                         }
                     }
                 }
-
-                val userSendLinksItem: HistoryItem.UserSendLinksItem? =
-                    HistoryItem.UserSendLinksItem(userSendLinksCount)
-                        .takeIf { userSendLinksCount > 0 }
-                val historyItems = listOfNotNull(userSendLinksItem)
-                    .plus(sellHistoryItems)
-                    .plus(rpcHistoryItems)
-                historyItemFlow.emit(historyItems)
             }
+
+            val userSendLinksItem: HistoryItem.UserSendLinksItem? =
+                HistoryItem.UserSendLinksItem(userSendLinksCount).takeIf { userSendLinksCount > 0 }
+            val historyItems = listOfNotNull(userSendLinksItem)
+                .plus(sellHistoryItems)
+                .plus(rpcHistoryItems)
+            historyItemFlow.emit(historyItems)
         }
     }
 

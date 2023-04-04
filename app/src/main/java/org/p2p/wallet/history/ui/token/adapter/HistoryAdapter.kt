@@ -134,8 +134,7 @@ class HistoryAdapter(
                     oldItem.transactionId == newItem.transactionId
                 }
                 else -> {
-                    oldItem.transactionId == newItem.transactionId
-                        && oldItem.date.isSameAs(newItem.date)
+                    oldItem.transactionId == newItem.transactionId && oldItem.date.isSameAs(newItem.date)
                 }
             }
         }
