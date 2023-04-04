@@ -50,12 +50,9 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     fun makeClaimDetails(
-        tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
     ): ClaimDetails {
-        val tokenSymbol = tokenToClaim.tokenSymbol
-        val decimals = tokenToClaim.decimals
         return ClaimDetails(
             willGetAmount = resultAmount.toBridgeAmount(),
             networkFee = fees?.gasEth.toBridgeAmount(),

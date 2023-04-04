@@ -2,6 +2,8 @@ package org.p2p.wallet.bridge.send.ui.mapper
 
 import android.content.res.Resources
 import java.math.BigDecimal
+import java.util.Date
+import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.isNullOrZero
@@ -15,6 +17,7 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeesStringFormat
+import org.p2p.wallet.transaction.model.NewShowProgress
 
 class BridgeSendUiMapper(private val resources: Resources) {
 
@@ -34,6 +37,29 @@ class BridgeSendUiMapper(private val resources: Resources) {
             messageAccountRent = fees?.messageAccountRent.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(),
             total = resultAmount.toBridgeAmount()
+        )
+    }
+
+    fun prepareShowProgress(
+        tokenToSend: Token.Active,
+        amountTokens: String,
+        amountUsd: String?,
+        recipient: String,
+        feeDetails: BridgeFeeDetails?
+    ): NewShowProgress {
+        val transactionDate = Date()
+        val feeList = listOfNotNull(
+            feeDetails?.networkFee,
+            feeDetails?.messageAccountRent,
+            feeDetails?.bridgeFee
+        )
+        return NewShowProgress(
+            date = transactionDate,
+            tokenUrl = tokenToSend.iconUrl.orEmpty(),
+            amountTokens = amountTokens,
+            amountUsd = amountUsd,
+            recipient = recipient,
+            totalFees = feeList.mapNotNull { it.toTextHighlighting() }
         )
     }
 
@@ -98,6 +124,16 @@ class BridgeSendUiMapper(private val resources: Resources) {
             tokenDecimals = this?.decimals.orZero(),
             tokenAmount = this?.amountInToken?.takeIf { !it.isNullOrZero() },
             fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
+        )
+    }
+
+    private fun BridgeAmount.toTextHighlighting(): TextHighlighting? {
+        if (isFree) return null
+        val usdText = formattedFiatAmount.orEmpty()
+        val commonText = "$formattedTokenAmount $usdText"
+        return TextHighlighting(
+            commonText = commonText,
+            highlightedText = usdText
         )
     }
 }
