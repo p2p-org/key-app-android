@@ -20,19 +20,16 @@ import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.newsend.ui.SendOpenedFrom
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
-import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
@@ -42,8 +39,6 @@ private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
 private const val ARG_INPUT_AMOUNT = "ARG_INPUT_AMOUNT"
 private const val ARG_OPENED_FROM = "ARG_OPENED_FROM"
 
-private const val KEY_RESULT_FEE = "KEY_RESULT_FEE"
-private const val KEY_RESULT_NEW_FEE_PAYER = "KEY_RESULT_APPROXIMATE_FEE_USD"
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
@@ -119,10 +114,6 @@ class BridgeSendFragment :
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
                 val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
                 presenter.updateToken(token)
-            }
-            result.containsKey(KEY_RESULT_NEW_FEE_PAYER) -> {
-                val newFeePayer = result.getParcelable<Token.Active>(KEY_RESULT_NEW_FEE_PAYER)!!
-                presenter.updateFeePayerToken(newFeePayer)
             }
         }
     }
@@ -250,20 +241,6 @@ class BridgeSendFragment :
     override fun onDestroy() {
         super.onDestroy()
         presenter.finishFeature()
-    }
-
-    private fun showAccountCreationFeeInfo(
-        fee: SendSolanaFee,
-        alternativeFeePayerTokens: List<Token.Active>
-    ) {
-        val target = SendNoAccountFragment.create(
-            tokenSymbol = fee.feePayerSymbol,
-            approximateFeeUsd = fee.getApproxAccountCreationFeeUsd(withBraces = false).orEmpty(),
-            alternativeFeePayerTokens = alternativeFeePayerTokens,
-            requestKey = KEY_REQUEST_SEND,
-            resultKey = KEY_RESULT_NEW_FEE_PAYER
-        )
-        replaceFragment(target)
     }
 
     private fun UiKitToolbar.setupToolbar() {

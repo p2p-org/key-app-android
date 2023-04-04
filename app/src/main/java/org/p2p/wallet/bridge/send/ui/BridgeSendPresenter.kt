@@ -33,6 +33,7 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
+import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -46,7 +47,6 @@ import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -319,13 +319,8 @@ class BridgeSendPresenter(
             newSendAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
-            val total = bridgeSendUiMapper.makeBridgeFeeDetails(
-                recipientAddress = recipientAddress.addressState.address,
-                tokenToSend = token,
-                calculationMode = calculationMode,
-                fees = fees
-            )
-            view?.showTransactionDetails(total)
+            val feeDetails = getFeeDetails(token)
+            view?.showTransactionDetails(feeDetails)
         }
     }
 
@@ -362,18 +357,26 @@ class BridgeSendPresenter(
         appScope.launch {
             val transactionDate = Date()
             try {
-                val progressDetails = NewShowProgress(
-                    date = transactionDate,
-                    tokenUrl = token.iconUrl.orEmpty(),
+                val feeDetails = getFeeDetails(token)
+                val progressDetails = bridgeSendUiMapper.prepareShowProgress(
+                    tokenToSend = token,
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd?.asNegativeUsdTransaction(),
                     recipient = recipientAddress.nicknameOrAddress(),
-                    totalFees = null // todo
+                    feeDetails = feeDetails
                 )
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
-                val result = bridgeInteractor.sendTransaction(address, token, lamports)
+                val bridgeFee = currentState.lastStaticState.bridgeFee
+
+                val result = bridgeInteractor.sendTransaction(
+                    recipient = address,
+                    token = token,
+                    feePayerToken = bridgeFee?.tokenToPayFee,
+                    feeRelayerFee = bridgeFee?.feeRelayerFee,
+                    amountInLamports = lamports
+                )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
@@ -383,6 +386,16 @@ class BridgeSendPresenter(
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
             }
         }
+    }
+
+    private fun getFeeDetails(tokenToSend: Token.Active): BridgeFeeDetails {
+        val fees = currentState.lastStaticState.bridgeFee?.fee
+        return bridgeSendUiMapper.makeBridgeFeeDetails(
+            recipientAddress = recipientAddress.addressState.address,
+            tokenToSend = tokenToSend,
+            calculationMode = calculationMode,
+            fees = fees
+        )
     }
 
     private fun SearchResult.nicknameOrAddress(): String {
