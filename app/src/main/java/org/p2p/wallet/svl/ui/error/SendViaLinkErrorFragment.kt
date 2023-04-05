@@ -3,12 +3,14 @@ package org.p2p.wallet.svl.ui.error
 import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.mvp.NoOpPresenter
 import org.p2p.wallet.databinding.FragmentSendViaLinkErrorBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.svl.ui.send.SvlReceiveFundsAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -30,6 +32,7 @@ class SendViaLinkErrorFragment :
     }
 
     override val presenter = NoOpPresenter<MvpView>()
+    private val receiveFundsAnalytics: SvlReceiveFundsAnalytics by inject()
 
     private val binding: FragmentSendViaLinkErrorBinding by viewBinding()
 
@@ -53,6 +56,8 @@ class SendViaLinkErrorFragment :
     }
 
     private fun renderAlreadyClaimed() = with(binding) {
+        receiveFundsAnalytics.logClaimAlreadyClaimed()
+
         imageViewBanner.setImageResource(R.drawable.sms_error)
         textViewTitle.setText(R.string.send_via_link_error_already_claimed_title)
         textViewSubtitle.setText(R.string.send_via_link_error_already_claimed_subtitle)

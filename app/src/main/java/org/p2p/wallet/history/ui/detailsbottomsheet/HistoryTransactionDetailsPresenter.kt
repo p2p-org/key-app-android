@@ -15,7 +15,7 @@ import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toBase58Instance
 
-class HistoryTransactionDetailsBottomSheetPresenter(
+class HistoryTransactionDetailsPresenter(
     private val resources: Resources,
     private val historyInteractor: HistoryInteractor,
     private val usernameInteractor: UsernameInteractor,

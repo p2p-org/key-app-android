@@ -7,10 +7,12 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistorySendLinksBinding
+import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.ui.delegates.historyDateTextDelegate
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -25,6 +27,8 @@ class HistorySendLinksFragment :
         fun create(): HistorySendLinksFragment = HistorySendLinksFragment()
     }
 
+    private val historyAnalytics: HistoryAnalytics by inject()
+
     private val adapter = CommonAnyCellAdapter(
         financeBlockCellDelegate(inflateListener = { it.setOnClickAction { _, item -> onItemClicked(item) } }),
         historyDateTextDelegate()
@@ -38,7 +42,7 @@ class HistorySendLinksFragment :
 
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
 
-        binding.recyclerViewLinks.adapter = adapter
+        binding.recyclerViewLinks.attachAdapter(adapter)
         binding.recyclerViewLinks.layoutManager = LinearLayoutManager(requireContext())
     }
 
@@ -47,6 +51,8 @@ class HistorySendLinksFragment :
     }
 
     private fun onItemClicked(item: FinanceBlockCellModel) {
+        historyAnalytics.logUserSendLinkClicked()
+
         val linkUuid = item.typedPayload<String>()
         HistorySendLinkDetailsBottomSheet.show(childFragmentManager, linkUuid)
     }
