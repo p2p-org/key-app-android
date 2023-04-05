@@ -2,7 +2,7 @@ package org.p2p.wallet.bridge.send.ui.mapper
 
 import android.content.res.Resources
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
@@ -90,10 +90,11 @@ class BridgeSendUiMapper(private val resources: Resources) {
         return BridgeFee(
             amount = totalAmount.toPlainString(),
             amountInUsd = totalAmountUsd.toPlainString(),
-            chain = null,
-            token = tokenSymbol,
             symbol = tokenSymbol,
+            name = tokenSymbol,
             decimals = decimals,
+            chain = null,
+            token = null,
         )
     }
 

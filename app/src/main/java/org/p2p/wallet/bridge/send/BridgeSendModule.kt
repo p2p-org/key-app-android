@@ -7,6 +7,7 @@ import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
+import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.repository.EthereumSendRemoteRepository
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
@@ -32,10 +33,24 @@ object BridgeSendModule : InjectionModule {
         factoryOf(::BridgeSendUiMapper)
         factoryOf(::SendFragmentFactory)
         factoryOf(::EthereumSendRemoteRepository) bind EthereumSendRepository::class
-        factoryOf(::BridgeSendInteractor)
         factoryOf(::SendBridgeStaticStateMapper)
         factoryOf(::SendBridgeValidator)
         factoryOf(::SendBridgeFeeRelayerCounter)
+        factory {
+            BridgeSendInteractor(
+                ethereumSendRepository = get(),
+                ethereumRepository = get(),
+                userInteractor = get(),
+                tokenKeyProvider = get(),
+                repository = get(),
+                relaySdkFacade = get(),
+                dispatchers = get(),
+                rpcSolanaRepository = get(),
+                feeRelayerRepository = get(),
+                feeRelayerInteractor = get(),
+                feeRelayerAccountInteractor = get(),
+            )
+        }
 
         factory { (recipientAddress: SearchResult, initialToken: Token.Active?, inputAmount: BigDecimal?) ->
             val initialBridgeToken = initialToken?.let { SendToken.Bridge(it) }
@@ -50,7 +65,7 @@ object BridgeSendModule : InjectionModule {
                 initialData = initialData,
                 mapper = get(),
                 validator = get(),
-                ethereumSendInteractor = get(),
+                bridgeSendInteractor = get(),
                 feeRelayerAccountInteractor = get(),
                 feeRelayerCounter = get()
             )
@@ -90,7 +105,6 @@ object BridgeSendModule : InjectionModule {
                 recipientAddress = recipientAddress,
                 userInteractor = get(),
                 bridgeInteractor = get(),
-                ethereumInteractor = get(),
                 resources = get(),
                 tokenKeyProvider = get(),
                 transactionManager = get(),

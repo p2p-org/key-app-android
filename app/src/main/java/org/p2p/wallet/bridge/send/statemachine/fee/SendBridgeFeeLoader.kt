@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flow
 import org.p2p.core.token.SolAddress
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
-import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
+import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
@@ -25,7 +25,7 @@ class SendBridgeFeeLoader constructor(
     private val initialData: SendInitialData.Bridge,
     private val mapper: SendBridgeStaticStateMapper,
     private val validator: SendBridgeValidator,
-    private val ethereumSendInteractor: EthereumSendInteractor,
+    private val bridgeSendInteractor: BridgeSendInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val feeRelayerCounter: SendBridgeFeeRelayerCounter,
 ) {
@@ -64,7 +64,7 @@ class SendBridgeFeeLoader constructor(
                 freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
             }
 
-            val fee = ethereumSendInteractor.getSendFee(
+            val fee = bridgeSendInteractor.getSendFee(
                 sendTokenMint = sendTokenMint,
                 amount = formattedAmount.toString()
             )

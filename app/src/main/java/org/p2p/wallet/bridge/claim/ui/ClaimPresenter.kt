@@ -69,7 +69,7 @@ class ClaimPresenter(
                     fees = newBundle.fees,
                     isFree = newBundle.compensationDeclineReason.isEmpty()
                 )
-                val finalValue = claimUiMapper.makeResultAmount(newBundle.resultAmount, tokenToClaim)
+                val finalValue = claimUiMapper.makeResultAmount(newBundle.resultAmount)
                 view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
             } catch (error: Throwable) {
                 val messageResId = when {

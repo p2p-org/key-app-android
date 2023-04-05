@@ -2,7 +2,7 @@ package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
+import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
@@ -13,7 +13,7 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 class InitFeatureActionHandler(
     private val feeLoader: SendBridgeFeeLoader,
     private val initialData: SendInitialData.Bridge,
-    private val interactor: EthereumSendInteractor,
+    private val interactor: BridgeSendInteractor,
 ) : SendActionHandler {
 
     override fun canHandle(

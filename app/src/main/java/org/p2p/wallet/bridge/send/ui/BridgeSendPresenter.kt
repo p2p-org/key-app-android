@@ -4,30 +4,17 @@ import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
-import java.util.Date
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
-import org.p2p.core.utils.asNegativeUsdTransaction
-import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.isConnectionError
-import org.p2p.core.utils.isZero
-import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.*
 import org.p2p.wallet.R
-import org.p2p.wallet.bridge.send.BridgeSendInteractor
-import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
-import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
-import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
-import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
-import org.p2p.wallet.bridge.send.statemachine.bridgeFee
-import org.p2p.wallet.bridge.send.statemachine.bridgeToken
-import org.p2p.wallet.bridge.send.statemachine.lastStaticState
+import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
+import org.p2p.wallet.bridge.send.statemachine.*
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
@@ -58,7 +45,6 @@ class BridgeSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
     private val bridgeInteractor: BridgeSendInteractor,
-    private val ethereumInteractor: EthereumSendInteractor,
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
@@ -83,7 +69,7 @@ class BridgeSendPresenter(
         newSendAnalytics.logNewSendScreenOpened()
         initialize(view)
         launch {
-            val isTokenChangeEnabled = ethereumInteractor.supportedSendTokens().size > 1
+            val isTokenChangeEnabled = bridgeInteractor.supportedSendTokens().size > 1
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
         }
         stateMachine.observe()
@@ -167,7 +153,7 @@ class BridgeSendPresenter(
             when (state) {
                 is SendState.Exception.Feature -> {
                     showFeeViewLoading(isLoading = false)
-                    val unit: Unit = when (val featureException = state.featureException) {
+                    when (val featureException = state.featureException) {
                         is SendFeatureException.FeeLoadingError -> {
                             setFeeLabel(resources.getString(R.string.send_fees))
                             showFeeViewVisible(false)
@@ -271,7 +257,7 @@ class BridgeSendPresenter(
         newSendAnalytics.logTokenSelectionClicked()
         launch {
             val token = currentState.lastStaticState.bridgeToken?.token
-            val tokens = ethereumInteractor.supportedSendTokens()
+            val tokens = bridgeInteractor.supportedSendTokens()
             view?.showTokenSelection(tokens = tokens, selectedToken = token)
         }
     }
