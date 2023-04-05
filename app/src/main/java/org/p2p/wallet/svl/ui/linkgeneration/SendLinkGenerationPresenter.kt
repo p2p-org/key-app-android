@@ -29,7 +29,6 @@ class SendLinkGenerationPresenter(
     ) {
         launch {
             val result = try {
-                delay(5000L)
                 val transactionId = sendViaLinkInteractor.sendTransaction(
                     destinationAddress = recipient.publicKey,
                     token = token,
