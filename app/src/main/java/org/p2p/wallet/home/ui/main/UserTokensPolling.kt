@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
@@ -46,48 +45,52 @@ class UserTokensPolling(
 
     private val isTokensRateFetched = AtomicBoolean(false)
     private var refreshJob: Job? = null
+    private var initJob: Job? = null
 
     fun shareTokenPollFlowIn(scope: CoroutineScope): StateFlow<Pair<List<Token.Active>?, List<Token.Eth>?>> =
         solTokensFlow.combine(ethTokensFlow) { sol, eth ->
             sol to eth
         }.stateIn(scope, SharingStarted.WhileSubscribed(), Pair(emptyList(), emptyList()))
 
+    fun startPollingUserTokens() {
+        initJob?.cancel()
+        initJob = launch {
+            pollTokens()
+        }.also {
+            it.invokeOnCompletion {
+                startPolling()
+            }
+        }
+    }
+
     suspend fun refresh() {
         isTokensRateFetched.set(false)
         solTokensFlow.emit(null)
         ethTokensFlow.emit(null)
-        startPolling()
+        startPollingUserTokens()
     }
 
-    fun startPolling() {
+    private fun startPolling() {
         refreshJob?.cancel()
         refreshJob = launch {
-            supervisorScope {
-                if (isPollingEnabled) {
-                    try {
-                        while (true) {
-                            delay(getDelayTimeInMillis(POLLING_ETH_DELAY.inWholeMilliseconds))
-                            fetchSolanaTokens()
-                            fetchEthereumTokens()
-                        }
-                    } catch (e: CancellationException) {
-                        Timber.i("Cancelled tokens remote update")
-                    } catch (e: Throwable) {
-                        Timber.e(e, "Failed polling tokens")
-                    }
-                } else {
-                    Timber.d("Skipping tokens auto-update")
+            if (isPollingEnabled) {
+                while (true) {
+                    delay(POLLING_ETH_DELAY.inWholeMilliseconds)
+                    pollTokens()
                 }
+            } else {
+                Timber.d("Skipping tokens auto-update")
             }
         }
     }
 
     private suspend fun fetchSolanaTokens() = withContext(dispatchers.io) {
-        if (!isTokensRateFetched.get()) {
-            loadSolTokensRate()
+        val newTokens = if (!isTokensRateFetched.get()) {
+            loadTokensWithRates()
         } else {
-            solTokensFlow.emit(userInteractor.loadUserTokensAndUpdateLocal())
+            userInteractor.loadUserTokensAndUpdateLocal()
         }
+        solTokensFlow.emit(newTokens)
     }
 
     private suspend fun getSolTokens(): List<Token.Active> {
@@ -103,22 +106,33 @@ class UserTokensPolling(
         ethTokensFlow.emit(ethTokens)
     }
 
-    private fun loadSolTokensRate() {
-        launch {
-            try {
-                userInteractor.loadUserRates(getSolTokens())
-                isTokensRateFetched.set(true)
-                solTokensFlow.emit(getSolTokens())
-            } catch (e: CancellationException) {
-                Timber.tag(TAG).d("Loading tokens rate was cancelled")
-            } catch (e: Throwable) {
-                Timber.tag(TAG).e(e, "Loading tokens rate finished with error: $e")
+    private suspend fun loadTokensWithRates(): List<Token.Active> = try {
+        userInteractor.loadUserRates(getSolTokens())
+        isTokensRateFetched.set(true)
+        getSolTokens()
+    } catch (e: CancellationException) {
+        Timber.tag(TAG).e("Loading tokens rate was cancelled")
+        emptyList()
+    } catch (e: Throwable) {
+        Timber.tag(TAG).e(e, "Loading tokens rate finished with error: $e")
+        emptyList()
+    }
+
+    private suspend inline fun pollTokens() {
+        kotlin.runCatching {
+            fetchSolanaTokens()
+            fetchEthereumTokens()
+        }.onSuccess {
+            Timber.tag(TAG).d("Tokens successfully updated")
+        }.onFailure {
+            when (it) {
+                is CancellationException -> {
+                    Timber.tag(TAG).e("Loading tokens rate was cancelled")
+                }
+                else -> {
+                    Timber.tag(TAG).e(it, "Loading tokens rate finished with error: $it")
+                }
             }
         }
     }
-
-    private fun isForceFetchRequired(): Boolean =
-        ethTokensFlow.value.isNullOrEmpty() && solTokensFlow.value.isNullOrEmpty()
-
-    private fun getDelayTimeInMillis(defaultValue: Long): Long = if (isForceFetchRequired()) 0L else defaultValue
 }

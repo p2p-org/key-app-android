@@ -103,23 +103,20 @@ class HomePresenter(
 
     private fun attachToPollingTokens() {
         launch {
-            tokensPolling.shareTokenPollFlowIn(this).onEach { (solTokens, ethTokens) ->
-                if (solTokens == null && ethTokens == null) {
-                    view?.showRefreshing(true)
+            tokensPolling.shareTokenPollFlowIn(this)
+                .onEach { (solTokens, ethTokens) ->
+                    if (solTokens == null && ethTokens == null) {
+                        view?.showRefreshing(true)
+                    }
+                }.collect { (solTokens, ethTokens) ->
+                    if (solTokens != null && ethTokens != null) {
+                        state = state.copy(tokens = solTokens, ethTokens = ethTokens)
+                        handleUserTokensLoaded(solTokens, ethTokens)
+                        initializeActionButtons()
+                        view?.showRefreshing(isRefreshing = false)
+                    }
                 }
-            }.collect { (solTokens, ethTokens) ->
-                if (solTokens != null && ethTokens != null) {
-                    state = state.copy(tokens = solTokens, ethTokens = ethTokens)
-                    handleUserTokensLoaded(solTokens, ethTokens)
-                    initializeActionButtons()
-                    view?.showRefreshing(isRefreshing = false)
-                }
-            }
         }
-    }
-
-    private fun isRefreshing(solTokens: List<Token.Active>?, ethTokens: List<Token.Eth>?): Boolean {
-        return (solTokens.isNullOrEmpty() && ethTokens.isNullOrEmpty())
     }
 
     override fun onResume(owner: LifecycleOwner) {
@@ -131,7 +128,7 @@ class HomePresenter(
         showUserAddressAndUsername()
 
         updatesManager.start()
-        tokensPolling.startPolling()
+        tokensPolling.startPollingUserTokens()
 
         val userId = username?.value ?: tokenKeyProvider.publicKey
         IntercomService.signIn(userId)
@@ -364,23 +361,6 @@ class HomePresenter(
         analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
         analytics.logUserAggregateBalanceProperty(balance.orZero())
     }
-//
-//    private fun loadTokenRates(loadedTokens: List<Token.Active>) {
-//        ratesJob?.cancel()
-//        ratesJob = launchSupervisor {
-//            try {
-//                view?.showBalance(homeMapper.mapRateSkeleton())
-//                userInteractor.loadUserRates(loadedTokens)
-//                val updatedTokens = async { userInteractor.getUserTokens() }
-//                val ethereumState = async { getEthereumState() }
-//                handleUserTokensLoaded(updatedTokens.await(), ethereumState.await())
-//            } catch (e: Throwable) {
-//                Timber.e(e, "Error loading token rates")
-//                view?.showBalance(cellModel = null)
-//                view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
-//            }
-//        }
-//    }
 
     private fun getUserBalance(): BigDecimal? {
         val tokens = state.tokens

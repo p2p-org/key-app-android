@@ -123,14 +123,12 @@ class UserInteractor(
             coingeckoId?.let { TokenId(id = it) }
         }
 
-        Timber.tag("_______TAG").d(tokenIds.toString())
         val allTokenIds = (tokenIds + POPULAR_TOKENS_COINGECKO_IDS).distinct()
 
         val prices = tokenPricesRepository.getTokenPriceByIds(
             tokenIds = allTokenIds,
             targetCurrency = Constants.USD_READABLE_SYMBOL
         )
-        Timber.tag("_______TAGPRICE").d(prices.toString())
 
         userLocalRepository.setTokenPrices(prices)
 
