@@ -1,11 +1,21 @@
 package org.p2p.wallet.svl.ui.receive
 
-import android.content.Context
+import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
+import java.net.UnknownHostException
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
@@ -13,29 +23,47 @@ import org.p2p.wallet.svl.model.ReceiveViaLinkMapper
 import org.p2p.wallet.svl.model.SendViaLinkClaimingState
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.toPublicKey
 
 class ReceiveViaLinkPresenter(
-    private val context: Context,
     private val receiveViaLinkInteractor: ReceiveViaLinkInteractor,
     private val receiveViaLinkMapper: ReceiveViaLinkMapper,
-    private val connectionStateProvider: ConnectionStateProvider
+    private val historyInteractor: HistoryInteractor,
+    private val connectionStateProvider: ConnectionStateProvider,
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val usernameInteractor: UsernameInteractor,
+    private val appScope: AppScope
 ) : BasePresenter<ReceiveViaLinkContract.View>(),
     ReceiveViaLinkContract.Presenter {
 
     override fun claimToken(temporaryAccount: TemporaryAccount, token: Token.Active) {
-        launch {
+        appScope.launch {
             try {
                 view?.renderState(SendViaLinkClaimingState.ClaimingInProcess)
-                receiveViaLinkInteractor.receiveTransfer(temporaryAccount, token)
+
+                val recipient = tokenKeyProvider.publicKey.toPublicKey()
+                val transactionId = receiveViaLinkInteractor.receiveTransfer(temporaryAccount, token, recipient)
+
+                historyInteractor.addPendingTransaction(
+                    txSignature = transactionId,
+                    mintAddress = token.mintAddress,
+                    transaction = buildPendingTransaction(transactionId, temporaryAccount, token, recipient)
+                )
 
                 val successMessage = receiveViaLinkMapper.mapClaimSuccessMessage(token)
                 val state = SendViaLinkClaimingState.ClaimSuccess(successMessage)
                 view?.renderState(state)
             } catch (e: Throwable) {
                 Timber.e(e, "Error claiming token")
-                view?.renderState(SendViaLinkClaimingState.ClaimFailed(e))
+                val textRes = if (e is UnknownHostException) {
+                    R.string.transaction_description_internet_error
+                } else {
+                    R.string.transaction_description_failed
+                }
+                view?.renderState(SendViaLinkClaimingState.ClaimFailed(textRes))
             }
         }
     }
@@ -51,15 +79,15 @@ class ReceiveViaLinkPresenter(
             return
         }
 
+        parseAccount(link, isRetry)
+    }
+
+    private fun parseAccount(link: SendViaLinkWrapper, isRetry: Boolean) {
         if (isRetry) {
             view?.showButtonLoading(isLoading = true)
         } else {
             view?.renderState(SendViaLinkClaimingState.InitialLoading)
         }
-        parseAccount(link)
-    }
-
-    private fun parseAccount(link: SendViaLinkWrapper) {
         launch {
             try {
                 val state = receiveViaLinkInteractor.parseAccountFromLink(link)
@@ -102,4 +130,25 @@ class ReceiveViaLinkPresenter(
 
     private fun isInternetConnectionEnabled(): Boolean =
         connectionStateProvider.hasConnection()
+
+    private fun buildPendingTransaction(
+        transactionId: String,
+        sender: TemporaryAccount,
+        token: Token.Active,
+        recipient: PublicKey
+    ): HistoryTransaction =
+        RpcHistoryTransaction.Transfer(
+            signature = transactionId,
+            date = ZonedDateTime.now(),
+            blockNumber = -1,
+            type = RpcHistoryTransactionType.RECEIVE,
+            senderAddress = sender.address,
+            amount = RpcHistoryAmount(token.total, token.totalInUsdScaled),
+            destination = recipient.toBase58(),
+            counterPartyUsername = usernameInteractor.getUsername()?.fullUsername,
+            fees = null,
+            status = HistoryTransactionStatus.PENDING,
+            iconUrl = token.iconUrl,
+            symbol = token.tokenSymbol
+        )
 }

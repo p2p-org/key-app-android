@@ -29,16 +29,16 @@ class ClaimUiMapper(private val resources: Resources) {
 
     fun prepareShowProgress(
         tokenToClaim: Token.Eth,
-        claimDetails: ClaimDetails?
+        claimDetails: ClaimDetails?,
     ): NewShowProgress {
         val transactionDate = Date()
-        val amountTokens = claimDetails?.willGetAmount?.formattedTokenAmount.orEmpty()
-        val amountUsd = claimDetails?.willGetAmount?.fiatAmount.orZero()
-        val feeList = listOfNotNull(
-            claimDetails?.networkFee,
-            claimDetails?.accountCreationFee,
-            claimDetails?.bridgeFee
-        )
+        val willGetAmount = claimDetails?.willGetAmount
+        val amountTokens = willGetAmount?.formattedTokenAmount.orEmpty()
+        val amountUsd = willGetAmount?.fiatAmount.orZero()
+        val feeList = claimDetails?.let {
+            listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
+        } ?: emptyList()
+
         return NewShowProgress(
             date = transactionDate,
             tokenUrl = tokenToClaim.iconUrl.orEmpty(),
@@ -53,18 +53,14 @@ class ClaimUiMapper(private val resources: Resources) {
         tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
-        ethToken: Token.Eth?
+        ethToken: Token.Eth?,
     ): ClaimDetails {
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals
+        val defaultFee = fees?.gasEth.toBridgeAmount(tokenSymbol, decimals)
         return ClaimDetails(
             willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
-            networkFee = ethToken?.let { ethTokenData ->
-                fees?.gasEth.toBridgeAmount(
-                    tokenSymbol = ethTokenData.tokenSymbol,
-                    decimals = ethTokenData.decimals
-                )
-            } ?: fees?.gasEth.toBridgeAmount(tokenSymbol, decimals),
+            networkFee = defaultFee,
             accountCreationFee = fees?.createAccount.toBridgeAmount(tokenSymbol, decimals),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
         )
@@ -112,7 +108,8 @@ class ClaimUiMapper(private val resources: Resources) {
         return BridgeAmount(
             tokenSymbol = tokenSymbol,
             tokenAmount = this?.amountInToken(decimals).takeIf { !it.isNullOrZero() },
-            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
+            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero(),
+            tokenDecimals = decimals
         )
     }
 

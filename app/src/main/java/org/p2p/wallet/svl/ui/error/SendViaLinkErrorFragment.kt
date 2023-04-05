@@ -1,5 +1,6 @@
 package org.p2p.wallet.svl.ui.error
 
+import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -46,6 +47,10 @@ class SendViaLinkErrorFragment :
             SendViaLinkError.UNKNOWN -> renderUnknown()
         }
         binding.buttonAction.setOnClickListener {
+            popBackStackTo(MainFragment::class)
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStackTo(MainFragment::class)
         }
     }

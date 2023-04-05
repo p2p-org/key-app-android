@@ -26,7 +26,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="$1903737373737373.91" />
+        tools:text="$190.91" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewSecond"

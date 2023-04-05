@@ -95,7 +95,7 @@ class SolendDepositInteractor(
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
 
-        val hasFreeTransactions = freeTransactionFeeLimit.hasFreeTransactions()
+        val hasFreeTransactions = freeTransactionFeeLimit.isTransactionAllowed()
         val feePayer = if (hasFreeTransactions) relayInfo.feePayerAddress else account.publicKey
 
         val depositFeeInSol = solendRepository.getDepositFee(

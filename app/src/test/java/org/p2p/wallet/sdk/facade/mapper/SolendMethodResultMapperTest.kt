@@ -1,9 +1,14 @@
 package org.p2p.wallet.sdk.facade.mapper
 
+import assertk.assertThat
+import assertk.assertions.isFailure
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEmpty
+import assertk.assertions.isNotNull
+import assertk.assertions.message
+import assertk.assertions.prop
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 import org.p2p.wallet.sdk.facade.model.KeyAppSdkMethodResultException
@@ -18,7 +23,9 @@ class SolendMethodResultMapperTest {
         val result = mapper.fromSdk<SolendMarketInformationResponse>(givenSuccessJson)
         // then
         assertThat(result)
-            .hasNoNullFieldsOrProperties()
+            .isNotNull()
+            .prop(SolendMarketInformationResponse::marketInfo)
+            .isNotNull()
     }
 
     @Test
@@ -26,11 +33,12 @@ class SolendMethodResultMapperTest {
         // when
         val mapper = SdkMethodResultMapper(Gson())
         // then
-        assertThatThrownBy { mapper.fromSdk<SolendMarketInformationResponse>(givenErrorJson) }
-            .isInstanceOf(KeyAppSdkMethodResultException::class.java)
+        assertThat { mapper.fromSdk<SolendMarketInformationResponse>(givenErrorJson) }
+            .isFailure()
+            .isInstanceOf(KeyAppSdkMethodResultException::class)
             .message()
-            .isNotBlank
-            .isNotNull
+            .isNotNull()
+            .isNotEmpty()
     }
 
     @Test
@@ -38,8 +46,9 @@ class SolendMethodResultMapperTest {
         // when
         val mapper = SdkMethodResultMapper(Gson())
         // then
-        assertThatThrownBy { mapper.fromSdk<SolendMarketInformationResponse>("{}") }
-            .isInstanceOf(IllegalStateException::class.java)
+        assertThat { mapper.fromSdk<SolendMarketInformationResponse>("{}") }
+            .isFailure()
+            .isInstanceOf(IllegalStateException::class)
     }
 
     @Test
@@ -47,8 +56,9 @@ class SolendMethodResultMapperTest {
         // when
         val mapper = SdkMethodResultMapper(Gson())
         // then
-        assertThatThrownBy { mapper.fromSdk<SolendMarketInformationResponse>("231--") }
-            .isInstanceOf(JsonSyntaxException::class.java)
+        assertThat { mapper.fromSdk<SolendMarketInformationResponse>("231--") }
+            .isFailure()
+            .isInstanceOf(JsonSyntaxException::class)
     }
 
     @Language("JSON")

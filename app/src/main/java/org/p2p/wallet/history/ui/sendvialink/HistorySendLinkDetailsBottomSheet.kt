@@ -64,7 +64,7 @@ class HistorySendLinkDetailsBottomSheet :
 
         DrawableCellModel(
             drawable = shapeDrawable(shapeCircle()),
-            tint = R.color.bg_rain
+            tint = R.color.bg_smoke
         ).applyBackground(binding.imageViewLinkDetails)
     }
 
@@ -120,7 +120,7 @@ class HistorySendLinkDetailsBottomSheet :
         )
         val rightSideCopyIcon = RightSideCellModel.IconWrapper(
             iconWrapper = IconWrapperCellModel.SingleIcon(
-                ImageViewCellModel(DrawableContainer.invoke(R.drawable.ic_copy))
+                ImageViewCellModel(DrawableContainer.invoke(R.drawable.ic_copy_filled_24))
             )
         )
         financeBlockLinkValue.bind(

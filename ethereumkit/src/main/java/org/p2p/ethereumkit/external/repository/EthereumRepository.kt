@@ -14,4 +14,5 @@ interface EthereumRepository {
     suspend fun getAddress(): EthAddress
     fun getPrivateKey(): BigInteger
     fun signTransaction(transaction: HexString): Signature
+    fun signTransactionLegacy(transaction: HexString): Signature
 }

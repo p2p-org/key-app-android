@@ -12,7 +12,7 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
@@ -61,7 +61,7 @@ class OrcaSwapInteractor(
         solToken?.let { setFeePayerToken(it) }
     }
 
-    suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit {
+    suspend fun getFreeTransactionsInfo(): TransactionFeeLimits {
         return feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
     }
 

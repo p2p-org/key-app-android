@@ -5,7 +5,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
-import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendLinkGenerationResultBinding
@@ -43,7 +42,7 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
 
             imageViewClose.setOnClickListener { popBackStackTo(MainFragment::class) }
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                popBackStackTo(MainFragment::class)
+                popBackStack()
             }
         }
     }

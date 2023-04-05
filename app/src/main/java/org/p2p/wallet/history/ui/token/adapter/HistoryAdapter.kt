@@ -129,7 +129,14 @@ class HistoryAdapter(
         }
 
         override fun areItemsTheSame(oldItem: HistoryItem, newItem: HistoryItem): Boolean {
-            return oldItem.transactionId == newItem.transactionId && oldItem.date.isSameAs(newItem.date)
+            return when {
+                oldItem is UserSendLinksItem && newItem is UserSendLinksItem -> {
+                    oldItem.transactionId == newItem.transactionId
+                }
+                else -> {
+                    oldItem.transactionId == newItem.transactionId && oldItem.date.isSameAs(newItem.date)
+                }
+            }
         }
     }
 

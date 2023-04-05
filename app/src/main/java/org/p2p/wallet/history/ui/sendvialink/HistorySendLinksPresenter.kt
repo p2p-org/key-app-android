@@ -40,6 +40,7 @@ class HistorySendLinksPresenter(
 
     private suspend fun getUserLinksModels(): List<AnyCellItem> {
         return userSendLinksRepository.getUserLinks()
+            .sortedByDescending(UserSendLink::dateCreated)
             .groupByCreationDate()
             .flatMap { (_, links) ->
                 val dateHistoryModel = links.first().dateCreated.toZonedDateTime().toCellModel()
@@ -55,6 +56,7 @@ class HistorySendLinksPresenter(
     private fun UserSendLink.toCellModel(): FinanceBlockCellModel {
         val icon = ImageViewCellModel(
             icon = DrawableContainer(R.drawable.ic_copy_link),
+            iconTint = R.color.bg_night,
             background = DrawableCellModel(
                 drawable = shapeDrawable(shapeCircle()),
                 tint = R.color.bg_rain

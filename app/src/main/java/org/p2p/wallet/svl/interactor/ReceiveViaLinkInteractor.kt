@@ -3,21 +3,24 @@ package org.p2p.wallet.svl.interactor
 import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isMoreThan
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.toPublicKey
 
 class ReceiveViaLinkInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
+    private val rpcBalanceRepository: RpcBalanceRepository,
     private val userLocalRepository: UserLocalRepository,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
     private val tokenKeyProvider: TokenKeyProvider
@@ -47,7 +50,7 @@ class ReceiveViaLinkInteractor(
         val tokenAccounts = rpcAccountRepository.getTokenAccountsByOwner(temporaryAccount.publicKey)
         val activeAccount = tokenAccounts.accounts.firstOrNull {
             it.account.data.parsed.info.tokenAmount.amount.toBigInteger().isMoreThan(BigInteger.ZERO)
-        } ?: return TemporaryAccountState.EmptyBalance
+        } ?: return checkSolBalance(temporaryAccount)
 
         val info = activeAccount.account.data.parsed.info
         val tokenData = userLocalRepository.findTokenData(info.mint) ?: run {
@@ -66,11 +69,36 @@ class ReceiveViaLinkInteractor(
         )
     }
 
-    suspend fun receiveTransfer(temporaryAccount: TemporaryAccount, token: Token.Active) {
-        val recipient = tokenKeyProvider.publicKey.toPublicKey()
+    // if no SPL accounts found, check SOL balance
+    private suspend fun checkSolBalance(temporaryAccount: TemporaryAccount): TemporaryAccountState {
+        val solBalance = rpcBalanceRepository.getBalance(temporaryAccount.publicKey)
+        if (solBalance == 0L) {
+            return TemporaryAccountState.EmptyBalance
+        }
+
+        val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT)
+            ?: return TemporaryAccountState.ParsingFailed
+
+        val token = Token.createSOL(
+            publicKey = temporaryAccount.publicKey.toBase58(),
+            tokenData = tokenData,
+            amount = solBalance,
+            exchangeRate = null
+        )
+        return TemporaryAccountState.Active(
+            account = temporaryAccount,
+            token = token
+        )
+    }
+
+    suspend fun receiveTransfer(
+        temporaryAccount: TemporaryAccount,
+        token: Token.Active,
+        recipient: PublicKey
+    ): String {
         val senderAccount = Account(temporaryAccount.keypair)
 
-        sendViaLinkInteractor.sendTransaction(
+        return sendViaLinkInteractor.sendTransaction(
             senderAccount = senderAccount,
             destinationAddress = recipient,
             token = token,

@@ -189,7 +189,7 @@ class CommonRestoreFragment :
         setLoadingAnimationState(isScreenLoading = isScreenLoading)
         with(binding) {
             buttonRestoreByGoogle.apply {
-                isLoadingState = isScreenLoading
+                setLoading(isScreenLoading)
                 isEnabled = !isScreenLoading
             }
             buttonPhone.isEnabled = !isScreenLoading
