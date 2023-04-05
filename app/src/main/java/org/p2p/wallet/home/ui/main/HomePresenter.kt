@@ -104,12 +104,12 @@ class HomePresenter(
     private fun attachToPollingTokens() {
         launch {
             tokensPolling.shareTokenPollFlowIn(this).onEach { (solTokens, ethTokens) ->
-                view?.showRefreshing(isRefreshing(solTokens, ethTokens))
+                if (solTokens == null && ethTokens == null) {
+                    view?.showRefreshing(true)
+                }
             }.collect { (solTokens, ethTokens) ->
-                state = state.copy(tokens = solTokens, ethTokens = ethTokens)
-                if (solTokens.isEmpty() && ethTokens.isEmpty()) {
-                    userInteractor.loadUserRates(userInteractor.loadUserTokensAndUpdateLocal())
-                } else {
+                if (solTokens != null && ethTokens != null) {
+                    state = state.copy(tokens = solTokens, ethTokens = ethTokens)
                     handleUserTokensLoaded(solTokens, ethTokens)
                     initializeActionButtons()
                     view?.showRefreshing(isRefreshing = false)
@@ -248,7 +248,7 @@ class HomePresenter(
                 view?.showEmptyState(isEmpty = true)
                 handleEmptyAccount()
             }
-            userTokens.isNotEmpty() -> {
+            (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
                 view?.showEmptyState(isEmpty = false)
                 showTokensAndBalance()
             }
