@@ -94,9 +94,10 @@ class UserInMemoryRepository(
 
         // Filter items that start with the query
         allTokens.filterTo(filteredList) {
-            val isSymbolStartsWithSearchText = it.symbol.startsWith(searchText, ignoreCase = true)
+            val isNamesEqualToSearchText = it.name.equals(searchText, ignoreCase = true)
             val isNameStartsWithSearchText = it.name.startsWith(searchText, ignoreCase = true)
-            isSymbolStartsWithSearchText || isNameStartsWithSearchText
+            val isSymbolStartsWithSearchText = it.symbol.startsWith(searchText, ignoreCase = true)
+            isNamesEqualToSearchText || isNameStartsWithSearchText || isSymbolStartsWithSearchText
         }
 
         return filteredList

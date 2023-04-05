@@ -36,7 +36,7 @@ class ReceiveTokensPresenter(
     private var lastSelectedTokenPayload: ReceiveTokenPayload? = null
     private var searchJob: Job? = null
 
-    private val tokensFlow = MutableStateFlow<Set<AnyCellItem>>(emptySet())
+    private val tokensFlow = MutableStateFlow<List<AnyCellItem>>(emptyList())
     private lateinit var pinnedWormholeTokens: List<TokenData>
     private lateinit var pinnedWormholeTokensAddresses: List<String>
 
@@ -82,7 +82,7 @@ class ReceiveTokensPresenter(
     override fun load(isRefresh: Boolean, scrollToUp: Boolean) {
         launch {
             if (isRefresh) {
-                tokensFlow.value = setOf()
+                tokensFlow.value = emptyList()
             }
             this@ReceiveTokensPresenter.scrollToUp = scrollToUp
             interactor.fetchTokens(searchText, PAGE_SIZE, isRefresh)
@@ -96,7 +96,7 @@ class ReceiveTokensPresenter(
             searchText = newQuery
             if (newQuery.isBlank()) {
                 view?.resetView()
-                tokensFlow.value = emptySet()
+                tokensFlow.value = emptyList()
             }
             load(isRefresh = true, scrollToUp = true)
         }
@@ -125,7 +125,7 @@ class ReceiveTokensPresenter(
     private fun observeMappedTokens() {
         launch {
             tokensFlow.collectLatest {
-                view?.showTokenItems(it.toList())
+                view?.showTokenItems(it)
             }
         }
     }
@@ -151,8 +151,8 @@ class ReceiveTokensPresenter(
                     ?.filter { it.mintAddress !in pinnedWormholeTokensAddresses }
                     ?: data.result
 
-                val startItems = if (isSearching) {
-                    setOf(
+                val startItems = if (isSearching && !oldItems.any { it is SectionHeaderCellModel }) {
+                    listOf(
                         createSectionHeader(R.string.receive_token_search_found_header),
                         *oldItems.toTypedArray()
                     )
