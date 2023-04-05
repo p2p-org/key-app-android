@@ -5,10 +5,11 @@ import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
@@ -26,7 +27,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -36,7 +39,7 @@ import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
+import org.p2p.wallet.home.ui.main.models.EthereumHomeState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -74,18 +77,21 @@ class HomePresenter(
     private val networkObserver: SolanaNetworkObserver,
     private val sellInteractor: SellInteractor,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
+    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val metadataInteractor: MetadataInteractor,
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
     private val homeMapper: HomeMapper,
     private val ethereumInteractor: EthereumInteractor,
-    private val seedPhraseProvider: SeedPhraseProvider
+    private val seedPhraseProvider: SeedPhraseProvider,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
 
-    private var state = HomeScreenViewState(areZerosHidden = settingsInteractor.areZerosHidden())
+    private var pollingJob: Job? = null
+    private var ratesJob: Job? = null
 
     init {
+        // TODO maybe we can find better place to start this service
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
         ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
         launch {
@@ -96,31 +102,22 @@ class HomePresenter(
         }
     }
 
-    override fun attach(view: HomeContract.View) {
-        super.attach(view)
-        attachToPollingTokens()
+    private data class ViewState(
+        val tokens: List<Token.Active> = emptyList(),
+        val ethereumState: EthereumHomeState = EthereumHomeState(),
+        val visibilityState: VisibilityState = VisibilityState.Hidden,
+        val username: Username? = null,
+        val areZerosHidden: Boolean,
+    ) {
+        val ethereumTokens: List<Token.Eth>
+            get() = ethereumState.ethereumTokens
+        val ethereumBundleStatuses: Map<String, List<ClaimStatus?>>
+            get() = ethereumState.ethereumBundleStatuses
     }
 
-    private fun attachToPollingTokens() {
-        launch {
-            tokensPolling.shareTokenPollFlowIn(this).onEach { (solTokens, ethTokens) ->
-                view?.showRefreshing(isRefreshing(solTokens, ethTokens))
-            }.collect { (solTokens, ethTokens) ->
-                state = state.copy(tokens = solTokens, ethTokens = ethTokens)
-                if (solTokens.isEmpty() && ethTokens.isEmpty()) {
-                    userInteractor.loadUserRates(userInteractor.loadUserTokensAndUpdateLocal())
-                } else {
-                    handleUserTokensLoaded(solTokens, ethTokens)
-                    initializeActionButtons()
-                    view?.showRefreshing(isRefreshing = false)
-                }
-            }
-        }
-    }
-
-    private fun isRefreshing(solTokens: List<Token.Active>?, ethTokens: List<Token.Eth>?): Boolean {
-        return (solTokens.isNullOrEmpty() && ethTokens.isNullOrEmpty())
-    }
+    private var state = ViewState(
+        areZerosHidden = settingsInteractor.areZerosHidden()
+    )
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
@@ -131,7 +128,19 @@ class HomePresenter(
         showUserAddressAndUsername()
 
         updatesManager.start()
-        tokensPolling.startPolling()
+
+        if (state.tokens.isEmpty()) {
+            initialLoadTokens()
+        } else {
+            launch {
+                handleUserTokensLoaded(
+                    state.tokens,
+                    state.ethereumState
+                )
+                initializeActionButtons()
+            }
+        }
+        startPollingForTokens()
 
         val userId = username?.value ?: tokenKeyProvider.publicKey
         IntercomService.signIn(userId)
@@ -220,7 +229,7 @@ class HomePresenter(
 
     override fun onSendClicked() {
         launch {
-            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethTokens.isEmpty()
+            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethereumTokens.isEmpty()
             if (isEmptyAccount) {
                 // this cannot be empty
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
@@ -233,16 +242,16 @@ class HomePresenter(
 
     private fun handleUserTokensLoaded(
         userTokens: List<Token.Active>,
-        ethTokens: List<Token.Eth>,
+        ethereumState: EthereumHomeState,
     ) {
         Timber.d("local tokens change arrived")
         state = state.copy(
             tokens = userTokens,
-            ethTokens = ethTokens,
+            ethereumState = ethereumState,
             username = usernameInteractor.getUsername(),
         )
 
-        val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
+        val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethereumState.ethereumTokens.isEmpty()
         when {
             isAccountEmpty -> {
                 view?.showEmptyState(isEmpty = true)
@@ -253,6 +262,15 @@ class HomePresenter(
                 showTokensAndBalance()
             }
         }
+    }
+
+    private suspend fun getEthereumState(): EthereumHomeState = supervisorScope {
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return@supervisorScope EthereumHomeState()
+        }
+        val ethereumTokens = async { ethereumInteractor.loadWalletTokens() }
+        val ethereumBundleStatuses = async { ethereumInteractor.getListOfEthereumBundleStatuses() }
+        EthereumHomeState(ethereumTokens.await(), ethereumBundleStatuses.await())
     }
 
     private fun handleEmptyAccount() {
@@ -286,7 +304,11 @@ class HomePresenter(
         launch {
             try {
                 view?.showRefreshing(isRefreshing = true)
-                tokensPolling.refresh()
+
+                val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal()
+                loadTokenRates(loadedTokens)
+                val ethereumState = getEthereumState()
+                handleUserTokensLoaded(loadedTokens, ethereumState)
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
@@ -319,7 +341,7 @@ class HomePresenter(
             )
 
             val updatedTokens = userInteractor.getUserTokens()
-            handleUserTokensLoaded(updatedTokens, state.ethTokens)
+            handleUserTokensLoaded(updatedTokens, state.ethereumState)
         }
     }
 
@@ -350,7 +372,8 @@ class HomePresenter(
             val areZerosHidden = settingsInteractor.areZerosHidden()
             val mappedTokens = homeElementItemMapper.mapToItems(
                 tokens = state.tokens,
-                ethereumTokens = state.ethTokens,
+                ethereumTokens = state.ethereumTokens,
+                ethereumBundleStatuses = state.ethereumBundleStatuses,
                 visibilityState = state.visibilityState,
                 isZerosHidden = areZerosHidden
             )
@@ -364,23 +387,52 @@ class HomePresenter(
         analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
         analytics.logUserAggregateBalanceProperty(balance.orZero())
     }
-//
-//    private fun loadTokenRates(loadedTokens: List<Token.Active>) {
-//        ratesJob?.cancel()
-//        ratesJob = launchSupervisor {
-//            try {
-//                view?.showBalance(homeMapper.mapRateSkeleton())
-//                userInteractor.loadUserRates(loadedTokens)
-//                val updatedTokens = async { userInteractor.getUserTokens() }
-//                val ethereumState = async { getEthereumState() }
-//                handleUserTokensLoaded(updatedTokens.await(), ethereumState.await())
-//            } catch (e: Throwable) {
-//                Timber.e(e, "Error loading token rates")
-//                view?.showBalance(cellModel = null)
-//                view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
-//            }
-//        }
-//    }
+
+    private fun loadTokenRates(loadedTokens: List<Token.Active>) {
+        ratesJob?.cancel()
+        ratesJob = launchSupervisor {
+            try {
+                view?.showBalance(homeMapper.mapRateSkeleton())
+                userInteractor.loadUserRates(loadedTokens)
+                val updatedTokens = async { userInteractor.getUserTokens() }
+                val ethereumState = async { getEthereumState() }
+                handleUserTokensLoaded(updatedTokens.await(), ethereumState.await())
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading token rates")
+                view?.showBalance(cellModel = null)
+                view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
+            }
+        }
+    }
+
+    private fun initialLoadTokens() {
+        launch {
+            try {
+                Timber.d("Initial token loading")
+                view?.showRefreshing(isRefreshing = true)
+
+                val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal()
+                loadTokenRates(loadedTokens)
+                val ethereumState = getEthereumState()
+                handleUserTokensLoaded(loadedTokens, ethereumState)
+                initializeActionButtons()
+            } catch (cancelled: CancellationException) {
+                Timber.i("Cancelled initial tokens remote update")
+            } catch (error: Throwable) {
+                Timber.e(error, "Error initial loading tokens")
+            } finally {
+                view?.showRefreshing(isRefreshing = false)
+            }
+        }
+    }
+
+    private fun startPollingForTokens() {
+        if (pollingJob?.isActive == true) return
+
+        pollingJob = launch {
+            tokensPolling.startPolling(onTokensLoaded = ::handleUserTokensLoaded)
+        }
+    }
 
     private fun getUserBalance(): BigDecimal? {
         val tokens = state.tokens

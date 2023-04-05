@@ -111,7 +111,6 @@ sealed class Token constructor(
         override val publicKey: String,
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
-        var isClaiming: Boolean = false,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
