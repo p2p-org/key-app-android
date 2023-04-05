@@ -94,14 +94,11 @@ class UserInMemoryRepository(
 
         // Filter items that start with the query
         allTokens.filterTo(filteredList) {
-            it.symbol.startsWith(searchText, ignoreCase = true) || it.name.startsWith(searchText, ignoreCase = true)
+            val isSymbolStartsWithSearchText = it.symbol.startsWith(searchText, ignoreCase = true)
+            val isNameStartsWithSearchText = it.name.startsWith(searchText, ignoreCase = true)
+            isSymbolStartsWithSearchText || isNameStartsWithSearchText
         }
 
-        // Filter items that contain the query
-        allTokens.filterTo(filteredList) {
-            it.symbol.contains(searchText, ignoreCase = true) && !it.symbol.startsWith(searchText, ignoreCase = true) ||
-                it.name.contains(searchText, ignoreCase = true) && !it.name.startsWith(searchText, ignoreCase = true)
-        }
         return filteredList
     }
 
