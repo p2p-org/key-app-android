@@ -20,7 +20,6 @@ private class DefaultDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
     }
 
     override fun areContentsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
-
         return Objects.equals(oldItem, newItem)
     }
 }
