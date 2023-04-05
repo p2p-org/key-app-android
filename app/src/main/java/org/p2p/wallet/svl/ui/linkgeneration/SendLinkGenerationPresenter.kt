@@ -41,9 +41,14 @@ class SendLinkGenerationPresenter(
 
                 val tokenAmount = lamports.fromLamports(token.decimals).toPlainString()
                 val formattedAmount = "$tokenAmount ${token.tokenSymbol}"
-                LinkGenerationState.Success(recipient.generateFormattedLink(), formattedAmount)
+                LinkGenerationState.Success(
+                    tokenSymbol = token.tokenSymbol,
+                    temporaryAccountPublicKey = recipient.publicKey.toBase58(),
+                    formattedLink = recipient.generateFormattedLink(),
+                    amount = formattedAmount
+                )
             } catch (e: Throwable) {
-                Timber.e(e, "Error generating send link")
+                Timber.e(e, "Error generating send link for ${recipient.publicKey.toBase58()}")
                 LinkGenerationState.Error
             }
             view?.showResult(result)
