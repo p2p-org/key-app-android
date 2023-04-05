@@ -10,7 +10,6 @@ import org.p2p.core.utils.toLamports
 import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
@@ -33,22 +32,6 @@ class SendBridgeFeeLoader constructor(
 
     private var freeTransactionFeeLimit: FreeTransactionFeeLimit? = null
 
-    fun updateFeeIfNeed(
-        lastStaticState: SendState.Static
-    ): Flow<SendState> = flow {
-
-        val token = lastStaticState.bridgeToken ?: return@flow
-        val oldFee = lastStaticState.bridgeFee
-
-        val isNeedRefresh = !validator.isFeeValid(oldFee)
-
-        if (isNeedRefresh) {
-            emit(SendState.Loading.Fee(lastStaticState))
-            val fee = loadFee(token, lastStaticState.inputAmount.orZero())
-            emit(mapper.updateFee(lastStaticState, fee))
-        }
-    }
-
     fun updateFee(
         lastStaticState: SendState.Static
     ): Flow<SendState> = flow {
@@ -57,7 +40,9 @@ class SendBridgeFeeLoader constructor(
 
         emit(SendState.Loading.Fee(lastStaticState))
         val fee = loadFee(token, lastStaticState.inputAmount.orZero())
-        emit(mapper.updateFee(lastStaticState, fee))
+        val updatedFee = mapper.updateFee(lastStaticState, fee)
+        emit(updatedFee)
+        validator.validateIsFeeMoreThenAmount(lastStaticState, fee)
     }
 
     private suspend fun loadFee(

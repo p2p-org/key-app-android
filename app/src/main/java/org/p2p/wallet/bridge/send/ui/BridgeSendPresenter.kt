@@ -166,11 +166,10 @@ class BridgeSendPresenter(
         view?.apply {
             when (state) {
                 is SendState.Exception.Feature -> {
-                    setFeeLabel(resources.getString(R.string.send_fees))
                     showFeeViewLoading(isLoading = false)
-                    setSliderText(null)
                     val unit: Unit = when (val featureException = state.featureException) {
                         is SendFeatureException.FeeLoadingError -> {
+                            setFeeLabel(resources.getString(R.string.send_fees))
                             showFeeViewVisible(false)
                             updateButtons(
                                 errorButton = TextContainer.Res(R.string.send_cant_calculate_fees_error),
@@ -187,6 +186,13 @@ class BridgeSendPresenter(
                                     R.string.send_max_warning_text_format,
                                     listOf(bridgeToken.tokenAmount, bridgeToken.token.tokenSymbol)
                                 ),
+                                sliderButton = null
+                            )
+                        }
+                        is SendFeatureException.InsufficientFunds -> {
+                            setInputColor(R.color.text_rose)
+                            updateButtons(
+                                errorButton = TextContainer.Res(R.string.error_insufficient_funds),
                                 sliderButton = null
                             )
                         }

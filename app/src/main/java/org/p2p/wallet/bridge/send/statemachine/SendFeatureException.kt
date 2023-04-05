@@ -10,6 +10,10 @@ sealed class SendFeatureException(
         val invalidAmount: BigDecimal,
     ) : SendFeatureException()
 
+    data class InsufficientFunds(
+        val invalidAmount: BigDecimal,
+    ) : SendFeatureException()
+
     data class FeeLoadingError(
         override val message: String? = null
     ) : SendFeatureException(message)
