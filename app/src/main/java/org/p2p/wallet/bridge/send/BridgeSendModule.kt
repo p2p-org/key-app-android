@@ -114,7 +114,8 @@ object BridgeSendModule : InjectionModule {
                 sendModeProvider = get(),
                 initialData = initialData,
                 stateMachine = stateMachine,
-                bridgeSendUiMapper = get()
+                bridgeSendUiMapper = get(),
+                historyInteractor = get()
             )
         } bind BridgeSendContract.Presenter::class
         factoryOf(::EthereumInteractor)

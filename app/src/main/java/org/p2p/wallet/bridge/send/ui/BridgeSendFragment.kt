@@ -163,6 +163,10 @@ class BridgeSendFragment :
         }
     }
 
+    override fun disableSwitchAmounts() {
+        binding.widgetSendDetails.disableFiat()
+    }
+
     override fun disableInputs() {
         binding.widgetSendDetails.disableInputs()
     }

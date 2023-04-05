@@ -9,8 +9,8 @@ class BridgeTokenComparator : Comparator<Token> {
     override fun compare(o1: Token, o2: Token): Int = when {
         o1.isUsdcEt() -> -1
         o2.isUsdcEt() -> 1
-        o1.isUSDT -> -1
-        o2.isUSDT -> 1
+        o1.isUSDT() -> -1
+        o2.isUSDT() -> 1
         o1 is Token.Active && o2 is Token.Active -> compareActiveTokens(o1, o2)
         o1 is Token.Active -> -1
         o2 is Token.Active -> 1
@@ -28,4 +28,5 @@ class BridgeTokenComparator : Comparator<Token> {
     }
 
     private fun Token.isUsdcEt(): Boolean = mintAddress == ERC20Tokens.USDC.mintAddress
+    private fun Token.isUSDT(): Boolean = mintAddress == ERC20Tokens.USDT.mintAddress
 }

@@ -397,11 +397,12 @@ class NewSendPresenter(
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
                 userInteractor.addRecipient(recipientAddress, transactionDate)
-                val transactionState = TransactionState.SendSuccess(buildTransaction(result, token), token.tokenSymbol)
+                val transaction = buildTransaction(result, token)
+                val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
                 historyInteractor.addPendingTransaction(
                     txSignature = result,
-                    transaction = buildTransaction(result, token),
+                    transaction = transaction,
                     mintAddress = token.mintAddress
                 )
             } catch (e: Throwable) {

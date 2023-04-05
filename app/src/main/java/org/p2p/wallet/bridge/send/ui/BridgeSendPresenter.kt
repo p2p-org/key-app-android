@@ -33,6 +33,7 @@ import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
@@ -49,7 +50,6 @@ import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 
 class BridgeSendPresenter(
@@ -66,6 +66,7 @@ class BridgeSendPresenter(
     private val initialData: SendInitialData.Bridge,
     private val stateMachine: SendStateMachine,
     private val bridgeSendUiMapper: BridgeSendUiMapper,
+    private val historyInteractor: HistoryInteractor
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
 
     private var currentState: SendState = SendState.Static.Empty
@@ -79,10 +80,6 @@ class BridgeSendPresenter(
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
         initialize(view)
-        launch {
-            val isTokenChangeEnabled = bridgeInteractor.supportedSendTokens().size > 1
-            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
-        }
         stateMachine.observe()
             .onEach {
                 handleState(it)
@@ -222,6 +219,19 @@ class BridgeSendPresenter(
 
         initialData.initialAmount?.let { inputAmount ->
             setupDefaultFields(inputAmount)
+        }
+        launch {
+            val supportedTokens = bridgeInteractor.supportedSendTokens()
+            val isTokenChangeEnabled = supportedTokens.size > 1
+            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
+            val initialToken = initialData.initialToken?.token ?: supportedTokens.first()
+            if (initialToken.rate == null) {
+                calculationMode.updateToken(initialToken)
+                if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                    switchCurrencyMode()
+                }
+                view.disableSwitchAmounts()
+            }
         }
     }
 
@@ -370,8 +380,14 @@ class BridgeSendPresenter(
                     amountInLamports = lamports
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
-                val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
+                val transaction = buildTransaction(result, token)
+                val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
+                historyInteractor.addPendingTransaction(
+                    txSignature = result,
+                    transaction = transaction,
+                    mintAddress = token.mintAddress
+                )
             } catch (e: Throwable) {
                 Timber.e(e)
                 val message = e.getErrorMessage { res -> resources.getString(res) }
@@ -395,7 +411,7 @@ class BridgeSendPresenter(
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
-    private fun buildTransaction(transactionId: String): HistoryTransaction =
+    private fun buildTransaction(transactionId: String, token: Token.Active): HistoryTransaction =
         RpcHistoryTransaction.Transfer(
             signature = transactionId,
             date = ZonedDateTime.now(),
@@ -407,8 +423,8 @@ class BridgeSendPresenter(
             counterPartyUsername = recipientAddress.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
-            iconUrl = emptyString(),
-            symbol = emptyString()
+            iconUrl = token.iconUrl,
+            symbol = token.tokenSymbol
         )
 
     private fun isInternetConnectionEnabled(): Boolean =

@@ -22,6 +22,7 @@ interface BridgeSendContract {
 
         fun setBottomButtonText(text: TextContainer?)
         fun setSliderText(text: String?)
+        fun disableSwitchAmounts()
         fun disableInputs()
     }
 
