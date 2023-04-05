@@ -3,6 +3,7 @@ package org.p2p.wallet.svl.ui.linkgeneration
 import timber.log.Timber
 import java.math.BigInteger
 import java.util.UUID
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
@@ -28,6 +29,7 @@ class SendLinkGenerationPresenter(
     ) {
         launch {
             val result = try {
+                delay(5000L)
                 val transactionId = sendViaLinkInteractor.sendTransaction(
                     destinationAddress = recipient.publicKey,
                     token = token,

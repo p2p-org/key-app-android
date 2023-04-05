@@ -7,6 +7,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -38,7 +39,7 @@ class HistorySendLinksFragment :
 
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
 
-        binding.recyclerViewLinks.adapter = adapter
+        binding.recyclerViewLinks.attachAdapter(adapter)
         binding.recyclerViewLinks.layoutManager = LinearLayoutManager(requireContext())
     }
 

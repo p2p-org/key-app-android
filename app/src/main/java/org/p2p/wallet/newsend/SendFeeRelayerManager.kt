@@ -15,7 +15,7 @@ import org.p2p.core.utils.toUsd
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
@@ -44,7 +44,7 @@ class SendFeeRelayerManager(
         onStateUpdated?.invoke(newState)
     }
 
-    private lateinit var feeLimitInfo: FreeTransactionFeeLimit
+    private lateinit var feeLimitInfo: TransactionFeeLimits
     private lateinit var recipientAddress: SearchResult
     private lateinit var solToken: Token.Active
     private var initializeCompleted = false

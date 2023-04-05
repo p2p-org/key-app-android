@@ -5,13 +5,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
-import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendLinkGenerationResultBinding
 import org.p2p.wallet.home.MainFragment
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -35,11 +32,6 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
 
     private val binding: FragmentSendLinkGenerationResultBinding by viewBinding()
 
-    // If complex logic will be needed,
-    // consider adding presenter class and move logic and these dependencies there
-    private val usernameInteractor: UsernameInteractor by inject()
-    private val tokenKeyProvider: TokenKeyProvider by inject()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
@@ -47,7 +39,7 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
 
             imageViewClose.setOnClickListener { popBackStackTo(MainFragment::class) }
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                popBackStackTo(MainFragment::class)
+                popBackStack()
             }
         }
     }

@@ -24,7 +24,7 @@ import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.TokenAccount
@@ -172,7 +172,7 @@ class SendInteractor(
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 
-    suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit =
+    suspend fun getFreeTransactionsInfo(): TransactionFeeLimits =
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
     suspend fun sendTransaction(
