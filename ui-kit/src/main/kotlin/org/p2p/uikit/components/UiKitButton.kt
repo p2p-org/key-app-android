@@ -30,12 +30,6 @@ class UiKitButton @JvmOverloads constructor(
     private var buttonIcon: Drawable? = null
     private val circularProgressDrawable = CircularProgressDrawable(context)
 
-    var isLoadingState: Boolean = false
-        set(loading) {
-            renderLoadingState(loading)
-            field = loading
-        }
-
     private val progressDrawableCallback = object : Drawable.Callback {
         override fun unscheduleDrawable(who: Drawable, what: Runnable) = Unit
 
@@ -71,8 +65,7 @@ class UiKitButton @JvmOverloads constructor(
         this.buttonIcon = icon
     }
 
-    private fun renderLoadingState(isLoading: Boolean) {
-        if (this.isLoadingState == isLoading) return
+    fun setLoading(isLoading: Boolean) {
         if (isLoading) {
             buttonIcon = icon
             icon = circularProgressDrawable

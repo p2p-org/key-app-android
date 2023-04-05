@@ -4,9 +4,9 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
 import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.auth.username.repository.UsernameRepository
+import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.NetworkType
@@ -20,8 +20,8 @@ class SearchInteractor(
     private val userInteractor: UserInteractor,
     private val transactionAddressInteractor: TransactionAddressInteractor,
     private val userLocalRepository: UserLocalRepository,
-    private val ethereumRepository: EthereumRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val ethereumInteractor: EthereumInteractor,
+    private val tokenKeyProvider: TokenKeyProvider,
 ) {
 
     suspend fun searchByName(username: String): List<SearchResult> {
@@ -92,6 +92,6 @@ class SearchInteractor(
     }
 
     private suspend fun isOwnEthAddress(publicKey: String): Boolean {
-        return publicKey == ethereumRepository.getAddress().hex
+        return publicKey == ethereumInteractor.getEthAddress().hex
     }
 }

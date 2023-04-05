@@ -32,13 +32,13 @@ class ClaimUiMapper(private val resources: Resources) {
         claimDetails: ClaimDetails?
     ): NewShowProgress {
         val transactionDate = Date()
-        val amountTokens = claimDetails?.willGetAmount?.formattedTokenAmount.orEmpty()
-        val amountUsd = claimDetails?.willGetAmount?.fiatAmount.orZero()
-        val feeList = listOfNotNull(
-            claimDetails?.networkFee,
-            claimDetails?.accountCreationFee,
-            claimDetails?.bridgeFee
-        )
+        val willGetAmount = claimDetails?.willGetAmount
+        val amountTokens = willGetAmount?.formattedTokenAmount.orEmpty()
+        val amountUsd = willGetAmount?.fiatAmount.orZero()
+        val feeList = claimDetails?.let {
+            listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
+        } ?: emptyList()
+
         return NewShowProgress(
             date = transactionDate,
             tokenUrl = tokenToClaim.iconUrl.orEmpty(),

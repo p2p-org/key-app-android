@@ -15,7 +15,7 @@
     <string name="transaction_history_unstake">Unstake</string>
     <string name="transaction_history_send_pending">Send…</string>
     <string name="transaction_history_receive">Receive</string>
-    <string name="transaction_history_receive_pending">Receiving…</string>
+    <string name="transaction_history_receive_pending">Processing…</string>
     <string name="transaction_history_create">Create account</string>
     <string name="transaction_history_closed">Close account</string>
     <string name="transaction_history_signature_format">Signature: %s</string>

@@ -6,7 +6,7 @@ import org.koin.dsl.module
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.wallet.bridge.send.interactor.EthereumSendInteractor
+import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.send.repository.EthereumSendRemoteRepository
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
@@ -31,7 +31,6 @@ object BridgeSendModule : InjectionModule {
     override fun create() = module {
         factoryOf(::BridgeSendUiMapper)
         factoryOf(::SendFragmentFactory)
-        factoryOf(::EthereumSendInteractor)
         factoryOf(::EthereumSendRemoteRepository) bind EthereumSendRepository::class
         factoryOf(::BridgeSendInteractor)
         factoryOf(::SendBridgeStaticStateMapper)
@@ -104,5 +103,6 @@ object BridgeSendModule : InjectionModule {
                 bridgeSendUiMapper = get()
             )
         } bind BridgeSendContract.Presenter::class
+        factoryOf(::EthereumInteractor)
     }
 }

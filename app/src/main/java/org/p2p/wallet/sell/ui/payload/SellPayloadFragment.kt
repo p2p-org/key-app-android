@@ -95,7 +95,7 @@ class SellPayloadFragment :
     }
 
     override fun showButtonLoading(isLoading: Boolean) {
-        binding.buttonCashOut.isLoadingState = isLoading
+        binding.buttonCashOut.setLoading(isLoading)
         binding.buttonCashOut.isEnabled = !isLoading
     }
 

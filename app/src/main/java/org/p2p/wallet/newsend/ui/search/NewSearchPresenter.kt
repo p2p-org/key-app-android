@@ -233,7 +233,7 @@ class NewSearchPresenter(
         launch {
             try {
                 view?.showLoading(isLoading = true)
-                val feeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+                val feeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = false)
                 val isSendViaLinkAvailable = feeLimits.hasFreeAccountCreationUsages()
                 val state = if (isSendViaLinkAvailable) SvlWidgetState.ENABLED else SvlWidgetState.DISABLED
                 view?.updateLinkWidgetState(state)

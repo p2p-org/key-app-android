@@ -319,7 +319,7 @@ class OrcaSwapFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.swapButton.isLoadingState = isLoading
+        binding.swapButton.setLoading(isLoading)
     }
 
     override fun showProgressDialog(transactionId: String, data: ShowProgress?) {

@@ -101,7 +101,7 @@ class DerivableAccountsFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.restoreButton.isLoadingState = isLoading
+        binding.restoreButton.setLoading(isLoading)
 
         binding.restoreButton.isEnabled = !isLoading
         binding.accountsRecyclerView.isEnabled = !isLoading

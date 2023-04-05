@@ -7,7 +7,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.create
-import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.ethereumkit.external.api.QUALIFIER_ETH_RETROFIT
 import org.p2p.ethereumkit.external.api.QUALIFIER_RPC_GSON
 import org.p2p.ethereumkit.external.balance.EthereumTokensRemoteRepository

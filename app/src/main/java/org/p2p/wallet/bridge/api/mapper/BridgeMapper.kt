@@ -48,9 +48,10 @@ class BridgeMapper {
             amount = response?.amount,
             amountInUsd = response?.usdAmount,
             chain = response?.chain,
-            token = response?.tokenName,
-            symbol = response?.tokenSymbol.orEmpty(),
-            decimals = response?.tokenDecimals.orZero(),
+            token = response?.tokenAddress,
+            symbol = response?.symbol.orEmpty(),
+            name = response?.tokenName.orEmpty(),
+            decimals = response?.decimals.orZero()
         )
     }
 
