@@ -8,7 +8,6 @@ import org.p2p.wallet.bridge.model.BridgeBundle
 class EthereumBundleMapper(
     private val ethereumRepository: EthereumRepository
 ) {
-
     suspend fun mapBundle(item: BridgeBundle): EthereumClaimToken {
         val contractAddress = item.resultAmount.token ?: ethereumRepository.getAddress()
         val canBeClaimed = item.status.canBeClaimed()
