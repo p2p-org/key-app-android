@@ -48,36 +48,49 @@
         tools:text="Today"
         tools:visibility="gone" />
 
-    <TextView
-        android:id="@+id/textViewTop"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-        android:textColor="@color/text_night"
-        app:layout_constraintBottom_toTopOf="@+id/textViewBottom"
-        app:layout_constraintEnd_toStartOf="@id/textViewDate"
-        app:layout_constraintStart_toEndOf="@id/frameWalletImageView"
-        app:layout_constraintTop_toTopOf="@id/frameWalletImageView"
-        tools:text="kirill.p2p.sol" />
-
-    <TextView
-        android:id="@+id/textViewBottom"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="16dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
-        android:textColor="@color/text_mountain"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@id/frameWalletImageView"
-        app:layout_constraintEnd_toStartOf="@id/textViewDate"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/frameWalletImageView"
-        app:layout_constraintTop_toBottomOf="@id/textViewTop"
-        tools:text="FG4Y3yX4A...rdpadasT" />
+        app:layout_constraintTop_toTopOf="@id/frameWalletImageView">
+
+        <TextView
+            android:id="@+id/textViewTop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+            android:textColor="@color/text_night"
+            app:layout_constraintBottom_toTopOf="@+id/textViewBottom"
+            app:layout_constraintEnd_toStartOf="@id/textViewDate"
+            app:layout_constraintStart_toEndOf="@id/frameWalletImageView"
+            app:layout_constraintTop_toTopOf="@id/frameWalletImageView"
+            tools:text="kirill.p2p.sol" />
+
+        <TextView
+            android:id="@+id/textViewBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_mountain"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/frameWalletImageView"
+            app:layout_constraintEnd_toStartOf="@id/textViewDate"
+            app:layout_constraintStart_toEndOf="@id/frameWalletImageView"
+            app:layout_constraintTop_toBottomOf="@id/textViewTop"
+            tools:text="FG4Y3yX4A...rdpadasT" />
+
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
