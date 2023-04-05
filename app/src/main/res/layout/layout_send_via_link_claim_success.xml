@@ -7,17 +7,14 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_rounded_transparent_8"
     android:backgroundTint="@color/backgroundPrimary"
-    android:paddingVertical="96dp">
+    android:paddingVertical="80dp">
 
-    <TextView
+    <ImageView
         android:id="@+id/imageViewIcon"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:background="@drawable/bg_rain_circle"
-        android:duplicateParentState="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/emoji_money_bag"
-        android:textSize="64sp"
+        android:src="@drawable/ic_wallet_found"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -11,7 +11,7 @@ interface FeeRelayerApi {
     suspend fun getPublicKey(): String
 
     @GET("free_fee_limits/{owner}")
-    suspend fun getFreeFeeLimits(@Path("owner") owner: String): FreeFeeLimitsResponse
+    suspend fun getFreeFeeLimits(@Path("owner") owner: String): TransactionFeeLimitsResponse
 
     @POST("relay_transaction")
     suspend fun relayTransaction(@Body request: SendTransactionRequest): List<String>

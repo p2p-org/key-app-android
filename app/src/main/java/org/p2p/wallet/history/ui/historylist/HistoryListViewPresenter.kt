@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
+import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -22,11 +23,17 @@ class HistoryListViewPresenter(
     private val environmentManager: NetworkEnvironmentManager,
     private val historyItemMapper: HistoryItemMapper,
     private val userSendLinksRepository: UserSendLinksLocalRepository,
-    private val sendViaLinksToggle: SendViaLinkFeatureToggle
+    private val sendViaLinksToggle: SendViaLinkFeatureToggle,
+    private val historyAnalytics: HistoryAnalytics,
 ) : BasePresenter<HistoryListViewContract.View>(), HistoryListViewContract.Presenter {
 
     override fun attach(view: HistoryListViewContract.View) {
         super.attach(view)
+        launch {
+            // stub HistoryListViewType.AllHistory because we check if user has saved links or not
+            val isBlockExists = getUserSendLinksCount(HistoryListViewType.AllHistory) != NO_LINKS_AVAILABLE_VALUE
+            historyAnalytics.onScreenOpened(isSendViaLinkBlockVisible = isBlockExists)
+        }
         attachToHistoryFlow()
     }
 
@@ -119,6 +126,7 @@ class HistoryListViewPresenter(
                     view?.onSellTransactionClicked(historyItem.transactionId)
                 }
                 is HistoryItem.UserSendLinksItem -> {
+                    historyAnalytics.logUserSendLinksBlockClicked()
                     view?.onUserSendLinksClicked()
                 }
                 else -> {
