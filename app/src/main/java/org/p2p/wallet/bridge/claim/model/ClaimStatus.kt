@@ -17,11 +17,6 @@ enum class ClaimStatus {
 
     @SerializedName("completed")
     COMPLETED;
-}
 
-fun ClaimStatus?.canBeClaimed(): Boolean {
-    if (this == null) {
-        return true
-    }
-    return this != ClaimStatus.IN_PROGRESS && this != ClaimStatus.PENDING
+    fun canBeClaimed() = this != IN_PROGRESS && this != PENDING
 }
