@@ -132,7 +132,7 @@ class NewSendDetailsBottomSheet :
             textViewTitle.text = getString(R.string.send_transactions_details_transaction_fee)
             textViewSubtitle.apply {
                 val fee = state.sendFee
-                text = if (!state.feeLimit.hasFreeTransactions()) {
+                text = if (!state.feeLimit.isTransactionAllowed()) {
                     setTextColor(colorNight)
                     if (fee == null) {
                         val zeroUsd = "(0$)"

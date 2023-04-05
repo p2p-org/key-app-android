@@ -253,7 +253,7 @@ class OrcaSwapPresenter(
         launch {
             try {
                 val freeTransactionsInfo = swapInteractor.getFreeTransactionsInfo()
-                view?.showFeeLimitsDialog(freeTransactionsInfo.maxUsage, freeTransactionsInfo.remaining)
+                view?.showFeeLimitsDialog(freeTransactionsInfo.maxTransactionsAllowed, freeTransactionsInfo.remaining)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading free transactions info")
             }

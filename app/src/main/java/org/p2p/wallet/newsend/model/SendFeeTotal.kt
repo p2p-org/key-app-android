@@ -10,7 +10,7 @@ import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 
 /**
  * [SendSolanaFee] can be null only if total fees is Zero. (transaction fee and account creation fee)
@@ -23,7 +23,7 @@ class SendFeeTotal constructor(
     val receive: String,
     val receiveUsd: BigDecimal?,
     val sendFee: SendSolanaFee?,
-    val feeLimit: FreeTransactionFeeLimit,
+    val feeLimit: TransactionFeeLimits,
     val sourceSymbol: String,
     val recipientAddress: String
 ) : Parcelable {

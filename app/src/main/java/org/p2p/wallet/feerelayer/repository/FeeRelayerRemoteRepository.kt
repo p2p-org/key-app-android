@@ -1,7 +1,6 @@
 package org.p2p.wallet.feerelayer.repository
 
 import java.math.BigInteger
-import org.p2p.core.utils.orZero
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.utils.crypto.Base64String
@@ -11,12 +10,13 @@ import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
 import org.p2p.wallet.feerelayer.api.SignTransactionRequest
 import org.p2p.wallet.feerelayer.model.FeeRelayerConverter
+import org.p2p.wallet.feerelayer.model.FeeRelayerLimitsConverter
 import org.p2p.wallet.feerelayer.model.FeeRelayerSignTransaction
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapDataConverter
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
+import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.utils.toPublicKey
 
@@ -40,41 +40,20 @@ class FeeRelayerRemoteRepository(
         return feeRelayerPublicKey!!
     }
 
-    override suspend fun getFreeFeeLimits(owner: String): FreeTransactionFeeLimit {
+    override suspend fun getFreeFeeLimits(owner: String): TransactionFeeLimits {
         val response = if (environmentManager.isDevnet()) {
             devnetApi.getFreeFeeLimits(owner)
         } else {
             api.getFreeFeeLimits(owner)
         }
 
-        return FreeTransactionFeeLimit(
-            maxUsage = response.limits.maxCount,
-            currentUsage = response.processedFee.count,
-            maxAmount = response.limits.maxAmount,
-            amountUsed = response.processedFee.totalAmount,
-            maxAccountCreationCount = response.limits.maxAccountCreationCount.orZero(),
-            accountCreationUsage = response.processedFee.rentCount.orZero()
-        )
+        return FeeRelayerLimitsConverter.fromNetwork(response)
     }
 
     override suspend fun signTransaction(
         transaction: Base64String,
         statistics: FeeRelayerStatistics
     ): FeeRelayerSignTransaction {
-//        val instructions = transaction.instructions
-//        val signatures = transaction.allSignatures
-//        val pubkeys = transaction.accountKeys
-//        val blockHash = transaction.recentBlockHash
-//
-//        val keys = pubkeys.map { it.publicKey.toBase58() }
-//        val requestInstructions = instructions.map { FeeRelayerConverter.toNetwork(it, keys) }
-
-//        val relayTransactionSignatures = mutableMapOf<Int, String>()
-//        signatures.forEach { signature ->
-//            val index = pubkeys.indexOfFirst { it.publicKey.toBase58() == signature.publicKey.toBase58() }
-//            relayTransactionSignatures[index] = signature.signature
-//        }
-//
         val infoRequest = FeeRelayerConverter.toNetwork(statistics)
 
         val request = SignTransactionRequest(
