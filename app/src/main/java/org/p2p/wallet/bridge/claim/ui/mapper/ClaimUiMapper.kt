@@ -29,7 +29,7 @@ class ClaimUiMapper(private val resources: Resources) {
 
     fun prepareShowProgress(
         tokenToClaim: Token.Eth,
-        claimDetails: ClaimDetails?
+        claimDetails: ClaimDetails?,
     ): NewShowProgress {
         val transactionDate = Date()
         val willGetAmount = claimDetails?.willGetAmount
@@ -52,6 +52,7 @@ class ClaimUiMapper(private val resources: Resources) {
     fun makeClaimDetails(
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
+        ethToken: Token.Eth?,
     ): ClaimDetails {
         return ClaimDetails(
             willGetAmount = resultAmount.toBridgeAmount(),

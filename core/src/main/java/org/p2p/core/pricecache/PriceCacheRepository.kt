@@ -1,10 +1,9 @@
 package org.p2p.core.pricecache
 
-import android.media.session.MediaSession.Token
 import java.math.BigDecimal
 import org.p2p.core.model.TokenPriceWithMark
 
-class PriceCacheRepository {
+class PriceCacheRepository() {
 
     private val cachedPrices: MutableMap<String, TokenPriceWithMark> = mutableMapOf()
 
@@ -12,12 +11,8 @@ class PriceCacheRepository {
 
     fun getPricesList(): Set<Map.Entry<String, TokenPriceWithMark>> = cachedPrices.entries
 
-    fun getPriceByKey(key: String): TokenPriceWithMark? {
-        return cachedPrices[key]
-    }
-
-    fun setPriceByKey(key: String, value: TokenPriceWithMark) {
-        cachedPrices[key] = value
+    fun getPriceByKey(key: String): BigDecimal? {
+        return cachedPrices[key]?.priceInUsd
     }
 
     fun filterKeysForExpiredPrices(tokenKeys: List<String>): List<String> {
