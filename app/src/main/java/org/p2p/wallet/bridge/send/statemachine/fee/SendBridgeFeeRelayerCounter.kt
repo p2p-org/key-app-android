@@ -9,6 +9,7 @@ import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
 import org.p2p.solanaj.core.FeeAmount
+import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
@@ -25,6 +26,7 @@ import org.p2p.wallet.user.interactor.UserInteractor
 class SendBridgeFeeRelayerCounter constructor(
     private val userInteractor: UserInteractor,
     private val sendInteractor: SendInteractor,
+    private val bridgeSendInteractor: BridgeSendInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
 ) {
@@ -80,7 +82,8 @@ class SendBridgeFeeRelayerCounter constructor(
                 }
                 is FeeCalculationState.PoolsNotFound -> {
                     Timber.tag("FeePayer").d("Error during FeeRelayer PoolsNotFound")
-                    tokenToPayFee = solToken
+                    val fee = buildSolanaFee(feePayer, sourceToken, feeState.feeInSol)
+                    tokenToPayFee = fee.firstAlternativeTokenOrNull() ?: solToken
                     feeRelayerFee = feeState.feeInSol
                     recalculate()
                 }
@@ -107,6 +110,7 @@ class SendBridgeFeeRelayerCounter constructor(
                         ) { recalculate() }
                     }
                     Timber.tag("FeePayer").d("${tokenToPayFee?.tokenSymbol}: ${tokenToPayFee?.mintAddress}")
+                    Timber.tag("FeePayer").d("$feeRelayerFee")
                 }
                 is FeeCalculationState.Error -> {
                     Timber.e(feeState.error, "Error during FeePayer fee calculation")
@@ -115,8 +119,6 @@ class SendBridgeFeeRelayerCounter constructor(
             }
         } catch (e: CancellationException) {
             Timber.i("Smart selection job was cancelled")
-        } catch (e: Throwable) {
-            Timber.e(e, "Error during FeeRelayer fee calculation")
         }
     }
 
@@ -203,7 +205,7 @@ class SendBridgeFeeRelayerCounter constructor(
         var alternativeTokens = alternativeTokensMap[keyForAlternativeRequest]
         if (alternativeTokens == null) {
             alternativeTokens = sendInteractor.findAlternativeFeePayerTokens(
-                userTokens = userInteractor.getNonZeroUserTokens(),
+                userTokens = bridgeSendInteractor.supportedSendTokens(),
                 feePayerToExclude = newFeePayer,
                 transactionFeeInSOL = feeRelayerFee.transactionFeeInSol,
                 accountCreationFeeInSOL = feeRelayerFee.accountCreationFeeInSol

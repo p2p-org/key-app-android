@@ -144,6 +144,10 @@ data class SendSolanaFee constructor(
 
     fun isEnoughSolBalance() = solToken?.let { !it.totalInLamports.isLessThan(feeRelayerFee.totalInSol) } ?: false
 
+    fun firstAlternativeTokenOrNull(): Token.Active? {
+        return alternativeFeePayerTokens.firstOrNull()
+    }
+
     fun calculateFeePayerState(
         strategy: FeePayerSelectionStrategy,
         sourceTokenTotal: BigInteger,
@@ -157,7 +161,8 @@ data class SendSolanaFee constructor(
         val hasAlternativeFeePayerTokens = alternativeFeePayerTokens.isNotEmpty()
         return when {
             // if there is enough SPL token balance to cover amount and fee
-            !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) -> FeePayerState.SwitchToSpl(sourceToken)
+            !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) &&
+                sourceToken in alternativeFeePayerTokens -> FeePayerState.SwitchToSpl(sourceToken)
             hasAlternativeFeePayerTokens -> FeePayerState.SwitchToSpl(alternativeFeePayerTokens.first())
             // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount
             shouldTryReduceAmount && sourceTokenTotal.isLessThan(totalNeeded) -> {
