@@ -169,6 +169,30 @@ class SendInteractor(
         }
     }
 
+    suspend fun findSupportedFeePayerTokens(
+        userTokens: List<Token.Active>,
+        transactionFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
+    ): List<Token.Active> = withContext(dispatchers.io) {
+        val fees = userTokens
+            .map { token ->
+                // converting SOL fee in token lamports to verify the balance coverage
+                async { getFeesInPayingTokeNullable(token, transactionFeeInSOL, accountCreationFeeInSOL) }
+            }
+            .awaitAll()
+            .filterNotNull()
+            .toMap()
+
+        userTokens.filter { token ->
+            val totalInSol = transactionFeeInSOL + accountCreationFeeInSOL
+            if (token.isSOL) return@filter token.totalInLamports >= totalInSol
+
+            // assuming that all other tokens are SPL
+            val feesInSpl = fees[token.tokenSymbol] ?: return@filter false
+            token.totalInLamports >= feesInSpl.total
+        }
+    }
+
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 

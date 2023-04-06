@@ -346,10 +346,8 @@ class BridgeSendPresenter(
     override fun send() {
         val token = currentState.lastStaticState.bridgeToken?.token ?: error("Token cannot be null!")
 
-        val address = initialData.recipient
         val currentAmount = calculationMode.getCurrentAmount()
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
-        val lamports = calculationMode.getCurrentAmountLamports()
 
         logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.orZero().toPlainString())
 

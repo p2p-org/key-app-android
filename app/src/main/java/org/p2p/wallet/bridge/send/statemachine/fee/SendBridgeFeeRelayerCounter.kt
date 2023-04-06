@@ -34,7 +34,7 @@ class SendBridgeFeeRelayerCounter constructor(
     // TODO FIX minRentExemption - need only for validateFunds remove if not needed
     private var minRentExemption: BigInteger = BigInteger.ZERO
 
-    private val alternativeTokensMap: HashMap<String, List<Token.Active>> = HashMap()
+    private val supportedPayerTokensMap: HashMap<String, List<Token.Active>> = HashMap()
 
     var tokenToPayFee: Token.Active? = null
         private set
@@ -202,22 +202,23 @@ class SendBridgeFeeRelayerCounter constructor(
         feeRelayerFee: FeeRelayerFee
     ): SendSolanaFee {
         val keyForAlternativeRequest = "${source.tokenSymbol}_${feeRelayerFee.totalInSol}"
-        var alternativeTokens = alternativeTokensMap[keyForAlternativeRequest]
-        if (alternativeTokens == null) {
-            alternativeTokens = sendInteractor.findAlternativeFeePayerTokens(
+        var supportedPayerTokens = supportedPayerTokensMap[keyForAlternativeRequest]
+        if (supportedPayerTokens == null) {
+            supportedPayerTokens = sendInteractor.findSupportedFeePayerTokens(
                 userTokens = bridgeSendInteractor.supportedSendTokens(),
-                feePayerToExclude = newFeePayer,
                 transactionFeeInSOL = feeRelayerFee.transactionFeeInSol,
                 accountCreationFeeInSOL = feeRelayerFee.accountCreationFeeInSol
             )
-            alternativeTokensMap[keyForAlternativeRequest] = alternativeTokens
+            supportedPayerTokensMap[keyForAlternativeRequest] = supportedPayerTokens
         }
+        val alternativeTokens = supportedPayerTokens.filter { it.tokenSymbol != newFeePayer.tokenSymbol }
         return SendSolanaFee(
             feePayerToken = newFeePayer,
             solToken = userInteractor.getUserSolToken(),
             feeRelayerFee = feeRelayerFee,
+            sourceToken = source,
             alternativeFeePayerTokens = alternativeTokens,
-            sourceToken = source
+            supportedFeePayerTokens = supportedPayerTokens,
         )
     }
 

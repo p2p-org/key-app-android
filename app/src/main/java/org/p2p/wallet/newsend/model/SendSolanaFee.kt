@@ -31,7 +31,8 @@ data class SendSolanaFee constructor(
     val feeRelayerFee: FeeRelayerFee,
     private val sourceToken: Token.Active,
     private val solToken: Token.Active?,
-    private val alternativeFeePayerTokens: List<Token.Active>
+    private val alternativeFeePayerTokens: List<Token.Active>,
+    private val supportedFeePayerTokens: List<Token.Active>? = null
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -159,10 +160,11 @@ data class SendSolanaFee constructor(
         val isEnoughSolBalance = isEnoughSolBalance()
         val shouldTryReduceAmount = isAllowedToCorrectAmount && !isSourceSol && !isEnoughSolBalance
         val hasAlternativeFeePayerTokens = alternativeFeePayerTokens.isNotEmpty()
+        val isValidToSwitchOnSource = supportedFeePayerTokens?.contains(sourceToken) ?: true
         return when {
             // if there is enough SPL token balance to cover amount and fee
             !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) &&
-                sourceToken in alternativeFeePayerTokens -> FeePayerState.SwitchToSpl(sourceToken)
+                isValidToSwitchOnSource -> FeePayerState.SwitchToSpl(sourceToken)
             hasAlternativeFeePayerTokens -> FeePayerState.SwitchToSpl(alternativeFeePayerTokens.first())
             // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount
             shouldTryReduceAmount && sourceTokenTotal.isLessThan(totalNeeded) -> {
