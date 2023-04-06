@@ -26,6 +26,7 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHistorySendLinkDetailsBinding
+import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.ui.sendvialink.HistorySendLinkDetailsContract.ViewState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -55,6 +56,7 @@ class HistorySendLinkDetailsBottomSheet :
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
     override val presenter: HistorySendLinkDetailsContract.Presenter by inject { parametersOf(linkUuid) }
+    private val historyAnalytics: HistoryAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,7 +64,7 @@ class HistorySendLinkDetailsBottomSheet :
 
         DrawableCellModel(
             drawable = shapeDrawable(shapeCircle()),
-            tint = R.color.bg_rain
+            tint = R.color.bg_smoke
         ).applyBackground(binding.imageViewLinkDetails)
     }
 
@@ -118,7 +120,7 @@ class HistorySendLinkDetailsBottomSheet :
         )
         val rightSideCopyIcon = RightSideCellModel.IconWrapper(
             iconWrapper = IconWrapperCellModel.SingleIcon(
-                ImageViewCellModel(DrawableContainer.invoke(R.drawable.ic_copy))
+                ImageViewCellModel(DrawableContainer.invoke(R.drawable.ic_copy_filled_24))
             )
         )
         financeBlockLinkValue.bind(
@@ -128,10 +130,12 @@ class HistorySendLinkDetailsBottomSheet :
             )
         )
         financeBlockLinkValue.rightSideView.setOnClickListener {
+            historyAnalytics.logUserSendLinkCopyClicked()
             requireContext().copyToClipBoard(state.link)
             showUiKitSnackBar(messageResId = R.string.send_via_link_generation_copied)
         }
         buttonShare.setOnClickListener {
+            historyAnalytics.logUserSendLinkShareClicked()
             requireContext().shareText(state.link)
         }
     }

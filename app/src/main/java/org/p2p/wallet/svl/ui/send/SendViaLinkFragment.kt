@@ -19,6 +19,7 @@ import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
 import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationFragment
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
@@ -39,14 +40,14 @@ class SendViaLinkFragment :
 
     companion object {
         fun create(
-            initialToken: Token.Active? = null
-        ): SendViaLinkFragment = SendViaLinkFragment()
-            .withArgs(
-                ARG_INITIAL_TOKEN to initialToken
-            )
+            initialToken: Token.Active? = null,
+        ): SendViaLinkFragment =
+            SendViaLinkFragment()
+                .withArgs(ARG_INITIAL_TOKEN to initialToken,)
     }
 
     private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
+    private val svlAnalytics: SendViaLinkAnalytics by inject()
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
@@ -99,6 +100,7 @@ class SendViaLinkFragment :
     }
 
     override fun showFreeTransactionsInfo() {
+        svlAnalytics.logFreeTransactionsClicked()
         SendFreeTransactionsDetailsBottomSheet.show(childFragmentManager, openedFrom = OpenedFrom.SEND_VIA_LINK)
     }
 

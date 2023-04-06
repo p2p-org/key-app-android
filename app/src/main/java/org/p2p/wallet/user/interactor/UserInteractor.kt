@@ -129,6 +129,7 @@ class UserInteractor(
             tokenIds = allTokenIds,
             targetCurrency = Constants.USD_READABLE_SYMBOL
         )
+
         userLocalRepository.setTokenPrices(prices)
 
         updateUserTokenRates(prices)

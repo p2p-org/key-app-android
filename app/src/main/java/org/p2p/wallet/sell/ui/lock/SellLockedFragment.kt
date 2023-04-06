@@ -10,6 +10,7 @@ import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.insets.appleBottomInsets
@@ -40,7 +41,6 @@ import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import java.math.BigDecimal
 
 private const val ARG_SELL_LOCKED = "ARG_SELL_LOCKED"
 private const val ARG_IS_TRANSACTION_JUST_CREATED = "ARG_IS_TRANSACTION_JUST_CREATED"
@@ -176,7 +176,7 @@ class SellLockedFragment :
                 recipient = recipient,
                 initialToken = tokenToSend,
                 inputAmount = sendAmount,
-                openedFrom = SendOpenedFrom.SELL_FLOW
+                openedFromFlow = SendOpenedFrom.SELL_FLOW
             )
         )
     }

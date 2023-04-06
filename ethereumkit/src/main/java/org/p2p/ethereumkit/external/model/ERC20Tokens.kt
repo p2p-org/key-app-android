@@ -98,6 +98,9 @@ enum class ERC20Tokens(
     );
 
     companion object {
+
+        const val ETH_DECIMALS = 18
+
         fun findToken(contractAddress: EthAddress): ERC20Tokens {
             return values().first { contractAddress.hex.contains(it.contractAddress, ignoreCase = true) }
         }
