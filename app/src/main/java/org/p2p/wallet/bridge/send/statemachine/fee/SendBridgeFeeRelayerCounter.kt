@@ -88,8 +88,15 @@ class SendBridgeFeeRelayerCounter constructor(
                     feeRelayerFee = feeState.fee
                     val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
                     val fee = buildSolanaFee(feePayer, sourceToken, feeState.fee)
-                    val isValidToPayInSol = feePayer.isSOL && fee.isEnoughSolBalance()
-                    if (!isValidToPayInSol) {
+                    if (feePayer.isSOL) {
+                        if (fee.isEnoughSolBalance()) {
+                            Timber.d("We can pay only in SOL!")
+                        } else {
+                            Timber.d("We can pay only in SOL but we have Insufficient Funds to cover this")
+                            throw SendFeatureException.InsufficientFunds(tokenAmount)
+                        }
+                    } else {
+                        Timber.tag("FeePayer").d("Payer candidate found ${tokenToPayFee?.tokenSymbol}")
                         validateAndSelectFeePayer(
                             solToken = solToken,
                             sourceToken = sourceToken,

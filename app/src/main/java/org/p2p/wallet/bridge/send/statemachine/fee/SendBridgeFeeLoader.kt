@@ -19,7 +19,7 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 
 class SendBridgeFeeLoader constructor(
     private val initialData: SendInitialData.Bridge,
@@ -30,7 +30,7 @@ class SendBridgeFeeLoader constructor(
     private val feeRelayerCounter: SendBridgeFeeRelayerCounter,
 ) {
 
-    private var freeTransactionFeeLimit: FreeTransactionFeeLimit? = null
+    private var freeTransactionFeeLimits: TransactionFeeLimits? = null
 
     fun updateFee(
         lastStaticState: SendState.Static
@@ -60,8 +60,9 @@ class SendBridgeFeeLoader constructor(
 
             val formattedAmount = amount.toLamports(token.decimals)
 
-            if (freeTransactionFeeLimit == null) {
-                freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+            if (freeTransactionFeeLimits == null) {
+                freeTransactionFeeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+                feeRelayerAccountInteractor.getUserRelayAccount(useCache = false)
             }
 
             val fee = bridgeSendInteractor.getSendFee(
@@ -82,7 +83,7 @@ class SendBridgeFeeLoader constructor(
                 fee = fee,
                 tokenToPayFee = feeRelayerCounter.tokenToPayFee,
                 feeRelayerFee = feeRelayerCounter.feeRelayerFee,
-                feeLimitInfo = freeTransactionFeeLimit
+                feeLimitInfo = freeTransactionFeeLimits
             )
         } catch (e: CancellationException) {
             throw e

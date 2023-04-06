@@ -19,7 +19,8 @@ class SendBridgeValidator {
     fun validateIsFeeMoreThenAmount(state: SendState.Static, fee: SendFee.Bridge) {
         val inputAmount = state.inputAmount ?: return
         val fees = fee.fee
-        val feeList = listOf(fees.networkFee, fees.messageAccountRent, fees.bridgeFee, fees.arbiterFee)
+        // todo fees.networkFee, fees.messageAccountRent, fees.bridgeFee this fee is in SOL!
+        val feeList = listOf(fees.arbiterFee)
         val feeSum: BigDecimal = feeList.sumOf { it.amountInToken }
         if (feeSum.isMoreThan(inputAmount)) throw SendFeatureException.InsufficientFunds(inputAmount)
     }

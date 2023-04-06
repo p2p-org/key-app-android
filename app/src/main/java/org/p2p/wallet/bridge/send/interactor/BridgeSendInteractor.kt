@@ -114,7 +114,7 @@ class BridgeSendInteractor(
             recipient = recipient,
             mint = SolAddress(tokenMint),
             amount = amountInLamports.toString(),
-            true,
+            needToUseRelay = feePayerToken?.isSOL == false,
         )
         val userAccount = Account(tokenKeyProvider.keyPair)
 
