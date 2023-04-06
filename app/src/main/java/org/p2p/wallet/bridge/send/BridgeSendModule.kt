@@ -12,7 +12,7 @@ import org.p2p.wallet.bridge.send.repository.EthereumSendRemoteRepository
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
-import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeRelayerCounter
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.AmountChangeActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.InitFeatureActionHandler
@@ -42,7 +42,6 @@ object BridgeSendModule : InjectionModule {
                 ethereumRepository = get(),
                 userInteractor = get(),
                 tokenKeyProvider = get(),
-                repository = get(),
                 relaySdkFacade = get(),
                 dispatchers = get(),
                 rpcSolanaRepository = get(),
@@ -61,37 +60,39 @@ object BridgeSendModule : InjectionModule {
                 recipient = recipient
             )
 
-            val feeLoader = SendBridgeFeeLoader(
+            val feeLoader = SendBridgeTransactionLoader(
                 initialData = initialData,
                 mapper = get(),
                 validator = get(),
                 bridgeSendInteractor = get(),
                 feeRelayerAccountInteractor = get(),
-                feeRelayerCounter = get()
+                feeRelayerCounter = get(),
+                repository = get(),
+                tokenKeyProvider = get(),
             )
             val handlers = mutableSetOf<SendActionHandler>().apply {
                 add(
                     InitFeatureActionHandler(
-                        feeLoader = feeLoader,
+                        transactionLoader = feeLoader,
                         initialData = initialData,
                         interactor = get()
                     )
                 )
                 add(
                     AmountChangeActionHandler(
-                        feeLoader = feeLoader,
+                        transactionLoader = feeLoader,
                         validator = get(),
                         mapper = get(),
                     )
                 )
                 add(
                     NewTokenActionHandler(
-                        feeLoader = feeLoader,
+                        transactionLoader = feeLoader,
                     )
                 )
                 add(
                     RefreshFeeActionHandler(
-                        feeLoader = feeLoader,
+                        transactionLoader = feeLoader,
                     )
                 )
             }
