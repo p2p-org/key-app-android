@@ -12,6 +12,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistorySendLinksBinding
+import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.ui.delegates.historyDateTextDelegate
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -25,6 +26,8 @@ class HistorySendLinksFragment :
     companion object {
         fun create(): HistorySendLinksFragment = HistorySendLinksFragment()
     }
+
+    private val historyAnalytics: HistoryAnalytics by inject()
 
     private val adapter = CommonAnyCellAdapter(
         financeBlockCellDelegate(inflateListener = { it.setOnClickAction { _, item -> onItemClicked(item) } }),
@@ -48,6 +51,8 @@ class HistorySendLinksFragment :
     }
 
     private fun onItemClicked(item: FinanceBlockCellModel) {
+        historyAnalytics.logUserSendLinkClicked()
+
         val linkUuid = item.typedPayload<String>()
         HistorySendLinkDetailsBottomSheet.show(childFragmentManager, linkUuid)
     }
