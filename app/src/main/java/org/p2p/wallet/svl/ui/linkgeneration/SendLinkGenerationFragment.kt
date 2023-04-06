@@ -12,6 +12,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendLinkGenerationBinding
 import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.ui.linkresult.SendLinkGenerationResultFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -45,6 +46,7 @@ class SendLinkGenerationFragment :
     }
 
     override val presenter: SendLinkGenerationContract.Presenter by inject()
+    private val svlAnalytics: SendViaLinkAnalytics by inject()
 
     private val binding: FragmentSendLinkGenerationBinding by viewBinding()
 
@@ -55,6 +57,7 @@ class SendLinkGenerationFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        svlAnalytics.logLinkGenerationOpened()
         presenter.generateLink(recipient, token, lamports, isSimulation)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {

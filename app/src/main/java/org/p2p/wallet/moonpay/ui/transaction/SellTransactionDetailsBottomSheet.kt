@@ -143,7 +143,7 @@ class SellTransactionDetailsBottomSheet :
                 recipient = recipient,
                 initialToken = tokenToSend,
                 inputAmount = sendAmount,
-                openedFrom = SendOpenedFrom.SELL_FLOW
+                openedFromFlow = SendOpenedFrom.SELL_FLOW,
             )
         )
         dismissAllowingStateLoss()

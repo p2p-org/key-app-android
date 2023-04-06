@@ -5,23 +5,38 @@ import org.p2p.core.model.CurrencyMode
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 
-const val NEW_SEND_RECIPIENT_VIEWED = "Sendnew_Recipient_Screen"
-const val NEW_SEND_RECIPIENT_ADD = "Sendnew_Recipient_Add"
-const val NEW_SEND_VIEWED = "Sendnew_Input_Screen"
-const val NEW_SEND_FREE_TRANSACTIONS_CLICK = "Sendnew_Free_Transaction_Click"
-const val NEW_SEND_TOKEN_SELECTION_CLICK = "Sendnew_Token_Input_Click"
-const val NEW_SEND_SWITCH_CURRENCY_MODE_CLICK = "Sendnew_Fiat_Input_Click"
-const val NEW_SEND_CONFIRM_BUTTON_CLICK = "Sendnew_Confirm_Button_Click"
-const val NEW_SEND_ACTION_BUTTON = "Action_Button_Send"
-const val NEW_SEND_SHOWING_DETAILS = "Send_Showing_Details"
-const val NEW_SEND_QR_GOING_BACK = "Send_QR_Going_Back"
+private const val NEW_SEND_RECIPIENT_VIEWED = "Sendnew_Recipient_Screen"
+private const val NEW_SEND_RECIPIENT_ADD = "Sendnew_Recipient_Add"
+private const val NEW_SEND_VIEWED = "Sendnew_Input_Screen"
+private const val NEW_SEND_FREE_TRANSACTIONS_CLICK = "Sendnew_Free_Transaction_Click"
+private const val NEW_SEND_TOKEN_SELECTION_CLICK = "Sendnew_Token_Input_Click"
+private const val NEW_SEND_SWITCH_CURRENCY_MODE_CLICK = "Sendnew_Fiat_Input_Click"
+private const val NEW_SEND_CONFIRM_BUTTON_CLICK = "Sendnew_Confirm_Button_Click"
+private const val NEW_SEND_ACTION_BUTTON = "Action_Button_Send"
+private const val NEW_SEND_SHOWING_DETAILS = "Send_Showing_Details"
+private const val NEW_SEND_QR_GOING_BACK = "Send_QR_Going_Back"
+
+private const val SEND_START_SCREEN_OPEN = "Send_Start_Screen_Open"
 
 class NewSendAnalytics(
     private val analytics: Analytics
 ) {
 
     private var isMaxButtonClicked: Boolean = false
+
+    fun logSearchScreenOpened(openedFrom: SearchOpenedFromScreen) {
+        analytics.logEvent(
+            event = SEND_START_SCREEN_OPEN,
+            params = mapOf(
+                "Last_Screen" to when (openedFrom) {
+                    SearchOpenedFromScreen.ACTION_PANEL -> "Action_Panel"
+                    SearchOpenedFromScreen.MAIN -> "Tap_Main"
+                }
+            )
+        )
+    }
 
     fun logNewSendScreenOpened() {
         analytics.logEvent(event = NEW_SEND_VIEWED)

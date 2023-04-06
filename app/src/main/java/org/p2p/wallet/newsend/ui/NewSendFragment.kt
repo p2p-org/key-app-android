@@ -39,7 +39,7 @@ import org.p2p.wallet.utils.withTextOrGone
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
 private const val ARG_INPUT_AMOUNT = "ARG_INPUT_AMOUNT"
-private const val ARG_OPENED_FROM = "ARG_OPENED_FROM"
+private const val ARG_OPENED_FROM_FLOW = "ARG_OPENED_FROM_FLOW"
 
 private const val KEY_RESULT_FEE = "KEY_RESULT_FEE"
 private const val KEY_RESULT_FEE_PAYER_TOKENS = "KEY_RESULT_FEE_PAYER_TOKENS"
@@ -56,20 +56,20 @@ class NewSendFragment :
             recipient: SearchResult,
             initialToken: Token.Active? = null,
             inputAmount: BigDecimal? = null,
-            openedFrom: SendOpenedFrom = SendOpenedFrom.MAIN_FLOW
+            openedFromFlow: SendOpenedFrom = SendOpenedFrom.MAIN_FLOW,
         ): NewSendFragment = NewSendFragment()
             .withArgs(
                 ARG_RECIPIENT to recipient,
                 ARG_INITIAL_TOKEN to initialToken,
                 ARG_INPUT_AMOUNT to inputAmount,
-                ARG_OPENED_FROM to openedFrom
+                ARG_OPENED_FROM_FLOW to openedFromFlow,
             )
     }
 
     private val recipient: SearchResult by args(ARG_RECIPIENT)
     private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
     private val inputAmount: BigDecimal? by args(ARG_INPUT_AMOUNT)
-    private val openedFrom: SendOpenedFrom by args(ARG_OPENED_FROM)
+    private val openedFromFlow: SendOpenedFrom by args(ARG_OPENED_FROM_FLOW)
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
@@ -251,7 +251,7 @@ class NewSendFragment :
 
     override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
         listener?.showTransactionProgress(internalTransactionId, data)
-        when (openedFrom) {
+        when (openedFromFlow) {
             SendOpenedFrom.SELL_FLOW -> popBackStackTo(target = MainFragment::class, inclusive = false)
             SendOpenedFrom.MAIN_FLOW -> popBackStackTo(target = NewSearchFragment::class, inclusive = true)
         }

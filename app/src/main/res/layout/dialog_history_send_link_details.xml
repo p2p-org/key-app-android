@@ -114,8 +114,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_rounded_solid_smoke_14"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/bg_rounded_solid_cloud_12"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/buttonShare"
         app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +139,7 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="16dp"
             android:gravity="center_vertical"
-            android:text="The one-time link can be used to send funds to anyone without needing an address. The funds can be claimed by anyone with a link." />
+            android:text="@string/send_via_link_claiming_message" />
     </LinearLayout>
 
     <org.p2p.uikit.components.UiKitButton
@@ -168,7 +168,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="32dp"
-        android:text="@string/common_done"
+        android:text="@string/common_close"
         android:textColor="@color/text_night"
         app:iconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"

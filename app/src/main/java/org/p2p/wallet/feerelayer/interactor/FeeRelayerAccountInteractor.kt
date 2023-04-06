@@ -4,7 +4,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
@@ -30,7 +30,7 @@ class FeeRelayerAccountInteractor(
 
     private var relayInfo: RelayInfo? = null
 
-    private var transactionLimit: FreeTransactionFeeLimit? = null
+    private var transactionLimit: TransactionFeeLimits? = null
 
     suspend fun getRelayInfo(): RelayInfo = withContext(dispatchers.io) {
         if (relayInfo == null) {
@@ -72,7 +72,7 @@ class FeeRelayerAccountInteractor(
         return@withContext relayAccount!!
     }
 
-    suspend fun getFreeTransactionFeeLimit(useCache: Boolean = true): FreeTransactionFeeLimit {
+    suspend fun getFreeTransactionFeeLimit(useCache: Boolean = true): TransactionFeeLimits {
         if (useCache && transactionLimit != null) {
             return transactionLimit!!
         }

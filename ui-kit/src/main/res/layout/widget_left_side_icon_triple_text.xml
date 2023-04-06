@@ -38,7 +38,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_goneMarginStart="0dp"
-        tools:text="Send" />
+        tools:text="Send Send Send Send Send Send Send Send Send Send " />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewSecond"
