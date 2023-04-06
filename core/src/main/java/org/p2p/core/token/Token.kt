@@ -149,12 +149,15 @@ sealed class Token constructor(
             return if (includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
         }
 
-        fun getFormattedTotal(includeSymbol: Boolean = false): String =
-            if (includeSymbol) {
-                "${total.formatToken(decimals)} $tokenSymbol"
+        fun getFormattedTotal(includeSymbol: Boolean = false): String {
+            val decimals = if (isEth && decimals > 8) 8 else decimals
+            val amount = total.formatToken(decimals)
+            return if (includeSymbol) {
+                "$amount $tokenSymbol"
             } else {
-                total.formatToken(decimals)
+                amount
             }
+        }
 
         fun getEthAddress(): EthAddress {
             return EthAddress(publicKey)
