@@ -98,7 +98,7 @@ class UserTokensPolling(
     }
 
     private suspend fun fetchEthereumTokens() = withContext(dispatchers.io) {
-        if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
             return@withContext
         }
         val ethBundles = ethereumInteractor.getListOfEthereumBundleStatuses()

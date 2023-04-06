@@ -151,7 +151,7 @@ class ReceiveTokensPresenter(
                     ?.filter { it.mintAddress !in pinnedWormholeTokensAddresses }
                     ?: data.result
 
-                val startItems = if (isSearching) {
+                val startItems = if (isSearching && !oldItems.any { it is SectionHeaderCellModel }) {
                     listOf(
                         createSectionHeader(R.string.receive_token_search_found_header),
                         *oldItems.toTypedArray()
