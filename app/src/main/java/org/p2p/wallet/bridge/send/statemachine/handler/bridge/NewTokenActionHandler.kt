@@ -5,11 +5,11 @@ import kotlinx.coroutines.flow.flow
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
 class NewTokenActionHandler(
-    private val feeLoader: SendBridgeFeeLoader,
+    private val transactionLoader: SendBridgeTransactionLoader,
 ) : SendActionHandler {
 
     override fun canHandle(newEvent: SendFeatureAction, staticState: SendState.Static): Boolean =
@@ -24,7 +24,7 @@ class NewTokenActionHandler(
 
         val state = SendState.Static.TokenZero(newToken, null)
         emit(state)
-        feeLoader.updateFee(state).collect {
+        transactionLoader.prepareTransaction(state).collect {
             emit(state)
         }
     }

@@ -355,6 +355,7 @@ class BridgeSendPresenter(
 
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
+        val sendTransaction = (currentState as? SendState.Static.ReadyToSend)?.sendTransaction ?: return
 
         appScope.launch {
             val transactionDate = Date()
@@ -373,11 +374,10 @@ class BridgeSendPresenter(
                 val bridgeFee = currentState.lastStaticState.bridgeFee
 
                 val result = bridgeInteractor.sendTransaction(
-                    recipient = address,
+                    sendTransaction = sendTransaction,
                     token = token,
                     feePayerToken = bridgeFee?.tokenToPayFee,
                     feeRelayerFee = bridgeFee?.feeRelayerFee,
-                    amountInLamports = lamports
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transaction = buildTransaction(result, token)

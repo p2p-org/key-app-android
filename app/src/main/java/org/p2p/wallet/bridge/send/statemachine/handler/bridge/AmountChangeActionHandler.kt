@@ -10,14 +10,14 @@ import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.fee
-import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 
 class AmountChangeActionHandler(
     private val mapper: SendBridgeStaticStateMapper,
     private val validator: SendBridgeValidator,
-    private val feeLoader: SendBridgeFeeLoader,
+    private val transactionLoader: SendBridgeTransactionLoader,
 ) : SendActionHandler {
 
     override fun canHandle(newEvent: SendFeatureAction, staticState: SendState.Static): Boolean =
@@ -50,7 +50,7 @@ class AmountChangeActionHandler(
             emit(SendState.Loading.Fee(newState))
             delay(500)
         }
-        feeLoader.updateFee(newState).collect {
+        transactionLoader.prepareTransaction(newState).collect {
             emit(it)
         }
     }

@@ -6,12 +6,12 @@ import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
 class InitFeatureActionHandler(
-    private val feeLoader: SendBridgeFeeLoader,
+    private val transactionLoader: SendBridgeTransactionLoader,
     private val initialData: SendInitialData.Bridge,
     private val interactor: BridgeSendInteractor,
 ) : SendActionHandler {
@@ -34,7 +34,7 @@ class InitFeatureActionHandler(
             SendState.Static.TokenNotZero(initialToken, initialData.initialAmount)
         }
         emit(tokenState)
-        feeLoader.updateFee(tokenState)
+        transactionLoader.prepareTransaction(tokenState)
             .collect {
                 emit(it)
             }
