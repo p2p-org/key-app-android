@@ -23,7 +23,6 @@ import org.p2p.wallet.bridge.model.BridgeAmount
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toPx
 
 class ClaimUiMapper(private val resources: Resources) {
