@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
-import org.p2p.uikit.utils.drawable.UiKitDrawableCellModels
-import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bind
 import org.p2p.wallet.R
@@ -54,9 +52,6 @@ class ReceiveViaLinkBottomSheet :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         analytics.logClaimStartedOpened()
-
-        UiKitDrawableCellModels.shapeCircleWithTint(R.color.bg_rain)
-            .applyBackground(binding.layoutClaimSuccess.imageViewIcon)
 
         presenter.parseAccountFromLink(link)
 

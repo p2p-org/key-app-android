@@ -241,6 +241,11 @@ class HistoryTransactionDetailsBottomSheetFragment :
         binding.viewProgress.isVisible = isLoading
     }
 
+    override fun onStop() {
+        dismissAllowingStateLoss()
+        super.onStop()
+    }
+
     private fun List<RpcFee>?.formatFees(lessThenMinString: String): CharSequence {
         return if (this == null) {
             getString(R.string.transaction_transaction_fee_free_value)

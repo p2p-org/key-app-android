@@ -129,7 +129,7 @@ class HomePresenter(
         showUserAddressAndUsername()
 
         updatesManager.start()
-        tokensPolling.startPollingUserTokens()
+        tokensPolling.startPolling()
 
         val userId = username?.value ?: tokenKeyProvider.publicKey
         IntercomService.signIn(userId)

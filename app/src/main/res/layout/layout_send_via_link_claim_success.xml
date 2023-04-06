@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_rounded_transparent_8"
     android:backgroundTint="@color/backgroundPrimary"
-    android:paddingVertical="80dp">
+    android:paddingBottom="32dp">
 
     <ImageView
         android:id="@+id/imageViewIcon"

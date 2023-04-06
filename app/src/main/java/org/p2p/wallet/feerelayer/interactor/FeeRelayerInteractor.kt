@@ -1,6 +1,5 @@
 package org.p2p.wallet.feerelayer.interactor
 
-import timber.log.Timber
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
@@ -12,7 +11,6 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.programs.SystemProgram
-import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenAccount
@@ -226,9 +224,6 @@ class FeeRelayerInteractor(
 
         // resign transaction
         transaction.sign(preparedTransaction.signers)
-
-        val serializedTransaction = transaction.serialize().toBase64Instance()
-        Timber.d("### transaction: ${serializedTransaction.base64Value}")
 
         /*
         * Retrying 3 times to avoid some errors

@@ -200,7 +200,8 @@ class MainFragment :
             tabCachedFragments.remove(itemId)
         }
 
-        if (!tabCachedFragments.containsKey(clickedTab.itemId)) {
+        val isHistoryTabSelected = clickedTab.itemId == ScreenTab.HISTORY_SCREEN.itemId
+        if (!tabCachedFragments.containsKey(clickedTab.itemId) || isHistoryTabSelected) {
             val fragment = when (clickedTab) {
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
