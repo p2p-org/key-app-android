@@ -142,6 +142,8 @@ data class SendSolanaFee constructor(
             // added min required balance for SOL check
             (sourceTokenTotal - minRentExemption) >= inputAmount + feeRelayerFee.totalInSol
 
+    fun isEnoughSolBalance() = solToken?.let { !it.totalInLamports.isLessThan(feeRelayerFee.totalInSol) } ?: false
+
     fun calculateFeePayerState(
         strategy: FeePayerSelectionStrategy,
         sourceTokenTotal: BigInteger,
@@ -150,7 +152,7 @@ data class SendSolanaFee constructor(
         val isSourceSol = sourceTokenSymbol == SOL_SYMBOL
         val isAllowedToCorrectAmount = strategy == CORRECT_AMOUNT
         val totalNeeded = feeRelayerFee.totalInSpl + inputAmount
-        val isEnoughSolBalance = solToken?.let { !it.totalInLamports.isLessThan(feeRelayerFee.totalInSol) } ?: false
+        val isEnoughSolBalance = isEnoughSolBalance()
         val shouldTryReduceAmount = isAllowedToCorrectAmount && !isSourceSol && !isEnoughSolBalance
         val hasAlternativeFeePayerTokens = alternativeFeePayerTokens.isNotEmpty()
         return when {

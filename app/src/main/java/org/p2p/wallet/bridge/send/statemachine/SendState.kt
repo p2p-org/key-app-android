@@ -19,7 +19,7 @@ sealed interface SendState {
 
         data class Other(
             override val lastStaticState: Static,
-            val exception: kotlin.Exception,
+            val exception: Throwable,
         ) : Exception
 
         data class Feature(

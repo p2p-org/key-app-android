@@ -71,7 +71,7 @@ class SendBridgeFeeLoader constructor(
 
             feeRelayerCounter.calculateFeeForPayer(
                 sourceToken = token,
-                feePayerToken = feeRelayerCounter.tokenToPayFee,
+                feePayerToken = token,
                 recipient = initialData.recipient.hex,
                 strategy = FeePayerSelectionStrategy.SELECT_FEE_PAYER,
                 tokenAmount = amount,
@@ -86,7 +86,7 @@ class SendBridgeFeeLoader constructor(
             )
         } catch (e: CancellationException) {
             throw e
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             throw SendFeatureException.FeeLoadingError(e.message)
         }
     }

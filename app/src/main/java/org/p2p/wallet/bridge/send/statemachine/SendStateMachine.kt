@@ -74,7 +74,7 @@ class SendStateMachine(
                 )
                 flowCollector.emit(wrappedState)
             }
-            is Exception -> {
+            else -> {
                 val lastStaticState = state.value.lastStaticState
                 val wrappedState = SendState.Exception.Other(
                     lastStaticState,

@@ -49,6 +49,9 @@ class SendBridgeFeeRelayerCounter constructor(
         bridgeFees: BridgeSendFees,
     ) {
         val feePayer = feePayerToken ?: tokenToPayFee ?: sourceToken
+        if (tokenToPayFee == null) {
+            tokenToPayFee = feePayer
+        }
         // feePayer = sourceToken for first case when tokenToPayFee is not initialised
         val solToken = userInteractor.getUserSolToken() ?: error("Error on getting SOL Token")
 
@@ -76,24 +79,27 @@ class SendBridgeFeeRelayerCounter constructor(
                     feeRelayerFee = null
                 }
                 is FeeCalculationState.PoolsNotFound -> {
-                    Timber.d("Error during FeeRelayer PoolsNotFound")
+                    Timber.tag("FeePayer").d("Error during FeeRelayer PoolsNotFound")
                     tokenToPayFee = solToken
                     feeRelayerFee = feeState.feeInSol
                     recalculate()
                 }
                 is FeeCalculationState.Success -> {
-                    tokenToPayFee = sourceToken
                     feeRelayerFee = feeState.fee
                     val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
                     val fee = buildSolanaFee(feePayer, sourceToken, feeState.fee)
-                    validateAndSelectFeePayer(
-                        solToken = solToken,
-                        sourceToken = sourceToken,
-                        feePayerToken = feePayer,
-                        fee = fee,
-                        inputAmount = inputAmount,
-                        strategy = strategy
-                    ) { recalculate() }
+                    val isValidToPayInSol = feePayer.isSOL && fee.isEnoughSolBalance()
+                    if (!isValidToPayInSol) {
+                        validateAndSelectFeePayer(
+                            solToken = solToken,
+                            sourceToken = sourceToken,
+                            feePayerToken = feePayer,
+                            fee = fee,
+                            inputAmount = inputAmount,
+                            strategy = strategy
+                        ) { recalculate() }
+                    }
+                    Timber.tag("FeePayer").d("${tokenToPayFee?.tokenSymbol}: ${tokenToPayFee?.mintAddress}")
                 }
                 is FeeCalculationState.Error -> {
                     Timber.e(feeState.error, "Error during FeePayer fee calculation")
