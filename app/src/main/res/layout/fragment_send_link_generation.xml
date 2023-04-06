@@ -15,7 +15,7 @@
         android:layout_gravity="center_horizontal"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/creating_link_animation" />
+        app:lottie_rawRes="@raw/creating_wallet_animation" />
 
     <TextView
         android:id="@+id/textViewCreationTitle"

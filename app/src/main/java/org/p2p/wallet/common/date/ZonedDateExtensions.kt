@@ -30,6 +30,18 @@ fun ZonedDateTime.toDateString(context: Context): String {
     }
 }
 
+fun ZonedDateTime.toSpecializedDateTimeString(context: Context): String {
+    val day = withZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
+    val today = Today.value
+    val yesterday = today.minusDays(1)
+    return when {
+        day.isEqual(today) -> "${context.getString(R.string.common_today)} @ ${toTimeString()}"
+        day.isEqual(yesterday) -> "${context.getString(R.string.common_yesterday)} @ ${toTimeString()}"
+        today.year == day.year -> monthDayFormatter.formatWithLocale(day)
+        else -> monthDayYearFormatter.formatWithLocale(day)
+    }
+}
+
 fun ZonedDateTime.toDateTimeString(): String {
     val localDateTime = withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()
     return dateTimeFormatter.formatWithLocale(localDateTime)
