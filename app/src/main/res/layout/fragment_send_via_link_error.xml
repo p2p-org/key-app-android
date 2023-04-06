@@ -21,6 +21,7 @@
         android:id="@+id/textViewTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
         android:gravity="center"
         android:text="@string/common_sorry"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"

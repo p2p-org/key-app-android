@@ -51,7 +51,7 @@
         android:drawablePadding="8dp"
         android:ellipsize="end"
         android:gravity="center_vertical"
-        android:maxLines="2"
+        android:maxLines="3"
         android:text="@string/send_dont_need_the_address"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"

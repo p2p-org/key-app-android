@@ -9,10 +9,9 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.mvp.NoOpPresenter
 import org.p2p.wallet.databinding.FragmentSendViaLinkErrorBinding
-import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.svl.ui.send.SvlReceiveFundsAnalytics
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.popBackStackTo
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -47,11 +46,11 @@ class SendViaLinkErrorFragment :
             SendViaLinkError.UNKNOWN -> renderUnknown()
         }
         binding.buttonAction.setOnClickListener {
-            popBackStackTo(MainFragment::class)
+            popBackStack()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            popBackStackTo(MainFragment::class)
+            popBackStack()
         }
     }
 
