@@ -25,6 +25,7 @@ import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.ui.main.UserTokensPolling
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.emptyString
@@ -39,6 +40,7 @@ class ClaimPresenter(
     private val claimUiMapper: ClaimUiMapper,
     private val resources: Resources,
     private val appScope: AppScope,
+    private val userTokensPolling: UserTokensPolling
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
     private var refreshJob: Job? = null
@@ -71,15 +73,9 @@ class ClaimPresenter(
                 view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
             } catch (error: Throwable) {
                 val messageResId = when {
-                    error is NotEnoughAmount || error is ContractError -> {
-                        R.string.bridge_claim_fees_bigger_error
-                    }
-                    error.isConnectionError() -> {
-                        R.string.common_offline_error
-                    }
-                    else -> {
-                        null
-                    }
+                    error is NotEnoughAmount || error is ContractError -> R.string.bridge_claim_fees_bigger_error
+                    error.isConnectionError() -> R.string.common_offline_error
+                    else -> null
                 }
                 if (messageResId != null) {
                     view?.showUiKitSnackBar(messageResId = messageResId)
@@ -94,15 +90,13 @@ class ClaimPresenter(
         }
     }
 
-    private suspend fun showFees(resultAmount: BridgeFee, fees: BridgeBundleFees, isFree: Boolean) {
-        val ethToken = ethereumInteractor.getEthereumToken()
+    private fun showFees(resultAmount: BridgeFee, fees: BridgeBundleFees, isFree: Boolean) {
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
 
         claimDetails = claimUiMapper.makeClaimDetails(
             tokenToClaim = tokenToClaim,
             resultAmount = resultAmount,
-            fees = fees.takeUnless { isFree },
-            ethToken = ethToken
+            fees = fees.takeUnless { isFree }
         )
         view?.setClaimButtonState(isButtonEnabled = true)
     }
@@ -132,6 +126,7 @@ class ClaimPresenter(
                     bundleId = latestBundleId,
                     sourceTokenSymbol = tokenToClaim.tokenSymbol
                 )
+                userTokensPolling.refresh()
                 transactionManager.emitTransactionState(
                     transactionId = latestBundleId,
                     state = transactionState

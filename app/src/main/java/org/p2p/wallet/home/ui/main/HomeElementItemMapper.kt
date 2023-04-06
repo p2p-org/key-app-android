@@ -3,7 +3,6 @@ package org.p2p.wallet.home.ui.main
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
-import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -15,7 +14,6 @@ class HomeElementItemMapper(
     suspend fun mapToItems(
         tokens: List<Token.Active>,
         ethereumTokens: List<Token.Eth>,
-        ethereumBundleStatuses: Map<String, List<ClaimStatus?>>,
         visibilityState: VisibilityState,
         isZerosHidden: Boolean,
     ): List<HomeElementItem> = withContext(dispatchers.io) {
@@ -30,11 +28,9 @@ class HomeElementItemMapper(
         val result = mutableListOf<HomeElementItem>(HomeElementItem.Title(R.string.home_tokens))
 
         result += ethereumTokens.map { token ->
-            val claimStatus = ethereumBundleStatuses[token.publicKey]?.filterNotNull().orEmpty()
-            val canBeClaimed = claimStatus.all { status -> status.canBeClaimed() }
             HomeElementItem.Claim(
                 token = token,
-                isClaimEnabled = canBeClaimed
+                isClaimEnabled = !token.isClaiming
             )
         }
 
