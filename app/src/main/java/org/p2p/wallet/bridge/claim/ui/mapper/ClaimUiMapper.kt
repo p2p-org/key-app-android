@@ -23,6 +23,7 @@ import org.p2p.wallet.bridge.model.BridgeAmount
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toPx
 
 class ClaimUiMapper(private val resources: Resources) {
@@ -45,7 +46,7 @@ class ClaimUiMapper(private val resources: Resources) {
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
             recipient = null,
-            totalFees = feeList.mapNotNull { it.toTextHighlighting() }
+            totalFees = listOf(toTextHighlighting(feeList))
         )
     }
 
@@ -112,12 +113,10 @@ class ClaimUiMapper(private val resources: Resources) {
         )
     }
 
-    private fun BridgeAmount.toTextHighlighting(): TextHighlighting? {
-        if (isFree) return null
-        val usdText = formattedFiatAmount.orEmpty()
-        val commonText = "$formattedTokenAmount $usdText"
+    private fun toTextHighlighting(items: List<BridgeAmount>): TextHighlighting {
+        val usdText = items.filter { !it.isFree }.sumOf { it.fiatAmount.orZero() }.toString()
         return TextHighlighting(
-            commonText = commonText,
+            commonText = usdText,
             highlightedText = usdText
         )
     }
