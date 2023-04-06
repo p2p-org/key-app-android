@@ -91,12 +91,14 @@ internal class EthereumKitRepository(
                     val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
                     metadata.balance.isMoreThan(MINIMAL_DUST) || isClaimInProgress
                 }.map { metadata ->
-                    val isClaiming = claimingTokens.firstOrNull { metadata.contractAddress == it.contractAddress }
-                        ?.isClaiming
-                        ?: false
+                    var isClaiming = false
+                    claimingTokens.forEach {
+                        if (metadata.contractAddress == it.contractAddress && it.isClaiming) {
+                            isClaiming = true
+                        }
+                    }
                     EthTokenConverter.ethMetadataToToken(metadata, isClaiming)
                 }
-
             } catch (cancellation: CancellationException) {
                 Timber.i(cancellation)
                 emptyList()
@@ -105,7 +107,6 @@ internal class EthereumKitRepository(
                 emptyList()
             }
         }
-
 
     private suspend fun getEthToken(): EthTokenMetadata {
         val ethContractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
