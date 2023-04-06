@@ -95,12 +95,17 @@ class UserInMemoryRepository(
         // Filter items that start with the query
         allTokens.filterTo(filteredList) {
             val isNamesEqualToSearchText = it.name.equals(searchText, ignoreCase = true)
+            val isSymbolEqualsToSearchText = it.symbol.equals(searchText, ignoreCase = true)
             val isNameStartsWithSearchText = it.name.startsWith(searchText, ignoreCase = true)
             val isSymbolStartsWithSearchText = it.symbol.startsWith(searchText, ignoreCase = true)
-            isNamesEqualToSearchText || isNameStartsWithSearchText || isSymbolStartsWithSearchText
+            isNamesEqualToSearchText || isSymbolEqualsToSearchText ||
+                isNameStartsWithSearchText || isSymbolStartsWithSearchText
         }
 
-        return filteredList
+        return filteredList.distinctBy { it.symbol }.sortedByDescending {
+            searchText.equals(it.name, ignoreCase = true) ||
+                searchText.equals(it.symbol, ignoreCase = true)
+        }
     }
 
     override fun getTokenListFlow(): Flow<TokenListData> = tokensSearchResultFlow
