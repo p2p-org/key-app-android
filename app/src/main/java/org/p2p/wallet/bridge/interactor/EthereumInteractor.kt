@@ -1,13 +1,14 @@
 package org.p2p.wallet.bridge.interactor
 
+import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
-import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.send.BridgeSendInteractor
 
@@ -21,12 +22,16 @@ class EthereumInteractor(
         ethereumRepository.init(userSeedPhrase)
     }
 
-    suspend fun loadWalletTokens(): List<Token.Eth> {
-        return ethereumRepository.loadWalletTokens()
+    suspend fun getWalletBalance(): BigInteger {
+        return ethereumRepository.getBalance()
     }
 
-    suspend fun getEthereumToken(): Token.Eth? {
-        return ethereumRepository.getUserEthToken()
+    suspend fun getPriceForToken(tokenAddress: String): BigDecimal {
+        return ethereumRepository.getPriceForToken(tokenAddress)
+    }
+
+    suspend fun loadWalletTokens(ethereumBundleStatuses: List<EthereumClaimToken>): List<Token.Eth> {
+        return ethereumRepository.loadWalletTokens(ethereumBundleStatuses)
     }
 
     suspend fun getEthAddress(): EthAddress {
@@ -42,7 +47,7 @@ class EthereumInteractor(
         )
     }
 
-    suspend fun getListOfEthereumBundleStatuses(): Map<String, List<ClaimStatus>> {
+    suspend fun getListOfEthereumBundleStatuses(): List<EthereumClaimToken> {
         val ethereumAddress: EthAddress = ethereumRepository.getAddress()
         return claimInteractor.getListOfEthereumBundleStatuses(ethereumAddress)
     }
