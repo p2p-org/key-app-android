@@ -3,7 +3,7 @@ package org.p2p.wallet.newsend
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlin.properties.Delegates
+import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatToken
@@ -40,7 +40,8 @@ class SendFeeRelayerManager(
     var onStateUpdated: ((FeeRelayerState) -> Unit)? = null
     var onFeeLoading: ((FeeLoadingState) -> Unit)? = null
 
-    private var currentState: FeeRelayerState by Delegates.observable(FeeRelayerState.Idle) { _, oldState, newState ->
+    private var currentState: FeeRelayerState by observable(FeeRelayerState.Idle) { _, oldState, newState ->
+        Timber.i("Switching send fee relayer state to $oldState to $newState")
         onStateUpdated?.invoke(newState)
     }
 
@@ -58,6 +59,7 @@ class SendFeeRelayerManager(
         solToken: Token.Active,
         recipientAddress: SearchResult
     ) {
+        Timber.i("initialize for SendFeeRelayerManager")
         this.recipientAddress = recipientAddress
         this.solToken = solToken
 
@@ -66,6 +68,7 @@ class SendFeeRelayerManager(
             initializeWithToken(initialToken)
             initializeCompleted = true
         } catch (e: Throwable) {
+            Timber.i(e, "initialize for SendFeeRelayerManager failed")
             initializeCompleted = false
             currentState = Failure(FeesCalculationError)
         } finally {
@@ -74,6 +77,7 @@ class SendFeeRelayerManager(
     }
 
     private suspend fun initializeWithToken(initialToken: Token.Active) {
+        Timber.i("initialize for SendFeeRelayerManager with token ${initialToken.mintAddress}")
         minRentExemption = sendInteractor.getMinRelayRentExemption()
         feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
         sendInteractor.initialize(initialToken)

@@ -1,9 +1,5 @@
 package org.p2p.wallet.updates
 
-import org.p2p.solanaj.ws.SocketStateListener
-import org.p2p.solanaj.ws.SubscriptionWebSocketClient
-import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import timber.log.Timber
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
@@ -18,6 +14,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import org.p2p.solanaj.ws.SocketStateListener
+import org.p2p.solanaj.ws.SubscriptionWebSocketClient
+import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 
 private const val DELAY_MS = 5000L
 
@@ -26,7 +26,7 @@ private const val TAG = "SocketUpdatesManager"
 class SocketUpdatesManager private constructor(
     appScope: AppScope,
     environmentManager: NetworkEnvironmentManager,
-    private val connectionStateProvider: ConnectionStateProvider,
+    private val connectionStateProvider: NetworkConnectionStateProvider,
     private val updateHandlers: List<UpdateHandler>,
     private val initDispatcher: CoroutineDispatcher
 ) : CoroutineScope by (appScope + initDispatcher), SocketStateListener, UpdatesManager {
@@ -34,7 +34,7 @@ class SocketUpdatesManager private constructor(
     constructor(
         appScope: AppScope,
         environmentManager: NetworkEnvironmentManager,
-        connectionStateProvider: ConnectionStateProvider,
+        connectionStateProvider: NetworkConnectionStateProvider,
         updateHandlers: List<UpdateHandler>
     ) : this(
         appScope = appScope,

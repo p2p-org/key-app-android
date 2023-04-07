@@ -6,11 +6,14 @@ import okhttp3.Response
 import org.json.JSONObject
 import timber.log.Timber
 import java.net.SocketTimeoutException
+import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.utils.bodyAsString
 
 private const val TAG = "CrashHttpLoggingInterceptor"
 
-class CrashHttpLoggingInterceptor : Interceptor {
+class CrashHttpLoggingInterceptor(
+    private val networkProvider: NetworkConnectionStateProvider
+) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()

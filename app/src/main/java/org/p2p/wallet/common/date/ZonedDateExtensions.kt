@@ -69,7 +69,7 @@ fun Long.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(
 fun String.toZonedDateTime(): ZonedDateTime {
     return try {
         ZonedDateTime.ofInstant(Instant.parse(this), ZoneId.systemDefault())
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
         Timber.e(e, "Failed to parses string in UTC format, such as '2022-12-01T10:15:20Z'")
         ZonedDateTime.now()
     }

@@ -24,7 +24,7 @@ import org.p2p.wallet.svl.model.SendViaLinkClaimingState
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.updates.ConnectionStateProvider
+import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toPublicKey
 
@@ -32,7 +32,7 @@ class ReceiveViaLinkPresenter(
     private val receiveViaLinkInteractor: ReceiveViaLinkInteractor,
     private val receiveViaLinkMapper: ReceiveViaLinkMapper,
     private val historyInteractor: HistoryInteractor,
-    private val connectionStateProvider: ConnectionStateProvider,
+    private val connectionStateProvider: NetworkConnectionStateProvider,
     private val tokenKeyProvider: TokenKeyProvider,
     private val usernameInteractor: UsernameInteractor,
     private val appScope: AppScope

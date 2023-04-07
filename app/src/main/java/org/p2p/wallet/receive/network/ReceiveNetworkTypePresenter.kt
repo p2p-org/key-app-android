@@ -1,20 +1,8 @@
 package org.p2p.wallet.receive.network
 
-import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
-import org.p2p.wallet.auth.analytics.RenBtcAnalytics
-import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
-import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
-import org.p2p.wallet.rpc.interactor.TokenInteractor
-import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.newsend.model.NetworkType
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.MIN_REQUIRED_ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.core.utils.fromLamports
@@ -22,8 +10,20 @@ import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
-import timber.log.Timber
-import kotlinx.coroutines.launch
+import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
+import org.p2p.wallet.auth.analytics.RenBtcAnalytics
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.newsend.model.NetworkType
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.rpc.interactor.TokenInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
+import org.p2p.wallet.user.interactor.UserInteractor
 
 class ReceiveNetworkTypePresenter(
     private val renBtcInteractor: RenBtcInteractor,
@@ -74,7 +74,7 @@ class ReceiveNetworkTypePresenter(
             try {
                 val tokensForBuy = userInteractor.getTokensForBuy(tokensValidForBuy)
                 resolveBuyScreensByFeatureToggle(tokensForBuy)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 view?.showErrorMessage(e)
             }
         }
@@ -100,7 +100,7 @@ class ReceiveNetworkTypePresenter(
                 tokenInteractor.createAccount(mintAddress)
                 renBtcAnalytics.logRenBtcAccountCreated(creationSuccess = true)
                 view?.navigateToReceive(selectedNetworkType)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Timber.e("Error on launching RenBtc session $e")
                 renBtcAnalytics.logRenBtcAccountCreated(creationSuccess = false)
 

@@ -1,12 +1,12 @@
 package org.p2p.wallet.settings.ui.security
 
+import javax.crypto.Cipher
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import javax.crypto.Cipher
 
 class SecurityPresenter(
     private val authInteractor: AuthInteractor,
@@ -45,7 +45,7 @@ class SecurityPresenter(
                 } else {
                     authInteractor.disableBiometricSignIn()
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 view?.showErrorMessage(e)
             }
         }
