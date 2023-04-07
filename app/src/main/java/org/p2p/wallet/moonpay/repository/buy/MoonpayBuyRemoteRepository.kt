@@ -1,5 +1,6 @@
 package org.p2p.wallet.moonpay.repository.buy
 
+import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.BuildConfig
@@ -7,7 +8,6 @@ import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
-import java.math.BigDecimal
 
 class MoonpayBuyRemoteRepository(
     private val api: MoonpayClientSideApi,
@@ -34,7 +34,7 @@ class MoonpayBuyRemoteRepository(
         MoonpayBuyResult.Success(mapper.fromNetworkToDomain(response))
     } catch (error: MoonpayRequestException) {
         if (error.isBadRequest) {
-            MoonpayBuyResult.Error(mapper.fromNetworkErrorToDomainMessage(error))
+            MoonpayBuyResult.Error(mapper.fromNetworkErrorToDomainMessage(error), error)
         } else {
             throw error
         }

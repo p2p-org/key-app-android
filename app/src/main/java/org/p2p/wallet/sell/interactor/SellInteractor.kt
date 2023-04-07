@@ -42,13 +42,22 @@ class SellInteractor(
     }
 
     suspend fun loadSellAvailability() {
+        Timber.i("Loading loadSellAvailability")
         sellRepository.loadMoonpayFlags()
     }
 
     suspend fun isSellAvailable(): Boolean {
-        return sellEnabledFeatureToggle.isFeatureEnabled &&
+        val isSellAvailable = sellEnabledFeatureToggle.isFeatureEnabled &&
             isUserBalancePositive() &&
             sellRepository.isSellAllowedForUser()
+
+        val debugInfo = buildString {
+            append("isFeatureEnabled=${sellEnabledFeatureToggle.isFeatureEnabled}")
+            append("isUserBalancePositive=${isUserBalancePositive()}")
+            append("isSellAllowedForUser=${sellRepository.isSellAllowedForUser()}")
+        }
+        Timber.i("Checking if sell is available: $debugInfo")
+        return isSellAvailable
     }
 
     private suspend fun isUserBalancePositive(): Boolean {
@@ -86,6 +95,7 @@ class SellInteractor(
     }
 
     suspend fun cancelTransaction(transactionId: String): MoonpaySellCancelResult {
+        Timber.i("Cancelling sell transaction")
         return sellRepository.cancelSellTransaction(transactionId)
     }
 

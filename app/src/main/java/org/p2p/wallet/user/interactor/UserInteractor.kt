@@ -82,16 +82,16 @@ class UserInteractor(
         val file = externalStorageRepository.readJsonFile(TOKENS_FILE_NAME)
 
         if (file != null) {
-            Timber.tag(TAG).d("Tokens data file was found. Trying to parse it...")
+            Timber.tag(TAG).i("Tokens data file was found. Trying to parse it...")
             val tokens = gson.fromJson(file.data, Array<TokenData>::class.java)?.toList()
             if (tokens != null) {
-                Timber.tag(TAG).d("Tokens data were successfully parsed from file.")
+                Timber.tag(TAG).i("Tokens data were successfully parsed from file.")
                 userLocalRepository.setTokenData(tokens)
                 return
             }
         }
 
-        Timber.tag(TAG).d("Tokens data file was not found. Loading from remote")
+        Timber.tag(TAG).i("Tokens data file was not found. Loading from remote")
         // If the file is not found or empty, load from network
         val data = userRepository.loadAllTokens()
         userLocalRepository.setTokenData(data)
@@ -118,6 +118,7 @@ class UserInteractor(
     }
 
     suspend fun loadUserRates(userTokens: List<Token.Active>) {
+        Timber.i("Loading user rates for ${userTokens.size}")
         val tokenIds = userTokens.mapNotNull { token ->
             val coingeckoId = userLocalRepository.findTokenData(token.mintAddress)?.coingeckoId
             coingeckoId?.let { TokenId(id = it) }
@@ -157,6 +158,7 @@ class UserInteractor(
         cachedTokens: List<Token.Active>,
         newTokens: List<Token.Active>
     ): List<Token.Active> {
+        Timber.i("Updating local tokens: old=${cachedTokens.size};new=${newTokens.size}")
         val newTokensToCache = newTokens
             .map { newToken ->
                 val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }

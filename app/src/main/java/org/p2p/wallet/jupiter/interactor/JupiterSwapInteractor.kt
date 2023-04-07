@@ -17,6 +17,8 @@ import org.p2p.wallet.utils.toBase58Instance
 
 private const val LOW_SLIPPAGE_ERROR_CODE = 6001
 
+private const val TAG = "JupiterSwapInteractor"
+
 class JupiterSwapInteractor(
     private val relaySdkFacade: RelaySdkFacade,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -30,6 +32,7 @@ class JupiterSwapInteractor(
     }
 
     suspend fun swapTokens(jupiterTransaction: Base64String): JupiterSwapTokensResult = try {
+        Timber.tag(TAG).i("Starting swapping tokens: jupiter unsigned transaction = ${jupiterTransaction.base64Value}")
         val userAccount = Account(tokenKeyProvider.keyPair)
 
         val signedSwapTransaction = relaySdkFacade.signTransaction(
@@ -46,6 +49,7 @@ class JupiterSwapInteractor(
         Timber.i("Swap tokens success: $firstTransactionSignature")
         JupiterSwapTokensResult.Success(firstTransactionSignature)
     } catch (error: ServerException) {
+        Timber.tag(TAG).i(error, "Failed swapping transaction")
         val domainErrorType = error.domainErrorType
         if (domainErrorType != null &&
             domainErrorType is RpcError.InstructionError &&
@@ -57,6 +61,7 @@ class JupiterSwapInteractor(
             JupiterSwapTokensResult.Failure(error)
         }
     } catch (failure: Throwable) {
+        Timber.tag(TAG).i(failure, "Failed to swap")
         JupiterSwapTokensResult.Failure(failure)
     }
 
