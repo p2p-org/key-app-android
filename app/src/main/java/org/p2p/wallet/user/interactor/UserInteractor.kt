@@ -10,6 +10,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
@@ -17,7 +18,6 @@ import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.POPULAR_TOKENS_COINGECKO_IDS
 import org.p2p.wallet.home.ui.main.TOKEN_SYMBOLS_VALID_FOR_BUY
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
@@ -26,7 +26,6 @@ import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.toPublicKey
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
@@ -39,10 +38,10 @@ class UserInteractor(
     private val mainLocalRepository: HomeLocalRepository,
     private val recipientsLocalRepository: RecipientsLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
-    private val tokenKeyProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences,
     private val externalStorageRepository: ExternalStorageRepository,
     private val tokenPricesRepository: TokenPricesRemoteRepository,
+    private val metadataUpdateFeatureToggle: TokenMetadataUpdateFeatureToggle,
     private val gson: Gson
 ) {
 
@@ -81,7 +80,7 @@ class UserInteractor(
     suspend fun loadAllTokensData() {
         val file = externalStorageRepository.readJsonFile(TOKENS_FILE_NAME)
 
-        if (file != null) {
+        if (!metadataUpdateFeatureToggle.isFeatureEnabled && file != null) {
             Timber.tag(TAG).d("Tokens data file was found. Trying to parse it...")
             val tokens = gson.fromJson(file.data, Array<TokenData>::class.java)?.toList()
             if (tokens != null) {
@@ -135,8 +134,8 @@ class UserInteractor(
         updateUserTokenRates(prices)
     }
 
-    suspend fun loadUserTokensAndUpdateLocal(): List<Token.Active> {
-        val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
+    suspend fun loadUserTokensAndUpdateLocal(publicKey: PublicKey): List<Token.Active> {
+        val newTokens = userRepository.loadUserTokens(publicKey)
         val cachedTokens = mainLocalRepository.getUserTokens()
         return updateLocalTokens(cachedTokens, newTokens)
     }

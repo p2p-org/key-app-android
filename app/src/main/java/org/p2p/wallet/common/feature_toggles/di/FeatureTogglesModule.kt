@@ -25,6 +25,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureTo
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 
 object FeatureTogglesModule : InjectionModule {
@@ -59,6 +60,7 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::SolendEnabledFeatureToggle)
         factoryOf(::NetworkObservationFeatureToggle)
         factoryOf(::SendViaLinkFeatureToggle)
+        factoryOf(::TokenMetadataUpdateFeatureToggle)
         factoryOf(::NetworkObservationPercentFeatureToggle)
         factoryOf(::NetworkObservationFrequencyFeatureToggle)
         factoryOf(::NetworkObservationDebounceFeatureToggle)

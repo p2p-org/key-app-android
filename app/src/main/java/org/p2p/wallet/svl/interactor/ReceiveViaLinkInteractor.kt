@@ -104,7 +104,8 @@ class ReceiveViaLinkInteractor(
             token = token,
             lamports = token.totalInLamports,
             memo = BuildConfig.sendViaLinkMemo,
-            isSimulation = false
+            isSimulation = false,
+            shouldCloseAccount = true
         )
     }
 }
