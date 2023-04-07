@@ -216,8 +216,7 @@ class NewSendPresenter(
                 view.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
             }
             is FeeRelayerState.Failure -> {
-                Timber.i(newState.errorStateError.toString())
-                Timber.i(newState, "FeeRelayerState has error")
+                Timber.e(newState, "FeeRelayerState has error")
                 if (newState.isFeeCalculationError()) view.showFeeViewVisible(isVisible = false)
                 updateButton(requireToken(), newState)
             }
