@@ -102,6 +102,7 @@ class ClaimPresenter(
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
 
         claimDetails = claimUiMapper.makeClaimDetails(
+            tokenToClaim = tokenToClaim,
             resultAmount = resultAmount,
             fees = fees.takeUnless { isFree },
             minAmountForFreeFee = minAmountForFreeFee

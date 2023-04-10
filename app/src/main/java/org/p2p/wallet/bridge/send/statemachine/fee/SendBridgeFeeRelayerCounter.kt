@@ -116,11 +116,13 @@ class SendBridgeFeeRelayerCounter constructor(
                         // Assuming token is not SOL
                         val tokenTotal = sourceToken.total.toLamports(sourceToken.decimals)
                         val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
-                        val newFeePayer = when (val state = fee.calculateFeePayerState(
-                            strategy = FeePayerSelectionStrategy.NO_ACTION,
-                            sourceTokenTotal = tokenTotal,
-                            inputAmount = inputAmount
-                        )) {
+                        val newFeePayer = when (
+                            val state = fee.calculateFeePayerState(
+                                strategy = FeePayerSelectionStrategy.NO_ACTION,
+                                sourceTokenTotal = tokenTotal,
+                                inputAmount = inputAmount
+                            )
+                        ) {
                             is FeePayerState.SwitchToSpl -> {
                                 state.tokenToSwitch
                             }
