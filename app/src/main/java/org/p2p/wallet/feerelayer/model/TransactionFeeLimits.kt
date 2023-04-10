@@ -4,6 +4,7 @@ import android.os.Parcelable
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.p2p.wallet.utils.divideSafe
 
 @Parcelize
 class TransactionFeeLimits(
@@ -35,7 +36,7 @@ class TransactionFeeLimits(
     fun isAccountCreationAllowed(): Boolean {
         val isAccountCreationCountEnough = maxAccountCreationCount - accountCreationUsed > 0
 
-        val minRequiredAmount = accountCreationAmountUsed / accountCreationUsed.toBigInteger()
+        val minRequiredAmount = accountCreationAmountUsed.divideSafe(accountCreationUsed.toBigInteger())
         // we need at least 2 039 280 lamports for next transaction
         val isAccountCreationAmountEnough = maxAccountCreationAmount - accountCreationAmountUsed > minRequiredAmount
 
