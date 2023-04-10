@@ -3,7 +3,6 @@ package org.p2p.wallet.bridge.send.statemachine.fee
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
@@ -36,134 +35,52 @@ class SendBridgeFeeRelayerCounter constructor(
 
     private val supportedPayerTokensMap: HashMap<String, List<Token.Active>> = HashMap()
 
-    var tokenToPayFee: Token.Active? = null
-        private set
-
-    var feeRelayerFee: FeeRelayerFee? = null
-        private set
-
     suspend fun calculateFeeForPayer(
         sourceToken: Token.Active,
         feePayerToken: Token.Active?,
-        recipient: String,
-        strategy: FeePayerSelectionStrategy,
         tokenAmount: BigDecimal,
         bridgeFees: BridgeSendFees,
-    ) {
-        val feePayer = feePayerToken ?: tokenToPayFee ?: sourceToken
-        if (tokenToPayFee == null) {
-            tokenToPayFee = feePayer
-        }
+    ): Pair<Token.Active, FeeRelayerFee?> {
+        val feePayer = feePayerToken ?: sourceToken
         // feePayer = sourceToken for first case when tokenToPayFee is not initialised
         val solToken = userInteractor.getUserSolToken() ?: error("Error on getting SOL Token")
 
-        try {
-            val feeState = calculateFeesForFeeRelayer(
-                feePayerToken = feePayer,
-                bridgeFees = bridgeFees,
-            )
+        val (tokenToPayFee, feeState) = calculateFeesForFeeRelayer(
+            tokenAmount = tokenAmount,
+            sourceToken = sourceToken,
+            feePayerToken = feePayer,
+            solToken = solToken,
+            bridgeFees = bridgeFees,
+        )
+        Timber.tag("FeePayer").d("${tokenToPayFee.tokenSymbol}: ${tokenToPayFee.mintAddress}")
 
-            suspend fun recalculate() {
-                calculateFeeForPayer(
-                    sourceToken = sourceToken,
-                    feePayerToken = tokenToPayFee,
-                    recipient = recipient,
-                    strategy = strategy,
-                    tokenAmount = tokenAmount,
-                    bridgeFees = bridgeFees,
-                )
+        return when (feeState) {
+            is FeeCalculationState.NoFees -> {
+                Timber.d("All is Ok just NoFees")
+                tokenToPayFee to null
             }
-
-            when (feeState) {
-                is FeeCalculationState.NoFees -> {
-                    Timber.d("All is Ok just NoFees")
-                    tokenToPayFee = sourceToken
-                    feeRelayerFee = null
-                }
-                is FeeCalculationState.PoolsNotFound -> {
-                    Timber.tag("FeePayer").d("Error during FeeRelayer PoolsNotFound")
-                    val fee = buildSolanaFee(feePayer, sourceToken, feeState.feeInSol)
-                    tokenToPayFee = fee.firstAlternativeTokenOrNull() ?: solToken
-                    feeRelayerFee = feeState.feeInSol
-                    recalculate()
-                }
-                is FeeCalculationState.Success -> {
-                    feeRelayerFee = feeState.fee
-                    val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
-                    val fee = buildSolanaFee(feePayer, sourceToken, feeState.fee)
-                    if (feePayer.isSOL) {
-                        if (fee.isEnoughSolBalance()) {
-                            Timber.d("We can pay only in SOL!")
-                        } else {
-                            Timber.d("We can pay only in SOL but we have Insufficient Funds to cover this")
-                            throw SendFeatureException.InsufficientFunds(tokenAmount)
-                        }
-                    } else {
-                        Timber.tag("FeePayer").d("Payer candidate found ${tokenToPayFee?.tokenSymbol}")
-                        validateAndSelectFeePayer(
-                            solToken = solToken,
-                            sourceToken = sourceToken,
-                            feePayerToken = feePayer,
-                            fee = fee,
-                            inputAmount = inputAmount,
-                            strategy = strategy
-                        ) { recalculate() }
-                    }
-                    Timber.tag("FeePayer").d("${tokenToPayFee?.tokenSymbol}: ${tokenToPayFee?.mintAddress}")
-                    Timber.tag("FeePayer").d("$feeRelayerFee")
-                }
-                is FeeCalculationState.Error -> {
-                    Timber.e(feeState.error, "Error during FeePayer fee calculation")
-                    throw SendFeatureException.FeeLoadingError(feeState.error.message)
-                }
+            is FeeCalculationState.PoolsNotFound -> {
+                Timber.tag("FeePayer").d("${feeState.feeInSol}")
+                tokenToPayFee to feeState.feeInSol
             }
-        } catch (e: CancellationException) {
-            Timber.i("Smart selection job was cancelled")
-        }
-    }
-
-    private suspend fun validateAndSelectFeePayer(
-        solToken: Token.Active,
-        sourceToken: Token.Active,
-        feePayerToken: Token.Active,
-        fee: SendSolanaFee,
-        inputAmount: BigInteger,
-        strategy: FeePayerSelectionStrategy,
-        recalculateBlock: suspend () -> Unit
-    ) {
-
-        // Assuming token is not SOL
-        val tokenTotal = sourceToken.total.toLamports(sourceToken.decimals)
-
-        /*
-         * Checking if fee payer is SOL, otherwise fee payer is already correctly set up
-         * - if there is enough SPL balance to cover fee, setting the default fee payer as SPL token
-         * - if there is not enough SPL/SOL balance to cover fee, trying to reduce input amount
-         * - In other cases, switching to SOL
-         * */
-        val prevFeePayerMint = feePayerToken.mintAddress
-        when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
-            is FeePayerState.SwitchToSpl -> {
-                tokenToPayFee = state.tokenToSwitch
+            is FeeCalculationState.Success -> {
+                Timber.tag("FeePayer").d("${feeState.fee}")
+                tokenToPayFee to feeState.fee
             }
-            is FeePayerState.SwitchToSol -> {
-                tokenToPayFee = solToken
+            is FeeCalculationState.Error -> {
+                Timber.e(feeState.error, "Error during FeePayer fee calculation")
+                throw SendFeatureException.FeeLoadingError(feeState.error.message)
             }
-            is FeePayerState.ReduceInputAmount -> {
-                tokenToPayFee = sourceToken
-                // currentState = FeeRelayerState.ReduceAmount(state.maxAllowedAmount) todo remove or use ReduceAmount
-            }
-        }
-
-        if (prevFeePayerMint != tokenToPayFee?.mintAddress) {
-            recalculateBlock.invoke()
         }
     }
 
     private suspend fun calculateFeesForFeeRelayer(
+        tokenAmount: BigDecimal,
+        sourceToken: Token.Active,
         feePayerToken: Token.Active,
+        solToken: Token.Active,
         bridgeFees: BridgeSendFees,
-    ): FeeCalculationState {
+    ): Pair<Token.Active, FeeCalculationState> {
         try {
             val expectedFee = FeeAmount(
                 transaction = bridgeFees.networkFee.amount?.toBigIntegerOrNull().orZero() +
@@ -174,7 +91,7 @@ class SendBridgeFeeRelayerCounter constructor(
             val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
 
             if (fees.total.isZero()) {
-                return FeeCalculationState.NoFees
+                return feePayerToken to FeeCalculationState.NoFees
             }
 
             val poolsStateFee = getFeesInPayingToken(
@@ -185,14 +102,68 @@ class SendBridgeFeeRelayerCounter constructor(
 
             return when (poolsStateFee) {
                 is FeePoolsState.Calculated -> {
-                    FeeCalculationState.Success(FeeRelayerFee(fees, poolsStateFee.feeInSpl, expectedFee))
+                    val feePayerFee = FeeRelayerFee(fees, poolsStateFee.feeInSpl, expectedFee)
+                    val fee = buildSolanaFee(feePayerToken, sourceToken, feePayerFee)
+                    if (feePayerToken.isSOL) {
+                        if (fee.isEnoughSolBalance()) {
+                            feePayerToken to FeeCalculationState.Success(feePayerFee)
+                        } else {
+                            Timber.d("We can pay only in SOL but we have Insufficient Funds to cover this")
+                            throw SendFeatureException.InsufficientFunds(tokenAmount)
+                        }
+                    } else {
+                        Timber.tag("FeePayer").d("Payer candidate found ${feePayerToken.tokenSymbol}")
+                        // Assuming token is not SOL
+                        val tokenTotal = sourceToken.total.toLamports(sourceToken.decimals)
+                        val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
+                        val newFeePayer = when (val state = fee.calculateFeePayerState(
+                            strategy = FeePayerSelectionStrategy.NO_ACTION,
+                            sourceTokenTotal = tokenTotal,
+                            inputAmount = inputAmount
+                        )) {
+                            is FeePayerState.SwitchToSpl -> {
+                                state.tokenToSwitch
+                            }
+                            is FeePayerState.SwitchToSol -> {
+                                solToken
+                            }
+                            is FeePayerState.ReduceInputAmount -> {
+                                // currentState = FeeRelayerState.ReduceAmount(state.maxAllowedAmount) todo remove or use ReduceAmount
+                                sourceToken
+                            }
+                        }
+                        if (feePayerToken.mintAddress != newFeePayer.mintAddress) {
+                            return calculateFeesForFeeRelayer(
+                                tokenAmount = tokenAmount,
+                                sourceToken = sourceToken,
+                                feePayerToken = newFeePayer,
+                                bridgeFees = bridgeFees,
+                                solToken = solToken,
+                            )
+                        } else {
+                            feePayerToken to FeeCalculationState.Success(feePayerFee)
+                        }
+                    }
                 }
                 is FeePoolsState.Failed -> {
-                    FeeCalculationState.PoolsNotFound(FeeRelayerFee(fees, poolsStateFee.feeInSOL, expectedFee))
+                    val feePayerFee = FeeRelayerFee(fees, poolsStateFee.feeInSOL, expectedFee)
+                    val fee = buildSolanaFee(feePayerToken, sourceToken, feePayerFee)
+                    val alternativeToken = fee.firstAlternativeTokenOrNull()
+                    if (alternativeToken == null) {
+                        feePayerToken to FeeCalculationState.PoolsNotFound(feePayerFee)
+                    } else {
+                        calculateFeesForFeeRelayer(
+                            tokenAmount = tokenAmount,
+                            sourceToken = sourceToken,
+                            feePayerToken = alternativeToken,
+                            bridgeFees = bridgeFees,
+                            solToken = solToken,
+                        )
+                    }
                 }
             }
         } catch (e: Throwable) {
-            return FeeCalculationState.Error(e)
+            return feePayerToken to FeeCalculationState.Error(e)
         }
     }
 

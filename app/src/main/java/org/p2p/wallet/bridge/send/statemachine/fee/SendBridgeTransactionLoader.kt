@@ -22,7 +22,6 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
-import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
@@ -84,19 +83,17 @@ class SendBridgeTransactionLoader constructor(
                 amount = formattedAmount.toString()
             )
 
-            feeRelayerCounter.calculateFeeForPayer(
+            val (tokenToPayFee, feeRelayerFee) = feeRelayerCounter.calculateFeeForPayer(
                 sourceToken = token,
                 feePayerToken = token,
-                recipient = initialData.recipient.hex,
-                strategy = FeePayerSelectionStrategy.SELECT_FEE_PAYER,
                 tokenAmount = amount,
                 bridgeFees = fee,
             )
 
             SendFee.Bridge(
                 fee = fee,
-                tokenToPayFee = feeRelayerCounter.tokenToPayFee,
-                feeRelayerFee = feeRelayerCounter.feeRelayerFee,
+                tokenToPayFee = tokenToPayFee,
+                feeRelayerFee = feeRelayerFee,
                 feeLimitInfo = freeTransactionFeeLimits
             )
         } catch (e: CancellationException) {
