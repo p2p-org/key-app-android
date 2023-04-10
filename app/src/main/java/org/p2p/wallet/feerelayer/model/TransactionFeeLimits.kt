@@ -16,7 +16,7 @@ class TransactionFeeLimits(
     val maxTransactionsAllowed: Int,
     val maxTransactionsAmountAllowed: BigInteger,
     val transactionsUsed: Int,
-    val amountUsed: BigInteger,
+    val totalFeeAmountUsed: BigInteger,
 
     val maxAccountCreationCount: Int,
     val maxAccountCreationAmount: BigInteger,
@@ -29,7 +29,7 @@ class TransactionFeeLimits(
 
     fun isTransactionAllowed(): Boolean {
         val isTransactionCountEnough = maxTransactionsAllowed - transactionsUsed > 0
-        val isTransactionAmountEnough = maxTransactionsAmountAllowed - amountUsed > BigInteger.ZERO
+        val isTransactionAmountEnough = maxTransactionsAmountAllowed - overallFeeAmountUsed > BigInteger.ZERO
         return isTransactionCountEnough && isTransactionAmountEnough
     }
 
@@ -56,6 +56,7 @@ class TransactionFeeLimits(
         if (forNextTransaction) {
             currentUsage += 1
         }
-        return currentUsage < maxTransactionsAllowed && (amountUsed + transactionFee) <= maxTransactionsAmountAllowed
+        val totalFee = totalFeeAmountUsed + transactionFee
+        return currentUsage < maxTransactionsAllowed && totalFee <= maxTransactionsAmountAllowed
     }
 }
