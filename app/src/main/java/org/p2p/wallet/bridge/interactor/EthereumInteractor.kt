@@ -71,4 +71,8 @@ class EthereumInteractor(
     suspend fun sendClaimBundle(signatures: List<Signature>) {
         return claimInteractor.sendEthereumBundle(signatures)
     }
+
+    suspend fun getClaimMinAmountForFreeFee(): BigDecimal {
+        return claimInteractor.getEthereumMinAmountForFreeFee()
+    }
 }

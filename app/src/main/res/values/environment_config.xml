@@ -31,7 +31,7 @@
     <string name="notificationServiceBaseUrl">https://push-service.key.app/</string>
     <string name="notificationServiceTestBaseUrl">https://push-service.keyapp.org/</string>
 
-    <string name="bridgesServiceBaseUrl">https://bridge-service.key.app/</string>
+    <string name="bridgesServiceBaseUrl">https://bridge-service.keyapp.org/</string>
     <string name="bridgesServiceTestBaseUrl">https://bridge-service.keyapp.org/</string>
 
     <string name="web3AuthServiceBaseUrl">https://web3-auth.keyapp.org/</string>
