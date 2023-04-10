@@ -34,7 +34,11 @@ class TransactionFeeLimits(
 
     fun isAccountCreationAllowed(): Boolean {
         val isAccountCreationCountEnough = maxAccountCreationCount - accountCreationUsed > 0
-        val isAccountCreationAmountEnough = maxAccountCreationAmount - accountCreationAmountUsed > BigInteger.ZERO
+
+        val minRequiredAmount = accountCreationAmountUsed / accountCreationUsed.toBigInteger()
+        // we need at least 2 039 280 lamports for next transaction
+        val isAccountCreationAmountEnough = maxAccountCreationAmount - accountCreationAmountUsed > minRequiredAmount
+
         return isAccountCreationCountEnough && isAccountCreationAmountEnough
     }
 

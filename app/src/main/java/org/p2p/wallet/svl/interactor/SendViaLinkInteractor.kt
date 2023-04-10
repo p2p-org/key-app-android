@@ -45,7 +45,8 @@ class SendViaLinkInteractor(
         token: Token.Active,
         lamports: BigInteger,
         memo: String,
-        isSimulation: Boolean
+        isSimulation: Boolean,
+        shouldCloseAccount: Boolean = false
     ): String {
         val statistics = FeeRelayerStatistics(
             operationType = OperationType.TRANSFER,
@@ -59,7 +60,8 @@ class SendViaLinkInteractor(
             token = token,
             lamports = lamports,
             feePayer = feePayer,
-            memo = memo
+            memo = memo,
+            shouldCloseAccount = shouldCloseAccount
         )
 
         return feeRelayerLinkInteractor.signAndSendTransaction(
@@ -76,7 +78,8 @@ class SendViaLinkInteractor(
         token: Token.Active,
         lamports: BigInteger,
         feePayer: PublicKey,
-        memo: String
+        memo: String,
+        shouldCloseAccount: Boolean
     ): PreparedTransaction {
         val account = senderAccount ?: Account(tokenKeyProvider.keyPair)
 
@@ -97,7 +100,8 @@ class SendViaLinkInteractor(
                 destinationAddress = destinationAddress,
                 amount = lamports,
                 feePayer = feePayer,
-                memo = memo
+                memo = memo,
+                shouldCloseAccount = shouldCloseAccount
             )
         }
 
@@ -140,7 +144,8 @@ class SendViaLinkInteractor(
         destinationAddress: PublicKey,
         amount: BigInteger,
         feePayer: PublicKey,
-        memo: String
+        memo: String,
+        shouldCloseAccount: Boolean
     ): PreparedTransaction {
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
             destinationAddress = destinationAddress,
@@ -178,6 +183,15 @@ class SendViaLinkInteractor(
             signer = account.publicKey,
             memo = memo
         )
+
+        if (shouldCloseAccount) {
+            instructions += TokenProgram.closeAccountInstruction(
+                TokenProgram.PROGRAM_ID,
+                fromPublicKey.toPublicKey(),
+                feePayer,
+                account.publicKey,
+            )
+        }
 
         return transactionInteractor.prepareTransaction(
             instructions = instructions,
