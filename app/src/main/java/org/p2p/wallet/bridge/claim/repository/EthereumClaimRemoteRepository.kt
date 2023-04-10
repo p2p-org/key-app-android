@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.claim.repository
 
 import androidx.annotation.IntRange
+import java.math.BigDecimal
 import java.util.Optional
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.eth.EthAddress
@@ -9,6 +10,7 @@ import org.p2p.wallet.bridge.api.mapper.BridgeMapper
 import org.p2p.wallet.bridge.api.request.GetEthereumBundleRpcRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumBundleStatusRpcRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumFeesRpcRequest
+import org.p2p.wallet.bridge.api.request.GetEthereumFreeFeeLimitRequest
 import org.p2p.wallet.bridge.api.request.GetListOfEthereumBundleStatusesRpcRequest
 import org.p2p.wallet.bridge.api.request.SendEthereumBundleRpcRequest
 import org.p2p.wallet.bridge.api.response.BridgeBundleResponse
@@ -84,5 +86,11 @@ class EthereumClaimRemoteRepository(
         )
         val result = bridgeRepository.launch(rpcRequest)
         return result.data.map { mapper.fromNetwork(it) }
+    }
+
+    override suspend fun getEthereumMinAmountForFreeFee(): BigDecimal {
+        val rpcRequest = GetEthereumFreeFeeLimitRequest
+        val result = bridgeRepository.launch(rpcRequest)
+        return result.data
     }
 }
