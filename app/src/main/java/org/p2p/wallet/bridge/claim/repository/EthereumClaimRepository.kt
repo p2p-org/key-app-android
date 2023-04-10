@@ -1,5 +1,6 @@
 package org.p2p.wallet.bridge.claim.repository
 
+import java.math.BigDecimal
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.Signature
@@ -33,4 +34,6 @@ interface EthereumClaimRepository {
     suspend fun getListOfEthereumBundleStatuses(
         ethAddress: EthAddress
     ): List<BridgeBundle>
+
+    suspend fun getEthereumMinAmountForFreeFee(): BigDecimal
 }

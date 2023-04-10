@@ -50,14 +50,19 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     fun makeClaimDetails(
+        tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
+        minAmountForFreeFee: BigDecimal
     ): ClaimDetails {
+        val defaultFee = fees?.gasEth.toBridgeAmount()
         return ClaimDetails(
             willGetAmount = resultAmount.toBridgeAmount(),
-            networkFee = fees?.gasEth.toBridgeAmount(),
+            networkFee = defaultFee,
             accountCreationFee = fees?.createAccount.toBridgeAmount(),
-            bridgeFee = fees?.arbiterFee.toBridgeAmount()
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(),
+            minAmountForFreeFee = minAmountForFreeFee,
+            claimAmount = tokenToClaim.total
         )
     }
 
@@ -106,7 +111,7 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     private fun toTextHighlighting(items: List<BridgeAmount>): TextHighlighting {
-        val usdText = items.filter { !it.isFree }.sumOf { it.fiatAmount.orZero() }.toString()
+        val usdText = items.filter { !it.isFree }.sumOf { it.fiatAmount.orZero() }.asApproximateUsd(withBraces = false)
         return TextHighlighting(
             commonText = usdText,
             highlightedText = usdText
