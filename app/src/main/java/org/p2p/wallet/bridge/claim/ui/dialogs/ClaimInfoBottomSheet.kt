@@ -74,14 +74,17 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
         root.setBackgroundResource(R.drawable.bg_rounded_solid_cloud_16)
         imageViewIcon.setImageResource(R.drawable.ic_lightning)
         textViewTitle.setText(R.string.free_transactions_title)
-        textViewSubtitle.text = getString(R.string.bridge_info_free_transaction_message)
+        textViewSubtitle.text = getString(
+            R.string.bridge_info_free_transaction_message,
+            claimDetails.minAmountForFreeFee.toBigInteger()
+        )
     }
 
     private fun ItemClaimDetailsPartBinding.bindDetailsLineWithFee(title: String, fee: BridgeAmount) {
         textViewTitle.text = title
         textViewFiatAmount.text = fee.formattedFiatAmount ?: getString(R.string.bridge_info_transaction_free)
         val formattedTokenAmount = fee.formattedTokenAmount
-        if (formattedTokenAmount == null) {
+        if (formattedTokenAmount == null && claimDetails.claimAmount >= claimDetails.minAmountForFreeFee) {
             textViewTokenAmount.text = getString(R.string.bridge_claim_fees_free)
             textViewTokenAmount.setTextColorRes(R.color.text_mint)
         } else {

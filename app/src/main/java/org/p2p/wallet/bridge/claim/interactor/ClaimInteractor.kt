@@ -1,5 +1,6 @@
 package org.p2p.wallet.bridge.claim.interactor
 
+import java.math.BigDecimal
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
@@ -41,5 +42,9 @@ class ClaimInteractor(
             .map {
                 mapper.mapBundle(it)
             }
+    }
+
+    suspend fun getEthereumMinAmountForFreeFee(): BigDecimal {
+        return ethereumClaimRepository.getEthereumMinAmountForFreeFee()
     }
 }

@@ -53,6 +53,7 @@ class ClaimUiMapper(private val resources: Resources) {
         tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
+        minAmountForFreeFee: BigDecimal
     ): ClaimDetails {
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals
@@ -61,7 +62,9 @@ class ClaimUiMapper(private val resources: Resources) {
             willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
             networkFee = defaultFee,
             accountCreationFee = fees?.createAccount.toBridgeAmount(tokenSymbol, decimals),
-            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals),
+            minAmountForFreeFee = minAmountForFreeFee,
+            claimAmount = tokenToClaim.total
         )
     }
 
