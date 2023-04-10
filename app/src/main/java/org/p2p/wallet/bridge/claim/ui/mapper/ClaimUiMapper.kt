@@ -116,7 +116,7 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     private fun toTextHighlighting(items: List<BridgeAmount>): TextHighlighting {
-        val usdText = items.filter { !it.isFree }.sumOf { it.fiatAmount.orZero() }.toString()
+        val usdText = items.filter { !it.isFree }.sumOf { it.fiatAmount.orZero() }.asApproximateUsd(withBraces = false)
         return TextHighlighting(
             commonText = usdText,
             highlightedText = usdText
