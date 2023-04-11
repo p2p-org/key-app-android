@@ -199,7 +199,7 @@ class SendInteractor(
         val fees = userTokens
             .map { token ->
                 // converting SOL fee in token lamports to verify the balance coverage
-                async { getFeesInPayingTokeNullable(token, transactionFeeInSOL, accountCreationFeeInSOL) }
+                async { getFeesInPayingTokenNullable(token, transactionFeeInSOL, accountCreationFeeInSOL) }
             }
             .awaitAll()
             .filterNotNull()
