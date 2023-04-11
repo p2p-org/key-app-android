@@ -83,7 +83,6 @@ internal class EthereumKitRepository(
                 }
                 getPriceForTokens(localTokensMetadata.map { it.contractAddress.hex })
                     .onEach { (address, price) ->
-                        Timber.tag("________").d("Address = $address, price = $price")
                         localTokensMetadata.find { it.contractAddress.hex == address }?.price = price
                     }
                 (listOf(getEthToken()) + localTokensMetadata).filter { metadata ->
@@ -137,9 +136,7 @@ internal class EthereumKitRepository(
             val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
             val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
 
-            loadTokenBalances(publicKey, tokenAddresses).also {
-                Timber.tag("_______BALANCES").d(it.toString())
-            }.map { tokenBalance ->
+            loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
                 getMetadataAsync(
                     tokenBalance = tokenBalance,
                     contractAddress = tokenBalance.contractAddress
