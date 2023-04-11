@@ -55,21 +55,19 @@ class ClaimUiMapper(private val resources: Resources) {
         fees: BridgeBundleFees?,
         minAmountForFreeFee: BigDecimal
     ): ClaimDetails {
-        val tokenSymbol = tokenToClaim.tokenSymbol
-        val decimals = tokenToClaim.decimals
-        val defaultFee = fees?.gasEth.toBridgeAmount(tokenSymbol, decimals)
+        val defaultFee = fees?.gasEth.toBridgeAmount()
         return ClaimDetails(
-            willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
+            willGetAmount = resultAmount.toBridgeAmount(),
             networkFee = defaultFee,
-            accountCreationFee = fees?.createAccount.toBridgeAmount(tokenSymbol, decimals),
-            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals),
+            accountCreationFee = fees?.createAccount.toBridgeAmount(),
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(),
             minAmountForFreeFee = minAmountForFreeFee,
             claimAmount = tokenToClaim.total
         )
     }
 
-    fun makeResultAmount(resultAmount: BridgeFee, tokenToClaim: Token.Eth): BridgeAmount {
-        return resultAmount.toBridgeAmount(tokenToClaim.tokenSymbol, tokenToClaim.decimals)
+    fun makeResultAmount(resultAmount: BridgeFee): BridgeAmount {
+        return resultAmount.toBridgeAmount()
     }
 
     fun getTextSkeleton(): TextViewCellModel.Skeleton {
@@ -103,15 +101,12 @@ class ClaimUiMapper(private val resources: Resources) {
         )
     }
 
-    private fun BridgeFee?.toBridgeAmount(
-        tokenSymbol: String,
-        decimals: Int,
-    ): BridgeAmount {
+    private fun BridgeFee?.toBridgeAmount(): BridgeAmount {
         return BridgeAmount(
-            tokenSymbol = tokenSymbol,
-            tokenAmount = this?.amountInToken(decimals).takeIf { !it.isNullOrZero() },
-            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero(),
-            tokenDecimals = decimals
+            tokenSymbol = this?.symbol.orEmpty(),
+            tokenDecimals = this?.decimals.orZero(),
+            tokenAmount = this?.amountInToken?.takeIf { !it.isNullOrZero() },
+            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
         )
     }
 
