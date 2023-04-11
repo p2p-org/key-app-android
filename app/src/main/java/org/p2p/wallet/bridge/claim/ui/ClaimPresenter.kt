@@ -3,6 +3,7 @@ package org.p2p.wallet.bridge.claim.ui
 import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
+import java.math.BigDecimal
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -59,15 +60,17 @@ class ClaimPresenter(
 
     private fun startRefreshJob(delayMillis: Long = 0) {
         refreshJob?.cancel()
-        refreshJob = launch {
+        refreshJob = launchSupervisor {
             delay(delayMillis)
             reset()
             try {
                 val newBundle = fetchBundle()
+                val minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee()
                 showFees(
                     resultAmount = newBundle.resultAmount,
                     fees = newBundle.fees,
-                    isFree = newBundle.compensationDeclineReason.isEmpty()
+                    isFree = newBundle.compensationDeclineReason.isEmpty(),
+                    minAmountForFreeFee = minAmountForFreeFee
                 )
                 val finalValue = claimUiMapper.makeResultAmount(newBundle.resultAmount, tokenToClaim)
                 view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
@@ -90,13 +93,19 @@ class ClaimPresenter(
         }
     }
 
-    private fun showFees(resultAmount: BridgeFee, fees: BridgeBundleFees, isFree: Boolean) {
+    private fun showFees(
+        resultAmount: BridgeFee,
+        fees: BridgeBundleFees,
+        isFree: Boolean,
+        minAmountForFreeFee: BigDecimal
+    ) {
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
 
         claimDetails = claimUiMapper.makeClaimDetails(
             tokenToClaim = tokenToClaim,
             resultAmount = resultAmount,
-            fees = fees.takeUnless { isFree }
+            fees = fees.takeUnless { isFree },
+            minAmountForFreeFee = minAmountForFreeFee
         )
         view?.setClaimButtonState(isButtonEnabled = true)
     }

@@ -5,25 +5,27 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.toPublicKey
 
 private val POLLING_ETH_DELAY = 30.toDuration(DurationUnit.SECONDS)
 private val TAG = "UserTokensPolling"
@@ -34,6 +36,7 @@ class UserTokensPolling(
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val ethereumInteractor: EthereumInteractor,
     private val dispatchers: CoroutineDispatchers,
+    private val tokenKeyProvider: TokenKeyProvider
 ) : CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = SupervisorJob() + dispatchers.io
@@ -86,11 +89,13 @@ class UserTokensPolling(
         if (!isTokensRateFetched.get()) {
             loadSolTokensRate()
         }
-        solTokensFlow.emit(userInteractor.loadUserTokensAndUpdateLocal())
+        solTokensFlow.emit(userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey()))
     }
 
     private suspend fun getSolTokens(): List<Token.Active> {
-        return userInteractor.getUserTokens().ifEmpty { userInteractor.loadUserTokensAndUpdateLocal() }
+        return userInteractor.getUserTokens().ifEmpty {
+            userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
+        }
     }
 
     private suspend fun fetchEthereumTokens() = withContext(dispatchers.io) {
