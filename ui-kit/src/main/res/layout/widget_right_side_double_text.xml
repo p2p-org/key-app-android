@@ -26,7 +26,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="$190.91" />
+        tools:text="$10190.91" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewSecond"
@@ -44,7 +44,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewFirst"
-        tools:text="23.8112 SOL"
+        tools:text="89088.8112 SOL"
         tools:visibility="visible" />
 
 </merge>
