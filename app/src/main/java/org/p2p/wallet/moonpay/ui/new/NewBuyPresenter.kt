@@ -91,7 +91,7 @@ class NewBuyPresenter(
             tokensToBuy = userInteractor.getTokensForBuy()
             if (tokensToBuy.isEmpty()) {
                 // cannot be empty, buy we are handling
-                Timber.i("Tokens to buy return an empty list, closing buy screen")
+                Timber.e(java.lang.IllegalStateException("Tokens to buy return an empty list, closing buy screen"))
                 view?.close()
                 return@launch
             }
@@ -294,21 +294,23 @@ class NewBuyPresenter(
 
     private fun onBuyCurrencyLoadSuccess(buyResult: MoonpayBuyResult) {
         val buyResultAnalytics: BuyAnalytics.BuyResult
-        Timber.d(buyResult.toString())
         when (buyResult) {
             is MoonpayBuyResult.Success -> {
                 buyResultAnalytics = BuyAnalytics.BuyResult.SUCCESS
                 updateViewWithBuyCurrencyData(buyResult.data)
             }
             is MoonpayBuyResult.Error -> {
+                Timber.e(buyResult, "Failed to buy")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
             }
             is MoonpayBuyResult.MinAmountError -> {
+                Timber.i(buyResult.toString(), "Failed to buy: MinAmountError")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 showMinAmountError(buyResult.minBuyAmount)
             }
             is MoonpayBuyResult.MaxAmountError -> {
+                Timber.i(buyResult.toString(), "Failed to buy: MaxAmountError")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 showMaxAmountError(buyResult.maxBuyAmount)
             }

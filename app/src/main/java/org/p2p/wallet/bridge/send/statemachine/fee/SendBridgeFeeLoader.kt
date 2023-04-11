@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.flow
 import org.p2p.core.token.SolAddress
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
@@ -18,6 +17,7 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class SendBridgeFeeLoader constructor(
     private val mapper: SendBridgeStaticStateMapper,
@@ -70,7 +70,7 @@ class SendBridgeFeeLoader constructor(
             SendFee.Bridge(fee)
         } catch (e: CancellationException) {
             throw e
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             throw SendFeatureException.FeeLoadingError
         }
     }

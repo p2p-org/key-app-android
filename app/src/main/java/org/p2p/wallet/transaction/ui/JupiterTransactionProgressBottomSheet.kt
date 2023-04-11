@@ -24,7 +24,7 @@ import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.Slippage.Companion.PERCENT_DIVIDE_VALUE
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
-import org.p2p.wallet.updates.ConnectionStateProvider
+import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -64,7 +64,7 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
     private val transactionManager: TransactionManager by inject()
     private val glideManager: GlideManager by inject()
     private val analytics: JupiterSwapTransactionDetailsAnalytics by inject()
-    private val connectionStateProvider: ConnectionStateProvider by inject()
+    private val connectionStateProvider: NetworkConnectionStateProvider by inject()
 
     private val binding: DialogJupiterSwapTransactionProgressBinding by viewBinding()
 

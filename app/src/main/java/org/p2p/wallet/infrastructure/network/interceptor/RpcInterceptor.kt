@@ -68,7 +68,7 @@ class RpcInterceptor(
     private fun handleResponse(response: Response): Response {
         val responseBody = try {
             response.body!!.string()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             throw IOException("Error parsing response body", e)
         }
 

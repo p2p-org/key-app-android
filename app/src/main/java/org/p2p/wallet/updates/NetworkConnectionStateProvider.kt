@@ -1,18 +1,18 @@
 package org.p2p.wallet.updates
 
+import androidx.core.content.getSystemService
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import androidx.core.content.getSystemService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 
-class ConnectionStateProvider(context: Context) {
+class NetworkConnectionStateProvider(context: Context) {
     private val connectivityManager: ConnectivityManager = context.getSystemService()!!
     private val networkState = MutableStateFlow(hasConnection())
     private var subscribersCount = 0

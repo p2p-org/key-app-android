@@ -1,29 +1,29 @@
 package org.p2p.wallet.auth.web3authsdk
 
-import android.content.Context
-import android.content.IntentSender.SendIntentException
-import android.content.SharedPreferences
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.core.content.edit
+import android.content.Context
+import android.content.IntentSender.SendIntentException
+import android.content.SharedPreferences
+import android.widget.Toast
 import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.android.gms.common.api.ApiException
-import org.p2p.wallet.R
-import org.p2p.wallet.updates.ConnectionStateProvider
 import timber.log.Timber
 import java.util.UUID
+import org.p2p.wallet.R
+import org.p2p.wallet.updates.NetworkConnectionStateProvider
 
 private const val USER_CANCELED_DIALOG_CODE = 16
 private const val INTERNAL_ERROR_CODE = 8
 private const val PREFS_KEY_TOKEN_EXPIRE_TIME = "PREFS_KEY_TOKEN_EXPIRE_TIME"
 
 class GoogleSignInHelper(
-    private val connectionStateProvider: ConnectionStateProvider,
+    private val connectionStateProvider: NetworkConnectionStateProvider,
     private val sharedPreferences: SharedPreferences,
     private val web3AuthApi: Web3AuthApi
 ) {

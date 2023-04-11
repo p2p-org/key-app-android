@@ -41,7 +41,7 @@ import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
 import org.p2p.wallet.jupiter.JupiterModule.JUPITER_RETROFIT_QUALIFIER
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
-import org.p2p.wallet.updates.ConnectionStateProvider
+import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
 
 object NetworkModule : InjectionModule {
@@ -72,7 +72,7 @@ object NetworkModule : InjectionModule {
                 .create()
         }
 
-        single { ConnectionStateProvider(get()) }
+        single { NetworkConnectionStateProvider(get()) }
 
         createMoonpayNetworkModule()
 
