@@ -13,6 +13,7 @@ import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RenBtcAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.UsernameAnalytics
+import org.p2p.wallet.bridge.anatytics.ClaimAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.repository.AnalyticsInMemoryRepository
 import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
@@ -58,6 +59,7 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::CreateWalletAnalytics)
         factoryOf(::RestoreWalletAnalytics)
         factoryOf(::NewSendAnalytics)
+        factoryOf(::ClaimAnalytics)
         factoryOf(::HistoryAnalytics)
         factoryOf(::SellAnalytics)
         factoryOf(::SendViaLinkAnalytics)
