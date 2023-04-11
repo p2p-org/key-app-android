@@ -80,16 +80,16 @@ class HistoryAnalytics(
                 sendUSD = transaction.amount.totalInUsd.orZero()
             )
         } else {
-            val receiveNetwork = if (isRenBtcSessionActive) {
-                ReceiveAnalytics.ReceiveNetwork.BITCOIN
+            val analyticsReceiveNetwork = if (isRenBtcSessionActive) {
+                ReceiveAnalytics.AnalyticsReceiveNetwork.BITCOIN
             } else {
-                ReceiveAnalytics.ReceiveNetwork.SOLANA
+                ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA
             }
             receiveAnalytics.logReceiveShowingDetails(
                 receiveSum = transaction.amount.total,
                 receiveUSD = transaction.amount.totalInUsd.orZero(),
                 tokenName = transaction.symbol,
-                receiveNetwork = receiveNetwork
+                analyticsReceiveNetwork = analyticsReceiveNetwork
             )
         }
     }

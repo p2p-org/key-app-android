@@ -115,6 +115,7 @@ class TokenHistoryFragment :
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         result.getSerializableOrNull<ReceiveNetwork>(KEY_RESULT_NETWORK)?.let { network ->
+            receiveAnalytics.logNetworkClicked(network)
             when (network) {
                 ReceiveNetwork.SOLANA -> openReceiveInSolana()
                 ReceiveNetwork.ETHEREUM -> openReceiveInEthereum()
@@ -183,6 +184,7 @@ class TokenHistoryFragment :
     }
 
     override fun showReceiveNetworkDialog() {
+        receiveAnalytics.logNetworkSelectionScreenOpened()
         SelectReceiveNetworkBottomSheet.show(
             fm = childFragmentManager,
             title = getString(R.string.receive_network_dialog_title),
