@@ -19,7 +19,7 @@ object FeeRelayerLimitsConverter {
             maxTransactionsAllowed = limits.maxCount,
             maxTransactionsAmountAllowed = limits.maxAmount,
             transactionsUsed = processedFee.count,
-            amountUsed = processedFee.totalAmount,
+            totalFeeAmountUsed = processedFee.totalAmount,
 
             maxAccountCreationCount = limits.maxAccountCreationCount.orZero(),
             maxAccountCreationAmount = limits.maxAccountCreationAmount.orZero(),

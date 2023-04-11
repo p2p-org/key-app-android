@@ -1,5 +1,15 @@
 package org.p2p.wallet.solana
 
+import timber.log.Timber
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
 import org.p2p.wallet.common.di.AppScope
@@ -12,14 +22,6 @@ import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.solana.model.SolanaNetworkState.Idle
 import org.p2p.wallet.solana.model.SolanaNetworkState.Offline
 import org.p2p.wallet.solana.model.SolanaNetworkState.Online
-import timber.log.Timber
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 
 private const val SAMPLE_COUNT = 3
 private const val TAG = "NETWORK_OBSERVER"
@@ -53,6 +55,10 @@ class SolanaNetworkObserver(
                     handleSamples(samples)
                 } catch (e: CancellationException) {
                     Timber.w("Fetching recent performance samples cancelled")
+                } catch (e: UnknownHostException) {
+                    Timber.i(e, "Error loading recent samples with UnknownHostException")
+                } catch (e: SocketTimeoutException) {
+                    Timber.i(e, "Error loading recent samples with SocketTimeoutException")
                 } catch (e: Throwable) {
                     Timber.e(e, "Error loading recent samples")
                 }

@@ -46,7 +46,7 @@ import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.TransactionState
-import org.p2p.wallet.updates.ConnectionStateProvider
+import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
@@ -59,7 +59,7 @@ class BridgeSendPresenter(
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
-    private val connectionStateProvider: ConnectionStateProvider,
+    private val connectionStateProvider: NetworkConnectionStateProvider,
     private val newSendAnalytics: NewSendAnalytics,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,

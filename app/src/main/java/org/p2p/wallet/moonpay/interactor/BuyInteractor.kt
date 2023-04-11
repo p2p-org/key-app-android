@@ -1,5 +1,10 @@
 package org.p2p.wallet.moonpay.interactor
 
+import timber.log.Timber
+import java.math.BigDecimal
+import javax.net.ssl.HttpsURLConnection
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
@@ -10,10 +15,6 @@ import org.p2p.wallet.moonpay.model.MoonpayBuyQuote
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.buy.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRepository
-import java.math.BigDecimal
-import javax.net.ssl.HttpsURLConnection
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 private const val CURRENCY_AMOUNT_FOR_PRICE_REQUEST = "1"
 private const val DEFAULT_MAX_CURRENCY_AMOUNT = 10000
@@ -35,6 +36,7 @@ class BuyInteractor(
     fun getQuotes(): List<MoonpayBuyQuote> = quotes.toList()
 
     suspend fun loadQuotes(currencies: List<String>, tokens: List<Token>) = withContext(dispatchers.io) {
+        Timber.i("Loading quotes for buy: currencies=$currencies; tokens=${tokens.map(Token::mintAddress)}")
         currencies.forEach { currency ->
             tokens.forEach { token ->
                 launch { loadQuote(currency, token) }
@@ -55,7 +57,7 @@ class BuyInteractor(
     ): MoonpayBuyResult {
         val minBuyAmount = getMinAmountForPair(baseCurrencyCode, tokenToBuy)
 
-        try {
+        return try {
             val response = moonpayRepository.getBuyCurrencyData(
                 baseCurrencyAmount,
                 quoteCurrencyAmount,
@@ -64,7 +66,7 @@ class BuyInteractor(
                 paymentMethod
             )
 
-            return when {
+            when {
                 !isMinAmountValid(response, tokenToBuy) -> {
                     MoonpayBuyResult.MinAmountError(minBuyAmount)
                 }
@@ -76,12 +78,12 @@ class BuyInteractor(
                 }
             }
         } catch (error: MoonpayRequestException) {
-            return when {
+            when {
                 isMinimumAmountException(error) -> {
                     MoonpayBuyResult.MinAmountError(minBuyAmount)
                 }
                 error.httpCode == HttpsURLConnection.HTTP_BAD_REQUEST -> {
-                    MoonpayBuyResult.Error(moonpayApiMapper.fromNetworkErrorToDomainMessage(error))
+                    MoonpayBuyResult.Error(moonpayApiMapper.fromNetworkErrorToDomainMessage(error), cause = error)
                 }
                 else -> {
                     throw error

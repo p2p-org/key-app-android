@@ -26,6 +26,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
+import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.utils.SolanajTimberLogger
 
 class App : Application(), Configuration.Provider {
@@ -34,6 +35,7 @@ class App : Application(), Configuration.Provider {
     private val appsFlyerService: AppsFlyerService by inject()
     private val usernameInteractor: UsernameInteractor by inject()
     private val networkServicesUrlProvider: NetworkServicesUrlProvider by inject()
+    private val networkStateProvider: NetworkConnectionStateProvider by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -112,7 +114,7 @@ class App : Application(), Configuration.Provider {
         }
         // Always plant this tree
         // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag
-        Timber.plant(TimberCrashTree(crashLogger))
+        Timber.plant(TimberCrashTree(crashLogger, networkStateProvider))
     }
 
     private fun setupCrashLoggingService() {
