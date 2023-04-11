@@ -12,7 +12,7 @@ import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -24,6 +24,8 @@ import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.toPx
+
+private const val CLAIM_TOKEN_AMOUNT_SCALE = 8
 
 class ClaimUiMapper(private val resources: Resources) {
 
@@ -39,13 +41,16 @@ class ClaimUiMapper(private val resources: Resources) {
             listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
         } ?: emptyList()
 
+        val amountToClaim = tokenToClaim.total
+        val minAmountForFreeFee = claimDetails?.minAmountForFreeFee.orZero()
+        val isFreeTransaction = amountToClaim >= minAmountForFreeFee
         return NewShowProgress(
             date = transactionDate,
             tokenUrl = tokenToClaim.iconUrl.orEmpty(),
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
             recipient = null,
-            totalFees = listOf(toTextHighlighting(feeList))
+            totalFees = listOf(toTextHighlighting(feeList)).takeUnless { isFreeTransaction }
         )
     }
 
@@ -96,7 +101,9 @@ class ClaimUiMapper(private val resources: Resources) {
         return ClaimScreenData(
             title = resources.getString(R.string.bridge_claim_title_format, tokenToClaim.tokenSymbol),
             tokenIconUrl = tokenToClaim.iconUrl,
-            tokenFormattedAmount = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}",
+            tokenFormattedAmount = "${
+            tokenToClaim.total.scaleLong(CLAIM_TOKEN_AMOUNT_SCALE).formatToken(tokenToClaim.decimals)
+            } ${tokenToClaim.tokenSymbol}",
             fiatFormattedAmount = tokenToClaim.totalInUsd.orZero().asApproximateUsd(withBraces = false),
         )
     }

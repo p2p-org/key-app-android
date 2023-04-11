@@ -48,6 +48,7 @@ class ClaimPresenter(
     private var claimDetails: ClaimDetails? = null
     private var latestTransactions: List<HexString> = emptyList()
     private var latestBundleId: String = emptyString()
+    private var minAmountForFreeFee: BigDecimal = BigDecimal.ZERO
     private var refreshJobDelayTimeInMillis = DEFAULT_DELAY_IN_MILLIS
 
     override fun attach(view: ClaimContract.View) {
@@ -65,7 +66,7 @@ class ClaimPresenter(
             reset()
             try {
                 val newBundle = fetchBundle()
-                val minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee()
+                minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee()
                 showFees(
                     resultAmount = newBundle.resultAmount,
                     fees = newBundle.fees,
@@ -135,7 +136,6 @@ class ClaimPresenter(
                     bundleId = latestBundleId,
                     sourceTokenSymbol = tokenToClaim.tokenSymbol
                 )
-                userTokensPolling.refresh()
                 transactionManager.emitTransactionState(
                     transactionId = latestBundleId,
                     state = transactionState

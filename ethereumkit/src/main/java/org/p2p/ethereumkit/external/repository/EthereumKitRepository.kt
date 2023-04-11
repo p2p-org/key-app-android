@@ -78,15 +78,15 @@ internal class EthereumKitRepository(
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> =
         withContext(dispatchers.io) {
             try {
-                val tokensMetadata = loadTokensMetadata()
                 if (localTokensMetadata.isEmpty()) {
-                    localTokensMetadata.addAll(tokensMetadata)
+                    localTokensMetadata.addAll(loadTokensMetadata())
                 }
-                getPriceForTokens(tokensMetadata.map { it.contractAddress.toString() })
+                getPriceForTokens(localTokensMetadata.map { it.contractAddress.hex })
                     .onEach { (address, price) ->
-                        tokensMetadata.find { it.contractAddress.hex == address }?.price = price
+                        Timber.tag("________").d("Address = $address, price = $price")
+                        localTokensMetadata.find { it.contractAddress.hex == address }?.price = price
                     }
-                (listOf(getEthToken()) + tokensMetadata).filter { metadata ->
+                (listOf(getEthToken()) + localTokensMetadata).filter { metadata ->
                     val tokenBundle = claimingTokens.firstOrNull { metadata.contractAddress == it.contractAddress }
                     val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
                     metadata.balance.isMoreThan(MINIMAL_DUST) || isClaimInProgress
@@ -110,7 +110,7 @@ internal class EthereumKitRepository(
 
     private suspend fun getEthToken(): EthTokenMetadata {
         val ethContractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
-        val tokenPrice = getPriceForToken(ethContractAddress.hex)
+        val tokenPrice = getPriceForToken(ERC20Tokens.ETH.contractAddress)
         return EthTokenMetadata(
             contractAddress = ethContractAddress,
             mintAddress = ERC20Tokens.ETH.mintAddress,
@@ -137,7 +137,9 @@ internal class EthereumKitRepository(
             val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
             val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
 
-            loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
+            loadTokenBalances(publicKey, tokenAddresses).also {
+                Timber.tag("_______BALANCES").d(it.toString())
+            }.map { tokenBalance ->
                 getMetadataAsync(
                     tokenBalance = tokenBalance,
                     contractAddress = tokenBalance.contractAddress
