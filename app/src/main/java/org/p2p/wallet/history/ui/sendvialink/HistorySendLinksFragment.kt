@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.ui.sendvialink
 
+import androidx.activity.addCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
@@ -39,8 +40,11 @@ class HistorySendLinksFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            onBackPressed()
+        }
 
-        binding.toolbar.setNavigationOnClickListener { popBackStack() }
+        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
 
         binding.recyclerViewLinks.attachAdapter(adapter)
         binding.recyclerViewLinks.layoutManager = LinearLayoutManager(requireContext())
@@ -48,6 +52,10 @@ class HistorySendLinksFragment :
 
     override fun showUserLinks(userLinksModels: List<AnyCellItem>) {
         adapter.items = userLinksModels
+    }
+
+    private fun onBackPressed() {
+        popBackStack()
     }
 
     private fun onItemClicked(item: FinanceBlockCellModel) {

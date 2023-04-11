@@ -13,6 +13,7 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
+import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -38,7 +39,7 @@ class HistoryFragment :
     }
 
     override fun onUserSendLinksClicked() {
-        replaceFragment(HistorySendLinksFragment.create())
+        addFragment(HistorySendLinksFragment.create())
     }
 
     override fun onTransactionClicked(transactionId: String) {
