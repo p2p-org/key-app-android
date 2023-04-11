@@ -20,14 +20,17 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.moonpay.analytics.BuyAnalytics
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.sell.analytics.SellAnalytics
-import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
+import org.p2p.wallet.moonpay.analytics.BuyAnalytics
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.sell.analytics.SellAnalytics
+import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
+import org.p2p.wallet.svl.ui.send.SvlReceiveFundsAnalytics
+import org.p2p.wallet.swap.analytics.SwapAnalytics
 
 object AnalyticsModule : InjectionModule {
     override fun create() = module {
@@ -43,6 +46,7 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::GeneralAnalytics)
         factoryOf(::AuthAnalytics)
         factoryOf(::ReceiveAnalytics)
+        factoryOf(::AnalyticsPushChannel)
         factoryOf(::BuyAnalytics)
         factoryOf(::SwapAnalytics)
         factoryOf(::ScreensAnalyticsInteractor)
@@ -56,6 +60,8 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::NewSendAnalytics)
         factoryOf(::HistoryAnalytics)
         factoryOf(::SellAnalytics)
+        factoryOf(::SendViaLinkAnalytics)
+        factoryOf(::SvlReceiveFundsAnalytics)
 
         factoryOf(::JupiterSwapMainScreenAnalytics)
         factoryOf(::JupiterSwapSettingsAnalytics)

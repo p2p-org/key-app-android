@@ -65,8 +65,8 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         emptyList()
     }
 
-    override suspend fun getTokenAccountsByOwner(owner: String): TokenAccounts {
-        require(owner.isNotBlank()) { "Owner ID cannot be blank" }
+    override suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts {
+        require(owner.toBase58().isNotBlank()) { "Owner ID cannot be blank" }
 
         val programId = TokenProgram.PROGRAM_ID
         val programIdParam = HashMap<String, String>()
@@ -76,7 +76,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         encoding[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED
 
         val params = listOf(
-            owner,
+            owner.toBase58(),
             programIdParam,
             encoding
         )

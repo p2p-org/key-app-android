@@ -33,13 +33,13 @@ import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
-import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.args
@@ -107,6 +107,7 @@ class MainFragment :
 
         deeplinksManager.setTabsSwitcher(this)
         deeplinksManager.executeHomePendingDeeplink()
+        deeplinksManager.executeTransferPendingAppLink()
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -199,7 +200,8 @@ class MainFragment :
             tabCachedFragments.remove(itemId)
         }
 
-        if (!tabCachedFragments.containsKey(clickedTab.itemId)) {
+        val isHistoryTabSelected = clickedTab.itemId == ScreenTab.HISTORY_SCREEN.itemId
+        if (!tabCachedFragments.containsKey(clickedTab.itemId) || isHistoryTabSelected) {
             val fragment = when (clickedTab) {
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()

@@ -13,6 +13,7 @@ import org.p2p.wallet.utils.emptyString
 @Parcelize
 data class BridgeAmount(
     val tokenSymbol: String,
+    val tokenDecimals: Int,
     val tokenAmount: BigDecimal?,
     val fiatAmount: BigDecimal?
 ) : Parcelable {
@@ -20,6 +21,7 @@ data class BridgeAmount(
     companion object {
         fun zero(): BridgeAmount = BridgeAmount(
             tokenSymbol = emptyString(),
+            tokenDecimals = 0,
             tokenAmount = null,
             fiatAmount = null
         )

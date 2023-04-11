@@ -10,6 +10,7 @@
     <string name="common_no">No</string>
     <string name="common_done">Done</string>
     <string name="common_close">Close</string>
+    <string name="common_reload">Reload</string>
     <string name="common_great">Great!</string>
     <string name="common_settings">Settings</string>
     <string name="common_copied">Copied to clipboard</string>
@@ -61,6 +62,7 @@
     <string name="error_network_title">Connection error</string>
     <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
     <string name="error_no_internet_message">🥺 You have no internet connection</string>
+    <string name="error_no_internet_message_no_emoji">You have no internet connection</string>
     <string name="error_invalid_transaction">Invalid transaction, please try again</string>
     <string name="error_amount">Amount error. Please enter valid amount</string>
     <string name="error_fetching_data_about_token">Couldn\'t fetch information for %s</string>

@@ -13,14 +13,14 @@ data class BridgeBundle(
     val bundleId: String,
     val userWallet: EthAddress,
     val recipient: SolAddress,
-    val resultAmount: BridgeBundleFee,
-    val token: EthAddress,
+    val resultAmount: BridgeFee,
+    val token: EthAddress?,
     val compensationDeclineReason: String,
     val expiresAt: Long,
     val transactions: List<HexString>,
     var signatures: List<Signature>,
     val fees: BridgeBundleFees,
-    val status: ClaimStatus? = null
+    var status: ClaimStatus? = null
 ) {
     fun getExpirationDateInMillis(): Long {
         return expiresAt.seconds.inWholeMilliseconds.toZonedDateTime().dateMilli()

@@ -7,7 +7,6 @@ import java.util.Date
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.formatToken
@@ -21,8 +20,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.model.ClaimScreenData
 import org.p2p.wallet.bridge.model.BridgeAmount
-import org.p2p.wallet.bridge.model.BridgeBundleFee
 import org.p2p.wallet.bridge.model.BridgeBundleFees
+import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.toPx
 
@@ -33,48 +32,43 @@ class ClaimUiMapper(private val resources: Resources) {
         claimDetails: ClaimDetails?
     ): NewShowProgress {
         val transactionDate = Date()
-        val amountTokens = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}"
-        val amountUsd = tokenToClaim.totalInUsd.orZero()
-        val feeList = listOfNotNull(
-            claimDetails?.networkFee,
-            claimDetails?.accountCreationFee,
-            claimDetails?.bridgeFee
-        )
+        val willGetAmount = claimDetails?.willGetAmount
+        val amountTokens = willGetAmount?.formattedTokenAmount.orEmpty()
+        val amountUsd = willGetAmount?.fiatAmount.orZero()
+        val feeList = claimDetails?.let {
+            listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
+        } ?: emptyList()
+
         return NewShowProgress(
             date = transactionDate,
             tokenUrl = tokenToClaim.iconUrl.orEmpty(),
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
             recipient = null,
-            totalFees = feeList.mapNotNull { it.toTextHighlighting() }
+            totalFees = listOf(toTextHighlighting(feeList))
         )
     }
 
     fun makeClaimDetails(
         tokenToClaim: Token.Eth,
-        fees: BridgeBundleFees,
-        ethToken: TokenData?
+        resultAmount: BridgeFee,
+        fees: BridgeBundleFees?,
+        minAmountForFreeFee: BigDecimal
     ): ClaimDetails {
         val tokenSymbol = tokenToClaim.tokenSymbol
         val decimals = tokenToClaim.decimals
+        val defaultFee = fees?.gasEth.toBridgeAmount(tokenSymbol, decimals)
         return ClaimDetails(
-            willGetAmount = BridgeAmount(
-                tokenSymbol,
-                tokenToClaim.total,
-                tokenToClaim.totalInUsd
-            ),
-            networkFee = ethToken?.let { ethTokenData ->
-                fees.gasEth.toBridgeAmount(
-                    tokenSymbol = ethTokenData.symbol,
-                    decimals = ethTokenData.decimals
-                )
-            } ?: fees.gasEth.toBridgeAmount(tokenSymbol, decimals),
-            accountCreationFee = fees.createAccount.toBridgeAmount(tokenSymbol, decimals),
-            bridgeFee = fees.arbiterFee.toBridgeAmount(tokenSymbol, decimals)
+            willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
+            networkFee = defaultFee,
+            accountCreationFee = fees?.createAccount.toBridgeAmount(tokenSymbol, decimals),
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals),
+            minAmountForFreeFee = minAmountForFreeFee,
+            claimAmount = tokenToClaim.total
         )
     }
 
-    fun makeResultAmount(resultAmount: BridgeBundleFee, tokenToClaim: Token.Eth): BridgeAmount {
+    fun makeResultAmount(resultAmount: BridgeFee, tokenToClaim: Token.Eth): BridgeAmount {
         return resultAmount.toBridgeAmount(tokenToClaim.tokenSymbol, tokenToClaim.decimals)
     }
 
@@ -109,23 +103,22 @@ class ClaimUiMapper(private val resources: Resources) {
         )
     }
 
-    private fun BridgeBundleFee?.toBridgeAmount(
+    private fun BridgeFee?.toBridgeAmount(
         tokenSymbol: String,
         decimals: Int,
     ): BridgeAmount {
         return BridgeAmount(
             tokenSymbol = tokenSymbol,
             tokenAmount = this?.amountInToken(decimals).takeIf { !it.isNullOrZero() },
-            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
+            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero(),
+            tokenDecimals = decimals
         )
     }
 
-    private fun BridgeAmount.toTextHighlighting(): TextHighlighting? {
-        if (isFree) return null
-        val usdText = formattedFiatAmount.orEmpty()
-        val commonText = "$formattedTokenAmount $usdText"
+    private fun toTextHighlighting(items: List<BridgeAmount>): TextHighlighting {
+        val usdText = items.filter { !it.isFree }.sumOf { it.fiatAmount.orZero() }.asApproximateUsd(withBraces = false)
         return TextHighlighting(
-            commonText = commonText,
+            commonText = usdText,
             highlightedText = usdText
         )
     }

@@ -36,6 +36,7 @@ import org.p2p.wallet.utils.withArgs
 import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.ethereumkit.external.utils.EthereumUtils
 
 private const val EXTRA_KEY = "EXTRA_KEY"
 private const val EXTRA_RESULT = "EXTRA_RESULT"
@@ -182,17 +183,17 @@ class ScanQrFragment :
     }
 
     private fun validateAddress(address: String) {
-        try {
-            PublicKey(address)
-            setFragmentResult(requestKey, bundleOf(resultKey to address))
+        val validAddress = validateSolanaWallet(address) ?: validateEthereumWallet(address)
+        if (validAddress != null) {
+            setFragmentResult(requestKey, bundleOf(resultKey to validAddress))
             popBackStack()
             showUiKitSnackBar(
-                message = getString(R.string.qr_address_found, address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)),
+                message = getString(R.string.qr_address_found, validAddress.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)),
                 actionButtonResId = android.R.string.ok,
                 actionBlock = {}
             )
-        } catch (e: Throwable) {
-            Timber.i(e, "No address in this scanned data: $address")
+        } else {
+            Timber.i("No address in this scanned data: $address")
             AlertDialog.Builder(requireContext())
                 .setCancelable(true)
                 .setMessage(R.string.qr_no_address)
@@ -201,6 +202,19 @@ class ScanQrFragment :
                 .show()
                 .also { errorDialog = it }
         }
+    }
+
+    private fun validateSolanaWallet(address: String): String? {
+        return try {
+            PublicKey(address)
+            address
+        } catch (e: Throwable) {
+            null
+        }
+    }
+
+    private fun validateEthereumWallet(address: String): String? {
+        return if (EthereumUtils.isValidAddress(address)) address else null
     }
 
     private fun showInvalidDataError() {

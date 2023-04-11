@@ -8,6 +8,7 @@ import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
+import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 
 interface HomeContract {
 
@@ -21,12 +22,12 @@ interface HomeContract {
         fun showEmptyViewData(data: List<Any>)
         fun showEmptyState(isEmpty: Boolean)
         fun showUserAddress(ellipsizedAddress: String)
-        fun showNewSendScreen()
+        fun showNewSendScreen(openedFromScreen: SearchOpenedFromScreen)
         fun showActionButtons(buttons: List<ActionButton>)
 
         fun navigateToProfile()
         fun navigateToReserveUsername()
-        fun showAddressCopied(addressAndUsername: String)
+        fun showAddressCopied(addressOrUsername: String)
         fun showBuyInfoScreen(token: Token)
 
         fun showSendNoTokens(fallbackToken: Token)
@@ -34,7 +35,7 @@ interface HomeContract {
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun onBuyClicked()
-        fun onSendClicked()
+        fun onSendClicked(clickSource: SearchOpenedFromScreen)
         fun onBuyTokenClicked(token: Token)
         fun onInfoBuyTokenClicked(token: Token)
         fun refreshTokens()

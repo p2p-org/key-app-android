@@ -207,9 +207,9 @@ private class TokenDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
     override fun areItemsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {
             oldItem is FinanceBlockCellModel && newItem is FinanceBlockCellModel -> {
-                val oldMint = oldItem.typedPayload<ReceiveTokenPayload>().tokenData.mintAddress
-                val newMint = newItem.typedPayload<ReceiveTokenPayload>().tokenData.mintAddress
-                oldMint == newMint
+                val oldData = oldItem.typedPayload<ReceiveTokenPayload>().tokenData
+                val newData = newItem.typedPayload<ReceiveTokenPayload>().tokenData
+                oldData.name == newData.name && oldData.symbol == newData.symbol
             }
             else -> oldItem::class == newItem::class
         }
@@ -218,9 +218,9 @@ private class TokenDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
     override fun areContentsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {
             oldItem is FinanceBlockCellModel && newItem is FinanceBlockCellModel -> {
-                val oldMint = oldItem.typedPayload<ReceiveTokenPayload>().tokenData.mintAddress
-                val newMint = newItem.typedPayload<ReceiveTokenPayload>().tokenData.mintAddress
-                oldMint == newMint
+                val oldData = oldItem.typedPayload<ReceiveTokenPayload>().tokenData
+                val newData = newItem.typedPayload<ReceiveTokenPayload>().tokenData
+                oldData.name == newData.name && oldData.symbol == newData.symbol
             }
             else -> Objects.equals(oldItem, newItem)
         }

@@ -129,7 +129,7 @@ class SellTransactionDetailsBottomSheet :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.layoutDetails.buttonRemoveOrCancel.isLoadingState = isLoading
+        binding.layoutDetails.buttonRemoveOrCancel.setLoading(isLoading)
     }
 
     override fun navigateToSendScreen(
@@ -143,7 +143,7 @@ class SellTransactionDetailsBottomSheet :
                 recipient = recipient,
                 initialToken = tokenToSend,
                 inputAmount = sendAmount,
-                openedFrom = SendOpenedFrom.SELL_FLOW
+                openedFromFlow = SendOpenedFrom.SELL_FLOW,
             )
         )
         dismissAllowingStateLoss()

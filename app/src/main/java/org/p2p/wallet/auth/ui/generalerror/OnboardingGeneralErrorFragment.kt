@@ -172,7 +172,7 @@ class OnboardingGeneralErrorFragment :
 
     override fun setLoadingState(isLoading: Boolean) {
         setLoadingAnimationState(isScreenLoading = isLoading)
-        binding.buttonRestoreByGoogle.isLoadingState = isLoading
+        binding.buttonRestoreByGoogle.setLoading(isLoading)
     }
 
     override fun navigateToPinCreate() {
@@ -201,7 +201,7 @@ class OnboardingGeneralErrorFragment :
 
     private fun setRestoreByGoogleLoadingState(isLoading: Boolean) {
         setLoadingAnimationState(isScreenLoading = isLoading)
-        binding.buttonRestoreByGoogle.isLoadingState = isLoading
+        binding.buttonRestoreByGoogle.setLoading(isLoading)
     }
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {

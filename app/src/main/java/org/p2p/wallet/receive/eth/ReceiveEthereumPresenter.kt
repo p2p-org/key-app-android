@@ -3,12 +3,12 @@ package org.p2p.wallet.receive.eth
 import timber.log.Timber
 import java.util.concurrent.CancellationException
 import kotlinx.coroutines.launch
-import org.p2p.ethereumkit.external.repository.EthereumRepository
+import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.qr.interactor.QrCodeInteractor
 
 class ReceiveEthereumPresenter(
-    private val ethereumRepository: EthereumRepository,
+    private val ethereumInteractor: EthereumInteractor,
     private val qrCodeInteractor: QrCodeInteractor
 ) : BasePresenter<ReceiveEthereumContract.View>(),
     ReceiveEthereumContract.Presenter {
@@ -17,7 +17,7 @@ class ReceiveEthereumPresenter(
         launch {
             try {
                 view?.showLoading(isLoading = true)
-                val tokenAddressInHexString = ethereumRepository.getAddress().hex
+                val tokenAddressInHexString = ethereumInteractor.getEthAddress().hex
                 val qr = qrCodeInteractor.generateQrCode(tokenAddressInHexString)
                 view?.showQrAndAddress(qr, tokenAddressInHexString)
             } catch (e: CancellationException) {

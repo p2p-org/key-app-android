@@ -3,32 +3,35 @@ package org.p2p.wallet.home.ui.main
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
-import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 
 class HomeElementItemMapper(
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
 ) {
 
     suspend fun mapToItems(
         tokens: List<Token.Active>,
         ethereumTokens: List<Token.Eth>,
-        ethereumBundleStatuses: Map<String, ClaimStatus?>,
         visibilityState: VisibilityState,
-        isZerosHidden: Boolean
+        isZerosHidden: Boolean,
     ): List<HomeElementItem> = withContext(dispatchers.io) {
-        val groups: Map<Boolean, List<Token.Active>> = tokens.groupBy { it.isDefinitelyHidden(isZerosHidden) }
+
+        val groups: Map<Boolean, List<Token.Active>> = tokens.groupBy { token ->
+            token.isDefinitelyHidden(isZerosHidden)
+        }
 
         val hiddenTokens = groups[true].orEmpty()
         val visibleTokens = groups[false].orEmpty()
 
         val result = mutableListOf<HomeElementItem>(HomeElementItem.Title(R.string.home_tokens))
 
-        result += ethereumTokens.map {
-            val claimStatus = ethereumBundleStatuses[it.publicKey]
-            HomeElementItem.Claim(it, isClaimEnabled = claimStatus?.canBeClaimed() ?: true)
+        result += ethereumTokens.map { token ->
+            HomeElementItem.Claim(
+                token = token,
+                isClaimEnabled = !token.isClaiming
+            )
         }
 
         result += visibleTokens.map { HomeElementItem.Shown(it) }

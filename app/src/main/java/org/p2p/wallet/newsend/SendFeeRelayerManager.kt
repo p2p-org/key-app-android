@@ -15,7 +15,7 @@ import org.p2p.core.utils.toUsd
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
@@ -44,7 +44,7 @@ class SendFeeRelayerManager(
         onStateUpdated?.invoke(newState)
     }
 
-    private lateinit var feeLimitInfo: FreeTransactionFeeLimit
+    private lateinit var feeLimitInfo: TransactionFeeLimits
     private lateinit var recipientAddress: SearchResult
     private lateinit var solToken: Token.Active
     private var initializeCompleted = false
@@ -130,6 +130,7 @@ class SendFeeRelayerManager(
             when (feeState) {
                 is FeeCalculationState.NoFees -> {
                     currentState = UpdateFee(solanaFee = null, feeLimitInfo = feeLimitInfo)
+                    sendInteractor.setFeePayerToken(sourceToken)
                 }
                 is FeeCalculationState.PoolsNotFound -> {
                     val solanaFee = buildSolanaFee(solToken, sourceToken, feeState.feeInSol)
@@ -137,6 +138,7 @@ class SendFeeRelayerManager(
                     sendInteractor.setFeePayerToken(solToken)
                 }
                 is FeeCalculationState.Success -> {
+                    sendInteractor.setFeePayerToken(sourceToken)
                     val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
                     showFeeDetails(
                         sourceToken = sourceToken,

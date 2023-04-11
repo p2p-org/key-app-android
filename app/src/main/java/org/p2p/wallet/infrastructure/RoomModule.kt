@@ -33,6 +33,8 @@ object RoomModule {
         single { get<WalletDatabase>().unknownTransactionsDao() }
         single { get<WalletDatabase>().recipientsDao() }
 
+        single { get<WalletDatabase>().userSendLinksDao() }
+
         single {
             val allTransactionDaos: List<TransactionsDao<*>> = listOf(
                 get<CloseAccountTransactionsDao>(),

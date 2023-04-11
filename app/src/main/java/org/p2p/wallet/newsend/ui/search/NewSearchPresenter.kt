@@ -9,17 +9,20 @@ import org.p2p.core.token.Token
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SearchState
 import org.p2p.wallet.newsend.model.SearchTarget
+import org.p2p.wallet.svl.model.SvlWidgetState
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.wallet.utils.toPublicKey
 
 private const val DELAY_IN_MS = 250L
 
@@ -29,7 +32,9 @@ class NewSearchPresenter(
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val userInteractor: UserInteractor,
     private val newSendAnalytics: NewSendAnalytics,
-    private val sendViaLinkFeatureToggle: SendViaLinkFeatureToggle
+    private val sendViaLinkFeatureToggle: SendViaLinkFeatureToggle,
+    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
     private var state = SearchState()
@@ -38,6 +43,8 @@ class NewSearchPresenter(
     override fun attach(view: NewSearchContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSearchScreenOpened()
+
+        loadFeeLimits()
 
         if (state.recentRecipients == null) {
             loadRecentRecipients()
@@ -111,7 +118,8 @@ class NewSearchPresenter(
 
         val target = SearchTarget(
             value = newQuery,
-            keyAppDomainIfUsername = usernameDomainFeatureToggle.value
+            keyAppDomainIfUsername = usernameDomainFeatureToggle.value,
+            isEthAddressEnabled = ethAddressEnabledFeatureToggle.isFeatureEnabled
         )
 
         searchJob?.cancel()
@@ -144,7 +152,7 @@ class NewSearchPresenter(
             val finalResult: SearchResult
             val preselectedToken: Token.Active?
             if (result is SearchResult.AddressFound && result.networkType == NetworkType.SOLANA) {
-                val balance = userInteractor.getBalance(result.addressState.address.toBase58Instance())
+                val balance = userInteractor.getBalance(result.addressState.address.toPublicKey())
                 finalResult = result.copyWithBalance(balance)
                 preselectedToken = result.sourceToken ?: initialToken
             } else {
@@ -159,8 +167,12 @@ class NewSearchPresenter(
     }
 
     private fun showSendViaLinkContainer(isVisible: Boolean) {
-        val isEnabledAndVisible = sendViaLinkFeatureToggle.isFeatureEnabled && isVisible
-        view?.showSendViaLink(isVisible = isEnabledAndVisible)
+        if (!sendViaLinkFeatureToggle.isFeatureEnabled) {
+            view?.showSendViaLink(isVisible = false)
+            return
+        }
+
+        view?.showSendViaLink(isVisible = isVisible)
     }
 
     private suspend fun validateAndSearch(target: SearchTarget) {
@@ -200,7 +212,7 @@ class NewSearchPresenter(
             return
         }
 
-        val newAddresses = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance(), initialToken)
+        val newAddresses = searchInteractor.searchByAddress(publicKey, initialToken)
         state.updateSearchResult(address, listOf(newAddresses))
         renderCurrentState()
     }
@@ -215,6 +227,23 @@ class NewSearchPresenter(
         view?.showUsersMessage(null)
         view?.clearUsers()
         view?.showNotFound()
+    }
+
+    private fun loadFeeLimits() {
+        launch {
+            try {
+                view?.showLoading(isLoading = true)
+                val feeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = false)
+                val isSendViaLinkAvailable = feeLimits.isSendViaLinkAllowed()
+                val state = if (isSendViaLinkAvailable) SvlWidgetState.ENABLED else SvlWidgetState.DISABLED
+                view?.updateLinkWidgetState(state)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading free transaction limits")
+                view?.updateLinkWidgetState(SvlWidgetState.DISABLED)
+            } finally {
+                view?.showLoading(isLoading = false)
+            }
+        }
     }
 
     private fun logRecipientSelected(recipient: SearchResult) {

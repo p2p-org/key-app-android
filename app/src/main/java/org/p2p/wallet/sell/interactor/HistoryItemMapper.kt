@@ -2,6 +2,7 @@ package org.p2p.wallet.sell.interactor
 
 import android.content.res.Resources
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.wallet.R
@@ -28,26 +29,37 @@ class HistoryItemMapper(
         return historyItemFlow
     }
 
-    suspend fun toAdapterItem(transactions: List<HistoryTransaction>) = with(dispatchers.io) {
-        val rpcHistoryItems = mutableListOf<HistoryItem>()
-        val sellHistoryItems = mutableListOf<HistoryItem>()
-        transactions.forEachIndexed { _, item ->
-            when (item) {
-                is RpcHistoryTransaction -> {
-                    parse(item, rpcHistoryItems)
-                }
-                is SellTransaction -> {
-                    // Sell transactions with cancel reason, should not appear in history
-                    if (!item.isCancelled()) {
-                        parse(item, sellHistoryItems)
+    suspend fun toAdapterItem(
+        transactions: List<HistoryTransaction>,
+        userSendLinksCount: Int
+    ) {
+        withContext(dispatchers.io) {
+            val rpcHistoryItems = mutableListOf<HistoryItem>()
+            val sellHistoryItems = mutableListOf<HistoryItem>()
+            transactions.forEachIndexed { _, item ->
+                when (item) {
+                    is RpcHistoryTransaction -> {
+                        parse(item, rpcHistoryItems)
+                    }
+                    is SellTransaction -> {
+                        // Sell transactions with cancel reason, should not appear in history
+                        if (!item.isCancelled()) {
+                            parse(item, sellHistoryItems)
+                        }
                     }
                 }
             }
+
+            val userSendLinksItem: HistoryItem.UserSendLinksItem? =
+                HistoryItem.UserSendLinksItem(userSendLinksCount).takeIf { userSendLinksCount > 0 }
+            val historyItems = listOfNotNull(userSendLinksItem)
+                .plus(sellHistoryItems)
+                .plus(rpcHistoryItems)
+            historyItemFlow.emit(historyItems)
         }
-        historyItemFlow.emit(sellHistoryItems + rpcHistoryItems)
     }
 
-    suspend fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
+    fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
         val isCurrentAndPreviousTransactionOnSameDay =
             cache.isNotEmpty() && cache.last().date.isSameDayAs(transaction.date)
         var tokenIconUrl: String? = null
@@ -77,7 +89,7 @@ class HistoryItemMapper(
                 tokenIconUrl = getTokenIconUrl()
                 iconRes = getIcon()
 
-                startTitle = getUsernameOrAddress()
+                startTitle = getFormattedUsernameOrAddress()
                 startSubtitle = resources.getString(getTypeName())
                 endTopValue = getValue()
                 endTopValueTextColor = getTextColor()
@@ -156,7 +168,7 @@ class HistoryItemMapper(
         }
     }
 
-    suspend fun parse(
+    fun parse(
         transaction: SellTransaction,
         cache: MutableList<HistoryItem>
     ) {

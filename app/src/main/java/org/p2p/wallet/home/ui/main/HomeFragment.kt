@@ -34,9 +34,11 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
+import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
@@ -72,6 +74,7 @@ class HomeFragment :
     private val binding: FragmentHomeBinding by viewBinding()
 
     private val glideManager: GlideManager by inject()
+    private val analytics: AnalyticsPushChannel by inject()
 
     private val contentAdapter: TokenAdapter by unsafeLazy {
         TokenAdapter(
@@ -125,13 +128,14 @@ class HomeFragment :
 
         requestPermissionNotification { permissionState ->
             if (permissionState == PermissionState.GRANTED) {
+                analytics.pushPermissionsAllowed()
                 AppNotificationManager.createNotificationChannels(requireContext())
             }
         }
     }
 
-    override fun showAddressCopied(addressAndUsername: String) {
-        requireContext().copyToClipBoard(addressAndUsername)
+    override fun showAddressCopied(addressOrUsername: String) {
+        requireContext().copyToClipBoard(addressOrUsername)
         showUiKitSnackBar(
             message = getString(R.string.home_address_snackbar_text),
             actionButtonResId = R.string.common_ok,
@@ -191,7 +195,7 @@ class HomeFragment :
                 replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             }
             ActionButton.SEND_BUTTON -> {
-                presenter.onSendClicked()
+                presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
             }
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())
@@ -222,12 +226,12 @@ class HomeFragment :
             HomeAction.BUY -> presenter.onBuyClicked()
             HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             HomeAction.SWAP -> replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.ACTION_PANEL))
-            HomeAction.SEND -> presenter.onSendClicked()
+            HomeAction.SEND -> presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
         }
     }
 
-    override fun showNewSendScreen() {
-        replaceFragment(NewSearchFragment.create())
+    override fun showNewSendScreen(openedFromScreen: SearchOpenedFromScreen) {
+        replaceFragment(NewSearchFragment.create(openedFromScreen))
     }
 
     override fun showOldBuyScreen(token: Token) {

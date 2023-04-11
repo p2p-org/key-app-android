@@ -7,6 +7,7 @@ import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT
 import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -16,6 +17,8 @@ import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
 
+private const val ALL_TOKENS_MAP_CHUNKED_COUNT = 50
+
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,
     private val userLocalRepository: UserLocalRepository,
@@ -24,10 +27,6 @@ class UserRemoteRepository(
     private val environmentManager: NetworkEnvironmentManager,
     private val dispatchers: CoroutineDispatchers
 ) : UserRepository {
-
-    companion object {
-        private const val ALL_TOKENS_MAP_CHUNKED_COUNT = 50
-    }
 
     override suspend fun loadAllTokens(): List<TokenData> =
         solanaApi.loadTokenlist()
@@ -40,15 +39,14 @@ class UserRemoteRepository(
     /**
      * Load user tokens
      */
-    override suspend fun loadUserTokens(publicKey: String): List<Token.Active> =
+    override suspend fun loadUserTokens(publicKey: PublicKey): List<Token.Active> =
         withContext(dispatchers.io) {
             val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
-
             // Map accounts to List<Token.Active>
             mapAccountsToTokens(publicKey, accounts)
         }
 
-    private suspend fun mapAccountsToTokens(publicKey: String, accounts: List<Account>): List<Token.Active> {
+    private suspend fun mapAccountsToTokens(publicKey: PublicKey, accounts: List<Account>): List<Token.Active> {
         val tokens = accounts.mapNotNull {
             val mintAddress = it.account.data.parsed.info.mint
 
@@ -73,7 +71,7 @@ class UserRemoteRepository(
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return tokens
         val solPrice = userLocalRepository.getPriceByTokenId(tokenData.coingeckoId)
         val solToken = Token.createSOL(
-            publicKey = publicKey,
+            publicKey = publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
             exchangeRate = solPrice?.getScaledValue()
@@ -83,17 +81,21 @@ class UserRemoteRepository(
     }
 
     private fun mapDevnetRenBTC(account: Account): Token.Active? {
-        if (environmentManager.loadCurrentEnvironment() != NetworkEnvironment.DEVNET) return null
+        if (environmentManager.loadCurrentEnvironment() != NetworkEnvironment.DEVNET) {
+            return null
+        }
         val token = userLocalRepository.findTokenData(REN_BTC_DEVNET_MINT)
-        val result = if (token == null) {
+        val btcTokenData: TokenData = if (token == null) {
             userLocalRepository.findTokenData(REN_BTC_DEVNET_MINT_ALTERNATE)
         } else {
             userLocalRepository.findTokenDataBySymbol(REN_BTC_SYMBOL)
-        }
+        } ?: return null
 
-        if (result == null) return null
-
-        val price = userLocalRepository.getPriceByTokenId(result.coingeckoId)
-        return TokenConverter.fromNetwork(account, result, price)
+        val btcPrice = userLocalRepository.getPriceByTokenId(btcTokenData.coingeckoId)
+        return TokenConverter.fromNetwork(
+            account = account,
+            tokenData = btcTokenData,
+            price = btcPrice
+        )
     }
 }

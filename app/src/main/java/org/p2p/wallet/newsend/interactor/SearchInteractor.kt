@@ -4,24 +4,24 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
 import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.ethereumkit.external.repository.EthereumRepository
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.auth.username.repository.UsernameRepository
+import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.AddressState
+import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
 
 class SearchInteractor(
     private val usernameRepository: UsernameRepository,
     private val userInteractor: UserInteractor,
     private val transactionAddressInteractor: TransactionAddressInteractor,
     private val userLocalRepository: UserLocalRepository,
-    private val ethereumRepository: EthereumRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val ethereumInteractor: EthereumInteractor,
+    private val tokenKeyProvider: TokenKeyProvider,
 ) {
 
     suspend fun searchByName(username: String): List<SearchResult> {
@@ -40,10 +40,10 @@ class SearchInteractor(
     }
 
     suspend fun searchByAddress(
-        wrappedAddress: Base58String,
+        wrappedAddress: PublicKey,
         sourceToken: Token.Active? = null
     ): SearchResult {
-        val address = wrappedAddress.base58Value
+        val address = wrappedAddress.toBase58()
         // assuming we are sending direct token and verify the recipient address is valid direct or SOL address
         val tokenData = transactionAddressInteractor.getDirectTokenData(address)
 
@@ -55,7 +55,7 @@ class SearchInteractor(
             return SearchResult.InvalidDirectAddress(address, tokenData)
         }
 
-        val balance = userInteractor.getBalance(address.toBase58Instance())
+        val balance = userInteractor.getBalance(wrappedAddress)
         return SearchResult.AddressFound(
             addressState = AddressState(address),
             sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
@@ -74,23 +74,24 @@ class SearchInteractor(
         return SearchResult.AddressFound(
             addressState = AddressState(address),
             sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
+            networkType = NetworkType.ETHEREUM
         )
     }
 
-    suspend fun isInvalidAddress(tokenData: TokenData?, sourceToken: Token.Active?): Boolean {
+    private suspend fun isInvalidAddress(tokenData: TokenData?, sourceToken: Token.Active?): Boolean {
         val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
         val hasNoTokensToSend = tokenData != null && userToken == null
         val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
         return hasNoTokensToSend || sendToOtherDirectToken
     }
 
-    suspend fun isOwnAddress(publicKey: String): Boolean {
+    private suspend fun isOwnAddress(publicKey: String): Boolean {
         val isOwnSolAddress = publicKey == tokenKeyProvider.publicKey
         val isOwnSplAddress = userInteractor.hasAccount(publicKey)
         return isOwnSolAddress || isOwnSplAddress
     }
 
     private suspend fun isOwnEthAddress(publicKey: String): Boolean {
-        return publicKey == ethereumRepository.getAddress().hex
+        return publicKey == ethereumInteractor.getEthAddress().hex
     }
 }

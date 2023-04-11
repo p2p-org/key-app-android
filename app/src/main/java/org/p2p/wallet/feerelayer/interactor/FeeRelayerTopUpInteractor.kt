@@ -10,7 +10,7 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
@@ -103,7 +103,7 @@ class FeeRelayerTopUpInteractor(
         topUpAmount: BigInteger,
         payingFeeToken: TokenAccount,
         relayAccount: RelayAccount,
-        freeTransactionFeeLimit: FreeTransactionFeeLimit?
+        freeTransactionFeeLimit: TransactionFeeLimits?
     ): TopUpPreparedParams {
 
         val tradableTopUpPoolsPair = orcaPoolInteractor.getTradablePoolsPairs(payingFeeToken.mint, WRAPPED_SOL_MINT)
@@ -210,7 +210,7 @@ class FeeRelayerTopUpInteractor(
 
     suspend fun calculateExpectedFeeForTopUp(
         relayAccount: RelayAccount,
-        freeTransactionFeeLimit: FreeTransactionFeeLimit?
+        freeTransactionFeeLimit: TransactionFeeLimits?
     ): BigInteger {
         val info = feeRelayerAccountInteractor.getRelayInfo()
 
@@ -351,8 +351,8 @@ class FeeRelayerTopUpInteractor(
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)
-        transaction.feePayer = feePayerAddress.toPublicKey()
-        transaction.recentBlockHash = blockhash
+        transaction.setFeePayer(feePayerAddress.toPublicKey())
+        transaction.setRecentBlockhash(blockhash)
 
         // calculate fee first
         val expectedFeeAmount = FeeAmount(

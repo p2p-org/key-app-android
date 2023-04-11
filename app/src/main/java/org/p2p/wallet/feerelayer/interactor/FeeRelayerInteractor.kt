@@ -19,6 +19,7 @@ import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
@@ -31,6 +32,7 @@ class FeeRelayerInteractor(
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: NetworkEnvironmentManager,
+    private val transactionInteractor: TransactionInteractor,
     private val dispatchers: CoroutineDispatchers
 ) {
 
@@ -104,7 +106,7 @@ class FeeRelayerInteractor(
         payingFeeToken: TokenAccount,
         additionalPaybackFee: BigInteger,
         statistics: FeeRelayerStatistics
-    ): List<String> {
+    ): String {
         checkAndTopUp(
             expectedFee = preparedTransaction.expectedFee,
             payingFeeToken = payingFeeToken
@@ -174,7 +176,7 @@ class FeeRelayerInteractor(
         payingFeeToken: TokenAccount,
         additionalPaybackFee: BigInteger,
         statistics: FeeRelayerStatistics
-    ): List<String> {
+    ): String {
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = info.feePayerAddress
@@ -182,7 +184,8 @@ class FeeRelayerInteractor(
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount(useCache = false)
 
         // verify fee payer
-        if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
+        val transactionFeePayer = preparedTransaction.transaction.getFeePayer()
+        if (transactionFeePayer == null || !feePayer.equals(transactionFeePayer)) {
             throw IllegalStateException("Invalid fee payer")
         }
 
@@ -228,7 +231,7 @@ class FeeRelayerInteractor(
         * */
         return retryRequest {
             feeRelayerRepository.relayTransaction(transaction, statistics)
-        }
+        }.firstOrNull().orEmpty()
     }
 
     suspend fun relayTransactionWithoutPayback(
@@ -239,7 +242,8 @@ class FeeRelayerInteractor(
         val feePayer = info.feePayerAddress
 
         // verify fee payer
-        if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
+        val transactionFeePayer = preparedTransaction.transaction.getFeePayer()
+        if (transactionFeePayer == null || !feePayer.equals(transactionFeePayer)) {
             throw IllegalStateException("Invalid fee payer")
         }
 

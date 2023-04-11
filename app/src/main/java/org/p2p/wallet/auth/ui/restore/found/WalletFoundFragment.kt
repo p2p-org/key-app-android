@@ -110,7 +110,7 @@ class WalletFoundFragment :
         setLoadingAnimationState(isScreenLoading = isScreenLoading)
         with(binding) {
             buttonUseAnotherAccount.apply {
-                isLoadingState = isScreenLoading
+                setLoading(isScreenLoading)
                 isEnabled = !isScreenLoading
             }
             buttonStartRestore.isEnabled = !isScreenLoading

@@ -77,17 +77,15 @@ object HomeModule : InjectionModule {
                 environmentManager = get(),
                 tokenKeyProvider = get(),
                 homeElementItemMapper = HomeElementItemMapper(get()),
-                resourcesProvider = get(),
+                resources = get(),
                 newBuyFeatureToggle = get(),
                 networkObserver = get(),
                 tokensPolling = get(),
                 metadataInteractor = get(),
                 sellInteractor = get(),
                 sellEnabledFeatureToggle = get(),
-                ethAddressEnabledFeatureToggle = get(),
-                ethereumRepository = get(),
-                claimInteractor = get(),
                 intercomDeeplinkManager = get(),
+                ethereumInteractor = get(),
                 seedPhraseProvider = get()
             )
         }

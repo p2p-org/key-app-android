@@ -19,6 +19,7 @@ import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleLong
+import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toPowerValue
 import org.p2p.core.wrapper.eth.EthAddress
@@ -73,6 +74,10 @@ sealed class Token constructor(
             get() = total.toLamports(decimals)
 
         @IgnoredOnParcel
+        val totalInUsdScaled: BigDecimal?
+            get() = totalInUsd?.scaleShort()
+
+        @IgnoredOnParcel
         val isZero: Boolean
             get() = total.isZero()
 
@@ -106,6 +111,7 @@ sealed class Token constructor(
         override val publicKey: String,
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
+        var isClaiming: Boolean = false,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -143,12 +149,15 @@ sealed class Token constructor(
             return if (includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
         }
 
-        fun getFormattedTotal(includeSymbol: Boolean = false): String =
-            if (includeSymbol) {
-                "${total.formatToken(decimals)} $tokenSymbol"
+        fun getFormattedTotal(includeSymbol: Boolean = false): String {
+            val decimals = if (isEth && decimals > 8) 8 else decimals
+            val amount = total.formatToken(decimals)
+            return if (includeSymbol) {
+                "$amount $tokenSymbol"
             } else {
-                total.formatToken(decimals)
+                amount
             }
+        }
 
         fun getEthAddress(): EthAddress {
             return EthAddress(publicKey)
@@ -234,7 +243,7 @@ sealed class Token constructor(
                 mintAddress = tokenData.mintAddress,
                 tokenName = SOL_NAME,
                 iconUrl = tokenData.iconUrl,
-                totalInUsd = exchangeRate?.let { total.multiply(it) },
+                totalInUsd = if (amount == 0L) null else exchangeRate?.let { total.multiply(it) },
                 coingeckoId = tokenData.coingeckoId,
                 total = total.scaleLong(tokenData.decimals),
                 rate = exchangeRate,

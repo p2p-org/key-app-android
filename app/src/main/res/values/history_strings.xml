@@ -15,7 +15,7 @@
     <string name="transaction_history_unstake">Unstake</string>
     <string name="transaction_history_send_pending">Send…</string>
     <string name="transaction_history_receive">Receive</string>
-    <string name="transaction_history_receive_pending">Receiving…</string>
+    <string name="transaction_history_receive_pending">Processing…</string>
     <string name="transaction_history_create">Create account</string>
     <string name="transaction_history_closed">Close account</string>
     <string name="transaction_history_signature_format">Signature: %s</string>
@@ -41,4 +41,6 @@
 
     <string name="transaction_details_status_message_format">There was a problem with the %s, your funds were refunded</string>
 
+    <string name="transaction_history_send_via_link_title">Sent via one-time link</string>
+    <string name="transaction_history_send_via_link_info">Unique one-time link works once only</string>
 </resources>
