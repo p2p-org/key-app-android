@@ -8,13 +8,22 @@ private const val CLAIM_BRIDGES_SCREEN_OPEN = "Claim_Bridges_Screen_Open"
 private const val CLAIM_BRIDGES_BUTTON_CLICK = "Claim_Bridges_Button_Click"
 private const val CLAIM_BRIDGES_FEE_CLICK = "Claim_Bridges_Fee_Click"
 private const val CLAIM_BRIDGES_CLICK_CONFIRMED = "Claim_Bridges_Click_Confirmed"
+private const val CLAIM_AVAILABLE = "Claim_Available"
 
 class ClaimAnalytics(
     private val analytics: Analytics
 ) {
 
-    fun logScreenOpened() {
-        analytics.logEvent(event = CLAIM_BRIDGES_SCREEN_OPEN)
+    fun logScreenOpened(openedFrom: ClaimOpenedFrom) {
+        analytics.logEvent(
+            event = CLAIM_BRIDGES_SCREEN_OPEN,
+            params = mapOf(
+                "From" to when (openedFrom) {
+                    ClaimOpenedFrom.MAIN -> "Main"
+                    ClaimOpenedFrom.PUSH -> "Push"
+                }
+            )
+        )
     }
 
     fun logClaimButtonClicked() {
@@ -40,5 +49,16 @@ class ClaimAnalytics(
                 "Free" to isFree,
             )
         )
+    }
+
+    fun logClaimAvailable(isClaimAvailable: Boolean) {
+        analytics.logEvent(
+            event = CLAIM_AVAILABLE,
+            params = mapOf("Claim" to isClaimAvailable)
+        )
+    }
+
+    enum class ClaimOpenedFrom {
+        MAIN, PUSH
     }
 }

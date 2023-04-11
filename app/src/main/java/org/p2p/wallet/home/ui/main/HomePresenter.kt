@@ -26,6 +26,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.bridge.anatytics.ClaimAnalytics
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -62,6 +63,7 @@ val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 class HomePresenter(
     private val analytics: HomeAnalytics,
+    private val claimAnalytics: ClaimAnalytics,
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
@@ -352,6 +354,8 @@ class HomePresenter(
                 visibilityState = state.visibilityState,
                 isZerosHidden = areZerosHidden
             )
+
+            claimAnalytics.logClaimAvailable(state.ethTokens.any { !it.isClaiming })
 
             view?.showTokens(mappedTokens, areZerosHidden)
         }

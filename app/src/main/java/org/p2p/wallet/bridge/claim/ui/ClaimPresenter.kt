@@ -56,7 +56,7 @@ class ClaimPresenter(
 
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
-        claimAnalytics.logScreenOpened()
+        claimAnalytics.logScreenOpened(ClaimAnalytics.ClaimOpenedFrom.MAIN)
         launchSupervisor {
             startRefreshJob()
             setupView()
