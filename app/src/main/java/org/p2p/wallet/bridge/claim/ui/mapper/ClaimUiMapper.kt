@@ -35,20 +35,19 @@ class ClaimUiMapper(private val resources: Resources) {
         val willGetAmount = claimDetails?.willGetAmount
         val amountTokens = willGetAmount?.formattedTokenAmount.orEmpty()
         val amountUsd = willGetAmount?.fiatAmount.orZero()
-        val feeList = claimDetails?.let {
-            listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
-        } ?: emptyList()
-
         val amountToClaim = tokenToClaim.total
         val minAmountForFreeFee = claimDetails?.minAmountForFreeFee.orZero()
         val isFreeTransaction = amountToClaim >= minAmountForFreeFee
+        val feeList = claimDetails?.let {
+            listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
+        }?.filter { !it.isFree && !isFreeTransaction }?.ifEmpty { null }
         return NewShowProgress(
             date = transactionDate,
             tokenUrl = tokenToClaim.iconUrl.orEmpty(),
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
             recipient = null,
-            totalFees = listOf(toTextHighlighting(feeList)).takeUnless { isFreeTransaction }
+            totalFees = feeList?.let { listOf(toTextHighlighting(feeList)) }
         )
     }
 
@@ -107,7 +106,6 @@ class ClaimUiMapper(private val resources: Resources) {
     /**
      * metadata.balance.fromLamports(metadata.decimals)
      */
-
     private fun BridgeFee?.toBridgeAmount(): BridgeAmount {
         return BridgeAmount(
             tokenSymbol = this?.symbol.orEmpty(),
