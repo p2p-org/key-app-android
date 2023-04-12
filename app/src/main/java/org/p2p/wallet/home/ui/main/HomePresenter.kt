@@ -7,7 +7,6 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
