@@ -75,7 +75,7 @@ fun BigDecimal.formatToken(decimals: Int = DEFAULT_DECIMAL): String = formatWith
 fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECIMAL)
 
 private fun BigDecimal.formatWithDecimals(decimals: Int): String = this.stripTrailingZeros().run {
-    if (isZero()) this.toString() else DecimalFormatter.format(this, decimals)
+    if (isZero()) this.toPlainString() else DecimalFormatter.format(this, decimals)
 }
 
 fun BigDecimal?.isNullOrZero(): Boolean = this == null || this.compareTo(BigDecimal.ZERO) == 0
