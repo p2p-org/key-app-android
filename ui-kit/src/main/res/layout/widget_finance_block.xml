@@ -20,7 +20,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/rightSideView"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintHorizontal_weight="0.8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_goneMarginEnd="0dp" />
@@ -34,8 +33,6 @@
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="0.25"
-        app:layout_constraintStart_toEndOf="@+id/leftSideView"
         app:layout_constraintTop_toTopOf="parent" />
 
 </merge>
