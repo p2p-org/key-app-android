@@ -2,7 +2,6 @@ package org.p2p.wallet.svl.ui.send
 
 import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -18,7 +17,6 @@ import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
-import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationFragment
 import org.p2p.wallet.utils.addFragment
@@ -43,7 +41,7 @@ class SendViaLinkFragment :
             initialToken: Token.Active? = null,
         ): SendViaLinkFragment =
             SendViaLinkFragment()
-                .withArgs(ARG_INITIAL_TOKEN to initialToken,)
+                .withArgs(ARG_INITIAL_TOKEN to initialToken)
     }
 
     private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
@@ -52,13 +50,6 @@ class SendViaLinkFragment :
     private val binding: FragmentSendNewBinding by viewBinding()
 
     override val presenter: SendViaLinkContract.Presenter by inject()
-
-    private var listener: RootListener? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = context as? RootListener
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

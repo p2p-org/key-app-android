@@ -7,7 +7,6 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
@@ -100,23 +99,21 @@ class HomePresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         attachToPollingTokens()
+        if (state.ethTokens.isEmpty() && state.tokens.isEmpty()) {
+            tokensPolling.initTokens()
+        }
     }
 
     private fun attachToPollingTokens() {
         launch {
-            tokensPolling.shareTokenPollFlowIn(this)
-                .onEach { (solTokens, ethTokens) ->
-                    if (solTokens == null && ethTokens == null) {
-                        view?.showRefreshing(true)
-                    }
-                }.collect { (solTokens, ethTokens) ->
-                    if (solTokens != null && ethTokens != null) {
-                        state = state.copy(tokens = solTokens, ethTokens = ethTokens)
-                        handleUserTokensLoaded(solTokens, ethTokens)
-                        initializeActionButtons()
-                        view?.showRefreshing(isRefreshing = false)
-                    }
+            tokensPolling.shareTokenPollFlowIn(this).collect { homeState ->
+                if (homeState.solTokens != null && homeState.ethTokens != null) {
+                    state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
+                    handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
+                    initializeActionButtons()
                 }
+                view?.showRefreshing(homeState.isRefreshing)
+            }
         }
     }
 
@@ -129,7 +126,6 @@ class HomePresenter(
         showUserAddressAndUsername()
 
         updatesManager.start()
-        tokensPolling.startPolling()
 
         val userId = username?.value ?: tokenKeyProvider.publicKey
         IntercomService.signIn(userId)
@@ -218,7 +214,7 @@ class HomePresenter(
 
     override fun onSendClicked(clickSource: SearchOpenedFromScreen) {
         launch {
-            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethTokens.isEmpty()
+            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethTokens.isNullOrEmpty()
             if (isEmptyAccount) {
                 // this cannot be empty
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch

@@ -61,7 +61,7 @@ class ReceiveViaLinkPresenter(
                 val textRes = if (e is UnknownHostException) {
                     R.string.transaction_description_internet_error
                 } else {
-                    R.string.transaction_description_failed
+                    R.string.transaction_description_svl_failed
                 }
                 view?.renderState(SendViaLinkClaimingState.ClaimFailed(textRes))
             }

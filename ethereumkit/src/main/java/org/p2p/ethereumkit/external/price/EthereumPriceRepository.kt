@@ -16,8 +16,12 @@ internal class EthereumPriceRepository(
         tokenAddresses: List<String>,
         targetCurrency: String,
     ): Map<String, BigDecimal> {
-        val localTokenPrices = priceCacheRepository.getPrices().map { it.value }
-        if (!isTokenPriceValid(localTokenPrices)) {
+        val localTokenPrices = priceCacheRepository.getPrices()
+            .filter { it.key.startsWith("0x") }
+            .map { it.value }
+
+        val isAllTokenPricesCached = tokenAddresses.size <= localTokenPrices.size
+        if (!isTokenPriceValid(localTokenPrices) || !isAllTokenPricesCached) {
             val result = loadPriceForEthereumToken(
                 tokenAddress = tokenAddresses.joinToString(","),
                 targetCurrency = targetCurrency
@@ -31,7 +35,7 @@ internal class EthereumPriceRepository(
 
     override suspend fun getPriceForToken(tokenAddress: String, targetCurrency: String): BigDecimal {
         val localTokenPrice = priceCacheRepository.getPriceByKey(tokenAddress)
-        if (isTokenPriceValid(localTokenPrice)) {
+        if (!isTokenPriceValid(localTokenPrice)) {
             val result = loadPriceForEthereumToken(
                 tokenAddress = tokenAddress,
                 targetCurrency = targetCurrency
