@@ -4,7 +4,8 @@ import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
+import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.R
+import org.p2p.wallet.bridge.anatytics.SendBridgesAnalytics
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
@@ -41,7 +43,6 @@ import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
@@ -60,7 +61,7 @@ class BridgeSendPresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
     private val connectionStateProvider: NetworkConnectionStateProvider,
-    private val newSendAnalytics: NewSendAnalytics,
+    private val sendBridgesAnalytics: SendBridgesAnalytics,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
     private val initialData: SendInitialData.Bridge,
@@ -78,7 +79,7 @@ class BridgeSendPresenter(
 
     override fun attach(view: BridgeSendContract.View) {
         super.attach(view)
-        newSendAnalytics.logNewSendScreenOpened()
+        sendBridgesAnalytics.logSendBridgesScreenOpened()
         initialize(view)
         stateMachine.observe()
             .onEach {
@@ -270,12 +271,10 @@ class BridgeSendPresenter(
             isInputEmpty = isInputEmpty
         )
         setFeeLabel(fees)
-        // FIXME: only for debug needs, remove after release
-        // if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
     }
 
     override fun onTokenClicked() {
-        newSendAnalytics.logTokenSelectionClicked()
+        sendBridgesAnalytics.logTokenSelectionClicked()
         launch {
             val token = currentState.lastStaticState.bridgeToken?.token
             val tokens = bridgeInteractor.supportedSendTokens()
@@ -284,6 +283,7 @@ class BridgeSendPresenter(
     }
 
     override fun updateToken(newToken: Token.Active) {
+        sendBridgesAnalytics.logTokenChanged(newToken.tokenSymbol)
         stateMachine.newAction(SendFeatureAction.NewToken(SendToken.Bridge(newToken)))
     }
 
@@ -292,6 +292,8 @@ class BridgeSendPresenter(
     }
 
     override fun updateInputAmount(amount: String) {
+        val tokeSymbol = currentState.lastStaticState.bridgeToken?.token?.tokenSymbol.orEmpty()
+        sendBridgesAnalytics.logTokenAmountChanged(tokeSymbol, amount)
         calculationMode.updateInputAmount(amount)
         val currentAmount = calculationMode.getCurrentAmount()
         if (currentAmount.isZero()) {
@@ -299,8 +301,6 @@ class BridgeSendPresenter(
         } else {
             stateMachine.newAction(SendFeatureAction.AmountChange(currentAmount))
         }
-
-        newSendAnalytics.setMaxButtonClicked(isClicked = false)
     }
 
     override fun onMaxButtonClicked() {
@@ -308,7 +308,6 @@ class BridgeSendPresenter(
         stateMachine.newAction(SendFeatureAction.MaxAmount)
         calculationMode.updateTokenAmount(token.total)
         view?.updateInputValue(calculationMode.formatInputAmount, true)
-        newSendAnalytics.setMaxButtonClicked(isClicked = true)
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showToast(TextContainer.Raw(message))
     }
@@ -317,8 +316,7 @@ class BridgeSendPresenter(
         val token = currentState.lastStaticState.bridgeToken?.token ?: error("Token cannot be null!")
         val fees = currentState.lastStaticState.bridgeFee?.fee
         if (calculationMode.isCurrentInputEmpty() && fees == null) {
-            // TODO check free state works correct
-            newSendAnalytics.logFreeTransactionsClicked()
+            sendBridgesAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
             val feeDetails = getFeeDetails(token)
@@ -349,7 +347,16 @@ class BridgeSendPresenter(
         val currentAmount = calculationMode.getCurrentAmount()
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
 
-        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.orZero().toPlainString())
+        val fee = currentState.lastStaticState.bridgeFee?.fee?.let { fees ->
+            val feeList = listOf(fees.networkFee, fees.messageAccountRent, fees.bridgeFee, fees.arbiterFee)
+            feeList.sumOf { it.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
+        } ?: BigDecimal.ZERO
+        logSendClicked(
+            token = token,
+            amountInToken = currentAmount.toPlainString(),
+            amountInUsd = currentAmountUsd.orZero().toPlainString(),
+            fee = fee.toPlainString()
+        )
 
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
@@ -428,14 +435,17 @@ class BridgeSendPresenter(
     private fun isInternetConnectionEnabled(): Boolean =
         connectionStateProvider.hasConnection()
 
-    private fun logSendClicked(token: Token.Active, amountInToken: String, amountInUsd: String) {
-        val solanaFee = true // todo
-        newSendAnalytics.logSendConfirmButtonClicked(
-            tokenName = token.tokenName,
+    private fun logSendClicked(
+        token: Token.Active,
+        amountInToken: String,
+        amountInUsd: String,
+        fee: String,
+    ) {
+        sendBridgesAnalytics.logSendConfirmButtonClicked(
+            tokenSymbol = token.tokenSymbol,
             amountInToken = amountInToken,
             amountInUsd = amountInUsd,
-            isFeeFree = solanaFee,
-            mode = calculationMode.getCurrencyMode()
+            fee = fee,
         )
     }
 }

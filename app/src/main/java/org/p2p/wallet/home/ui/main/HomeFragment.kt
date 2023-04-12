@@ -13,6 +13,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
+import org.p2p.wallet.bridge.anatytics.ClaimAnalytics
 import org.p2p.wallet.bridge.claim.ui.ClaimFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.permissions.PermissionState
@@ -88,6 +89,8 @@ class HomeFragment :
 
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val claimAnalytics: ClaimAnalytics by inject()
+
     private val swapFragmentFactory: SwapFragmentFactory by inject()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
 
@@ -332,6 +335,7 @@ class HomeFragment :
     }
 
     override fun onClaimTokenClicked(token: Token.Eth) {
+        claimAnalytics.logClaimButtonClicked()
         replaceFragment(
             ClaimFragment.create(ethereumToken = token)
         )
