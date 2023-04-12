@@ -97,12 +97,12 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     fun mapScreenData(tokenToClaim: Token.Eth): ClaimScreenData {
+        val tokenAmount = tokenToClaim.total.scaleLong(CLAIM_TOKEN_AMOUNT_SCALE).formatToken(tokenToClaim.decimals)
+        val tokenSymbol = tokenToClaim.tokenSymbol
         return ClaimScreenData(
             title = resources.getString(R.string.bridge_claim_title_format, tokenToClaim.tokenSymbol),
             tokenIconUrl = tokenToClaim.iconUrl,
-            tokenFormattedAmount = "${
-                tokenToClaim.total.scaleLong(CLAIM_TOKEN_AMOUNT_SCALE).formatToken(tokenToClaim.decimals)
-            } ${tokenToClaim.tokenSymbol}",
+            tokenFormattedAmount = "$tokenAmount $tokenSymbol",
             fiatFormattedAmount = tokenToClaim.totalInUsd.orZero().asApproximateUsd(withBraces = false),
         )
     }
