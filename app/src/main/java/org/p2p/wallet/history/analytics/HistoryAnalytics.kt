@@ -16,7 +16,7 @@ private const val HISTORY_SEND_CLICKED = "History_Send_Clicked"
 private const val HISTORY_CLICK_BLOCK_SEND_VIA_LINK = "History_Click_Block_Send_Via_Link"
 private const val HISTORY_SEND_CLICK_TRANSACTION = "History_Send_Click_Transaction"
 private const val HISTORY_SEND_CLICK_COPY_TRANSACTION = "History_Send_Click_Copy_Transaction"
-private const val HISTORY_SEND_CLICK_SHARE_TRANSACTION = "History_Send_Click_Copy_Transaction"
+private const val HISTORY_SEND_CLICK_SHARE_TRANSACTION = "History_Send_Click_Share_Transaction"
 
 class HistoryAnalytics(
     private val tracker: Analytics,
