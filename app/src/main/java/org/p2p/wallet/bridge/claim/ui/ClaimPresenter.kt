@@ -58,10 +58,8 @@ class ClaimPresenter(
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
         claimAnalytics.logScreenOpened(ClaimAnalytics.ClaimOpenedFrom.MAIN)
-        launchSupervisor {
-            startRefreshJob()
-            setupView()
-        }
+        startRefreshJob()
+        setupView()
     }
 
     private fun startRefreshJob(delayMillis: Long = 0) {
@@ -159,7 +157,6 @@ class ClaimPresenter(
                 )
             } catch (e: BridgeResult.Error) {
                 val message = e.getErrorMessage { res -> resources.getString(res) }
-                transactionManager.emitTransactionState(latestBundleId, TransactionState.Error(message))
                 Timber.e(e, "Failed to send signed bundle")
             }
         }

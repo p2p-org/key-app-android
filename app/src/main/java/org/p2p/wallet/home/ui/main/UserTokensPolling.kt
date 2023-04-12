@@ -49,39 +49,27 @@ class UserTokensPolling(
 
     private var refreshJob: Job? = null
 
-    fun shareTokenPollFlowIn(scope: CoroutineScope): StateFlow<UserTokensPollState> =
+    fun shareTokenPollFlowIn(scope: CoroutineScope): StateFlow<UserTokensPollState?> =
         userInteractor.getUserTokensFlow()
             .combine(ethTokensFlow) { sol, eth ->
-                if (homeScreenState.solTokens.isNotEmpty() && sol.isEmpty()) {
-                    homeScreenState = homeScreenState.copy(ethTokens = eth)
+                homeScreenState = if (homeScreenState.solTokens.isNotEmpty() && sol.isEmpty()) {
+                    homeScreenState.copy(ethTokens = eth)
                 } else {
-                    homeScreenState = homeScreenState.copy(solTokens = sol, ethTokens = eth)
+                    homeScreenState.copy(solTokens = sol, ethTokens = eth)
                 }
                 homeScreenState
             }.combine(isRefreshingFlow) { currentState, refreshing ->
                 this.homeScreenState = currentState.copy(isRefreshing = refreshing)
                 homeScreenState
-            }.stateIn(scope, SharingStarted.WhileSubscribed(), UserTokensPollState())
-
-    suspend fun refresh() {
-        ethTokensFlow.emit(emptyList())
-        initTokens()
-    }
+            }.stateIn(scope, SharingStarted.WhileSubscribed(), null)
 
     fun initTokens() {
-        launch {
+        refreshJob?.cancel()
+        refreshJob = launch {
             try {
                 isRefreshingFlow.emit(true)
-                joinAll(
-                    async {
-                        val solTokens = fetchSolTokens()
-                        userInteractor.loadUserRates(solTokens)
-                    },
-                    async {
-                        val ethTokens = fetchEthereumTokens()
-                        ethTokensFlow.emit(ethTokens)
-                    }
-                )
+                val ethTokens = fetchEthereumTokens()
+                ethTokensFlow.emit(ethTokens)
                 startPolling()
             } catch (e: CancellationException) {
                 Timber.i("Cancelled tokens remote update")
@@ -133,6 +121,6 @@ class UserTokensPolling(
 
 data class UserTokensPollState(
     val solTokens: List<Token.Active> = emptyList(),
-    val ethTokens: List<Token.Eth>? = emptyList(),
+    val ethTokens: List<Token.Eth> = emptyList(),
     val isRefreshing: Boolean = false
 )
