@@ -109,11 +109,9 @@ class HomePresenter(
     private fun attachToPollingTokens() {
         launch {
             tokensPolling.shareTokenPollFlowIn(this).collect { homeState ->
-                if (homeState.solTokens != null && homeState.ethTokens != null) {
-                    state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
-                    handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
-                    initializeActionButtons()
-                }
+                state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens.orEmpty())
+                handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens.orEmpty())
+                initializeActionButtons()
                 view?.showRefreshing(homeState.isRefreshing)
             }
         }
@@ -216,7 +214,7 @@ class HomePresenter(
 
     override fun onSendClicked(clickSource: SearchOpenedFromScreen) {
         launch {
-            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethTokens.isNullOrEmpty()
+            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethTokens.isEmpty()
             if (isEmptyAccount) {
                 // this cannot be empty
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch

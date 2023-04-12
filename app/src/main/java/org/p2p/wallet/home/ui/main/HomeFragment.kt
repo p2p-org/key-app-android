@@ -47,6 +47,7 @@ import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -163,6 +164,7 @@ class HomeFragment :
         layoutToolbar.setupToolbar()
 
         homeRecyclerView.adapter = contentAdapter
+        homeRecyclerView.layoutManager = HomeScreenLayoutManager(requireContext())
         swipeRefreshLayout.setOnRefreshListener { presenter.refreshTokens() }
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
 
@@ -254,7 +256,9 @@ class HomeFragment :
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean) {
-        contentAdapter.setItems(tokens, isZerosHidden)
+        binding.homeRecyclerView.post {
+            contentAdapter.setItems(tokens, isZerosHidden)
+        }
     }
 
     override fun showTokensForBuy(tokens: List<Token>) {
