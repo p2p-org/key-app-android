@@ -110,7 +110,7 @@ object BridgeSendModule : InjectionModule {
                 tokenKeyProvider = get(),
                 transactionManager = get(),
                 connectionStateProvider = get(),
-                newSendAnalytics = get(),
+                sendBridgesAnalytics = get(),
                 appScope = get(),
                 sendModeProvider = get(),
                 initialData = initialData,

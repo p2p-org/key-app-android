@@ -84,12 +84,12 @@ class RenBTCPresenter(
     }
 
     override fun onNetworkClicked() {
-        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.ReceiveNetwork.BITCOIN)
+        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.AnalyticsReceiveNetwork.BITCOIN)
         view?.showNetwork()
     }
 
     override fun onBrowserClicked(publicKey: String) {
-        receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.ReceiveNetwork.BITCOIN)
+        receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.AnalyticsReceiveNetwork.BITCOIN)
         val url = context.getString(R.string.bitcoinExplorer, publicKey)
         view?.showBrowser(url)
     }

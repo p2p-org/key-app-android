@@ -69,6 +69,7 @@ object HomeModule : InjectionModule {
         factory<HomeContract.Presenter> {
             HomePresenter(
                 analytics = get(),
+                claimAnalytics = get(),
                 updatesManager = get(),
                 userInteractor = get(),
                 settingsInteractor = get(),

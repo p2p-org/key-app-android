@@ -7,7 +7,6 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
@@ -26,6 +25,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.bridge.anatytics.ClaimAnalytics
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -62,6 +62,7 @@ val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 class HomePresenter(
     private val analytics: HomeAnalytics,
+    private val claimAnalytics: ClaimAnalytics,
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
@@ -100,23 +101,19 @@ class HomePresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         attachToPollingTokens()
+        if (state.ethTokens.isEmpty() && state.tokens.isEmpty()) {
+            tokensPolling.initTokens()
+        }
     }
 
     private fun attachToPollingTokens() {
         launch {
-            tokensPolling.shareTokenPollFlowIn(this)
-                .onEach { (solTokens, ethTokens) ->
-                    if (solTokens == null && ethTokens == null) {
-                        view?.showRefreshing(true)
-                    }
-                }.collect { (solTokens, ethTokens) ->
-                    if (solTokens != null && ethTokens != null) {
-                        state = state.copy(tokens = solTokens, ethTokens = ethTokens)
-                        handleUserTokensLoaded(solTokens, ethTokens)
-                        initializeActionButtons()
-                        view?.showRefreshing(isRefreshing = false)
-                    }
-                }
+            tokensPolling.shareTokenPollFlowIn(this).collect { homeState ->
+                state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens.orEmpty())
+                handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens.orEmpty())
+                initializeActionButtons()
+                view?.showRefreshing(homeState.isRefreshing)
+            }
         }
     }
 
@@ -129,7 +126,6 @@ class HomePresenter(
         showUserAddressAndUsername()
 
         updatesManager.start()
-        tokensPolling.startPolling()
 
         val userId = username?.value ?: tokenKeyProvider.publicKey
         IntercomService.signIn(userId)
@@ -352,6 +348,8 @@ class HomePresenter(
                 visibilityState = state.visibilityState,
                 isZerosHidden = areZerosHidden
             )
+
+            claimAnalytics.logClaimAvailable(state.ethTokens.any { !it.isClaiming })
 
             view?.showTokens(mappedTokens, areZerosHidden)
         }

@@ -27,9 +27,11 @@ import org.p2p.uikit.utils.recycler.decoration.onePxDividerFinanceBlockDecoratio
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveSupportedTokensBinding
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.eth.EthereumReceiveFragment
 import org.p2p.wallet.receive.solana.NewReceiveSolanaFragment
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
@@ -60,6 +62,9 @@ class ReceiveTokensFragment :
     private val glideManager: GlideManager by inject()
 
     override val presenter: ReceiveTokensContract.Presenter by inject()
+
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val receiveAnalytics: ReceiveAnalytics by inject()
 
     private val adapter = CommonAnyCellAdapter(
         sectionHeaderCellDelegate(),
@@ -102,10 +107,12 @@ class ReceiveTokensFragment :
             ::onFragmentResult
         )
         presenter.load(isRefresh = true)
+        receiveAnalytics.logStartScreen(analyticsInteractor.getPreviousScreenName())
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         result.getSerializableOrNull<ReceiveNetwork>(KEY_RESULT_NETWORK)?.let { network ->
+            receiveAnalytics.logNetworkClicked(network)
             presenter.onNetworkSelected(network)
         }
     }
@@ -162,6 +169,7 @@ class ReceiveTokensFragment :
     }
 
     override fun showSelectNetworkDialog() {
+        receiveAnalytics.logNetworkSelectionScreenOpened()
         SelectReceiveNetworkBottomSheet.show(
             fm = childFragmentManager,
             title = getString(R.string.receive_network_dialog_title),
@@ -198,7 +206,9 @@ class ReceiveTokensFragment :
     }
 
     private fun onTokenClick(item: FinanceBlockCellModel) {
-        presenter.onTokenClicked(item.typedPayload())
+        val payload = item.typedPayload() as ReceiveTokenPayload
+        receiveAnalytics.logTokenClicked(payload.tokenData.symbol)
+        presenter.onTokenClicked(payload)
     }
 }
 

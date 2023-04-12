@@ -10,10 +10,12 @@ import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isConnectionError
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
 import org.p2p.core.wrapper.HexString
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.bridge.anatytics.ClaimAnalytics
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
@@ -41,17 +43,21 @@ class ClaimPresenter(
     private val claimUiMapper: ClaimUiMapper,
     private val resources: Resources,
     private val appScope: AppScope,
-    private val userTokensPolling: UserTokensPolling
+    private val userTokensPolling: UserTokensPolling,
+    private val claimAnalytics: ClaimAnalytics
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
     private var refreshJob: Job? = null
     private var claimDetails: ClaimDetails? = null
     private var latestTransactions: List<HexString> = emptyList()
     private var latestBundleId: String = emptyString()
+    private var latestBundle: BridgeBundle? = null
+    private var minAmountForFreeFee: BigDecimal = BigDecimal.ZERO
     private var refreshJobDelayTimeInMillis = DEFAULT_DELAY_IN_MILLIS
 
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
+        claimAnalytics.logScreenOpened(ClaimAnalytics.ClaimOpenedFrom.MAIN)
         launchSupervisor {
             startRefreshJob()
             setupView()
@@ -65,7 +71,7 @@ class ClaimPresenter(
             reset()
             try {
                 val newBundle = fetchBundle()
-                val minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee()
+                minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee()
                 showFees(
                     resultAmount = newBundle.resultAmount,
                     fees = newBundle.fees,
@@ -99,6 +105,7 @@ class ClaimPresenter(
         isFree: Boolean,
         minAmountForFreeFee: BigDecimal
     ) {
+        claimAnalytics.logFeesButtonClicked()
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
 
         claimDetails = claimUiMapper.makeClaimDetails(
@@ -115,6 +122,17 @@ class ClaimPresenter(
     }
 
     override fun onSendButtonClicked() {
+        latestBundle?.apply {
+            with(resultAmount) {
+                claimAnalytics.logConfirmClaimButtonClicked(
+                    tokenSymbol = symbol,
+                    tokenAmount = amountInToken,
+                    tokenAmountInFiat = amountInUsd?.toBigDecimal().orZero(),
+                    isFree = compensationDeclineReason.isEmpty()
+                )
+            }
+        }
+
         appScope.launch {
             try {
                 val signatures = latestTransactions.map { unsignedTransaction ->
@@ -135,7 +153,6 @@ class ClaimPresenter(
                     bundleId = latestBundleId,
                     sourceTokenSymbol = tokenToClaim.tokenSymbol
                 )
-                userTokensPolling.refresh()
                 transactionManager.emitTransactionState(
                     transactionId = latestBundleId,
                     state = transactionState
@@ -162,6 +179,7 @@ class ClaimPresenter(
             erc20Token = tokenToClaim.getEthAddress().takeIf { !tokenToClaim.isEth },
             amount = totalToClaim.toString()
         ).also { newBundle ->
+            latestBundle = newBundle
             latestBundleId = newBundle.bundleId
             refreshJobDelayTimeInMillis = newBundle.getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
             latestTransactions = newBundle.transactions

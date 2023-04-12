@@ -75,12 +75,12 @@ class ReceiveSolanaPresenter(
     }
 
     override fun onNetworkClicked() {
-        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.ReceiveNetwork.SOLANA)
+        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA)
         view?.showNetwork()
     }
 
     override fun onBrowserClicked(publicKey: String) {
-        receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.ReceiveNetwork.SOLANA)
+        receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA)
         val url = context.getString(R.string.solanaWalletExplorer, publicKey)
         view?.showBrowser(url)
     }
