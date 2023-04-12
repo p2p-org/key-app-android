@@ -7,6 +7,7 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
@@ -50,6 +51,7 @@ import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.ellipsizeAddress
+import org.p2p.wallet.utils.toPublicKey
 
 val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
@@ -100,18 +102,31 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
-        attachToPollingTokens()
-        if (state.ethTokens.isEmpty() && state.tokens.isEmpty()) {
-            tokensPolling.initTokens()
+        loadSolanaTokens()
+    }
+
+    private fun loadSolanaTokens() {
+        launch {
+            try {
+                view?.showRefreshing(true)
+                val solTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
+                async { userInteractor.loadUserRates(solTokens) }
+                attachToPollingTokens()
+                tokensPolling.initTokens()
+            } catch (e: Throwable) {
+                Timber.e(e, "Error on loading Sol tokens")
+            } finally {
+                view?.showRefreshing(false)
+            }
         }
     }
 
     private fun attachToPollingTokens() {
         launch {
-            tokensPolling.shareTokenPollFlowIn(this).collect { homeState ->
-                state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens.orEmpty())
-                handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens.orEmpty())
+            tokensPolling.shareTokenPollFlowIn(this).filterNotNull().collect { homeState ->
+                state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
                 initializeActionButtons()
+                handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
                 view?.showRefreshing(homeState.isRefreshing)
             }
         }
@@ -133,27 +148,25 @@ class HomePresenter(
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
     }
 
-    private fun initializeActionButtons() {
-        launch {
-            val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
-            val isSellAvailable = sellInteractor.isSellAvailable()
+    private suspend fun initializeActionButtons() {
+        val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
+        val isSellAvailable = sellInteractor.isSellAvailable()
 
-            val buttons = mutableListOf(
-                ActionButton.BUY_BUTTON,
-                ActionButton.RECEIVE_BUTTON,
-                ActionButton.SEND_BUTTON
-            )
+        val buttons = mutableListOf(
+            ActionButton.BUY_BUTTON,
+            ActionButton.RECEIVE_BUTTON,
+            ActionButton.SEND_BUTTON
+        )
 
-            if (!isSellFeatureToggleEnabled) {
-                buttons += ActionButton.SWAP_BUTTON
-            }
-
-            if (isSellAvailable) {
-                buttons += ActionButton.SELL_BUTTON
-            }
-
-            view?.showActionButtons(buttons)
+        if (!isSellFeatureToggleEnabled) {
+            buttons += ActionButton.SWAP_BUTTON
         }
+
+        if (isSellAvailable) {
+            buttons += ActionButton.SELL_BUTTON
+        }
+
+        view?.showActionButtons(buttons)
     }
 
     private fun showUserAddressAndUsername() {
