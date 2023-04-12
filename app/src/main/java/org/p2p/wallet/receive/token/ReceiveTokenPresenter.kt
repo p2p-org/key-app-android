@@ -71,7 +71,7 @@ class ReceiveTokenPresenter(
     }
 
     override fun onNetworkClicked() {
-        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.ReceiveNetwork.SOLANA)
+        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA)
         view?.showNetwork()
     }
 
