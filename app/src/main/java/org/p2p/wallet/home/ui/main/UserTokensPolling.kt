@@ -63,13 +63,9 @@ class UserTokensPolling(
                 homeScreenState
             }.stateIn(scope, SharingStarted.WhileSubscribed(), null)
 
-    suspend fun refresh() {
-        ethTokensFlow.emit(emptyList())
-        initTokens()
-    }
-
     fun initTokens() {
-        launch {
+        refreshJob?.cancel()
+        refreshJob = launch {
             try {
                 isRefreshingFlow.emit(true)
                 val ethTokens = fetchEthereumTokens()

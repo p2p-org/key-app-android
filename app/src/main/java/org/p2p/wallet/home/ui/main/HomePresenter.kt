@@ -293,7 +293,7 @@ class HomePresenter(
         launch {
             try {
                 view?.showRefreshing(isRefreshing = true)
-                tokensPolling.refresh()
+                tokensPolling.initTokens()
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {

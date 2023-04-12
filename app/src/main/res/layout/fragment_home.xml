@@ -35,7 +35,6 @@
                     android:id="@+id/view_balance"
                     layout="@layout/layout_home_balance"
                     android:layout_width="match_parent"
-                    android:visibility="gone"
                     android:layout_height="wrap_content" />
 
                 <org.p2p.wallet.common.ui.widget.actionbuttons.ActionButtonsView
@@ -43,7 +42,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:visibility="gone"
                     android:layout_marginBottom="30dp" />
 
             </LinearLayout>

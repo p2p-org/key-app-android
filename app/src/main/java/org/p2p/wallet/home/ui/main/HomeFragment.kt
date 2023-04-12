@@ -158,7 +158,6 @@ class HomeFragment :
 
     override fun showActionButtons(buttons: List<ActionButton>) {
         binding.viewActionButtons.showActionButtons(buttons)
-        binding.viewActionButtons.isVisible = true
     }
 
     private fun FragmentHomeBinding.setupView() {
@@ -273,7 +272,6 @@ class HomeFragment :
 
     override fun showBalance(cellModel: TextViewCellModel?) {
         binding.viewBalance.textViewAmount.bindOrGone(cellModel)
-        binding.viewBalance.root.isVisible = true
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {
