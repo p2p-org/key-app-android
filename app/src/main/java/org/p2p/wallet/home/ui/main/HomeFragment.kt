@@ -13,6 +13,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
+import org.p2p.wallet.bridge.anatytics.ClaimAnalytics
 import org.p2p.wallet.bridge.claim.ui.ClaimFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.permissions.PermissionState
@@ -46,6 +47,7 @@ import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.SwapFragmentFactory
 import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -87,6 +89,8 @@ class HomeFragment :
 
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val claimAnalytics: ClaimAnalytics by inject()
+
     private val swapFragmentFactory: SwapFragmentFactory by inject()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
 
@@ -160,6 +164,7 @@ class HomeFragment :
         layoutToolbar.setupToolbar()
 
         homeRecyclerView.adapter = contentAdapter
+        homeRecyclerView.layoutManager = HomeScreenLayoutManager(requireContext())
         swipeRefreshLayout.setOnRefreshListener { presenter.refreshTokens() }
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
 
@@ -251,7 +256,9 @@ class HomeFragment :
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean) {
-        contentAdapter.setItems(tokens, isZerosHidden)
+        binding.homeRecyclerView.post {
+            contentAdapter.setItems(tokens, isZerosHidden)
+        }
     }
 
     override fun showTokensForBuy(tokens: List<Token>) {
@@ -328,6 +335,7 @@ class HomeFragment :
     }
 
     override fun onClaimTokenClicked(token: Token.Eth) {
+        claimAnalytics.logClaimButtonClicked()
         replaceFragment(
             ClaimFragment.create(ethereumToken = token)
         )

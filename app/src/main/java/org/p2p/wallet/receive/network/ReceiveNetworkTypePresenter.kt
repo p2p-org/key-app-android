@@ -57,9 +57,9 @@ class ReceiveNetworkTypePresenter(
                 onBitcoinSelected()
             }
             val analyticsNetworkType = if (networkType == NetworkType.SOLANA) {
-                ReceiveAnalytics.ReceiveNetwork.SOLANA
+                ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA
             } else {
-                ReceiveAnalytics.ReceiveNetwork.BITCOIN
+                ReceiveAnalytics.AnalyticsReceiveNetwork.BITCOIN
             }
             receiveAnalytics.logReceiveChangingNetwork(analyticsNetworkType)
         }
