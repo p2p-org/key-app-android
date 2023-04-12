@@ -43,7 +43,7 @@ class UserTokensPolling(
     private val isPollingEnabled: Boolean
         get() = appFeatureFlags.isPollingEnabled.featureValue
 
-    private val ethTokensFlow = MutableStateFlow<List<Token.Eth>?>(null)
+    private val ethTokensFlow = MutableStateFlow<List<Token.Eth>>(emptyList())
     private val isRefreshingFlow = MutableStateFlow<Boolean>(false)
     private var homeScreenState = UserTokensPollState()
 
@@ -52,7 +52,11 @@ class UserTokensPolling(
     fun shareTokenPollFlowIn(scope: CoroutineScope): StateFlow<UserTokensPollState> =
         userInteractor.getUserTokensFlow()
             .combine(ethTokensFlow) { sol, eth ->
-                homeScreenState = homeScreenState.copy(solTokens = sol, ethTokens = eth)
+                if (homeScreenState.solTokens.isNotEmpty() && sol.isEmpty()) {
+                    homeScreenState = homeScreenState.copy(ethTokens = eth)
+                } else {
+                    homeScreenState = homeScreenState.copy(solTokens = sol, ethTokens = eth)
+                }
                 homeScreenState
             }.combine(isRefreshingFlow) { currentState, refreshing ->
                 this.homeScreenState = currentState.copy(isRefreshing = refreshing)
@@ -60,7 +64,7 @@ class UserTokensPolling(
             }.stateIn(scope, SharingStarted.WhileSubscribed(), UserTokensPollState())
 
     suspend fun refresh() {
-        ethTokensFlow.emit(null)
+        ethTokensFlow.emit(emptyList())
         initTokens()
     }
 
@@ -115,7 +119,7 @@ class UserTokensPolling(
         }
     }
 
-    private suspend fun fetchSolTokens() =
+    private suspend fun fetchSolTokens(): List<Token.Active> =
         userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
 
     private suspend fun fetchEthereumTokens(): List<Token.Eth> {
@@ -128,7 +132,7 @@ class UserTokensPolling(
 }
 
 data class UserTokensPollState(
-    val solTokens: List<Token.Active>? = null,
-    val ethTokens: List<Token.Eth>? = null,
+    val solTokens: List<Token.Active> = emptyList(),
+    val ethTokens: List<Token.Eth>? = emptyList(),
     val isRefreshing: Boolean = false
 )

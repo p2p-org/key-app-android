@@ -7,6 +7,7 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
@@ -106,12 +107,10 @@ class HomePresenter(
 
     private fun attachToPollingTokens() {
         launch {
-            tokensPolling.shareTokenPollFlowIn(this).collect { homeState ->
-                if (homeState.solTokens != null && homeState.ethTokens != null) {
-                    state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
-                    handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
-                    initializeActionButtons()
-                }
+            tokensPolling.shareTokenPollFlowIn(this).collectLatest { homeState ->
+                state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens.orEmpty())
+                handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens.orEmpty())
+                initializeActionButtons()
                 view?.showRefreshing(homeState.isRefreshing)
             }
         }
@@ -214,7 +213,7 @@ class HomePresenter(
 
     override fun onSendClicked(clickSource: SearchOpenedFromScreen) {
         launch {
-            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethTokens.isNullOrEmpty()
+            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethTokens.isEmpty()
             if (isEmptyAccount) {
                 // this cannot be empty
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
