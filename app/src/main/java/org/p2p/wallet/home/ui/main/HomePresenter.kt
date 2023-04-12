@@ -107,7 +107,7 @@ class HomePresenter(
 
     private fun attachToPollingTokens() {
         launch {
-            tokensPolling.shareTokenPollFlowIn(this).collectLatest { homeState ->
+            tokensPolling.shareTokenPollFlowIn(this).collect { homeState ->
                 state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens.orEmpty())
                 handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens.orEmpty())
                 initializeActionButtons()
