@@ -18,7 +18,10 @@ data class RecipientEntity(
     val username: String?,
 
     @ColumnInfo(name = COLUMN_DATE_TIMESTAMP)
-    val dateTimestamp: Long
+    val dateTimestamp: Long,
+
+    @ColumnInfo(name = COLUMN_NETWORK_TYPE)
+    val networkTypeName: String
 
 ) {
     companion object {
@@ -26,5 +29,6 @@ data class RecipientEntity(
         const val COLUMN_ADDRESS = "address"
         const val COLUMN_NICKNAME = "nickname"
         const val COLUMN_DATE_TIMESTAMP = "date_timestamp"
+        const val COLUMN_NETWORK_TYPE = "network_type"
     }
 }
