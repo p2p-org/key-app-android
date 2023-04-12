@@ -17,12 +17,9 @@ class TokenAdapterDiffCallback(
         val new = newList[newItemPosition]
         return when {
             old is HomeElementItem.Shown && new is HomeElementItem.Shown ->
-                old.token.publicKey == new.token.publicKey &&
-                    old.token.rate == new.token.rate
+                old.token.publicKey == new.token.publicKey
             old is HomeElementItem.Hidden && new is HomeElementItem.Hidden ->
-                old.token.publicKey == new.token.publicKey &&
-                    old.token.rate == new.token.rate
-
+                old.token.publicKey == new.token.publicKey
             old is HomeElementItem.Action && new is HomeElementItem.Action ->
                 // should pass in contents compare
                 true

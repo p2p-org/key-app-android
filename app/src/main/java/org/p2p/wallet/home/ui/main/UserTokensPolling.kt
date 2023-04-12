@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
@@ -42,18 +43,23 @@ class UserTokensPolling(
     private val isPollingEnabled: Boolean
         get() = appFeatureFlags.isPollingEnabled.featureValue
 
-    private val solTokensFlow = MutableStateFlow<List<Token.Active>?>(null)
     private val ethTokensFlow = MutableStateFlow<List<Token.Eth>?>(null)
+    private val isRefreshingFlow = MutableStateFlow<Boolean>(false)
+    private var homeScreenState = UserTokensPollState()
 
     private var refreshJob: Job? = null
 
-    fun shareTokenPollFlowIn(scope: CoroutineScope): StateFlow<Pair<List<Token.Active>?, List<Token.Eth>?>> =
-        solTokensFlow.combine(ethTokensFlow) { sol, eth ->
-            sol to eth
-        }.stateIn(scope, SharingStarted.WhileSubscribed(), Pair(null, null))
+    fun shareTokenPollFlowIn(scope: CoroutineScope): StateFlow<UserTokensPollState> =
+        userInteractor.getUserTokensFlow()
+            .combine(ethTokensFlow) { sol, eth ->
+                homeScreenState = homeScreenState.copy(solTokens = sol, ethTokens = eth)
+                homeScreenState
+            }.combine(isRefreshingFlow) { currentState, refreshing ->
+                this.homeScreenState = currentState.copy(isRefreshing = refreshing)
+                homeScreenState
+            }.stateIn(scope, SharingStarted.WhileSubscribed(), UserTokensPollState())
 
     suspend fun refresh() {
-        solTokensFlow.emit(null)
         ethTokensFlow.emit(null)
         initTokens()
     }
@@ -61,18 +67,24 @@ class UserTokensPolling(
     fun initTokens() {
         launch {
             try {
-                val tokensBefore = userInteractor.getUserTokens()
-                val solTokens = async { fetchSolTokens() }
-                val ethTokens = async { fetchEthereumTokens() }
-                userInteractor.loadUserRates(solTokens.await())
-                solTokensFlow.emit(userInteractor.getUserTokens())
-                ethTokensFlow.emit(ethTokens.await())
-                val tokensAfter = userInteractor.getUserTokens()
+                isRefreshingFlow.emit(true)
+                joinAll(
+                    async {
+                        val solTokens = fetchSolTokens()
+                        userInteractor.loadUserRates(solTokens)
+                    },
+                    async {
+                        val ethTokens = fetchEthereumTokens()
+                        ethTokensFlow.emit(ethTokens)
+                    }
+                )
                 startPolling()
             } catch (e: CancellationException) {
                 Timber.i("Cancelled tokens remote update")
             } catch (e: Throwable) {
                 Timber.e(e, "Failed polling tokens")
+            } finally {
+                isRefreshingFlow.emit(false)
             }
         }
     }
@@ -84,10 +96,13 @@ class UserTokensPolling(
                 try {
                     while (true) {
                         delay(POLLING_ETH_DELAY.inWholeMilliseconds)
-                        val solTokens = async { fetchSolTokens() }
-                        val ethTokens = async { fetchEthereumTokens() }
-                        solTokensFlow.emit(solTokens.await())
-                        ethTokensFlow.emit(ethTokens.await())
+                        joinAll(
+                            async { fetchSolTokens() },
+                            async {
+                                val ethTokens = fetchEthereumTokens()
+                                ethTokensFlow.emit(ethTokens)
+                            }
+                        )
                     }
                 } catch (e: CancellationException) {
                     Timber.i("Cancelled tokens remote update")
@@ -111,3 +126,9 @@ class UserTokensPolling(
         return ethereumInteractor.loadWalletTokens(ethBundles)
     }
 }
+
+data class UserTokensPollState(
+    val solTokens: List<Token.Active>? = null,
+    val ethTokens: List<Token.Eth>? = null,
+    val isRefreshing: Boolean = false
+)
