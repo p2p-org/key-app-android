@@ -27,6 +27,8 @@ class HistoryListViewPresenter(
     private val historyAnalytics: HistoryAnalytics,
 ) : BasePresenter<HistoryListViewContract.View>(), HistoryListViewContract.Presenter {
 
+    private var isInitialHistoryLoaded = false
+
     override fun attach(view: HistoryListViewContract.View) {
         super.attach(view)
         launch {
@@ -75,6 +77,8 @@ class HistoryListViewPresenter(
     }
 
     override fun loadHistory(historyType: HistoryListViewType) {
+        if (isInitialHistoryLoaded) return
+
         launch {
             try {
                 view?.showPagingState(PagingState.InitialLoading)
@@ -87,6 +91,7 @@ class HistoryListViewPresenter(
                     transactions = newHistoryTransactions,
                     userSendLinksCount = getUserSendLinksCount(historyType),
                 )
+                isInitialHistoryLoaded = true
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading history: $e")
                 view?.showPagingState(PagingState.Error(e))
