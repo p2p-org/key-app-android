@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.uikit.components.FocusField
@@ -33,9 +34,10 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import timber.log.Timber
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+private const val EXTRA_FIAT_TOKEN = "EXTRA_FIAT_TOKEN"
+private const val EXTRA_FIAT_AMOUNT = "EXTRA_AMOUNT"
 
 private const val KEY_REQUEST = "KEY_REQUEST_NEW_BUY"
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
@@ -46,14 +48,21 @@ class NewBuyFragment :
     NewBuyContract.View {
 
     companion object {
-        fun create(token: Token): NewBuyFragment = NewBuyFragment().withArgs(
-            EXTRA_TOKEN to token
-        )
+        fun create(token: Token, fiatToken: String? = null, fiatAmount: String? = null): NewBuyFragment =
+            NewBuyFragment()
+                .withArgs(
+                    EXTRA_TOKEN to token,
+                    EXTRA_FIAT_TOKEN to fiatToken,
+                    EXTRA_FIAT_AMOUNT to fiatAmount
+                )
     }
 
-    override val presenter: NewBuyContract.Presenter by inject { parametersOf(token) }
-
     private val token: Token by args(EXTRA_TOKEN)
+    private val fiatToken: String? by args(EXTRA_FIAT_TOKEN)
+    private val fiatAmount: String? by args(EXTRA_FIAT_AMOUNT)
+
+    override val presenter: NewBuyContract.Presenter by inject { parametersOf(token, fiatToken, fiatAmount) }
+
     private val binding: FragmentNewBuyBinding by viewBinding()
     private val adapter: PaymentMethodsAdapter by unsafeLazy {
         PaymentMethodsAdapter(presenter::onPaymentMethodSelected)

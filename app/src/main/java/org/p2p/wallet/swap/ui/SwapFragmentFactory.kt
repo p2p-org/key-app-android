@@ -9,6 +9,14 @@ import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 
 class SwapFragmentFactory(private val newSwapEnabledFeatureToggle: NewSwapEnabledFeatureToggle) {
 
+    fun swapFragment(tokenA: String, tokenB: String, amount: String, source: SwapOpenedFrom): Fragment {
+        return if (newSwapEnabledFeatureToggle.isFeatureEnabled) {
+            JupiterSwapFragment.create(tokenA, tokenB, amount, source)
+        } else {
+            OrcaSwapFragment.create(source)
+        }
+    }
+
     fun swapFragment(token: Token.Active? = null, source: SwapOpenedFrom): Fragment {
         return if (newSwapEnabledFeatureToggle.isFeatureEnabled) {
             JupiterSwapFragment.create(token, source)

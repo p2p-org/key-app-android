@@ -13,6 +13,9 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
+import timber.log.Timber
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
@@ -28,6 +31,8 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
+import org.p2p.wallet.deeplinks.DeeplinkData
+import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
@@ -105,6 +110,17 @@ class MainFragment :
             onCreateActions = arrayListOf()
         }
 
+        deeplinksManager
+            .subscribeOnDeeplinks(
+                setOf(
+                    DeeplinkTarget.HOME,
+                    DeeplinkTarget.HISTORY,
+                    DeeplinkTarget.SETTINGS,
+                )
+            )
+            .onEach(::navigateFromDeeplink)
+            .launchIn(lifecycleScope)
+
         deeplinksManager.setTabsSwitcher(this)
         deeplinksManager.executeHomePendingDeeplink()
         deeplinksManager.executeTransferPendingAppLink()
@@ -175,7 +191,25 @@ class MainFragment :
         super.onDestroyView()
     }
 
+    private fun navigateFromDeeplink(data: DeeplinkData) {
+        Timber.e("ITEM_ID ${R.id.historyItem}")
+        Timber.d("Navigate from deeplink: ${data.target}")
+        when (data.target) {
+            DeeplinkTarget.HOME -> {
+                navigate(ScreenTab.HOME_SCREEN)
+            }
+            DeeplinkTarget.HISTORY -> {
+                navigate(ScreenTab.HISTORY_SCREEN)
+            }
+            DeeplinkTarget.SETTINGS -> {
+                navigate(ScreenTab.SETTINGS_SCREEN)
+            }
+            else -> Unit
+        }
+    }
+
     override fun navigate(clickedTab: ScreenTab) {
+        Timber.d("Navigate to $clickedTab")
         if (clickedTab == ScreenTab.FEEDBACK_SCREEN) {
             IntercomService.showMessenger()
             analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
@@ -201,6 +235,8 @@ class MainFragment :
         }
 
         val isHistoryTabSelected = clickedTab.itemId == ScreenTab.HISTORY_SCREEN.itemId
+
+        // If the selected tab is not in the tab cache or if it's the History tab, create a new fragment for the tab
         if (!tabCachedFragments.containsKey(clickedTab.itemId) || isHistoryTabSelected) {
             val fragment = when (clickedTab) {
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()
@@ -213,8 +249,16 @@ class MainFragment :
             tabCachedFragments[itemId] = fragment
         }
 
+        // Get the ID of the previously selected fragment
         val prevFragmentId = binding.bottomNavigation.getSelectedItemId()
+
+        // forcibly commit previous transaction if new transaction is coming almost immediately
+        childFragmentManager.executePendingTransactions()
+
+        // Replace the currently displayed fragment with the new fragment
         childFragmentManager.commit(allowStateLoss = false) {
+
+            // Hide or remove the previously selected fragment if it's not the same as the current fragment
             if (prevFragmentId != itemId) {
                 if (tabCachedFragments[prevFragmentId] != null && !tabCachedFragments[prevFragmentId]!!.isAdded) {
                     remove(tabCachedFragments[prevFragmentId]!!)
@@ -222,14 +266,18 @@ class MainFragment :
                     hide(tabCachedFragments[prevFragmentId]!!)
                 }
             }
-            val nextFragmentTag = tabCachedFragments[itemId]!!.javaClass.name
-            if (childFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
 
+            // Get the tag for the new fragment
+            val nextFragmentTag = tabCachedFragments[itemId]!!.javaClass.name
+
+            // If the new fragment isn't already added to the container, add it
+            if (childFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
                 if (tabCachedFragments[itemId]!!.isAdded) {
                     return
                 }
                 add(R.id.fragmentContainer, tabCachedFragments[itemId]!!, nextFragmentTag)
             } else {
+                // If the new fragment is already added, show it
                 if (!tabCachedFragments[itemId]!!.isAdded) {
                     remove(tabCachedFragments[itemId]!!)
                     if (tabCachedFragments[itemId]!!.isAdded) {
@@ -275,6 +323,10 @@ class MainFragment :
         }
         binding.bottomNavigation.inflateMenu(menuRes)
         binding.bottomNavigation.menu.findItem(R.id.feedbackItem)?.isCheckable = false
+    }
+
+    private fun isSwapAddedToBottomMenu(): Boolean {
+        return binding.bottomNavigation.menu.findItem(ScreenTab.SWAP_SCREEN.itemId) != null
     }
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {

@@ -49,9 +49,11 @@ object BuyModule : InjectionModule {
                 networkServicesUrlProvider = get()
             )
         }
-        factory<NewBuyContract.Presenter> { (token: Token) ->
+        factory<NewBuyContract.Presenter> { (token: Token, fiatToken: String?, fiatAmount: String?) ->
             NewBuyPresenter(
                 tokenToBuy = token,
+                fiatToken = fiatToken,
+                fiatAmount = fiatAmount,
                 buyAnalytics = get(),
                 userInteractor = get(),
                 paymentMethodsInteractor = get(),

@@ -4,7 +4,11 @@ import androidx.core.content.getSystemService
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import org.p2p.uikit.components.ScreenTab
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.onCompletion
 import org.p2p.wallet.R
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.notification.NotificationType
@@ -24,12 +28,55 @@ class AppDeeplinksManager(
         const val NOTIFICATION_TYPE = "eventType"
     }
 
+    private val deeplinkData = MutableStateFlow<DeeplinkData?>(null)
+
+    /**
+     * Tabs switcher for navigate by home screen (see [org.p2p.wallet.home.MainFragment])
+     */
     private var mainTabsSwitcher: MainTabsSwitcher? = null
+
+    /**
+     * Listener for root activity (see [org.p2p.wallet.root.RootActivity])
+     */
     private var rootListener: RootListener? = null
 
+    /**
+     * Intent for pending home intents, like attempt to
+     */
     private var pendingIntent: Intent? = null
 
+    /**
+     * Intent for send-via-link
+     */
     private var pendingTransferLink: SendViaLinkWrapper? = null
+
+    /**
+     * Notify manager that we have new deeplink to handle
+     * @param data Deeplink data
+     */
+    fun notify(data: DeeplinkData) {
+        deeplinkData.tryEmit(data)
+    }
+
+    /**
+     * Get the deeplink data flow for specified targets
+     * @param supportedTargets Set of deeplink targets, empty means all targets will be emitted
+     */
+    fun subscribeOnDeeplinks(supportedTargets: Set<DeeplinkTarget> = emptySet()): Flow<DeeplinkData> {
+        return deeplinkData
+            .filterNotNull()
+            .let { flow ->
+                if(supportedTargets.isEmpty()) {
+                    flow
+                } else {
+                    flow.filter { item -> item.target in supportedTargets }
+                }
+            }
+            .onCompletion {
+                // dispose after all subscribers are unsubscribed
+                deeplinkData.tryEmit(null)
+            }
+    }
 
     fun setTabsSwitcher(mainTabsSwitcher: MainTabsSwitcher) {
         this.mainTabsSwitcher = mainTabsSwitcher
@@ -57,6 +104,19 @@ class AppDeeplinksManager(
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> {
                         rootListener?.triggerOnboardingDeeplink(data)
+                    }
+                    isValidScheme && DeeplinkUtils.isValidCommonLink(data) -> {
+                        val screenName = data.host
+                        val target = DeeplinkTarget.fromScreenName(screenName)
+                        target?.let { deeplinkTarget ->
+                            val deeplinkData = DeeplinkData(
+                                target = deeplinkTarget,
+                                pathSegments = data.pathSegments,
+                                args = data.queryParameterNames.associateWith { key -> data.getQueryParameter(key) },
+                                intent = intent
+                            )
+                            notify(deeplinkData)
+                        }
                     }
                     isTransferScheme -> {
                         val deeplink = SendViaLinkWrapper(data.toString())
@@ -131,12 +191,12 @@ class AppDeeplinksManager(
 
         rootListener?.popBackStackToMain()
 
-        val clickedTab = ScreenTab.fromTabId(extras.getInt(EXTRA_TAB_SCREEN))!!
-        mainTabsSwitcher?.navigate(clickedTab) ?: savePendingIntent(intent)
-    }
+        val clickedTab = DeeplinkTarget.fromScreenTabId(extras.getInt(EXTRA_TAB_SCREEN))
+        clickedTab?.let { target ->
+            val deeplinkData = DeeplinkData(target, intent = intent)
+            notify(deeplinkData)
+        }
 
-    private fun savePendingIntent(intent: Intent) {
-        pendingIntent = intent
     }
 
     private fun isDeeplinkWithUri(intent: Intent): Boolean = intent.data != null

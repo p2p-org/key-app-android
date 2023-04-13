@@ -41,6 +41,8 @@ private const val DELAY_IN_MS = 500L
 
 class NewBuyPresenter(
     tokenToBuy: Token,
+    private val fiatToken: String? = null,
+    private val fiatAmount: String? = null,
     private val buyAnalytics: BuyAnalytics,
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
@@ -115,7 +117,18 @@ class NewBuyPresenter(
             }
 
             validatePaymentMethod()
-            preselectMinimalFiatAmount()
+
+            if(!fiatToken.isNullOrBlank()) {
+                currenciesToSelect.firstOrNull { it.code.lowercase() == fiatToken.lowercase() }?.let {
+                    selectCurrency(it)
+                }
+            }
+
+            if(fiatAmount != null && fiatAmount.toBigDecimalOrNull() != null) {
+                selectMinimalFiatAmount(fiatAmount)
+            } else {
+                preselectMinimalFiatAmount()
+            }
         }
     }
 
@@ -126,9 +139,13 @@ class NewBuyPresenter(
         }
     }
 
+    private fun selectMinimalFiatAmount(amount: String) {
+        view?.showPreselectedAmount(amount)
+        setBuyAmount(amount, isDelayEnabled = false)
+    }
+
     private fun preselectMinimalFiatAmount() {
-        view?.showPreselectedAmount(DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toString())
-        setBuyAmount(DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toString(), isDelayEnabled = false)
+        selectMinimalFiatAmount(DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toString())
     }
 
     override fun onBackPressed() {
