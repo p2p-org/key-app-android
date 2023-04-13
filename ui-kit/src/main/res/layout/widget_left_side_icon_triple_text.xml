@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:duplicateParentState="true"
-        android:ellipsize="end"
+        android:ellipsize="middle"
         android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
         android:textColor="@color/text_night"
