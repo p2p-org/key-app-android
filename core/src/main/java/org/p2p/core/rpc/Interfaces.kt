@@ -7,8 +7,20 @@ import io.reactivex.Single
 class RpcHandler(val onSuccess: (RpcResponse) -> Unit, val onError: (Throwable) -> Unit)
 typealias SubscriptionHandler = (RpcSubscriptionResponse) -> Unit
 
-data class RpcResponse(val id: Int, val result: JsonElement?, val error: Error?) {
-    data class Error(val code: Int, val message: String)
+data class RpcResponse(
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("result")
+    val result: JsonElement?,
+    @SerializedName("error")
+    val error: Error?
+) {
+    data class Error(
+        @SerializedName("code")
+        val code: Int,
+        @SerializedName("message")
+        val message: String
+    )
 }
 
 data class RpcSubscriptionResponse(val method: String, val params: Params) {

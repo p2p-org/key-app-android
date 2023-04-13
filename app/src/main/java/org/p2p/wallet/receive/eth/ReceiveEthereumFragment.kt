@@ -15,6 +15,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentEthereumReceiveBinding
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
@@ -42,6 +43,8 @@ class EthereumReceiveFragment :
 
     private val binding: FragmentEthereumReceiveBinding by viewBinding()
     private val glideManager: GlideManager by inject()
+    private val receiveAnalytics: ReceiveAnalytics by inject()
+
     private val logoUrl: String by args(ARG_TOKEN_LOGO_URL)
     private val tokenSymbol: String by args(ARG_TOKEN_SYMBOL)
 
@@ -59,6 +62,7 @@ class EthereumReceiveFragment :
     override fun showQrAndAddress(qrBitmap: Bitmap, addressInHexString: String) {
         with(binding) {
             buttonAction.setOnClickListener {
+                receiveAnalytics.logAddressCopyButtonClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.ETHEREUM)
                 requireContext().copyToClipBoard(addressInHexString)
                 showUiKitSnackBar(messageResId = R.string.receive_eth_address_copied)
             }
@@ -78,6 +82,7 @@ class EthereumReceiveFragment :
                 )
                 shapeOutline(shapeRounded16dp())
                 setOnClickListener {
+                    receiveAnalytics.logAddressCopyLongClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.ETHEREUM)
                     requireContext().copyToClipBoard(addressInHexString)
                     showUiKitSnackBar(messageResId = R.string.receive_eth_address_copied)
                 }

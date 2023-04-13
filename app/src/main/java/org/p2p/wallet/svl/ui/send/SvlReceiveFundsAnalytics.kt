@@ -4,6 +4,7 @@ import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.newsend.model.TemporaryAccount
 
 private const val CLAIM_START_SCREEN_OPEN = "Claim_Start_Screen_Open"
+private const val CLAIM_CLICK_HIDE = "Claim_Click_Hide"
 private const val CLAIM_CLICK_CONFIRMED = "Claim_Click_Confirmed"
 private const val CLAIM_CLICK_CLOSE = "Claim_Click_Close"
 private const val CLAIM_END_SCREEN_OPEN = "Claim_End_Screen_Open"
@@ -32,6 +33,10 @@ class SvlReceiveFundsAnalytics(private val tracker: Analytics) {
                 "From_Address" to linkAuthor
             )
         )
+    }
+
+    fun logHideClicked() {
+        tracker.logEvent(CLAIM_CLICK_HIDE)
     }
 
     fun logCloseClicked() {

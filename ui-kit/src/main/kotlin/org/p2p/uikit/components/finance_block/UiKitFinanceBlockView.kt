@@ -40,7 +40,10 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
             right = paddingHorizontal,
             bottom = paddingVertical
         )
-        rippleForeground()
+        if(!isInEditMode) {
+            // editor preview crashes when trying to apply rippleForeground
+            rippleForeground()
+        }
         bindViewStyle(styleType)
     }
 

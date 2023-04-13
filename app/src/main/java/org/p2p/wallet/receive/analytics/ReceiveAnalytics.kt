@@ -1,7 +1,8 @@
 package org.p2p.wallet.receive.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
 import java.math.BigDecimal
+import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 
 private const val RECEIVE_VIEWED = "Receive_Viewed"
 private const val RECEIVE_TOKEN_VIEWED = "Token_Receive_Viewed"
@@ -14,10 +15,16 @@ private const val RECEIVE_SETTING_BITCOIN = "Receive_Setting_Bitcoin"
 private const val RECEIVE_NETWORK_CHANGED = "Receive_Network_Changed"
 private const val RECEIVE_SHOWING_STATUSES = "Receive_Showing_Statuses"
 private const val RECEIVE_SHOWING_STATUS = "Receive_Showing_Status"
-private const val RECEIVE_SHOWING_HISTORY = "Receive_Showing_History"
 private const val RECEIVE_SHOWING_DETAILS = "Receive_Showing_Details"
 private const val RECEIVE_START_SCREEN = "Receive_Start_Screen"
 private const val RECEIVE_ACTION_BUTTON = "Action_Button_Receive"
+
+private const val RECEIVE_TOKEN_CLICK = "Receive_Token_Click"
+private const val RECEIVE_NETWORK_SCREEN_OPEN = "Receive_Network_Screen_Open"
+private const val RECEIVE_NETWORK_CLICK_BUTTON = "Receive_Network_Click_Button"
+private const val RECEIVE_COPY_ADDRESS_CLICK_BUTTON = "Receive_Copy_Address_Click_Button"
+private const val RECEIVE_COPY_LONG_ADDRESS_CLICK = "Receive_Copy_Long_Address_Click"
+private const val RECEIVE_COPY_ADDRESS_USERNAME = "Receive_Copy_Address_Username"
 
 class ReceiveAnalytics(private val tracker: Analytics) {
 
@@ -75,35 +82,26 @@ class ReceiveAnalytics(private val tracker: Analytics) {
         )
     }
 
-    fun logReceiveViewingExplorer(receiveNetwork: ReceiveNetwork) {
+    fun logReceiveViewingExplorer(analyticsReceiveNetwork: AnalyticsReceiveNetwork) {
         tracker.logEvent(
             RECEIVE_VIEWING_EXPLORER,
             arrayOf(
-                Pair("Receive_Network", receiveNetwork.title)
+                Pair("Receive_Network", analyticsReceiveNetwork.title)
             )
         )
     }
 
-    fun logReceiveChangingNetwork(receiveNetwork: ReceiveNetwork) {
+    fun logReceiveChangingNetwork(analyticsReceiveNetwork: AnalyticsReceiveNetwork) {
         tracker.logEvent(
             RECEIVE_CHANGING_NETWORK,
             arrayOf(
-                Pair("Receive_Network", receiveNetwork.title)
+                Pair("Receive_Network", analyticsReceiveNetwork.title)
             )
         )
     }
 
     fun logReceiveSettingBitcoin() {
         tracker.logEvent(RECEIVE_SETTING_BITCOIN)
-    }
-
-    fun logReceiveNetworkChanged(receiveNetwork: ReceiveNetwork) {
-        tracker.logEvent(
-            RECEIVE_NETWORK_CHANGED,
-            arrayOf(
-                Pair("Receive_Network", receiveNetwork.title)
-            )
-        )
     }
 
     fun logReceiveShowingStatuses() {
@@ -114,15 +112,11 @@ class ReceiveAnalytics(private val tracker: Analytics) {
         tracker.logEvent(RECEIVE_SHOWING_STATUS)
     }
 
-    fun logReceiveShowingHistory() {
-        tracker.logEvent(RECEIVE_SHOWING_HISTORY)
-    }
-
     fun logReceiveShowingDetails(
         receiveSum: BigDecimal,
         receiveUSD: BigDecimal,
         tokenName: String,
-        receiveNetwork: ReceiveNetwork
+        analyticsReceiveNetwork: AnalyticsReceiveNetwork
     ) {
         tracker.logEvent(
             RECEIVE_SHOWING_DETAILS,
@@ -130,7 +124,7 @@ class ReceiveAnalytics(private val tracker: Analytics) {
                 Pair("Receive_Sum", receiveSum),
                 Pair("Receive_USD", receiveUSD),
                 Pair("Token_Name", tokenName),
-                Pair("Receive_Network", receiveNetwork.title)
+                Pair("Receive_Network", analyticsReceiveNetwork.title)
             )
         )
     }
@@ -156,8 +150,63 @@ class ReceiveAnalytics(private val tracker: Analytics) {
         )
     }
 
-    enum class ReceiveNetwork(val title: String) {
+    fun logTokenClicked(tokenSymbol: String) {
+        tracker.logEvent(
+            event = RECEIVE_TOKEN_CLICK,
+            params = mapOf(
+                "Token_Name" to tokenSymbol
+            )
+        )
+    }
+
+    fun logAddressCopyButtonClicked(analyticsReceiveNetwork: AnalyticsReceiveNetwork) {
+        tracker.logEvent(
+            event = RECEIVE_COPY_ADDRESS_CLICK_BUTTON,
+            params = mapOf(
+                "Network" to analyticsReceiveNetwork.title
+            )
+        )
+    }
+
+    fun logAddressCopyLongClicked(analyticsReceiveNetwork: AnalyticsReceiveNetwork) {
+        tracker.logEvent(
+            event = RECEIVE_COPY_LONG_ADDRESS_CLICK,
+            params = mapOf(
+                "Network" to analyticsReceiveNetwork.title
+            )
+        )
+    }
+
+    fun logUsernameCopyClicked(analyticsReceiveNetwork: AnalyticsReceiveNetwork) {
+        tracker.logEvent(
+            event = RECEIVE_COPY_ADDRESS_USERNAME,
+            params = mapOf(
+                "Network" to analyticsReceiveNetwork.title
+            )
+        )
+    }
+
+    fun logNetworkClicked(network: ReceiveNetwork) {
+        val analyticsNetwork = if (network == ReceiveNetwork.ETHEREUM) {
+            AnalyticsReceiveNetwork.ETHEREUM
+        } else {
+            AnalyticsReceiveNetwork.SOLANA
+        }
+        tracker.logEvent(
+            event = RECEIVE_NETWORK_CLICK_BUTTON,
+            params = mapOf(
+                "Network" to analyticsNetwork.title
+            )
+        )
+    }
+
+    fun logNetworkSelectionScreenOpened() {
+        tracker.logEvent(event = RECEIVE_NETWORK_SCREEN_OPEN)
+    }
+
+    enum class AnalyticsReceiveNetwork(val title: String) {
         SOLANA("Solana"),
+        ETHEREUM("Ethereum"),
         BITCOIN("Bitcoin")
     }
 }
