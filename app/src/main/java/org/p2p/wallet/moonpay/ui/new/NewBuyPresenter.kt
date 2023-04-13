@@ -118,13 +118,13 @@ class NewBuyPresenter(
 
             validatePaymentMethod()
 
-            if(!fiatToken.isNullOrBlank()) {
+            if (!fiatToken.isNullOrBlank()) {
                 currenciesToSelect.firstOrNull { it.code.lowercase() == fiatToken.lowercase() }?.let {
                     selectCurrency(it)
                 }
             }
 
-            if(fiatAmount != null && fiatAmount.toBigDecimalOrNull() != null) {
+            if (fiatAmount != null && fiatAmount.toBigDecimalOrNull() != null) {
                 selectMinimalFiatAmount(fiatAmount)
             } else {
                 preselectMinimalFiatAmount()

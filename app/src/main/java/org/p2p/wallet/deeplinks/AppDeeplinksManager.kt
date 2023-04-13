@@ -66,7 +66,7 @@ class AppDeeplinksManager(
         return deeplinkData
             .filterNotNull()
             .let { flow ->
-                if(supportedTargets.isEmpty()) {
+                if (supportedTargets.isEmpty()) {
                     flow
                 } else {
                     flow.filter { item -> item.target in supportedTargets }
@@ -196,7 +196,6 @@ class AppDeeplinksManager(
             val deeplinkData = DeeplinkData(target, intent = intent)
             notify(deeplinkData)
         }
-
     }
 
     private fun isDeeplinkWithUri(intent: Intent): Boolean = intent.data != null

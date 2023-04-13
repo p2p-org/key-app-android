@@ -65,5 +65,4 @@ class DeeplinkUtilsTest {
         uri = newMockUri("keyapp", "", "home")
         assertFalse(DeeplinkUtils.isValidCommonLink(uri))
     }
-
 }

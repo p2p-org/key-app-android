@@ -177,7 +177,7 @@ class HomePresenter(
                             onSendClicked(SearchOpenedFromScreen.MAIN)
                         }
                         DeeplinkTarget.SWAP -> {
-                            if(data.hasArgNotNull("from") && data.hasArgNotNull("to")) {
+                            if (data.hasArgNotNull("from") && data.hasArgNotNull("to")) {
                                 val amount = data.args["amount"]?.toBigDecimalOrNull()?.toPlainString() ?: "0"
                                 view?.showSwapWithArgs(
                                     tokenA = data.args["from"] as String,
@@ -255,7 +255,7 @@ class HomePresenter(
         val fiatToken = data.args["from"]
         val fiatAmount = data.args["amount"]
 
-        if(!cryptoToken.isNullOrBlank() && !fiatToken.isNullOrBlank()) {
+        if (!cryptoToken.isNullOrBlank() && !fiatToken.isNullOrBlank()) {
             launch {
                 val token = userInteractor.getSingleTokenForBuy(listOf(cryptoToken))
                 if (token != null) {

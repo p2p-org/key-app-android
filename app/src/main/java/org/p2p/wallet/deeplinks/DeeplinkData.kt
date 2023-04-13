@@ -16,5 +16,4 @@ data class DeeplinkData(
     val intent: Intent? = null
 ) {
     fun hasArgNotNull(key: String): Boolean = args[key] != null
-    fun getArg(key: String): String = args[key] ?: throw IllegalStateException("Argument $key is null")
 }

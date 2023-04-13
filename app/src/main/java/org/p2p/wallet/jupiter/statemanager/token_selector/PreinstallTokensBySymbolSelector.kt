@@ -38,7 +38,7 @@ class PreinstallTokensBySymbolSelector(
             ?: userTokens
                 .firstOrNull { it.tokenSymbol.lowercase() == preinstallTokenA.lowercase() }
                 ?.let { SwapTokenModel.UserToken(it) }
-                // if not found, use default token
+            // if not found, use default token
             ?: defaultTokenA
 
         val tokenB = jupiterTokens
@@ -50,9 +50,8 @@ class PreinstallTokensBySymbolSelector(
             ?: userTokens
                 .firstOrNull { it.tokenSymbol.lowercase() == preinstallTokenB.lowercase() }
                 ?.let { SwapTokenModel.UserToken(it) }
-                // if not found, use default token
+            // if not found, use default token
             ?: defaultTokenB
-
 
         savedSelectedSwapTokenStorage.savedTokenAMint = tokenA.mintAddress
         savedSelectedSwapTokenStorage.savedTokenBMint = tokenB.mintAddress

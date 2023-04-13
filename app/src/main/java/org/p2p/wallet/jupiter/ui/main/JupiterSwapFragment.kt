@@ -78,7 +78,12 @@ class JupiterSwapFragment :
                     EXTRA_OPENED_FROM to source
                 )
 
-        fun create(tokenASymbol: String, tokenBSymbol: String, amount: String, source: SwapOpenedFrom): JupiterSwapFragment =
+        fun create(
+            tokenASymbol: String,
+            tokenBSymbol: String,
+            amount: String,
+            source: SwapOpenedFrom
+        ): JupiterSwapFragment =
             JupiterSwapFragment()
                 .withArgs(
                     EXTRA_INITIAL_TOKEN_A_SYMBOL to tokenASymbol,

@@ -140,7 +140,7 @@ object JupiterModule : InjectionModule {
     private fun Module.initJupiterSwapStateManager() {
         // todo: probably we could refactor these arguments and pass by some data class
         factory { (token: Token.Active?, tokenASymbol: String?, tokenBSymbol: String?) ->
-            if(!tokenASymbol.isNullOrBlank() && !tokenBSymbol.isNullOrBlank()) {
+            if (!tokenASymbol.isNullOrBlank() && !tokenBSymbol.isNullOrBlank()) {
                 PreinstallTokensBySymbolSelector(
                     jupiterTokensRepository = get(),
                     dispatchers = get(),
@@ -200,7 +200,12 @@ object JupiterModule : InjectionModule {
         singleOf(::SwapStateManagerHolder)
         singleOf(::SwapRateTickerManager)
 
-        factory<SwapStateManager> { (initialToken: Token.Active?, tokenASymbol: String?, tokenBSymbol: String?, stateManagerHolderKey: String) ->
+        factory<SwapStateManager> { (
+            initialToken: Token.Active?,
+            tokenASymbol: String?,
+            tokenBSymbol: String?,
+            stateManagerHolderKey: String
+        ) ->
             val managerHolder: SwapStateManagerHolder = get()
             val handlers: Set<SwapStateHandler> =
                 get(parameters = { parametersOf(initialToken, tokenASymbol, tokenBSymbol) })
