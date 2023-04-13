@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
@@ -218,9 +219,13 @@ class NewSearchPresenter(
     }
 
     private suspend fun searchByEthereumAddress(address: String) {
-        val newAddresses = searchInteractor.searchByEthAddress(EthAddress(address))
-        state.updateSearchResult(address, listOf(newAddresses))
-        renderCurrentState()
+        if (initialToken != null && ERC20Tokens.values().none { it.mintAddress == initialToken.mintAddress }) {
+            showNotFound()
+        } else {
+            val newAddresses = searchInteractor.searchByEthAddress(EthAddress(address))
+            state.updateSearchResult(address, listOf(newAddresses))
+            renderCurrentState()
+        }
     }
 
     private fun showNotFound() {
