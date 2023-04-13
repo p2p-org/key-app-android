@@ -3,6 +3,7 @@ package org.p2p.wallet.svl.ui.receive
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -69,6 +70,11 @@ class ReceiveViaLinkBottomSheet :
         textViewTokenAmount.bind(tokenAmount)
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        analytics.logHideClicked()
+        super.onDismiss(dialog)
+    }
+
     override fun renderState(state: SendViaLinkClaimingState) = with(binding) {
         when (state) {
             is SendViaLinkClaimingState.InitialLoading -> renderInitialLoading()
@@ -114,6 +120,7 @@ class ReceiveViaLinkBottomSheet :
     }
 
     private fun DialogSendViaLinkReceiveFundsBinding.renderClaimSuccess(state: SendViaLinkClaimingState.ClaimSuccess) {
+        analytics.logClaimSuccess()
         layoutClaimSuccess.root.isVisible = true
         textViewTitle.isVisible = false
         layoutTransactionDetails.isVisible = false
