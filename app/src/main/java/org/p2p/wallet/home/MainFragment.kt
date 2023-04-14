@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -110,16 +109,13 @@ class MainFragment :
             onCreateActions = arrayListOf()
         }
 
-        deeplinksManager
-            .subscribeOnDeeplinks(
-                setOf(
-                    DeeplinkTarget.HOME,
-                    DeeplinkTarget.HISTORY,
-                    DeeplinkTarget.SETTINGS,
-                )
+        deeplinksManager.subscribeOnDeeplinks(
+            setOf(
+                DeeplinkTarget.HOME,
+                DeeplinkTarget.HISTORY,
+                DeeplinkTarget.SETTINGS,
             )
-            .onEach(::navigateFromDeeplink)
-            .launchIn(lifecycleScope)
+        ).onEach(::navigateFromDeeplink).launchIn(lifecycleScope)
 
         deeplinksManager.setTabsSwitcher(this)
         deeplinksManager.executeHomePendingDeeplink()
@@ -192,8 +188,6 @@ class MainFragment :
     }
 
     private fun navigateFromDeeplink(data: DeeplinkData) {
-        Timber.e("ITEM_ID ${R.id.historyItem}")
-        Timber.d("Navigate from deeplink: ${data.target}")
         when (data.target) {
             DeeplinkTarget.HOME -> {
                 navigate(ScreenTab.HOME_SCREEN)
@@ -209,7 +203,6 @@ class MainFragment :
     }
 
     override fun navigate(clickedTab: ScreenTab) {
-        Timber.d("Navigate to $clickedTab")
         if (clickedTab == ScreenTab.FEEDBACK_SCREEN) {
             IntercomService.showMessenger()
             analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
