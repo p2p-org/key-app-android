@@ -43,7 +43,7 @@ android {
 
     configurations.all {
         resolutionStrategy.eachDependency {
-            if(requested.group == "org.bouncycastle") {
+            if (requested.group == "org.bouncycastle") {
                 useTarget("org.bouncycastle:bcprov-jdk15to18:1.68")
             }
         }
@@ -80,8 +80,7 @@ dependencies {
     val retrofitVersion = "2.9.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
-    implementation ("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
-
+    implementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
 
     val okHttpVersion = "4.9.3"
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")

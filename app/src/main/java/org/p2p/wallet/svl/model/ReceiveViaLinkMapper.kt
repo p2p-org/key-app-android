@@ -14,7 +14,7 @@ class ReceiveViaLinkMapper {
 
     fun mapTokenAmount(token: Token.Active): TextViewCellModel =
         TextViewCellModel.Raw(
-            text = TextContainer("${token.total} ${token.tokenSymbol}")
+            text = TextContainer("${token.total.toPlainString()} ${token.tokenSymbol}")
         )
 
     fun mapSenderAddress(address: String): TextViewCellModel =
