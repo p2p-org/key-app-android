@@ -25,7 +25,7 @@ class DeeplinkUtilsTest {
     }
 
     @Test
-    fun `GIVEN onboarding deeplink WHEN deeplink is valid THEN isValidOnboardingLink return true`() {
+    fun `GIVEN onboarding deeplink WHEN deeplink is valid THEN isValidOnboardingLink returns true`() {
         var uri: Uri = newMockUri("https", "onboarding", "/seedPhrase", "")
         assertTrue(DeeplinkUtils.isValidOnboardingLink(uri))
 
@@ -46,7 +46,7 @@ class DeeplinkUtilsTest {
     }
 
     @Test
-    fun `GIVEN navigation deeplink WHEN deeplink is valid THEN isValidCommonLink return true`() {
+    fun `GIVEN navigation deeplink WHEN deeplink is valid THEN isValidCommonLink returns true`() {
         var uri: Uri = newMockUri("keyapp", DeeplinkTarget.HOME.screenName)
         assertTrue(DeeplinkUtils.isValidCommonLink(uri))
 
