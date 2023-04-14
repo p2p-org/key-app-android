@@ -109,7 +109,6 @@ class UserTokensPolling(
 
     private suspend fun fetchEthereumTokens() {
         if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-
             val ethBundles = ethereumInteractor.getListOfEthereumBundleStatuses()
             ethereumInteractor.loadWalletTokens(ethBundles)
         }
@@ -117,7 +116,7 @@ class UserTokensPolling(
 
     private fun getEthereumTokensFlow(): Flow<List<Token.Eth>> {
         return if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return ethereumInteractor.getTokensFlow()
+            ethereumInteractor.getTokensFlow()
         } else {
             flowOf(emptyList())
         }

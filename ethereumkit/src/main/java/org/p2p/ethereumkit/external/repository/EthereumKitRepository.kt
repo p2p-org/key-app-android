@@ -36,8 +36,7 @@ private val MINIMAL_DUST = BigInteger("1")
 internal class EthereumKitRepository(
     private val tokensRepository: EthereumTokensRepository,
     private val priceRepository: PriceRepository,
-    private val dispatchers: CoroutineDispatchers,
-
+    private val dispatchers: CoroutineDispatchers
 ) : EthereumRepository {
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null

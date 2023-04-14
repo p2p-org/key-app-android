@@ -11,12 +11,10 @@ import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 
 class EthereumInteractor(
     private val claimInteractor: ClaimInteractor,
-    private val ethereumRepository: EthereumRepository,
-    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle
+    private val ethereumRepository: EthereumRepository
 ) {
 
     fun setup(userSeedPhrase: List<String>) {
