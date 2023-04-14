@@ -15,7 +15,7 @@ import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
-import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
+import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService

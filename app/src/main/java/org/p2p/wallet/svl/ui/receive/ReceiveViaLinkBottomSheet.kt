@@ -100,12 +100,14 @@ class ReceiveViaLinkBottomSheet :
         buttonDone.isVisible = true
         buttonCancel.isVisible = true
 
-        buttonDone.setText(R.string.common_reload)
+        buttonDone.setText(R.string.common_try_again)
         buttonDone.setOnClickListener { presenter.parseAccountFromLink(link, isRetry = true) }
     }
 
     private fun DialogSendViaLinkReceiveFundsBinding.renderClaimFailed(state: SendViaLinkClaimingState.ClaimFailed) {
         analytics.logClaimFailed()
+
+        textViewTitle.setText(R.string.send_via_link_receive_funds_title)
 
         layoutTransactionDetails.isVisible = true
         progressStateTransaction.isVisible = true
@@ -140,7 +142,7 @@ class ReceiveViaLinkBottomSheet :
         layoutTransactionDetails.isVisible = true
         imageViewBanner.isVisible = false
         progressStateTransaction.isVisible = true
-        progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
+        progressStateTransaction.setDescriptionText(R.string.send_via_link_receive_funds_claiming_message)
         buttonDone.setText(R.string.common_close)
         buttonDone.setOnClickListener {
             analytics.logCloseClicked()

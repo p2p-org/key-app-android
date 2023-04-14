@@ -29,7 +29,7 @@ sealed interface SendViaLinkClaimingState {
 
         constructor() : this(
             titleRes = R.string.send_via_link_error_failed_parsing_title,
-            subTitleRes = R.string.send_via_link_error_failed_parsing_subtitle,
+            subTitleRes = null,
             iconRes = R.drawable.ic_not_found
         )
     }

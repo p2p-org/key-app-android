@@ -205,7 +205,7 @@ class SendViaLinkFragment :
     }
 
     private fun UiKitToolbar.setupToolbar() {
-        setTitle(R.string.send_via_link_title)
+        setTitle(R.string.send_via_link_title_main)
         setNavigationOnClickListener { popBackStack() }
     }
 }

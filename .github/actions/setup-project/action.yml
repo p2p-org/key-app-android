@@ -68,8 +68,11 @@ inputs:
   lokalise-app-id:
     description: "Lokalise App ID"
     required: true
-  secret-memo:
+  svl-memo-send:
     description: "Secret memo for generating a send link"
+    required: true
+  svl-memo-claim:
+    description: "Secret memo claiming funds from the link"
     required: true
   salt-prefix:
     description: "Salt prefix for generating a temporary account for send"
@@ -121,7 +124,8 @@ runs:
       shell: bash
       run: |
         touch common.properties
-        echo "secretMemo=${{ inputs.secret-memo }}" >> common.properties
+        echo "svlMemoSend=${{ inputs.svl-memo-send }}" >> common.properties
+        echo "svlMemoClaim=${{ inputs.svl-memo-claim }}" >> common.properties
         echo "saltPrefix=${{ inputs.salt-prefix }}" >> common.properties
         echo "common.properties is successfully created"
     - name: "Setup gradle"

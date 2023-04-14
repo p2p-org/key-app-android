@@ -103,7 +103,7 @@ class SendViaLinkPresenter(
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
-            view.setFeeLabel(resources.getString(R.string.send_fees_free))
+            view.setFeeLabel(resources.getString(R.string.send_fees_zero))
             view.showFeeViewLoading(isLoading = false)
         }
     }
@@ -133,7 +133,7 @@ class SendViaLinkPresenter(
                 return@launch
             }
 
-            view.setFeeLabel(resources.getString(R.string.send_fees_free))
+            view.setFeeLabel(resources.getString(R.string.send_fees_zero))
             view.showFeeViewLoading(isLoading = false)
         }
     }
