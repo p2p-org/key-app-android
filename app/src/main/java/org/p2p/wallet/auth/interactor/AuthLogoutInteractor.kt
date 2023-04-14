@@ -4,6 +4,7 @@ import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
 import timber.log.Timber
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.di.AppScope
@@ -61,6 +62,8 @@ class AuthLogoutInteractor(
             RenVMService.stopService(context)
 
             pushNotificationsInteractor.deleteDeviceToken(publicKey)
+        }.invokeOnCompletion {
+            appScope.cancel()
         }
     }
 }

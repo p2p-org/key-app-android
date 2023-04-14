@@ -111,8 +111,11 @@ class HomePresenter(
                 view?.showRefreshing(true)
                 val solTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
                 async { userInteractor.loadUserRates(solTokens) }
+                async {
+                    val bundles = ethereumInteractor.getListOfEthereumBundleStatuses()
+                    ethereumInteractor.loadWalletTokens(bundles)
+                }
                 attachToPollingTokens()
-                tokensPolling.initTokens()
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading Sol tokens")
             } finally {
@@ -293,7 +296,7 @@ class HomePresenter(
         launch {
             try {
                 view?.showRefreshing(isRefreshing = true)
-                tokensPolling.initTokens()
+                tokensPolling.refreshTokens()
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
