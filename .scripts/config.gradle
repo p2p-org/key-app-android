@@ -16,7 +16,8 @@ android {
 
         def commonProperties = new PropertiesFile(rootProject.file("common.properties"), logger)
         buildConfigField("String", "saltPrefix", "\"${commonProperties.getOrThrow('saltPrefix')}\"")
-        buildConfigField("String", "sendViaLinkMemo", "\"${commonProperties.getOrThrow('secretMemo')}\"")
+        buildConfigField("String", "svlMemoSend", "\"${commonProperties.getOrThrow('svlMemoSend')}\"")
+        buildConfigField("String", "svlMemoClaim", "\"${commonProperties.getOrThrow('svlMemoClaim')}\"")
     }
 
     buildTypes {

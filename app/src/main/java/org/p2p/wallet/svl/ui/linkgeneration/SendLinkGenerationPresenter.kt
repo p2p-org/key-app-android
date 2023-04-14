@@ -32,7 +32,7 @@ class SendLinkGenerationPresenter(
                     destinationAddress = recipient.publicKey,
                     token = token,
                     lamports = lamports,
-                    memo = BuildConfig.sendViaLinkMemo,
+                    memo = BuildConfig.svlMemoSend,
                     isSimulation = isSimulation
                 )
                 saveLink(recipient, token, lamports)

@@ -44,7 +44,8 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
-          secret-memo: ${{ secrets.SECRET_MEMO }}
+          svl-memo-send: ${{ secrets.SVL_MEMO_SEND }}
+          svl-memo-claim: ${{ secrets.SVL_MEMO_CLAIM }}
           salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: Create and fill p2pwallet.jks
         run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2pwallet.jks
