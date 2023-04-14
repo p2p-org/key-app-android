@@ -7,6 +7,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
@@ -35,10 +37,12 @@ internal class EthereumKitRepository(
     private val tokensRepository: EthereumTokensRepository,
     private val priceRepository: PriceRepository,
     private val dispatchers: CoroutineDispatchers,
+
 ) : EthereumRepository {
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
     private var localTokensMetadata = mutableListOf<EthTokenMetadata>()
+    private var ethereumTokensFlow = MutableStateFlow<List<Token.Eth>>(emptyList())
 
     override fun init(seedPhrase: List<String>) {
         tokenKeyProvider = EthTokenKeyProvider(
@@ -75,8 +79,8 @@ internal class EthereumKitRepository(
         return tokensRepository.getWalletBalance(publicKey)
     }
 
-    override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> =
-        withContext(dispatchers.io) {
+    override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>) {
+        val walletTokens = withContext(dispatchers.io) {
             try {
                 if (localTokensMetadata.isEmpty()) {
                     localTokensMetadata.addAll(loadTokensMetadata())
@@ -106,6 +110,8 @@ internal class EthereumKitRepository(
                 emptyList()
             }
         }
+        ethereumTokensFlow.emit(walletTokens)
+    }
 
     private suspend fun getEthToken(): EthTokenMetadata {
         val ethContractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
@@ -160,6 +166,10 @@ internal class EthereumKitRepository(
                 mapToTokenMetadata(tokenBalance, metadata, erc20Token)
             }
         }
+
+    override fun getWalletTokensFlow(): Flow<List<Token.Eth>> {
+        return ethereumTokensFlow
+    }
 
     private fun throwInitError(): Nothing =
         error("You must call EthereumKitRepository.init() method, before interact with this repository")

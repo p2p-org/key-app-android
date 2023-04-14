@@ -7,21 +7,23 @@ import kotlin.time.toDuration
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
@@ -34,24 +36,23 @@ class UserTokensPolling(
     private val userInteractor: UserInteractor,
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val ethereumInteractor: EthereumInteractor,
-    private val dispatchers: CoroutineDispatchers,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val appScope: AppScope
 ) : CoroutineScope {
     override val coroutineContext: CoroutineContext
-        get() = SupervisorJob() + dispatchers.io
+        get() = appScope.coroutineContext
 
     private val isPollingEnabled: Boolean
         get() = appFeatureFlags.isPollingEnabled.featureValue
 
-    private val ethTokensFlow = MutableStateFlow<List<Token.Eth>>(emptyList())
-    private val isRefreshingFlow = MutableStateFlow<Boolean>(false)
+    private val isRefreshingFlow = MutableStateFlow(false)
     private var homeScreenState = UserTokensPollState()
 
     private var refreshJob: Job? = null
 
     fun shareTokenPollFlowIn(scope: CoroutineScope): StateFlow<UserTokensPollState?> =
         userInteractor.getUserTokensFlow()
-            .combine(ethTokensFlow) { sol, eth ->
+            .combine(getEthereumTokensFlow()) { sol, eth ->
                 homeScreenState = if (homeScreenState.solTokens.isNotEmpty() && sol.isEmpty()) {
                     homeScreenState.copy(ethTokens = eth)
                 } else {
@@ -63,13 +64,12 @@ class UserTokensPolling(
                 homeScreenState
             }.stateIn(scope, SharingStarted.WhileSubscribed(), null)
 
-    fun initTokens() {
-        refreshJob?.cancel()
-        refreshJob = launch {
+    fun refreshTokens() {
+        launch {
             try {
                 isRefreshingFlow.emit(true)
-                val ethTokens = fetchEthereumTokens()
-                ethTokensFlow.emit(ethTokens)
+                fetchEthereumTokens()
+                fetchSolTokens()
                 startPolling()
             } catch (e: CancellationException) {
                 Timber.i("Cancelled tokens remote update")
@@ -86,14 +86,11 @@ class UserTokensPolling(
         refreshJob = launch {
             if (isPollingEnabled) {
                 try {
-                    while (true) {
+                    while (isActive) {
                         delay(POLLING_ETH_DELAY.inWholeMilliseconds)
                         joinAll(
                             async { fetchSolTokens() },
-                            async {
-                                val ethTokens = fetchEthereumTokens()
-                                ethTokensFlow.emit(ethTokens)
-                            }
+                            async { fetchEthereumTokens() }
                         )
                     }
                 } catch (e: CancellationException) {
@@ -110,12 +107,20 @@ class UserTokensPolling(
     private suspend fun fetchSolTokens(): List<Token.Active> =
         userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
 
-    private suspend fun fetchEthereumTokens(): List<Token.Eth> {
-        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            return emptyList()
+    private suspend fun fetchEthereumTokens() {
+        if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+
+            val ethBundles = ethereumInteractor.getListOfEthereumBundleStatuses()
+            ethereumInteractor.loadWalletTokens(ethBundles)
         }
-        val ethBundles = ethereumInteractor.getListOfEthereumBundleStatuses()
-        return ethereumInteractor.loadWalletTokens(ethBundles)
+    }
+
+    private fun getEthereumTokensFlow(): Flow<List<Token.Eth>> {
+        return if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return ethereumInteractor.getTokensFlow()
+        } else {
+            flowOf(emptyList())
+        }
     }
 }
 
