@@ -1,4 +1,4 @@
-package org.p2p.wallet.bridge.anatytics
+package org.p2p.wallet.bridge.analytics
 
 import org.p2p.wallet.common.analytics.Analytics
 

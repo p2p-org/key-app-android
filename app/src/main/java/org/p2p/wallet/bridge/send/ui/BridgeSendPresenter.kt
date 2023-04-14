@@ -19,7 +19,7 @@ import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.R
-import org.p2p.wallet.bridge.anatytics.SendBridgesAnalytics
+import org.p2p.wallet.bridge.analytics.SendBridgesAnalytics
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
