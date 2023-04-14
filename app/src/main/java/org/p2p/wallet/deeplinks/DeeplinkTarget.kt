@@ -18,8 +18,7 @@ enum class DeeplinkTarget(val screenName: String, val tab: ScreenTab? = null) {
      * requires intercom_survey_id @see [org.p2p.wallet.intercom.IntercomDeeplinkManager]
      */
     FEEDBACK("intercom", ScreenTab.FEEDBACK_SCREEN),
-    ONBOARDING("onboarding"),
-    ;
+    ONBOARDING("onboarding");
 
     companion object {
         /**
