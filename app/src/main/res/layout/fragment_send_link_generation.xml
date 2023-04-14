@@ -15,7 +15,7 @@
         android:layout_gravity="center_horizontal"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/creating_wallet_animation" />
+        app:lottie_rawRes="@raw/creating_link_animation" />
 
     <TextView
         android:id="@+id/textViewCreationTitle"
@@ -26,17 +26,6 @@
         android:layout_marginTop="36dp"
         android:gravity="center"
         android:text="@string/send_via_link_animation_text"
-        android:textColor="@color/text_night" />
-
-    <TextView
-        android:id="@+id/textViewCreationMessage"
-        style="@style/UiKit.TextAppearance.Regular.Title3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="18dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="@string/send_via_link_animation_time_text"
         android:textColor="@color/text_night" />
 
     <ProgressBar

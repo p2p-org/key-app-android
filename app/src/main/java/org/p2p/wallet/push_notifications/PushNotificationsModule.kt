@@ -4,7 +4,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.push_notifications.api.NotificationServiceApi
-import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
+import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.push_notifications.repository.DeviceTokenRemoteRepository
 import org.p2p.wallet.push_notifications.repository.DeviceTokenRepository
 import retrofit2.Retrofit

@@ -138,8 +138,12 @@ class HistorySendLinkDetailsBottomSheet :
         }
         buttonShare.setOnClickListener {
             historyAnalytics.logUserSendLinkShareClicked()
-            requireContext().shareText(state.link)
+            requireContext().shareText(buildShareLink(state.link, state.formattedTokenAmount))
         }
+    }
+
+    private fun buildShareLink(formattedLink: String, amount: String): String {
+        return getString(R.string.send_via_link_share_message, amount, formattedLink)
     }
 
     override fun close() {

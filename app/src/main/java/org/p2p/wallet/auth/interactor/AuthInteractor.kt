@@ -17,7 +17,7 @@ import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_BIOMETRIC_HASH
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_HASH
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_SALT
-import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
+import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 

@@ -103,7 +103,7 @@ class UserInMemoryRepository(
         }
 
         return filteredList.distinctBy { it.symbol }.sortedByDescending {
-            it.name.startsWith(searchText, ignoreCase = true)
+            it.symbol.startsWith(searchText, ignoreCase = true)
         }
     }
 
