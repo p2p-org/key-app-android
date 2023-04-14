@@ -27,6 +27,13 @@ class HistoryFragment :
     }
 
     override val presenter: HistoryContract.Presenter by inject()
+
+    /**
+     * We need to attach this presenter to the HistoryFragment lifecycle,
+     * as it should survive the destruction of HistoryListView.
+     * Otherwise, the presenter will be initialized again and the history list will be reloaded
+     * every time we return to the HistoryFragment from the backstack.
+     */
     private val historyListPresenter: HistoryListViewContract.Presenter by inject()
     private val binding: FragmentHistoryBinding by viewBinding()
 
