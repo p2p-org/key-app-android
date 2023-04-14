@@ -70,16 +70,6 @@ import org.p2p.wallet.jupiter.ui.tokens.presenter.SwapTokensAMapper
 import org.p2p.wallet.jupiter.ui.tokens.presenter.SwapTokensBMapper
 import org.p2p.wallet.jupiter.ui.tokens.presenter.SwapTokensCommonMapper
 import org.p2p.wallet.jupiter.ui.tokens.presenter.SwapTokensPresenter
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
-
-data class JupiterPresenterInitialData(
-    val stateManagerHolderKey: String,
-    val swapOpenedFrom: SwapOpenedFrom,
-    val initialToken: Token.Active? = null,
-    val initialAmount: String? = null,
-    val tokenASymbol: String? = null,
-    val tokenBSymbol: String? = null,
-)
 
 object JupiterModule : InjectionModule {
 
@@ -129,7 +119,7 @@ object JupiterModule : InjectionModule {
                 userLocalRepository = get(),
                 analytics = get(),
                 historyInteractor = get(),
-                initialAmount = initialData.initialAmount,
+                initialAmountA = initialData.initialAmountA,
             )
         } bind JupiterSwapContract.Presenter::class
 
@@ -140,30 +130,34 @@ object JupiterModule : InjectionModule {
     private fun Module.initJupiterSwapStateManager() {
         // todo: probably we could refactor these arguments and pass by some data class
         factory { (token: Token.Active?, tokenASymbol: String?, tokenBSymbol: String?) ->
-            if (!tokenASymbol.isNullOrBlank() && !tokenBSymbol.isNullOrBlank()) {
-                PreinstallTokensBySymbolSelector(
-                    jupiterTokensRepository = get(),
-                    dispatchers = get(),
-                    homeLocalRepository = get(),
-                    savedSelectedSwapTokenStorage = get(),
-                    preinstallTokenA = tokenASymbol,
-                    preinstallTokenB = tokenBSymbol,
-                )
-            } else if (token == null) {
-                CommonSwapTokenSelector(
-                    jupiterTokensRepository = get(),
-                    homeLocalRepository = get(),
-                    dispatchers = get(),
-                    selectedSwapTokenStorage = get()
-                )
-            } else {
-                PreinstallTokenASelector(
-                    jupiterTokensRepository = get(),
-                    dispatchers = get(),
-                    homeLocalRepository = get(),
-                    savedSelectedSwapTokenStorage = get(),
-                    preinstallTokenA = token,
-                )
+            when {
+                !tokenASymbol.isNullOrBlank() && !tokenBSymbol.isNullOrBlank() -> {
+                    PreinstallTokensBySymbolSelector(
+                        jupiterTokensRepository = get(),
+                        dispatchers = get(),
+                        homeLocalRepository = get(),
+                        savedSelectedSwapTokenStorage = get(),
+                        preinstallTokenA = tokenASymbol,
+                        preinstallTokenB = tokenBSymbol,
+                    )
+                }
+                token != null -> {
+                    PreinstallTokenASelector(
+                        jupiterTokensRepository = get(),
+                        dispatchers = get(),
+                        homeLocalRepository = get(),
+                        savedSelectedSwapTokenStorage = get(),
+                        preinstallTokenA = token,
+                    )
+                }
+                else -> {
+                    CommonSwapTokenSelector(
+                        jupiterTokensRepository = get(),
+                        homeLocalRepository = get(),
+                        dispatchers = get(),
+                        selectedSwapTokenStorage = get()
+                    )
+                }
             }
         }
         factory { (token: Token.Active?, tokenASymbol: String?, tokenBSymbol: String?) ->
@@ -207,8 +201,9 @@ object JupiterModule : InjectionModule {
             stateManagerHolderKey: String
         ) ->
             val managerHolder: SwapStateManagerHolder = get()
-            val handlers: Set<SwapStateHandler> =
-                get(parameters = { parametersOf(initialToken, tokenASymbol, tokenBSymbol) })
+            val handlers: Set<SwapStateHandler> = get(parameters = {
+                parametersOf(initialToken, tokenASymbol, tokenBSymbol)
+            })
             managerHolder.getOrCreate(key = stateManagerHolderKey) {
                 SwapStateManager(
                     dispatchers = get(),

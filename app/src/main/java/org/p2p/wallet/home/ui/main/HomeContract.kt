@@ -25,7 +25,7 @@ interface HomeContract {
         fun showUserAddress(ellipsizedAddress: String)
         fun showNewSendScreen(openedFromScreen: SearchOpenedFromScreen)
         fun showActionButtons(buttons: List<ActionButton>)
-        fun showSwapWithArgs(tokenA: String, tokenB: String, amount: String, source: SwapOpenedFrom)
+        fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom)
         fun showSwap(source: SwapOpenedFrom)
         fun showCashOut()
 

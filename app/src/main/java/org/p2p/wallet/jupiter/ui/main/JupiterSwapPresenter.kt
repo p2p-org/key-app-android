@@ -71,7 +71,7 @@ class JupiterSwapPresenter(
     private val dispatchers: CoroutineDispatchers,
     private val userLocalRepository: UserLocalRepository,
     private val historyInteractor: HistoryInteractor,
-    private val initialAmount: String? = "0",
+    private val initialAmountA: String? = null,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true
@@ -102,7 +102,7 @@ class JupiterSwapPresenter(
             .onEach(::handleRateTickerChanges)
             .launchIn(this)
 
-        initialAmount?.let {
+        initialAmountA?.let {
             view.setAmountFiat(it)
         }
     }

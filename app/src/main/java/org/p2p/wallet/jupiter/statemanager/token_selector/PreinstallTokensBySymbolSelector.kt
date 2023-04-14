@@ -31,25 +31,23 @@ class PreinstallTokensBySymbolSelector(
 
         val tokenA = jupiterTokens
             // find jupiter token
-            .firstOrNull { it.tokenSymbol.lowercase() == preinstallTokenA.lowercase() }?.let {
-                SwapTokenModel.JupiterToken(it)
-            }
+            .firstOrNull { it.tokenSymbol.lowercase() == preinstallTokenA.lowercase() }
+            ?.let(SwapTokenModel::JupiterToken)
             // if not found, find user token
             ?: userTokens
                 .firstOrNull { it.tokenSymbol.lowercase() == preinstallTokenA.lowercase() }
-                ?.let { SwapTokenModel.UserToken(it) }
+                ?.let(SwapTokenModel::UserToken)
             // if not found, use default token
             ?: defaultTokenA
 
         val tokenB = jupiterTokens
             // find jupiter token
-            .firstOrNull { it.tokenSymbol.lowercase() == preinstallTokenB.lowercase() }?.let {
-                SwapTokenModel.JupiterToken(it)
-            }
+            .firstOrNull { it.tokenSymbol.lowercase() == preinstallTokenB.lowercase() }
+            ?.let(SwapTokenModel::JupiterToken)
             // if not found, find user token
             ?: userTokens
                 .firstOrNull { it.tokenSymbol.lowercase() == preinstallTokenB.lowercase() }
-                ?.let { SwapTokenModel.UserToken(it) }
+                ?.let(SwapTokenModel::UserToken)
             // if not found, use default token
             ?: defaultTokenB
 

@@ -61,9 +61,9 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_OPENED_FROM = "EXTRA_OPENED_FROM"
-private const val EXTRA_INITIAL_TOKEN_A_SYMBOL = "EXTRA_FROM_TOKEN_NAME"
-private const val EXTRA_INITIAL_TOKEN_B_SYMBOL = "EXTRA_TO_TOKEN_NAME"
-private const val EXTRA_INITIAL_AMOUNT = "EXTRA_AMOUNT"
+private const val EXTRA_INITIAL_TOKEN_A_SYMBOL = "EXTRA_INITIAL_TOKEN_A_SYMBOL"
+private const val EXTRA_INITIAL_TOKEN_B_SYMBOL = "EXTRA_INITIAL_TOKEN_B_SYMBOL"
+private const val EXTRA_INITIAL_AMOUNT_A = "EXTRA_INITIAL_AMOUNT_A"
 
 class JupiterSwapFragment :
     BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
@@ -81,35 +81,38 @@ class JupiterSwapFragment :
         fun create(
             tokenASymbol: String,
             tokenBSymbol: String,
-            amount: String,
+            amountA: String,
             source: SwapOpenedFrom
         ): JupiterSwapFragment =
             JupiterSwapFragment()
                 .withArgs(
                     EXTRA_INITIAL_TOKEN_A_SYMBOL to tokenASymbol,
                     EXTRA_INITIAL_TOKEN_B_SYMBOL to tokenBSymbol,
-                    EXTRA_INITIAL_AMOUNT to amount,
+                    EXTRA_INITIAL_AMOUNT_A to amountA,
                     EXTRA_OPENED_FROM to source
                 )
     }
 
     private val stateManagerHolderKey: String = UUID.randomUUID().toString()
+
     private val initialToken: Token.Active? by args(EXTRA_TOKEN)
     private val initialTokenASymbol: String? by args(EXTRA_INITIAL_TOKEN_A_SYMBOL)
     private val initialTokenBSymbol: String? by args(EXTRA_INITIAL_TOKEN_B_SYMBOL)
-    private val initialAmount: String? by args(EXTRA_INITIAL_AMOUNT)
-    private val binding: FragmentJupiterSwapBinding by viewBinding()
+    private val initialAmountA: String? by args(EXTRA_INITIAL_AMOUNT_A)
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
+
+    private val binding: FragmentJupiterSwapBinding by viewBinding()
+
     private val analytics: JupiterSwapMainScreenAnalytics by inject()
     override val presenter: JupiterSwapContract.Presenter by inject {
         parametersOf(
             JupiterPresenterInitialData(
-                stateManagerHolderKey,
-                openedFrom,
-                initialToken,
-                initialAmount,
-                initialTokenASymbol,
-                initialTokenBSymbol,
+                stateManagerHolderKey = stateManagerHolderKey,
+                swapOpenedFrom = openedFrom,
+                initialToken = initialToken,
+                initialAmountA = initialAmountA,
+                tokenASymbol = initialTokenASymbol,
+                tokenBSymbol = initialTokenBSymbol,
             )
         )
     }

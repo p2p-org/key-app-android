@@ -10,7 +10,7 @@ import kotlinx.coroutines.runBlocking
 class CoroutineExtensionsTest {
 
     @Test
-    fun `waitForCondition waits for condition to be true`() = runBlocking {
+    fun `GIVEN waitForCondition WHEN condition is met THEN returns true`() = runBlocking {
         var conditionMet = false
         var endTime = System.currentTimeMillis()
 
@@ -30,7 +30,7 @@ class CoroutineExtensionsTest {
     }
 
     @Test
-    fun `waitForCondition times out when condition is not met`() = runBlocking {
+    fun `GIVEN waitForCondition WHEN condition is not met THEN returns false`() = runBlocking {
         val conditionMet = false
 
         // Wait for the condition to be true

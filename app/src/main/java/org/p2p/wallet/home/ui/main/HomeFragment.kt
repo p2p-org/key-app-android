@@ -160,12 +160,12 @@ class HomeFragment :
         binding.viewActionButtons.showActionButtons(buttons)
     }
 
-    override fun showSwapWithArgs(tokenA: String, tokenB: String, amount: String, source: SwapOpenedFrom) {
+    override fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom) {
         replaceFragment(
             swapFragmentFactory.swapFragment(
-                tokenA = tokenA,
-                tokenB = tokenB,
-                amount = amount,
+                tokenASymbol = tokenASymbol,
+                tokenBSymbol = tokenBSymbol,
+                amountA = amountA,
                 source = source
             )
         )

@@ -33,7 +33,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureTo
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
-import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
@@ -41,7 +40,6 @@ import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
-import org.p2p.wallet.infrastructure.coroutines.waitForCondition
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -51,12 +49,12 @@ import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
+import org.p2p.wallet.utils.unsafeLazy
 
 val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
@@ -94,6 +92,16 @@ class HomePresenter(
     private var username: Username? = null
 
     private var state = HomeScreenViewState(areZerosHidden = settingsInteractor.areZerosHidden())
+
+    private val deeplinkHandler by unsafeLazy {
+        HomePresenterDeeplinkHandler(
+            coroutineScope = this,
+            presenter = this,
+            state = { state },
+            view = { view },
+            userInteractor = { userInteractor }
+        )
+    }
 
     init {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
@@ -160,44 +168,14 @@ class HomePresenter(
 
     private fun handleDeeplinks() {
         launchSupervisor {
-            deeplinksManager
-                .subscribeOnDeeplinks(
-                    setOf(
-                        DeeplinkTarget.BUY,
-                        DeeplinkTarget.SEND,
-                        DeeplinkTarget.SWAP,
-                        DeeplinkTarget.CASH_OUT
-                    )
+            deeplinksManager.subscribeOnDeeplinks(
+                setOf(
+                    DeeplinkTarget.BUY,
+                    DeeplinkTarget.SEND,
+                    DeeplinkTarget.SWAP,
+                    DeeplinkTarget.CASH_OUT
                 )
-                .collect { data ->
-                    when (data.target) {
-                        DeeplinkTarget.BUY -> {
-                            handleBuyDeeplink(data)
-                        }
-                        DeeplinkTarget.SEND -> {
-                            // fixme hack! waiting for tokens to load, probably it's better to show progress
-                            waitForCondition(1000) { state.tokens.isNotEmpty() }
-                            onSendClicked(SearchOpenedFromScreen.MAIN)
-                        }
-                        DeeplinkTarget.SWAP -> {
-                            if (data.hasArgNotNull("from") && data.hasArgNotNull("to")) {
-                                val amount = data.args["amount"]?.toBigDecimalOrNull()?.toPlainString() ?: "0"
-                                view?.showSwapWithArgs(
-                                    tokenA = data.args["from"] as String,
-                                    tokenB = data.args["to"] as String,
-                                    amount = amount,
-                                    source = SwapOpenedFrom.MAIN_SCREEN
-                                )
-                            } else {
-                                view?.showSwap(SwapOpenedFrom.MAIN_SCREEN)
-                            }
-                        }
-                        DeeplinkTarget.CASH_OUT -> {
-                            view?.showCashOut()
-                        }
-                        else -> Unit
-                    }
-                }
+            ).collect(deeplinkHandler::handle)
         }
     }
 
@@ -247,28 +225,6 @@ class HomePresenter(
             } else {
                 view?.showTokensForBuy(tokensForBuy)
             }
-        }
-    }
-
-    /**
-     * Handles buy token for fiat deeplink
-     */
-    private fun handleBuyDeeplink(data: DeeplinkData) {
-        val cryptoToken = data.args["to"]
-        val fiatToken = data.args["from"]
-        val fiatAmount = data.args["amount"]
-
-        if (!cryptoToken.isNullOrBlank() && !fiatToken.isNullOrBlank()) {
-            launch {
-                val token = userInteractor.getSingleTokenForBuy(listOf(cryptoToken))
-                if (token != null) {
-                    view?.showNewBuyScreen(token, fiatToken, fiatAmount)
-                } else {
-                    onBuyClicked()
-                }
-            }
-        } else {
-            onBuyClicked()
         }
     }
 

@@ -12,8 +12,6 @@ import android.content.Intent
 data class DeeplinkData(
     val target: DeeplinkTarget,
     val pathSegments: List<String> = emptyList(),
-    val args: Map<String, String?> = emptyMap(),
+    val args: Map<String, String> = emptyMap(),
     val intent: Intent? = null
-) {
-    fun hasArgNotNull(key: String): Boolean = args[key] != null
-}
+)

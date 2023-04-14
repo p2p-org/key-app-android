@@ -112,7 +112,9 @@ class AppDeeplinksManager(
                             val deeplinkData = DeeplinkData(
                                 target = deeplinkTarget,
                                 pathSegments = data.pathSegments,
-                                args = data.queryParameterNames.associateWith { key -> data.getQueryParameter(key) },
+                                args = data.queryParameterNames
+                                    .filter { !data.getQueryParameter(it).isNullOrBlank() }
+                                    .associateWith { data.getQueryParameter(it)!! },
                                 intent = intent
                             )
                             notify(deeplinkData)

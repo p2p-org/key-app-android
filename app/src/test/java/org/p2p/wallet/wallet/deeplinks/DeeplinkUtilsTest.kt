@@ -19,13 +19,13 @@ class DeeplinkUtilsTest {
             every { getScheme() } returns scheme
             every { getHost() } returns host
             every { getPath() } returns path
-            every { pathSegments } returns (path?.split("/")?.filter { it.isNotBlank() } ?: emptyList())
+            every { pathSegments } returns (path?.split("/")?.filter { it.isNotBlank() }.orEmpty())
             every { getQuery() } returns query
         }
     }
 
     @Test
-    fun `Check onboarding deep link validity`() {
+    fun `GIVEN onboarding deeplink WHEN deeplink is valid THEN isValidOnboardingLink return true`() {
         var uri: Uri = newMockUri("https", "onboarding", "/seedPhrase", "")
         assertTrue(DeeplinkUtils.isValidOnboardingLink(uri))
 
@@ -46,7 +46,7 @@ class DeeplinkUtilsTest {
     }
 
     @Test
-    fun `Check navigation deep link validity`() {
+    fun `GIVEN navigation deeplink WHEN deeplink is valid THEN isValidCommonLink return true`() {
         var uri: Uri = newMockUri("keyapp", DeeplinkTarget.HOME.screenName)
         assertTrue(DeeplinkUtils.isValidCommonLink(uri))
 
