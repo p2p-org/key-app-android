@@ -1,4 +1,4 @@
-package org.p2p.wallet.push_notifications.ineractor
+package org.p2p.wallet.push_notifications.interactor
 
 import androidx.core.content.edit
 import android.content.SharedPreferences

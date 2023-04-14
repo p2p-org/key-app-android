@@ -15,7 +15,7 @@ import org.p2p.core.utils.toLamports
 import org.p2p.core.wrapper.HexString
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.bridge.anatytics.ClaimAnalytics
+import org.p2p.wallet.bridge.analytics.ClaimAnalytics
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor

@@ -103,7 +103,7 @@ class ReceiveViaLinkInteractor(
             destinationAddress = recipient,
             token = token,
             lamports = token.totalInLamports,
-            memo = BuildConfig.sendViaLinkMemo,
+            memo = BuildConfig.svlMemoClaim,
             isSimulation = false,
             shouldCloseAccount = true
         )

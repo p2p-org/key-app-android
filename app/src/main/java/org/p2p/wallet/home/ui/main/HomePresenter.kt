@@ -26,7 +26,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.bridge.anatytics.ClaimAnalytics
+import org.p2p.wallet.bridge.analytics.ClaimAnalytics
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -118,8 +118,11 @@ class HomePresenter(
                 view?.showRefreshing(true)
                 val solTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
                 async { userInteractor.loadUserRates(solTokens) }
+                async {
+                    val bundles = ethereumInteractor.getListOfEthereumBundleStatuses()
+                    ethereumInteractor.loadWalletTokens(bundles)
+                }
                 attachToPollingTokens()
-                tokensPolling.initTokens()
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading Sol tokens")
             } finally {
@@ -365,7 +368,7 @@ class HomePresenter(
         launch {
             try {
                 view?.showRefreshing(isRefreshing = true)
-                tokensPolling.initTokens()
+                tokensPolling.refreshTokens()
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
