@@ -7,6 +7,8 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
@@ -92,6 +94,7 @@ class HomePresenter(
     private var username: Username? = null
 
     private var state = HomeScreenViewState(areZerosHidden = settingsInteractor.areZerosHidden())
+    private val buttonsStateFlow = MutableStateFlow<List<ActionButton>>(emptyList())
 
     private val deeplinkHandler by unsafeLazy {
         HomePresenterDeeplinkHandler(
@@ -117,6 +120,7 @@ class HomePresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         loadSolanaTokens()
+        attachToActionButtons()
         handleDeeplinks()
     }
 
@@ -150,6 +154,14 @@ class HomePresenter(
         }
     }
 
+    private fun attachToActionButtons() {
+        launch {
+            buttonsStateFlow.collect { buttons ->
+                view?.showActionButtons(buttons)
+            }
+        }
+    }
+
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         intercomDeeplinkManager.proceedDeeplinkIfExists()
@@ -179,25 +191,26 @@ class HomePresenter(
         }
     }
 
-    private suspend fun initializeActionButtons() {
-        val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
-        val isSellAvailable = sellInteractor.isSellAvailable()
+    private fun initializeActionButtons() {
+        launch {
+            val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
+            val isSellAvailable = sellInteractor.isSellAvailable()
 
-        val buttons = mutableListOf(
-            ActionButton.BUY_BUTTON,
-            ActionButton.RECEIVE_BUTTON,
-            ActionButton.SEND_BUTTON
-        )
+            val buttons = mutableListOf(
+                ActionButton.BUY_BUTTON,
+                ActionButton.RECEIVE_BUTTON,
+                ActionButton.SEND_BUTTON
+            )
 
-        if (!isSellFeatureToggleEnabled) {
-            buttons += ActionButton.SWAP_BUTTON
+            if (!isSellFeatureToggleEnabled) {
+                buttons += ActionButton.SWAP_BUTTON
+            }
+
+            if (isSellAvailable) {
+                buttons += ActionButton.SELL_BUTTON
+            }
+            buttonsStateFlow.emit(buttons)
         }
-
-        if (isSellAvailable) {
-            buttons += ActionButton.SELL_BUTTON
-        }
-
-        view?.showActionButtons(buttons)
     }
 
     private fun showUserAddressAndUsername() {
@@ -289,6 +302,7 @@ class HomePresenter(
             (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
                 view?.showEmptyState(isEmpty = false)
                 showTokensAndBalance()
+                initializeActionButtons()
             }
         }
     }

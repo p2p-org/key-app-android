@@ -227,7 +227,9 @@ class MainFragment :
             tabCachedFragments.remove(itemId)
         }
 
-        val isHistoryTabSelected = clickedTab.itemId == ScreenTab.HISTORY_SCREEN.itemId
+        val isHistoryTabSelected =
+            clickedTab.itemId == ScreenTab.HISTORY_SCREEN.itemId &&
+                lastSelectedItemId != ScreenTab.HISTORY_SCREEN.itemId
 
         // If the selected tab is not in the tab cache or if it's the History tab, create a new fragment for the tab
         if (!tabCachedFragments.containsKey(clickedTab.itemId) || isHistoryTabSelected) {
@@ -242,7 +244,6 @@ class MainFragment :
             tabCachedFragments[itemId] = fragment
         }
 
-        // Get the ID of the previously selected fragment
         val prevFragmentId = binding.bottomNavigation.getSelectedItemId()
 
         // forcibly commit previous transaction if new transaction is coming almost immediately
@@ -250,7 +251,6 @@ class MainFragment :
 
         // Replace the currently displayed fragment with the new fragment
         childFragmentManager.commit(allowStateLoss = false) {
-
             // Hide or remove the previously selected fragment if it's not the same as the current fragment
             if (prevFragmentId != itemId) {
                 if (tabCachedFragments[prevFragmentId] != null && !tabCachedFragments[prevFragmentId]!!.isAdded) {
@@ -316,10 +316,6 @@ class MainFragment :
         }
         binding.bottomNavigation.inflateMenu(menuRes)
         binding.bottomNavigation.menu.findItem(R.id.feedbackItem)?.isCheckable = false
-    }
-
-    private fun isSwapAddedToBottomMenu(): Boolean {
-        return binding.bottomNavigation.menu.findItem(ScreenTab.SWAP_SCREEN.itemId) != null
     }
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {
