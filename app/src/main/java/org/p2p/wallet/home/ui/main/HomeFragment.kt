@@ -285,7 +285,8 @@ class HomeFragment :
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
             viewActionButtons.isVisible = !isEmpty
-            viewBalance.root.isVisible = !isEmpty
+            viewBalance.textViewAmount.isVisible = !isEmpty
+
             val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
             if (homeRecyclerView.adapter != updatedAdapter) {
                 homeRecyclerView.adapter = updatedAdapter
