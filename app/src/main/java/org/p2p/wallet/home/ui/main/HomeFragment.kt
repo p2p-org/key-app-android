@@ -8,7 +8,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.text.bind
+import org.p2p.uikit.utils.text.bindOrGone
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -271,13 +271,11 @@ class HomeFragment :
     }
 
     override fun showBalance(cellModel: TextViewCellModel?) {
-        cellModel?.let { binding.viewBalance.textViewAmount.bind(it) }
+        binding.viewBalance.textViewAmount.bindOrGone(cellModel)
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {
         binding.swipeRefreshLayout.isRefreshing = isRefreshing
-        binding.viewBalance.skeletonAmount.isVisible = isRefreshing
-        binding.viewBalance.textViewAmount.isVisible = !isRefreshing
     }
 
     override fun showEmptyViewData(data: List<Any>) {
@@ -287,6 +285,8 @@ class HomeFragment :
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
             viewActionButtons.isVisible = !isEmpty
+            viewBalance.textViewAmount.isVisible = !isEmpty
+
             val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
             if (homeRecyclerView.adapter != updatedAdapter) {
                 homeRecyclerView.adapter = updatedAdapter
