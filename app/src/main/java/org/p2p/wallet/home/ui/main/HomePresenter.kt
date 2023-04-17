@@ -266,7 +266,6 @@ class HomePresenter(
         )
 
         val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
-        Timber.tag("_____test").d(isAccountEmpty.toString())
         when {
             isAccountEmpty -> {
                 view?.showEmptyState(isEmpty = true)
