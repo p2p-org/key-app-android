@@ -15,6 +15,7 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.historylist.HistoryListViewClickListener
+import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -56,6 +57,7 @@ class TokenHistoryFragment :
     }
 
     override val presenter: TokenHistoryContract.Presenter by inject { parametersOf(tokenForHistory) }
+    private val historyListPresenter: HistoryListViewContract.Presenter by inject()
 
     private val tokenForHistory: Token.Active by args(EXTRA_TOKEN)
 
@@ -86,6 +88,7 @@ class TokenHistoryFragment :
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
         binding.layoutHistoryList.bind(
+            presenter = historyListPresenter,
             clickListener = this@TokenHistoryFragment,
             listType = HistoryListViewType.HistoryForToken(tokenForHistory.mintAddress.toBase58Instance())
         )

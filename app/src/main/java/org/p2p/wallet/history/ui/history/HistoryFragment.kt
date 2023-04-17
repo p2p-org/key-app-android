@@ -9,6 +9,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.historylist.HistoryListViewClickListener
+import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -26,11 +27,20 @@ class HistoryFragment :
     }
 
     override val presenter: HistoryContract.Presenter by inject()
+
+    /**
+     * We need to attach this presenter to the HistoryFragment lifecycle,
+     * as it should survive the destruction of HistoryListView.
+     * Otherwise, the presenter will be initialized again and the history list will be reloaded
+     * every time we return to the HistoryFragment from the backstack.
+     */
+    private val historyListPresenter: HistoryListViewContract.Presenter by inject()
     private val binding: FragmentHistoryBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.layoutHistoryList.bind(
+            presenter = historyListPresenter,
             clickListener = this,
             listType = HistoryListViewType.AllHistory
         )

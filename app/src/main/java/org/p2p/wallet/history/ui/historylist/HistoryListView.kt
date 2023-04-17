@@ -1,8 +1,6 @@
 package org.p2p.wallet.history.ui.historylist
 
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.doOnAttach
-import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.content.Context
@@ -43,22 +41,26 @@ class HistoryListView @JvmOverloads constructor(
         )
     }
 
-    private val presenter: HistoryListViewContract.Presenter by inject()
+    private lateinit var presenter: HistoryListViewContract.Presenter
 
     private var clickListener: HistoryListViewClickListener? = null
 
-    init {
-        doOnAttach { presenter.attach(this) }
-        doOnDetach { presenter.detach() }
-    }
-
     fun bind(
+        presenter: HistoryListViewContract.Presenter,
         clickListener: HistoryListViewClickListener,
         listType: HistoryListViewType,
     ) {
+        this.presenter = presenter
         this.listViewType = listType
         this.clickListener = clickListener
+
+        presenter.attach(this)
         bindView()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        presenter.detach()
     }
 
     private fun bindView() = with(binding) {
