@@ -106,7 +106,7 @@ class HomePresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         loadSolanaTokens()
-        attachToActionButtons()
+        observeActionButtonState()
     }
 
     private fun loadSolanaTokens() {
@@ -139,7 +139,7 @@ class HomePresenter(
         }
     }
 
-    private fun attachToActionButtons() {
+    private fun observeActionButtonState() {
         launch {
             buttonsStateFlow.collect { buttons ->
                 view?.showActionButtons(buttons)
