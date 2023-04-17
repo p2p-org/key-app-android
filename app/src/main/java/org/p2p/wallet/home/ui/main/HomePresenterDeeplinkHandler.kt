@@ -13,18 +13,18 @@ import org.p2p.wallet.user.interactor.UserInteractor
 /**
  * Handles deeplinks supported by the home screen
  */
-internal class HomePresenterDeeplinkHandler(
+class HomePresenterDeeplinkHandler(
     private val coroutineScope: CoroutineScope,
     private val presenter: HomeContract.Presenter,
-    private val state: () -> HomeScreenViewState,
-    private val view: () -> HomeContract.View?,
-    private val userInteractor: () -> UserInteractor
+    private val view: HomeContract.View?,
+    private val state: HomeScreenViewState,
+    private val userInteractor: UserInteractor
 ) {
 
     suspend fun handle(data: DeeplinkData) {
         when (data.target) {
             DeeplinkTarget.BUY -> handleBuyDeeplink(data)
-            DeeplinkTarget.SEND -> handleSendDeeplink(data)
+            DeeplinkTarget.SEND -> handleSendDeeplink()
             DeeplinkTarget.SWAP -> handleSwapDeeplink(data)
             DeeplinkTarget.CASH_OUT -> handleCashOutDeeplink()
             else -> Unit
@@ -32,26 +32,26 @@ internal class HomePresenterDeeplinkHandler(
     }
 
     private fun handleCashOutDeeplink() {
-        view()?.showCashOut()
+        view?.showCashOut()
     }
 
     private fun handleSwapDeeplink(data: DeeplinkData) {
         if (data.args.containsKey("from") && data.args.containsKey("to")) {
             val amount = data.args["amount"]?.toBigDecimalOrNull()?.toPlainString() ?: "0"
-            view()?.showSwapWithArgs(
+            view?.showSwapWithArgs(
                 tokenASymbol = data.args.getValue("from"),
                 tokenBSymbol = data.args.getValue("to"),
                 amountA = amount,
                 source = SwapOpenedFrom.MAIN_SCREEN
             )
         } else {
-            view()?.showSwap(SwapOpenedFrom.MAIN_SCREEN)
+            view?.showSwap(SwapOpenedFrom.MAIN_SCREEN)
         }
     }
 
-    private suspend fun handleSendDeeplink(data: DeeplinkData) {
+    private suspend fun handleSendDeeplink() {
         // fixme hack! waiting for tokens to load, probably it's better to show progress
-        waitForCondition(1000) { state().tokens.isNotEmpty() }
+        waitForCondition(1000) { state.tokens.isNotEmpty() }
         presenter.onSendClicked(SearchOpenedFromScreen.MAIN)
     }
 
@@ -65,9 +65,9 @@ internal class HomePresenterDeeplinkHandler(
 
         if (!cryptoToken.isNullOrBlank() && !fiatToken.isNullOrBlank()) {
             coroutineScope.launch {
-                val token = userInteractor().getSingleTokenForBuy(listOf(cryptoToken))
+                val token = userInteractor.getSingleTokenForBuy(listOf(cryptoToken))
                 if (token != null) {
-                    view()?.showNewBuyScreen(token, fiatToken, fiatAmount)
+                    view?.showNewBuyScreen(token, fiatToken, fiatAmount)
                 } else {
                     presenter.onBuyClicked()
                 }

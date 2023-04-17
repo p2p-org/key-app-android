@@ -115,7 +115,9 @@ class MainFragment :
                 DeeplinkTarget.HISTORY,
                 DeeplinkTarget.SETTINGS,
             )
-        ).onEach(::navigateFromDeeplink).launchIn(lifecycleScope)
+        )
+            .onEach(::navigateFromDeeplink)
+            .launchIn(lifecycleScope)
 
         deeplinksManager.setTabsSwitcher(this)
         deeplinksManager.executeHomePendingDeeplink()

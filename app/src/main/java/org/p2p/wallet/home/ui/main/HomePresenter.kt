@@ -8,7 +8,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
@@ -100,9 +99,9 @@ class HomePresenter(
         HomePresenterDeeplinkHandler(
             coroutineScope = this,
             presenter = this,
-            state = { state },
-            view = { view },
-            userInteractor = { userInteractor }
+            view = view,
+            state = state,
+            userInteractor = userInteractor
         )
     }
 
