@@ -3,6 +3,7 @@ package org.p2p.wallet.infrastructure.network
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
@@ -176,7 +177,8 @@ object NetworkModule : InjectionModule {
         readTimeOut: Long = DEFAULT_READ_TIMEOUT_SECONDS,
         connectTimeOut: Long = DEFAULT_CONNECT_TIMEOUT_SECONDS,
         tag: String?,
-        interceptor: Interceptor? = null
+        interceptor: Interceptor? = null,
+        clientProtocols: List<Protocol>? = null
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -184,6 +186,9 @@ object NetworkModule : InjectionModule {
             .apply {
                 if (interceptor != null) {
                     addInterceptor(interceptor)
+                }
+                if (clientProtocols != null) {
+                    protocols(clientProtocols)
                 }
                 if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
                     addInterceptor(httpLoggingInterceptor(tag))
