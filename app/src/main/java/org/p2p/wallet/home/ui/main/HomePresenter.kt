@@ -12,14 +12,14 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
-import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
-import org.p2p.core.utils.Constants.ETH_SYMBOL
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
+import org.p2p.core.utils.Constants.WETH_COINGECKO_ID
+import org.p2p.core.utils.Constants.WETH_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -57,11 +57,11 @@ import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
 
-val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
+val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
     SOL_COINGECKO_ID,
     USDT_COINGECKO_ID,
-    ETH_COINGECKO_ID,
+    WETH_COINGECKO_ID,
     USDC_COINGECKO_ID
 ).map { TokenId(it) }
 val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
@@ -119,7 +119,7 @@ class HomePresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         loadSolanaTokens()
-        attachToActionButtons()
+        observeActionButtonState()
         handleDeeplinks()
     }
 
@@ -153,7 +153,7 @@ class HomePresenter(
         }
     }
 
-    private fun attachToActionButtons() {
+    private fun observeActionButtonState() {
         launch {
             buttonsStateFlow.collect { buttons ->
                 view?.showActionButtons(buttons)

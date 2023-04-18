@@ -23,6 +23,7 @@ object Constants {
     const val USDC_COINGECKO_ID = "usd-coin"
     const val BTC_COINGECKO_ID = "bitcoin"
     const val ETH_COINGECKO_ID = "ethereum"
+    const val WETH_COINGECKO_ID = "ethereum-wormhole"
     const val USDT_COINGECKO_ID = "tether"
 
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"

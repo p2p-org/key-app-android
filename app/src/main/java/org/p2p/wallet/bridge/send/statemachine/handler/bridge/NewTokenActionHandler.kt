@@ -25,7 +25,7 @@ class NewTokenActionHandler(
         val state = SendState.Static.TokenZero(newToken, null)
         emit(state)
         transactionLoader.prepareTransaction(state).collect {
-            emit(state)
+            emit(it)
         }
     }
 }

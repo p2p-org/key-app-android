@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalanceResponse
@@ -31,7 +32,7 @@ import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.Signature
 
-private val MINIMAL_DUST = BigInteger("1")
+private val MINIMAL_DUST = BigDecimal("1")
 
 internal class EthereumKitRepository(
     private val tokensRepository: EthereumTokensRepository,
@@ -88,11 +89,8 @@ internal class EthereumKitRepository(
                     .onEach { (address, price) ->
                         localTokensMetadata.find { it.contractAddress.hex == address }?.price = price
                     }
-                (listOf(getEthToken()) + localTokensMetadata).filter { metadata ->
-                    val tokenBundle = claimingTokens.firstOrNull { metadata.contractAddress == it.contractAddress }
-                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
-                    metadata.balance.isMoreThan(MINIMAL_DUST) || isClaimInProgress
-                }.map { metadata ->
+
+                (listOf(getEthToken()) + localTokensMetadata).map { metadata ->
                     var isClaiming = false
                     claimingTokens.forEach {
                         if (metadata.contractAddress == it.contractAddress && it.isClaiming) {
@@ -100,6 +98,11 @@ internal class EthereumKitRepository(
                         }
                     }
                     EthTokenConverter.ethMetadataToToken(metadata, isClaiming)
+                }.filter { token ->
+                    val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
+                    val tokenFiatAmount = token.totalInUsd.orZero()
+                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
+                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
                 }
             } catch (cancellation: CancellationException) {
                 Timber.i(cancellation)

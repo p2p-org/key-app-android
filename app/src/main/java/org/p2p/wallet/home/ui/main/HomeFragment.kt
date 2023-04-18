@@ -1,6 +1,9 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
@@ -93,6 +96,9 @@ class HomeFragment :
 
     private val swapFragmentFactory: SwapFragmentFactory by inject()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
+    private val layoutManager: LinearLayoutManager by lazy {
+        HomeScreenLayoutManager(requireContext())
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -183,7 +189,12 @@ class HomeFragment :
         layoutToolbar.setupToolbar()
 
         homeRecyclerView.adapter = contentAdapter
-        homeRecyclerView.layoutManager = HomeScreenLayoutManager(requireContext())
+        homeRecyclerView.doOnAttach {
+            homeRecyclerView.layoutManager = layoutManager
+        }
+        homeRecyclerView.doOnDetach {
+            homeRecyclerView.layoutManager = null
+        }
         swipeRefreshLayout.setOnRefreshListener { presenter.refreshTokens() }
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
 
@@ -304,7 +315,7 @@ class HomeFragment :
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
             viewActionButtons.isVisible = !isEmpty
-            viewBalance.textViewAmount.isVisible = !isEmpty
+            viewBalance.root.isVisible = !isEmpty
 
             val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
             if (homeRecyclerView.adapter != updatedAdapter) {
