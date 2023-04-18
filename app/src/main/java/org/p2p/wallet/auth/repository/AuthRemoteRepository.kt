@@ -1,16 +1,16 @@
 package org.p2p.wallet.auth.repository
 
+import java.security.SecureRandom
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.mnemoticgenerator.MnemonicGenerator
 import org.p2p.wallet.utils.mnemoticgenerator.Words
-import java.security.SecureRandom
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.withContext
 
 private const val ACCOUNTS_QUANTITY_TO_CREATE = 5
 
@@ -20,11 +20,12 @@ class AuthRemoteRepository(
 
     override suspend fun createAccount(
         path: DerivationPath,
-        keys: List<String>
+        keys: List<String>,
+        walletIndex: Int
     ): Account = withContext(dispatchers.io) {
         when (path) {
-            DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(words = keys, walletIndex = 0)
-            else -> Account.fromBip44Mnemonic(words = keys, walletIndex = 0, derivationPath = path)
+            DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(words = keys, walletIndex = walletIndex)
+            else -> Account.fromBip44Mnemonic(words = keys, walletIndex = walletIndex, derivationPath = path)
         }
     }
 

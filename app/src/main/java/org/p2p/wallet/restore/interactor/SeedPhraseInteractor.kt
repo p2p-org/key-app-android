@@ -85,8 +85,9 @@ class SeedPhraseInteractor(
     suspend fun createAndSaveAccount(
         path: DerivationPath,
         mnemonicPhrase: List<String>,
+        walletIndex: Int
     ) {
-        val account = authRepository.createAccount(path, mnemonicPhrase)
+        val account = authRepository.createAccount(path, mnemonicPhrase, walletIndex)
         val publicKey = account.publicKey.toBase58()
 
         tokenProvider.keyPair = account.keypair
