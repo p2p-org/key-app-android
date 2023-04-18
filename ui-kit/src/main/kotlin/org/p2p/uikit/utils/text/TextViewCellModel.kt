@@ -9,6 +9,7 @@ import androidx.core.view.updatePadding
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.text.TextUtils
 import android.util.TypedValue
 import android.widget.TextView
 import org.p2p.core.common.TextContainer
@@ -37,6 +38,7 @@ sealed interface TextViewCellModel {
         val badgeBackground: TextViewBackgroundModel? = null,
         val autoSizeConfiguration: TextViewAutoSizeConfiguration? = null,
         val maxLines: Int? = null,
+        val ellipsize: TextUtils.TruncateAt? = null
     ) : TextViewCellModel
 
     data class Skeleton(
@@ -128,6 +130,8 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
     }
 
     maxLines = model.maxLines ?: initialTextStyle.maxLines
+    ellipsize = model.ellipsize ?: initialTextStyle.ellipsize
+
     val autoSize = model.autoSizeConfiguration
     val initialAutoSize = initialTextStyle.textViewAutoSizeConfiguration
     val autoSizeTextType =
@@ -196,6 +200,7 @@ private data class InitialTextStyle(
     val gravity: Int,
     val textViewAutoSizeConfiguration: TextViewAutoSizeConfiguration,
     val maxLines: Int,
+    val ellipsize: TextUtils.TruncateAt?
 ) {
     constructor(textView: TextView) : this(
         textSize = textView.textSize,
@@ -207,6 +212,7 @@ private data class InitialTextStyle(
         gravity = textView.gravity,
         hintTextColors = textView.hintTextColors,
         maxLines = textView.maxLines,
+        ellipsize = textView.ellipsize,
         textViewAutoSizeConfiguration = TextViewAutoSizeConfiguration(
             autoSizeTextType = textView.autoSizeTextType,
             autoSizeMinTextSize = textView.autoSizeMinTextSize,
