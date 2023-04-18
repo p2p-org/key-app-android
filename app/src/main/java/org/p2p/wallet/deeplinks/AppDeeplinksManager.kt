@@ -4,6 +4,7 @@ import androidx.core.content.getSystemService
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -102,54 +103,15 @@ class AppDeeplinksManager(
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
                 val isTransferScheme = context.getString(R.string.transfer_app_scheme) == data.host
                 when {
-                    isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> {
-                        rootListener?.triggerOnboardingDeeplink(data)
-                    }
-                    isValidScheme && DeeplinkUtils.isValidCommonLink(data) -> {
-                        val screenName = data.host
-                        val target = DeeplinkTarget.fromScreenName(screenName)
-                        target?.let { deeplinkTarget ->
-                            val deeplinkData = DeeplinkData(
-                                target = deeplinkTarget,
-                                pathSegments = data.pathSegments,
-                                args = data.queryParameterNames
-                                    .filter { !data.getQueryParameter(it).isNullOrBlank() }
-                                    .associateWith { data.getQueryParameter(it)!! },
-                                intent = intent
-                            )
-                            notify(deeplinkData)
-                        }
-                    }
-                    isTransferScheme -> {
-                        val deeplink = SendViaLinkWrapper(data.toString())
-                        val isExecuted = rootListener?.parseTransferViaLink(deeplink) ?: false
-                        if (!isExecuted) {
-                            // postpone deeplink execution until app will be ready
-                            pendingTransferLink = deeplink
-                        }
-                    }
+                    isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> handleOnboardingDeeplink(data)
+                    isValidScheme && DeeplinkUtils.isValidCommonLink(data) -> handleCommonDeeplink(intent)
+                    isTransferScheme -> handleTransferDeeplink(data)
                     intercomDeeplinkManager.handleBackgroundDeeplink(data) -> {
                         // do nothing
                     }
                 }
             }
-            isDeeplinkWithExtras(intent) -> {
-                val extras = intent.extras ?: return
-
-                when {
-                    // additional parsing when app been opened with notification from background
-                    extras.containsKey(NOTIFICATION_TYPE) -> {
-                        val values = extras.toStringMap()
-                        val notificationType = NotificationType.fromValue(
-                            values[NOTIFICATION_TYPE].orEmpty()
-                        )
-                        intent.addDeeplinkDataToIntent(notificationType)
-                    }
-                    extras.containsKey(EXTRA_TAB_SCREEN) -> {
-                        switchToMainTabIfPossible(intent)
-                    }
-                }
-            }
+            isDeeplinkWithExtras(intent) -> handleDeeplinkWithExtras(intent)
             else -> Unit
         }
     }
@@ -186,6 +148,54 @@ class AppDeeplinksManager(
         }
 
         putExtra(EXTRA_TAB_SCREEN, navigationId)
+    }
+
+    private fun handleDeeplinkWithExtras(intent: Intent) {
+        val extras = intent.extras ?: return
+
+        when {
+            // additional parsing when app been opened with notification from background
+            extras.containsKey(NOTIFICATION_TYPE) -> {
+                val values = extras.toStringMap()
+                val notificationType = NotificationType.fromValue(
+                    values[NOTIFICATION_TYPE].orEmpty()
+                )
+                intent.addDeeplinkDataToIntent(notificationType)
+            }
+            extras.containsKey(EXTRA_TAB_SCREEN) -> {
+                switchToMainTabIfPossible(intent)
+            }
+        }
+    }
+
+    private fun handleOnboardingDeeplink(data: Uri) {
+        rootListener?.triggerOnboardingDeeplink(data)
+    }
+
+    private fun handleTransferDeeplink(data: Uri) {
+        val deeplink = SendViaLinkWrapper(data.toString())
+        val isExecuted = rootListener?.parseTransferViaLink(deeplink) ?: false
+        if (!isExecuted) {
+            // postpone deeplink execution until app will be ready
+            pendingTransferLink = deeplink
+        }
+    }
+
+    private fun handleCommonDeeplink(intent: Intent) {
+        val data = intent.data ?: return
+        val screenName = data.host
+        val target = DeeplinkTarget.fromScreenName(screenName)
+        target?.let { deeplinkTarget ->
+            val deeplinkData = DeeplinkData(
+                target = deeplinkTarget,
+                pathSegments = data.pathSegments,
+                args = data.queryParameterNames
+                    .filter { !data.getQueryParameter(it).isNullOrBlank() }
+                    .associateWith { data.getQueryParameter(it)!! },
+                intent = intent
+            )
+            notify(deeplinkData)
+        }
     }
 
     private fun switchToMainTabIfPossible(intent: Intent) {
