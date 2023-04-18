@@ -91,9 +91,9 @@ class HistoryItemMapper(
 
                 startTitle = getFormattedUsernameOrAddress()
                 startSubtitle = resources.getString(getTypeName())
-                endTopValue = getValue()
+                endTopValue = getFormattedFiatValue()
                 endTopValueTextColor = getTextColor()
-                endBottomValue = getTotal()
+                endBottomValue = getTotalWithSymbol()
             }
             is RpcHistoryTransaction.StakeUnstake -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
@@ -245,7 +245,7 @@ class HistoryItemMapper(
         )
     }
 
-    suspend fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {
+    fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {
         val receiverAddress = if (sellTransaction is SellTransaction.WaitingForDepositTransaction) {
             sellTransaction.moonpayDepositWalletAddress.base58Value
         } else {

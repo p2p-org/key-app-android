@@ -1,6 +1,7 @@
 package org.p2p.wallet.common.date
 
 import android.content.Context
+import android.content.res.Resources
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -18,13 +19,21 @@ private val monthDayYearFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("MM.dd.yyyy HH:mm")
 private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
+@Deprecated(
+    message = "Use toDateString with Resources instead of context",
+    replaceWith = ReplaceWith("toDateString(context.resources)")
+)
 fun ZonedDateTime.toDateString(context: Context): String {
+    return toDateString(context.resources)
+}
+
+fun ZonedDateTime.toDateString(resources: Resources): String {
     val day = withZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
     val today = Today.value
     val yesterday = today.minusDays(1)
     return when {
-        day.isEqual(today) -> context.getString(R.string.common_today)
-        day.isEqual(yesterday) -> context.getString(R.string.common_yesterday)
+        day.isEqual(today) -> resources.getString(R.string.common_today)
+        day.isEqual(yesterday) -> resources.getString(R.string.common_yesterday)
         today.year == day.year -> monthDayFormatter.formatWithLocale(day)
         else -> monthDayYearFormatter.formatWithLocale(day)
     }

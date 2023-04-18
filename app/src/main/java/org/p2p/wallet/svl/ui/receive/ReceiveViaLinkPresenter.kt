@@ -26,6 +26,7 @@ import org.p2p.wallet.svl.ui.error.SendViaLinkError
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toPublicKey
 
 class ReceiveViaLinkPresenter(
@@ -49,8 +50,13 @@ class ReceiveViaLinkPresenter(
 
                 historyInteractor.addPendingTransaction(
                     txSignature = transactionId,
-                    mintAddress = token.mintAddress,
-                    transaction = buildPendingTransaction(transactionId, temporaryAccount, token, recipient)
+                    mintAddress = token.mintAddress.toBase58Instance(),
+                    transaction = buildPendingTransaction(
+                        transactionId = transactionId,
+                        sender = temporaryAccount,
+                        token = token,
+                        recipient = recipient
+                    )
                 )
 
                 val successMessage = receiveViaLinkMapper.mapClaimSuccessMessage(token)
