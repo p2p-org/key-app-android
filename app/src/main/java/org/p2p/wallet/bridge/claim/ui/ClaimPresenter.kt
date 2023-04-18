@@ -103,7 +103,6 @@ class ClaimPresenter(
         isFree: Boolean,
         minAmountForFreeFee: BigDecimal
     ) {
-        claimAnalytics.logFeesButtonClicked()
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
 
         claimDetails = claimUiMapper.makeClaimDetails(
@@ -117,6 +116,7 @@ class ClaimPresenter(
 
     override fun onFeeClicked() {
         view?.showClaimFeeInfo(claimDetails ?: return)
+        claimAnalytics.logFeesButtonClicked()
     }
 
     override fun onSendButtonClicked() {
