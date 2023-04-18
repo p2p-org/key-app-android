@@ -52,7 +52,7 @@
 
     <!--Send-->
     <string name="send_switch_to_token">Tap to switch to %s</string>
-    <string name="send_enter_amount">Enter Amount</string>
+    <string name="send_enter_amount">Enter the amount</string>
 
     <string name="send_slider_text_format">Send %s %s</string>
     <string name="send_max_warning_text_format">Max: %s %s</string>

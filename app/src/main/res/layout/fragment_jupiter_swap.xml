@@ -190,7 +190,7 @@
             android:backgroundTint="@color/bg_rain"
             android:enabled="false"
             android:maxLines="1"
-            android:text="@string/send_enter_amount"
+            android:text="@string/swap_main_enter_amount"
             android:textColor="@color/text_mountain"
             app:cornerRadius="24dp"
             app:layout_constraintBottom_toBottomOf="parent"

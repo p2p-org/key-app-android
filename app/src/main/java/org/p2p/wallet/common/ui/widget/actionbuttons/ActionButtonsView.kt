@@ -1,14 +1,17 @@
 package org.p2p.wallet.common.ui.widget.actionbuttons
 
+import androidx.recyclerview.widget.RecyclerView
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.context
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.wallet.databinding.LayoutActionButtonsBinding
 import org.p2p.wallet.sell.analytics.SellAnalytics
+import org.p2p.wallet.utils.HomeScreenLayoutManager
 
 class ActionButtonsView @JvmOverloads constructor(
     context: Context,
@@ -19,6 +22,10 @@ class ActionButtonsView @JvmOverloads constructor(
     var onButtonClicked: ((ActionButton) -> Unit)? = null
 
     private val binding: LayoutActionButtonsBinding = inflateViewBinding()
+    private val layoutManager: HomeScreenLayoutManager by lazy {
+        HomeScreenLayoutManager(context = binding.context)
+            .apply { orientation = RecyclerView.HORIZONTAL }
+    }
 
     private val sellAnalytics: SellAnalytics by inject()
 
@@ -28,7 +35,10 @@ class ActionButtonsView @JvmOverloads constructor(
     })
 
     init {
-        binding.recyclerViewActionButtons.attachAdapter(buttonsAdapter)
+        with(binding) {
+            recyclerViewActionButtons.layoutManager = layoutManager
+            recyclerViewActionButtons.attachAdapter(buttonsAdapter)
+        }
     }
 
     fun showActionButtons(buttons: List<ActionButton>) {
