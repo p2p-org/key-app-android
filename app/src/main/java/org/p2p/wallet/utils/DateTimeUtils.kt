@@ -14,7 +14,7 @@ object DateTimeUtils {
 
     private val formatsCache = HashMap<FormatterKey, SimpleDateFormat>()
 
-    private const val PATTERN_FULL_DAY = "HH:mm"
+    const val PATTERN_FULL_DAY = "HH:mm"
     private const val PATTERN_AM_PM = "hh:mm a"
     private const val PATTERN_DATE = "dd.MM.yyyy"
     private const val PATTERN_MONTH_DATE_SHORT = "MM dd"

@@ -39,6 +39,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
+import org.p2p.wallet.jupiter.JupiterPresenterInitialData
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
@@ -60,6 +61,9 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_OPENED_FROM = "EXTRA_OPENED_FROM"
+private const val EXTRA_INITIAL_TOKEN_A_SYMBOL = "EXTRA_INITIAL_TOKEN_A_SYMBOL"
+private const val EXTRA_INITIAL_TOKEN_B_SYMBOL = "EXTRA_INITIAL_TOKEN_B_SYMBOL"
+private const val EXTRA_INITIAL_AMOUNT_A = "EXTRA_INITIAL_AMOUNT_A"
 
 class JupiterSwapFragment :
     BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
@@ -73,15 +77,44 @@ class JupiterSwapFragment :
                     EXTRA_TOKEN to token,
                     EXTRA_OPENED_FROM to source
                 )
+
+        fun create(
+            tokenASymbol: String,
+            tokenBSymbol: String,
+            amountA: String,
+            source: SwapOpenedFrom
+        ): JupiterSwapFragment =
+            JupiterSwapFragment()
+                .withArgs(
+                    EXTRA_INITIAL_TOKEN_A_SYMBOL to tokenASymbol,
+                    EXTRA_INITIAL_TOKEN_B_SYMBOL to tokenBSymbol,
+                    EXTRA_INITIAL_AMOUNT_A to amountA,
+                    EXTRA_OPENED_FROM to source
+                )
     }
 
     private val stateManagerHolderKey: String = UUID.randomUUID().toString()
+
     private val initialToken: Token.Active? by args(EXTRA_TOKEN)
-    private val binding: FragmentJupiterSwapBinding by viewBinding()
+    private val initialTokenASymbol: String? by args(EXTRA_INITIAL_TOKEN_A_SYMBOL)
+    private val initialTokenBSymbol: String? by args(EXTRA_INITIAL_TOKEN_B_SYMBOL)
+    private val initialAmountA: String? by args(EXTRA_INITIAL_AMOUNT_A)
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
+
+    private val binding: FragmentJupiterSwapBinding by viewBinding()
+
     private val analytics: JupiterSwapMainScreenAnalytics by inject()
     override val presenter: JupiterSwapContract.Presenter by inject {
-        parametersOf(initialToken, stateManagerHolderKey, openedFrom)
+        parametersOf(
+            JupiterPresenterInitialData(
+                stateManagerHolderKey = stateManagerHolderKey,
+                swapOpenedFrom = openedFrom,
+                initialToken = initialToken,
+                initialAmountA = initialAmountA,
+                tokenASymbol = initialTokenASymbol,
+                tokenBSymbol = initialTokenBSymbol,
+            )
+        )
     }
 
     private var mainTabsSwitcher: MainTabsSwitcher? = null
@@ -204,6 +237,10 @@ class JupiterSwapFragment :
 
     override fun setRatioState(state: TextViewCellModel?) {
         binding.textViewRate.bindOrInvisible(state)
+    }
+
+    override fun setAmountFiat(amount: String) {
+        binding.swapWidgetFrom.setAmount(amount)
     }
 
     override fun showSolErrorToast() {

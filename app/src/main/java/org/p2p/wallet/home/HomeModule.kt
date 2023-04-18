@@ -66,6 +66,7 @@ object HomeModule : InjectionModule {
         factoryOf(::UserTokensPolling)
         /* Cached data exists, therefore creating singleton */
         // todo: do something with this dependenices!
+        // todo: to eliminate all this hell, we could just migrate to hilt
         factory<HomeContract.Presenter> {
             HomePresenter(
                 analytics = get(),
@@ -87,7 +88,8 @@ object HomeModule : InjectionModule {
                 sellEnabledFeatureToggle = get(),
                 intercomDeeplinkManager = get(),
                 ethereumInteractor = get(),
-                seedPhraseProvider = get()
+                seedPhraseProvider = get(),
+                deeplinksManager = get(),
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

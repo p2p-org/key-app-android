@@ -33,6 +33,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
+import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
@@ -53,6 +55,7 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
+import org.p2p.wallet.utils.unsafeLazy
 
 val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
@@ -83,13 +86,24 @@ class HomePresenter(
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
     private val homeMapper: HomeMapper,
     private val ethereumInteractor: EthereumInteractor,
-    private val seedPhraseProvider: SeedPhraseProvider
+    private val seedPhraseProvider: SeedPhraseProvider,
+    private val deeplinksManager: AppDeeplinksManager
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
 
     private var state = HomeScreenViewState(areZerosHidden = settingsInteractor.areZerosHidden())
     private val buttonsStateFlow = MutableStateFlow<List<ActionButton>>(emptyList())
+
+    private val deeplinkHandler by unsafeLazy {
+        HomePresenterDeeplinkHandler(
+            coroutineScope = this,
+            presenter = this,
+            view = view,
+            state = state,
+            userInteractor = userInteractor
+        )
+    }
 
     init {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
@@ -106,6 +120,7 @@ class HomePresenter(
         super.attach(view)
         loadSolanaTokens()
         observeActionButtonState()
+        handleDeeplinks()
     }
 
     private fun loadSolanaTokens() {
@@ -160,6 +175,19 @@ class HomePresenter(
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
+    }
+
+    private fun handleDeeplinks() {
+        launchSupervisor {
+            deeplinksManager.subscribeOnDeeplinks(
+                setOf(
+                    DeeplinkTarget.BUY,
+                    DeeplinkTarget.SEND,
+                    DeeplinkTarget.SWAP,
+                    DeeplinkTarget.CASH_OUT
+                )
+            ).collect(deeplinkHandler::handle)
+        }
     }
 
     private fun initializeActionButtons() {

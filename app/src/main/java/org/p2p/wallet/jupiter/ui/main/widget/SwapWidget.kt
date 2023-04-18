@@ -9,6 +9,7 @@ import android.content.res.ColorStateList
 import android.text.InputType
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import android.widget.TextView
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
@@ -70,6 +71,10 @@ class SwapWidget @JvmOverloads constructor(
 
     fun focusAndShowKeyboard() {
         binding.editTextAmount.focusAndShowKeyboard(true)
+    }
+
+    fun setAmount(amount: String) {
+        binding.editTextAmount.setText(amount)
     }
 
     private fun bindLoading(model: SwapWidgetModel.Loading) = with(binding) {

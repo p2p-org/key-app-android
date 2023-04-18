@@ -12,9 +12,6 @@ import android.widget.ImageView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
-import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.format.DateTimeFormatter
-import java.util.Locale
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.formatFiat
@@ -24,7 +21,6 @@ import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
-import org.p2p.wallet.common.date.toDateString
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHistoryTransactionDetailsBinding
 import org.p2p.wallet.history.model.rpc.RpcFee
@@ -38,7 +34,6 @@ import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.unsafeLazy
-import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
@@ -46,7 +41,6 @@ import org.p2p.wallet.utils.withTextOrGone
 private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
 
 private const val IMAGE_SIZE = 64
-private const val TIME_FORMAT = "HH:mm"
 
 class HistoryTransactionDetailsBottomSheetFragment :
     BaseMvpBottomSheet<HistoryTransactionDetailsContract.View, HistoryTransactionDetailsContract.Presenter>(
@@ -76,8 +70,6 @@ class HistoryTransactionDetailsBottomSheetFragment :
     override val presenter: HistoryTransactionDetailsContract.Presenter by inject()
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
-
-    private val timeFormat by unsafeLazy { DateTimeFormatter.ofPattern(TIME_FORMAT, Locale.US) }
 
     private val titleStateFormat: String by unsafeLazy { getString(R.string.transaction_details_title) }
 
@@ -132,12 +124,8 @@ class HistoryTransactionDetailsBottomSheetFragment :
         imageViewSecondToken.isVisible = true
     }
 
-    override fun showDate(date: ZonedDateTime) {
-        binding.textViewSubtitle.text = getString(
-            R.string.transaction_details_date_format,
-            date.toDateString(binding.context),
-            date.format(timeFormat)
-        )
+    override fun showSubtitle(subtitle: String) {
+        binding.textViewSubtitle.text = subtitle
     }
 
     override fun showStatus(@StringRes titleResId: Int, @ColorRes colorId: Int) = with(binding) {
@@ -145,10 +133,15 @@ class HistoryTransactionDetailsBottomSheetFragment :
         textViewAmountUsd.setTextColor(getColor(colorId))
     }
 
-    override fun showErrorState(errorMessage: String) = with(binding.progressStateTransaction) {
+    override fun showProgressTransactionErrorState(errorMessage: String) = with(binding.progressStateTransaction) {
         isVisible = true
         setFailedState()
         setDescriptionText(errorMessage)
+    }
+
+    override fun showProgressTransactionInProgress() = with(binding.progressStateTransaction) {
+        isVisible = true
+        setDescriptionText(R.string.transaction_details_pending_transfer_description)
     }
 
     override fun showTransactionId(signature: String) {
@@ -163,9 +156,17 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
     }
 
-    override fun showSenderAddress(senderAddress: Base58String, senderUsername: String?) = with(binding) {
+    override fun showSenderAddress(
+        senderAddress: Base58String,
+        senderUsername: String?,
+        isReceivePending: Boolean
+    ) = with(binding) {
         textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled_16, 0)
-        textViewSendReceiveTitle.text = getString(R.string.transaction_details_receive_from)
+        textViewSendReceiveTitle.text = if (isReceivePending) {
+            getString(R.string.transaction_details_from)
+        } else {
+            getString(R.string.transaction_details_receive_from)
+        }
         if (senderUsername != null) {
             textViewSendReceiveValue.text = senderUsername
             textViewSendReceiveValue.setOnClickListener {
@@ -187,8 +188,9 @@ class HistoryTransactionDetailsBottomSheetFragment :
                 )
             }
         }
-        textViewFeeTitle.isGone = true
-        textViewFeeValue.isGone = true
+        // hide only if transaction if not pending
+        textViewFeeTitle.isGone = !isReceivePending
+        textViewFeeValue.isGone = !isReceivePending
     }
 
     override fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?) = with(binding) {
@@ -233,6 +235,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     override fun showFee(fees: List<RpcFee>?) = with(binding) {
+        textViewFeeValue.isVisible = true
         textViewFeeValue.text = fees.formatFees(lessThenMinString)
     }
 

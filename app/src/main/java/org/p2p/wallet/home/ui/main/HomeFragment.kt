@@ -166,6 +166,25 @@ class HomeFragment :
         binding.viewActionButtons.showActionButtons(buttons)
     }
 
+    override fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom) {
+        replaceFragment(
+            swapFragmentFactory.swapFragment(
+                tokenASymbol = tokenASymbol,
+                tokenBSymbol = tokenBSymbol,
+                amountA = amountA,
+                source = source
+            )
+        )
+    }
+
+    override fun showSwap(source: SwapOpenedFrom) {
+        replaceFragment(swapFragmentFactory.swapFragment(source = source))
+    }
+
+    override fun showCashOut() {
+        replaceFragment(SellPayloadFragment.create())
+    }
+
     private fun FragmentHomeBinding.setupView() {
         layoutToolbar.setupToolbar()
 
@@ -217,7 +236,7 @@ class HomeFragment :
                 replaceFragment(SellPayloadFragment.create())
             }
             ActionButton.SWAP_BUTTON -> {
-                replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.MAIN_SCREEN))
+                showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
             }
         }
     }
@@ -241,7 +260,7 @@ class HomeFragment :
             HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
             HomeAction.BUY -> presenter.onBuyClicked()
             HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
-            HomeAction.SWAP -> replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.ACTION_PANEL))
+            HomeAction.SWAP -> showSwap(SwapOpenedFrom.ACTION_PANEL)
             HomeAction.SEND -> presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
         }
     }
@@ -258,8 +277,8 @@ class HomeFragment :
         replaceFragment(SendUnavailableFragment.create(fallbackToken))
     }
 
-    override fun showNewBuyScreen(token: Token) {
-        replaceFragment(NewBuyFragment.create(token))
+    override fun showNewBuyScreen(token: Token, fiatToken: String?, fiatAmount: String?) {
+        replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {

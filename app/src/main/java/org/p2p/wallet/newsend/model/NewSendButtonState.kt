@@ -58,7 +58,7 @@ class NewSendButtonState(
                     State.Disabled(textContainer, R.color.text_night)
                 }
                 !isAmountNotZero -> {
-                    val textContainer = TextContainer.Res(R.string.main_enter_the_amount)
+                    val textContainer = TextContainer.Res(R.string.send_enter_amount)
                     State.Disabled(textContainer, R.color.text_night)
                 }
                 !isEnoughBalance -> {
