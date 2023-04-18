@@ -76,8 +76,8 @@ class SearchViewHolder(
                 imageIconUrl
             } else {
                 frameWalletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
-                R.drawable.ic_search_wallet
                 description = null
+                R.drawable.ic_search_wallet
             }
             textViewTop.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
