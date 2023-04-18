@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
@@ -93,6 +94,9 @@ class HomeFragment :
 
     private val swapFragmentFactory: SwapFragmentFactory by inject()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
+    private val layoutManager: LinearLayoutManager by lazy {
+        HomeScreenLayoutManager(requireContext())
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

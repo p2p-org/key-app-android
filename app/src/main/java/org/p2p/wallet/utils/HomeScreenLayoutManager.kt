@@ -5,7 +5,8 @@ import androidx.recyclerview.widget.RecyclerView
 import android.content.Context
 import timber.log.Timber
 
-class HomeScreenLayoutManager(context: Context) : LinearLayoutManager(context) {
+class HomeScreenLayoutManager(context: Context) :
+    LinearLayoutManager(context) {
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
         try {
