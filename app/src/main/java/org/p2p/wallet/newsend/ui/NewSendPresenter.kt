@@ -49,6 +49,7 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
+import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toPublicKey
 
 class NewSendPresenter(
@@ -412,7 +413,7 @@ class NewSendPresenter(
                 historyInteractor.addPendingTransaction(
                     txSignature = result,
                     transaction = transaction,
-                    mintAddress = token.mintAddress
+                    mintAddress = token.mintAddress.toBase58Instance()
                 )
             } catch (e: Throwable) {
                 Timber.e(e, "Failed sending transaction!")
