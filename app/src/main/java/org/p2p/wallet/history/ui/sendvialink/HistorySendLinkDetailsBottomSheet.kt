@@ -2,6 +2,7 @@ package org.p2p.wallet.history.ui.sendvialink
 
 import androidx.fragment.app.FragmentManager
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -116,6 +117,7 @@ class HistorySendLinkDetailsBottomSheet :
 
         val leftSideLinkValueContent = LeftSideCellModel.IconWithText(
             firstLineText = TextViewCellModel.Raw(TextContainer(state.link)),
+            firstLineTextEllipsize = TextUtils.TruncateAt.END,
             secondLineText = TextViewCellModel.Raw(TextContainer(R.string.transaction_history_send_via_link_info))
         )
         val rightSideCopyIcon = RightSideCellModel.IconWrapper(
