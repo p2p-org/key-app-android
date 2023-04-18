@@ -17,6 +17,7 @@
     <string name="swap_main_alert">The price is higher due to the large amount of cash lost for the pair of tokens. Split your transaction for few small swaps.</string>
     <string name="swap_main_slippage_changed">🤖 We changed slippage to %s</string>
     <string name="swap_main_slippage_changed_details_button">OPEN DETAILS</string>
+    <string name="swap_main_enter_amount">Enter amount</string>
 
     <string name="swap_tokens_token_a_toolbar">Token you pay</string>
     <string name="swap_tokens_token_b_toolbar">Token you receive</string>

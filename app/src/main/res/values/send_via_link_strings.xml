@@ -1,5 +1,5 @@
 <resources>
-    <string name="send_via_link">Send crypto via one-time link</string>
+    <string name="send_via_link">Send money via link</string>
     <string name="send_via_link_title">Send via one-time link</string>
     <string name="send_via_link_title_main">Send via link</string>
     <string name="send_via_link_message">Anyone who gets this one-time link can claim money</string>
@@ -7,7 +7,7 @@
     <string name="send_via_link_animation_text">Creating your one-time link</string>
     <string name="send_via_link_animation_time_text">This will take up to 5 seconds</string>
     <string name="send_via_link_ready">Share your link to send money</string>
-    <string name="send_via_link_return_back">If you want to get your money back just open one-time the link by yourself</string>
+    <string name="send_via_link_return_back">If you want to get your money back just open the link by yourself</string>
     <string name="send_via_link_limit_exceeded">You have reached the daily limit of sending free links. Try tomorrow</string>
     <string name="send_via_link_generation_copied">✅ Copied</string>
     <string name="send_via_link_share_message">Hey, I\'ve sent you %1s! Get it here: \n%2s</string>
