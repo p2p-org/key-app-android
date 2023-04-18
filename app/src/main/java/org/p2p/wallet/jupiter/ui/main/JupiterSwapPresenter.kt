@@ -197,7 +197,7 @@ class JupiterSwapPresenter(
                     val pendingTransaction = buildPendingTransaction(result, currentState)
                     historyInteractor.addPendingTransaction(
                         txSignature = result.signature,
-                        mintAddress = currentState.tokenA.mintAddress.base58Value,
+                        mintAddress = currentState.tokenA.mintAddress,
                         transaction = pendingTransaction
                     )
                     view?.showDefaultSlider()
