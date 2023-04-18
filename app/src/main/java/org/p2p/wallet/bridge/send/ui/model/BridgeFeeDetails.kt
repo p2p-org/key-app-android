@@ -11,5 +11,5 @@ data class BridgeFeeDetails(
     val networkFee: BridgeAmount,
     val messageAccountRent: BridgeAmount,
     val bridgeFee: BridgeAmount,
-    val total: BridgeAmount,
+    val totalFees: List<BridgeAmount>,
 ) : Parcelable

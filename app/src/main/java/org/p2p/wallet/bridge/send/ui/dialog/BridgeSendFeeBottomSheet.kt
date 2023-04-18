@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.model.BridgeAmount
@@ -54,7 +56,7 @@ class BridgeSendFeeBottomSheet : BaseDoneBottomSheet() {
                 title = getString(R.string.bridge_send_fee_details_address),
                 value = bridgeFeeDetails.recipientAddress
             )
-            layoutWillGetAmount.bindDetailsLineWithFee(
+            layoutWillGetAmount.bindWillGetAmountLine(
                 title = getString(R.string.bridge_send_fee_details_gets),
                 fee = bridgeFeeDetails.willGetAmount
             )
@@ -66,9 +68,9 @@ class BridgeSendFeeBottomSheet : BaseDoneBottomSheet() {
                 title = getString(R.string.bridge_send_fee_details_wormhole),
                 fee = bridgeFeeDetails.bridgeFee
             )
-            layoutTotal.bindDetailsLineWithFee(
+            layoutTotal.bindDetailsTotalFee(
                 title = getString(R.string.bridge_send_fee_details_total),
-                fee = bridgeFeeDetails.total
+                fees = bridgeFeeDetails.totalFees
             )
         }
     }
@@ -84,15 +86,49 @@ class BridgeSendFeeBottomSheet : BaseDoneBottomSheet() {
         textViewFiatAmount.isVisible = false
     }
 
+    private fun ItemClaimDetailsPartBinding.bindWillGetAmountLine(title: String, fee: BridgeAmount) {
+        textViewTitle.text = title
+        textViewFiatAmount.text = fee.fiatAmount.orZero().asUsd()
+        bindFreeOrValue("${fee.tokenAmount.orZero().formatToken(fee.tokenDecimals)} ${fee.tokenSymbol}")
+    }
+
     private fun ItemClaimDetailsPartBinding.bindDetailsLineWithFee(title: String, fee: BridgeAmount) {
         textViewTitle.text = title
         textViewFiatAmount.text = fee.fiatAmount?.asUsd() ?: getString(R.string.bridge_info_transaction_free)
-        val formattedTokenAmount = fee.formattedTokenAmount
-        if (formattedTokenAmount == null) {
+        bindFreeOrValue(fee.formattedTokenAmount)
+    }
+
+    private fun ItemClaimDetailsPartBinding.bindDetailsTotalFee(title: String, fees: List<BridgeAmount>) {
+        val isFree = fees.isEmpty()
+        val totalFeesByToken = fees.groupBy { it.tokenSymbol }.values.map { bridgeFees ->
+            val feeForTokenData = bridgeFees.firstOrNull()
+            BridgeAmount(
+                tokenSymbol = feeForTokenData?.tokenSymbol.orEmpty(),
+                tokenDecimals = feeForTokenData?.tokenDecimals.orZero(),
+                tokenAmount = bridgeFees.sumOf { it.tokenAmount.orZero() },
+                fiatAmount = bridgeFees.sumOf { it.tokenAmount.orZero() }
+            )
+        }
+
+        textViewTitle.text = title
+        textViewFiatAmount.text = totalFeesByToken.takeUnless { it.all { isFree } }
+            ?.sumOf { it.fiatAmount.orZero() }
+            ?.asUsd() ?: getString(R.string.bridge_info_transaction_free)
+        val formattedTokenAmount = buildString {
+            totalFeesByToken.forEach {
+                append(it.formattedTokenAmount)
+                appendLine()
+            }
+        }.takeUnless { isFree }
+        bindFreeOrValue(formattedTokenAmount)
+    }
+
+    private fun ItemClaimDetailsPartBinding.bindFreeOrValue(value: String?) {
+        if (value == null) {
             textViewTokenAmount.text = getString(R.string.bridge_claim_fees_free)
             textViewTokenAmount.setTextColorRes(R.color.text_mint)
         } else {
-            textViewTokenAmount.text = formattedTokenAmount
+            textViewTokenAmount.text = value
             textViewTokenAmount.setTextColorRes(R.color.text_night)
         }
     }

@@ -2,7 +2,7 @@ package org.p2p.wallet.bridge.send.ui.mapper
 
 import android.content.res.Resources
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
@@ -23,20 +23,19 @@ class BridgeSendUiMapper(private val resources: Resources) {
 
     fun makeBridgeFeeDetails(
         recipientAddress: String,
-        tokenToSend: Token.Active,
-        calculationMode: CalculationMode,
         fees: BridgeSendFees?
     ): BridgeFeeDetails {
-        val tokenSymbol = tokenToSend.tokenSymbol
-        val decimals = tokenToSend.decimals
-        val resultAmount = getResultAmount(tokenSymbol, decimals, calculationMode, fees)
         return BridgeFeeDetails(
             recipientAddress = recipientAddress,
-            willGetAmount = resultAmount.toBridgeAmount(),
+            willGetAmount = fees?.resultAmount.toBridgeAmount(),
             networkFee = fees?.networkFee.toBridgeAmount(),
             messageAccountRent = fees?.messageAccountRent.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(),
-            total = resultAmount.toBridgeAmount()
+            totalFees = fees?.let { it ->
+                listOf(it.arbiterFee, it.bridgeFee, it.networkFee, it.messageAccountRent)
+                    .map { it.toBridgeAmount() }
+                    .filter { !it.isFree }
+            }.orEmpty()
         )
     }
 
