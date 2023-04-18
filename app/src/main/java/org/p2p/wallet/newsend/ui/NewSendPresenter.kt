@@ -51,6 +51,8 @@ import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
 
+private const val ACCEPTABLE_RATE_DIFF = 0.02
+
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
@@ -163,12 +165,8 @@ class NewSendPresenter(
             initialAmount?.let { inputAmount ->
                 setupDefaultFields(inputAmount)
             }
-            if (token?.rate == null) {
-                if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
-                    switchCurrencyMode()
-                }
-                view.disableSwitchAmounts()
-            }
+
+            checkTokenRatesAndSetSwitchAmountState(initialToken)
         }
     }
 
@@ -254,6 +252,8 @@ class NewSendPresenter(
 
     override fun updateToken(newToken: Token.Active) {
         token = newToken
+        checkTokenRatesAndSetSwitchAmountState(newToken)
+
         showMaxButtonIfNeeded()
         view?.showFeeViewVisible(isVisible = true)
         updateButton(requireToken(), feeRelayerManager.getState())
@@ -267,6 +267,23 @@ class NewSendPresenter(
             strategy = CORRECT_AMOUNT,
             useCache = false
         )
+    }
+
+    private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
+        val isStableCoin = token.isUSDC || token.isUSDT
+        if (token.rate == null || isStableCoin && isStableCoinRateDiffAcceptable(token)) {
+            if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                switchCurrencyMode()
+            }
+            view?.disableSwitchAmounts()
+        } else {
+            view?.enableSwitchAmounts()
+        }
+    }
+
+    private fun isStableCoinRateDiffAcceptable(token: Token.Active): Boolean {
+        val delta = token.rate.orZero() - BigDecimal.ONE
+        return delta.abs() < BigDecimal(ACCEPTABLE_RATE_DIFF)
     }
 
     override fun switchCurrencyMode() {
