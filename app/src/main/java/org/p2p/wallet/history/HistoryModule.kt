@@ -13,6 +13,8 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.api.RpcHistoryServiceApi
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.RpcHistoryTransactionConverter
+import org.p2p.wallet.history.repository.local.PendingTransactionsInMemoryRepository
+import org.p2p.wallet.history.repository.local.PendingTransactionsLocalRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
@@ -21,8 +23,8 @@ import org.p2p.wallet.history.repository.remote.HistoryRepository
 import org.p2p.wallet.history.repository.remote.MoonpayHistoryRemoteRepository
 import org.p2p.wallet.history.repository.remote.RpcHistoryRepository
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
-import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsPresenter
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsContract
+import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsPresenter
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
@@ -70,15 +72,18 @@ object HistoryModule : InjectionModule {
         factoryOf(::TransactionDetailsEntityMapper)
         singleOf(::HistoryServiceSignatureFieldGenerator)
 
-        singleOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
-        single { get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcTransactionApi::class.java) }
-        factoryOf(::HistoryInteractor)
         single<HistoryRemoteRepository> {
             val remotes = listOf(
                 new(::RpcHistoryRepository),
                 new(::MoonpayHistoryRemoteRepository)
             )
-            HistoryRepository(repositories = remotes, dispatchers = get(), localRepository = get())
+            HistoryRepository(repositories = remotes, dispatchers = get(), pendingTransactionsLocalRepository = get())
         }
+
+        factoryOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
+        singleOf(::PendingTransactionsInMemoryRepository) bind PendingTransactionsLocalRepository::class
+        single { get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcTransactionApi::class.java) }
+
+        factoryOf(::HistoryInteractor)
     }
 }
