@@ -18,6 +18,7 @@ import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
+import org.p2p.wallet.utils.viewbinding.getString
 
 class SearchViewHolder(
     parent: ViewGroup,
@@ -65,16 +66,22 @@ class SearchViewHolder(
     private fun renderAddressOnly(item: SearchResult.AddressFound) {
         with(binding) {
             val imageIconUrl = item.sourceToken?.iconUrl
+            val description: String?
             val imageObject: Any = if (imageIconUrl != null) {
                 frameWalletImageView.setPadding(0, 0, 0, 0)
-
+                description = getString(
+                    R.string.search_no_other_tokens_description,
+                    item.sourceToken.tokenSymbol
+                )
                 imageIconUrl
             } else {
                 frameWalletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
                 R.drawable.ic_search_wallet
+                description = null
             }
             textViewTop.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
+            textViewBottom.withTextOrGone(description)
             Glide.with(root)
                 .load(imageObject)
                 .circleCrop()
