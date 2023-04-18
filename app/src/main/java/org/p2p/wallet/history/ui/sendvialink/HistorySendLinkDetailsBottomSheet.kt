@@ -101,7 +101,7 @@ class HistorySendLinkDetailsBottomSheet :
         financeBlockLinkValue.bind(
             FinanceBlockCellModel(
                 leftSideCellModel = loadingLeftSide,
-                rightSideCellModel = null,
+                rightSideCellModel = null
             )
         )
     }

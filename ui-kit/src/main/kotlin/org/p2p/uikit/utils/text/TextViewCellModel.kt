@@ -38,7 +38,7 @@ sealed interface TextViewCellModel {
         val badgeBackground: TextViewBackgroundModel? = null,
         val autoSizeConfiguration: TextViewAutoSizeConfiguration? = null,
         val maxLines: Int? = null,
-        val ellipsize: TextUtils.TruncateAt? = null,
+        val ellipsize: TextUtils.TruncateAt? = null
     ) : TextViewCellModel
 
     data class Skeleton(
@@ -200,7 +200,7 @@ private data class InitialTextStyle(
     val gravity: Int,
     val textViewAutoSizeConfiguration: TextViewAutoSizeConfiguration,
     val maxLines: Int,
-    val ellipsize: TextUtils.TruncateAt?,
+    val ellipsize: TextUtils.TruncateAt?
 ) {
     constructor(textView: TextView) : this(
         textSize = textView.textSize,
