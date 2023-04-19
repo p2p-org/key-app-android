@@ -2,7 +2,7 @@ package org.p2p.wallet.bridge.send.ui.mapper
 
 import android.content.res.Resources
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
@@ -23,20 +23,20 @@ class BridgeSendUiMapper(private val resources: Resources) {
 
     fun makeBridgeFeeDetails(
         recipientAddress: String,
-        tokenToSend: Token.Active,
-        calculationMode: CalculationMode,
         fees: BridgeSendFees?
     ): BridgeFeeDetails {
-        val tokenSymbol = tokenToSend.tokenSymbol
-        val decimals = tokenToSend.decimals
-        val resultAmount = getResultAmount(tokenSymbol, decimals, calculationMode, fees)
+        val totalFees = fees?.let { it ->
+            listOf(it.arbiterFee, it.bridgeFee, it.networkFee, it.messageAccountRent)
+                .map { it.toBridgeAmount() }
+                .filter { !it.isZero }
+        }.orEmpty()
         return BridgeFeeDetails(
             recipientAddress = recipientAddress,
-            willGetAmount = resultAmount.toBridgeAmount(),
+            willGetAmount = fees?.resultAmount.toBridgeAmount(),
             networkFee = fees?.networkFee.toBridgeAmount(),
             messageAccountRent = fees?.messageAccountRent.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(),
-            total = resultAmount.toBridgeAmount()
+            totalFees = totalFees
         )
     }
 
@@ -129,7 +129,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
     }
 
     private fun BridgeAmount.toTextHighlighting(): TextHighlighting? {
-        if (isFree) return null
+        if (isZero) return null
         val usdText = formattedFiatAmount.orEmpty()
         val commonText = "$formattedTokenAmount $usdText"
         return TextHighlighting(

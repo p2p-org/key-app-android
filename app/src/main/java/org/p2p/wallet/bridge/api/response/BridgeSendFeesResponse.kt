@@ -10,5 +10,7 @@ data class BridgeSendFeesResponse(
     @SerializedName("bridge_fee")
     val bridgeFee: BridgeAmountResponse?,
     @SerializedName("arbiter_fee")
-    val arbiterFee: BridgeAmountResponse?
+    val arbiterFee: BridgeAmountResponse?,
+    @SerializedName("result_amount")
+    val resultAmount: BridgeAmountResponse?
 )

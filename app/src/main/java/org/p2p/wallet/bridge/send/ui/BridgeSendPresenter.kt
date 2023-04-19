@@ -108,7 +108,9 @@ class BridgeSendPresenter(
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
 
                 val textResId = R.string.send_format
-                val value = "${state.amount.formatToken(token.decimals)} ${token.tokenSymbol}"
+                val resultTokenAmount = state.bridgeFee?.fee?.resultAmount?.amountInToken
+                    ?: state.amount.formatToken(token.decimals)
+                val value = "$resultTokenAmount ${token.tokenSymbol}"
                 updateButtons(
                     errorButton = null,
                     sliderButton = resources.getString(textResId, value)
@@ -314,13 +316,12 @@ class BridgeSendPresenter(
     }
 
     override fun onFeeInfoClicked() {
-        val token = currentState.lastStaticState.bridgeToken?.token ?: error("Token cannot be null!")
         val fees = currentState.lastStaticState.bridgeFee?.fee
         if (calculationMode.isCurrentInputEmpty() && fees == null) {
             sendBridgesAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
-            val feeDetails = getFeeDetails(token)
+            val feeDetails = getFeeDetails()
             view?.showTransactionDetails(feeDetails)
         }
     }
@@ -366,7 +367,7 @@ class BridgeSendPresenter(
         appScope.launch {
             val transactionDate = Date()
             try {
-                val feeDetails = getFeeDetails(token)
+                val feeDetails = getFeeDetails()
                 val progressDetails = bridgeSendUiMapper.prepareShowProgress(
                     tokenToSend = token,
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
@@ -402,12 +403,10 @@ class BridgeSendPresenter(
         }
     }
 
-    private fun getFeeDetails(tokenToSend: Token.Active): BridgeFeeDetails {
+    private fun getFeeDetails(): BridgeFeeDetails {
         val fees = currentState.lastStaticState.bridgeFee?.fee
         return bridgeSendUiMapper.makeBridgeFeeDetails(
             recipientAddress = recipientAddress.addressState.address,
-            tokenToSend = tokenToSend,
-            calculationMode = calculationMode,
             fees = fees
         )
     }
