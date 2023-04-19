@@ -3,13 +3,13 @@ package org.p2p.wallet.svl.interactor
 import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isMoreThan
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
@@ -17,13 +17,15 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
 class ReceiveViaLinkInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
     private val rpcBalanceRepository: RpcBalanceRepository,
     private val userLocalRepository: UserLocalRepository,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenPricesRemoteRepository: TokenPricesRemoteRepository
 ) {
 
     private class ReceiveViaLinkError(
@@ -58,10 +60,17 @@ class ReceiveViaLinkInteractor(
             return TemporaryAccountState.ParsingFailed
         }
 
+        val tokenPrice = tokenData.coingeckoId?.let {
+            tokenPricesRemoteRepository.getTokenPriceById(
+                tokenId = TokenId(it),
+                targetCurrency = USD_READABLE_SYMBOL
+            )
+        }
+
         val token = TokenConverter.fromNetwork(
             account = activeAccount,
             tokenData = tokenData,
-            price = null
+            price = tokenPrice
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
@@ -79,11 +88,15 @@ class ReceiveViaLinkInteractor(
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT)
             ?: return TemporaryAccountState.ParsingFailed
 
+        val solPrice = tokenData.coingeckoId?.let {
+            tokenPricesRemoteRepository.getTokenPriceById(TokenId(it), USD_READABLE_SYMBOL)
+        }
+
         val token = Token.createSOL(
             publicKey = temporaryAccount.publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
-            exchangeRate = null
+            solPrice = solPrice?.price
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,

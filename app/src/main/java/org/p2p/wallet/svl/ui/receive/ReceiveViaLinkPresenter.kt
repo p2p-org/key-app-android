@@ -76,12 +76,7 @@ class ReceiveViaLinkPresenter(
 
     override fun parseAccountFromLink(link: SendViaLinkWrapper, isRetry: Boolean) {
         if (!isInternetConnectionEnabled()) {
-            val state = SendViaLinkClaimingState.ParsingFailed(
-                titleRes = R.string.error_no_internet_message_no_emoji,
-                subTitleRes = null,
-                iconRes = R.drawable.ic_cat
-            )
-            view?.renderState(state)
+            view?.renderState(SendViaLinkClaimingState.ParsingFailed.INTERNET_ERROR)
             return
         }
 
@@ -100,7 +95,7 @@ class ReceiveViaLinkPresenter(
                 handleState(state)
             } catch (e: Throwable) {
                 Timber.e(e, "Error parsing link")
-                view?.renderState(SendViaLinkClaimingState.ParsingFailed())
+                view?.renderState(SendViaLinkClaimingState.ParsingFailed.UNKNOWN_ERROR)
             } finally {
                 view?.showButtonLoading(isLoading = false)
             }
@@ -123,7 +118,7 @@ class ReceiveViaLinkPresenter(
                 )
             }
             is TemporaryAccountState.ParsingFailed -> {
-                view?.renderState(SendViaLinkClaimingState.ParsingFailed())
+                view?.renderState(SendViaLinkClaimingState.ParsingFailed.UNKNOWN_ERROR)
             }
             is TemporaryAccountState.EmptyBalance -> {
                 view?.showLinkError(SendViaLinkError.ALREADY_CLAIMED)

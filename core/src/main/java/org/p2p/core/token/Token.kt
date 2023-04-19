@@ -233,7 +233,7 @@ sealed class Token constructor(
             publicKey: String,
             tokenData: TokenData,
             amount: Long,
-            exchangeRate: BigDecimal?
+            solPrice: BigDecimal?
         ): Active {
             val total: BigDecimal = BigDecimal(amount).divide(tokenData.decimals.toPowerValue())
             return Active(
@@ -243,10 +243,10 @@ sealed class Token constructor(
                 mintAddress = tokenData.mintAddress,
                 tokenName = SOL_NAME,
                 iconUrl = tokenData.iconUrl,
-                totalInUsd = if (amount == 0L) null else exchangeRate?.let { total.multiply(it) },
+                totalInUsd = if (amount == 0L) null else solPrice?.let { total.multiply(it) },
                 coingeckoId = tokenData.coingeckoId,
                 total = total.scaleLong(tokenData.decimals),
-                rate = exchangeRate,
+                rate = solPrice,
                 visibility = TokenVisibility.DEFAULT,
                 serumV3Usdc = tokenData.serumV3Usdc,
                 serumV3Usdt = tokenData.serumV3Usdt,

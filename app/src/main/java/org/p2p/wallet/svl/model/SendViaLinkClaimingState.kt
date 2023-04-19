@@ -27,10 +27,18 @@ sealed interface SendViaLinkClaimingState {
         @DrawableRes val iconRes: Int
     ) : SendViaLinkClaimingState {
 
-        constructor() : this(
-            titleRes = R.string.send_via_link_error_failed_parsing_title,
-            subTitleRes = null,
-            iconRes = R.drawable.ic_not_found
-        )
+        companion object {
+            val UNKNOWN_ERROR = ParsingFailed(
+                titleRes = R.string.send_via_link_error_failed_parsing_title,
+                subTitleRes = null,
+                iconRes = R.drawable.ic_not_found
+            )
+
+            val INTERNET_ERROR = ParsingFailed(
+                titleRes = R.string.error_no_internet_message_no_emoji,
+                subTitleRes = null,
+                iconRes = R.drawable.ic_cat
+            )
+        }
     }
 }
