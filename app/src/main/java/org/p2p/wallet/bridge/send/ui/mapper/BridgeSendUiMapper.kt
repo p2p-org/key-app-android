@@ -28,7 +28,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
         val totalFees = fees?.let { it ->
             listOf(it.arbiterFee, it.bridgeFee, it.networkFee, it.messageAccountRent)
                 .map { it.toBridgeAmount() }
-                .filter { !it.isFree }
+                .filter { !it.isZero }
         }.orEmpty()
         return BridgeFeeDetails(
             recipientAddress = recipientAddress,
@@ -129,7 +129,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
     }
 
     private fun BridgeAmount.toTextHighlighting(): TextHighlighting? {
-        if (isFree) return null
+        if (isZero) return null
         val usdText = formattedFiatAmount.orEmpty()
         val commonText = "$formattedTokenAmount $usdText"
         return TextHighlighting(

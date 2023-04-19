@@ -27,7 +27,7 @@ data class BridgeAmount(
     }
 
     @IgnoredOnParcel
-    val isFree: Boolean = tokenAmount.isNullOrZero() || fiatAmount.isNullOrZero()
+    val isZero: Boolean = tokenAmount.isNullOrZero() || fiatAmount.isNullOrZero()
 
     val formattedTokenAmount: String?
         get() = tokenAmount?.let { "${it.formatToken(tokenDecimals)} $tokenSymbol" }

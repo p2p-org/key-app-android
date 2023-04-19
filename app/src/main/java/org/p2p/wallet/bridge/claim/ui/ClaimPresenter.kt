@@ -43,7 +43,6 @@ class ClaimPresenter(
     private val claimUiMapper: ClaimUiMapper,
     private val resources: Resources,
     private val appScope: AppScope,
-    private val userTokensPolling: UserTokensPolling,
     private val claimAnalytics: ClaimAnalytics
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
@@ -106,9 +105,10 @@ class ClaimPresenter(
         view?.showFee(claimUiMapper.mapFeeTextContainer(fees, isFree))
 
         claimDetails = claimUiMapper.makeClaimDetails(
+            isFree = isFree,
             tokenToClaim = tokenToClaim,
             resultAmount = resultAmount,
-            fees = fees.takeUnless { isFree },
+            fees = fees,
             minAmountForFreeFee = minAmountForFreeFee
         )
         view?.setClaimButtonState(isButtonEnabled = true)
