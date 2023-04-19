@@ -108,9 +108,9 @@ class BridgeSendPresenter(
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
 
                 val textResId = R.string.send_format
-                val result = state.bridgeFee?.fee?.resultAmount?.amountInToken
+                val resultTokenAmount = state.bridgeFee?.fee?.resultAmount?.amountInToken
                     ?: state.amount.formatToken(token.decimals)
-                val value = "$result ${token.tokenSymbol}"
+                val value = "$resultTokenAmount ${token.tokenSymbol}"
                 updateButtons(
                     errorButton = null,
                     sliderButton = resources.getString(textResId, value)

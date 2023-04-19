@@ -106,20 +106,20 @@ class BridgeSendFeeBottomSheet : BaseDoneBottomSheet() {
                 tokenSymbol = feeForTokenData?.tokenSymbol.orEmpty(),
                 tokenDecimals = feeForTokenData?.tokenDecimals.orZero(),
                 tokenAmount = bridgeFees.sumOf { it.tokenAmount.orZero() },
-                fiatAmount = bridgeFees.sumOf { it.tokenAmount.orZero() }
+                fiatAmount = bridgeFees.sumOf { it.fiatAmount.orZero() }
             )
         }
 
         textViewTitle.text = title
         textViewFiatAmount.text = totalFeesByToken.takeUnless { it.all { isFree } }
             ?.sumOf { it.fiatAmount.orZero() }
-            ?.asUsd() ?: getString(R.string.bridge_info_transaction_free)
-        val formattedTokenAmount = buildString {
-            totalFeesByToken.forEach {
-                append(it.formattedTokenAmount)
-                appendLine()
-            }
-        }.takeUnless { isFree }
+            ?.asUsd()
+            ?: getString(R.string.bridge_info_transaction_free)
+
+        val formattedTokenAmount = totalFeesByToken.joinToString(separator = "\n") {
+            it.formattedTokenAmount.orEmpty()
+        }
+            .takeUnless { isFree }
         bindFreeOrValue(formattedTokenAmount)
     }
 
