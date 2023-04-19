@@ -2,7 +2,6 @@ package org.p2p.wallet.restore.ui.derivable
 
 import androidx.recyclerview.widget.RecyclerView
 import android.annotation.SuppressLint
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.isZero
@@ -10,11 +9,12 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenSimpleBinding
 import org.p2p.wallet.restore.model.DerivableAccount
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private const val FULL_ALPHA = 1.0f
 private const val HALF_ALPHA = 0.5f
 
-typealias OnAccountClick = (walletIndex: Int) -> Unit
+private typealias OnAccountClick = (walletIndex: Int) -> Unit
 
 class DerivableAccountsAdapter(
     private val onAccountClick: OnAccountClick
@@ -31,20 +31,16 @@ class DerivableAccountsAdapter(
     override fun getItemCount(): Int = data.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-        ViewHolder(
-            binding = ItemTokenSimpleBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            ),
-            onAccountClick = onAccountClick
-        )
+        ViewHolder(parent, onAccountClick = onAccountClick)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as ViewHolder).onBind(data[position])
     }
 
     private class ViewHolder(
-        binding: ItemTokenSimpleBinding,
-        private val onAccountClick: OnAccountClick
+        parent: ViewGroup,
+        private val onAccountClick: OnAccountClick,
+        binding: ItemTokenSimpleBinding = parent.inflateViewBinding(attachToRoot = false)
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private val root = binding.root
