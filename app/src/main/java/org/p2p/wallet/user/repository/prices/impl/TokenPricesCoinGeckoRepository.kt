@@ -30,7 +30,7 @@ class TokenPricesCoinGeckoRepository(
     override suspend fun getTokenPriceById(
         tokenId: TokenId,
         targetCurrency: String
-    ): TokenPrice = loadPrices(listOf(tokenId), targetCurrency).first()
+    ): TokenPrice = loadPrices(listOf(tokenId), targetCurrency).first { it.tokenId == tokenId.id }
 
     override suspend fun getTokenPricesByIdsMap(
         tokenIds: List<TokenId>,

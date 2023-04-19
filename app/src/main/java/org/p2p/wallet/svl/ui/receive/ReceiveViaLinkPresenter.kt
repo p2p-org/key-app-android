@@ -144,7 +144,7 @@ class ReceiveViaLinkPresenter(
             blockNumber = -1,
             type = RpcHistoryTransactionType.RECEIVE,
             senderAddress = sender.address,
-            amount = RpcHistoryAmount(token.total, token.totalInUsdScaled),
+            amount = RpcHistoryAmount(token.total, token.totalInUsd),
             destination = recipient.toBase58(),
             counterPartyUsername = usernameInteractor.getUsername()?.fullUsername,
             fees = null,
