@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import java.math.BigDecimal
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.asUsd
-import org.p2p.core.utils.toUsd
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
@@ -99,7 +98,7 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
             textViewTokenAmount.text = getString(R.string.bridge_claim_fees_free)
             textViewTokenAmount.setTextColorRes(R.color.text_mint)
         } else {
-            textViewFiatAmount.text =  fee.formattedFiatAmount ?: BigDecimal.ZERO.asUsd()
+            textViewFiatAmount.text = fee.formattedFiatAmount ?: BigDecimal.ZERO.asUsd()
             textViewTokenAmount.text = fee.formattedTokenAmount ?: Constants.ZERO_AMOUNT
             textViewTokenAmount.setTextColorRes(R.color.text_night)
         }

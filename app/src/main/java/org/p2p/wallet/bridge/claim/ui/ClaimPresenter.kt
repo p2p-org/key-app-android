@@ -28,7 +28,6 @@ import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.ui.main.UserTokensPolling
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.emptyString
