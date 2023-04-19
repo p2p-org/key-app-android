@@ -190,7 +190,10 @@ class HomePresenter(
         }
     }
 
-    private fun initializeActionButtons() {
+    private fun initializeActionButtons(isRefreshing: Boolean = false) {
+        if (!isRefreshing && buttonsStateFlow.value.isNotEmpty()) {
+            return
+        }
         launch {
             val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
             val isSellAvailable = sellInteractor.isSellAvailable()
@@ -291,7 +294,6 @@ class HomePresenter(
             ethTokens = ethTokens,
             username = usernameInteractor.getUsername(),
         )
-
         val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
         when {
             isAccountEmpty -> {
@@ -301,7 +303,6 @@ class HomePresenter(
             (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
                 view?.showEmptyState(isEmpty = false)
                 showTokensAndBalance()
-                initializeActionButtons()
             }
         }
     }
@@ -338,6 +339,7 @@ class HomePresenter(
             try {
                 view?.showRefreshing(isRefreshing = true)
                 tokensPolling.refreshTokens()
+                initializeActionButtons(isRefreshing = true)
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
