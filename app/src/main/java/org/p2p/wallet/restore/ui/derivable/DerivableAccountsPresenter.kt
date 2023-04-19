@@ -95,11 +95,11 @@ class DerivableAccountsPresenter(
         }
     }
 
-    override fun createAndSaveAccount() {
+    override fun createAndSaveAccount(walletIndex: Int) {
         launch {
             try {
                 view?.showLoading(true)
-                seedPhraseInteractor.createAndSaveAccount(path, secretKeys)
+                seedPhraseInteractor.createAndSaveAccount(path, secretKeys, walletIndex)
                 analytics.logWalletRestored(ScreenNames.OnBoarding.IMPORT_MANUAL)
                 restoreWalletAnalytics.setUserRestoreMethod(UsernameRestoreMethod.SEED_PHRASE)
 
