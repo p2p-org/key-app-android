@@ -5,13 +5,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.core.common.TextContainer
 import org.p2p.core.glide.GlideManager
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.left_side.LeftSideCellModel
-import org.p2p.uikit.utils.drawable.shape.shapeOutline
-import org.p2p.uikit.utils.drawable.shape.shapeRounded16dp
-import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentEthereumReceiveBinding
@@ -66,21 +60,8 @@ class EthereumReceiveFragment :
                 requireContext().copyToClipBoard(addressInHexString)
                 showUiKitSnackBar(messageResId = R.string.receive_eth_address_copied)
             }
-            financeBlockAddress.apply {
-                bind(
-                    FinanceBlockCellModel(
-                        leftSideCellModel = LeftSideCellModel.IconWithText(
-                            firstLineText = TextViewCellModel.Raw(
-                                TextContainer.Raw(getString(R.string.receive_my_eth_address))
-                            ),
-                            secondLineText = TextViewCellModel.Raw(
-                                TextContainer.Raw(addressInHexString),
-                                maxLines = 3
-                            )
-                        ),
-                    )
-                )
-                shapeOutline(shapeRounded16dp())
+            containerAddress.apply {
+                textViewAddress.text = addressInHexString
                 setOnClickListener {
                     receiveAnalytics.logAddressCopyLongClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.ETHEREUM)
                     requireContext().copyToClipBoard(addressInHexString)
