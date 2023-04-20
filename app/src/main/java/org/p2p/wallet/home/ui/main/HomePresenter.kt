@@ -53,7 +53,6 @@ import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenId
-import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
