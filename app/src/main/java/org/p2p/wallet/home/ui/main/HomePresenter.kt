@@ -227,15 +227,7 @@ class HomePresenter(
     }
 
     override fun onAddressClicked() {
-        // example result: "test-android.key 4vwfPYdvv9vkX5mTC6BBh4cQcWFTQ7Q7WR42JyTfZwi7"
-        val userDataToCopy = buildString {
-            username?.fullUsername?.let {
-                append(it)
-                appendWhitespace()
-            }
-            append(tokenKeyProvider.publicKey)
-        }
-        view?.showAddressCopied(userDataToCopy)
+        view?.showAddressCopied(username?.fullUsername ?: tokenKeyProvider.publicKey)
     }
 
     override fun onBuyClicked() {
