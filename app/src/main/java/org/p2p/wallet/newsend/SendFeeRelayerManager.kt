@@ -70,7 +70,7 @@ class SendFeeRelayerManager(
         } catch (e: Throwable) {
             Timber.i(e, "initialize for SendFeeRelayerManager failed")
             initializeCompleted = false
-            currentState = Failure(FeesCalculationError)
+            handleError(FeesCalculationError)
         } finally {
             onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
         }

@@ -1,8 +1,6 @@
 package org.p2p.wallet.utils
 
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.programs.SerumSwapProgram.usdcMint
-import org.p2p.solanaj.programs.SerumSwapProgram.usdtMint
 
 const val CUT_ADDRESS_SYMBOLS_COUNT = 6
 const val CUT_4_SYMBOLS = 4
@@ -10,11 +8,6 @@ const val CUT_7_SYMBOLS = 7
 const val CUT_16_SYMBOLS = 16
 
 fun String.toPublicKey() = PublicKey(this)
-
-fun PublicKey.isUsdx(): Boolean {
-    val thisValue = this.toBase58()
-    return thisValue == usdcMint.toBase58() || thisValue == usdtMint.toBase58()
-}
 
 fun String.cutMiddle(cutCount: Int = CUT_4_SYMBOLS): String {
     val firstSix = this.take(cutCount)

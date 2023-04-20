@@ -1,7 +1,7 @@
 package org.p2p.wallet.jupiter
 
 import org.p2p.core.token.Token
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 
 data class JupiterPresenterInitialData(
     val stateManagerHolderKey: String,

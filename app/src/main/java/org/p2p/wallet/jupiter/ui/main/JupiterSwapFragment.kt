@@ -48,7 +48,7 @@ import org.p2p.wallet.jupiter.ui.tokens.SwapTokensFragment
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
 import org.p2p.wallet.root.ActivityVisibility
 import org.p2p.wallet.root.AppActivityVisibility
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.transaction.ui.JupiterTransactionBottomSheetDismissListener
 import org.p2p.wallet.transaction.ui.JupiterTransactionDismissResult
 import org.p2p.wallet.transaction.ui.JupiterTransactionProgressBottomSheet

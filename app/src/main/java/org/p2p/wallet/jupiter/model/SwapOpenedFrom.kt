@@ -1,4 +1,4 @@
-package org.p2p.wallet.swap.ui.orca
+package org.p2p.wallet.jupiter.model
 
 enum class SwapOpenedFrom {
     ACTION_PANEL,

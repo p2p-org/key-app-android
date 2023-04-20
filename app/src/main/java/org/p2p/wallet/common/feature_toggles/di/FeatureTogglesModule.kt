@@ -17,7 +17,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFe
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSwapEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -48,7 +47,6 @@ object FeatureTogglesModule : InjectionModule {
                 get<RegisterUsernameEnabledFeatureToggle>(),
                 get<RegisterUsernameSkipEnabledFeatureToggle>(),
                 get<SellEnabledFeatureToggle>(),
-                get<NewSwapEnabledFeatureToggle>(),
                 get<EthAddressEnabledFeatureToggle>()
             ).toList()
         }
@@ -68,7 +66,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::RegisterUsernameEnabledFeatureToggle)
         factoryOf(::RegisterUsernameSkipEnabledFeatureToggle)
         factoryOf(::SellEnabledFeatureToggle)
-        factoryOf(::NewSwapEnabledFeatureToggle)
         factoryOf(::EthAddressEnabledFeatureToggle)
     }
 }
