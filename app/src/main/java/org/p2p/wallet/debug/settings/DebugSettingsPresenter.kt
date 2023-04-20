@@ -6,7 +6,7 @@ import android.util.DisplayMetrics
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.AppRestarter
-import org.p2p.wallet.common.ResourcesProvider
+import android.content.res.Resources
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
@@ -23,7 +23,7 @@ class DebugSettingsPresenter(
     private val environmentManager: NetworkEnvironmentManager,
     private val homeLocalRepository: HomeLocalRepository,
     private val context: Context,
-    private val resourcesProvider: ResourcesProvider,
+    private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val networkServicesUrlProvider: NetworkServicesUrlProvider,
     private val appRestarter: AppRestarter
@@ -120,7 +120,7 @@ class DebugSettingsPresenter(
             ),
             SettingsRow.Section(
                 titleResId = R.string.debug_settings_logs_title,
-                subtitle = resourcesProvider.getString(R.string.debug_settings_logs_subtitle),
+                subtitle = resources.getString(R.string.debug_settings_logs_subtitle),
                 iconRes = R.drawable.ic_settings_cloud
             )
         )
@@ -128,7 +128,7 @@ class DebugSettingsPresenter(
 
     private fun getDeviceInfo(): List<SettingsRow> {
         val deviceValues = buildString {
-            val displayMetrics: DisplayMetrics = resourcesProvider.resources.displayMetrics
+            val displayMetrics: DisplayMetrics = resources.displayMetrics
             val densityBucket = getDensityString(displayMetrics)
             val deviceMake = truncateAt(Build.MANUFACTURER, 20)
             val deviceModel = truncateAt(Build.MODEL, 20)

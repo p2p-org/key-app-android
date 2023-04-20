@@ -23,8 +23,6 @@ import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.toPx
 
-private const val CLAIM_TOKEN_AMOUNT_SCALE = 8
-
 class ClaimUiMapper(private val resources: Resources) {
 
     fun prepareShowProgress(
@@ -40,7 +38,7 @@ class ClaimUiMapper(private val resources: Resources) {
         val isFreeTransaction = amountToClaim >= minAmountForFreeFee
         val feeList = claimDetails?.let {
             listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
-        }?.filter { !it.isFree && !isFreeTransaction }?.ifEmpty { null }
+        }?.filter { !isFreeTransaction }?.ifEmpty { null }
         return NewShowProgress(
             date = transactionDate,
             tokenUrl = tokenToClaim.iconUrl.orEmpty(),
@@ -52,6 +50,7 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     fun makeClaimDetails(
+        isFree: Boolean,
         tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
@@ -59,12 +58,12 @@ class ClaimUiMapper(private val resources: Resources) {
     ): ClaimDetails {
         val defaultFee = fees?.gasEth.toBridgeAmount()
         return ClaimDetails(
+            isFree = isFree,
             willGetAmount = resultAmount.toBridgeAmount(),
             networkFee = defaultFee,
             accountCreationFee = fees?.createAccount.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(),
-            minAmountForFreeFee = minAmountForFreeFee,
-            claimAmount = tokenToClaim.total
+            minAmountForFreeFee = minAmountForFreeFee
         )
     }
 
@@ -116,7 +115,7 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     private fun toTextHighlighting(items: List<BridgeAmount>): TextHighlighting {
-        val usdText = items.filter { !it.isFree }.sumOf { it.fiatAmount.orZero() }.asApproximateUsd(withBraces = false)
+        val usdText = items.filter { !it.isZero }.sumOf { it.fiatAmount.orZero() }.asApproximateUsd(withBraces = false)
         return TextHighlighting(
             commonText = usdText,
             highlightedText = usdText

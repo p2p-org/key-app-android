@@ -1,5 +1,7 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
@@ -34,6 +36,7 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
@@ -46,8 +49,7 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
-import org.p2p.wallet.swap.ui.SwapFragmentFactory
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.replaceFragment
@@ -92,7 +94,6 @@ class HomeFragment :
     private val receiveAnalytics: ReceiveAnalytics by inject()
     private val claimAnalytics: ClaimAnalytics by inject()
 
-    private val swapFragmentFactory: SwapFragmentFactory by inject()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val layoutManager: LinearLayoutManager by lazy {
         HomeScreenLayoutManager(requireContext())
@@ -164,11 +165,30 @@ class HomeFragment :
         binding.viewActionButtons.showActionButtons(buttons)
     }
 
+    override fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom) {
+        replaceFragment(
+            JupiterSwapFragment.create(tokenASymbol, tokenBSymbol, amountA, source)
+        )
+    }
+
+    override fun showSwap(source: SwapOpenedFrom) {
+        replaceFragment(JupiterSwapFragment.create(source = source))
+    }
+
+    override fun showCashOut() {
+        replaceFragment(SellPayloadFragment.create())
+    }
+
     private fun FragmentHomeBinding.setupView() {
         layoutToolbar.setupToolbar()
 
         homeRecyclerView.adapter = contentAdapter
-        homeRecyclerView.layoutManager = HomeScreenLayoutManager(requireContext())
+        homeRecyclerView.doOnAttach {
+            homeRecyclerView.layoutManager = layoutManager
+        }
+        homeRecyclerView.doOnDetach {
+            homeRecyclerView.layoutManager = null
+        }
         swipeRefreshLayout.setOnRefreshListener { presenter.refreshTokens() }
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
 
@@ -210,7 +230,7 @@ class HomeFragment :
                 replaceFragment(SellPayloadFragment.create())
             }
             ActionButton.SWAP_BUTTON -> {
-                replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.MAIN_SCREEN))
+                showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
             }
         }
     }
@@ -234,7 +254,7 @@ class HomeFragment :
             HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
             HomeAction.BUY -> presenter.onBuyClicked()
             HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
-            HomeAction.SWAP -> replaceFragment(swapFragmentFactory.swapFragment(source = SwapOpenedFrom.ACTION_PANEL))
+            HomeAction.SWAP -> showSwap(SwapOpenedFrom.ACTION_PANEL)
             HomeAction.SEND -> presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
         }
     }
@@ -251,8 +271,8 @@ class HomeFragment :
         replaceFragment(SendUnavailableFragment.create(fallbackToken))
     }
 
-    override fun showNewBuyScreen(token: Token) {
-        replaceFragment(NewBuyFragment.create(token))
+    override fun showNewBuyScreen(token: Token, fiatToken: String?, fiatAmount: String?) {
+        replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
@@ -289,7 +309,7 @@ class HomeFragment :
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
             viewActionButtons.isVisible = !isEmpty
-            viewBalance.textViewAmount.isVisible = !isEmpty
+            viewBalance.root.isVisible = !isEmpty
 
             val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
             if (homeRecyclerView.adapter != updatedAdapter) {

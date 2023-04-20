@@ -5,7 +5,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ResourcesProvider
+import android.content.res.Resources
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.moonpay.interactor.BuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
@@ -42,16 +42,18 @@ object BuyModule : InjectionModule {
             BuySolanaPresenter(
                 tokenToBuy = token,
                 moonpayBuyRepository = get(),
-                minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_min_error_format),
-                maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
+                minBuyErrorFormat = get<Resources>().getString(R.string.buy_min_error_format),
+                maxBuyErrorFormat = get<Resources>().getString(R.string.buy_max_error_format),
                 buyAnalytics = get(),
                 analyticsInteractor = get(),
                 networkServicesUrlProvider = get()
             )
         }
-        factory<NewBuyContract.Presenter> { (token: Token) ->
+        factory<NewBuyContract.Presenter> { (token: Token, fiatToken: String?, fiatAmount: String?) ->
             NewBuyPresenter(
                 tokenToBuy = token,
+                fiatToken = fiatToken,
+                fiatAmount = fiatAmount,
                 buyAnalytics = get(),
                 userInteractor = get(),
                 paymentMethodsInteractor = get(),

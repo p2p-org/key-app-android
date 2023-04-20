@@ -1,11 +1,8 @@
 package org.p2p.solanaj.core
 
 import org.bitcoinj.core.Utils
-import org.p2p.solanaj.serumswap.chunked
-import org.p2p.solanaj.serumswap.model.MemoryLayout
-import org.p2p.solanaj.serumswap.model.Seq128Elements
-import org.p2p.solanaj.utils.ByteUtils
 import java.math.BigInteger
+import org.p2p.solanaj.utils.ByteUtils
 
 abstract class AbstractData protected constructor(data: ByteArray, dataLength: Int) {
     @Transient
@@ -19,12 +16,6 @@ abstract class AbstractData protected constructor(data: ByteArray, dataLength: I
             "Wrong data size: data.size=${data.size}; dataLength=$dataLength"
         }
         this.data = data
-    }
-
-    protected fun getCursorPosition(): Int = cursor
-
-    protected fun setCursorPosition(position: Int) {
-        cursor = position
     }
 
     protected fun readBytes(length: Int): ByteArray {
@@ -59,44 +50,5 @@ abstract class AbstractData protected constructor(data: ByteArray, dataLength: I
         val uint128 = ByteUtils.readUint128(data, cursor)
         cursor += ByteUtils.UINT_128_LENGTH
         return uint128
-    }
-
-    protected fun readSeq128Elements(memoryLayout: MemoryLayout): Seq128Elements<Any> {
-        val length = Seq128Elements.LENGTH + memoryLayout.getSize()
-        val endIndex = cursor + length
-        if (data.size > endIndex) throw IllegalStateException("Bytes length is not valid")
-
-        val bytesArray = data.copyOfRange(cursor, endIndex - 1)
-        val elements = mutableListOf<Any>()
-
-        val chunkedArray = bytesArray.chunked(memoryLayout.getSize())
-
-        chunkedArray.forEachIndexed { index, bytes ->
-            when (memoryLayout) {
-                is MemoryLayout.Byte -> {
-                    val element = bytes[index]
-                    elements.add(element)
-                }
-                is MemoryLayout.Long -> {
-                    val element = Utils.readUint32(bytes, index)
-                    elements.add(element)
-                }
-                is MemoryLayout.BigInteger -> {
-                    val element = ByteUtils.readUint64(bytes, index)
-                    elements.add(element)
-                }
-                is MemoryLayout.BigInteger128 -> {
-                    val element = ByteUtils.readUint128(bytes, index)
-                    elements.add(element)
-                }
-                is MemoryLayout.PublicKey -> {
-                    val element = PublicKey.readPubkey(bytes, index)
-                    elements.add(element)
-                }
-            }
-        }
-
-        cursor += length
-        return Seq128Elements(elements, length)
     }
 }

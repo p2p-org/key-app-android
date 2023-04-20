@@ -7,10 +7,10 @@ import org.p2p.wallet.bridge.model.BridgeAmount
 
 @Parcelize
 data class ClaimDetails(
+    val isFree: Boolean,
     val willGetAmount: BridgeAmount,
     val networkFee: BridgeAmount,
     val accountCreationFee: BridgeAmount,
     val bridgeFee: BridgeAmount,
-    val minAmountForFreeFee: BigDecimal,
-    val claimAmount: BigDecimal
+    val minAmountForFreeFee: BigDecimal
 ) : Parcelable

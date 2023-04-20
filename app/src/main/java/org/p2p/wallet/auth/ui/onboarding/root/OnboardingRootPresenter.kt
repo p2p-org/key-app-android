@@ -82,7 +82,7 @@ class OnboardingRootPresenter(
                     words = keys,
                     provider = SeedPhraseSource.MANUAL
                 )
-                seedPhraseInteractor.createAndSaveAccount(DerivationPath.BIP44CHANGE, keys)
+                seedPhraseInteractor.createAndSaveAccount(DerivationPath.BIP44CHANGE, keys, walletIndex = 0)
                 createPin(deeplink)
             }
             is SeedPhraseVerifyResult.Invalid,

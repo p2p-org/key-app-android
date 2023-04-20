@@ -47,7 +47,7 @@ import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
@@ -70,7 +70,8 @@ class JupiterSwapPresenter(
     private val rateTickerManager: SwapRateTickerManager,
     private val dispatchers: CoroutineDispatchers,
     private val userLocalRepository: UserLocalRepository,
-    private val historyInteractor: HistoryInteractor
+    private val historyInteractor: HistoryInteractor,
+    private val initialAmountA: String? = null,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true
@@ -100,6 +101,10 @@ class JupiterSwapPresenter(
         rateTickerManager.observe()
             .onEach(::handleRateTickerChanges)
             .launchIn(this)
+
+        initialAmountA?.let {
+            view.setAmountFiat(it)
+        }
     }
 
     override fun switchTokens() {
@@ -192,7 +197,7 @@ class JupiterSwapPresenter(
                     val pendingTransaction = buildPendingTransaction(result, currentState)
                     historyInteractor.addPendingTransaction(
                         txSignature = result.signature,
-                        mintAddress = currentState.tokenA.mintAddress.base58Value,
+                        mintAddress = currentState.tokenA.mintAddress,
                         transaction = pendingTransaction
                     )
                     view?.showDefaultSlider()

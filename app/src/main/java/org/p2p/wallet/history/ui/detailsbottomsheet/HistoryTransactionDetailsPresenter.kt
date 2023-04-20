@@ -1,17 +1,21 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
 import android.content.res.Resources
+import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
+import java.util.Locale
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
+import org.p2p.wallet.common.date.toDateString
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toBase58Instance
 
@@ -21,6 +25,8 @@ class HistoryTransactionDetailsPresenter(
     private val usernameInteractor: UsernameInteractor,
 ) : BasePresenter<HistoryTransactionDetailsContract.View>(),
     HistoryTransactionDetailsContract.Presenter {
+
+    private val timeFormat = DateTimeFormatter.ofPattern(DateTimeUtils.PATTERN_FULL_DAY, Locale.US)
 
     override fun load(transactionId: String) {
         launch {
@@ -43,7 +49,13 @@ class HistoryTransactionDetailsPresenter(
             return
         }
 
-        view?.showDate(transaction.date)
+        val transactionDate = resources.getString(
+            R.string.transaction_details_date_format,
+            transaction.date.toDateString(resources),
+            transaction.date.format(timeFormat)
+        )
+        view?.showSubtitle(transactionDate)
+
         showStatusAndSignature(transaction as? RpcHistoryTransaction)
         when (transaction) {
             is RpcHistoryTransaction.Swap -> parseSwap(transaction)
@@ -81,6 +93,10 @@ class HistoryTransactionDetailsPresenter(
 
     private suspend fun parseTransfer(transaction: RpcHistoryTransaction.Transfer) {
         view?.apply {
+            if (transaction.status.isPending()) {
+                view?.showSubtitle(resources.getString(R.string.details_pending))
+                showProgressTransactionInProgress()
+            }
             showTransferView(transaction.iconUrl, transaction.getIcon())
             showFee(transaction.fees)
             showAmount(
@@ -90,12 +106,18 @@ class HistoryTransactionDetailsPresenter(
             showTransferAddress(
                 isSend = transaction.isSend,
                 senderAddress = transaction.senderAddress,
-                receiverAddress = transaction.destination
+                receiverAddress = transaction.destination,
+                isPendingSend = transaction.status.isPending()
             )
         }
     }
 
-    private suspend fun showTransferAddress(isSend: Boolean, senderAddress: String, receiverAddress: String) {
+    private suspend fun showTransferAddress(
+        isSend: Boolean,
+        isPendingSend: Boolean,
+        senderAddress: String,
+        receiverAddress: String
+    ) {
         val transferActorAddress = if (isSend) receiverAddress.toBase58Instance() else senderAddress.toBase58Instance()
         val transferActorUsername: UsernameDetails? = getTransferActorUsername(transferActorAddress)
         if (isSend) {
@@ -106,7 +128,8 @@ class HistoryTransactionDetailsPresenter(
         } else {
             view?.showSenderAddress(
                 senderAddress = transferActorAddress,
-                senderUsername = transferActorUsername?.username?.fullUsername
+                senderUsername = transferActorUsername?.username?.fullUsername,
+                isReceivePending = isPendingSend
             )
         }
     }
@@ -168,11 +191,11 @@ class HistoryTransactionDetailsPresenter(
             showFee(transaction.fees)
             showTransferView(transaction.iconUrl, transaction.getIcon())
             showStateTitleValue(
-                resources.getString(
+                title = resources.getString(
                     if (transaction.isStake) R.string.transaction_details_stake
                     else R.string.transaction_details_unstake
                 ),
-                transaction.signature.cutMiddle()
+                value = transaction.signature.cutMiddle()
             )
         }
     }
@@ -184,8 +207,8 @@ class HistoryTransactionDetailsPresenter(
             showAmount(total, usdTotal)
             showTransferView(tokenIconUrl = null, placeholderIcon = R.drawable.ic_transaction_unknown)
             showStateTitleValue(
-                resources.getString(R.string.transaction_details_signature),
-                transaction.signature.cutMiddle()
+                title = resources.getString(R.string.transaction_details_signature),
+                value = transaction.signature.cutMiddle()
             )
         }
     }
@@ -231,7 +254,7 @@ class HistoryTransactionDetailsPresenter(
             is RpcHistoryTransaction.Unknown -> resources.getString(R.string.transaction_history_unknown)
             else -> null
         }?.also { errorTypeName ->
-            view?.showErrorState(
+            view?.showProgressTransactionErrorState(
                 resources.getString(R.string.transaction_details_status_message_format, errorTypeName)
             )
         }

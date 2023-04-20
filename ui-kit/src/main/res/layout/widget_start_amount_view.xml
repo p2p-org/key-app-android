@@ -25,6 +25,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
         android:textColor="@color/text_night"
+        android:maxLines="1"
         app:layout_constraintStart_toEndOf="@id/imageView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Send" />
@@ -35,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:drawablePadding="4dp"
+        android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
         app:layout_constraintStart_toEndOf="@id/imageView"

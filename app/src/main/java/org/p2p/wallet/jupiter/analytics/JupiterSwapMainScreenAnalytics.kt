@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 
 private const val SWAP_START_SCREEN = "Swap_Start_Screen"
 private const val SWAP_CHANGING_TOKEN_A_CLICK = "Swap_Changing_Token_A_Click"

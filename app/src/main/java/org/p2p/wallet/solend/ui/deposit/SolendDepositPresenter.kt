@@ -1,7 +1,7 @@
 package org.p2p.wallet.solend.ui.deposit
 
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ResourcesProvider
+import android.content.res.Resources
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.solend.interactor.SolendDepositInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
@@ -26,7 +26,7 @@ private const val FEE_DELAY_IN_MS = 250L
 
 class SolendDepositPresenter(
     deposit: SolendDepositToken,
-    private val resourcesProvider: ResourcesProvider,
+    private val resources: Resources,
     private val solendDepositInteractor: SolendDepositInteractor,
     private val depositInteractor: SolendDepositInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor
@@ -61,7 +61,7 @@ class SolendDepositPresenter(
                     if (validDeposit != null) selectTokenToDeposit(validDeposit)
                 } catch (e: Throwable) {
                     Timber.e(e, "Error fetching available deposit tokens")
-                    view?.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
+                    view?.showUiKitSnackBar(e.getErrorMessage { res -> resources.getString(res) })
                 } finally {
                     view?.showFullScreenLoading(isLoading = false)
                 }

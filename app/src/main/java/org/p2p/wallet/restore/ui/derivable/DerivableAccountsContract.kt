@@ -16,6 +16,6 @@ interface DerivableAccountsContract {
     interface Presenter : MvpPresenter<View> {
         fun loadData()
         fun setNewPath(path: DerivationPath)
-        fun createAndSaveAccount()
+        fun createAndSaveAccount(walletIndex: Int = 0)
     }
 }
