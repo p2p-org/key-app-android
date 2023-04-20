@@ -7,5 +7,5 @@ class UsernameDomainFeatureToggle(
 ) : StringFeatureToggle(valuesProvider) {
     override val featureKey: String = "username_domain"
     override val featureDescription: String = "Username domain postfix"
-    override val defaultValue: String = ".key"
+    override val defaultValue: String = ".key.sol"
 }
