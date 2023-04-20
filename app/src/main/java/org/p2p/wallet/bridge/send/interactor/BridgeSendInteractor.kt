@@ -99,7 +99,8 @@ class BridgeSendInteractor(
         token: Token.Active
     ): FeeRelayerSignTransaction {
         val statistics = FeeRelayerStatistics(
-            operationType = OperationType.TRANSFER, currency = token.mintAddress
+            operationType = OperationType.TRANSFER,
+            currency = token.mintAddress
         )
         return feeRelayerRepository.signTransaction(
             transaction = signedTransaction.transaction.decodeToBytes().toBase64Instance(),
