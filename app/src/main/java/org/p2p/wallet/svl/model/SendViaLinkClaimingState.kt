@@ -28,13 +28,13 @@ sealed interface SendViaLinkClaimingState {
     ) : SendViaLinkClaimingState {
 
         companion object {
-            val UNKNOWN_ERROR = ParsingFailed(
+            fun buildUnknownError(): ParsingFailed = ParsingFailed(
                 titleRes = R.string.send_via_link_error_failed_parsing_title,
                 subTitleRes = null,
                 iconRes = R.drawable.ic_not_found
             )
 
-            val INTERNET_ERROR = ParsingFailed(
+            fun buildInternetError(): ParsingFailed = ParsingFailed(
                 titleRes = R.string.error_no_internet_message_no_emoji,
                 subTitleRes = null,
                 iconRes = R.drawable.ic_cat

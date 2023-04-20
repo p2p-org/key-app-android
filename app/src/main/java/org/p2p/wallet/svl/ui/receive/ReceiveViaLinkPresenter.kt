@@ -11,12 +11,12 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.svl.interactor.ReceiveViaLinkError
 import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.svl.model.ReceiveViaLinkMapper
@@ -63,7 +63,7 @@ class ReceiveViaLinkPresenter(
                 val state = SendViaLinkClaimingState.ClaimSuccess(successMessage)
                 view?.renderState(state)
             } catch (e: Throwable) {
-                Timber.e(e, "Error claiming token")
+                Timber.e(ReceiveViaLinkError("Error claiming token", e))
                 val textRes = if (e is UnknownHostException) {
                     R.string.transaction_description_internet_error
                 } else {
@@ -76,7 +76,7 @@ class ReceiveViaLinkPresenter(
 
     override fun parseAccountFromLink(link: SendViaLinkWrapper, isRetry: Boolean) {
         if (!isInternetConnectionEnabled()) {
-            view?.renderState(SendViaLinkClaimingState.ParsingFailed.INTERNET_ERROR)
+            view?.renderState(SendViaLinkClaimingState.ParsingFailed.buildInternetError())
             return
         }
 
@@ -94,8 +94,8 @@ class ReceiveViaLinkPresenter(
                 val state = receiveViaLinkInteractor.parseAccountFromLink(link)
                 handleState(state)
             } catch (e: Throwable) {
-                Timber.e(e, "Error parsing link")
-                view?.renderState(SendViaLinkClaimingState.ParsingFailed.UNKNOWN_ERROR)
+                Timber.e(ReceiveViaLinkError("Error parsing link", e))
+                view?.renderState(SendViaLinkClaimingState.ParsingFailed.buildUnknownError())
             } finally {
                 view?.showButtonLoading(isLoading = false)
             }
@@ -118,7 +118,7 @@ class ReceiveViaLinkPresenter(
                 )
             }
             is TemporaryAccountState.ParsingFailed -> {
-                view?.renderState(SendViaLinkClaimingState.ParsingFailed.UNKNOWN_ERROR)
+                view?.renderState(SendViaLinkClaimingState.ParsingFailed.buildUnknownError())
             }
             is TemporaryAccountState.EmptyBalance -> {
                 view?.showLinkError(SendViaLinkError.ALREADY_CLAIMED)
@@ -137,7 +137,7 @@ class ReceiveViaLinkPresenter(
         sender: TemporaryAccount,
         token: Token.Active,
         recipient: PublicKey
-    ): HistoryTransaction =
+    ): RpcHistoryTransaction.Transfer =
         RpcHistoryTransaction.Transfer(
             signature = transactionId,
             date = ZonedDateTime.now(),

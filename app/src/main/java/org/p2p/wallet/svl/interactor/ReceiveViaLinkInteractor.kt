@@ -10,6 +10,7 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
@@ -20,6 +21,11 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
+class ReceiveViaLinkError(
+    override val message: String,
+    override val cause: Throwable? = null
+) : Throwable()
+
 class ReceiveViaLinkInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
     private val rpcBalanceRepository: RpcBalanceRepository,
@@ -27,11 +33,6 @@ class ReceiveViaLinkInteractor(
     private val sendViaLinkInteractor: SendViaLinkInteractor,
     private val tokenPricesRemoteRepository: TokenPricesRemoteRepository
 ) {
-
-    private class ReceiveViaLinkError(
-        override val message: String,
-        override val cause: Throwable? = null
-    ) : Throwable()
 
     suspend fun parseAccountFromLink(link: SendViaLinkWrapper): TemporaryAccountState {
         val seedCode = link.link.substringAfterLast(SEND_LINK_FORMAT)
@@ -60,12 +61,7 @@ class ReceiveViaLinkInteractor(
             return TemporaryAccountState.ParsingFailed
         }
 
-        val tokenPrice = tokenData.coingeckoId?.let {
-            tokenPricesRemoteRepository.getTokenPriceById(
-                tokenId = TokenId(it),
-                targetCurrency = USD_READABLE_SYMBOL
-            )
-        }
+        val tokenPrice = tokenData.coingeckoId?.let { fetchPriceForToken(it) }
 
         val token = TokenConverter.fromNetwork(
             account = activeAccount,
@@ -88,9 +84,7 @@ class ReceiveViaLinkInteractor(
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT)
             ?: return TemporaryAccountState.ParsingFailed
 
-        val solPrice = tokenData.coingeckoId?.let {
-            tokenPricesRemoteRepository.getTokenPriceById(TokenId(it), USD_READABLE_SYMBOL)
-        }
+        val solPrice = tokenData.coingeckoId?.let { fetchPriceForToken(it) }
 
         val token = Token.createSOL(
             publicKey = temporaryAccount.publicKey.toBase58(),
@@ -102,6 +96,17 @@ class ReceiveViaLinkInteractor(
             account = temporaryAccount,
             token = token
         )
+    }
+
+    private suspend fun fetchPriceForToken(coingeckoId: String): TokenPrice? {
+        return kotlin.runCatching {
+            tokenPricesRemoteRepository.getTokenPriceById(
+                tokenId = TokenId(coingeckoId),
+                targetCurrency = USD_READABLE_SYMBOL
+            )
+        }
+            .onFailure { Timber.i(it) }
+            .getOrNull() // can be skipped if there error, that's ok
     }
 
     suspend fun receiveTransfer(

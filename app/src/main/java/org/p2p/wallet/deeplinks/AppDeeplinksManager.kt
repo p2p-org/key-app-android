@@ -101,19 +101,31 @@ class AppDeeplinksManager(
                 val data = intent.data ?: return
 
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
-                val isTransferScheme = context.getString(R.string.transfer_app_scheme) == data.host
+                val isTransferScheme = isTransferDeeplink(data)
+
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> handleOnboardingDeeplink(data)
                     isValidScheme && DeeplinkUtils.isValidCommonLink(data) -> handleCommonDeeplink(intent)
                     isTransferScheme -> handleTransferDeeplink(data)
-                    intercomDeeplinkManager.handleBackgroundDeeplink(data) -> {
-                        // do nothing
-                    }
+                    intercomDeeplinkManager.handleBackgroundDeeplink(data) -> Unit
                 }
             }
             isDeeplinkWithExtras(intent) -> handleDeeplinkWithExtras(intent)
             else -> Unit
         }
+    }
+
+    /**
+     * https://t.key.app/...
+     * or keyapp://t/... if came from website
+     */
+    private fun isTransferDeeplink(data: Uri): Boolean {
+        val transferHostMain = context.getString(R.string.transfer_app_host)
+        val transferSchemeMain = "https"
+        val transferHostAlternative = "t"
+        val transferSchemeAlternative = context.getString(R.string.transfer_app_scheme_alternative)
+        return data.host == transferHostMain && data.scheme == transferSchemeMain ||
+            data.host == transferHostAlternative && data.scheme == transferSchemeAlternative
     }
 
     fun buildIntent(notificationType: NotificationType): Intent {
@@ -173,7 +185,16 @@ class AppDeeplinksManager(
     }
 
     private fun handleTransferDeeplink(data: Uri) {
-        val deeplink = SendViaLinkWrapper(data.toString())
+        val validatedSvlLink = if (data.scheme == context.getString(R.string.transfer_app_scheme_alternative)) {
+            // convert link to https format
+            data.buildUpon()
+                .scheme("https")
+                .authority("t.key.app")
+                .build()
+        } else {
+            data
+        }
+        val deeplink = SendViaLinkWrapper(validatedSvlLink.toString())
         val isExecuted = rootListener?.parseTransferViaLink(deeplink) ?: false
         if (!isExecuted) {
             // postpone deeplink execution until app will be ready
