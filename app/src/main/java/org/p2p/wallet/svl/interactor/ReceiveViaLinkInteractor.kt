@@ -61,10 +61,12 @@ class ReceiveViaLinkInteractor(
             return TemporaryAccountState.ParsingFailed
         }
 
+        val tokenPrice = tokenData.coingeckoId?.let { fetchPriceForToken(it) }
+
         val token = TokenConverter.fromNetwork(
             account = activeAccount,
             tokenData = tokenData,
-            price = null
+            price = tokenPrice
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
@@ -82,11 +84,13 @@ class ReceiveViaLinkInteractor(
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT)
             ?: return TemporaryAccountState.ParsingFailed
 
+        val solPrice = tokenData.coingeckoId?.let { fetchPriceForToken(it) }
+
         val token = Token.createSOL(
             publicKey = temporaryAccount.publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
-            solPrice = null
+            solPrice = solPrice?.price
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
