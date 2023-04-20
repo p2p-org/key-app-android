@@ -133,8 +133,8 @@ class OnboardingGeneralErrorFragment :
     }
 
     override fun setState(state: GatewayHandledState.CriticalError) = with(binding) {
-        textViewErrorTitle.text = resourcesProvider.getString(R.string.onboarding_general_error_critical_error_title)
-        textViewErrorSubtitle.text = resourcesProvider.getString(
+        textViewErrorTitle.text = resources.getString(R.string.onboarding_general_error_critical_error_title)
+        textViewErrorSubtitle.text = resources.getString(
             R.string.onboarding_general_error_critical_error_sub_title,
             state.errorCode
         )

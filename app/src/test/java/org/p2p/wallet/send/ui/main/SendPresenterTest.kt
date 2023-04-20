@@ -43,7 +43,7 @@ class SendPresenterTest {
 //    lateinit var transactionManager: TransactionManager
 //
 //    @MockK
-//    lateinit var resourcesProvider: ResourcesProvider
+//    lateinit var resources: Resources
 //
 //    @MockK
 //    lateinit var dispatchers: CoroutineDispatchers
