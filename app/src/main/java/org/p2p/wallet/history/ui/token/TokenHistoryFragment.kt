@@ -17,6 +17,7 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBot
 import org.p2p.wallet.history.ui.historylist.HistoryListViewClickListener
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewType
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
@@ -29,8 +30,7 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.swap.ui.SwapFragmentFactory
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
@@ -66,8 +66,6 @@ class TokenHistoryFragment :
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
     private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
-
-    private val swapFragmentFactory: SwapFragmentFactory by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -145,7 +143,7 @@ class TokenHistoryFragment :
                 replaceFragment(NewSearchFragment.create(tokenForHistory, SearchOpenedFromScreen.MAIN))
             }
             ActionButton.SWAP_BUTTON -> {
-                replaceFragment(swapFragmentFactory.swapFragment(tokenForHistory, SwapOpenedFrom.TOKEN_SCREEN))
+                replaceFragment(JupiterSwapFragment.create(tokenForHistory, SwapOpenedFrom.TOKEN_SCREEN))
             }
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())

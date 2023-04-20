@@ -7,7 +7,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.addIf
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSwapEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
@@ -25,7 +24,6 @@ class RootPresenter(
     private val sellInteractor: SellInteractor,
     private val swapTokensRepository: JupiterSwapTokensRepository,
     private val swapRoutesRepository: JupiterSwapRoutesRepository,
-    private val newSwapEnabledFeatureToggle: NewSwapEnabledFeatureToggle,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val context: Context
 ) : BasePresenter<RootContract.View>(), RootContract.Presenter {
@@ -58,11 +56,8 @@ class RootPresenter(
             predicate = sellEnabledFeatureToggle.isFeatureEnabled,
             value = async { sellInteractor.loadSellAvailability() }
         )
-        addIf(
-            predicate = newSwapEnabledFeatureToggle.isFeatureEnabled,
-            async { swapRoutesRepository.loadAndCacheAllSwapRoutes() },
-            async { swapTokensRepository.getTokens() }
-        )
+        add(async { swapRoutesRepository.loadAndCacheAllSwapRoutes() })
+        add(async { swapTokensRepository.getTokens() })
     }
         .also {
             Timber.tag(TAG).i("Total requests added: ${it.size}")

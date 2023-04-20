@@ -36,6 +36,7 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
@@ -48,8 +49,7 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
-import org.p2p.wallet.swap.ui.SwapFragmentFactory
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.replaceFragment
@@ -94,7 +94,6 @@ class HomeFragment :
     private val receiveAnalytics: ReceiveAnalytics by inject()
     private val claimAnalytics: ClaimAnalytics by inject()
 
-    private val swapFragmentFactory: SwapFragmentFactory by inject()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val layoutManager: LinearLayoutManager by lazy {
         HomeScreenLayoutManager(requireContext())
@@ -168,17 +167,12 @@ class HomeFragment :
 
     override fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom) {
         replaceFragment(
-            swapFragmentFactory.swapFragment(
-                tokenASymbol = tokenASymbol,
-                tokenBSymbol = tokenBSymbol,
-                amountA = amountA,
-                source = source
-            )
+            JupiterSwapFragment.create(tokenASymbol, tokenBSymbol, amountA, source)
         )
     }
 
     override fun showSwap(source: SwapOpenedFrom) {
-        replaceFragment(swapFragmentFactory.swapFragment(source = source))
+        replaceFragment(JupiterSwapFragment.create(source = source))
     }
 
     override fun showCashOut() {

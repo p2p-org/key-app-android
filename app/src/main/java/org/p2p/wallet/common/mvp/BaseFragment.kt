@@ -41,9 +41,9 @@ import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
-import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 
 private const val EXTRA_OVERRIDDEN_ENTER_ANIMATION = "EXTRA_OVERRIDDEN_ENTER_ANIMATION"
 private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMATION"
@@ -142,7 +142,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is NewSettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
         is SecurityFragment -> ScreenNames.Settings.SECURITY
-        is OrcaSwapFragment -> ScreenNames.Swap.MAIN
+        is JupiterSwapFragment -> ScreenNames.Swap.MAIN
         is TokenHistoryFragment -> ScreenNames.Token.TOKEN_SCREEN
         is SignInPinFragment -> ScreenNames.Lock.SCREEN
         is HistoryFragment -> ScreenNames.Main.MAIN_HISTORY
