@@ -318,12 +318,12 @@ class BridgeSendPresenter(
     override fun onFeeInfoClicked() {
         val fees = currentState.lastStaticState.bridgeFee?.fee
         if (calculationMode.isCurrentInputEmpty() && fees == null) {
-            sendBridgesAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
             val feeDetails = getFeeDetails()
             view?.showTransactionDetails(feeDetails)
         }
+        sendBridgesAnalytics.logFreeTransactionsClicked()
     }
 
     override fun checkInternetConnection() {
