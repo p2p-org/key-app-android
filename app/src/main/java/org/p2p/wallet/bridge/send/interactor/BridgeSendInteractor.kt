@@ -102,13 +102,15 @@ class BridgeSendInteractor(
             operationType = OperationType.TRANSFER, currency = token.mintAddress
         )
         return feeRelayerRepository.signTransaction(
-            transaction = signedTransaction.transaction.decodeToBytes().toBase64Instance(), statistics = statistics
+            transaction = signedTransaction.transaction.decodeToBytes().toBase64Instance(),
+            statistics = statistics
         )
     }
 
     private suspend fun sendToBlockchain(transaction: Base64String): String {
         return rpcSolanaRepository.sendTransaction(
-            serializedTransaction = transaction.base64Value, encoding = Encoding.BASE64
+            serializedTransaction = transaction.base64Value,
+            encoding = Encoding.BASE64
         )
     }
 }
