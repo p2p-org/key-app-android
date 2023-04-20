@@ -1,20 +1,23 @@
 package org.p2p.wallet.auth.username.repository
 
-import timber.log.Timber
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.username.api.RegisterUsernameServiceApi
 import org.p2p.wallet.auth.username.repository.mapper.RegisterUsernameServiceApiMapper
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.isDot
+import timber.log.Timber
+import kotlinx.coroutines.withContext
 
 class UsernameRemoteRepository(
     private val usernameService: RegisterUsernameServiceApi,
     private val mapper: RegisterUsernameServiceApiMapper,
     private val rpcSolanaRepository: RpcSolanaRepository,
-    private val usernameParser: UsernameParser,
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val dispatchers: CoroutineDispatchers
 ) : UsernameRepository {
 
@@ -55,9 +58,13 @@ class UsernameRemoteRepository(
         val request = mapper.toResolveUsernameNetwork(username)
         val response = usernameService.resolveUsername(request)
         mapper.fromNetwork(response).map { nameResponse ->
-            usernameParser.parse(
+            UsernameDetails(
                 ownerAddress = nameResponse.domainOwnerAddress,
-                anyUsername = nameResponse.usernameWithDomain
+                username = Username(
+                    value = nameResponse.usernameWithDomain.dropLastWhile { !it.isDot() },
+                    domainPrefix = usernameDomainFeatureToggle.value,
+                    fullUsername = nameResponse.usernameWithDomain
+                )
             )
         }
     }
@@ -68,9 +75,12 @@ class UsernameRemoteRepository(
         val request = mapper.toLookupUsernameNetwork(ownerAddress)
         val response = usernameService.lookupUsername(request)
         mapper.fromNetwork(response).map {
-            usernameParser.parse(
+            UsernameDetails(
                 ownerAddress = ownerAddress,
-                anyUsername = it.usernameWithDomain
+                username = Username(
+                    value = it.usernameWithoutDomain,
+                    domainPrefix = usernameDomainFeatureToggle.value
+                )
             )
         }
     }
