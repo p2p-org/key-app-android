@@ -13,6 +13,7 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -58,6 +59,7 @@ class EthereumReceiveFragment :
             buttonAction.setOnClickListener {
                 receiveAnalytics.logAddressCopyButtonClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.ETHEREUM)
                 requireContext().copyToClipBoard(addressInHexString)
+                requireContext().vibrate()
                 showUiKitSnackBar(messageResId = R.string.receive_eth_address_copied)
             }
             containerAddress.apply {
@@ -65,6 +67,7 @@ class EthereumReceiveFragment :
                 setOnClickListener {
                     receiveAnalytics.logAddressCopyLongClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.ETHEREUM)
                     requireContext().copyToClipBoard(addressInHexString)
+                    requireContext().vibrate()
                     showUiKitSnackBar(messageResId = R.string.receive_eth_address_copied)
                 }
             }
