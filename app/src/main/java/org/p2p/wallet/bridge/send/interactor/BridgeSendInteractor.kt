@@ -16,12 +16,8 @@ import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
-import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FeeRelayerSignTransaction
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
-import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -38,9 +34,7 @@ class BridgeSendInteractor(
     private val relaySdkFacade: RelaySdkFacade,
     private val dispatchers: CoroutineDispatchers,
     private val rpcSolanaRepository: RpcSolanaRepository,
-    private val feeRelayerRepository: FeeRelayerRepository,
-    private val feeRelayerInteractor: FeeRelayerInteractor,
-    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
+    private val feeRelayerRepository: FeeRelayerRepository
 ) {
 
     private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
@@ -55,10 +49,8 @@ class BridgeSendInteractor(
     }
 
     suspend fun supportedSendTokens(): List<Token.Active> {
-        return userInteractor.getNonZeroUserTokens()
-            .filter { it.mintAddress in supportedTokensMints }
-            .sortedWith(BridgeTokenComparator())
-            .ifEmpty {
+        return userInteractor.getNonZeroUserTokens().filter { it.mintAddress in supportedTokensMints }
+            .sortedWith(BridgeTokenComparator()).ifEmpty {
                 // TODO PWN-7613 also block button as we can't send we do not have funds
                 val usdCet = userInteractor.findTokenDataByAddress(ERC20Tokens.USDC.mintAddress) as Token.Other
                 listOf(toTokenActiveStub(usdCet))
@@ -86,17 +78,8 @@ class BridgeSendInteractor(
 
     suspend fun sendTransaction(
         token: Token.Active,
-        feePayerToken: Token.Active?,
-        feeRelayerFee: FeeRelayerFee?,
-        sendTransaction: BridgeSendTransaction,
+        sendTransaction: BridgeSendTransaction
     ): String = withContext(dispatchers.io) {
-
-        if (feePayerToken != null && feeRelayerFee != null) {
-            feeRelayerInteractor.checkAndTopUp(
-                expectedFee = feeRelayerFee.expectedFee,
-                payingFeeToken = TokenAccount(feePayerToken.publicKey, feePayerToken.mintAddress),
-            )
-        }
 
         val userAccount = Account(tokenKeyProvider.keyPair)
 
@@ -114,19 +97,16 @@ class BridgeSendInteractor(
         token: Token.Active
     ): FeeRelayerSignTransaction {
         val statistics = FeeRelayerStatistics(
-            operationType = OperationType.TRANSFER,
-            currency = token.mintAddress
+            operationType = OperationType.TRANSFER, currency = token.mintAddress
         )
         return feeRelayerRepository.signTransaction(
-            transaction = signedTransaction.transaction.decodeToBytes().toBase64Instance(),
-            statistics = statistics
+            transaction = signedTransaction.transaction.decodeToBytes().toBase64Instance(), statistics = statistics
         )
     }
 
     private suspend fun sendToBlockchain(transaction: Base64String): String {
         return rpcSolanaRepository.sendTransaction(
-            serializedTransaction = transaction.base64Value,
-            encoding = Encoding.BASE64
+            serializedTransaction = transaction.base64Value, encoding = Encoding.BASE64
         )
     }
 }

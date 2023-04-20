@@ -38,7 +38,7 @@ class RpcSolanaRemoteRepository(
 
     override suspend fun sendTransaction(serializedTransaction: String, encoding: Encoding): String {
         val params = arrayListOf(serializedTransaction, RpcSendTransactionConfig(encoding))
-        return api.sendTransaction(RpcRequest(method = "sendTransaction", params = params)).result
+        return api.sendTransaction(RpcRequest(method = "simulateTransaction", params = params)).result
     }
 
     override suspend fun getRecentPerformanceSamples(exampleCount: Int): List<RecentPerformanceSample> {
