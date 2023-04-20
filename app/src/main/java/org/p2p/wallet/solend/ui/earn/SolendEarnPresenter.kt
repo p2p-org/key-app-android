@@ -2,7 +2,7 @@ package org.p2p.wallet.solend.ui.earn
 
 import androidx.annotation.CallSuper
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ResourcesProvider
+import android.content.res.Resources
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.infrastructure.account.AccountStorage
@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class SolendEarnPresenter(
-    private val resourcesProvider: ResourcesProvider,
+    private val resources: Resources,
     private val solendDepositsInteractor: SolendDepositInteractor,
     private val userInteractor: UserInteractor,
     private val depositTickerStorage: DepositTickerStorage,
@@ -75,7 +75,7 @@ class SolendEarnPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
                 showDepositsWidgetError()
-                view?.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
+                view?.showUiKitSnackBar(e.getErrorMessage { res -> resources.getString(res) })
             } finally {
                 view?.showLoading(isLoading = false)
             }
@@ -92,7 +92,7 @@ class SolendEarnPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
                 showDepositsWidgetError()
-                view?.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
+                view?.showUiKitSnackBar(e.getErrorMessage { res -> resources.getString(res) })
             } finally {
                 view?.showRefreshing(isRefreshing = false)
             }

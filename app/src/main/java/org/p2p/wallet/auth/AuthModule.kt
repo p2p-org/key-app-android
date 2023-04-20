@@ -64,15 +64,11 @@ import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundPresenter
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenContract
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
-import org.p2p.wallet.auth.ui.security.SecurityKeyContract
-import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
 import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
-import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
-import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
@@ -92,12 +88,10 @@ object AuthModule {
 
         factoryOf(::AuthInteractor)
         factoryOf(::AuthRemoteRepository) bind AuthRepository::class
-        factoryOf(::SecurityKeyPresenter) bind SecurityKeyContract.Presenter::class
         factoryOf(::SignInPinPresenter) bind SignInPinContract.Presenter::class
         factoryOf(::ValidatePinPresenter) bind ValidatePinContract.Presenter::class
         factoryOf(::SplashPresenter) bind SplashContract.Presenter::class
         factory { UserSeedPhrasePresenter(get()) } bind UserSeedPhraseContract.Presenter::class
-        factoryOf(::VerifySecurityKeyPresenter) bind VerifySecurityKeyContract.Presenter::class
         factory {
             AuthLogoutInteractor(
                 context = get(),

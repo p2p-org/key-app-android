@@ -22,10 +22,7 @@ import org.p2p.uikit.utils.toast
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
-import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
-import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.ui.history.HistoryFragment
@@ -51,8 +48,6 @@ private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMA
 abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), BaseFragmentContract {
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
-
-    protected val resourcesProvider: ResourcesProvider by inject()
 
     protected open val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
     protected open val customStatusBarStyle: SystemIconsStyle? = null
@@ -132,10 +127,8 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     // TODO add another screens
     fun getAnalyticsName(): String = when (this) {
         is SeedPhraseFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
-        is SecurityKeyFragment -> ScreenNames.OnBoarding.CREATE_MANUAL
         is NewCreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
         is SeedInfoFragment -> ScreenNames.OnBoarding.SEED_INFO
-        is VerifySecurityKeyFragment -> ScreenNames.OnBoarding.SEED_VERIFY
         is DerivableAccountsFragment -> ScreenNames.OnBoarding.DERIVATION
         is ReserveUsernameFragment -> ScreenNames.OnBoarding.USERNAME_RESERVE
         is HomeFragment -> ScreenNames.Main.MAIN

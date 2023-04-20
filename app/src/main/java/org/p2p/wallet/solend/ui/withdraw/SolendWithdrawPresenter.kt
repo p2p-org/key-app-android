@@ -1,7 +1,7 @@
 package org.p2p.wallet.solend.ui.withdraw
 
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ResourcesProvider
+import android.content.res.Resources
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.solend.interactor.SolendWithdrawInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
@@ -26,7 +26,7 @@ private const val FEE_DELAY_IN_MS = 250L
 
 class SolendWithdrawPresenter(
     token: SolendDepositToken.Active,
-    private val resourcesProvider: ResourcesProvider,
+    private val resources: Resources,
     private val withdrawInteractor: SolendWithdrawInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor
 ) : BasePresenter<SolendWithdrawContract.View>(), SolendWithdrawContract.Presenter {
@@ -61,7 +61,7 @@ class SolendWithdrawPresenter(
                     validDeposit?.let { selectTokenToWithdraw(it) }
                 } catch (e: Throwable) {
                     Timber.e(e, "Error fetching available withdraw tokens")
-                    view?.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
+                    view?.showUiKitSnackBar(e.getErrorMessage { res -> resources.getString(res) })
                 }
             }
         }
