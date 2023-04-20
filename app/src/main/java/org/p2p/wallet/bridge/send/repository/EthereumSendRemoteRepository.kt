@@ -23,8 +23,7 @@ class EthereumSendRemoteRepository(
         source: SolAddress,
         recipient: EthAddress,
         mint: SolAddress?,
-        amount: String,
-        needToUseRelay: Boolean,
+        amount: String
     ): BridgeSendTransaction {
         val request = TransferFromSolanaRpcRequest(
             userWallet = userWallet,
@@ -32,8 +31,7 @@ class EthereumSendRemoteRepository(
             source = source,
             recipient = recipient,
             mint = mint,
-            amount = amount,
-            needToUseRelay = needToUseRelay,
+            amount = amount
         )
         val result = bridgeRepository.launch(request)
         return mapper.fromNetwork(result.data)

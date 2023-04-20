@@ -51,7 +51,7 @@ class SendBridgeTransactionLoader constructor(
         if (inputAmount != null) {
             val inputLamports = inputAmount.toLamports(token.token.decimals)
             validator.validateIsFeeMoreThenAmount(updatedFee, fee)
-            val sendTransaction = createTransaction(token.token, inputLamports, fee)
+            val sendTransaction = createTransaction(token.token, inputLamports)
             emit(SendState.Static.ReadyToSend(token, fee, inputAmount, sendTransaction))
         } else {
             emit(SendState.Static.TokenZero(token, fee))
@@ -83,17 +83,8 @@ class SendBridgeTransactionLoader constructor(
                 amount = formattedAmount.toString()
             )
 
-            val (tokenToPayFee, feeRelayerFee) = feeRelayerCounter.calculateFeeForPayer(
-                sourceToken = token,
-                feePayerToken = token,
-                tokenAmount = amount,
-                bridgeFees = fee,
-            )
-
             SendFee.Bridge(
                 fee = fee,
-                tokenToPayFee = tokenToPayFee,
-                feeRelayerFee = feeRelayerFee,
                 feeLimitInfo = freeTransactionFeeLimits
             )
         } catch (e: CancellationException) {
@@ -107,8 +98,7 @@ class SendBridgeTransactionLoader constructor(
 
     private suspend fun createTransaction(
         token: Token.Active,
-        amountInLamports: BigInteger,
-        fee: SendFee.Bridge
+        amountInLamports: BigInteger
     ): BridgeSendTransaction {
         val tokenMint = token.mintAddress
         val userPublicKey = tokenKeyProvider.publicKey
@@ -116,7 +106,6 @@ class SendBridgeTransactionLoader constructor(
 
         val relayAccount = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = SolAddress(relayAccount.feePayerAddress.toBase58())
-        val feePayerToken = fee.tokenToPayFee
 
         return repository.transferFromSolana(
             userWallet = userWallet,
@@ -124,8 +113,7 @@ class SendBridgeTransactionLoader constructor(
             source = SolAddress(token.publicKey),
             recipient = initialData.recipient,
             mint = SolAddress(tokenMint),
-            amount = amountInLamports.toString(),
-            needToUseRelay = feePayerToken?.isSOL == false,
+            amount = amountInLamports.toString()
         )
     }
 }
