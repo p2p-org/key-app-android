@@ -99,6 +99,9 @@ class ReceiveViaLinkInteractor(
     }
 
     private suspend fun fetchPriceForToken(coingeckoId: String): TokenPrice? {
+        val price = userLocalRepository.getPriceByTokenId(coingeckoId)
+        if (price != null) return price
+
         return kotlin.runCatching {
             tokenPricesRemoteRepository.getTokenPriceById(
                 tokenId = TokenId(coingeckoId),
