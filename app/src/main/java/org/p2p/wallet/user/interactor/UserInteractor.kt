@@ -146,8 +146,13 @@ class UserInteractor(
 
         val newTokens = cachedTokens.map { token ->
             val price = prices.find { it.tokenId == token.coingeckoId }
-            val totalInUsd = price?.price?.let { token.total.times(it) }
-            token.copy(rate = price?.price, totalInUsd = totalInUsd)
+
+            val newTotalInUsd = price?.price?.let { token.total.times(it) }
+            val oldTotalInUsd = token.totalInUsd
+
+            val tokenRate = token.rate ?: price?.price
+            val totalInUsd = oldTotalInUsd ?: newTotalInUsd
+            token.copy(rate = tokenRate, totalInUsd = totalInUsd)
         }
 
         mainLocalRepository.clear()
