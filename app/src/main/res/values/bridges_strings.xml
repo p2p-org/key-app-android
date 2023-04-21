@@ -37,6 +37,5 @@
     <string name="bridge_send_fee_details_gets">Recipient gets</string>
     <string name="bridge_send_fee_details_network">Network Fees</string>
     <string name="bridge_send_fee_details_wormhole">Using Wormhole bridge</string>
-    <string name="bridge_send_fee_details_total">Total fees</string>
 
 </resources>
