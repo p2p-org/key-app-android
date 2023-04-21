@@ -124,7 +124,7 @@ class HomePresenter(
     }
 
     private fun loadSolanaTokens() {
-        launch {
+        launchSupervisor {
             try {
                 view?.showRefreshing(true)
                 val solTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
