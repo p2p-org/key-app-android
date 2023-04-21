@@ -63,13 +63,37 @@
 
             </FrameLayout>
 
-            <org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
-                android:id="@+id/financeBlockAddress"
+            <LinearLayout
+                android:id="@+id/containerAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
-                app:layout_constraintTop_toBottomOf="@id/containerQr" />
+                android:background="@drawable/bg_snow_rounded_16"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintTop_toBottomOf="@id/containerQr">
+
+                <TextView
+                    android:id="@+id/textViewAddressTitle"
+                    style="@style/UiKit.TextAppearance.SemiBold.Text3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/receive_my_eth_address"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textViewAddress"
+                    style="@style/UiKit.TextAppearance.Regular.Label1"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_mountain"
+                    app:layout_constraintTop_toBottomOf="@id/textViewAddressTitle"
+                    tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
+
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/containerBanner"
@@ -79,23 +103,24 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_banner_rounded"
                 android:backgroundTint="@color/light_grass"
-                android:paddingHorizontal="20dp"
-                app:layout_constraintTop_toBottomOf="@id/financeBlockAddress">
+                android:paddingStart="16dp"
+                android:paddingEnd="12dp"
+                app:layout_constraintTop_toBottomOf="@id/containerAddress">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:gravity="start|center_vertical"
                     android:text="@string/receive_ethereum_banner_text"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
                     android:textColor="@color/text_night"
                     app:layout_constraintEnd_toStartOf="@id/imageViewMoney"
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <ImageView
                     android:id="@+id/imageViewMoney"
-                    android:layout_width="72dp"
-                    android:layout_height="100dp"
+                    android:layout_width="100dp"
+                    android:layout_height="88dp"
                     android:src="@drawable/placeholder_receive_banner"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -119,10 +144,11 @@
                     android:id="@+id/textViewFirstNum"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:background="@drawable/bg_circle_stroke_icon_secondary"
+                    android:background="@drawable/bg_circle_stroke_icon_silver"
                     android:gravity="center"
                     android:text="@string/receive_num_1"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Label1"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+                    android:textColor="@color/text_silver"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -142,14 +168,16 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_circle_stroke_icon_secondary"
+                    android:background="@drawable/bg_circle_stroke_icon_silver"
                     android:gravity="center"
                     android:text="@string/receive_num_2"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Label1"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+                    android:textColor="@color/text_silver"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textViewFirstNum" />
 
                 <TextView
+                    android:id="@+id/textViewSecondDescription"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -164,12 +192,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:gravity="center_horizontal"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
                     android:text="@string/receive_only_need_sign_transaction"
                     android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
                     android:textColor="@color/text_mountain"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/textViewSecondDescription"
                     app:layout_constraintTop_toBottomOf="@id/textViewSecondNum" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -185,6 +214,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="@string/receive_copy_address"
+        app:icon="@drawable/ic_copy"
+        app:iconGravity="textEnd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="1" />
 

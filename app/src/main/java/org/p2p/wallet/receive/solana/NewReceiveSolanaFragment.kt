@@ -13,6 +13,7 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -54,6 +55,7 @@ class NewReceiveSolanaFragment :
                 val username = binding.textViewUsername.text.toString()
                 if (username.isEmpty()) return@setOnClickListener
                 requireContext().copyToClipBoard(username)
+                requireContext().vibrate()
                 showUiKitSnackBar(messageResId = R.string.receive_username_copied)
             }
         }
@@ -65,11 +67,13 @@ class NewReceiveSolanaFragment :
             buttonAction.setOnClickListener {
                 receiveAnalytics.logAddressCopyButtonClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA)
                 requireContext().copyToClipBoard(tokenAddress)
+                requireContext().vibrate()
                 showUiKitSnackBar(messageResId = R.string.receive_sol_address_copied)
             }
             containerAddress.setOnClickListener {
                 receiveAnalytics.logAddressCopyLongClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA)
                 requireContext().copyToClipBoard(tokenAddress)
+                requireContext().vibrate()
                 showUiKitSnackBar(messageResId = R.string.receive_sol_address_copied)
             }
             textViewAddress.text = tokenAddress
