@@ -68,10 +68,6 @@ class BridgeSendFeeBottomSheet : BaseDoneBottomSheet() {
                 title = getString(R.string.bridge_send_fee_details_wormhole),
                 fee = bridgeFeeDetails.bridgeFee
             )
-            layoutTotal.bindDetailsTotalFee(
-                title = getString(R.string.bridge_send_fee_details_total),
-                fees = bridgeFeeDetails.totalFees
-            )
         }
     }
 
@@ -96,31 +92,6 @@ class BridgeSendFeeBottomSheet : BaseDoneBottomSheet() {
         textViewTitle.text = title
         textViewFiatAmount.text = fee.fiatAmount?.asUsd() ?: getString(R.string.bridge_info_transaction_free)
         bindFreeOrValue(fee.formattedTokenAmount)
-    }
-
-    private fun ItemClaimDetailsPartBinding.bindDetailsTotalFee(title: String, fees: List<BridgeAmount>) {
-        val isFree = fees.isEmpty()
-        val totalFeesByToken = fees.groupBy { it.tokenSymbol }.values.map { bridgeFees ->
-            val feeForTokenData = bridgeFees.firstOrNull()
-            BridgeAmount(
-                tokenSymbol = feeForTokenData?.tokenSymbol.orEmpty(),
-                tokenDecimals = feeForTokenData?.tokenDecimals.orZero(),
-                tokenAmount = bridgeFees.sumOf { it.tokenAmount.orZero() },
-                fiatAmount = bridgeFees.sumOf { it.fiatAmount.orZero() }
-            )
-        }
-
-        textViewTitle.text = title
-        textViewFiatAmount.text = totalFeesByToken.takeUnless { it.all { isFree } }
-            ?.sumOf { it.fiatAmount.orZero() }
-            ?.asUsd()
-            ?: getString(R.string.bridge_info_transaction_free)
-
-        val formattedTokenAmount = totalFeesByToken.joinToString(separator = "\n") {
-            it.formattedTokenAmount.orEmpty()
-        }
-            .takeUnless { isFree }
-        bindFreeOrValue(formattedTokenAmount)
     }
 
     private fun ItemClaimDetailsPartBinding.bindFreeOrValue(value: String?) {

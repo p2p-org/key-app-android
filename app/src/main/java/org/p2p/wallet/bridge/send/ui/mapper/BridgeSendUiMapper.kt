@@ -25,18 +25,12 @@ class BridgeSendUiMapper(private val resources: Resources) {
         recipientAddress: String,
         fees: BridgeSendFees?
     ): BridgeFeeDetails {
-        val totalFees = fees?.let { it ->
-            listOf(it.arbiterFee, it.bridgeFee, it.networkFee, it.messageAccountRent)
-                .map { it.toBridgeAmount() }
-                .filter { !it.isZero }
-        }.orEmpty()
         return BridgeFeeDetails(
             recipientAddress = recipientAddress,
             willGetAmount = fees?.resultAmount.toBridgeAmount(),
             networkFee = fees?.networkFee.toBridgeAmount(),
             messageAccountRent = fees?.messageAccountRent.toBridgeAmount(),
-            bridgeFee = fees?.arbiterFee.toBridgeAmount(),
-            totalFees = totalFees
+            bridgeFee = fees?.arbiterFee.toBridgeAmount()
         )
     }
 
