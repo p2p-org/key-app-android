@@ -50,11 +50,13 @@ class SendBridgeTransactionLoader constructor(
         val inputAmount = updatedFee.inputAmount
         if (inputAmount != null) {
             val inputLamports = inputAmount.toLamports(token.token.decimals)
+            validator.validateIsFeeMoreThenTotal(updatedFee, fee)
             validator.validateIsFeeMoreThenAmount(updatedFee, fee)
             val sendTransaction = createTransaction(token.token, inputLamports)
             emit(SendState.Static.ReadyToSend(token, fee, inputAmount, sendTransaction))
         } else {
             emit(SendState.Static.TokenZero(token, fee))
+            validator.validateIsFeeMoreThenTotal(updatedFee, fee)
         }
     }
 

@@ -75,7 +75,7 @@
     <string name="send_no_account_non_critical_continue">Continue with %s</string>
     <string name="send_no_account_non_critical_switch">Switch to another token</string>
 
-
+    <string name="send_error_fee_more_then_amount">The fee is more than the amount sent</string>
 
     <!--Transactions Progress BottomSheet-->
     <string name="transaction_progress_title">Transaction %s</string>
