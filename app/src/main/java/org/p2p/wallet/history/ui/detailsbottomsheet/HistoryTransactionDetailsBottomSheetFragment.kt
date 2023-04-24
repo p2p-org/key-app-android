@@ -16,6 +16,7 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatUsername
 import org.p2p.core.utils.lessThenMinValue
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.SpanUtils
@@ -168,7 +169,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
             getString(R.string.transaction_details_receive_from)
         }
         if (senderUsername != null) {
-            textViewSendReceiveValue.text = senderUsername
+            textViewSendReceiveValue.text = formatUsername(senderUsername)
             textViewSendReceiveValue.setOnClickListener {
                 requireContext().copyToClipBoard(senderUsername)
                 showUiKitSnackBar(
@@ -197,7 +198,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
         textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled_16, 0)
         textViewSendReceiveTitle.text = getString(R.string.transaction_details_send_to)
         if (receiverUsername != null) {
-            textViewSendReceiveValue.text = receiverUsername
+            textViewSendReceiveValue.text = formatUsername(receiverUsername)
             textViewSendReceiveValue.setOnClickListener {
                 requireContext().copyToClipBoard(receiverUsername)
                 showUiKitSnackBar(

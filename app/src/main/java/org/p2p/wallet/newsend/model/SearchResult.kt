@@ -6,11 +6,11 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import org.p2p.core.utils.formatUsername
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 
 private const val EMPTY_BALANCE = 0L
-private const val USERNAME_KEY_APP_DOMAIN = ".key"
 
 sealed class SearchResult(open val addressState: AddressState) : Parcelable {
 
@@ -54,11 +54,7 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
         val username: String,
         val date: Date? = null
     ) : SearchResult(addressState) {
-        fun getFormattedUsername(): String = if (username.endsWith(USERNAME_KEY_APP_DOMAIN)) {
-            "@$username"
-        } else {
-            username
-        }
+        fun getFormattedUsername(): String = formatUsername(username)
     }
 }
 
