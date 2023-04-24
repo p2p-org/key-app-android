@@ -81,7 +81,7 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
             createUiCellModel(
                 ReceiveNetwork.SOLANA,
                 Constants.SOL_NAME,
-                ERC20Tokens.SOL.tokenIconUrl.orEmpty()
+                ERC20Tokens.SOL_TOKEN_URL
             ),
             createUiCellModel(
                 ReceiveNetwork.ETHEREUM,

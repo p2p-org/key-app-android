@@ -52,7 +52,7 @@ class ReceiveTokensPresenter(
                 )
             )
             view.setBannerTokens(
-                firstTokenUrl = ERC20Tokens.SOL.tokenIconUrl.orEmpty(),
+                firstTokenUrl = ERC20Tokens.SOL_TOKEN_URL,
                 secondTokenUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty()
             )
             observeTokens()
@@ -176,7 +176,7 @@ class ReceiveTokensPresenter(
         return withContext(dispatchers.io) {
             items.map {
                 it.toTokenFinanceCellModel(
-                    solTokenUrl = ERC20Tokens.SOL.tokenIconUrl.orEmpty(),
+                    solTokenUrl = ERC20Tokens.SOL_TOKEN_URL,
                     ethTokenUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty()
                 )
             }
