@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.18" />
+
+    <ImageView
+        android:id="@+id/image_view_box"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_timer_error"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".26"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guide_top" />
+
+    <TextView
+        android:id="@+id/text_view_error_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/error_general_message_refresh"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        app:layout_constraintBottom_toTopOf="@+id/text_view_error_subtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_view_box" />
+
+    <TextView
+        android:id="@+id/text_view_error_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/error_general_message_refresh_subtitle"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_error_title" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/button_refresh"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/common_refresh"
+        android:textColor="@color/text_snow"
+        app:iconGravity="textEnd"
+        app:iconTint="@color/text_lime"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

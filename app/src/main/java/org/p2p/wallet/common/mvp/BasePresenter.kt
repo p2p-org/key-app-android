@@ -12,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import org.p2p.core.network.ConnectionManager
 
 abstract class BasePresenter<V : MvpView> : MvpPresenter<V>, CoroutineScope {
 
@@ -43,6 +44,23 @@ abstract class BasePresenter<V : MvpView> : MvpPresenter<V>, CoroutineScope {
     protected fun launchSupervisor(block: suspend CoroutineScope.() -> Unit): Job {
         return launch {
             supervisorScope { block() }
+        }
+    }
+
+    protected fun launchInternetAware(
+        connectionManager: ConnectionManager,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job {
+        var job: Job? = null
+
+        return launch {
+            connectionManager.connectionStatus.collect { hasConnection ->
+                if (hasConnection) {
+                    job = launch { block() }
+                } else {
+                    job?.cancel()
+                }
+            }
         }
     }
 }

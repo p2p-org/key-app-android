@@ -16,6 +16,7 @@ import org.koin.android.ext.android.inject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.core.network.ConnectionManager
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
@@ -34,18 +35,21 @@ import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
+import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
+import org.p2p.wallet.home.ui.main.RefreshErrorFragment
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
-import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -69,6 +73,9 @@ class MainFragment :
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle by inject()
 
     private val sellInteractor: SellInteractor by inject()
+
+    private val refreshErrorInteractor: RefreshErrorInteractor by inject()
+    private val connectionManager: ConnectionManager by inject()
 
     private var lastSelectedItemId = R.id.homeItem
 
@@ -106,6 +113,20 @@ class MainFragment :
             onCreateActions = arrayListOf()
         }
 
+        connectionManager.connectionStatus.onEach { isConnected ->
+            if(!isConnected) showInternetError(true)
+        }.launchIn(lifecycleScope)
+
+        // todo: this is just a fake solution, we need to hide error when user clicks on refresh button
+        refreshErrorInteractor.getRefreshClickFlow()
+            .onEach {
+                if(connectionManager.connectionStatus.value) {
+                    showInternetError(false)
+                }
+            }
+            .launchIn(lifecycleScope)
+
+
         deeplinksManager.subscribeOnDeeplinks(
             setOf(
                 DeeplinkTarget.HOME,
@@ -119,6 +140,25 @@ class MainFragment :
         deeplinksManager.setTabsSwitcher(this)
         deeplinksManager.executeHomePendingDeeplink()
         deeplinksManager.executeTransferPendingAppLink()
+    }
+
+    private val refreshErrorFragment: RefreshErrorFragment by unsafeLazy {
+        RefreshErrorFragment()
+    }
+
+    private fun showInternetError(showError: Boolean) {
+        parentFragmentManager.commit {
+            if (showError) {
+                if (!refreshErrorFragment.isAdded) {
+                    add(R.id.rootContainer, refreshErrorFragment)
+                }
+                show(refreshErrorFragment)
+            } else {
+                hide(refreshErrorFragment)
+                show(this@MainFragment)
+            }
+
+        }
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -190,12 +230,15 @@ class MainFragment :
             DeeplinkTarget.HOME -> {
                 navigate(ScreenTab.HOME_SCREEN)
             }
+
             DeeplinkTarget.HISTORY -> {
                 navigate(ScreenTab.HISTORY_SCREEN)
             }
+
             DeeplinkTarget.SETTINGS -> {
                 navigate(ScreenTab.SETTINGS_SCREEN)
             }
+
             else -> Unit
         }
     }

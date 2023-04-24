@@ -2,10 +2,12 @@ package org.p2p.wallet.home
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -57,6 +59,7 @@ object HomeModule : InjectionModule {
             )
         }
         factoryOf(::SearchInteractor)
+        singleOf(::RefreshErrorInteractor)
     }
 
     private fun Module.initPresentationLayer() {
@@ -90,6 +93,7 @@ object HomeModule : InjectionModule {
                 ethereumInteractor = get(),
                 seedPhraseProvider = get(),
                 deeplinksManager = get(),
+                connectionManager = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
