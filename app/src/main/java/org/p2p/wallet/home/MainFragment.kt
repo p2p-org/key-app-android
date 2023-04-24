@@ -114,18 +114,17 @@ class MainFragment :
         }
 
         connectionManager.connectionStatus.onEach { isConnected ->
-            if(!isConnected) showInternetError(true)
+            if (!isConnected) showInternetError(true)
         }.launchIn(lifecycleScope)
 
         // todo: this is just a fake solution, we need to hide error when user clicks on refresh button
         refreshErrorInteractor.getRefreshClickFlow()
             .onEach {
-                if(connectionManager.connectionStatus.value) {
+                if (connectionManager.connectionStatus.value) {
                     showInternetError(false)
                 }
             }
             .launchIn(lifecycleScope)
-
 
         deeplinksManager.subscribeOnDeeplinks(
             setOf(
@@ -157,7 +156,6 @@ class MainFragment :
                 hide(refreshErrorFragment)
                 show(this@MainFragment)
             }
-
         }
     }
 

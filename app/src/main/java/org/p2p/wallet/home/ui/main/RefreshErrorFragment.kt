@@ -34,7 +34,6 @@ class RefreshErrorFragment : BaseFragment(R.layout.fragment_refresh_error) {
                     buttonRefresh.setLoading(false)
                 }
             }
-
         }
     }
 }

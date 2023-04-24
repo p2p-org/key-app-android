@@ -78,7 +78,7 @@ class UserInteractor(
     suspend fun getBalance(address: PublicKey): Long = rpcRepository.getBalance(address)
 
     suspend fun loadAllTokensDataIfEmpty() {
-        if(!userLocalRepository.areInitialTokensLoaded()) {
+        if (!userLocalRepository.areInitialTokensLoaded()) {
             loadAllTokensData()
         }
     }

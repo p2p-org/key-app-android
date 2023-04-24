@@ -225,7 +225,6 @@ class HomePresenter(
             buttons += ActionButton.SELL_BUTTON
         }
         buttonsStateFlow.emit(buttons)
-
     }
 
     private fun showUserAddressAndUsername() {
