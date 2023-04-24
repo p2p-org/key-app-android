@@ -52,6 +52,7 @@ class ClaimPresenter(
     private var latestBundle: BridgeBundle? = null
     private var minAmountForFreeFee: BigDecimal = BigDecimal.ZERO
     private var refreshJobDelayTimeInMillis = DEFAULT_DELAY_IN_MILLIS
+    private var isLastErrorWasNotEnoughFundsError = false
 
     override fun attach(view: ClaimContract.View) {
         super.attach(view)
@@ -77,18 +78,29 @@ class ClaimPresenter(
                 val finalValue = claimUiMapper.makeResultAmount(newBundle.resultAmount)
                 view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
             } catch (error: Throwable) {
+                Timber.e(error, "Error on getting bundle for claim")
+                val isNotEnoughFundsError = error is NotEnoughAmount || error is ContractError
                 val messageResId = when {
-                    error is NotEnoughAmount || error is ContractError -> R.string.bridge_claim_fees_bigger_error
+                    isNotEnoughFundsError -> R.string.bridge_claim_fees_bigger_error
                     error.isConnectionError() -> R.string.common_offline_error
+                    error is BridgeResult.Error -> R.string.bridge_claim_fees_common_error
                     else -> null
                 }
                 if (messageResId != null) {
                     view?.showUiKitSnackBar(messageResId = messageResId)
                 }
-                Timber.e(error, "Error on getting bundle for claim")
-
+                if (isNotEnoughFundsError) {
+                    view?.setButtonText(
+                        TextViewCellModel.Raw(
+                            TextContainer(R.string.bridge_claim_bottom_button_add_funds)
+                        )
+                    )
+                }
                 view?.showFee(TextViewCellModel.Raw(TextContainer(R.string.bridge_claim_fees_unavailable)))
-                view?.setClaimButtonState(isButtonEnabled = false)
+                view?.setClaimButtonState(isButtonEnabled = isNotEnoughFundsError)
+                view?.setBannerVisibility(isBannerVisible = isNotEnoughFundsError)
+                view?.setFeeInfoVisibility(isVisible = false)
+                isLastErrorWasNotEnoughFundsError = isNotEnoughFundsError
             } finally {
                 startRefreshJob(refreshJobDelayTimeInMillis)
             }
@@ -119,6 +131,14 @@ class ClaimPresenter(
     }
 
     override fun onSendButtonClicked() {
+        if (isLastErrorWasNotEnoughFundsError) {
+            view?.openReceive()
+        } else {
+            sendBundle()
+        }
+    }
+
+    private fun sendBundle() {
         latestBundle?.apply {
             with(resultAmount) {
                 claimAnalytics.logConfirmClaimButtonClicked(
@@ -164,7 +184,10 @@ class ClaimPresenter(
     private fun reset() {
         latestTransactions = emptyList()
         claimDetails = null
+        isLastErrorWasNotEnoughFundsError = false
         view?.setClaimButtonState(isButtonEnabled = false)
+        view?.setBannerVisibility(isBannerVisible = false)
+        view?.setFeeInfoVisibility(isVisible = true)
         view?.showFee(claimUiMapper.getTextSkeleton())
     }
 

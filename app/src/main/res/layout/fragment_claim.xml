@@ -115,6 +115,40 @@
 
     </LinearLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerBanner"
+        android:layout_width="match_parent"
+        android:layout_height="108dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_banner_rounded"
+        android:backgroundTint="@color/light_grass"
+        android:paddingStart="16dp"
+        android:paddingEnd="12dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/layoutFeeContainer">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical"
+            android:text="@string/receive_ethereum_banner_text"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textColor="@color/text_night"
+            app:layout_constraintEnd_toStartOf="@id/imageViewMoney"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageViewMoney"
+            android:layout_width="100dp"
+            android:layout_height="88dp"
+            android:src="@drawable/placeholder_receive_banner"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonBottom"
         style="@style/UiKit.Components.Button.Large"

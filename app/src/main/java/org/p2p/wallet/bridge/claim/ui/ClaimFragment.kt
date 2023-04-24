@@ -1,5 +1,6 @@
 package org.p2p.wallet.bridge.claim.ui
 
+import androidx.core.view.isVisible
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -17,11 +18,13 @@ import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.dialogs.ClaimInfoBottomSheet
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentClaimBinding
+import org.p2p.wallet.receive.eth.EthereumReceiveFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -113,6 +116,36 @@ class ClaimFragment :
                 setTextColorRes(R.color.text_mountain)
                 setBackgroundColor(getColor(R.color.bg_rain))
             }
+        }
+    }
+
+    override fun setButtonText(buttonText: TextViewCellModel) {
+        binding.buttonBottom.bind(buttonText)
+    }
+
+    override fun setBannerVisibility(isBannerVisible: Boolean) {
+        binding.containerBanner.isVisible = isBannerVisible
+    }
+
+    override fun setFeeInfoVisibility(isVisible: Boolean) {
+        val drawableId = if (isVisible) {
+            R.drawable.ic_info_outline
+        } else {
+            0
+        }
+        binding.textViewFeeValue.setCompoundDrawablesWithIntrinsicBounds(
+            0, 0, drawableId, 0
+        )
+    }
+
+    override fun openReceive() {
+        with(token) {
+            replaceFragment(
+                EthereumReceiveFragment.create(
+                    tokenLogoUrl = iconUrl.orEmpty(),
+                    tokenSymbol = tokenSymbol
+                )
+            )
         }
     }
 
