@@ -1,15 +1,11 @@
 package org.p2p.wallet.home.interactor
 
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import org.p2p.wallet.home.repository.RefreshErrorRepository
 
-class RefreshErrorInteractor {
+class RefreshErrorInteractor(
+    private val refreshErrorRepository: RefreshErrorRepository
+) {
+    fun getRefreshClickFlow() = refreshErrorRepository.getFlow()
 
-    private val refreshClickFlow = MutableSharedFlow<Unit>(replay = 1)
-
-    fun getRefreshClickFlow() = refreshClickFlow.asSharedFlow()
-
-    fun notifyRefreshClick() {
-        refreshClickFlow.tryEmit(Unit)
-    }
+    fun notifyRefreshClick() = refreshErrorRepository.notifyClick()
 }
