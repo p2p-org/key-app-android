@@ -19,6 +19,7 @@ interface SendViaLinkContract {
 
         fun setBottomButtonText(text: TextContainer?)
         fun setSliderText(text: String?)
+        fun disableSwitchAmounts()
         fun disableInputs()
 
         fun navigateToLinkGeneration(account: TemporaryAccount, token: Token.Active, lamports: BigInteger)

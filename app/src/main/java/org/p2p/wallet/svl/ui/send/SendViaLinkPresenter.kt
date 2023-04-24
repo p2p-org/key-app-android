@@ -7,6 +7,7 @@ import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.R
@@ -135,6 +136,12 @@ class SendViaLinkPresenter(
 
             view.setFeeLabel(resources.getString(R.string.send_fees_zero))
             view.showFeeViewLoading(isLoading = false)
+            if (token?.rate == null) {
+                if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                    switchCurrencyMode()
+                }
+                view.disableSwitchAmounts()
+            }
         }
     }
 
