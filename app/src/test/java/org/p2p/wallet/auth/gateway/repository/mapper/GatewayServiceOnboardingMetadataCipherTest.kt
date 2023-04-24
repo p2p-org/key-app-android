@@ -1,10 +1,7 @@
 package org.p2p.wallet.auth.gateway.repository.mapper
 
-import assertk.all
-import assertk.assertThat
-import assertk.assertions.isEqualTo
-import assertk.assertions.matchesPredicate
 import com.google.gson.Gson
+import org.assertj.core.api.Assertions.assertThat
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305
 import org.junit.Test
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
@@ -36,10 +33,10 @@ class GatewayServiceOnboardingMetadataCipherTest {
         // when
         val encryptResult = metadataCipher.encryptMetadata(givenMnemonic, givenGatewayMetadata)
         // then
-        assertThat(encryptResult).all {
-            matchesPredicate { it.metadataCiphered.base64Value.isNotBlank() }
-            matchesPredicate { it.nonce.base64Value.isNotBlank() }
-        }
+        assertThat(encryptResult)
+            .hasNoNullFieldsOrProperties()
+            .matches { it.metadataCiphered.base64Value.isNotBlank() }
+            .matches { it.nonce.base64Value.isNotBlank() }
     }
 
     @Test

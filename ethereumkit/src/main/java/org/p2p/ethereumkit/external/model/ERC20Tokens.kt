@@ -11,7 +11,6 @@ import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_ETH_MINT
-import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.wrapper.eth.EthAddress
 
 enum class ERC20Tokens(
@@ -59,14 +58,6 @@ enum class ERC20Tokens(
             WRAPPED_ETH_MINT
         )
     ),
-    SOL(
-        contractAddress = "0xd31a59c85ae9d8edefec411d448f90841571b89c",
-        mintAddress = WRAPPED_SOL_MINT,
-        coingeckoId = SOL_COINGECKO_ID,
-        tokenIconUrl = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
-        replaceTokenName = SOL_NAME,
-        replaceTokenSymbol = SOL_SYMBOL
-    ),
     AVAX(
         contractAddress = "0x85f138bfee4ef8e540890cfb48f620571d67eda3",
         mintAddress = "KgV1GvrHQmRBY8sHQQeUKwTm2r2h8t4C8qt12Cw1HVE",
@@ -100,6 +91,7 @@ enum class ERC20Tokens(
     companion object {
 
         const val ETH_DECIMALS = 18
+        const val SOL_TOKEN_URL = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422"
 
         fun findToken(contractAddress: EthAddress): ERC20Tokens {
             return values().first { contractAddress.hex.contains(it.contractAddress, ignoreCase = true) }

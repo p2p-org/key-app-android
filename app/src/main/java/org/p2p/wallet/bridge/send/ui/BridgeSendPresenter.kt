@@ -382,9 +382,7 @@ class BridgeSendPresenter(
 
                 val result = bridgeInteractor.sendTransaction(
                     sendTransaction = sendTransaction,
-                    token = token,
-                    feePayerToken = bridgeFee?.tokenToPayFee,
-                    feeRelayerFee = bridgeFee?.feeRelayerFee,
+                    token = token
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transaction = buildTransaction(result, token)

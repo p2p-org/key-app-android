@@ -155,6 +155,7 @@ class JupiterSwapFragment :
             setupToolbar()
             buttonTryAgain.setOnClickListener { presenter.onTryAgainClick() }
         }
+        presenter.resumeStateManager()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -344,6 +345,11 @@ class JupiterSwapFragment :
         ).applyBackground(binding.linearLayoutAlert)
         imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_rose)
         textViewAlert.setTextColor(context.getColorStateList(R.color.text_rose))
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        presenter.pauseStateManager()
     }
 
     override fun onDestroy() {

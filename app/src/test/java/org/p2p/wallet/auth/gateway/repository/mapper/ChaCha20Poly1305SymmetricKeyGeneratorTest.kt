@@ -1,8 +1,6 @@
 package org.p2p.wallet.auth.gateway.repository.mapper
 
-import assertk.assertThat
-import assertk.assertions.hasSize
-import assertk.assertions.isEqualTo
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.chacha.ChaCha20Poly1305SymmetricKeyGenerator
