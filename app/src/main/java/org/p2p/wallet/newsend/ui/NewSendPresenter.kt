@@ -89,7 +89,9 @@ class NewSendPresenter(
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
-
+        selectedToken?.let { initToken ->
+            checkTokenRatesAndSetSwitchAmountState(initToken)
+        }
         initialize(view)
     }
 
@@ -154,6 +156,8 @@ class NewSendPresenter(
             val initialToken = if (selectedToken != null) selectedToken!! else userNonZeroTokens.first()
             token = initialToken
 
+            checkTokenRatesAndSetSwitchAmountState(initialToken)
+
             val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
             if (solToken == null) {
                 // we cannot proceed without SOL.
@@ -166,8 +170,6 @@ class NewSendPresenter(
             initialAmount?.let { inputAmount ->
                 setupDefaultFields(inputAmount)
             }
-
-            checkTokenRatesAndSetSwitchAmountState(initialToken)
         }
     }
 
@@ -209,16 +211,19 @@ class NewSendPresenter(
             is FeeRelayerState.UpdateFee -> {
                 handleUpdateFee(newState, view)
             }
+
             is FeeRelayerState.ReduceAmount -> {
                 val inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
                 view.updateInputValue(inputAmount, forced = true)
                 view.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
             }
+
             is FeeRelayerState.Failure -> {
                 Timber.e(newState, "FeeRelayerState has error")
                 if (newState.isFeeCalculationError()) view.showFeeViewVisible(isVisible = false)
                 updateButton(requireToken(), newState)
             }
+
             is FeeRelayerState.Idle -> Unit
         }
     }
@@ -511,6 +516,7 @@ class NewSendPresenter(
                 view?.setSliderText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
+
             is NewSendButtonState.State.Enabled -> {
                 view?.setSliderText(resources.getString(state.textResId, state.value))
                 view?.setBottomButtonText(null)
