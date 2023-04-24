@@ -17,6 +17,10 @@ interface ClaimContract {
         fun showClaimFeeInfo(claimDetails: ClaimDetails)
         fun showClaimButtonValue(tokenAmountToClaim: String)
         fun setClaimButtonState(isButtonEnabled: Boolean)
+        fun setButtonText(buttonText: TextViewCellModel)
+        fun setBannerVisibility(isBannerVisible: Boolean)
+        fun setFeeInfoVisibility(isVisible: Boolean)
+        fun openReceive()
         fun showProgressDialog(bundleId: String, data: NewShowProgress)
     }
 
