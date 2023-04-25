@@ -98,6 +98,7 @@ class HistoryListView @JvmOverloads constructor(
                 shimmerView.root.isVisible = true
                 refreshLayout.isVisible = false
             }
+
             is PagingState.Idle -> {
                 shimmerView.root.isVisible = false
                 refreshLayout.isVisible = true
@@ -105,6 +106,7 @@ class HistoryListView @JvmOverloads constructor(
                 emptyStateLayout.root.isVisible = isHistoryEmpty
                 historyRecyclerView.isVisible = !isHistoryEmpty
             }
+
             is PagingState.Loading -> {
                 shimmerView.root.isVisible = isHistoryEmpty
                 refreshLayout.isVisible = true
@@ -112,6 +114,7 @@ class HistoryListView @JvmOverloads constructor(
                 emptyStateLayout.root.isVisible = false
                 historyRecyclerView.isVisible = !isHistoryEmpty
             }
+
             is PagingState.Error -> {
                 shimmerView.root.isVisible = false
                 refreshLayout.isVisible = true
@@ -173,13 +176,6 @@ class HistoryListView @JvmOverloads constructor(
     //region Not Needed Base Methods
     override fun showErrorMessage(e: Throwable?) = Unit
     override fun showErrorMessage(messageResId: Int) = Unit
-    override fun showErrorSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) = Unit
-    override fun showErrorSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) = Unit
-    override fun showErrorSnackBar(e: Throwable, actionResId: Int?, block: (() -> Unit)?) = Unit
-    override fun showSuccessSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) = Unit
-    override fun showSuccessSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) = Unit
-    override fun showInfoSnackBar(message: String, iconResId: Int?, actionResId: Int?, actionBlock: (() -> Unit)?) =
-        Unit
 
     override fun showToast(message: TextContainer) = Unit
     override fun showUiKitSnackBar(
