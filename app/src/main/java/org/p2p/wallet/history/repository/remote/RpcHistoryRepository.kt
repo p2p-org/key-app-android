@@ -83,7 +83,6 @@ class RpcHistoryRepository(
         }
 
         val offset = findTransactionsByTokenAddress(tokenAddress).size.toLong()
-        Timber.tag("_____HISTORY_FETCH").d("offset = $offset, limit = $limit")
         val signature = historyServiceSignatureFieldGenerator.generateSignature(
             pubKey = tokenKeyProvider.publicKey,
             privateKey = tokenKeyProvider.keyPair,
@@ -108,7 +107,6 @@ class RpcHistoryRepository(
         )
         return@withContext try {
             val result = historyApi.getTransactionHistory(rpcRequest).result.transactions
-            Timber.tag("_____HISTORY_RESULT").d("result = ${result.size}")
 
             if (result.isEmpty() || result.size < limit) {
                 tokenPagingState[tokenAddress] = HistoryPagingState.INACTIVE
@@ -119,7 +117,6 @@ class RpcHistoryRepository(
             allTransactions[tokenAddress] = localTransactions
             findTransactionsByTokenAddress(tokenAddress)
         } catch (e: EmptyDataException) {
-            Timber.tag("_____HISTORY_ERROR").d("ERROR")
             tokenPagingState[tokenAddress] = HistoryPagingState.INACTIVE
             findTransactionsByTokenAddress(tokenAddress)
         }
