@@ -18,7 +18,7 @@ object DecimalFormatter {
         }
 
         val decimalFormat = DecimalFormat(format, formatSymbols)
-        decimalFormat.roundingMode = RoundingMode.UP.ordinal
+        decimalFormat.roundingMode = RoundingMode.DOWN.ordinal
         return decimalFormat.format(value)
     }
 }
