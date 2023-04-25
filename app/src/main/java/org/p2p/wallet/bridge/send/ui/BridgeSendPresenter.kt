@@ -194,6 +194,13 @@ class BridgeSendPresenter(
                                 sliderButton = null
                             )
                         }
+                        is SendFeatureException.FeeIsMoreThanTotal -> {
+                            setInputColor(R.color.text_rose)
+                            updateButtons(
+                                errorButton = TextContainer.Res(R.string.send_error_fee_more_than_amount),
+                                sliderButton = null
+                            )
+                        }
                     }
                 }
                 is SendState.Exception.Other -> if (state.exception.isConnectionError()) {
