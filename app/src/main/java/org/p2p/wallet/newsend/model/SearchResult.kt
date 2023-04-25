@@ -10,7 +10,6 @@ import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 
 private const val EMPTY_BALANCE = 0L
-private const val USERNAME_KEY_APP_DOMAIN = ".key"
 
 sealed class SearchResult(open val addressState: AddressState) : Parcelable {
 
@@ -52,14 +51,9 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     data class UsernameFound constructor(
         override val addressState: AddressState,
         val username: String,
+        val formattedUsername: String,
         val date: Date? = null
-    ) : SearchResult(addressState) {
-        fun getFormattedUsername(): String = if (username.endsWith(USERNAME_KEY_APP_DOMAIN)) {
-            "@$username"
-        } else {
-            username
-        }
-    }
+    ) : SearchResult(addressState)
 }
 
 fun TemporaryAccount.toSearchResult(): SearchResult =

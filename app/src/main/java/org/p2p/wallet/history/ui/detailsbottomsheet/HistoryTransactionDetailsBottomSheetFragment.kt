@@ -26,6 +26,7 @@ import org.p2p.wallet.databinding.DialogHistoryTransactionDetailsBinding
 import org.p2p.wallet.history.model.rpc.RpcFee
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.CUT_7_SYMBOLS
+import org.p2p.wallet.utils.UsernameFormatter
 import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -66,6 +67,8 @@ class HistoryTransactionDetailsBottomSheetFragment :
     private val binding: DialogHistoryTransactionDetailsBinding by viewBinding()
 
     private val glideManager: GlideManager by inject()
+
+    private val usernameFormatter: UsernameFormatter by inject()
 
     override val presenter: HistoryTransactionDetailsContract.Presenter by inject()
 
@@ -168,7 +171,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
             getString(R.string.transaction_details_receive_from)
         }
         if (senderUsername != null) {
-            textViewSendReceiveValue.text = senderUsername
+            textViewSendReceiveValue.text = usernameFormatter.format(senderUsername)
             textViewSendReceiveValue.setOnClickListener {
                 requireContext().copyToClipBoard(senderUsername)
                 showUiKitSnackBar(
@@ -197,7 +200,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
         textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled_16, 0)
         textViewSendReceiveTitle.text = getString(R.string.transaction_details_send_to)
         if (receiverUsername != null) {
-            textViewSendReceiveValue.text = receiverUsername
+            textViewSendReceiveValue.text = usernameFormatter.format(receiverUsername)
             textViewSendReceiveValue.setOnClickListener {
                 requireContext().copyToClipBoard(receiverUsername)
                 showUiKitSnackBar(
