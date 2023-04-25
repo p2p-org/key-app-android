@@ -190,7 +190,7 @@ class BridgeSendPresenter(
                         is SendFeatureException.InsufficientFunds -> {
                             setInputColor(R.color.text_rose)
                             updateButtons(
-                                errorButton = TextContainer.Res(R.string.error_insufficient_funds),
+                                errorButton = TextContainer.Res(R.string.send_error_insufficient_funds),
                                 sliderButton = null
                             )
                         }
