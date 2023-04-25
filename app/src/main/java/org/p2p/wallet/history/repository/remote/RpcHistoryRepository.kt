@@ -1,6 +1,5 @@
 package org.p2p.wallet.history.repository.remote
 
-import timber.log.Timber
 import kotlinx.coroutines.withContext
 import java.util.Optional
 import org.p2p.core.utils.Constants
