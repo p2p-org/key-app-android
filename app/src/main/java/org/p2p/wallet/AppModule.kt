@@ -60,7 +60,7 @@ object AppModule {
                 tokenKeyProvider = get()
             )
         }
-        single { ConnectionManager(androidContext()) }
+        singleOf(::ConnectionManager)
 
         singleOf(::AppCreatedAction)
 

@@ -29,7 +29,7 @@ class RefreshErrorFragment : BaseFragment(R.layout.fragment_refresh_error) {
                 buttonRefresh.setLoading(true)
                 lifecycleScope.launch {
                     delay(FAKE_LOADING_TIME_MS)
-                    refreshErrorInteractor.notifyRefreshClick()
+                    refreshErrorInteractor.notifyRefreshClicked()
                     buttonRefresh.isEnabled = true
                     buttonRefresh.setLoading(false)
                 }

@@ -79,6 +79,10 @@ class MainFragment :
 
     private var lastSelectedItemId = R.id.homeItem
 
+    private val refreshErrorFragment: RefreshErrorFragment by unsafeLazy {
+        RefreshErrorFragment()
+    }
+
     companion object {
         fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainFragment =
             MainFragment()
@@ -139,10 +143,6 @@ class MainFragment :
         deeplinksManager.setTabsSwitcher(this)
         deeplinksManager.executeHomePendingDeeplink()
         deeplinksManager.executeTransferPendingAppLink()
-    }
-
-    private val refreshErrorFragment: RefreshErrorFragment by unsafeLazy {
-        RefreshErrorFragment()
     }
 
     private fun showInternetError(showError: Boolean) {

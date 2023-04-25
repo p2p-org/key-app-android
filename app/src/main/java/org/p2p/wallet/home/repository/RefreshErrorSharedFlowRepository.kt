@@ -7,8 +7,8 @@ class RefreshErrorSharedFlowRepository : RefreshErrorRepository {
 
     private val flow = MutableSharedFlow<Unit>(replay = 1)
 
-    override fun getFlow() = flow.asSharedFlow()
-    override fun notifyClick() {
+    override fun getRefreshClickFlow() = flow.asSharedFlow()
+    override fun notifyRefreshClicked() {
         flow.tryEmit(Unit)
     }
 }

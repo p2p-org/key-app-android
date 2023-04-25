@@ -147,12 +147,14 @@ class HomePresenter(
     }
 
     private suspend fun attachToPollingTokens() {
-        tokensPolling.shareTokenPollFlowIn(this).filterNotNull().collect { homeState ->
-            state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
-            initializeActionButtons()
-            handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
-            view?.showRefreshing(homeState.isRefreshing)
-        }
+        tokensPolling.shareTokenPollFlowIn(this)
+            .filterNotNull()
+            .collect { homeState ->
+                state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
+                initializeActionButtons()
+                handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
+                view?.showRefreshing(homeState.isRefreshing)
+            }
     }
 
     private fun observeActionButtonState() {
@@ -165,8 +167,8 @@ class HomePresenter(
 
     private fun observeInternetConnection() {
         launch {
-            connectionManager.connectionStatus.collect {
-                if (it) {
+            connectionManager.connectionStatus.collect { hasConnection ->
+                if (hasConnection) {
                     updatesManager.start()
                 } else {
                     updatesManager.stop()
@@ -312,6 +314,7 @@ class HomePresenter(
                 view?.showEmptyState(isEmpty = true)
                 handleEmptyAccount()
             }
+
             (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
                 view?.showEmptyState(isEmpty = false)
                 showTokensAndBalance()

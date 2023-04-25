@@ -2,6 +2,7 @@ package org.p2p.wallet.home
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
@@ -43,7 +44,7 @@ object HomeModule : InjectionModule {
     private fun Module.initDataLayer() {
         factory<HomeLocalRepository> { HomeDatabaseRepository(get()) }
         factoryOf(::HomeMapper)
-        factory<RefreshErrorRepository> { RefreshErrorSharedFlowRepository() }
+        factoryOf(::RefreshErrorSharedFlowRepository) bind RefreshErrorRepository::class
     }
 
     private fun Module.initDomainLayer() {
@@ -61,7 +62,7 @@ object HomeModule : InjectionModule {
             )
         }
         factoryOf(::SearchInteractor)
-        single { RefreshErrorInteractor(refreshErrorRepository = get()) }
+        singleOf(::RefreshErrorInteractor)
     }
 
     private fun Module.initPresentationLayer() {
