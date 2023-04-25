@@ -48,6 +48,7 @@
     <string name="not_available">N/A</string>
     <string name="common_burn">Burn</string>
     <string name="common_mint">Mint</string>
+    <string name="common_refresh">Refresh</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -59,6 +60,8 @@
     <string name="error_title">Error occurred</string>
     <string name="error_general_title">Unknown error</string>
     <string name="error_general_message">❌ Something went wrong. Please, try again</string>
+    <string name="error_general_message_refresh">Something went wrong</string>
+    <string name="error_general_message_refresh_subtitle">Refresh the page to proceed</string>
     <string name="error_network_title">Connection error</string>
     <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
     <string name="error_no_internet_message">🥺 You have no internet connection</string>

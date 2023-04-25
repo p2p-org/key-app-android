@@ -7,6 +7,10 @@ import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.receive.list.TokenListData
 
 interface UserLocalRepository {
+    /**
+     * Checks whether intial tokens from json file are loaded
+     */
+    fun areInitialTokensLoaded(): Boolean
     fun setTokenPrices(prices: List<TokenPrice>)
     fun getTokenPrices(): Flow<List<TokenPrice>>
     fun getPriceByTokenId(tokenId: String?): TokenPrice?

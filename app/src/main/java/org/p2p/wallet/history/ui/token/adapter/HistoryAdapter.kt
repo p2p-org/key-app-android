@@ -22,6 +22,7 @@ import org.p2p.wallet.history.ui.token.adapter.holders.HistoryUserSendLinksViewH
 import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistorySwapBannerViewHolder
 
 private const val TRANSACTION_VIEW_TYPE = 1
 private const val HISTORY_DATE_VIEW_TYPE = 2
@@ -30,6 +31,7 @@ private const val ERROR_VIEW_TYPE = 4
 private const val TRANSACTION_SWAP_VIEW_TYPE = 5
 private const val TRANSACTION_MOONPAY_VIEW_TYPE = 6
 private const val TRANSACTION_USER_SEND_LINKS_VIEW_TYPE = 7
+private const val SWAP_BANNER_VIEW_TYPE = 8
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
@@ -47,6 +49,7 @@ class HistoryAdapter(
             PROGRESS_VIEW_TYPE -> ProgressViewHolder(parent)
             TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onHistoryItemClicked)
             TRANSACTION_USER_SEND_LINKS_VIEW_TYPE -> HistoryUserSendLinksViewHolder(parent, onHistoryItemClicked)
+            SWAP_BANNER_VIEW_TYPE -> HistorySwapBannerViewHolder(parent, onHistoryItemClicked)
             else -> ErrorViewHolder(parent)
         }
     }
@@ -60,6 +63,7 @@ class HistoryAdapter(
             is HistorySellTransactionViewHolder -> holder.onBind(getItem(position) as MoonpayTransactionItem)
             is ProgressViewHolder -> Unit
             is HistoryUserSendLinksViewHolder -> holder.onBind(getItem(position) as UserSendLinksItem)
+            is HistorySwapBannerViewHolder -> holder.onBind(getItem(position) as HistoryItem.SwapBannerItem)
         }
     }
 
@@ -68,6 +72,7 @@ class HistoryAdapter(
             is TransactionItem -> item.transactionId.hashCode().toLong()
             is DateItem -> item.date.hashCode().toLong()
             is UserSendLinksItem -> item.linksCount.hashCode().toLong()
+            is HistoryItem.SwapBannerItem -> item.date.hashCode().toLong()
             else -> RecyclerView.NO_ID
         }
     }
@@ -101,6 +106,7 @@ class HistoryAdapter(
             is TransactionItem -> getTransactionItemViewType(item)
             is MoonpayTransactionItem -> TRANSACTION_MOONPAY_VIEW_TYPE
             is UserSendLinksItem -> TRANSACTION_USER_SEND_LINKS_VIEW_TYPE
+            is HistoryItem.SwapBannerItem -> SWAP_BANNER_VIEW_TYPE
         }
     }
 
@@ -123,6 +129,9 @@ class HistoryAdapter(
                     oldItem.date.isSameAs(newItem.date)
                 oldItem is UserSendLinksItem && newItem is UserSendLinksItem ->
                     oldItem.linksCount == newItem.linksCount
+                oldItem is HistoryItem.SwapBannerItem && newItem is HistoryItem.SwapBannerItem -> {
+                    oldItem.date.isSameAs(newItem.date)
+                }
                 else ->
                     false
             }
@@ -132,6 +141,9 @@ class HistoryAdapter(
             return when {
                 oldItem is UserSendLinksItem && newItem is UserSendLinksItem -> {
                     oldItem.transactionId == newItem.transactionId
+                }
+                oldItem is HistoryItem.SwapBannerItem && newItem is HistoryItem.SwapBannerItem -> {
+                    oldItem.date.isSameAs(newItem.date)
                 }
                 else -> {
                     oldItem.transactionId == newItem.transactionId && oldItem.date.isSameAs(newItem.date)
