@@ -11,8 +11,8 @@ import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
-import org.p2p.wallet.home.repository.RefreshErrorSharedFlowRepository
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
@@ -44,7 +44,7 @@ object HomeModule : InjectionModule {
     private fun Module.initDataLayer() {
         factory<HomeLocalRepository> { HomeDatabaseRepository(get()) }
         factoryOf(::HomeMapper)
-        factoryOf(::RefreshErrorSharedFlowRepository) bind RefreshErrorRepository::class
+        factoryOf(::RefreshErrorInMemoryRepository) bind RefreshErrorRepository::class
     }
 
     private fun Module.initDomainLayer() {
