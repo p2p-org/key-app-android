@@ -4,6 +4,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import org.threeten.bp.ZonedDateTime
 import org.p2p.uikit.utils.recycler.RoundedItem
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.emptyString
 
 sealed interface HistoryItem {
@@ -51,6 +52,17 @@ sealed interface HistoryItem {
     data class UserSendLinksItem(
         val linksCount: Int
     ) : HistoryItem, RoundedItem {
+        override val date: ZonedDateTime = ZonedDateTime.now()
+        override val transactionId: String = emptyString()
+    }
+
+    data class SwapBannerItem(
+        val sourceTokenMintAddress: String,
+        val destinationTokenMintAddress: String,
+        val sourceTokenSymbol: String,
+        val destinationTokenSymbol: String,
+        val openedFrom: SwapOpenedFrom = SwapOpenedFrom.HISTORY_SCREEN_BANNER
+    ) : HistoryItem {
         override val date: ZonedDateTime = ZonedDateTime.now()
         override val transactionId: String = emptyString()
     }

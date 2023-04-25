@@ -19,6 +19,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.LayoutHistoryListBinding
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.unsafeLazy
 
 class HistoryListView @JvmOverloads constructor(
@@ -141,6 +142,22 @@ class HistoryListView @JvmOverloads constructor(
 
     override fun onSellTransactionClicked(transactionId: String) {
         clickListener?.onSellTransactionClicked(transactionId)
+    }
+
+    override fun onSwapBannerItemClicked(
+        sourceTokenMint: String,
+        destinationTokenMint: String,
+        sourceSymbol: String,
+        destinationSymbol: String,
+        openedFrom: SwapOpenedFrom
+    ) {
+        clickListener?.onSwapBannerClicked(
+            sourceTokenMint = sourceTokenMint,
+            destinationTokenMint = destinationTokenMint,
+            sourceSymbol = sourceSymbol,
+            destinationSymbol = destinationSymbol,
+            openedFrom = openedFrom
+        )
     }
 
     override fun onUserSendLinksClicked() {
