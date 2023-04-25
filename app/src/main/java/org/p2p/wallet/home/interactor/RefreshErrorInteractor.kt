@@ -6,7 +6,7 @@ import org.p2p.wallet.home.repository.RefreshErrorRepository
 class RefreshErrorInteractor(
     private val refreshErrorRepository: RefreshErrorRepository
 ) {
-    fun getRefreshClickFlow(): Flow<Unit> = refreshErrorRepository.getRefreshClickFlow()
+    fun getRefreshEventFlow(): Flow<Unit> = refreshErrorRepository.getRefreshEventFlow()
 
-    fun notifyRefreshClicked(): Unit = refreshErrorRepository.notifyRefreshClicked()
+    fun notifyEventRefreshed(): Unit = refreshErrorRepository.notifyEventRefreshed()
 }

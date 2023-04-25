@@ -122,7 +122,7 @@ class MainFragment :
         }.launchIn(lifecycleScope)
 
         // todo: this is just a fake solution, we need to hide error when user clicks on refresh button
-        refreshErrorInteractor.getRefreshClickFlow()
+        refreshErrorInteractor.getRefreshEventFlow()
             .onEach {
                 if (connectionManager.connectionStatus.value) {
                     showInternetError(false)
