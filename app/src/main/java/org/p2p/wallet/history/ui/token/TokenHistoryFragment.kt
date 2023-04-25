@@ -159,6 +159,23 @@ class TokenHistoryFragment :
         presenter.onSellTransactionClicked(transactionId)
     }
 
+    override fun onSwapBannerClicked(
+        sourceTokenMint: String,
+        destinationTokenMint: String,
+        sourceSymbol: String,
+        destinationSymbol: String,
+        openedFrom: SwapOpenedFrom
+    ) {
+        replaceFragment(
+            JupiterSwapFragment.create(
+                tokenASymbol = sourceSymbol,
+                tokenBSymbol = destinationSymbol,
+                amountA = "0",
+                source = openedFrom
+            )
+        )
+    }
+
     override fun onUserSendLinksClicked() = Unit
 
     override fun showError(@StringRes resId: Int, argument: String) {

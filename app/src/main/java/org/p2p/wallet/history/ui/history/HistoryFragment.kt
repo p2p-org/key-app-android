@@ -12,6 +12,8 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewClickListener
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksFragment
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.utils.replaceFragment
@@ -57,6 +59,23 @@ class HistoryFragment :
 
     override fun onSellTransactionClicked(transactionId: String) {
         presenter.onSellTransactionClicked(transactionId)
+    }
+
+    override fun onSwapBannerClicked(
+        sourceTokenMint: String,
+        destinationTokenMint: String,
+        sourceSymbol: String,
+        destinationSymbol: String,
+        openedFrom: SwapOpenedFrom
+    ) {
+        replaceFragment(
+            JupiterSwapFragment.create(
+                tokenASymbol = sourceSymbol,
+                tokenBSymbol = destinationSymbol,
+                amountA = "0",
+                source = openedFrom
+            )
+        )
     }
 
     private fun listenForSellTransactionDialogDismiss() {
