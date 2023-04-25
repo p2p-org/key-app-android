@@ -424,7 +424,7 @@ class NewSendPresenter(
     }
 
     private fun SearchResult.nicknameOrAddress(): String {
-        return if (this is SearchResult.UsernameFound) getFormattedUsername()
+        return if (this is SearchResult.UsernameFound) formattedUsername
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 

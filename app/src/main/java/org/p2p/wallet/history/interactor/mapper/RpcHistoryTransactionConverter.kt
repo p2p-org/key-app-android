@@ -15,11 +15,13 @@ import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
+import org.p2p.wallet.utils.UsernameFormatter
 import org.p2p.wallet.utils.fromJsonReified
 
 class RpcHistoryTransactionConverter(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val gson: Gson
+    private val gson: Gson,
+    private val usernameFormatter: UsernameFormatter
 ) {
 
     fun toDomain(
@@ -51,7 +53,7 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
             senderAddress = info.counterParty.address,
-            counterPartyUsername = info.counterParty.username,
+            counterPartyUsername = usernameFormatter.formatOrNull(info.counterParty.username),
             iconUrl = info.token.logoUrl,
             amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
@@ -73,7 +75,7 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
             senderAddress = tokenKeyProvider.publicKey,
-            counterPartyUsername = info.counterParty.username,
+            counterPartyUsername = usernameFormatter.formatOrNull(info.counterParty.username),
             iconUrl = info.token.logoUrl,
             amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),

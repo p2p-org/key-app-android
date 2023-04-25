@@ -47,7 +47,7 @@ class SearchViewHolder(
             if (item.username.endsWith(usernameDomainFeatureToggle.value)) {
                 imageResource = R.drawable.ic_key_app_circle
                 frameWalletImageView.setPadding(0, 0, 0, 0)
-                textViewTop.text = item.getFormattedUsername()
+                textViewTop.text = item.formattedUsername
                 textViewBottom.isVisible = false
             } else {
                 imageResource = R.drawable.ic_search_wallet
