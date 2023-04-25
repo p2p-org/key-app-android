@@ -12,7 +12,6 @@ import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.asUsdTransaction
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.formatUsername
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.scaleShortOrFirstNotZero
@@ -214,8 +213,7 @@ sealed class RpcHistoryTransaction(
         fun getFormattedUsernameOrAddress(): String = getUsername() ?: getAddress()
 
         private fun getUsername(): String? {
-            return counterPartyUsername?.let { formatUsername(it) }
-                ?.let { if (isSend) "To $it" else "From $it" }
+            return counterPartyUsername?.let { if (isSend) "To $it" else "From $it" }
         }
 
         private fun getAddress(): String {

@@ -2,13 +2,15 @@ package org.p2p.wallet.newsend.model
 
 import java.util.Date
 import org.p2p.wallet.newsend.db.RecipientEntity
+import org.p2p.wallet.utils.UsernameFormatter
 
 private const val EMPTY_TIMESTAMP = 0L
 
 object RecipientConverter {
 
     fun fromDatabase(
-        entity: RecipientEntity
+        entity: RecipientEntity,
+        usernameFormatter: UsernameFormatter
     ): SearchResult {
         return if (entity.username.isNullOrEmpty()) SearchResult.AddressFound(
             addressState = AddressState(entity.address),
@@ -17,6 +19,7 @@ object RecipientConverter {
         ) else SearchResult.UsernameFound(
             addressState = AddressState(entity.address),
             username = entity.username,
+            formattedUsername = usernameFormatter.format(entity.username),
             date = Date(entity.dateTimestamp)
         )
     }

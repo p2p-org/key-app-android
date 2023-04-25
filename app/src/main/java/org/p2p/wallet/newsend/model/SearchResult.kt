@@ -6,7 +6,6 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
-import org.p2p.core.utils.formatUsername
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 
@@ -52,10 +51,9 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     data class UsernameFound constructor(
         override val addressState: AddressState,
         val username: String,
+        val formattedUsername: String,
         val date: Date? = null
-    ) : SearchResult(addressState) {
-        fun getFormattedUsername(): String = formatUsername(username)
-    }
+    ) : SearchResult(addressState)
 }
 
 fun TemporaryAccount.toSearchResult(): SearchResult =

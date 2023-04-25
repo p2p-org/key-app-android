@@ -5,8 +5,6 @@ import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.URLSpan
 
-private const val USERNAME_KEY_APP_DOMAIN = ".key"
-
 fun emptyString() = ""
 
 fun StringBuilder.appendBreakLine() {
@@ -28,12 +26,4 @@ fun Spanned.removeLinksUnderline(): SpannableString {
         )
     }
     return spannable
-}
-
-fun formatUsername(username: String): String {
-    return if (username.endsWith(USERNAME_KEY_APP_DOMAIN)) {
-        "@$username"
-    } else {
-        username
-    }
 }
