@@ -1,18 +1,18 @@
 package org.p2p.ethereumkit.internal.api.core
 
-import org.p2p.ethereumkit.internal.api.jsonrpc.BlockNumberJsonRpc
-import org.p2p.core.rpc.JsonRpc
-import org.p2p.ethereumkit.internal.core.EthereumKit
-import org.p2p.ethereumkit.internal.network.ConnectionManager
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.schedule
+import org.p2p.core.network.ConnectionManager
 import org.p2p.core.rpc.IRpcApiProvider
 import org.p2p.core.rpc.IRpcSyncer
 import org.p2p.core.rpc.IRpcSyncerListener
+import org.p2p.core.rpc.JsonRpc
 import org.p2p.core.rpc.SyncerState
+import org.p2p.ethereumkit.internal.api.jsonrpc.BlockNumberJsonRpc
+import org.p2p.ethereumkit.internal.core.EthereumKit
 
 class ApiRpcSyncer(
     private val rpcApiProvider: IRpcApiProvider,
@@ -64,7 +64,7 @@ class ApiRpcSyncer(
     private fun handleConnectionChange() {
         if (!isStarted) return
 
-        if (connectionManager.isConnected) {
+        if (connectionManager.connectionStatus.value) {
             state = SyncerState.Ready
             startTimer()
         } else {
