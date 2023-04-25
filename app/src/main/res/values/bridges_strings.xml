@@ -41,6 +41,6 @@
     <string name="bridge_send_fee_details_wormhole">Using Wormhole bridge</string>
     <string name="bridge_usdc_usdt_swap_message">To make a transfer to ETH you have to swap USDC to USDCet</string>
     <string name="bridge_usdc_usdt_swap_action">Swap USDC → USDCet</string>
-    <string name="how_to_claim_for_free_title">How to claim for free</string>
+    <string name="bridge_how_to_claim_for_free_title">How to claim for free</string>
 
 </resources>
