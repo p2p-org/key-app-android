@@ -64,7 +64,6 @@ object BridgeSendModule : InjectionModule {
                 validator = get(),
                 bridgeSendInteractor = get(),
                 feeRelayerAccountInteractor = get(),
-                feeRelayerCounter = get(),
                 repository = get(),
                 tokenKeyProvider = get(),
             )
