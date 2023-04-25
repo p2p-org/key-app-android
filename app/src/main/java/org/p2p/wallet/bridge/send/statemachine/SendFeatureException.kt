@@ -14,6 +14,10 @@ sealed class SendFeatureException(
         val invalidAmount: BigDecimal,
     ) : SendFeatureException()
 
+    data class FeeIsMoreThanTotal(
+        val totalAmount: BigDecimal,
+    ) : SendFeatureException()
+
     data class FeeLoadingError(
         override val message: String? = null
     ) : SendFeatureException(message)
