@@ -7,7 +7,8 @@ import org.p2p.wallet.history.model.HistoryTransaction
 sealed class TransactionState {
 
     data class Progress(
-        @StringRes val message: Int = R.string.send_transaction_being_processed
+        @StringRes val message: Int = R.string.send_transaction_being_processed,
+        @StringRes val description: Int = R.string.transaction_description_progress,
     ) : TransactionState()
 
     data class SendSuccess(

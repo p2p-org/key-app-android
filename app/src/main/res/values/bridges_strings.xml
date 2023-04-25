@@ -39,5 +39,6 @@
     <string name="bridge_send_fee_details_gets">Recipient gets</string>
     <string name="bridge_send_fee_details_network">Network Fees</string>
     <string name="bridge_send_fee_details_wormhole">Using Wormhole bridge</string>
+    <string name="bridge_send_transaction_description_progress">It usually takes 15–20 minutes for a transaction to complete</string>
 
 </resources>
