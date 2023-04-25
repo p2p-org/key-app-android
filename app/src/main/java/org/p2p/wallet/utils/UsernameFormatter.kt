@@ -14,7 +14,6 @@ class UsernameFormatter(
     }
 
     fun formatOrNull(username: String?): String? {
-        if (username == null) return null
-        return format(username)
+        return username?.let(::format)
     }
 }
