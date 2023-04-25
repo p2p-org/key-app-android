@@ -18,6 +18,7 @@ import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
+import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.utils.viewbinding.getString
 
 class SearchViewHolder(
@@ -81,7 +82,8 @@ class SearchViewHolder(
             }
             textViewTop.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
-            textViewBottom.withTextOrGone(description)
+            textViewBottom.text = description
+            textViewBottom.isVisible = item.networkType == NetworkType.SOLANA
             Glide.with(root)
                 .load(imageObject)
                 .circleCrop()
