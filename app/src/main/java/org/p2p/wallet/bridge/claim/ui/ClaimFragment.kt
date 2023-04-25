@@ -128,14 +128,21 @@ class ClaimFragment :
     }
 
     override fun setFeeInfoVisibility(isVisible: Boolean) {
-        val drawableId = if (isVisible) {
-            R.drawable.ic_info_outline
+        val textColorId: Int
+        val drawableId: Int
+        if (isVisible) {
+            drawableId = R.drawable.ic_info_outline
+            textColorId = getColor(R.color.text_mountain)
         } else {
-            0
+            drawableId = 0
+            textColorId = getColor(R.color.text_night)
         }
-        binding.textViewFeeValue.setCompoundDrawablesWithIntrinsicBounds(
-            0, 0, drawableId, 0
-        )
+        binding.textViewFeeValue.apply {
+            setTextColor(textColorId)
+            setCompoundDrawablesWithIntrinsicBounds(
+                0, 0, drawableId, 0
+            )
+        }
     }
 
     override fun openReceive() {
