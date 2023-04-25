@@ -12,11 +12,8 @@ import com.google.android.material.snackbar.Snackbar
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.toast
-import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
-import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
-import org.p2p.wallet.utils.snackbar
 
 abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
     @LayoutRes val layoutRes: Int
@@ -60,62 +57,6 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
 
     override fun showErrorMessage(@StringRes messageResId: Int) {
         showErrorDialog(messageRes = messageResId)
-    }
-
-    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
-    override fun showErrorSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
-        snackbar {
-            it.setMessage(getString(messageResId))
-                .setIcon(R.drawable.ic_close_red)
-                .setAction(actionResId, block)
-        }
-    }
-
-    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
-    override fun showErrorSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
-        snackbar {
-            it.setMessage(message)
-                .setIcon(R.drawable.ic_close_red)
-                .setAction(actionResId, block)
-        }
-    }
-
-    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
-    override fun showErrorSnackBar(e: Throwable, actionResId: Int?, block: (() -> Unit)?) {
-        snackbar {
-            it.setMessage(e.getErrorMessage { res -> getString(res) })
-                .setIcon(R.drawable.ic_close_red)
-                .setAction(actionResId, block)
-        }
-    }
-
-    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
-    override fun showSuccessSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
-        snackbar {
-            it.setMessage(getString(messageResId))
-                .setIcon(R.drawable.ic_done)
-                .setAction(actionResId, block)
-        }
-    }
-
-    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
-    override fun showSuccessSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
-        snackbar {
-            it.setMessage(message)
-                .setIcon(R.drawable.ic_done)
-                .setAction(actionResId, block)
-        }
-    }
-
-    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
-    override fun showInfoSnackBar(message: String, iconResId: Int?, actionResId: Int?, actionBlock: (() -> Unit)?) {
-        snackbar {
-            it.setMessage(message)
-                .setAction(actionResId, actionBlock)
-            iconResId?.let { icon ->
-                it.setIcon(icon)
-            }
-        }
     }
     //endregion
 

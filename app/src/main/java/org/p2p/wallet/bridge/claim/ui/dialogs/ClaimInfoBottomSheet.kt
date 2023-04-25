@@ -52,7 +52,7 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
             layoutWillGetAmount.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_info_you_will_get),
                 fee = claimDetails.willGetAmount,
-                isFree = claimDetails.isFree
+                isFree = false
             )
             layoutNetworkFee.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_info_network_fee),
