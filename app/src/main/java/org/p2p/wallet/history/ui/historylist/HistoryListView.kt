@@ -124,14 +124,12 @@ class HistoryListView @JvmOverloads constructor(
 
     override fun showHistory(history: List<HistoryItem>) {
         with(binding) {
-            historyRecyclerView.post {
-                historyAdapter.submitList(history)
-                historyRecyclerView.invalidateItemDecorations()
+            historyAdapter.submitList(history)
+            historyRecyclerView.invalidateItemDecorations()
 
-                val isHistoryEmpty = historyAdapter.isEmpty()
-                emptyStateLayout.root.isVisible = isHistoryEmpty
-                historyRecyclerView.isVisible = !isHistoryEmpty
-            }
+            val isHistoryEmpty = historyAdapter.isEmpty()
+            emptyStateLayout.root.isVisible = isHistoryEmpty
+            historyRecyclerView.isVisible = !isHistoryEmpty
         }
     }
 
