@@ -21,6 +21,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.addFragment
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -159,7 +160,7 @@ class PhoneNumberEnterFragment :
         requireActivity().supportFragmentManager.setFragmentResultListener(
             REQUEST_KEY, viewLifecycleOwner
         ) { _, bundle ->
-            val countryCode = bundle.getParcelable<CountryCode>(RESULT_KEY)
+            val countryCode = bundle.getParcelableCompat<CountryCode>(RESULT_KEY)
             presenter.onCountryCodeChanged(countryCode)
         }
     }

@@ -179,7 +179,7 @@ class SwipeRevealLayout : ViewGroup {
         init(context, attrs)
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {}
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         mGestureDetector!!.onTouchEvent(event)
@@ -676,9 +676,9 @@ class SwipeRevealLayout : ViewGroup {
 
         override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
             return when (dragEdge) {
-                DRAG_EDGE_TOP -> min(top, mRectMainClose.top + mSecondaryView!!.height)
+                DRAG_EDGE_TOP -> kotlin.math.min(top, mRectMainClose.top + mSecondaryView!!.height)
                     .coerceAtLeast(mRectMainClose.top)
-                DRAG_EDGE_BOTTOM -> min(
+                DRAG_EDGE_BOTTOM -> kotlin.math.min(
                     top,
                     mRectMainClose.top
                 ).coerceAtLeast(mRectMainClose.top - mSecondaryView!!.height)
@@ -690,7 +690,7 @@ class SwipeRevealLayout : ViewGroup {
             return when (dragEdge) {
                 DRAG_EDGE_RIGHT -> left.coerceAtMost(mRectMainClose.left)
                     .coerceAtLeast(mRectMainClose.left - mSecondaryView!!.width)
-                DRAG_EDGE_LEFT -> min(
+                DRAG_EDGE_LEFT -> kotlin.math.min(
                     left,
                     mRectMainClose.left + mSecondaryView!!.width
                 ).coerceAtLeast(mRectMainClose.left)

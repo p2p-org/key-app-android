@@ -8,7 +8,7 @@ import org.p2p.wallet.bridge.model.BridgeBundle
 
 class EthereumClaimLocalRepository {
 
-    suspend fun parseBundles(bundles: List<BridgeBundle>): Map<String, List<ClaimStatus>> {
+    fun parseBundles(bundles: List<BridgeBundle>): Map<String, List<ClaimStatus>> {
         return try {
             val ethAddress = ERC20Tokens.ETH.contractAddress
             return bundles.associate { bundle ->

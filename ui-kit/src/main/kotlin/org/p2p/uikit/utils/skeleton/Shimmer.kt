@@ -15,6 +15,11 @@ import androidx.annotation.Px
 import android.animation.ValueAnimator
 import android.graphics.Color
 import android.graphics.RectF
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
+import kotlin.math.sin
 
 class Shimmer {
     /** The shape of the shimmer's highlight. By default LINEAR is used.  */
@@ -72,11 +77,11 @@ class Shimmer {
     var animationDuration = 1000L
     var repeatDelay: Long = 0
     fun width(width: Int): Int {
-        return if (fixedWidth > 0) fixedWidth else Math.round(widthRatio * width)
+        return if (fixedWidth > 0) fixedWidth else (widthRatio * width).roundToInt()
     }
 
     fun height(height: Int): Int {
-        return if (fixedHeight > 0) fixedHeight else Math.round(heightRatio * height)
+        return if (fixedHeight > 0) fixedHeight else (heightRatio * height).roundToInt()
     }
 
     fun updateColors() {
@@ -105,31 +110,31 @@ class Shimmer {
     fun updatePositions() {
         when (shape) {
             Shape.LINEAR -> {
-                positions[0] = Math.max((1f - intensity - dropoff) / 2f, 0f)
-                positions[1] = Math.max((1f - intensity - 0.001f) / 2f, 0f)
-                positions[2] = Math.min((1f + intensity + 0.001f) / 2f, 1f)
-                positions[3] = Math.min((1f + intensity + dropoff) / 2f, 1f)
+                positions[0] = max((1f - intensity - dropoff) / 2f, 0f)
+                positions[1] = max((1f - intensity - 0.001f) / 2f, 0f)
+                positions[2] = min((1f + intensity + 0.001f) / 2f, 1f)
+                positions[3] = min((1f + intensity + dropoff) / 2f, 1f)
             }
             Shape.RADIAL -> {
                 positions[0] = 0f
-                positions[1] = Math.min(intensity, 1f)
-                positions[2] = Math.min(intensity + dropoff, 1f)
+                positions[1] = min(intensity, 1f)
+                positions[2] = min(intensity + dropoff, 1f)
                 positions[3] = 1f
             }
             else -> {
-                positions[0] = Math.max((1f - intensity - dropoff) / 2f, 0f)
-                positions[1] = Math.max((1f - intensity - 0.001f) / 2f, 0f)
-                positions[2] = Math.min((1f + intensity + 0.001f) / 2f, 1f)
-                positions[3] = Math.min((1f + intensity + dropoff) / 2f, 1f)
+                positions[0] = max((1f - intensity - dropoff) / 2f, 0f)
+                positions[1] = max((1f - intensity - 0.001f) / 2f, 0f)
+                positions[2] = min((1f + intensity + 0.001f) / 2f, 1f)
+                positions[3] = min((1f + intensity + dropoff) / 2f, 1f)
             }
         }
     }
 
     fun updateBounds(viewWidth: Int, viewHeight: Int) {
-        val magnitude = Math.max(viewWidth, viewHeight)
+        val magnitude = max(viewWidth, viewHeight)
         val rad = Math.PI / 2f - Math.toRadians((tilt % 90f).toDouble())
-        val hyp = magnitude / Math.sin(rad)
-        val padding = 3 * Math.round((hyp - magnitude).toFloat() / 2f)
+        val hyp = magnitude / sin(rad)
+        val padding = 3 * ((hyp - magnitude).toFloat() / 2f).roundToLong()
         bounds[-padding.toFloat(), -padding.toFloat(), (width(viewWidth) + padding).toFloat()] =
             (height(viewHeight) + padding).toFloat()
     }
@@ -294,7 +299,7 @@ class Shimmer {
 
         companion object {
             private fun clamp(min: Float, max: Float, value: Float): Float {
-                return Math.min(max, Math.max(min, value))
+                return kotlin.math.min(max, kotlin.math.max(min, value))
             }
         }
     }

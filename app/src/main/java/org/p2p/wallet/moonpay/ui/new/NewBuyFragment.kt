@@ -28,6 +28,7 @@ import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.bottomsheet.BuyDetailsBottomSheet
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getDrawableCompat
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.unsafeLazy
@@ -92,7 +93,7 @@ class NewBuyFragment :
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when {
             result.containsKey(KEY_RESULT_TOKEN) -> {
-                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
+                result.getParcelableCompat<Token>(KEY_RESULT_TOKEN)?.let {
                     with(binding) {
                         val symbol = it.tokenSymbol
                         amountsView.tokenSymbol = symbol
@@ -104,7 +105,7 @@ class NewBuyFragment :
             }
 
             result.containsKey(KEY_RESULT_CURRENCY) -> {
-                result.getParcelable<BuyCurrency.Currency>(KEY_RESULT_CURRENCY)?.let {
+                result.getParcelableCompat<BuyCurrency.Currency>(KEY_RESULT_CURRENCY)?.let {
                     setCurrencyCode(it.code)
                     presenter.setCurrency(it)
                 }

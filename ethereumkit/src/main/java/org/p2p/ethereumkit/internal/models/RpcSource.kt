@@ -2,7 +2,7 @@ package org.p2p.ethereumkit.internal.models
 
 import java.net.URL
 
-sealed class RpcSource() {
+sealed class RpcSource {
     class Http(val urls: List<URL>, val auth: String?) : RpcSource()
     class WebSocket(val url: URL, val auth: String?) : RpcSource()
 

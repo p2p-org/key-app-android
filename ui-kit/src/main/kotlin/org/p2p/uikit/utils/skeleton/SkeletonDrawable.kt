@@ -13,6 +13,9 @@ import android.graphics.Rect
 import android.graphics.Shader
 import android.graphics.drawable.PaintDrawable
 import android.graphics.drawable.shapes.Shape
+import kotlin.math.max
+import kotlin.math.sqrt
+import kotlin.math.tan
 
 class SkeletonDrawable : PaintDrawable() {
     private val mUpdateListener = AnimatorUpdateListener { invalidateSelf() }
@@ -70,7 +73,7 @@ class SkeletonDrawable : PaintDrawable() {
         if (mShimmer == null || mShimmerPaint.shader == null) {
             return
         }
-        val tiltTan = Math.tan(Math.toRadians(mShimmer!!.tilt.toDouble())).toFloat()
+        val tiltTan = tan(Math.toRadians(mShimmer!!.tilt.toDouble())).toFloat()
         val translateHeight = mDrawRect.height() + tiltTan * mDrawRect.width()
         val translateWidth = mDrawRect.width() + tiltTan * mDrawRect.height()
         val dx: Float
@@ -135,9 +138,9 @@ class SkeletonDrawable : PaintDrawable() {
         }
         mValueAnimator = ValueAnimator.ofFloat(0f, 1f + (mShimmer!!.repeatDelay / mShimmer!!.animationDuration).toFloat())
             .apply {
-                setRepeatMode(mShimmer!!.repeatMode)
-                setRepeatCount(mShimmer!!.repeatCount)
-                setDuration(mShimmer!!.animationDuration + mShimmer!!.repeatDelay)
+                repeatMode = mShimmer!!.repeatMode
+                repeatCount = mShimmer!!.repeatCount
+                duration = mShimmer!!.animationDuration + mShimmer!!.repeatDelay
                 addUpdateListener(mUpdateListener)
                 if (started) {
                     start()
@@ -173,7 +176,7 @@ class SkeletonDrawable : PaintDrawable() {
             }
             Shimmer.Shape.RADIAL -> RadialGradient(
                 width / 2f,
-                height / 2f, (Math.max(width, height) / Math.sqrt(2.0)).toFloat(),
+                height / 2f, (max(width, height) / sqrt(2.0)).toFloat(),
                 mShimmer!!.colors,
                 mShimmer!!.positions,
                 Shader.TileMode.CLAMP

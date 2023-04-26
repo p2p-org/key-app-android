@@ -67,7 +67,7 @@ class ReserveUsernameInputView @JvmOverloads constructor(
         }
     }
 
-    fun renderState(state: ReserveUsernameInputView.InputState) {
+    fun renderState(state: InputState) {
         when (state) {
             InputState.USERNAME_INVALID -> {
                 binding.progressBar.isVisible = false
