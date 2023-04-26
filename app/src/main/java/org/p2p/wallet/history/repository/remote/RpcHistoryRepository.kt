@@ -82,7 +82,6 @@ class RpcHistoryRepository(
         }
 
         val offset = findTransactionsByTokenAddress(tokenAddress).size.toLong()
-
         val signature = historyServiceSignatureFieldGenerator.generateSignature(
             pubKey = tokenKeyProvider.publicKey,
             privateKey = tokenKeyProvider.keyPair,
@@ -107,6 +106,7 @@ class RpcHistoryRepository(
         )
         return@withContext try {
             val result = historyApi.getTransactionHistory(rpcRequest).result.transactions
+
             if (result.isEmpty() || result.size < limit) {
                 tokenPagingState[tokenAddress] = HistoryPagingState.INACTIVE
             }

@@ -77,6 +77,12 @@ class UserInteractor(
 
     suspend fun getBalance(address: PublicKey): Long = rpcRepository.getBalance(address)
 
+    suspend fun loadAllTokensDataIfEmpty() {
+        if (!userLocalRepository.areInitialTokensLoaded()) {
+            loadAllTokensData()
+        }
+    }
+
     suspend fun loadAllTokensData() {
         val file = externalStorageRepository.readJsonFile(TOKENS_FILE_NAME)
 

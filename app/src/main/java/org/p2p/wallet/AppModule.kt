@@ -4,6 +4,7 @@ import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.p2p.core.network.ConnectionManager
 import org.p2p.ethereumkit.EthereumKitService
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
@@ -59,6 +60,7 @@ object AppModule {
                 tokenKeyProvider = get()
             )
         }
+        singleOf(::ConnectionManager)
 
         singleOf(::AppCreatedAction)
 

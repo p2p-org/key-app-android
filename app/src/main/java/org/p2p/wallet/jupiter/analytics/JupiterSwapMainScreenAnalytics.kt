@@ -177,6 +177,7 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
         ACTION_PANEL("Action_Panel"),
         MAIN_SCREEN("Tap_Main"),
         TOKEN_SCREEN("Tap_Token"),
+        SWAP_BANNER("Tap_Banner")
     }
 
     private fun SwapOpenedFrom.toAnalyticsValue(): SwapOpenedFromAnalytics {
@@ -184,6 +185,7 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
             SwapOpenedFrom.ACTION_PANEL -> SwapOpenedFromAnalytics.ACTION_PANEL
             SwapOpenedFrom.TOKEN_SCREEN -> SwapOpenedFromAnalytics.TOKEN_SCREEN
             SwapOpenedFrom.MAIN_SCREEN, SwapOpenedFrom.BOTTOM_NAVIGATION -> SwapOpenedFromAnalytics.MAIN_SCREEN
+            SwapOpenedFrom.HISTORY_SCREEN_BANNER -> SwapOpenedFromAnalytics.SWAP_BANNER
         }
     }
 }

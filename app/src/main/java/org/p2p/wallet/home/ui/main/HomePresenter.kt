@@ -10,6 +10,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
@@ -87,7 +88,8 @@ class HomePresenter(
     private val homeMapper: HomeMapper,
     private val ethereumInteractor: EthereumInteractor,
     private val seedPhraseProvider: SeedPhraseProvider,
-    private val deeplinksManager: AppDeeplinksManager
+    private val deeplinksManager: AppDeeplinksManager,
+    private val connectionManager: ConnectionManager
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -118,15 +120,17 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
+        observeInternetConnection()
         loadSolanaTokens()
         observeActionButtonState()
         handleDeeplinks()
     }
 
     private fun loadSolanaTokens() {
-        launch {
+        launchInternetAware(connectionManager) {
             try {
                 view?.showRefreshing(true)
+                userInteractor.loadAllTokensDataIfEmpty()
                 val solTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
                 async { userInteractor.loadUserRates(solTokens) }
                 async {
@@ -142,21 +146,33 @@ class HomePresenter(
         }
     }
 
-    private fun attachToPollingTokens() {
-        launch {
-            tokensPolling.shareTokenPollFlowIn(this).filterNotNull().collect { homeState ->
+    private suspend fun attachToPollingTokens() {
+        tokensPolling.shareTokenPollFlowIn(this)
+            .filterNotNull()
+            .collect { homeState ->
                 state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
                 initializeActionButtons()
                 handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
                 view?.showRefreshing(homeState.isRefreshing)
             }
-        }
     }
 
     private fun observeActionButtonState() {
         launch {
             buttonsStateFlow.collect { buttons ->
                 view?.showActionButtons(buttons)
+            }
+        }
+    }
+
+    private fun observeInternetConnection() {
+        launch {
+            connectionManager.connectionStatus.collect { hasConnection ->
+                if (hasConnection) {
+                    updatesManager.start()
+                } else {
+                    updatesManager.stop()
+                }
             }
         }
     }
@@ -190,29 +206,27 @@ class HomePresenter(
         }
     }
 
-    private fun initializeActionButtons(isRefreshing: Boolean = false) {
+    private suspend fun initializeActionButtons(isRefreshing: Boolean = false) {
         if (!isRefreshing && buttonsStateFlow.value.isNotEmpty()) {
             return
         }
-        launch {
-            val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
-            val isSellAvailable = sellInteractor.isSellAvailable()
+        val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
+        val isSellAvailable = sellInteractor.isSellAvailable()
 
-            val buttons = mutableListOf(
-                ActionButton.BUY_BUTTON,
-                ActionButton.RECEIVE_BUTTON,
-                ActionButton.SEND_BUTTON
-            )
+        val buttons = mutableListOf(
+            ActionButton.BUY_BUTTON,
+            ActionButton.RECEIVE_BUTTON,
+            ActionButton.SEND_BUTTON
+        )
 
-            if (!isSellFeatureToggleEnabled) {
-                buttons += ActionButton.SWAP_BUTTON
-            }
-
-            if (isSellAvailable) {
-                buttons += ActionButton.SELL_BUTTON
-            }
-            buttonsStateFlow.emit(buttons)
+        if (!isSellFeatureToggleEnabled) {
+            buttons += ActionButton.SWAP_BUTTON
         }
+
+        if (isSellAvailable) {
+            buttons += ActionButton.SELL_BUTTON
+        }
+        buttonsStateFlow.emit(buttons)
     }
 
     private fun showUserAddressAndUsername() {
@@ -300,6 +314,7 @@ class HomePresenter(
                 view?.showEmptyState(isEmpty = true)
                 handleEmptyAccount()
             }
+
             (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
                 view?.showEmptyState(isEmpty = false)
                 showTokensAndBalance()
@@ -308,34 +323,32 @@ class HomePresenter(
     }
 
     private fun handleEmptyAccount() {
-        launch {
-            val tokensForBuy =
-                userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
-                    .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
+        val tokensForBuy =
+            userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
+                .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
-            val homeBannerItem = HomeBannerItem(
-                id = R.id.home_banner_top_up,
-                titleTextId = R.string.main_banner_title,
-                subtitleTextId = R.string.main_banner_subtitle,
-                buttonTextId = R.string.main_banner_button,
-                drawableRes = R.drawable.ic_main_banner,
-                backgroundColorRes = R.color.bannerBackgroundColor
+        val homeBannerItem = HomeBannerItem(
+            id = R.id.home_banner_top_up,
+            titleTextId = R.string.main_banner_title,
+            subtitleTextId = R.string.main_banner_subtitle,
+            buttonTextId = R.string.main_banner_button,
+            drawableRes = R.drawable.ic_main_banner,
+            backgroundColorRes = R.color.bannerBackgroundColor
+        )
+        view?.showEmptyViewData(
+            listOf(
+                homeBannerItem,
+                resources.getString(R.string.main_popular_tokens_header),
+                *tokensForBuy.toTypedArray()
             )
-            view?.showEmptyViewData(
-                listOf(
-                    homeBannerItem,
-                    resources.getString(R.string.main_popular_tokens_header),
-                    *tokensForBuy.toTypedArray()
-                )
-            )
-            logBalance(BigDecimal.ZERO)
+        )
+        logBalance(BigDecimal.ZERO)
 
-            view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
-        }
+        view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
     }
 
     override fun refreshTokens() {
-        launch {
+        launchInternetAware(connectionManager) {
             try {
                 view?.showRefreshing(isRefreshing = true)
                 tokensPolling.refreshTokens()
@@ -388,7 +401,7 @@ class HomePresenter(
     }
 
     private fun showTokensAndBalance() {
-        launch {
+        launchInternetAware(connectionManager) {
             val balance = getUserBalance()
 
             if (balance != null) {

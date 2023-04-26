@@ -249,7 +249,7 @@ class BridgeSendFragment :
 
     private fun UiKitToolbar.setupToolbar() {
         val toolbarTitle = when (val recipient = recipient) {
-            is SearchResult.UsernameFound -> recipient.getFormattedUsername()
+            is SearchResult.UsernameFound -> recipient.formattedUsername
             else -> recipient.formattedAddress
         }
         title = toolbarTitle
