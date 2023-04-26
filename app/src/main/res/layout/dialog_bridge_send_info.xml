@@ -35,14 +35,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="24dp" />
-
-    <include
-        android:id="@+id/layoutTotal"
-        layout="@layout/item_claim_details_part"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="32dp" />
 
 </LinearLayout>

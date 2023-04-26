@@ -190,7 +190,14 @@ class BridgeSendPresenter(
                         is SendFeatureException.InsufficientFunds -> {
                             setInputColor(R.color.text_rose)
                             updateButtons(
-                                errorButton = TextContainer.Res(R.string.error_insufficient_funds),
+                                errorButton = TextContainer.Res(R.string.send_error_insufficient_funds),
+                                sliderButton = null
+                            )
+                        }
+                        is SendFeatureException.FeeIsMoreThanTotal -> {
+                            setInputColor(R.color.text_rose)
+                            updateButtons(
+                                errorButton = TextContainer.Res(R.string.send_error_fee_more_than_amount),
                                 sliderButton = null
                             )
                         }
@@ -377,14 +384,14 @@ class BridgeSendPresenter(
                 )
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)
-
-                val bridgeFee = currentState.lastStaticState.bridgeFee
+                val progressState = TransactionState.Progress(
+                    description = R.string.bridge_send_transaction_description_progress
+                )
+                transactionManager.emitTransactionState(internalTransactionId, progressState)
 
                 val result = bridgeInteractor.sendTransaction(
                     sendTransaction = sendTransaction,
-                    token = token,
-                    feePayerToken = bridgeFee?.tokenToPayFee,
-                    feeRelayerFee = bridgeFee?.feeRelayerFee,
+                    token = token
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transaction = buildTransaction(result, token)
@@ -412,7 +419,7 @@ class BridgeSendPresenter(
     }
 
     private fun SearchResult.nicknameOrAddress(): String {
-        return if (this is SearchResult.UsernameFound) getFormattedUsername()
+        return if (this is SearchResult.UsernameFound) formattedUsername
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 

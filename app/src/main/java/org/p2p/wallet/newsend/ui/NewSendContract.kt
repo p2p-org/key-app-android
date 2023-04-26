@@ -23,6 +23,7 @@ interface NewSendContract {
         fun setBottomButtonText(text: TextContainer?)
         fun setSliderText(text: String?)
         fun disableSwitchAmounts()
+        fun enableSwitchAmounts()
         fun disableInputs()
     }
 

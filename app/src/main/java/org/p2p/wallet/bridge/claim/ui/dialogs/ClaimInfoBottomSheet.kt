@@ -52,7 +52,7 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
             layoutWillGetAmount.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_info_you_will_get),
                 fee = claimDetails.willGetAmount,
-                isFree = claimDetails.isFree
+                isFree = false
             )
             layoutNetworkFee.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_info_network_fee),
@@ -80,7 +80,7 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
     private fun ItemInfoImageDoubleTextBinding.bindLayoutFreeTransactions() {
         root.setBackgroundResource(R.drawable.bg_rounded_solid_cloud_16)
         imageViewIcon.setImageResource(R.drawable.ic_lightning)
-        textViewTitle.setText(R.string.free_transactions_title)
+        textViewTitle.setText(R.string.bridge_how_to_claim_for_free_title)
         textViewSubtitle.text = getString(
             R.string.bridge_info_free_transaction_message,
             claimDetails.minAmountForFreeFee.toBigInteger()

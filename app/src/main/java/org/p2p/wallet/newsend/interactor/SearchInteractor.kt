@@ -14,9 +14,11 @@ import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.UsernameFormatter
 
 class SearchInteractor(
     private val usernameRepository: UsernameRepository,
+    private val usernameFormatter: UsernameFormatter,
     private val userInteractor: UserInteractor,
     private val transactionAddressInteractor: TransactionAddressInteractor,
     private val userLocalRepository: UserLocalRepository,
@@ -33,7 +35,8 @@ class SearchInteractor(
             } else {
                 SearchResult.UsernameFound(
                     addressState = AddressState(address = address),
-                    username = usernameDetails.username.fullUsername
+                    username = usernameDetails.username.fullUsername,
+                    formattedUsername = usernameFormatter.format(usernameDetails.username.fullUsername),
                 )
             }
         }

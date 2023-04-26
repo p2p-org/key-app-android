@@ -45,9 +45,7 @@ object BridgeSendModule : InjectionModule {
                 relaySdkFacade = get(),
                 dispatchers = get(),
                 rpcSolanaRepository = get(),
-                feeRelayerRepository = get(),
-                feeRelayerInteractor = get(),
-                feeRelayerAccountInteractor = get(),
+                feeRelayerRepository = get()
             )
         }
 
@@ -66,7 +64,6 @@ object BridgeSendModule : InjectionModule {
                 validator = get(),
                 bridgeSendInteractor = get(),
                 feeRelayerAccountInteractor = get(),
-                feeRelayerCounter = get(),
                 repository = get(),
                 tokenKeyProvider = get(),
             )

@@ -20,6 +20,7 @@ import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.SocketUpdatesManager
 import org.p2p.wallet.updates.UpdatesManager
+import org.p2p.wallet.utils.UsernameFormatter
 
 object InfrastructureModule : InjectionModule {
 
@@ -51,6 +52,8 @@ object InfrastructureModule : InjectionModule {
         singleOf(::IntercomPushService)
         singleOf(::IntercomDeeplinkManager)
         single { TokenConverter }
+
+        singleOf(::UsernameFormatter)
 
         includes(StorageModule.create(), RoomModule.create())
     }

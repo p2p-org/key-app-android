@@ -7,6 +7,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
@@ -157,6 +158,23 @@ class TokenHistoryFragment :
 
     override fun onSellTransactionClicked(transactionId: String) {
         presenter.onSellTransactionClicked(transactionId)
+    }
+
+    override fun onSwapBannerClicked(
+        sourceTokenMint: String,
+        destinationTokenMint: String,
+        sourceSymbol: String,
+        destinationSymbol: String,
+        openedFrom: SwapOpenedFrom
+    ) {
+        replaceFragment(
+            JupiterSwapFragment.create(
+                tokenASymbol = sourceSymbol,
+                tokenBSymbol = destinationSymbol,
+                amountA = Constants.ZERO_AMOUNT,
+                source = openedFrom
+            )
+        )
     }
 
     override fun onUserSendLinksClicked() = Unit

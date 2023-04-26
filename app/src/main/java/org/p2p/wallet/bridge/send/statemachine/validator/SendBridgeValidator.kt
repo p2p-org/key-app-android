@@ -5,6 +5,7 @@ import org.p2p.core.utils.isMoreThan
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine.Companion.SEND_FEE_EXPIRED_DURATION
+import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
@@ -16,13 +17,17 @@ class SendBridgeValidator {
         if (newAmount.isMoreThan(maxAmount)) throw SendFeatureException.NotEnoughAmount(newAmount)
     }
 
-    fun validateIsFeeMoreThenAmount(state: SendState.Static, fee: SendFee.Bridge) {
+    fun validateIsFeeMoreThanAmount(state: SendState.Static, fee: SendFee.Bridge) {
         val inputAmount = state.inputAmount ?: return
-        val fees = fee.fee
-        // todo fees.networkFee, fees.messageAccountRent, fees.bridgeFee this fee is in SOL!
-        val feeList = listOf(fees.arbiterFee)
-        val feeSum: BigDecimal = feeList.sumOf { it.amountInToken }
+
+        val feeSum = getFeeSum(fee)
         if (feeSum.isMoreThan(inputAmount)) throw SendFeatureException.InsufficientFunds(inputAmount)
+    }
+
+    fun validateIsFeeMoreThanTotal(state: SendState.Static, fee: SendFee.Bridge) {
+        val totalAmount = state.bridgeToken?.tokenAmount
+        val feeSum = getFeeSum(fee)
+        if (totalAmount != null && feeSum > totalAmount) throw SendFeatureException.FeeIsMoreThanTotal(totalAmount)
     }
 
     fun isFeeValid(oldFee: SendFee.Bridge?): Boolean {
@@ -32,5 +37,9 @@ class SendBridgeValidator {
             (now - oldFee.updateTimeMs) < SEND_FEE_EXPIRED_DURATION -> true
             else -> false
         }
+    }
+
+    private fun getFeeSum(fee: SendFee.Bridge): BigDecimal {
+        return fee.fee.arbiterFee.amountInToken
     }
 }

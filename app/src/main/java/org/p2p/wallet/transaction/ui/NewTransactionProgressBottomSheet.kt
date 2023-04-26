@@ -184,7 +184,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun handleProgress(state: TransactionState.Progress) {
         with(binding) {
             textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_submitted))
-            progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
+            progressStateTransaction.setDescriptionText(state.description)
             buttonDone.setText(R.string.common_done)
         }
     }
