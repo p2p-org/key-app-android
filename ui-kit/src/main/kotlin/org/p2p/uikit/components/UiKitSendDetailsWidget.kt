@@ -144,6 +144,11 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
     }
 
+    fun enableFiat() {
+        enableSwitchAmounts()
+        binding.textViewSecondAmount.isVisible = true
+    }
+
     fun disableFiat() {
         disableSwitchAmounts()
         binding.textViewSecondAmount.isVisible = false
@@ -153,6 +158,12 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         disableSwitchAmounts()
         binding.textViewMax.isVisible = false
         binding.editTextAmount.isEnabled = false
+    }
+
+    private fun enableSwitchAmounts() {
+        binding.imageViewSwitchTo.isVisible = true
+        binding.viewSwitchToClickArea.isVisible = true
+        binding.textViewAmountTypeSwitchLabel.isVisible = true
     }
 
     private fun disableSwitchAmounts() {
