@@ -70,7 +70,7 @@ class SendFeeRelayerManager(
         } catch (e: Throwable) {
             Timber.i(e, "initialize for SendFeeRelayerManager failed")
             initializeCompleted = false
-            handleError(FeesCalculationError)
+            handleError(FeesCalculationError(e))
         } finally {
             onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
         }
@@ -154,7 +154,7 @@ class SendFeeRelayerManager(
                 }
                 is FeeCalculationState.Error -> {
                     Timber.e(feeState.error, "Error during FeeRelayer fee calculation")
-                    handleError(FeesCalculationError)
+                    handleError(FeesCalculationError(feeState.error))
                 }
             }
         } catch (e: CancellationException) {
@@ -330,7 +330,7 @@ class SendFeeRelayerManager(
             null
         } catch (e: Throwable) {
             Timber.e(e, "Error calculating fees")
-            handleError(FeesCalculationError)
+            handleError(FeesCalculationError(e))
             null
         }
 
@@ -349,7 +349,7 @@ class SendFeeRelayerManager(
                 currentState = UpdateFee(fee, feeLimitInfo)
             }
             is FeeCalculationState.Error -> {
-                handleError(FeesCalculationError)
+                handleError(FeesCalculationError(cause = feeState.error))
             }
             else -> Unit
         }

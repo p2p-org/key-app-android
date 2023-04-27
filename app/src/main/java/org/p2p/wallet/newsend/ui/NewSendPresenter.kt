@@ -7,6 +7,7 @@ import java.math.BigDecimal
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
@@ -38,6 +39,7 @@ import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
+import org.p2p.wallet.newsend.model.FeeRelayerStateError
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendSolanaFee
@@ -217,7 +219,18 @@ class NewSendPresenter(
 
             is FeeRelayerState.Failure -> {
                 Timber.e(newState, "FeeRelayerState has error")
-                if (newState.isFeeCalculationError()) view.showFeeViewVisible(isVisible = false)
+                if (newState.isFeeCalculationError()) {
+                    view.showFeeViewVisible(isVisible = false)
+
+                    newState.errorStateError as FeeRelayerStateError.FeesCalculationError
+                    if (newState.errorStateError.cause is CancellationException) {
+                        Timber.i(newState)
+                    } else {
+                        Timber.e(newState, "FeeRelayerState has calculation error")
+                    }
+                } else {
+                    Timber.e(newState, "FeeRelayerState has error")
+                }
                 updateButton(requireToken(), newState)
             }
 

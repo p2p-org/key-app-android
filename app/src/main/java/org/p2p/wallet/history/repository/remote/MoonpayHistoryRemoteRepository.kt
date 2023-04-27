@@ -1,10 +1,10 @@
 package org.p2p.wallet.history.repository.remote
 
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
-
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRemoteRepository
@@ -14,10 +14,10 @@ class MoonpayHistoryRemoteRepository(
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val repository: MoonpaySellRemoteRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val hiddenSellTransactionsStorageContract: HiddenSellTransactionsStorageContract
+    private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract
 ) : HistoryRemoteRepository {
 
-    private val allTransactions = mutableListOf<HistoryTransaction>()
+    private val cachedTransactions = mutableListOf<HistoryTransaction>()
 
     private var historyPagingState = HistoryPagingState.ACTIVE
 
@@ -26,24 +26,25 @@ class MoonpayHistoryRemoteRepository(
     }
 
     override suspend fun loadHistory(limit: Int, mintAddress: String): HistoryPagingResult {
-        if (!sellEnabledFeatureToggle.isFeatureEnabled || mintAddress.isNotEmpty()) {
+        val allHistoryOpened = mintAddress == Constants.WRAPPED_SOL_MINT
+        if (!sellEnabledFeatureToggle.isFeatureEnabled || !allHistoryOpened) {
             historyPagingState = HistoryPagingState.INACTIVE
             return HistoryPagingResult.Success(emptyList())
         }
-        allTransactions.clear()
+
+        cachedTransactions.clear()
         return try {
             val newTransactions = repository.getUserSellTransactions(
                 userAddress = tokenKeyProvider.publicKey.toBase58Instance()
             )
-            if (!allTransactions.containsAll(newTransactions)) {
-                allTransactions.addAll(newTransactions)
+            if (!cachedTransactions.containsAll(newTransactions)) {
+                cachedTransactions.addAll(newTransactions)
             }
             historyPagingState = HistoryPagingState.INACTIVE
-            HistoryPagingResult.Success(
-                newTransactions.filter {
-                    !hiddenSellTransactionsStorageContract.isTransactionHidden(it.transactionId)
-                }
-            )
+            val filteredSellTransactions = newTransactions.filterNot {
+                hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
+            }
+            HistoryPagingResult.Success(filteredSellTransactions)
         } catch (e: Throwable) {
             HistoryPagingResult.Error(e)
         }
@@ -54,6 +55,6 @@ class MoonpayHistoryRemoteRepository(
     }
 
     override suspend fun findTransactionById(id: String): HistoryTransaction? {
-        return allTransactions.firstOrNull { it.getHistoryTransactionId() == id }
+        return cachedTransactions.firstOrNull { it.getHistoryTransactionId() == id }
     }
 }
