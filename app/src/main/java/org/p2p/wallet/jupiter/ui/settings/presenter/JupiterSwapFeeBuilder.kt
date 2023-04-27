@@ -89,4 +89,3 @@ data class SwapSettingFeeBox(
     val amountUsd: BigDecimal?,
     val token: JupiterSwapToken,
 )
-
