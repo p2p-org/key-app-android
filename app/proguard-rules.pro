@@ -80,7 +80,6 @@
 -keep public class * extends org.p2p.wallet.moonpay.model.MoonpayBuyResult
 -keep public class * implements org.p2p.wallet.bridge.model.BridgeResult
 
-
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }
 -keep class com.appsflyer.** { *; }
