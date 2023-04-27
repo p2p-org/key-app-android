@@ -71,9 +71,9 @@ class HistoryFragment :
     ) {
         replaceFragment(
             JupiterSwapFragment.create(
-                tokenASymbol = sourceSymbol,
-                tokenBSymbol = destinationSymbol,
-                amountA = Constants.ZERO_AMOUNT,
+                initialTokenASymbol = sourceSymbol,
+                initialTokenBSymbol = destinationSymbol,
+                preinstallAmountA = Constants.ZERO_AMOUNT,
                 source = openedFrom
             )
         )
