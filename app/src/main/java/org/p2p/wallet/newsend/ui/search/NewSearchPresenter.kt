@@ -229,7 +229,7 @@ class NewSearchPresenter(
     }
 
     private fun showNotFound() {
-        view?.showUsersMessage(null)
+        view?.showUsersMessage(textRes = null)
         view?.clearUsers()
         view?.showNotFound()
     }
