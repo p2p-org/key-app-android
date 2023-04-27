@@ -190,6 +190,10 @@ class NewSendFragment :
         binding.widgetSendDetails.disableFiat()
     }
 
+    override fun enableSwitchAmounts() {
+        binding.widgetSendDetails.enableFiat()
+    }
+
     override fun disableInputs() {
         binding.widgetSendDetails.disableInputs()
     }
@@ -281,7 +285,7 @@ class NewSendFragment :
 
     private fun UiKitToolbar.setupToolbar() {
         val toolbarTitle = when (val recipient = recipient) {
-            is SearchResult.UsernameFound -> recipient.getFormattedUsername()
+            is SearchResult.UsernameFound -> recipient.formattedUsername
             else -> recipient.formattedAddress
         }
         title = toolbarTitle

@@ -1,4 +1,5 @@
 @file:Suppress("DEPRECATION")
+
 package org.p2p.wallet.common.crashlogging.impl
 
 import io.sentry.Breadcrumb
@@ -41,6 +42,11 @@ class SentryFacade : CrashLoggingFacade {
     }
 
     override fun setCustomKey(key: String, value: Any) {
+        if (key.contentEquals("username")) {
+            // for search purposes
+            Sentry.setTag(key, value.toString())
+        }
+
         val validatedValue: String = if (value is String) {
             value.takeIf(String::isNotBlank) ?: "-"
         } else {

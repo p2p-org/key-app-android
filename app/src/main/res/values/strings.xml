@@ -48,6 +48,7 @@
     <string name="not_available">N/A</string>
     <string name="common_burn">Burn</string>
     <string name="common_mint">Mint</string>
+    <string name="common_refresh">Refresh</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -59,6 +60,8 @@
     <string name="error_title">Error occurred</string>
     <string name="error_general_title">Unknown error</string>
     <string name="error_general_message">❌ Something went wrong. Please, try again</string>
+    <string name="error_general_message_refresh">Something went wrong</string>
+    <string name="error_general_message_refresh_subtitle">Refresh the page to proceed</string>
     <string name="error_network_title">Connection error</string>
     <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
     <string name="error_no_internet_message">🥺 You have no internet connection</string>
@@ -253,7 +256,7 @@
     <string name="main_correct_address">I’m sure, It’s correct</string>
     <string name="home_buy">Buy</string>
     <string name="main_swap_min_receive">Receive at least:</string>
-    <string name="main_enter_the_amount">Enter the amount</string>
+    <string name="main_enter_the_amount">Enter amount</string>
     <string name="main_enter_incorrect_amount">Incorrect amount</string>
     <string name="main_scan_qr">Scan QR</string>
     <string name="main_key_app_username_sol_address">Username / address</string>
@@ -366,7 +369,6 @@
     <string name="send_transaction_details">@string/common_transaction_details</string>
     <string name="send_receive_title">Receive</string>
     <string name="send_transaction_being_processed">The transaction is being processed</string>
-    <string name="send_confirm_transaction">Confirm your transaction</string>
     <string name="send_confirm_warning">Be sure all details are correct before confirming the transaction. Once confirmed, it cannot be reversed. If everything is correct, tap the button below to continue.</string>
     <string name="send_confirm_warning_highlight">Once confirmed, it cannot be reversed.</string>
     <string name="send_confirm_with_fingerprint">Confirm with fingerprint</string>
@@ -408,7 +410,6 @@
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
     <string name="swap_being_processed">The swap is being processed</string>
     <string name="swap_max_price_slippage">Max price slippage</string>
-    <string name="swap_transfer_confirm_message">You are going to swap</string>
     <string name="swap_insufficient_balance">Your account does not have enough balance to cover fees. Please choose another token and try again</string>
     <string name="swap_successfully_format">%1s was swapped to %2s successfully</string>
     <string name="swap_insufficient_funds_format">Insufficient %s funds to pay swap fees</string>

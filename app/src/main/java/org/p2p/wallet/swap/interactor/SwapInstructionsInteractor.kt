@@ -18,68 +18,6 @@ class SwapInstructionsInteractor(
     private val orcaAddressInteractor: TransactionAddressInteractor
 ) {
 
-    suspend fun prepareValidAccountAndInstructions(
-        myAccount: PublicKey,
-        address: PublicKey?,
-        mint: PublicKey,
-        initAmount: BigInteger,
-        feePayer: PublicKey,
-        closeAfterward: Boolean
-    ): AccountInstructions {
-        if (mint.toBase58() == WRAPPED_SOL_MINT) {
-            val accountInstructions = prepareSourceAccountAndInstructions(
-                myNativeWallet = myAccount,
-                source = address ?: myAccount,
-                amount = BigInteger.ZERO,
-                feePayer = feePayer
-            )
-
-            val isCreatingWSOL = myAccount.toBase58() == (address ?: myAccount).toBase58() &&
-                accountInstructions.instructions.size > 1
-
-            // transfer
-            if (isCreatingWSOL && initAmount.compareTo(BigInteger.ZERO) != 0) {
-                val transferInstruction = SystemProgram.transfer(
-                    fromPublicKey = myAccount,
-                    toPublicKey = accountInstructions.account,
-                    lamports = initAmount
-                )
-
-                accountInstructions.instructions.add(1, transferInstruction)
-            }
-
-            return accountInstructions
-        }
-
-        return prepareDestinationAccountAndInstructions(
-            myAccount = myAccount,
-            destination = address,
-            destinationMint = mint,
-            feePayer = feePayer,
-            closeAfterward = closeAfterward
-        )
-    }
-
-    // MARK: - Account and instructions
-    suspend fun prepareSourceAccountAndInstructions(
-        myNativeWallet: PublicKey,
-        source: PublicKey,
-        amount: BigInteger,
-        feePayer: PublicKey
-    ): AccountInstructions {
-        // if token is non-native
-        if (source.toBase58() != myNativeWallet.toBase58()) {
-            return AccountInstructions(source)
-        }
-
-        // if token is native
-        return prepareCreatingWSOLAccountAndCloseWhenDone(
-            from = source,
-            amount = amount,
-            payer = feePayer
-        )
-    }
-
     suspend fun prepareCreatingWSOLAccountAndCloseWhenDone(
         from: PublicKey,
         amount: BigInteger,
@@ -115,27 +53,6 @@ class SwapInstructionsInteractor(
             ),
             signers = listOf(newAccount),
             secretKey = newAccount.keypair
-        )
-    }
-
-    suspend fun prepareDestinationAccountAndInstructions(
-        myAccount: PublicKey,
-        destination: PublicKey?,
-        destinationMint: PublicKey,
-        feePayer: PublicKey,
-        closeAfterward: Boolean
-    ): AccountInstructions {
-        // if destination is a registered non-native token account
-        if (destination != null && destination.toBase58() != myAccount.toBase58()) {
-            return AccountInstructions(destination)
-        }
-
-        // if destination is a native account or is null
-        return prepareForCreatingAssociatedTokenAccount(
-            owner = myAccount,
-            mint = destinationMint,
-            feePayer = feePayer,
-            closeAfterward = closeAfterward
         )
     }
 

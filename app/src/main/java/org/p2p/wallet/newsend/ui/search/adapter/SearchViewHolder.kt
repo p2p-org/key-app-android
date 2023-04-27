@@ -18,6 +18,8 @@ import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
+import org.p2p.wallet.newsend.model.NetworkType
+import org.p2p.wallet.utils.viewbinding.getString
 
 class SearchViewHolder(
     parent: ViewGroup,
@@ -46,7 +48,7 @@ class SearchViewHolder(
             if (item.username.endsWith(usernameDomainFeatureToggle.value)) {
                 imageResource = R.drawable.ic_key_app_circle
                 frameWalletImageView.setPadding(0, 0, 0, 0)
-                textViewTop.text = item.getFormattedUsername()
+                textViewTop.text = item.formattedUsername
                 textViewBottom.isVisible = false
             } else {
                 imageResource = R.drawable.ic_search_wallet
@@ -65,16 +67,23 @@ class SearchViewHolder(
     private fun renderAddressOnly(item: SearchResult.AddressFound) {
         with(binding) {
             val imageIconUrl = item.sourceToken?.iconUrl
+            val description: String?
             val imageObject: Any = if (imageIconUrl != null) {
                 frameWalletImageView.setPadding(0, 0, 0, 0)
-
+                description = getString(
+                    R.string.search_no_other_tokens_description,
+                    item.sourceToken.tokenSymbol
+                )
                 imageIconUrl
             } else {
                 frameWalletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                description = null
                 R.drawable.ic_search_wallet
             }
             textViewTop.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
+            textViewBottom.text = description
+            textViewBottom.isVisible = item.networkType == NetworkType.SOLANA
             Glide.with(root)
                 .load(imageObject)
                 .circleCrop()

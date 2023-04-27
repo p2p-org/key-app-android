@@ -3,6 +3,7 @@ package org.p2p.wallet.sell.interactor
 import android.content.res.Resources
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
+import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.wallet.R
@@ -15,6 +16,7 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
 
@@ -24,18 +26,20 @@ class HistoryItemMapper(
 ) {
 
     private val historyItemFlow = MutableStateFlow<List<HistoryItem>?>(null)
+    val rpcHistoryItems = mutableListOf<HistoryItem>()
+    val sellHistoryItems = mutableListOf<HistoryItem>()
 
     fun getHistoryAdapterItemFlow(): MutableStateFlow<List<HistoryItem>?> {
         return historyItemFlow
     }
 
     suspend fun toAdapterItem(
+        tokenMintAddress: Base58String? = null,
         transactions: List<HistoryTransaction>,
         userSendLinksCount: Int
     ) {
         withContext(dispatchers.io) {
-            val rpcHistoryItems = mutableListOf<HistoryItem>()
-            val sellHistoryItems = mutableListOf<HistoryItem>()
+
             transactions.forEachIndexed { _, item ->
                 when (item) {
                     is RpcHistoryTransaction -> {
@@ -50,9 +54,31 @@ class HistoryItemMapper(
                 }
             }
 
+            val swapBannerItem: HistoryItem.SwapBannerItem? = when (tokenMintAddress?.base58Value) {
+                Constants.USDC_MINT -> {
+                    HistoryItem.SwapBannerItem(
+                        sourceTokenMintAddress = Constants.USDC_MINT,
+                        sourceTokenSymbol = Constants.USDC_SYMBOL,
+                        destinationTokenMintAddress = Constants.USDT_MINT,
+                        destinationTokenSymbol = Constants.USDT_SYMBOL
+                    )
+                }
+                Constants.USDT_MINT -> {
+                    HistoryItem.SwapBannerItem(
+                        sourceTokenMintAddress = Constants.USDT_MINT,
+                        sourceTokenSymbol = Constants.USDT_SYMBOL,
+                        destinationTokenMintAddress = Constants.USDC_MINT,
+                        destinationTokenSymbol = Constants.USDC_SYMBOL
+                    )
+                }
+                else -> {
+                    null
+                }
+            }
+
             val userSendLinksItem: HistoryItem.UserSendLinksItem? =
                 HistoryItem.UserSendLinksItem(userSendLinksCount).takeIf { userSendLinksCount > 0 }
-            val historyItems = listOfNotNull(userSendLinksItem)
+            val historyItems = listOfNotNull(swapBannerItem, userSendLinksItem)
                 .plus(sellHistoryItems)
                 .plus(rpcHistoryItems)
             historyItemFlow.emit(historyItems)
@@ -91,9 +117,9 @@ class HistoryItemMapper(
 
                 startTitle = getFormattedUsernameOrAddress()
                 startSubtitle = resources.getString(getTypeName())
-                endTopValue = getValue()
+                endTopValue = getFormattedFiatValue()
                 endTopValueTextColor = getTextColor()
-                endBottomValue = getTotal()
+                endBottomValue = getTotalWithSymbol()
             }
             is RpcHistoryTransaction.StakeUnstake -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
@@ -245,7 +271,7 @@ class HistoryItemMapper(
         )
     }
 
-    suspend fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {
+    fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {
         val receiverAddress = if (sellTransaction is SellTransaction.WaitingForDepositTransaction) {
             sellTransaction.moonpayDepositWalletAddress.base58Value
         } else {

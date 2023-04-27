@@ -9,6 +9,7 @@
     android:background="@color/backgroundPrimary"
     android:clickable="true"
     android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     android:paddingHorizontal="16dp">
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView

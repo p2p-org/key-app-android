@@ -43,7 +43,7 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
     }
 
     fun setChecked(menuItemId: Int) {
-        binding.bottomNavigationView.menu.findItem(menuItemId).isChecked = true
+        binding.bottomNavigationView.menu.findItem(menuItemId)?.isChecked = true
     }
 }
 

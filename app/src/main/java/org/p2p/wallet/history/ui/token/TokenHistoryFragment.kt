@@ -7,6 +7,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
@@ -15,7 +16,9 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.historylist.HistoryListViewClickListener
+import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewType
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
@@ -28,8 +31,7 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.swap.ui.SwapFragmentFactory
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
@@ -56,6 +58,7 @@ class TokenHistoryFragment :
     }
 
     override val presenter: TokenHistoryContract.Presenter by inject { parametersOf(tokenForHistory) }
+    private val historyListPresenter: HistoryListViewContract.Presenter by inject()
 
     private val tokenForHistory: Token.Active by args(EXTRA_TOKEN)
 
@@ -64,8 +67,6 @@ class TokenHistoryFragment :
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
     private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
-
-    private val swapFragmentFactory: SwapFragmentFactory by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -86,6 +87,7 @@ class TokenHistoryFragment :
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
         binding.layoutHistoryList.bind(
+            presenter = historyListPresenter,
             clickListener = this@TokenHistoryFragment,
             listType = HistoryListViewType.HistoryForToken(tokenForHistory.mintAddress.toBase58Instance())
         )
@@ -115,6 +117,7 @@ class TokenHistoryFragment :
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         result.getSerializableOrNull<ReceiveNetwork>(KEY_RESULT_NETWORK)?.let { network ->
+            receiveAnalytics.logNetworkClicked(network)
             when (network) {
                 ReceiveNetwork.SOLANA -> openReceiveInSolana()
                 ReceiveNetwork.ETHEREUM -> openReceiveInEthereum()
@@ -141,7 +144,7 @@ class TokenHistoryFragment :
                 replaceFragment(NewSearchFragment.create(tokenForHistory, SearchOpenedFromScreen.MAIN))
             }
             ActionButton.SWAP_BUTTON -> {
-                replaceFragment(swapFragmentFactory.swapFragment(tokenForHistory, SwapOpenedFrom.TOKEN_SCREEN))
+                replaceFragment(JupiterSwapFragment.create(tokenForHistory, SwapOpenedFrom.TOKEN_SCREEN))
             }
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())
@@ -155,6 +158,23 @@ class TokenHistoryFragment :
 
     override fun onSellTransactionClicked(transactionId: String) {
         presenter.onSellTransactionClicked(transactionId)
+    }
+
+    override fun onSwapBannerClicked(
+        sourceTokenMint: String,
+        destinationTokenMint: String,
+        sourceSymbol: String,
+        destinationSymbol: String,
+        openedFrom: SwapOpenedFrom
+    ) {
+        replaceFragment(
+            JupiterSwapFragment.create(
+                tokenASymbol = sourceSymbol,
+                tokenBSymbol = destinationSymbol,
+                amountA = Constants.ZERO_AMOUNT,
+                source = openedFrom
+            )
+        )
     }
 
     override fun onUserSendLinksClicked() = Unit
@@ -183,6 +203,7 @@ class TokenHistoryFragment :
     }
 
     override fun showReceiveNetworkDialog() {
+        receiveAnalytics.logNetworkSelectionScreenOpened()
         SelectReceiveNetworkBottomSheet.show(
             fm = childFragmentManager,
             title = getString(R.string.receive_network_dialog_title),

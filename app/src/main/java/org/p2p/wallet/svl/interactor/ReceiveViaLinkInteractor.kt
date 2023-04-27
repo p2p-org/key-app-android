@@ -3,13 +3,14 @@ package org.p2p.wallet.svl.interactor
 import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isMoreThan
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
@@ -17,19 +18,21 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
+
+class ReceiveViaLinkError(
+    override val message: String,
+    override val cause: Throwable? = null
+) : Throwable()
 
 class ReceiveViaLinkInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
     private val rpcBalanceRepository: RpcBalanceRepository,
     private val userLocalRepository: UserLocalRepository,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenPricesRemoteRepository: TokenPricesRemoteRepository
 ) {
-
-    private class ReceiveViaLinkError(
-        override val message: String,
-        override val cause: Throwable? = null
-    ) : Throwable()
 
     suspend fun parseAccountFromLink(link: SendViaLinkWrapper): TemporaryAccountState {
         val seedCode = link.link.substringAfterLast(SEND_LINK_FORMAT)
@@ -58,10 +61,12 @@ class ReceiveViaLinkInteractor(
             return TemporaryAccountState.ParsingFailed
         }
 
+        val tokenPrice = tokenData.coingeckoId?.let { fetchPriceForToken(it) }
+
         val token = TokenConverter.fromNetwork(
             account = activeAccount,
             tokenData = tokenData,
-            price = null
+            price = tokenPrice
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
@@ -79,16 +84,32 @@ class ReceiveViaLinkInteractor(
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT)
             ?: return TemporaryAccountState.ParsingFailed
 
+        val solPrice = tokenData.coingeckoId?.let { fetchPriceForToken(it) }
+
         val token = Token.createSOL(
             publicKey = temporaryAccount.publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
-            exchangeRate = null
+            solPrice = solPrice?.price
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
             token = token
         )
+    }
+
+    private suspend fun fetchPriceForToken(coingeckoId: String): TokenPrice? {
+        val price = userLocalRepository.getPriceByTokenId(coingeckoId)
+        if (price != null) return price
+
+        return kotlin.runCatching {
+            tokenPricesRemoteRepository.getTokenPriceById(
+                tokenId = TokenId(coingeckoId),
+                targetCurrency = USD_READABLE_SYMBOL
+            )
+        }
+            .onFailure { Timber.i(it) }
+            .getOrNull() // can be skipped if there error, that's ok
     }
 
     suspend fun receiveTransfer(
@@ -103,7 +124,7 @@ class ReceiveViaLinkInteractor(
             destinationAddress = recipient,
             token = token,
             lamports = token.totalInLamports,
-            memo = BuildConfig.sendViaLinkMemo,
+            memo = BuildConfig.svlMemoClaim,
             isSimulation = false,
             shouldCloseAccount = true
         )

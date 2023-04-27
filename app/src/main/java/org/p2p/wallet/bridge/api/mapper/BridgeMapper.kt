@@ -60,7 +60,8 @@ class BridgeMapper {
             networkFee = fromNetwork(response.networkFee),
             messageAccountRent = fromNetwork(response.messageAccountRent),
             bridgeFee = fromNetwork(response.bridgeFee),
-            arbiterFee = fromNetwork(response.arbiterFee)
+            arbiterFee = fromNetwork(response.arbiterFee),
+            resultAmount = fromNetwork(response.resultAmount),
         )
     }
 

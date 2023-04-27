@@ -9,10 +9,8 @@ import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asPositiveUsdTransaction
-import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -35,41 +33,42 @@ class ClaimUiMapper(private val resources: Resources) {
         val willGetAmount = claimDetails?.willGetAmount
         val amountTokens = willGetAmount?.formattedTokenAmount.orEmpty()
         val amountUsd = willGetAmount?.fiatAmount.orZero()
+        val amountToClaim = tokenToClaim.total
+        val minAmountForFreeFee = claimDetails?.minAmountForFreeFee.orZero()
+        val isFreeTransaction = amountToClaim >= minAmountForFreeFee
         val feeList = claimDetails?.let {
             listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
-        } ?: emptyList()
-
+        }?.filter { !isFreeTransaction }?.ifEmpty { null }
         return NewShowProgress(
             date = transactionDate,
             tokenUrl = tokenToClaim.iconUrl.orEmpty(),
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
             recipient = null,
-            totalFees = listOf(toTextHighlighting(feeList))
+            totalFees = feeList?.let { listOf(toTextHighlighting(feeList)) }
         )
     }
 
     fun makeClaimDetails(
+        isFree: Boolean,
         tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
         minAmountForFreeFee: BigDecimal
     ): ClaimDetails {
-        val tokenSymbol = tokenToClaim.tokenSymbol
-        val decimals = tokenToClaim.decimals
-        val defaultFee = fees?.gasEth.toBridgeAmount(tokenSymbol, decimals)
+        val defaultFee = fees?.gasEth.toBridgeAmount()
         return ClaimDetails(
-            willGetAmount = resultAmount.toBridgeAmount(tokenSymbol, decimals),
+            isFree = isFree,
+            willGetAmount = resultAmount.toBridgeAmount(),
             networkFee = defaultFee,
-            accountCreationFee = fees?.createAccount.toBridgeAmount(tokenSymbol, decimals),
-            bridgeFee = fees?.arbiterFee.toBridgeAmount(tokenSymbol, decimals),
-            minAmountForFreeFee = minAmountForFreeFee,
-            claimAmount = tokenToClaim.total
+            accountCreationFee = fees?.createAccount.toBridgeAmount(),
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(),
+            minAmountForFreeFee = minAmountForFreeFee
         )
     }
 
-    fun makeResultAmount(resultAmount: BridgeFee, tokenToClaim: Token.Eth): BridgeAmount {
-        return resultAmount.toBridgeAmount(tokenToClaim.tokenSymbol, tokenToClaim.decimals)
+    fun makeResultAmount(resultAmount: BridgeFee): BridgeAmount {
+        return resultAmount.toBridgeAmount()
     }
 
     fun getTextSkeleton(): TextViewCellModel.Skeleton {
@@ -98,25 +97,25 @@ class ClaimUiMapper(private val resources: Resources) {
         return ClaimScreenData(
             title = resources.getString(R.string.bridge_claim_title_format, tokenToClaim.tokenSymbol),
             tokenIconUrl = tokenToClaim.iconUrl,
-            tokenFormattedAmount = "${tokenToClaim.total.scaleMedium().formatToken()} ${tokenToClaim.tokenSymbol}",
+            tokenFormattedAmount = tokenToClaim.getFormattedTotal(includeSymbol = true),
             fiatFormattedAmount = tokenToClaim.totalInUsd.orZero().asApproximateUsd(withBraces = false),
         )
     }
 
-    private fun BridgeFee?.toBridgeAmount(
-        tokenSymbol: String,
-        decimals: Int,
-    ): BridgeAmount {
+    /**
+     * metadata.balance.fromLamports(metadata.decimals)
+     */
+    private fun BridgeFee?.toBridgeAmount(): BridgeAmount {
         return BridgeAmount(
-            tokenSymbol = tokenSymbol,
-            tokenAmount = this?.amountInToken(decimals).takeIf { !it.isNullOrZero() },
-            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero(),
-            tokenDecimals = decimals
+            tokenSymbol = this?.symbol.orEmpty(),
+            tokenDecimals = this?.decimals.orZero(),
+            tokenAmount = this?.amountInToken?.takeIf { !it.isNullOrZero() },
+            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
         )
     }
 
     private fun toTextHighlighting(items: List<BridgeAmount>): TextHighlighting {
-        val usdText = items.filter { !it.isFree }.sumOf { it.fiatAmount.orZero() }.asApproximateUsd(withBraces = false)
+        val usdText = items.filter { !it.isZero }.sumOf { it.fiatAmount.orZero() }.asApproximateUsd(withBraces = false)
         return TextHighlighting(
             commonText = usdText,
             highlightedText = usdText

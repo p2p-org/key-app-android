@@ -12,7 +12,7 @@ data class TransferFromSolanaRpcRequest(
     @Transient val source: SolAddress,
     @Transient val recipient: EthAddress,
     @Transient val mint: SolAddress?,
-    @Transient val amount: String,
+    @Transient val amount: String
 ) : JsonRpc<Map<String, Any>, BridgeSendTransactionResponse>(
     method = "transfer_from_solana",
     params = buildMap {

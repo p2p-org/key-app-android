@@ -9,6 +9,6 @@ interface AuthRepository {
         keys: List<String>
     ): Map<DerivationPath, List<Account>>
 
-    suspend fun createAccount(path: DerivationPath, keys: List<String>): Account
+    suspend fun createAccount(path: DerivationPath, keys: List<String>, walletIndex: Int): Account
     suspend fun generatePhrase(): List<String>
 }

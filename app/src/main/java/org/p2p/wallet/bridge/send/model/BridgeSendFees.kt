@@ -6,5 +6,6 @@ data class BridgeSendFees(
     val networkFee: BridgeFee,
     val messageAccountRent: BridgeFee,
     val bridgeFee: BridgeFee,
-    val arbiterFee: BridgeFee
+    val arbiterFee: BridgeFee,
+    val resultAmount: BridgeFee,
 )

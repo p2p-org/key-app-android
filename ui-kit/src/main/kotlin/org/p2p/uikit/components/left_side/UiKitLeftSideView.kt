@@ -58,5 +58,7 @@ class UiKitLeftSideView @JvmOverloads constructor(
         textViewFirst.bindOrGone(model.firstLineText)
         textViewSecond.bindOrGone(model.secondLineText)
         textViewThird.bindOrGone(model.thirdLineText)
+
+        textViewFirst.ellipsize = model.firstLineTextEllipsize
     }
 }

@@ -3,6 +3,7 @@ package org.p2p.wallet.infrastructure.network
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
@@ -41,7 +42,7 @@ import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
 import org.p2p.wallet.jupiter.JupiterModule.JUPITER_RETROFIT_QUALIFIER
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
-import org.p2p.wallet.updates.ConnectionStateProvider
+import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
 
 object NetworkModule : InjectionModule {
@@ -72,7 +73,7 @@ object NetworkModule : InjectionModule {
                 .create()
         }
 
-        single { ConnectionStateProvider(get()) }
+        single { NetworkConnectionStateProvider(get()) }
 
         createMoonpayNetworkModule()
 
@@ -176,7 +177,8 @@ object NetworkModule : InjectionModule {
         readTimeOut: Long = DEFAULT_READ_TIMEOUT_SECONDS,
         connectTimeOut: Long = DEFAULT_CONNECT_TIMEOUT_SECONDS,
         tag: String?,
-        interceptor: Interceptor? = null
+        interceptor: Interceptor? = null,
+        clientProtocols: List<Protocol>? = null
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -184,6 +186,9 @@ object NetworkModule : InjectionModule {
             .apply {
                 if (interceptor != null) {
                     addInterceptor(interceptor)
+                }
+                if (clientProtocols != null) {
+                    protocols(clientProtocols)
                 }
                 if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
                     addInterceptor(httpLoggingInterceptor(tag))

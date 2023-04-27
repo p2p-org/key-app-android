@@ -23,6 +23,10 @@ class UserInMemoryRepository(
     private val tokensSearchResultFlow = MutableStateFlow(TokenListData())
     private val searchTextByTokens: MutableMap<String, List<TokenData>> = mutableMapOf()
 
+    override fun areInitialTokensLoaded(): Boolean {
+        return allTokensFlow.value.isNotEmpty()
+    }
+
     override fun setTokenPrices(prices: List<TokenPrice>) {
         pricesFlow.value = prices
     }
@@ -103,7 +107,7 @@ class UserInMemoryRepository(
         }
 
         return filteredList.distinctBy { it.symbol }.sortedByDescending {
-            it.name.startsWith(searchText, ignoreCase = true)
+            it.symbol.equals(searchText, ignoreCase = true)
         }
     }
 

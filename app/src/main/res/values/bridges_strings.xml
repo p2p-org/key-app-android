@@ -12,7 +12,9 @@
     <string name="bridge_claim_fees_unavailable">Value is unavailable</string>
     <string name="bridge_claim_bottom_button">Claim</string>
     <string name="bridge_claim_bottom_button_format">Claim %s</string>
+    <string name="bridge_claim_bottom_button_add_funds">Add funds</string>
     <string name="bridge_claim_fees_bigger_error">The fees are bigger than the transaction amount</string>
+    <string name="bridge_claim_fees_common_error">Wormhole Bridge is currently unable. Please try again later.</string>
 
     <string name="bridge_info_free_transaction_message">All transactions over $%d are free. Key App will cover all fees for you.</string>
     <string name="bridge_info_transaction_free">Free</string>
@@ -30,5 +32,16 @@
     <string name="receive_token_search_found_header">HERE\'S WHAT WE FOUND</string>
 
     <string name="receive_network_dialog_title">Choose network</string>
+
+    <!--Send-->
+    <string name="bridge_send_fee_details_title">Transaction details</string>
+    <string name="bridge_send_fee_details_address">Recipient\'s address</string>
+    <string name="bridge_send_fee_details_gets">Recipient gets</string>
+    <string name="bridge_send_fee_details_network">Network Fees</string>
+    <string name="bridge_send_fee_details_wormhole">Using Wormhole bridge</string>
+    <string name="bridge_send_transaction_description_progress">It usually takes 15–20 minutes for a transaction to complete</string>
+    <string name="bridge_usdc_usdt_swap_message">To make a transfer to ETH you have to swap USDC to USDCet</string>
+    <string name="bridge_usdc_usdt_swap_action">Swap USDC → USDCet</string>
+    <string name="bridge_how_to_claim_for_free_title">How to claim for free</string>
 
 </resources>

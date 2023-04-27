@@ -41,6 +41,8 @@ private const val DELAY_IN_MS = 500L
 
 class NewBuyPresenter(
     tokenToBuy: Token,
+    private val fiatToken: String? = null,
+    private val fiatAmount: String? = null,
     private val buyAnalytics: BuyAnalytics,
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
@@ -91,7 +93,7 @@ class NewBuyPresenter(
             tokensToBuy = userInteractor.getTokensForBuy()
             if (tokensToBuy.isEmpty()) {
                 // cannot be empty, buy we are handling
-                Timber.i("Tokens to buy return an empty list, closing buy screen")
+                Timber.e(java.lang.IllegalStateException("Tokens to buy return an empty list, closing buy screen"))
                 view?.close()
                 return@launch
             }
@@ -115,7 +117,18 @@ class NewBuyPresenter(
             }
 
             validatePaymentMethod()
-            preselectMinimalFiatAmount()
+
+            if (!fiatToken.isNullOrBlank()) {
+                currenciesToSelect.firstOrNull { it.code.lowercase() == fiatToken.lowercase() }?.let {
+                    selectCurrency(it)
+                }
+            }
+
+            if (fiatAmount != null && fiatAmount.toBigDecimalOrNull() != null) {
+                selectMinimalFiatAmount(fiatAmount)
+            } else {
+                preselectMinimalFiatAmount()
+            }
         }
     }
 
@@ -126,9 +139,13 @@ class NewBuyPresenter(
         }
     }
 
+    private fun selectMinimalFiatAmount(amount: String) {
+        view?.showPreselectedAmount(amount)
+        setBuyAmount(amount, isDelayEnabled = false)
+    }
+
     private fun preselectMinimalFiatAmount() {
-        view?.showPreselectedAmount(DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toString())
-        setBuyAmount(DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toString(), isDelayEnabled = false)
+        selectMinimalFiatAmount(DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toString())
     }
 
     override fun onBackPressed() {
@@ -294,21 +311,23 @@ class NewBuyPresenter(
 
     private fun onBuyCurrencyLoadSuccess(buyResult: MoonpayBuyResult) {
         val buyResultAnalytics: BuyAnalytics.BuyResult
-        Timber.d(buyResult.toString())
         when (buyResult) {
             is MoonpayBuyResult.Success -> {
                 buyResultAnalytics = BuyAnalytics.BuyResult.SUCCESS
                 updateViewWithBuyCurrencyData(buyResult.data)
             }
             is MoonpayBuyResult.Error -> {
+                Timber.e(buyResult, "Failed to buy")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
             }
             is MoonpayBuyResult.MinAmountError -> {
+                Timber.i(buyResult.toString(), "Failed to buy: MinAmountError")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 showMinAmountError(buyResult.minBuyAmount)
             }
             is MoonpayBuyResult.MaxAmountError -> {
+                Timber.i(buyResult.toString(), "Failed to buy: MaxAmountError")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 showMaxAmountError(buyResult.maxBuyAmount)
             }

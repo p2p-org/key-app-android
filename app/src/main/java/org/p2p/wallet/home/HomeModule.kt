@@ -2,13 +2,17 @@ package org.p2p.wallet.home
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
+import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
@@ -40,6 +44,7 @@ object HomeModule : InjectionModule {
     private fun Module.initDataLayer() {
         factory<HomeLocalRepository> { HomeDatabaseRepository(get()) }
         factoryOf(::HomeMapper)
+        factoryOf(::RefreshErrorInMemoryRepository) bind RefreshErrorRepository::class
     }
 
     private fun Module.initDomainLayer() {
@@ -57,6 +62,7 @@ object HomeModule : InjectionModule {
             )
         }
         factoryOf(::SearchInteractor)
+        singleOf(::RefreshErrorInteractor)
     }
 
     private fun Module.initPresentationLayer() {
@@ -66,9 +72,11 @@ object HomeModule : InjectionModule {
         factoryOf(::UserTokensPolling)
         /* Cached data exists, therefore creating singleton */
         // todo: do something with this dependenices!
+        // todo: to eliminate all this hell, we could just migrate to hilt
         factory<HomeContract.Presenter> {
             HomePresenter(
                 analytics = get(),
+                claimAnalytics = get(),
                 updatesManager = get(),
                 userInteractor = get(),
                 settingsInteractor = get(),
@@ -86,7 +94,9 @@ object HomeModule : InjectionModule {
                 sellEnabledFeatureToggle = get(),
                 intercomDeeplinkManager = get(),
                 ethereumInteractor = get(),
-                seedPhraseProvider = get()
+                seedPhraseProvider = get(),
+                deeplinksManager = get(),
+                connectionManager = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

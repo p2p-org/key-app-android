@@ -4,7 +4,12 @@ import androidx.core.content.getSystemService
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import org.p2p.uikit.components.ScreenTab
+import android.net.Uri
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.onCompletion
 import org.p2p.wallet.R
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.notification.NotificationType
@@ -24,12 +29,55 @@ class AppDeeplinksManager(
         const val NOTIFICATION_TYPE = "eventType"
     }
 
+    private val deeplinkData = MutableStateFlow<DeeplinkData?>(null)
+
+    /**
+     * Tabs switcher for navigate by home screen (see [org.p2p.wallet.home.MainFragment])
+     */
     private var mainTabsSwitcher: MainTabsSwitcher? = null
+
+    /**
+     * Listener for root activity (see [org.p2p.wallet.root.RootActivity])
+     */
     private var rootListener: RootListener? = null
 
+    /**
+     * Intent for pending home intents, like attempt to
+     */
     private var pendingIntent: Intent? = null
 
+    /**
+     * Intent for send-via-link
+     */
     private var pendingTransferLink: SendViaLinkWrapper? = null
+
+    /**
+     * Notify manager that we have new deeplink to handle
+     * @param data Deeplink data
+     */
+    fun notify(data: DeeplinkData) {
+        deeplinkData.tryEmit(data)
+    }
+
+    /**
+     * Get the deeplink data flow for specified targets
+     * @param supportedTargets Set of deeplink targets, empty means all targets will be emitted
+     */
+    fun subscribeOnDeeplinks(supportedTargets: Set<DeeplinkTarget> = emptySet()): Flow<DeeplinkData> {
+        return deeplinkData
+            .filterNotNull()
+            .let { flow ->
+                if (supportedTargets.isEmpty()) {
+                    flow
+                } else {
+                    flow.filter { item -> item.target in supportedTargets }
+                }
+            }
+            .onCompletion {
+                // dispose after all subscribers are unsubscribed
+                deeplinkData.tryEmit(null)
+            }
+    }
 
     fun setTabsSwitcher(mainTabsSwitcher: MainTabsSwitcher) {
         this.mainTabsSwitcher = mainTabsSwitcher
@@ -53,43 +101,31 @@ class AppDeeplinksManager(
                 val data = intent.data ?: return
 
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
-                val isTransferScheme = context.getString(R.string.transfer_app_scheme) == data.host
-                when {
-                    isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> {
-                        rootListener?.triggerOnboardingDeeplink(data)
-                    }
-                    isTransferScheme -> {
-                        val deeplink = SendViaLinkWrapper(data.toString())
-                        val isExecuted = rootListener?.parseTransferViaLink(deeplink) ?: false
-                        if (!isExecuted) {
-                            // postpone deeplink execution until app will be ready
-                            pendingTransferLink = deeplink
-                        }
-                    }
-                    intercomDeeplinkManager.handleBackgroundDeeplink(data) -> {
-                        // do nothing
-                    }
-                }
-            }
-            isDeeplinkWithExtras(intent) -> {
-                val extras = intent.extras ?: return
+                val isTransferScheme = isTransferDeeplink(data)
 
                 when {
-                    // additional parsing when app been opened with notification from background
-                    extras.containsKey(NOTIFICATION_TYPE) -> {
-                        val values = extras.toStringMap()
-                        val notificationType = NotificationType.fromValue(
-                            values[NOTIFICATION_TYPE].orEmpty()
-                        )
-                        intent.addDeeplinkDataToIntent(notificationType)
-                    }
-                    extras.containsKey(EXTRA_TAB_SCREEN) -> {
-                        switchToMainTabIfPossible(intent)
-                    }
+                    isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> handleOnboardingDeeplink(data)
+                    isValidScheme && DeeplinkUtils.isValidCommonLink(data) -> handleCommonDeeplink(intent)
+                    isTransferScheme -> handleTransferDeeplink(data)
+                    intercomDeeplinkManager.handleBackgroundDeeplink(data) -> Unit
                 }
             }
+            isDeeplinkWithExtras(intent) -> handleDeeplinkWithExtras(intent)
             else -> Unit
         }
+    }
+
+    /**
+     * https://t.key.app/...
+     * or keyapp://t/... if came from website
+     */
+    private fun isTransferDeeplink(data: Uri): Boolean {
+        val transferHostMain = context.getString(R.string.transfer_app_host)
+        val transferSchemeMain = "https"
+        val transferHostAlternative = "t"
+        val transferSchemeAlternative = context.getString(R.string.transfer_app_scheme_alternative)
+        return data.host == transferHostMain && data.scheme == transferSchemeMain ||
+            data.host == transferHostAlternative && data.scheme == transferSchemeAlternative
     }
 
     fun buildIntent(notificationType: NotificationType): Intent {
@@ -126,17 +162,73 @@ class AppDeeplinksManager(
         putExtra(EXTRA_TAB_SCREEN, navigationId)
     }
 
+    private fun handleDeeplinkWithExtras(intent: Intent) {
+        val extras = intent.extras ?: return
+
+        when {
+            // additional parsing when app been opened with notification from background
+            extras.containsKey(NOTIFICATION_TYPE) -> {
+                val values = extras.toStringMap()
+                val notificationType = NotificationType.fromValue(
+                    values[NOTIFICATION_TYPE].orEmpty()
+                )
+                intent.addDeeplinkDataToIntent(notificationType)
+            }
+            extras.containsKey(EXTRA_TAB_SCREEN) -> {
+                switchToMainTabIfPossible(intent)
+            }
+        }
+    }
+
+    private fun handleOnboardingDeeplink(data: Uri) {
+        rootListener?.triggerOnboardingDeeplink(data)
+    }
+
+    private fun handleTransferDeeplink(data: Uri) {
+        val validatedSvlLink = if (data.scheme == context.getString(R.string.transfer_app_scheme_alternative)) {
+            // convert link to https format
+            data.buildUpon()
+                .scheme("https")
+                .authority("t.key.app")
+                .build()
+        } else {
+            data
+        }
+        val deeplink = SendViaLinkWrapper(validatedSvlLink.toString())
+        val isExecuted = rootListener?.parseTransferViaLink(deeplink) ?: false
+        if (!isExecuted) {
+            // postpone deeplink execution until app will be ready
+            pendingTransferLink = deeplink
+        }
+    }
+
+    private fun handleCommonDeeplink(intent: Intent) {
+        val data = intent.data ?: return
+        val screenName = data.host
+        val target = DeeplinkTarget.fromScreenName(screenName)
+        target?.let { deeplinkTarget ->
+            val deeplinkData = DeeplinkData(
+                target = deeplinkTarget,
+                pathSegments = data.pathSegments,
+                args = data.queryParameterNames
+                    .filter { !data.getQueryParameter(it).isNullOrBlank() }
+                    .associateWith { data.getQueryParameter(it)!! },
+                intent = intent
+            )
+            notify(deeplinkData)
+        }
+    }
+
     private fun switchToMainTabIfPossible(intent: Intent) {
         val extras = intent.extras ?: return
 
         rootListener?.popBackStackToMain()
 
-        val clickedTab = ScreenTab.fromTabId(extras.getInt(EXTRA_TAB_SCREEN))!!
-        mainTabsSwitcher?.navigate(clickedTab) ?: savePendingIntent(intent)
-    }
-
-    private fun savePendingIntent(intent: Intent) {
-        pendingIntent = intent
+        val clickedTab = DeeplinkTarget.fromScreenTabId(extras.getInt(EXTRA_TAB_SCREEN))
+        clickedTab?.let { target ->
+            val deeplinkData = DeeplinkData(target, intent = intent)
+            notify(deeplinkData)
+        }
     }
 
     private fun isDeeplinkWithUri(intent: Intent): Boolean = intent.data != null

@@ -23,7 +23,7 @@ class EthereumSendRemoteRepository(
         source: SolAddress,
         recipient: EthAddress,
         mint: SolAddress?,
-        amount: String,
+        amount: String
     ): BridgeSendTransaction {
         val request = TransferFromSolanaRpcRequest(
             userWallet = userWallet,

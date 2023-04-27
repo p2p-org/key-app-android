@@ -67,6 +67,7 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="24dp"
         android:backgroundTint="@color/bg_snow"
+        android:gravity="center"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/containerQr">
@@ -83,8 +84,9 @@
         <TextView
             android:id="@+id/textViewAddress"
             style="@style/UiKit.TextAppearance.Regular.Label1"
-            android:layout_width="match_parent"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:textColor="@color/text_mountain"
             app:layout_constraintTop_toBottomOf="@id/textViewAddressTitle"
             tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
@@ -106,6 +108,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:gravity="center"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/separator">
@@ -122,7 +125,7 @@
         <TextView
             android:id="@+id/textViewUsername"
             style="@style/UiKit.TextAppearance.Regular.Label1"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_mountain"
             app:layout_constraintTop_toBottomOf="@id/textViewUsernameTitle"
@@ -137,6 +140,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="@string/receive_copy_address"
+        app:icon="@drawable/ic_copy"
+        app:iconGravity="textEnd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutUsername"
         app:layout_constraintVertical_bias="1" />

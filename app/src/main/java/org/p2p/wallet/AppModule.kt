@@ -4,6 +4,7 @@ import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.p2p.core.network.ConnectionManager
 import org.p2p.ethereumkit.EthereumKitService
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
@@ -11,7 +12,6 @@ import org.p2p.wallet.bridge.claim.ClaimModule
 import org.p2p.wallet.bridge.send.BridgeSendModule
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
@@ -52,7 +52,6 @@ object AppModule {
         singleOf(::AppScope)
         single<Resources> { androidContext().resources }
         singleOf(::InAppFeatureFlags)
-        singleOf(::ResourcesProvider)
         singleOf(::ServiceScope)
         single { AppRestarter { restartAction.invoke() } }
         single {
@@ -61,6 +60,7 @@ object AppModule {
                 tokenKeyProvider = get()
             )
         }
+        singleOf(::ConnectionManager)
 
         singleOf(::AppCreatedAction)
 

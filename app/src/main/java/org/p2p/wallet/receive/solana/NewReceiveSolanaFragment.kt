@@ -9,9 +9,11 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewReceiveSolanaBinding
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -34,6 +36,7 @@ class NewReceiveSolanaFragment :
 
     override val presenter: NewReceiveSolanaContract.Presenter by inject()
     private val binding: FragmentNewReceiveSolanaBinding by viewBinding()
+    private val receiveAnalytics: ReceiveAnalytics by inject()
     private val glideManager: GlideManager by inject()
     private val logoUrl: String by args(ARG_TOKEN_LOGO_URL)
     private val tokenSymbol: String by args(ARG_TOKEN_SYMBOL)
@@ -48,9 +51,11 @@ class NewReceiveSolanaFragment :
             containerWatermark.isVisible = logoUrl.isNotEmpty()
 
             layoutUsername.setOnClickListener {
+                receiveAnalytics.logUsernameCopyClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA)
                 val username = binding.textViewUsername.text.toString()
                 if (username.isEmpty()) return@setOnClickListener
                 requireContext().copyToClipBoard(username)
+                requireContext().vibrate()
                 showUiKitSnackBar(messageResId = R.string.receive_username_copied)
             }
         }
@@ -60,11 +65,15 @@ class NewReceiveSolanaFragment :
     override fun initView(qrBitmap: Bitmap, username: String?, tokenAddress: String) {
         with(binding) {
             buttonAction.setOnClickListener {
+                receiveAnalytics.logAddressCopyButtonClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA)
                 requireContext().copyToClipBoard(tokenAddress)
+                requireContext().vibrate()
                 showUiKitSnackBar(messageResId = R.string.receive_sol_address_copied)
             }
             containerAddress.setOnClickListener {
+                receiveAnalytics.logAddressCopyLongClicked(ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA)
                 requireContext().copyToClipBoard(tokenAddress)
+                requireContext().vibrate()
                 showUiKitSnackBar(messageResId = R.string.receive_sol_address_copied)
             }
             textViewAddress.text = tokenAddress

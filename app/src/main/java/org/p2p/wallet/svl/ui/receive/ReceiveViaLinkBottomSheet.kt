@@ -3,6 +3,7 @@ package org.p2p.wallet.svl.ui.receive
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -69,6 +70,11 @@ class ReceiveViaLinkBottomSheet :
         textViewTokenAmount.bind(tokenAmount)
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        analytics.logHideClicked()
+        super.onDismiss(dialog)
+    }
+
     override fun renderState(state: SendViaLinkClaimingState) = with(binding) {
         when (state) {
             is SendViaLinkClaimingState.InitialLoading -> renderInitialLoading()
@@ -94,12 +100,14 @@ class ReceiveViaLinkBottomSheet :
         buttonDone.isVisible = true
         buttonCancel.isVisible = true
 
-        buttonDone.setText(R.string.common_reload)
+        buttonDone.setText(R.string.common_try_again)
         buttonDone.setOnClickListener { presenter.parseAccountFromLink(link, isRetry = true) }
     }
 
     private fun DialogSendViaLinkReceiveFundsBinding.renderClaimFailed(state: SendViaLinkClaimingState.ClaimFailed) {
         analytics.logClaimFailed()
+
+        textViewTitle.setText(R.string.send_via_link_receive_funds_title)
 
         layoutTransactionDetails.isVisible = true
         progressStateTransaction.isVisible = true
@@ -114,6 +122,7 @@ class ReceiveViaLinkBottomSheet :
     }
 
     private fun DialogSendViaLinkReceiveFundsBinding.renderClaimSuccess(state: SendViaLinkClaimingState.ClaimSuccess) {
+        analytics.logClaimSuccess()
         layoutClaimSuccess.root.isVisible = true
         textViewTitle.isVisible = false
         layoutTransactionDetails.isVisible = false
@@ -133,7 +142,7 @@ class ReceiveViaLinkBottomSheet :
         layoutTransactionDetails.isVisible = true
         imageViewBanner.isVisible = false
         progressStateTransaction.isVisible = true
-        progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
+        progressStateTransaction.setDescriptionText(R.string.send_via_link_receive_funds_claiming_message)
         buttonDone.setText(R.string.common_close)
         buttonDone.setOnClickListener {
             analytics.logCloseClicked()

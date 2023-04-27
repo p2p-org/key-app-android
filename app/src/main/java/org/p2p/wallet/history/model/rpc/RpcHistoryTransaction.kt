@@ -201,33 +201,45 @@ sealed class RpcHistoryTransaction(
         @DrawableRes
         fun getIcon(): Int = if (isSend) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
 
-        fun getTitle(resources: Resources): String = if (isSend) {
-            resources.getString(R.string.details_transfer_format, symbol, destination.cutMiddle())
-        } else {
-            resources.getString(R.string.details_transfer_format, destination.cutMiddle(), symbol)
+        fun getTitle(resources: Resources): String {
+            val (from: String, to: String) = if (isSend) {
+                symbol to destination.cutMiddle()
+            } else {
+                destination.cutMiddle() to symbol
+            }
+            return resources.getString(R.string.details_transfer_format, from, to)
         }
 
         fun getFormattedUsernameOrAddress(): String = getUsername() ?: getAddress()
 
-        private fun getUsername(): String? = counterPartyUsername?.let { if (isSend) "To $it" else "From $it" }
+        private fun getUsername(): String? {
+            return counterPartyUsername?.let { if (isSend) "To $it" else "From $it" }
+        }
 
         private fun getAddress(): String {
             return if (isSend) "To ${destination.cutStart()}" else "From ${senderAddress.cutStart()}"
         }
 
-        fun getValue(): String? = amount.totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isSend))
+        fun getFormattedFiatValue(): String? {
+            return amount.totalInUsd
+                ?.scaleShortOrFirstNotZero()
+                ?.asUsdTransaction(getSymbol(isSend))
+        }
 
-        fun getTotal(): String = "${getSymbol(isSend)}${getFormattedTotal()}"
+        fun getTotalWithSymbol(): String = "${getSymbol(isSend)}${getFormattedTotal()}"
 
         @StringRes
-        fun getTypeName(): Int = when (type) {
-            RpcHistoryTransactionType.RECEIVE -> {
-                if (status.isPending()) R.string.transaction_history_receive_pending
-                else R.string.transaction_history_receive
+        fun getTypeName(): Int = if (type == RpcHistoryTransactionType.RECEIVE) {
+            if (status.isPending()) {
+                R.string.transaction_history_receive_pending
+            } else {
+                R.string.transaction_history_receive
             }
-            else -> {
-                if (status.isPending()) R.string.transaction_history_send_pending
-                else R.string.transaction_history_send
+        } else {
+            if (status.isPending()) {
+                R.string.transaction_history_send_pending
+            } else {
+                R.string.transaction_history_send
             }
         }
 

@@ -1,6 +1,7 @@
 package org.p2p.wallet.history.ui.historylist
 
 import timber.log.Timber
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
@@ -27,6 +28,8 @@ class HistoryListViewPresenter(
     private val historyAnalytics: HistoryAnalytics,
 ) : BasePresenter<HistoryListViewContract.View>(), HistoryListViewContract.Presenter {
 
+    private var isInitialHistoryLoaded = false
+
     override fun attach(view: HistoryListViewContract.View) {
         super.attach(view)
         launch {
@@ -41,6 +44,7 @@ class HistoryListViewPresenter(
         launch {
             historyItemMapper.getHistoryAdapterItemFlow()
                 .filterNotNull()
+                .distinctUntilChanged()
                 .collect { items ->
                     view?.showHistory(items)
                     view?.showPagingState(PagingState.Idle)
@@ -63,7 +67,9 @@ class HistoryListViewPresenter(
                     mintAddress = historyType.mintAddress.base58Value
                 )
                 val newHistoryTransactions = handlePagingResult(result)
+
                 historyItemMapper.toAdapterItem(
+                    tokenMintAddress = historyType.mintAddress,
                     transactions = newHistoryTransactions,
                     userSendLinksCount = getUserSendLinksCount(historyType),
                 )
@@ -75,6 +81,8 @@ class HistoryListViewPresenter(
     }
 
     override fun loadHistory(historyType: HistoryListViewType) {
+        if (isInitialHistoryLoaded) return
+
         launch {
             try {
                 view?.showPagingState(PagingState.InitialLoading)
@@ -83,10 +91,13 @@ class HistoryListViewPresenter(
                     mintAddress = historyType.mintAddress.base58Value
                 )
                 val newHistoryTransactions = handlePagingResult(result)
+
                 historyItemMapper.toAdapterItem(
+                    tokenMintAddress = historyType.mintAddress,
                     transactions = newHistoryTransactions,
                     userSendLinksCount = getUserSendLinksCount(historyType),
                 )
+                isInitialHistoryLoaded = true
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading history: $e")
                 view?.showPagingState(PagingState.Error(e))
@@ -104,6 +115,7 @@ class HistoryListViewPresenter(
                 )
                 val newHistoryTransactions = handlePagingResult(result)
                 historyItemMapper.toAdapterItem(
+                    tokenMintAddress = historyType.mintAddress,
                     transactions = newHistoryTransactions,
                     userSendLinksCount = getUserSendLinksCount(historyType),
                 )
@@ -128,6 +140,15 @@ class HistoryListViewPresenter(
                 is HistoryItem.UserSendLinksItem -> {
                     historyAnalytics.logUserSendLinksBlockClicked()
                     view?.onUserSendLinksClicked()
+                }
+                is HistoryItem.SwapBannerItem -> {
+                    view?.onSwapBannerItemClicked(
+                        sourceTokenMint = historyItem.sourceTokenMintAddress,
+                        destinationTokenMint = historyItem.destinationTokenMintAddress,
+                        sourceSymbol = historyItem.sourceTokenSymbol,
+                        destinationSymbol = historyItem.destinationTokenSymbol,
+                        openedFrom = historyItem.openedFrom
+                    )
                 }
                 else -> {
                     val errorMessage = "Unsupported Transaction click! $historyItem"

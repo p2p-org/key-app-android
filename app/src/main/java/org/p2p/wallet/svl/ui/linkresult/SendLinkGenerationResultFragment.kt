@@ -67,7 +67,8 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
                 buttonAction.setText(R.string.main_share)
                 buttonAction.setOnClickListener {
                     svlAnalytics.logLinkShareButtonClicked()
-                    requireContext().shareText(state.formattedLink)
+                    val shareMessage = buildShareLink(state.formattedLink, state.amount)
+                    requireContext().shareText(shareMessage)
                 }
 
                 imageViewCopy.setOnClickListener {
@@ -87,5 +88,9 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
                 buttonAction.setOnClickListener { popBackStack() }
             }
         }
+    }
+
+    private fun buildShareLink(formattedLink: String, amount: String): String {
+        return getString(R.string.send_via_link_share_message, amount, formattedLink)
     }
 }

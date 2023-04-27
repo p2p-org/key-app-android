@@ -82,6 +82,7 @@ class SwapStateManager(
     }
 
     fun onNewAction(action: SwapStateAction) {
+        Timber.tag(TAG).i("new action triggered: $action")
         lastSwapStateAction = action
         refreshJob?.cancel()
         activeActionHandleJob?.cancel()
@@ -119,11 +120,11 @@ class SwapStateManager(
     }
 
     private fun handleHandlerError(action: SwapStateAction, exception: Throwable) {
-        when {
-            exception is CancellationException -> {
+        when (exception) {
+            is CancellationException -> {
                 Timber.tag(TAG).i(exception)
             }
-            exception is SwapFeatureException -> {
+            is SwapFeatureException -> {
                 if (exception is SwapFeatureException.RoutesNotFound) {
                     Timber.tag(TAG).e(exception)
                 } else {

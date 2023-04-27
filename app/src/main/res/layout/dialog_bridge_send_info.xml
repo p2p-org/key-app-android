@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/layoutAddress"
+        layout="@layout/item_claim_details_part"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="24dp" />
+
+    <include
+        android:id="@+id/layoutWillGetAmount"
+        layout="@layout/item_claim_details_part"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <include
+        android:id="@+id/layoutNetworkFee"
+        layout="@layout/item_claim_details_part"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <include
+        android:id="@+id/layoutBridgeFee"
+        layout="@layout/item_claim_details_part"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="32dp" />
+
+</LinearLayout>

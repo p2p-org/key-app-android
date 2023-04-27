@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.send.statemachine
 
 import java.math.BigDecimal
+import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
@@ -19,7 +20,7 @@ sealed interface SendState {
 
         data class Other(
             override val lastStaticState: Static,
-            val exception: kotlin.Exception,
+            val exception: Throwable,
         ) : Exception
 
         data class Feature(
@@ -47,6 +48,7 @@ sealed interface SendState {
             val token: SendToken,
             val fee: SendFee,
             val amount: BigDecimal,
+            val sendTransaction: BridgeSendTransaction,
         ) : Static, SendBridgeState
     }
 }

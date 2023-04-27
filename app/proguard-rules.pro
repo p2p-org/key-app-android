@@ -68,12 +68,16 @@
 
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
 -keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
+
+# Our own classes
 -keep public class org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 -keep public class org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 -keep class io.sentry.SentryEvent { *; }
 -keep public class * implements org.p2p.wallet.auth.model.OnboardingFlow
 -keep public class org.p2p.wallet.auth.model.RestoreError
 -keep public class * implements org.p2p.wallet.auth.model.RestoreUserResult
+-keep public class * implements org.p2p.wallet.jupiter.statemanager.SwapStateAction
+-keep public class * extends org.p2p.wallet.moonpay.model.MoonpayBuyResult
 
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }

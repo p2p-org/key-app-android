@@ -10,12 +10,12 @@ import org.p2p.wallet.auth.model.GoogleButton
 import org.p2p.wallet.auth.model.PrimaryFirstButton
 import org.p2p.wallet.auth.model.SecondaryFirstButton
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
-import org.p2p.wallet.common.ResourcesProvider
+import android.content.res.Resources
 
 private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
 
 class GatewayServiceErrorHandler(
-    private val resourcesProvider: ResourcesProvider,
+    private val resources: Resources,
     private val onboardingInteractor: OnboardingInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor
 ) {
@@ -30,7 +30,7 @@ class GatewayServiceErrorHandler(
             }
             is PushServiceError.PhoneNumberAlreadyConfirmed -> {
                 GatewayHandledState.ToastError(
-                    resourcesProvider.getString(
+                    resources.getString(
                         R.string.onboarding_phone_enter_error_phone_confirmed
                     )
                 )
@@ -39,14 +39,14 @@ class GatewayServiceErrorHandler(
                 val isDeviceShareSaved = restoreWalletInteractor.isDeviceShareSaved()
                 val userPhoneNumber = onboardingInteractor.temporaryPhoneNumber?.formattedValue.orEmpty()
 
-                val title = resourcesProvider.getString(
+                val title = resources.getString(
                     if (isDeviceShareSaved) {
                         R.string.restore_no_wallet_title
                     } else {
                         R.string.restore_no_account_title
                     }
                 )
-                val subtitle = resourcesProvider.getString(
+                val subtitle = resources.getString(
                     if (isDeviceShareSaved) {
                         R.string.restore_no_wallet_try_another_option
                     } else {
@@ -88,13 +88,13 @@ class GatewayServiceErrorHandler(
             }
             is PushServiceError.SmsDeliverFailed -> {
                 GatewayHandledState.ToastError(
-                    resourcesProvider.getString(R.string.onboarding_phone_enter_error_sms_failed)
+                    resources.getString(R.string.onboarding_phone_enter_error_sms_failed)
                 )
             }
 
             is PushServiceError.TooManyOtpRequests -> {
                 val cooldownTtl = error.cooldownTtl
-                val message = resourcesProvider.getString(R.string.error_too_often_otp_requests_message)
+                val message = resources.getString(R.string.error_too_often_otp_requests_message)
                 GatewayHandledState.ToastError(message)
             }
             is PushServiceError.TooManyRequests -> {
@@ -103,7 +103,7 @@ class GatewayServiceErrorHandler(
                 GatewayHandledState.TimerBlockError(error = error, cooldownTtl = cooldownTtl)
             }
             is PushServiceError.UserAlreadyExists -> {
-                val message = resourcesProvider.getString(R.string.onboarding_phone_enter_error_phone_confirmed)
+                val message = resources.getString(R.string.onboarding_phone_enter_error_phone_confirmed)
                 GatewayHandledState.ToastError(message)
             }
             else -> {

@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import java.math.BigDecimal
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.asUsd
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
@@ -48,19 +51,23 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
             layoutFreeTransactions.bindLayoutFreeTransactions()
             layoutWillGetAmount.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_info_you_will_get),
-                fee = claimDetails.willGetAmount
+                fee = claimDetails.willGetAmount,
+                isFree = false
             )
             layoutNetworkFee.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_info_network_fee),
-                fee = claimDetails.networkFee
+                fee = claimDetails.networkFee,
+                isFree = claimDetails.isFree
             )
             layoutAccountCreationFee.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_info_account_creation_fee),
-                fee = claimDetails.accountCreationFee
+                fee = claimDetails.accountCreationFee,
+                isFree = claimDetails.isFree
             )
             layoutBridgeFee.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_info_bridge_fee),
-                fee = claimDetails.bridgeFee
+                fee = claimDetails.bridgeFee,
+                isFree = claimDetails.isFree
             )
         }
     }
@@ -73,22 +80,26 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
     private fun ItemInfoImageDoubleTextBinding.bindLayoutFreeTransactions() {
         root.setBackgroundResource(R.drawable.bg_rounded_solid_cloud_16)
         imageViewIcon.setImageResource(R.drawable.ic_lightning)
-        textViewTitle.setText(R.string.free_transactions_title)
+        textViewTitle.setText(R.string.bridge_how_to_claim_for_free_title)
         textViewSubtitle.text = getString(
             R.string.bridge_info_free_transaction_message,
             claimDetails.minAmountForFreeFee.toBigInteger()
         )
     }
 
-    private fun ItemClaimDetailsPartBinding.bindDetailsLineWithFee(title: String, fee: BridgeAmount) {
+    private fun ItemClaimDetailsPartBinding.bindDetailsLineWithFee(
+        title: String,
+        fee: BridgeAmount,
+        isFree: Boolean
+    ) {
         textViewTitle.text = title
-        textViewFiatAmount.text = fee.formattedFiatAmount ?: getString(R.string.bridge_info_transaction_free)
-        val formattedTokenAmount = fee.formattedTokenAmount
-        if (formattedTokenAmount == null && claimDetails.claimAmount >= claimDetails.minAmountForFreeFee) {
+        if (isFree) {
+            textViewFiatAmount.text = getString(R.string.bridge_info_transaction_free)
             textViewTokenAmount.text = getString(R.string.bridge_claim_fees_free)
             textViewTokenAmount.setTextColorRes(R.color.text_mint)
         } else {
-            textViewTokenAmount.text = formattedTokenAmount
+            textViewFiatAmount.text = fee.formattedFiatAmount ?: BigDecimal.ZERO.asUsd()
+            textViewTokenAmount.text = fee.formattedTokenAmount ?: Constants.ZERO_AMOUNT
             textViewTokenAmount.setTextColorRes(R.color.text_night)
         }
     }

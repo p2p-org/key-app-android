@@ -47,7 +47,7 @@ import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
@@ -70,7 +70,8 @@ class JupiterSwapPresenter(
     private val rateTickerManager: SwapRateTickerManager,
     private val dispatchers: CoroutineDispatchers,
     private val userLocalRepository: UserLocalRepository,
-    private val historyInteractor: HistoryInteractor
+    private val historyInteractor: HistoryInteractor,
+    private val initialAmountA: String? = null,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true
@@ -100,6 +101,10 @@ class JupiterSwapPresenter(
         rateTickerManager.observe()
             .onEach(::handleRateTickerChanges)
             .launchIn(this)
+
+        initialAmountA?.let {
+            view.setAmountFiat(it)
+        }
     }
 
     override fun switchTokens() {
@@ -192,20 +197,22 @@ class JupiterSwapPresenter(
                     val pendingTransaction = buildPendingTransaction(result, currentState)
                     historyInteractor.addPendingTransaction(
                         txSignature = result.signature,
-                        mintAddress = currentState.tokenA.mintAddress.base58Value,
+                        mintAddress = currentState.tokenA.mintAddress,
                         transaction = pendingTransaction
                     )
                     view?.showDefaultSlider()
                 }
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
-                    Timber.e(result, "Failed to swap tokens")
                     val causeFailure = if (result.cause is JupiterSwapInteractor.LowSlippageRpcError) {
+                        Timber.i("Swap failure: low slippage = ${currentState.slippage}")
                         TransactionStateSwapFailureReason.LowSlippage(currentState.slippage)
                     } else {
+                        Timber.i("Swap failure: low slippage = unknown")
                         TransactionStateSwapFailureReason.Unknown(result.message.orEmpty())
                     }
                     val transactionState = TransactionState.JupiterSwapFailed(failure = causeFailure)
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
+                    Timber.e(result, "Failed to swap tokens")
                     view?.showDefaultSlider()
                 }
             }
@@ -220,8 +227,7 @@ class JupiterSwapPresenter(
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
             is SwapState.RoutesLoaded,
-            is SwapState.LoadingTransaction,
-            -> swapInteractor.getTokenAAmount(featureState)
+            is SwapState.LoadingTransaction, -> swapInteractor.getTokenAAmount(featureState)
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
             null -> null
         }
@@ -262,10 +268,8 @@ class JupiterSwapPresenter(
             is SwapState.SwapLoaded,
             is SwapState.TokenANotZero,
             is SwapState.RoutesLoaded,
-            is SwapState.TokenAZero,
-            -> true
-            is SwapState.SwapException ->
-                isChangeTokenScreenAvailable(featureState.previousFeatureState)
+            is SwapState.TokenAZero, -> true
+            is SwapState.SwapException -> isChangeTokenScreenAvailable(featureState.previousFeatureState)
         }
     }
 

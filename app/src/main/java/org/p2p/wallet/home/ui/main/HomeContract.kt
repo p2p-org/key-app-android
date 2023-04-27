@@ -9,13 +9,14 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 
 interface HomeContract {
 
     interface View : MvpView, OnHomeItemsClickListener {
         fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean)
         fun showTokensForBuy(tokens: List<Token>)
-        fun showNewBuyScreen(token: Token)
+        fun showNewBuyScreen(token: Token, fiatToken: String? = null, fiatAmount: String? = null)
         fun showOldBuyScreen(token: Token)
         fun showBalance(cellModel: TextViewCellModel?)
         fun showRefreshing(isRefreshing: Boolean)
@@ -24,10 +25,13 @@ interface HomeContract {
         fun showUserAddress(ellipsizedAddress: String)
         fun showNewSendScreen(openedFromScreen: SearchOpenedFromScreen)
         fun showActionButtons(buttons: List<ActionButton>)
+        fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom)
+        fun showSwap(source: SwapOpenedFrom)
+        fun showCashOut()
 
         fun navigateToProfile()
         fun navigateToReserveUsername()
-        fun showAddressCopied(addressOrUsername: String)
+        fun showAddressCopied(addressAndUsername: String)
         fun showBuyInfoScreen(token: Token)
 
         fun showSendNoTokens(fallbackToken: Token)

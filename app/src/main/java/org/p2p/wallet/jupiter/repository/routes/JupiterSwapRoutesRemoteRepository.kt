@@ -79,7 +79,7 @@ class JupiterSwapRoutesRemoteRepository(
             val isTooSmallAmountError = try {
                 val json = JSONObject(e.response()?.errorBody()?.string() ?: emptyString())
                 json.getString("message").contains("The value \"NaN\" cannot be converted to a number")
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 false
             }
             throw if (isTooSmallAmountError) SwapFailure.TooSmallInputAmount(e) else e

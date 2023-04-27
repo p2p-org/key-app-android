@@ -82,7 +82,7 @@
     <!--Deposit To Solend-->
     <string name="solend_deposit_title">Deposit into Solend</string>
     <string name="solend_select_token_to_deposit_title">Token to deposit</string>
-    <string name="solend_deposit_input_label">Enter the amount</string>
+    <string name="solend_deposit_input_label">Enter amount</string>
     <string name="solend_deposit_output_label_format">Use all %s</string>
     <string name="solend_deposit_bottom_message_empty">Withdraw your funds with all rewards at any time</string>
     <string name="solend_deposit_bottom_message_with_amount">Excluding fees, you\'ll deposit %s ($%s)</string>

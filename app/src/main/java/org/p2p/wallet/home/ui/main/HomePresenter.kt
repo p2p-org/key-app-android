@@ -7,18 +7,20 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
-import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
-import org.p2p.core.utils.Constants.ETH_SYMBOL
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
+import org.p2p.core.utils.Constants.WETH_COINGECKO_ID
+import org.p2p.core.utils.Constants.WETH_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -26,11 +28,14 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.bridge.analytics.ClaimAnalytics
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
+import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
@@ -50,18 +55,21 @@ import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.ellipsizeAddress
+import org.p2p.wallet.utils.toPublicKey
+import org.p2p.wallet.utils.unsafeLazy
 
-val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
+val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS = setOf(
     SOL_COINGECKO_ID,
     USDT_COINGECKO_ID,
-    ETH_COINGECKO_ID,
+    WETH_COINGECKO_ID,
     USDC_COINGECKO_ID
 ).map { TokenId(it) }
 val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 class HomePresenter(
     private val analytics: HomeAnalytics,
+    private val claimAnalytics: ClaimAnalytics,
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
@@ -79,12 +87,25 @@ class HomePresenter(
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
     private val homeMapper: HomeMapper,
     private val ethereumInteractor: EthereumInteractor,
-    private val seedPhraseProvider: SeedPhraseProvider
+    private val seedPhraseProvider: SeedPhraseProvider,
+    private val deeplinksManager: AppDeeplinksManager,
+    private val connectionManager: ConnectionManager
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
 
     private var state = HomeScreenViewState(areZerosHidden = settingsInteractor.areZerosHidden())
+    private val buttonsStateFlow = MutableStateFlow<List<ActionButton>>(emptyList())
+
+    private val deeplinkHandler by unsafeLazy {
+        HomePresenterDeeplinkHandler(
+            coroutineScope = this,
+            presenter = this,
+            view = view,
+            state = state,
+            userInteractor = userInteractor
+        )
+    }
 
     init {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
@@ -99,24 +120,60 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
-        attachToPollingTokens()
+        observeInternetConnection()
+        loadSolanaTokens()
+        observeActionButtonState()
+        handleDeeplinks()
     }
 
-    private fun attachToPollingTokens() {
-        launch {
-            tokensPolling.shareTokenPollFlowIn(this)
-                .onEach { (solTokens, ethTokens) ->
-                    if (solTokens == null && ethTokens == null) {
-                        view?.showRefreshing(true)
-                    }
-                }.collect { (solTokens, ethTokens) ->
-                    if (solTokens != null && ethTokens != null) {
-                        state = state.copy(tokens = solTokens, ethTokens = ethTokens)
-                        handleUserTokensLoaded(solTokens, ethTokens)
-                        initializeActionButtons()
-                        view?.showRefreshing(isRefreshing = false)
-                    }
+    private fun loadSolanaTokens() {
+        launchInternetAware(connectionManager) {
+            try {
+                view?.showRefreshing(true)
+                userInteractor.loadAllTokensDataIfEmpty()
+                val solTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
+                async { userInteractor.loadUserRates(solTokens) }
+                async {
+                    val bundles = ethereumInteractor.getListOfEthereumBundleStatuses()
+                    ethereumInteractor.loadWalletTokens(bundles)
                 }
+                attachToPollingTokens()
+            } catch (e: Throwable) {
+                Timber.e(e, "Error on loading Sol tokens")
+            } finally {
+                view?.showRefreshing(false)
+            }
+        }
+    }
+
+    private suspend fun attachToPollingTokens() {
+        tokensPolling.shareTokenPollFlowIn(this)
+            .filterNotNull()
+            .collect { homeState ->
+                state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
+                initializeActionButtons()
+                handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
+                view?.showRefreshing(homeState.isRefreshing)
+            }
+    }
+
+    private fun observeActionButtonState() {
+        launch {
+            buttonsStateFlow.collect { buttons ->
+                view?.showActionButtons(buttons)
+            }
+        }
+    }
+
+    private fun observeInternetConnection() {
+        launch {
+            connectionManager.connectionStatus.collect { hasConnection ->
+                if (hasConnection) {
+                    updatesManager.start()
+                } else {
+                    updatesManager.stop()
+                }
+            }
         }
     }
 
@@ -129,7 +186,6 @@ class HomePresenter(
         showUserAddressAndUsername()
 
         updatesManager.start()
-        tokensPolling.startPolling()
 
         val userId = username?.value ?: tokenKeyProvider.publicKey
         IntercomService.signIn(userId)
@@ -137,27 +193,40 @@ class HomePresenter(
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
     }
 
-    private fun initializeActionButtons() {
-        launch {
-            val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
-            val isSellAvailable = sellInteractor.isSellAvailable()
-
-            val buttons = mutableListOf(
-                ActionButton.BUY_BUTTON,
-                ActionButton.RECEIVE_BUTTON,
-                ActionButton.SEND_BUTTON
-            )
-
-            if (!isSellFeatureToggleEnabled) {
-                buttons += ActionButton.SWAP_BUTTON
-            }
-
-            if (isSellAvailable) {
-                buttons += ActionButton.SELL_BUTTON
-            }
-
-            view?.showActionButtons(buttons)
+    private fun handleDeeplinks() {
+        launchSupervisor {
+            deeplinksManager.subscribeOnDeeplinks(
+                setOf(
+                    DeeplinkTarget.BUY,
+                    DeeplinkTarget.SEND,
+                    DeeplinkTarget.SWAP,
+                    DeeplinkTarget.CASH_OUT
+                )
+            ).collect(deeplinkHandler::handle)
         }
+    }
+
+    private suspend fun initializeActionButtons(isRefreshing: Boolean = false) {
+        if (!isRefreshing && buttonsStateFlow.value.isNotEmpty()) {
+            return
+        }
+        val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
+        val isSellAvailable = sellInteractor.isSellAvailable()
+
+        val buttons = mutableListOf(
+            ActionButton.BUY_BUTTON,
+            ActionButton.RECEIVE_BUTTON,
+            ActionButton.SEND_BUTTON
+        )
+
+        if (!isSellFeatureToggleEnabled) {
+            buttons += ActionButton.SWAP_BUTTON
+        }
+
+        if (isSellAvailable) {
+            buttons += ActionButton.SELL_BUTTON
+        }
+        buttonsStateFlow.emit(buttons)
     }
 
     private fun showUserAddressAndUsername() {
@@ -239,13 +308,13 @@ class HomePresenter(
             ethTokens = ethTokens,
             username = usernameInteractor.getUsername(),
         )
-
         val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
         when {
             isAccountEmpty -> {
                 view?.showEmptyState(isEmpty = true)
                 handleEmptyAccount()
             }
+
             (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
                 view?.showEmptyState(isEmpty = false)
                 showTokensAndBalance()
@@ -254,37 +323,36 @@ class HomePresenter(
     }
 
     private fun handleEmptyAccount() {
-        launch {
-            val tokensForBuy =
-                userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
-                    .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
+        val tokensForBuy =
+            userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
+                .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
-            val homeBannerItem = HomeBannerItem(
-                id = R.id.home_banner_top_up,
-                titleTextId = R.string.main_banner_title,
-                subtitleTextId = R.string.main_banner_subtitle,
-                buttonTextId = R.string.main_banner_button,
-                drawableRes = R.drawable.ic_main_banner,
-                backgroundColorRes = R.color.bannerBackgroundColor
+        val homeBannerItem = HomeBannerItem(
+            id = R.id.home_banner_top_up,
+            titleTextId = R.string.main_banner_title,
+            subtitleTextId = R.string.main_banner_subtitle,
+            buttonTextId = R.string.main_banner_button,
+            drawableRes = R.drawable.ic_main_banner,
+            backgroundColorRes = R.color.bannerBackgroundColor
+        )
+        view?.showEmptyViewData(
+            listOf(
+                homeBannerItem,
+                resources.getString(R.string.main_popular_tokens_header),
+                *tokensForBuy.toTypedArray()
             )
-            view?.showEmptyViewData(
-                listOf(
-                    homeBannerItem,
-                    resources.getString(R.string.main_popular_tokens_header),
-                    *tokensForBuy.toTypedArray()
-                )
-            )
-            logBalance(BigDecimal.ZERO)
+        )
+        logBalance(BigDecimal.ZERO)
 
-            view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
-        }
+        view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
     }
 
     override fun refreshTokens() {
-        launch {
+        launchInternetAware(connectionManager) {
             try {
                 view?.showRefreshing(isRefreshing = true)
-                tokensPolling.refresh()
+                tokensPolling.refreshTokens()
+                initializeActionButtons(isRefreshing = true)
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
@@ -333,7 +401,7 @@ class HomePresenter(
     }
 
     private fun showTokensAndBalance() {
-        launch {
+        launchInternetAware(connectionManager) {
             val balance = getUserBalance()
 
             if (balance != null) {
@@ -352,6 +420,8 @@ class HomePresenter(
                 visibilityState = state.visibilityState,
                 isZerosHidden = areZerosHidden
             )
+
+            claimAnalytics.logClaimAvailable(state.ethTokens.any { !it.isClaiming })
 
             view?.showTokens(mappedTokens, areZerosHidden)
         }

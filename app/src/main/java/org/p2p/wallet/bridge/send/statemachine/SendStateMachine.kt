@@ -9,12 +9,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -32,35 +30,33 @@ class SendStateMachine(
 
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
     private val state = MutableStateFlow<SendState>(SendState.Static.Empty)
-    private val actions = MutableSharedFlow<Pair<SendFeatureAction, SendActionHandler>>()
 
     private var refreshFeeTimer: Job? = null
+    private var actionHandleJob: Job? = null
     private var lastAction: SendFeatureAction = SendFeatureAction.InitFeature
 
     fun observe(): StateFlow<SendState> = state.asStateFlow()
 
     init {
         newAction(SendFeatureAction.InitFeature)
-        actions
-            .flatMapLatest {
-                val (action, actionHandler) = it
-                val staticState = state.lastStaticState
-                actionHandler.handle(staticState, action)
-            }
-            .flowOn(dispatchers.io)
-            .catch { catchException(it, this) }
-            .onEach { newState -> state.value = newState }
-            .launchIn(this)
     }
 
     fun newAction(action: SendFeatureAction) {
         refreshFeeTimer?.cancel()
+        actionHandleJob?.cancel()
         lastAction = action
 
         val staticState = state.lastStaticState
         val actionHandler = handlers.firstOrNull { it.canHandle(action, staticState) } ?: return
-
-        actions.tryEmit(action to actionHandler)
+        actionHandleJob = actionHandler.handle(staticState, action)
+            .flowOn(dispatchers.io)
+            .catch { catchException(it, this) }
+            .onEach { newState ->
+                Timber.d("emit newState = $newState")
+                startFeeTimerIfNeed(newState)
+                state.value = newState
+            }
+            .launchIn(this)
     }
 
     private suspend fun catchException(throwable: Throwable, flowCollector: FlowCollector<SendState>) {
@@ -74,24 +70,40 @@ class SendStateMachine(
                 val lastStaticState = state.value.lastStaticState
                 val wrappedState = SendState.Exception.Feature(
                     lastStaticState,
-                    SendFeatureException.FeeLoadingError,
+                    throwable,
                 )
                 flowCollector.emit(wrappedState)
             }
-            is Exception -> {
+            else -> {
                 val lastStaticState = state.value.lastStaticState
                 val wrappedState = SendState.Exception.Other(
                     lastStaticState,
-                    SendFeatureException.FeeLoadingError,
+                    throwable,
                 )
                 flowCollector.emit(wrappedState)
             }
         }
     }
 
-    private fun startFeeReloadTimer() {
+    private fun startFeeTimerIfNeed(newState: SendState) {
+        val needStart = when (newState) {
+            SendState.Static.Empty,
+            is SendState.Exception -> false
+            is SendState.Loading.Fee -> {
+                refreshFeeTimer?.cancel()
+                false
+            }
+            is SendState.Static.ReadyToSend,
+            is SendState.Static.TokenNotZero,
+            is SendState.Static.TokenZero -> true
+        }
+        if (needStart) startFeeReloadTimer()
+    }
+
+    private fun startFeeReloadTimer(delay: Long = SEND_FEE_EXPIRED_DURATION) {
+        refreshFeeTimer?.cancel()
         refreshFeeTimer = launch {
-            delay(SEND_FEE_EXPIRED_DURATION)
+            delay(delay)
             newAction(SendFeatureAction.RefreshFee)
         }
     }

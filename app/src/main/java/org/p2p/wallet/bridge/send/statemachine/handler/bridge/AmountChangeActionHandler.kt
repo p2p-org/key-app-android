@@ -1,8 +1,8 @@
 package org.p2p.wallet.bridge.send.statemachine.handler.bridge
 
 import java.math.BigDecimal
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import org.p2p.core.utils.isZero
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
@@ -10,17 +10,17 @@ import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.fee
-import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeLoader
+import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 
 class AmountChangeActionHandler(
     private val mapper: SendBridgeStaticStateMapper,
     private val validator: SendBridgeValidator,
-    private val feeLoader: SendBridgeFeeLoader,
+    private val transactionLoader: SendBridgeTransactionLoader,
 ) : SendActionHandler {
 
-    override fun canHandle(newEvent: SendFeatureAction, staticState: SendState): Boolean =
+    override fun canHandle(newEvent: SendFeatureAction, staticState: SendState.Static): Boolean =
         newEvent is SendFeatureAction.AmountChange ||
             newEvent is SendFeatureAction.MaxAmount ||
             newEvent is SendFeatureAction.ZeroAmount
@@ -39,11 +39,19 @@ class AmountChangeActionHandler(
             SendFeatureAction.InitFeature -> return@flow
         }
 
-        if (newAmount.isZero()) {
-            emit(SendState.Static.TokenZero(token, lastStaticState.fee))
+        val newState = if (newAmount.isZero()) {
+            SendState.Static.TokenZero(token, lastStaticState.fee)
         } else {
             validator.validateInputAmount(token, newAmount)
-            emit(mapper.updateInputAmount(lastStaticState, newAmount))
+            mapper.updateInputAmount(lastStaticState, newAmount)
         }
-    }.flatMapMerge { feeLoader.updateFeeIfNeed(lastStaticState) }
+        emit(newState)
+        if (newState is SendState.Static.TokenNotZero) {
+            emit(SendState.Loading.Fee(newState))
+            delay(500)
+        }
+        transactionLoader.prepareTransaction(newState).collect {
+            emit(it)
+        }
+    }
 }

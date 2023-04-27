@@ -13,7 +13,10 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.core.network.ConnectionManager
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
@@ -28,22 +31,25 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
+import org.p2p.wallet.deeplinks.DeeplinkData
+import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
+import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
+import org.p2p.wallet.home.ui.main.RefreshErrorFragment
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
-import org.p2p.wallet.swap.ui.SwapFragmentFactory
-import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.wallet.swap.ui.orca.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -61,7 +67,6 @@ class MainFragment :
     private val generalAnalytics: GeneralAnalytics by inject()
     private val swapAnalytics: SwapAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
-    private val swapFragmentFactory: SwapFragmentFactory by inject()
 
     private val deeplinksManager: AppDeeplinksManager by inject()
     private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
@@ -69,7 +74,14 @@ class MainFragment :
 
     private val sellInteractor: SellInteractor by inject()
 
+    private val refreshErrorInteractor: RefreshErrorInteractor by inject()
+    private val connectionManager: ConnectionManager by inject()
+
     private var lastSelectedItemId = R.id.homeItem
+
+    private val refreshErrorFragment: RefreshErrorFragment by unsafeLazy {
+        RefreshErrorFragment()
+    }
 
     companion object {
         fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainFragment =
@@ -105,9 +117,46 @@ class MainFragment :
             onCreateActions = arrayListOf()
         }
 
+        connectionManager.connectionStatus.onEach { isConnected ->
+            if (!isConnected) showInternetError(true)
+        }.launchIn(lifecycleScope)
+
+        // todo: this is just a fake solution, we need to hide error when user clicks on refresh button
+        refreshErrorInteractor.getRefreshEventFlow()
+            .onEach {
+                if (connectionManager.connectionStatus.value) {
+                    showInternetError(false)
+                }
+            }
+            .launchIn(lifecycleScope)
+
+        deeplinksManager.subscribeOnDeeplinks(
+            setOf(
+                DeeplinkTarget.HOME,
+                DeeplinkTarget.HISTORY,
+                DeeplinkTarget.SETTINGS,
+            )
+        )
+            .onEach(::navigateFromDeeplink)
+            .launchIn(lifecycleScope)
+
         deeplinksManager.setTabsSwitcher(this)
         deeplinksManager.executeHomePendingDeeplink()
         deeplinksManager.executeTransferPendingAppLink()
+    }
+
+    private fun showInternetError(showError: Boolean) {
+        parentFragmentManager.commit {
+            if (showError) {
+                if (!refreshErrorFragment.isAdded) {
+                    add(R.id.rootContainer, refreshErrorFragment)
+                }
+                show(refreshErrorFragment)
+            } else {
+                hide(refreshErrorFragment)
+                show(this@MainFragment)
+            }
+        }
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -163,7 +212,6 @@ class MainFragment :
                 is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
                 is NewSettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
                 is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
-                is OrcaSwapFragment,
                 is JupiterSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
             }
         }
@@ -173,6 +221,24 @@ class MainFragment :
     override fun onDestroyView() {
         deeplinksManager.clearTabsSwitcher()
         super.onDestroyView()
+    }
+
+    private fun navigateFromDeeplink(data: DeeplinkData) {
+        when (data.target) {
+            DeeplinkTarget.HOME -> {
+                navigate(ScreenTab.HOME_SCREEN)
+            }
+
+            DeeplinkTarget.HISTORY -> {
+                navigate(ScreenTab.HISTORY_SCREEN)
+            }
+
+            DeeplinkTarget.SETTINGS -> {
+                navigate(ScreenTab.SETTINGS_SCREEN)
+            }
+
+            else -> Unit
+        }
     }
 
     override fun navigate(clickedTab: ScreenTab) {
@@ -194,27 +260,31 @@ class MainFragment :
         }
 
         val itemId = clickedTab.itemId
+        val isHistoryTabSelected =
+            clickedTab.itemId == ScreenTab.HISTORY_SCREEN.itemId &&
+                lastSelectedItemId != ScreenTab.HISTORY_SCREEN.itemId
 
-        // fixme: https://p2pvalidator.atlassian.net/browse/PWN-7051 Refreshing swap every time
-        if (clickedTab == ScreenTab.SWAP_SCREEN && tabCachedFragments.get(itemId) is OrcaSwapFragment) {
-            tabCachedFragments.remove(itemId)
-        }
-
-        val isHistoryTabSelected = clickedTab.itemId == ScreenTab.HISTORY_SCREEN.itemId
+        // If the selected tab is not in the tab cache or if it's the History tab, create a new fragment for the tab
         if (!tabCachedFragments.containsKey(clickedTab.itemId) || isHistoryTabSelected) {
             val fragment = when (clickedTab) {
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
-                ScreenTab.SWAP_SCREEN -> swapFragmentFactory.swapFragment(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
+                ScreenTab.SWAP_SCREEN -> JupiterSwapFragment.create(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
                 else -> error("Can't create fragment for $clickedTab")
             }
             tabCachedFragments[itemId] = fragment
         }
 
         val prevFragmentId = binding.bottomNavigation.getSelectedItemId()
+
+        // forcibly commit previous transaction if new transaction is coming almost immediately
+        childFragmentManager.executePendingTransactions()
+
+        // Replace the currently displayed fragment with the new fragment
         childFragmentManager.commit(allowStateLoss = false) {
+            // Hide or remove the previously selected fragment if it's not the same as the current fragment
             if (prevFragmentId != itemId) {
                 if (tabCachedFragments[prevFragmentId] != null && !tabCachedFragments[prevFragmentId]!!.isAdded) {
                     remove(tabCachedFragments[prevFragmentId]!!)
@@ -222,14 +292,18 @@ class MainFragment :
                     hide(tabCachedFragments[prevFragmentId]!!)
                 }
             }
-            val nextFragmentTag = tabCachedFragments[itemId]!!.javaClass.name
-            if (childFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
 
+            // Get the tag for the new fragment
+            val nextFragmentTag = tabCachedFragments[itemId]!!.javaClass.name
+
+            // If the new fragment isn't already added to the container, add it
+            if (childFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
                 if (tabCachedFragments[itemId]!!.isAdded) {
                     return
                 }
                 add(R.id.fragmentContainer, tabCachedFragments[itemId]!!, nextFragmentTag)
             } else {
+                // If the new fragment is already added, show it
                 if (!tabCachedFragments[itemId]!!.isAdded) {
                     remove(tabCachedFragments[itemId]!!)
                     if (tabCachedFragments[itemId]!!.isAdded) {

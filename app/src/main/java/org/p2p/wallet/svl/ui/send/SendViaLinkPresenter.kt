@@ -7,6 +7,7 @@ import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.R
@@ -22,7 +23,7 @@ import org.p2p.wallet.newsend.model.toSearchResult
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 import org.p2p.wallet.svl.model.SendLinkGenerator
-import org.p2p.wallet.updates.ConnectionStateProvider
+import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.unsafeLazy
 
@@ -31,7 +32,7 @@ class SendViaLinkPresenter(
     private val sendInteractor: SendInteractor,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
     private val resources: Resources,
-    private val connectionStateProvider: ConnectionStateProvider,
+    private val connectionStateProvider: NetworkConnectionStateProvider,
     private val newSendAnalytics: NewSendAnalytics,
     private val svlAnalytics: SendViaLinkAnalytics,
     sendModeProvider: SendModeProvider
@@ -103,7 +104,7 @@ class SendViaLinkPresenter(
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
-            view.setFeeLabel(resources.getString(R.string.send_fees_free))
+            view.setFeeLabel(resources.getString(R.string.send_fees_zero))
             view.showFeeViewLoading(isLoading = false)
         }
     }
@@ -133,8 +134,14 @@ class SendViaLinkPresenter(
                 return@launch
             }
 
-            view.setFeeLabel(resources.getString(R.string.send_fees_free))
+            view.setFeeLabel(resources.getString(R.string.send_fees_zero))
             view.showFeeViewLoading(isLoading = false)
+            if (token?.rate == null) {
+                if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                    switchCurrencyMode()
+                }
+                view.disableSwitchAmounts()
+            }
         }
     }
 

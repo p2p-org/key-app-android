@@ -7,10 +7,13 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalanceResponse
@@ -29,16 +32,17 @@ import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.Signature
 
-private val MINIMAL_DUST = BigInteger("1")
+private val MINIMAL_DUST = BigDecimal("1")
 
 internal class EthereumKitRepository(
     private val tokensRepository: EthereumTokensRepository,
     private val priceRepository: PriceRepository,
-    private val dispatchers: CoroutineDispatchers,
+    private val dispatchers: CoroutineDispatchers
 ) : EthereumRepository {
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
     private var localTokensMetadata = mutableListOf<EthTokenMetadata>()
+    private var ethereumTokensFlow = MutableStateFlow<List<Token.Eth>>(emptyList())
 
     override fun init(seedPhrase: List<String>) {
         tokenKeyProvider = EthTokenKeyProvider(
@@ -75,22 +79,18 @@ internal class EthereumKitRepository(
         return tokensRepository.getWalletBalance(publicKey)
     }
 
-    override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> =
-        withContext(dispatchers.io) {
+    override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>) {
+        val walletTokens = withContext(dispatchers.io) {
             try {
-                val tokensMetadata = loadTokensMetadata()
                 if (localTokensMetadata.isEmpty()) {
-                    localTokensMetadata.addAll(tokensMetadata)
+                    localTokensMetadata.addAll(loadTokensMetadata())
                 }
-                getPriceForTokens(tokensMetadata.map { it.contractAddress.toString() })
+                getPriceForTokens(localTokensMetadata.map { it.contractAddress.hex })
                     .onEach { (address, price) ->
-                        tokensMetadata.find { it.contractAddress.hex == address }?.price = price
+                        localTokensMetadata.find { it.contractAddress.hex == address }?.price = price
                     }
-                (listOf(getEthToken()) + tokensMetadata).filter { metadata ->
-                    val tokenBundle = claimingTokens.firstOrNull { metadata.contractAddress == it.contractAddress }
-                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
-                    metadata.balance.isMoreThan(MINIMAL_DUST) || isClaimInProgress
-                }.map { metadata ->
+
+                (listOf(getEthToken()) + localTokensMetadata).map { metadata ->
                     var isClaiming = false
                     claimingTokens.forEach {
                         if (metadata.contractAddress == it.contractAddress && it.isClaiming) {
@@ -98,6 +98,11 @@ internal class EthereumKitRepository(
                         }
                     }
                     EthTokenConverter.ethMetadataToToken(metadata, isClaiming)
+                }.filter { token ->
+                    val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
+                    val tokenFiatAmount = token.totalInUsd.orZero()
+                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
+                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
                 }
             } catch (cancellation: CancellationException) {
                 Timber.i(cancellation)
@@ -107,10 +112,12 @@ internal class EthereumKitRepository(
                 emptyList()
             }
         }
+        ethereumTokensFlow.emit(walletTokens)
+    }
 
     private suspend fun getEthToken(): EthTokenMetadata {
         val ethContractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
-        val tokenPrice = getPriceForToken(ethContractAddress.hex)
+        val tokenPrice = getPriceForToken(ERC20Tokens.ETH.contractAddress)
         return EthTokenMetadata(
             contractAddress = ethContractAddress,
             mintAddress = ERC20Tokens.ETH.mintAddress,
@@ -161,6 +168,10 @@ internal class EthereumKitRepository(
                 mapToTokenMetadata(tokenBalance, metadata, erc20Token)
             }
         }
+
+    override fun getWalletTokensFlow(): Flow<List<Token.Eth>> {
+        return ethereumTokensFlow
+    }
 
     private fun throwInitError(): Nothing =
         error("You must call EthereumKitRepository.init() method, before interact with this repository")

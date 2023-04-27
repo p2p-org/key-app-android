@@ -67,6 +67,7 @@
             layout="@layout/view_home_buy_token_banner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -86,8 +87,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
+                android:orientation="vertical"
                 android:overScrollMode="never"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_token" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

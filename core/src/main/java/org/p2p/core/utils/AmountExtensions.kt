@@ -74,8 +74,14 @@ fun BigDecimal.formatToken(decimals: Int = DEFAULT_DECIMAL): String = formatWith
 // case: 10000.000000007900 -> 100 000.00
 fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECIMAL)
 
+/**
+ * Note: setScale(0) for zero is mandatory because if the value has precision greater than 6 decimals,
+ * the result of toString() will be formatted using scientific notation
+ * @param decimals - number of decimals to show
+ * @return formatted string
+ */
 private fun BigDecimal.formatWithDecimals(decimals: Int): String = this.stripTrailingZeros().run {
-    if (isZero()) this.toString() else DecimalFormatter.format(this, decimals)
+    if (isZero()) this.setScale(0).toString() else DecimalFormatter.format(this, decimals)
 }
 
 fun BigDecimal?.isNullOrZero(): Boolean = this == null || this.compareTo(BigDecimal.ZERO) == 0
@@ -99,6 +105,7 @@ fun BigDecimal.asCurrency(currency: String): String =
 
 fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$ 0.01" else "$ ${formatFiat()}"
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
+    isZero() -> "$0"
     lessThenMinValue() -> "(<$0.01)"
     withBraces -> "~($${formatFiat()})"
     else -> "~$${formatFiat()}"

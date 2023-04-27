@@ -38,10 +38,20 @@ class CalculationMode(
 
     private var inputAmount: String = emptyString()
 
+    var inputAmountDecimal: BigDecimal = BigDecimal.ZERO
+        private set
+
+    val formatInputAmount: String
+        get() = when (currencyMode) {
+            is CurrencyMode.Fiat -> inputAmountDecimal.formatFiat()
+            is CurrencyMode.Token -> inputAmountDecimal.formatToken(token.decimals)
+        }
+
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
     fun updateToken(newToken: Token.Active) {
+        if (::token.isInitialized && newToken.mintAddress == this.token.mintAddress) return
         this.token = newToken
 
         if (currencyMode is CurrencyMode.Token) {
@@ -182,5 +192,59 @@ class CalculationMode(
 
     private fun handleCalculationUpdate(value: String, symbol: String) {
         onCalculationCompleted?.invoke("$value $symbol")
+    }
+
+    /**
+     * For new bridge. Do not call any callback, just update inner amount
+     */
+    fun updateTokenAmount(newTokenAmount: BigDecimal) {
+        val newUsdAmount = newTokenAmount.multiply(token.usdRateOrZero)
+        val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
+
+        usdAmount = newUsdAmount
+        tokenAmount = newTokenAmount
+        inputAmountDecimal = newAmount
+        inputAmount = formatInputAmount
+
+        if (currencyMode is CurrencyMode.Fiat) {
+            handleCalculateTokenAmountUpdate()
+        } else {
+            handleCalculateUsdAmountUpdate()
+        }
+    }
+
+    /**
+     * For new bridge. Do not call any math, just update [currencyMode] and invoke callback. Expect only update UI
+     */
+    fun switchAndUpdateInputAmount(): String {
+        val newMode = when (currencyMode) {
+            is CurrencyMode.Token -> CurrencyMode.Fiat.Usd // only support USD
+            is CurrencyMode.Fiat -> CurrencyMode.Token(token)
+        }
+
+        val (switchSymbol, mainSymbol) = when (newMode) {
+            is CurrencyMode.Token -> USD_READABLE_SYMBOL to token.tokenSymbol
+            is CurrencyMode.Fiat -> token.tokenSymbol to newMode.fiatAbbreviation
+        }
+
+        // update fraction
+        handleFractionUpdate(newMode)
+
+        // update labels
+        onLabelsUpdated?.invoke(switchSymbol, mainSymbol)
+
+        // update around value
+        when (newMode) {
+            is CurrencyMode.Token -> handleCalculateUsdAmountUpdate()
+            is CurrencyMode.Fiat -> handleCalculateTokenAmountUpdate()
+        }
+
+        inputAmount = when (newMode) {
+            is CurrencyMode.Fiat -> usdAmount.toPlainString()
+            is CurrencyMode.Token -> tokenAmount.toPlainString()
+        }
+
+        currencyMode = newMode
+        return inputAmount
     }
 }

@@ -43,7 +43,7 @@ android {
 
     configurations.all {
         resolutionStrategy.eachDependency {
-            if(requested.group == "org.bouncycastle") {
+            if (requested.group == "org.bouncycastle") {
                 useTarget("org.bouncycastle:bcprov-jdk15to18:1.68")
             }
         }
@@ -80,8 +80,7 @@ dependencies {
     val retrofitVersion = "2.9.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
-    implementation ("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
-
+    implementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
 
     val okHttpVersion = "4.9.3"
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
@@ -169,10 +168,11 @@ dependencies {
     testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("io.insert-koin:koin-test-junit4:$koinVersion")
 
-    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
+    testImplementation("org.assertj:assertj-core:3.22.0")
     testImplementation("org.slf4j:slf4j-nop:1.7.30")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testImplementation("org.assertj:assertj-core:3.22.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.8.2") {
         because("This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.")

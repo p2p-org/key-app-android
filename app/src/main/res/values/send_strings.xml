@@ -52,7 +52,7 @@
 
     <!--Send-->
     <string name="send_switch_to_token">Tap to switch to %s</string>
-    <string name="send_enter_amount">Enter Amount</string>
+    <string name="send_enter_amount">Enter amount</string>
 
     <string name="send_slider_text_format">Send %s %s</string>
     <string name="send_max_warning_text_format">Max: %s %s</string>
@@ -74,8 +74,8 @@
     <string name="send_no_account_non_critical_message">You will have to pay a one-time fee %s to create an account for this address. You can choose in which currency to pay with below.</string>
     <string name="send_no_account_non_critical_continue">Continue with %s</string>
     <string name="send_no_account_non_critical_switch">Switch to another token</string>
-
-
+    <string name="send_error_insufficient_funds">Check Available Funds</string>
+    <string name="send_error_fee_more_than_amount">The fee is more than the amount sent</string>
 
     <!--Transactions Progress BottomSheet-->
     <string name="transaction_progress_title">Transaction %s</string>
@@ -84,7 +84,8 @@
     <string name="transaction_progress_failed">failed</string>
     <string name="transaction_description_progress">It usually takes 5–20 seconds for a transaction to complete</string>
     <string name="transaction_description_succeeded">The transaction has been successfully completed 🤟</string>
-    <string name="transaction_description_failed">The transaction was rejected by the Solana blockchain. Open your link again</string>
+    <string name="transaction_description_general_failed">The transaction was rejected by the Solana blockchain</string>
+    <string name="transaction_description_svl_failed">The transaction was rejected. Open your link again.</string>
     <string name="transaction_description_internet_error">The transaction was rejected after failed internet connection. Open your link again</string>
     <string name="transaction_date_format">%s @ %s</string>
     <string name="transaction_send_to_title">Sent to</string>
