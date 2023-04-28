@@ -156,6 +156,7 @@ class SendFeeRelayerManager(
                     Timber.e(feeState.error, "Error during FeeRelayer fee calculation")
                     handleError(FeesCalculationError(feeState.error))
                 }
+                is FeeCalculationState.Cancelled -> Unit
             }
         } catch (e: CancellationException) {
             Timber.i("Smart selection job was cancelled")

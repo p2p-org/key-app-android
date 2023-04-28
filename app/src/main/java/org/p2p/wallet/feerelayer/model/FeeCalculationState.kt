@@ -4,5 +4,6 @@ sealed interface FeeCalculationState {
     data class Success(val fee: FeeRelayerFee) : FeeCalculationState
     data class PoolsNotFound(val feeInSol: FeeRelayerFee) : FeeCalculationState
     object NoFees : FeeCalculationState
+    object Cancelled : FeeCalculationState
     data class Error(val error: Throwable) : FeeCalculationState
 }

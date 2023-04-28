@@ -71,6 +71,10 @@ class SendBridgeFeeRelayerCounter constructor(
                 Timber.e(feeState.error, "Error during FeePayer fee calculation")
                 throw SendFeatureException.FeeLoadingError(feeState.error.message)
             }
+            is FeeCalculationState.Cancelled -> {
+                Timber.d("FeePayer fee calculation cancelled")
+                tokenToPayFee to null
+            }
         }
     }
 
