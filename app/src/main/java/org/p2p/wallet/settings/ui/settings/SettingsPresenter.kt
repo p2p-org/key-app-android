@@ -1,46 +1,39 @@
 package org.p2p.wallet.settings.ui.settings
 
 import android.content.Context
+import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
-import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.model.SettingsItemMapper
-import timber.log.Timber
 
 private const val NETWORK_CHANGE_DELAY = 250L
 
-class NewSettingsPresenter(
+class SettingsPresenter(
     private val environmentManager: NetworkEnvironmentManager,
     private val usernameInteractor: UsernameInteractor,
     private val authLogoutInteractor: AuthLogoutInteractor,
     private val appRestarter: AppRestarter,
-    private val receiveAnalytics: ReceiveAnalytics,
-    private val adminAnalytics: AdminAnalytics,
-    private val browseAnalytics: BrowseAnalytics,
+    private val analytics: SettingsPresenterAnalytics,
     private val settingsInteractor: SettingsInteractor,
     private val homeLocalRepository: HomeLocalRepository,
     private val settingsItemMapper: SettingsItemMapper,
     private val authInteractor: AuthInteractor,
-    private val seedPhraseProvider: SeedPhraseProvider,
     private val context: Context
-) : BasePresenter<NewSettingsContract.View>(), NewSettingsContract.Presenter {
+) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
-    override fun attach(view: NewSettingsContract.View) {
+    override fun attach(view: SettingsContract.View) {
         super.attach(view)
         loadSettings()
     }
@@ -85,20 +78,20 @@ class NewSettingsPresenter(
     }
 
     override fun onSignOutClicked() {
-        adminAnalytics.logSignOut()
+        analytics.logSignOut()
         view?.showSignOutConfirmDialog()
     }
 
     override fun onConfirmSignOutClicked() {
         authLogoutInteractor.onUserLogout()
-        adminAnalytics.logSignedOut()
+        analytics.logSignedOut()
         appRestarter.restartApp()
     }
 
     override fun onUsernameSettingClicked() {
         val isUsernameExists = usernameInteractor.isUsernameExist()
         if (isUsernameExists) view?.openUsernameScreen() else view?.openReserveUsernameScreen()
-        receiveAnalytics.logSettingsUsernameViewed(isUsernameExists)
+        analytics.logSettingsUsernameViewed(isUsernameExists)
     }
 
     override fun onRecoveryKitClicked() {
@@ -113,7 +106,7 @@ class NewSettingsPresenter(
                 homeLocalRepository.clear()
                 RenVMService.stopService(context)
 
-                browseAnalytics.logNetworkChanging(newNetworkEnvironment.name)
+                analytics.logNetworkChanging(newNetworkEnvironment.name)
                 // Sometimes these operations are completed too quickly
                 // On the UI it shows blinking loading effect which is not good
                 // Adding short delay to show loading state
