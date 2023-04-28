@@ -154,7 +154,7 @@ class UserInteractor(
             val price = prices.find { it.tokenId == token.coingeckoId }
             val totalInUsd = price?.price?.let { token.total.times(it) }
             token.copy(rate = price?.price, totalInUsd = totalInUsd)
-        }
+        }.sortedWith(TokenComparator())
 
         mainLocalRepository.clear()
         mainLocalRepository.updateTokens(newTokens)
