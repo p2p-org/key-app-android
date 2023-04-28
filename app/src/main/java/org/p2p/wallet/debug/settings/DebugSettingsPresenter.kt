@@ -158,7 +158,6 @@ class DebugSettingsPresenter(
     private fun getCiInfo(): List<SettingsRow> {
         val ciValues = buildString {
             createApiKeyRecord("amplitudeKey", BuildConfig.amplitudeKey)
-            createApiKeyRecord("comparePublicKey", BuildConfig.comparePublicKey)
             createApiKeyRecord("intercomApiKey", BuildConfig.intercomApiKey)
             createApiKeyRecord("intercomAppId", BuildConfig.intercomAppId)
             createApiKeyRecord("moonpayKey", BuildConfig.moonpayKey)
