@@ -7,6 +7,7 @@ import java.math.BigDecimal
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
@@ -38,6 +39,7 @@ import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
+import org.p2p.wallet.newsend.model.FeeRelayerStateError
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendSolanaFee
@@ -51,6 +53,8 @@ import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toPublicKey
+
+private const val ACCEPTABLE_RATE_DIFF = 0.02
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -87,7 +91,6 @@ class NewSendPresenter(
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
-
         initialize(view)
     }
 
@@ -152,6 +155,8 @@ class NewSendPresenter(
             val initialToken = if (selectedToken != null) selectedToken!! else userNonZeroTokens.first()
             token = initialToken
 
+            checkTokenRatesAndSetSwitchAmountState(initialToken)
+
             val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
             if (solToken == null) {
                 // we cannot proceed without SOL.
@@ -163,12 +168,6 @@ class NewSendPresenter(
             initializeFeeRelayer(view, initialToken, solToken)
             initialAmount?.let { inputAmount ->
                 setupDefaultFields(inputAmount)
-            }
-            if (token?.rate == null) {
-                if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
-                    switchCurrencyMode()
-                }
-                view.disableSwitchAmounts()
             }
         }
     }
@@ -211,16 +210,30 @@ class NewSendPresenter(
             is FeeRelayerState.UpdateFee -> {
                 handleUpdateFee(newState, view)
             }
+
             is FeeRelayerState.ReduceAmount -> {
                 val inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
                 view.updateInputValue(inputAmount, forced = true)
                 view.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
             }
+
             is FeeRelayerState.Failure -> {
                 Timber.e(newState, "FeeRelayerState has error")
-                if (newState.isFeeCalculationError()) view.showFeeViewVisible(isVisible = false)
+                if (newState.isFeeCalculationError()) {
+                    view.showFeeViewVisible(isVisible = false)
+
+                    newState.errorStateError as FeeRelayerStateError.FeesCalculationError
+                    if (newState.errorStateError.cause is CancellationException) {
+                        Timber.i(newState)
+                    } else {
+                        Timber.e(newState, "FeeRelayerState has calculation error")
+                    }
+                } else {
+                    Timber.e(newState, "FeeRelayerState has error")
+                }
                 updateButton(requireToken(), newState)
             }
+
             is FeeRelayerState.Idle -> Unit
         }
     }
@@ -255,6 +268,8 @@ class NewSendPresenter(
 
     override fun updateToken(newToken: Token.Active) {
         token = newToken
+        checkTokenRatesAndSetSwitchAmountState(newToken)
+
         showMaxButtonIfNeeded()
         view?.showFeeViewVisible(isVisible = true)
         updateButton(requireToken(), feeRelayerManager.getState())
@@ -268,6 +283,23 @@ class NewSendPresenter(
             strategy = CORRECT_AMOUNT,
             useCache = false
         )
+    }
+
+    private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
+        val isStableCoin = token.isUSDC || token.isUSDT
+        if (token.rate == null || isStableCoin && isStableCoinRateDiffAcceptable(token)) {
+            if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                switchCurrencyMode()
+            }
+            view?.disableSwitchAmounts()
+        } else {
+            view?.enableSwitchAmounts()
+        }
+    }
+
+    private fun isStableCoinRateDiffAcceptable(token: Token.Active): Boolean {
+        val delta = token.rate.orZero() - BigDecimal.ONE
+        return delta.abs() < BigDecimal(ACCEPTABLE_RATE_DIFF)
     }
 
     override fun switchCurrencyMode() {
@@ -494,6 +526,7 @@ class NewSendPresenter(
                 view?.setSliderText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
+
             is NewSendButtonState.State.Enabled -> {
                 view?.setSliderText(resources.getString(state.textResId, state.value))
                 view?.setBottomButtonText(null)

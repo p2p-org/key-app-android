@@ -384,8 +384,10 @@ class BridgeSendPresenter(
                 )
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)
-
-                val bridgeFee = currentState.lastStaticState.bridgeFee
+                val progressState = TransactionState.Progress(
+                    description = R.string.bridge_send_transaction_description_progress
+                )
+                transactionManager.emitTransactionState(internalTransactionId, progressState)
 
                 val result = bridgeInteractor.sendTransaction(
                     sendTransaction = sendTransaction,

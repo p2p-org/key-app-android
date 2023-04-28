@@ -39,7 +39,9 @@
     <string name="bridge_send_fee_details_gets">Recipient gets</string>
     <string name="bridge_send_fee_details_network">Network Fees</string>
     <string name="bridge_send_fee_details_wormhole">Using Wormhole bridge</string>
+    <string name="bridge_send_transaction_description_progress">It usually takes 15–20 minutes for a transaction to complete</string>
     <string name="bridge_usdc_usdt_swap_message">To make a transfer to ETH you have to swap USDC to USDCet</string>
     <string name="bridge_usdc_usdt_swap_action">Swap USDC → USDCet</string>
+    <string name="bridge_how_to_claim_for_free_title">How to claim for free</string>
 
 </resources>
