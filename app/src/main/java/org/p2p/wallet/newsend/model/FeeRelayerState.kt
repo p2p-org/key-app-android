@@ -12,7 +12,7 @@ sealed interface FeeRelayerState {
     ) : FeeRelayerState
     data class Failure(val errorStateError: FeeRelayerStateError) : FeeRelayerState, Throwable() {
         fun isFeeCalculationError(): Boolean {
-            return errorStateError == FeeRelayerStateError.FeesCalculationError
+            return errorStateError is FeeRelayerStateError.FeesCalculationError
         }
     }
 
