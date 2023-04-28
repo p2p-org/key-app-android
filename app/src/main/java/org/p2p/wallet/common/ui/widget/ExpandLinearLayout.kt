@@ -15,6 +15,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import org.p2p.wallet.utils.getParcelableCompat
 
 private const val KEY_SUPER_STATE = "super_state"
 private const val KEY_EXPANSION = "expansion"
@@ -183,7 +184,7 @@ class ExpandLinearLayout @JvmOverloads constructor(
         state = if (expansion == 1f) State.EXPANDED else State.COLLAPSED
         onExpansionChangeListener?.invoke(expansion, state)
         val superState =
-            bundle.getParcelable<Parcelable>(KEY_SUPER_STATE)
+            bundle.getParcelableCompat<Parcelable>(KEY_SUPER_STATE)
         super.onRestoreInstanceState(superState)
     }
 

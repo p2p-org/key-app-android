@@ -19,7 +19,7 @@ private const val EXTRA_PATH = "EXTRA_PATH"
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
-class SelectDerivableAccountBottomSheet() : BottomSheetDialogFragment() {
+class SelectDerivableAccountBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         fun show(

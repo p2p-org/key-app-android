@@ -173,7 +173,7 @@ object JupiterModule : InjectionModule {
         factoryOf(::SwapStateTokenAZeroHandler)
         factoryOf(::SwapStateTokenANotZeroHandler)
 
-        factory<Set<SwapStateHandler>> { (initialToken: Token.Active?, tokenASymbol: String?, tokenBSymbol: String?) ->
+        factory { (initialToken: Token.Active?, tokenASymbol: String?, tokenBSymbol: String?) ->
             setOf(
                 get<SwapStateInitialLoadingHandler>(parameters = {
                     parametersOf(
@@ -194,7 +194,7 @@ object JupiterModule : InjectionModule {
         singleOf(::SwapStateManagerHolder)
         singleOf(::SwapRateTickerManager)
 
-        factory<SwapStateManager> { (
+        factory { (
             initialToken: Token.Active?,
             tokenASymbol: String?,
             tokenBSymbol: String?,

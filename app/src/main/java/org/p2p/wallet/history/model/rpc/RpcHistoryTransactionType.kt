@@ -1,6 +1,6 @@
 package org.p2p.wallet.history.model.rpc
 
-enum class RpcHistoryTransactionType() {
+enum class RpcHistoryTransactionType {
     UNKNOWN,
     SWAP,
     SEND,

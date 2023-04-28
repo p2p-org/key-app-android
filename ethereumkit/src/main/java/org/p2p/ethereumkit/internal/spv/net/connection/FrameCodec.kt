@@ -18,7 +18,7 @@ class FrameCodec(private val secrets: Secrets,
 
     private val logger = Logger.getLogger("FrameCodec")
 
-    fun readFrame(inputStream: InputStream): Frame? {
+    fun readFrame(inputStream: InputStream): Frame {
         val headBuffer = ByteArray(32)
         inputStream.read(headBuffer)
 

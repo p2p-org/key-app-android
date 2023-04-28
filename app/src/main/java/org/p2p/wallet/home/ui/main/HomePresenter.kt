@@ -87,7 +87,7 @@ class HomePresenter(
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
     private val homeMapper: HomeMapper,
     private val ethereumInteractor: EthereumInteractor,
-    private val seedPhraseProvider: SeedPhraseProvider,
+    seedPhraseProvider: SeedPhraseProvider,
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {

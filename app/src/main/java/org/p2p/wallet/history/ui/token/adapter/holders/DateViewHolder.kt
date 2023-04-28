@@ -14,6 +14,6 @@ class DateViewHolder(
 
     fun onBind(operationOrDate: HistoryItem.DateItem) {
         val date = operationOrDate.date
-        binding.textViewDate.text = date.toDateString(binding.context)
+        binding.textViewDate.text = date.toDateString(binding.context.resources)
     }
 }
