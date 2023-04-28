@@ -18,7 +18,7 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
 class ReceiveViaLinkError(
@@ -104,7 +104,7 @@ class ReceiveViaLinkInteractor(
 
         return kotlin.runCatching {
             tokenPricesRemoteRepository.getTokenPriceById(
-                tokenId = TokenId(coingeckoId),
+                tokenId = TokenCoinGeckoId(coingeckoId),
                 targetCurrency = USD_READABLE_SYMBOL
             )
         }

@@ -14,7 +14,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.repository.prices.impl.TokenPricesCoinGeckoRepository
 
 class DerivableAccountsPresenter(
@@ -42,7 +42,7 @@ class DerivableAccountsPresenter(
     private fun loadSolRate() {
         launch {
             try {
-                val tokenId = TokenId(SOL_COINGECKO_ID)
+                val tokenId = TokenCoinGeckoId(SOL_COINGECKO_ID)
                 val solRate = tokenPricesCoinGeckoRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL)
                     .also { solRate = it }
 
