@@ -30,8 +30,6 @@ class HistoryItemMapper(
 ) {
 
     private val historyItemFlow = MutableStateFlow<List<HistoryItem>?>(null)
-    private val rpcHistoryItems = mutableListOf<HistoryItem>()
-    private val sellHistoryItems = mutableListOf<HistoryItem>()
 
     fun getHistoryAdapterItemFlow(): MutableStateFlow<List<HistoryItem>?> {
         return historyItemFlow
@@ -42,6 +40,8 @@ class HistoryItemMapper(
         transactions: List<HistoryTransaction>,
         userSendLinksCount: Int
     ) {
+        val rpcHistoryItems = mutableListOf<HistoryItem>()
+        val sellHistoryItems = mutableListOf<HistoryItem>()
         withContext(dispatchers.io) {
 
             transactions.forEachIndexed { _, item ->
