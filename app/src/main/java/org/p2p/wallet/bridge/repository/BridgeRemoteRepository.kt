@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.repository
 
 import com.google.gson.Gson
+import timber.log.Timber
 import java.net.URI
 import org.p2p.core.rpc.JsonRpc
 import org.p2p.core.rpc.RpcApi
@@ -24,6 +25,8 @@ class BridgeRemoteRepository(
             val result = request.parseResponse(response, gson)
             return BridgeResult.Success(result)
         } catch (e: JsonRpc.ResponseError.RpcError) {
+            Timber.i(e, "failed request for ${request.method}")
+            Timber.i("Body ${e.error.message}")
             val errorCode = e.error.code
             throw errorMapper.parseError(errorCode)
         }
