@@ -51,8 +51,7 @@ class TokenListPresenter(
         launch {
             interactor.getTokenListFlow().collect { data ->
                 if (data.result.isNotEmpty()) {
-                    val filteredResult = data.result.filter { it.mintAddress != Constants.WRAPPED_SOL_MINT }
-                    view?.showItems(filteredResult, scrollToUp)
+                    view?.showItems(data.result, scrollToUp)
                 } else {
                     view?.showEmpty(data.searchText)
                 }

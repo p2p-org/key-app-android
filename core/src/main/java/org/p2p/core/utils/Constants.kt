@@ -12,6 +12,7 @@ object Constants {
 
     const val REN_BTC_SYMBOL = "renBTC"
     const val SOL_SYMBOL = "SOL"
+    const val WSOL_SYMBOL = "wSOL"
     const val USDC_SYMBOL = "USDC"
     const val USDT_SYMBOL = "USDT"
     const val BTC_SYMBOL = "BTC"
