@@ -1,19 +1,14 @@
-package org.p2p.core.utils
+package org.p2p.wallet.utils
 
-import android.icu.text.DecimalFormat
-import android.icu.text.DecimalFormatSymbols
 import java.math.RoundingMode
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 private const val DECIMAL_FORMAT = "###,###."
 
-object DecimalFormatter {
+object JvmDecimalFormatter {
 
-    /**
-     * Format number with given decimals
-     * Note: don't remove JvmStatic as it's used in tests
-     */
-    @JvmStatic
     fun format(value: Number, decimals: Int): String {
         val format = DECIMAL_FORMAT + "#".repeat(decimals)
 
@@ -23,7 +18,7 @@ object DecimalFormatter {
         }
 
         val decimalFormat = DecimalFormat(format, formatSymbols)
-        decimalFormat.roundingMode = RoundingMode.DOWN.ordinal
+        decimalFormat.roundingMode = RoundingMode.DOWN
         return decimalFormat.format(value)
     }
 }

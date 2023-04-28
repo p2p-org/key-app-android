@@ -72,7 +72,7 @@ class JupiterSwapPresenter(
     private val userLocalRepository: UserLocalRepository,
     private val historyInteractor: HistoryInteractor,
     private val initialAmountA: String? = null,
-) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
+) : BasePresenter<JupiterSwapContract.View>(dispatchers.ui), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true
     private var needToScrollPriceImpact = true

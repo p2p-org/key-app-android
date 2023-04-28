@@ -1,5 +1,6 @@
 package org.p2p.wallet.infrastructure.coroutines
 
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.delay
 
 /**
@@ -19,3 +20,9 @@ suspend fun waitForCondition(
     }
     return condition()
 }
+
+/**
+ * Returns true if the current [CoroutineContext] has the [kotlinx.coroutines.test.TestCoroutineScheduler].
+ */
+val CoroutineContext.hasTestScheduler: Boolean
+    get() = toString().contains("TestCoroutineScheduler")
