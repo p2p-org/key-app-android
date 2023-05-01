@@ -2,7 +2,6 @@ package org.p2p.wallet.moonpay.ui.new
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import timber.log.Timber
 import org.p2p.wallet.moonpay.model.PaymentMethod
 
 class PaymentMethodsAdapter(
@@ -21,7 +20,7 @@ class PaymentMethodsAdapter(
     override fun getItemCount(): Int = items.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentMethodViewHolder {
-        if(itemWidth == 0) {
+        if (itemWidth == 0) {
             // calculate parent width / 2 minus paddings
             itemWidth = (parent.measuredWidth / 2f).toInt() - parent.paddingLeft - parent.paddingRight
         }
