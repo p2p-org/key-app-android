@@ -23,7 +23,7 @@
         app:titleTextColor="@color/night" />
 
     <include
-        android:id="@+id/derivationPathView"
+        android:id="@+id/viewDerivationPath"
         layout="@layout/view_derivation_path"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/derivationPathInputLayout"
+        android:id="@+id/textInputLayoutDerivationPath"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -44,10 +44,10 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/derivationPathView">
+        app:layout_constraintTop_toBottomOf="@id/viewDerivationPath">
 
         <AutoCompleteTextView
-            android:id="@+id/derivationPathTextView"
+            android:id="@+id/textViewDerivationPath"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none"
@@ -57,7 +57,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
-        android:id="@+id/titleTextView"
+        android:id="@+id/textViewTitle"
         style="@style/UiKit.TextAppearance.Regular.Text3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -68,10 +68,10 @@
         android:textColor="@color/textIconPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/derivationPathInputLayout" />
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutDerivationPath" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/accountsRecyclerView"
+        android:id="@+id/recyclerViewAccounts"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
@@ -79,11 +79,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
         tools:listitem="@layout/item_token_simple" />
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/restoreButton"
+        android:id="@+id/buttonRestore"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="0dp"
         android:layout_height="@dimen/ui_kit_button_large_height"
