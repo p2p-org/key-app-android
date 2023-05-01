@@ -72,7 +72,7 @@ class SwapCommonSettingsMapper {
             payload = SwapSlippagePayload.CUSTOM
         )
         if (isCustom) {
-            this += SwapCustomSlippageCellModel(slippage = slippage,)
+            this += SwapCustomSlippageCellModel(slippage = slippage)
         }
     }
 

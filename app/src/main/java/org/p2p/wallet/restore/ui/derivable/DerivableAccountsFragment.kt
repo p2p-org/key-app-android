@@ -17,6 +17,7 @@ import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.ui.derivable.bottomsheet.SelectDerivableAccountBottomSheet
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.getSerializableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -115,7 +116,7 @@ class DerivableAccountsFragment :
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
             KEY_REQUEST_PATH -> {
-                (result.getSerializable(KEY_RESULT_PATH) as? DerivationPath)?.let {
+                result.getSerializableCompat<DerivationPath>(KEY_RESULT_PATH)?.let {
                     presenter.setNewPath(it)
                     selectedPath = it
                     binding.derivationPathView.textViewSubtitle.text = it.stringValue

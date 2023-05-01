@@ -29,6 +29,8 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getParcelableArrayListCompat
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
@@ -116,9 +118,9 @@ class NewSendFragment :
         ) { _, result ->
             when {
                 result.containsKey(KEY_RESULT_FEE) && result.containsKey(KEY_RESULT_FEE_PAYER_TOKENS) -> {
-                    val fee = result.getParcelable<SendSolanaFee>(KEY_RESULT_FEE)
-                    val feePayerTokens = result.getParcelableArrayList<Token.Active>(KEY_RESULT_FEE_PAYER_TOKENS)
-                    if (fee == null || feePayerTokens == null) return@setFragmentResultListener
+                    val fee = result.getParcelableCompat<SendSolanaFee>(KEY_RESULT_FEE)
+                    val feePayerTokens = result.getParcelableArrayListCompat<Token.Active>(KEY_RESULT_FEE_PAYER_TOKENS)
+                    if (fee == null || feePayerTokens.isEmpty()) return@setFragmentResultListener
                     showAccountCreationFeeInfo(fee, feePayerTokens)
                 }
             }
@@ -129,11 +131,11 @@ class NewSendFragment :
         when {
             // will be more!
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
-                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
+                val token = result.getParcelableCompat<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
                 presenter.updateToken(token)
             }
             result.containsKey(KEY_RESULT_NEW_FEE_PAYER) -> {
-                val newFeePayer = result.getParcelable<Token.Active>(KEY_RESULT_NEW_FEE_PAYER)!!
+                val newFeePayer = result.getParcelableCompat<Token.Active>(KEY_RESULT_NEW_FEE_PAYER)!!
                 presenter.updateFeePayerToken(newFeePayer)
             }
         }

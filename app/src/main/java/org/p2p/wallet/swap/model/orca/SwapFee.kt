@@ -20,7 +20,7 @@ class SwapFee constructor(
     private val fee: FeeRelayerSwapFee,
     private val feePayerToken: Token.Active,
     private val sourceToken: Token.Active,
-    private val destination: Token,
+    destination: Token,
     private val solToken: Token.Active?
 ) {
 

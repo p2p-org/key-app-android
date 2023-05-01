@@ -52,10 +52,9 @@ class TransactionStorage(database: TransactionDatabase) : ITransactionStorage {
             whereConditions.add(fromCondition)
         }
 
-        val transactionTagJoinStatements = tags
-            .mapIndexed { index, _ ->
-                "INNER JOIN TransactionTag AS transaction_tags_$index ON tx.hash = transaction_tags_$index.hash"
-            }
+        val transactionTagJoinStatements = List(tags.size) { index ->
+            "INNER JOIN TransactionTag AS transaction_tags_$index ON tx.hash = transaction_tags_$index.hash"
+        }
             .joinToString("\n")
 
         val whereClause = if (whereConditions.isNotEmpty()) "WHERE ${whereConditions.joinToString(" AND ")}" else ""
@@ -95,10 +94,9 @@ class TransactionStorage(database: TransactionDatabase) : ITransactionStorage {
 
             whereConditions.add(tagCondition)
 
-            transactionTagJoinStatements += tags
-                .mapIndexed { index, _ ->
-                    "INNER JOIN TransactionTag AS transaction_tags_$index ON tx.hash = transaction_tags_$index.hash"
-                }
+            transactionTagJoinStatements += List(tags.size) { index ->
+                "INNER JOIN TransactionTag AS transaction_tags_$index ON tx.hash = transaction_tags_$index.hash"
+            }
                 .joinToString("\n")
         }
 

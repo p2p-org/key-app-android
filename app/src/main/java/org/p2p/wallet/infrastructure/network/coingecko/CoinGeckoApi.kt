@@ -1,8 +1,10 @@
-package org.p2p.wallet.home.api
+package org.p2p.wallet.infrastructure.network.coingecko
 
 import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Query
+import org.p2p.wallet.infrastructure.network.coingecko.response.CoinGeckoEthereumPrice
+import org.p2p.wallet.infrastructure.network.coingecko.response.CoinGeckoPriceResponse
 
 interface CoinGeckoApi {
     /**

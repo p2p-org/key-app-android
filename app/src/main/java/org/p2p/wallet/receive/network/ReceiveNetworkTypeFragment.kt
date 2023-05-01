@@ -27,6 +27,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
+import org.p2p.wallet.utils.getParcelableCompat
 
 private const val EXTRA_NETWORK_TYPE = "EXTRA_NETWORK_TYPE"
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
@@ -89,7 +90,7 @@ class ReceiveNetworkTypeFragment :
             }
 
             if (bundle.containsKey(BUNDLE_KEY_SELECTED_TOKEN)) {
-                val token = bundle.getParcelable<Token>(BUNDLE_KEY_SELECTED_TOKEN)
+                val token = bundle.getParcelableCompat<Token>(BUNDLE_KEY_SELECTED_TOKEN)
                 if (token != null) {
                     popAndReplaceFragment(
                         BuySolanaFragment.create(token)

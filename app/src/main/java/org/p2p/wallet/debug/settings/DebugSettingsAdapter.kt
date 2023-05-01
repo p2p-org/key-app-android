@@ -145,7 +145,7 @@ class DebugSettingsAdapter(
 
     inner class SwitchViewHolder(
         parent: ViewGroup,
-        private val binding: ItemSettingsDebugSwitchBinding = parent.inflateViewBinding(attachToRoot = false),
+        binding: ItemSettingsDebugSwitchBinding = parent.inflateViewBinding(attachToRoot = false),
         private val onSettingsRowSwitchListener: (titleResId: Int, isSelected: Boolean) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 

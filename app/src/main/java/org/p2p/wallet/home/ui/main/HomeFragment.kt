@@ -52,6 +52,8 @@ import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
+import org.p2p.wallet.utils.getParcelableCompat
+import org.p2p.wallet.utils.getSerializableCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
@@ -238,13 +240,13 @@ class HomeFragment :
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
-                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.also(::showOldBuyScreen)
+                result.getParcelableCompat<Token>(KEY_RESULT_TOKEN)?.also(::showOldBuyScreen)
             }
             KEY_REQUEST_TOKEN_INFO -> {
-                result.getParcelable<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
+                result.getParcelableCompat<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
             }
             KEY_REQUEST_ACTION -> {
-                (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.also(::openScreenByHomeAction)
+                result.getSerializableCompat<HomeAction>(KEY_RESULT_ACTION)?.also(::openScreenByHomeAction)
             }
         }
     }

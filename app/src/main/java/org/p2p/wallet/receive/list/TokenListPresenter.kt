@@ -1,6 +1,7 @@
 package org.p2p.wallet.receive.list
 
 import kotlinx.coroutines.launch
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.BrowseAnalytics
@@ -50,7 +51,8 @@ class TokenListPresenter(
         launch {
             interactor.getTokenListFlow().collect { data ->
                 if (data.result.isNotEmpty()) {
-                    view?.showItems(data.result, scrollToUp)
+                    val filteredResult = data.result.filter { it.mintAddress != Constants.WRAPPED_SOL_MINT }
+                    view?.showItems(filteredResult, scrollToUp)
                 } else {
                     view?.showEmpty(data.searchText)
                 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="compareBaseUrl">https://min-api.cryptocompare.com/</string>
     <string name="coinGeckoBaseUrl">https://api.coingecko.com/api/v3/</string>
 
     <string name="bitcoinExplorer">https://btc.com/btc/address/%s</string>
