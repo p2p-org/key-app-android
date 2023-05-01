@@ -2,6 +2,7 @@ package org.p2p.wallet.moonpay.ui.new
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import timber.log.Timber
 import org.p2p.wallet.moonpay.model.PaymentMethod
 
 class PaymentMethodsAdapter(
@@ -9,6 +10,7 @@ class PaymentMethodsAdapter(
 ) : RecyclerView.Adapter<PaymentMethodViewHolder>() {
 
     private val items = mutableListOf<PaymentMethod>()
+    private var itemWidth: Int = 0
 
     fun setItems(items: List<PaymentMethod>) {
         this.items.clear()
@@ -19,7 +21,17 @@ class PaymentMethodsAdapter(
     override fun getItemCount(): Int = items.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentMethodViewHolder {
-        return PaymentMethodViewHolder(parent = parent, onClickListener = onMethodClick)
+        if(itemWidth == 0) {
+            // calculate parent width / 2 minus paddings
+            itemWidth = (parent.measuredWidth / 2f).toInt() - parent.paddingLeft - parent.paddingRight
+        }
+        return PaymentMethodViewHolder(parent = parent, onClickListener = onMethodClick).apply {
+            itemView.layoutParams = with(itemView.layoutParams as RecyclerView.LayoutParams) {
+                // then we get calculated width and add left margin to shift next element to its left margin
+                width = (itemWidth + marginStart)
+                this
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: PaymentMethodViewHolder, position: Int) {
