@@ -7,7 +7,7 @@ data class MoonpayErrorResponse(
     @SerializedName("message")
     val message: String,
     @SerializedName("type")
-    val type: String,
+    val type: String?,
     @SerializedName("errors")
-    val errors: JsonArray
+    val errors: JsonArray?
 )

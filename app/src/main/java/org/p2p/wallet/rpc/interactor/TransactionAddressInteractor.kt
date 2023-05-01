@@ -1,5 +1,7 @@
 package org.p2p.wallet.rpc.interactor
 
+import timber.log.Timber
+import org.p2p.core.token.TokenData
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
@@ -8,11 +10,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.model.AddressValidation
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
-import org.p2p.core.token.TokenData
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
 
 private const val ADDRESS_TAG = "Address"
 
@@ -44,10 +44,10 @@ class TransactionAddressInteractor(
         useCache: Boolean = true
     ): TransactionAddressData {
         val associatedAddress = try {
-            Timber.tag(ADDRESS_TAG).d("Searching for SPL token address")
+            Timber.tag(ADDRESS_TAG).i("Searching for SPL token address")
             findSplTokenAddress(destinationAddress, mintAddress, useCache)
         } catch (e: IllegalStateException) {
-            Timber.tag(ADDRESS_TAG).d("Searching address failed, address is wrong")
+            Timber.tag(ADDRESS_TAG).i("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")
         }
 

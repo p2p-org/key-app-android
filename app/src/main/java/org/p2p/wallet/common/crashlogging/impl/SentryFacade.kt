@@ -6,6 +6,9 @@ import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.protocol.User
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
 
 private const val BREADCRUMB_CATEGORY = "SentryFacade"
@@ -30,7 +33,17 @@ class SentryFacade : CrashLoggingFacade {
                 createBreadcrumb("${error.javaClass.name}: $message", SentryLevel.ERROR)
             )
         }
-        Sentry.captureException(error)
+        val isErrorCoheredWithNetwork = when(error) {
+            is UnknownHostException,
+            is SocketTimeoutException,
+            is ConnectException -> true
+            else -> false
+        }
+        if (isErrorCoheredWithNetwork) {
+            logInformation(error.toString())
+        } else {
+            Sentry.captureException(error)
+        }
     }
 
     override fun setUserId(userId: String) {
