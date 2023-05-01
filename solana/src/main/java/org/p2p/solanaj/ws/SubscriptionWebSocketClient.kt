@@ -1,6 +1,5 @@
 package org.p2p.solanaj.ws
 
-import android.util.Log
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -34,11 +33,18 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
                 throw IllegalArgumentException(e)
             }
             Timber.tag(TAG).d("Creating connection, uri: " + serverURI + " + host: " + endpointURI.host)
-            if (instance == null) {
-                instance = SubscriptionWebSocketClient(serverURI)
+            try {
+                if (instance == null) {
+                    instance = SubscriptionWebSocketClient(serverURI)
+                }
+                Timber.tag(TAG).d("Web socket client is created for : $serverURI")
+            } catch (e: Throwable) {
+                Timber.tag(TAG).e("Error on creating web socket client, error = $e")
             }
+
             if (instance?.isOpen == false) {
                 instance?.connect()
+                Timber.tag(TAG).d("Connection created for : $serverURI")
             }
             return instance
         }
@@ -56,7 +62,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     private val rpcSubscriptionAdapter = moshi.adapter<RpcResponse<Long>>(
         Types.newParameterizedType(
             RpcResponse::class.java,
-            Long::class.java
+            Long::class.javaObjectType
         )
     )
 
@@ -113,14 +119,21 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
 
     override fun onMessage(message: String) {
         Timber.tag(TAG).d("New message received: %s", message)
-        if (MoshiUtils.canParse(message, rpcSubscriptionAdapter)) {
-            val subscriptionResult = rpcSubscriptionAdapter.fromJson(message)
-            val resultId = subscriptionResult?.id ?: return
-            addResultAndNotify(resultId, subscriptionResult)
-        } else if (MoshiUtils.canParse(message, rpcNotificationAdapter)) {
-            val eventResult = rpcNotificationAdapter.fromJson(message)
-            val listener = subscriptionListeners[eventResult?.subscription]
-            listener?.onNotificationEvent(eventResult?.params)
+        try {
+            if (MoshiUtils.canParse(message, rpcSubscriptionAdapter)) {
+                val subscriptionResult = rpcSubscriptionAdapter.fromJson(message)
+                val resultId = subscriptionResult?.id ?: return
+                addResultAndNotify(resultId, subscriptionResult)
+                Timber.tag(TAG).d("Add subscription listeners, ${subscriptionListeners.keys.map { it.toString() }}")
+            } else {
+                val eventResult = rpcNotificationAdapter.fromJson(message)
+                val listener = subscriptionListeners[eventResult?.subscription]
+                listener?.onNotificationEvent(eventResult?.params)
+                Timber.tag(TAG)
+                    .d("Find listener for subscription = ${eventResult?.subscription} in  ${subscriptionListeners.keys.map { it.toString() }}")
+            }
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Error on reading message")
         }
     }
 
