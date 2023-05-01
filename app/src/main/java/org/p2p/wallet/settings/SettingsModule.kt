@@ -30,6 +30,5 @@ object SettingsModule : InjectionModule {
         factoryOf(::RecoveryKitPresenter) bind RecoveryKitContract.Presenter::class
         factoryOf(::ResetPinPresenter) bind ResetPinContract.Presenter::class
         factoryOf(::SettingsNetworkPresenter) bind SettingsNetworkContract.Presenter::class
-        factoryOf(::ResetPinPresenter) bind ResetPinContract.Presenter::class
     }
 }
