@@ -12,7 +12,6 @@ import timber.log.Timber
 import java.net.URI
 import java.net.URISyntaxException
 import org.p2p.solanaj.model.types.*
-import org.p2p.solanaj.utils.MoshiUtils
 
 private const val TAG = "SubscriptionSocketClient"
 
@@ -57,14 +56,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     private val moshi = Moshi.Builder().build()
     private val listGsonAdapter: JsonAdapter<RpcRequest> = moshi.adapter(RpcRequest::class.java)
     private val mapGsonAdapter: JsonAdapter<RpcMapRequest> = moshi.adapter(RpcMapRequest::class.java)
-    private val rpcNotificationAdapter: JsonAdapter<RpcNotificationResponse> =
-        moshi.adapter(RpcNotificationResponse::class.java)
-    private val rpcSubscriptionAdapter = moshi.adapter<RpcResponse<Long>>(
-        Types.newParameterizedType(
-            RpcResponse::class.java,
-            Long::class.javaObjectType
-        )
-    )
+    private val rpcSubscriptionAdapter = moshi.adapter(RpcNotificationResponse::class.java)
 
     fun ping() {
         try {
@@ -120,17 +112,21 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     override fun onMessage(message: String) {
         Timber.tag(TAG).d("New message received: %s", message)
         try {
-            if (MoshiUtils.canParse(message, rpcSubscriptionAdapter)) {
-                val subscriptionResult = rpcSubscriptionAdapter.fromJson(message)
-                val resultId = subscriptionResult?.id ?: return
-                addResultAndNotify(resultId, subscriptionResult)
+            val jsonParsed = rpcSubscriptionAdapter.fromJson(message)
+            val id = jsonParsed?.id
+            val result = jsonParsed?.result
+            if (id != null && result != null) {
+                addResultAndNotify(id, result)
                 Timber.tag(TAG).d("Add subscription listeners, ${subscriptionListeners.keys.map { it.toString() }}")
             } else {
-                val eventResult = rpcNotificationAdapter.fromJson(message)
-                val listener = subscriptionListeners[eventResult?.subscription]
-                listener?.onNotificationEvent(eventResult?.params)
+                val subscriptionId = (jsonParsed?.params?.get("subscription") as? Double)?.toLong()
+                val listener = subscriptionListeners[subscriptionId]
+                listener?.onNotificationEvent(jsonParsed?.params)
                 Timber.tag(TAG)
-                    .d("Find listener for subscription = ${eventResult?.subscription} in  ${subscriptionListeners.keys.map { it.toString() }}")
+                    .d(
+                        "Find listener for subscription = $subscriptionId in" +
+                            "  ${subscriptionListeners.keys.map { it.toString() }}"
+                    )
             }
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Error on reading message")
@@ -169,11 +165,11 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
         }
     }
 
-    private fun addResultAndNotify(resultId: String, rpcResult: RpcResponse<Long>) {
+    private fun addResultAndNotify(resultId: String, subscriptionId: Long) {
         if (subscriptionIds.containsKey(resultId)) {
-            subscriptionIds[resultId] = rpcResult.result
+            subscriptionIds[resultId] = subscriptionId
             subscriptions[resultId]?.listener?.let { listener ->
-                subscriptionListeners[rpcResult.result] = listener
+                subscriptionListeners[subscriptionId] = listener
             }
             subscriptions.remove(resultId)
         }
@@ -186,7 +182,8 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
 
     enum class NotificationType(val type: String) {
         SIGNATURE("signatureNotification"),
-        ACCOUNT("accountNotification");
+        ACCOUNT("accountNotification"),
+        PROGRAM("programNotification");
 
         companion object {
             fun valueOf(type: String?): NotificationType? {

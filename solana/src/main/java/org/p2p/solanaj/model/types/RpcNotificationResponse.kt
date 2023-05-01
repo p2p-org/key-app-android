@@ -8,7 +8,9 @@ data class RpcNotificationResponse(
     @SerializedName("method")
     val method: String? = null,
     @SerializedName("params")
-    val params: String,
-    @SerializedName("subscription")
-    val subscription: Long
+    val params: Map<String,Any>?,
+    @SerializedName("id")
+    val id: String? = null,
+    @SerializedName("result")
+    val result: Long? = null
 )

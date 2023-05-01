@@ -11,7 +11,13 @@ class TokenProgramSubscriber(
 
     val request = RpcRequest(
         method = SUBSCRIBE_METHOD_NAME,
-        params = listOf(PROGRAM_ID)
+        params = listOf(
+            PROGRAM_ID,
+            mapOf(
+                "Commitment" to "Confirmed",
+                "encoding" to "base64"
+            )
+        )
     )
 
     private val cancelRequest = RpcMapRequest(
