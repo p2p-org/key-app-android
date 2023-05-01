@@ -77,6 +77,7 @@ class NewBuyPresenter(
 
     override fun attach(view: NewBuyContract.View) {
         super.attach(view)
+        view.setCurrencySelectionEnabled(currencySelectionEnabled)
         loadTokensToBuy()
         loadAvailablePaymentMethods()
         val prevScreenName =
