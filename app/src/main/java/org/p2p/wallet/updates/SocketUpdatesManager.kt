@@ -102,7 +102,7 @@ class SocketUpdatesManager private constructor(
             launch(Dispatchers.Default) {
                 Timber.tag(TAG).d("Event received, data = $data")
                 updateHandlers.forEach {
-                    it.onUpdate(updateType, data ?: return@launch)
+                    it.onUpdate(updateType, data)
                 }
             }
         }

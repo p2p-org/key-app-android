@@ -1,13 +1,13 @@
 package org.p2p.solanaj.ws
 
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
+import com.google.gson.Gson
 import org.java_websocket.WebSocket
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.exceptions.WebsocketNotConnectedException
 import org.java_websocket.framing.Framedata
 import org.java_websocket.handshake.ServerHandshake
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.net.URI
 import java.net.URISyntaxException
@@ -15,7 +15,7 @@ import org.p2p.solanaj.model.types.*
 
 private const val TAG = "SubscriptionSocketClient"
 
-class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) {
+class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI), KoinComponent {
 
     companion object {
         private var instance: SubscriptionWebSocketClient? = null
@@ -49,14 +49,10 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
         }
     }
 
+    private val gson: Gson by inject()
     private val subscriptions = mutableMapOf<String, SubscriptionParams<*>?>()
     private val subscriptionIds = mutableMapOf<String, Long?>()
     private val subscriptionListeners = mutableMapOf<Long, NotificationEventListener>()
-
-    private val moshi = Moshi.Builder().build()
-    private val listGsonAdapter: JsonAdapter<RpcRequest> = moshi.adapter(RpcRequest::class.java)
-    private val mapGsonAdapter: JsonAdapter<RpcMapRequest> = moshi.adapter(RpcMapRequest::class.java)
-    private val rpcSubscriptionAdapter = moshi.adapter(RpcNotificationResponse::class.java)
 
     fun ping() {
         try {
@@ -82,7 +78,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     }
 
     fun removeSubscription(request: RpcMapRequest) {
-        send(mapGsonAdapter.toJson(request))
+        send(gson.toJson(request))
 
         subscriptions[request.id] = null
         subscriptionIds[request.id] = null
@@ -91,7 +87,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     }
 
     fun removeSubscription(request: RpcRequest) {
-        send(listGsonAdapter.toJson(request))
+        send(gson.toJson(request))
 
         subscriptions[request.id] = null
         subscriptionIds[request.id] = null
@@ -112,16 +108,16 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     override fun onMessage(message: String) {
         Timber.tag(TAG).d("New message received: %s", message)
         try {
-            val jsonParsed = rpcSubscriptionAdapter.fromJson(message)
+            val jsonParsed = gson.fromJson(message, RpcNotificationResponse::class.java)
             val id = jsonParsed?.id
             val result = jsonParsed?.result
             if (id != null && result != null) {
                 addResultAndNotify(id, result)
                 Timber.tag(TAG).d("Add subscription listeners, ${subscriptionListeners.keys.map { it.toString() }}")
             } else {
-                val subscriptionId = (jsonParsed?.params?.get("subscription") as? Double)?.toLong()
+                val subscriptionId = jsonParsed?.params?.get("subscription")?.asInt?.toLong()
                 val listener = subscriptionListeners[subscriptionId]
-                listener?.onNotificationEvent(jsonParsed?.params)
+                listener?.onNotificationEvent(jsonParsed?.params ?: return)
                 Timber.tag(TAG)
                     .d(
                         "Find listener for subscription = $subscriptionId in" +
@@ -151,12 +147,12 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
             for (sub in subscriptions.values) {
                 when (sub?.request) {
                     is RpcRequest -> {
-                        val requestJson = listGsonAdapter.toJson(sub.request as RpcRequest)
+                        val requestJson = gson.toJson(sub.request as RpcRequest)
                         send(requestJson)
                         Timber.tag(TAG).d("Add subscription for request = $requestJson")
                     }
                     is RpcMapRequest -> {
-                        val requestJson = mapGsonAdapter.toJson(sub.request as RpcMapRequest)
+                        val requestJson = gson.toJson(sub.request as RpcMapRequest)
                         send(requestJson)
                         Timber.tag(TAG).d("Add subscription for request = $requestJson")
                     }

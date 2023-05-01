@@ -1,5 +1,6 @@
 package org.p2p.wallet.updates.handler
 
+import com.google.gson.JsonObject
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.p2p.wallet.transaction.interactor.TransactionStatusInteractor
@@ -15,7 +16,7 @@ class TransactionSignatureHandler(
         // Nothing to initialize for transaction signatures
     }
 
-    override suspend fun onUpdate(type: UpdateType, data: Any) {
+    override suspend fun onUpdate(type: UpdateType, data: JsonObject) {
         if (type != UpdateType.SIGNATURE_RECEIVED) {
             return
         }

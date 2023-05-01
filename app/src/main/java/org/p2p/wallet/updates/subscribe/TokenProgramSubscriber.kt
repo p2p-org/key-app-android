@@ -15,7 +15,7 @@ class TokenProgramSubscriber(
             PROGRAM_ID,
             mapOf(
                 "Commitment" to "Confirmed",
-                "encoding" to "base64"
+                "encoding" to "base64",
             )
         )
     )
