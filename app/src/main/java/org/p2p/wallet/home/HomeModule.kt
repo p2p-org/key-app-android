@@ -33,7 +33,6 @@ import org.p2p.wallet.receive.renbtc.ReceiveRenBtcPresenter
 import org.p2p.wallet.receive.token.ReceiveTokenContract
 import org.p2p.wallet.receive.token.ReceiveTokenPresenter
 import org.p2p.wallet.updates.subscribe.BalanceUpdateSubscriber
-import org.p2p.wallet.updates.subscribe.TokenProgramSubscriber
 
 object HomeModule : InjectionModule {
 
@@ -78,7 +77,6 @@ object HomeModule : InjectionModule {
         factory<HomeContract.Presenter> {
             val subscribers = listOf(
                 BalanceUpdateSubscriber(get(), get()),
-                TokenProgramSubscriber(get())
             )
             HomePresenter(
                 analytics = get(),

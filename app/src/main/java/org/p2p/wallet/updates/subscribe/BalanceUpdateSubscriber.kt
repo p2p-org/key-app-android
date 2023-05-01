@@ -1,5 +1,6 @@
 package org.p2p.wallet.updates.subscribe
 
+import com.google.gson.annotations.SerializedName
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -13,7 +14,13 @@ class BalanceUpdateSubscriber(
 
     private val request = RpcRequest(
         method = SUBSCRIBE_METHOD_NAME,
-        params = listOf(tokenKeyProvider.publicKey)
+        params = listOf(
+            tokenKeyProvider.publicKey,
+            mapOf(
+                "Commitment" to "Confirmed",
+                "encoding" to "base64"
+            )
+        )
     )
 
     private val cancelRequest = RpcMapRequest(
@@ -38,3 +45,10 @@ class BalanceUpdateSubscriber(
         private const val PARAMS_NUMBER = "number"
     }
 }
+
+data class BalanceUpdateRequest(
+    @SerializedName("Commitment")
+    val commitment: String = "Confirmed",
+    @SerializedName("encoding")
+    val encoding: String = "jsonParsed"
+)

@@ -10,12 +10,10 @@ import org.java_websocket.exceptions.WebsocketNotConnectedException
 import org.java_websocket.framing.Framedata
 import org.java_websocket.handshake.ServerHandshake
 import timber.log.Timber
-import org.p2p.solanaj.model.types.RpcNotificationResult
-import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.solanaj.model.types.RpcResponse
 import java.net.URI
 import java.net.URISyntaxException
-import org.p2p.solanaj.model.types.RpcMapRequest
+import org.p2p.solanaj.model.types.*
+import org.p2p.solanaj.utils.MoshiUtils
 
 private const val TAG = "SubscriptionSocketClient"
 
@@ -53,6 +51,14 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     private val moshi = Moshi.Builder().build()
     private val listGsonAdapter: JsonAdapter<RpcRequest> = moshi.adapter(RpcRequest::class.java)
     private val mapGsonAdapter: JsonAdapter<RpcMapRequest> = moshi.adapter(RpcMapRequest::class.java)
+    private val rpcNotificationAdapter: JsonAdapter<RpcNotificationResponse> =
+        moshi.adapter(RpcNotificationResponse::class.java)
+    private val rpcSubscriptionAdapter = moshi.adapter<RpcResponse<Long>>(
+        Types.newParameterizedType(
+            RpcResponse::class.java,
+            Long::class.java
+        )
+    )
 
     fun ping() {
         try {
@@ -107,17 +113,14 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
 
     override fun onMessage(message: String) {
         Timber.tag(TAG).d("New message received: %s", message)
-        val resultAdapter = moshi.adapter<RpcResponse<Long>>(
-            Types.newParameterizedType(RpcResponse::class.java, Long::class.java)
-        )
-        try {
-            resultAdapter.fromJson(message)?.also { rpcResult ->
-                rpcResult.id?.let { resultId ->
-                    addResultAndNotify(resultId, rpcResult)
-                } ?: handleNotificationMessage(message)
-            }
-        } catch (ex: Exception) {
-            Timber.tag(TAG).e(ex, "Error on socket message")
+        if (MoshiUtils.canParse(message, rpcSubscriptionAdapter)) {
+            val subscriptionResult = rpcSubscriptionAdapter.fromJson(message)
+            val resultId = subscriptionResult?.id ?: return
+            addResultAndNotify(resultId, subscriptionResult)
+        } else if (MoshiUtils.canParse(message, rpcNotificationAdapter)) {
+            val eventResult = rpcNotificationAdapter.fromJson(message)
+            val listener = subscriptionListeners[eventResult?.subscription]
+            listener?.onNotificationEvent(eventResult?.params)
         }
     }
 
@@ -163,22 +166,6 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
         }
     }
 
-    private fun handleNotificationMessage(message: String) {
-        val notificationResultAdapter = moshi.adapter(RpcNotificationResult::class.java)
-        notificationResultAdapter.fromJson(message)?.let { result ->
-            val listener = subscriptionListeners[result.params.subscription]
-            val value = result.params.result.value as Map<*, *>
-            when (NotificationType.valueOf(result.method)) {
-                NotificationType.SIGNATURE -> listener?.onNotificationEvent(
-                    SignatureNotification(
-                        value["err"]
-                    )
-                )
-                NotificationType.ACCOUNT -> listener?.onNotificationEvent(value)
-            }
-        }
-    }
-
     private class SubscriptionParams<RpcRequest>(
         var request: RpcRequest,
         var listener: NotificationEventListener
@@ -189,12 +176,8 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
         ACCOUNT("accountNotification");
 
         companion object {
-            fun valueOf(type: String): NotificationType? {
-                return values().find { it.type == type }.also {
-                    if (it == null) {
-                        Log.e("NotificationType", "Unknown NotificationType: $type")
-                    }
-                }
+            fun valueOf(type: String?): NotificationType? {
+                return values().firstOrNull { it.type == type }
             }
         }
     }
