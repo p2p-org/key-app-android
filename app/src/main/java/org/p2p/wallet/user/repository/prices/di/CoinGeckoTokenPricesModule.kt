@@ -3,6 +3,7 @@ package org.p2p.wallet.user.repository.prices.di
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.scope.Scope
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.pricecache.PriceCacheRepository
 import org.p2p.wallet.R
@@ -10,6 +11,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getClient
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.coingecko.CoinGeckoApi
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.impl.TokenPricesCoinGeckoRepository
 
 object CoinGeckoTokenPricesModule : InjectionModule {
@@ -24,7 +26,7 @@ object CoinGeckoTokenPricesModule : InjectionModule {
                 priceCacheRepository = get(),
                 dispatchers = get()
             )
-        }
+        } bind TokenPricesRemoteRepository::class
     }
 
     private fun Scope.getCoinGeckoRetrofit(): CoinGeckoApi {
