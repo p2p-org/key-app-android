@@ -77,7 +77,7 @@ class App : Application(), Configuration.Provider {
             // crashes when using level != Level.Error
             // do NOT use other than ERROR before bumping to Koin 3.1.6
             // FIXME
-            androidLogger(level = Level.ERROR)
+            androidLogger(level = Level.INFO)
             androidContext(this@App)
             // uncomment in PWN-4197
             // workManagerFactory inside calls WorkManager.initialize that causes IllegalStateException

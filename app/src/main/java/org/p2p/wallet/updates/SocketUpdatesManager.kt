@@ -14,6 +14,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import org.p2p.solanaj.model.types.RpcMapRequest
+import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.ws.SocketStateListener
 import org.p2p.solanaj.ws.SubscriptionWebSocketClient
 import org.p2p.wallet.common.di.AppScope
@@ -82,20 +84,41 @@ class SocketUpdatesManager private constructor(
         launch { observers.remove(observer) }
     }
 
-    override fun subscribeToTransaction(signature: String) {
-        client?.signatureSubscribe(signature) { data ->
+    override fun addSubscription(request: RpcRequest, updateType: UpdateType) {
+        Timber.tag(TAG).d("Add subscription for request = $request, client = $client")
+        client?.addSubscription(request) { data ->
             launch(Dispatchers.Default) {
                 Timber.tag(TAG).d("Event received, data = $data")
                 updateHandlers.forEach {
-                    it.onUpdate(UpdateType.SIGNATURE_RECEIVED, signature)
+                    it.onUpdate(updateType, data ?: return@launch)
                 }
             }
         }
     }
 
-    override fun unsubscribeFromTransaction(signature: String) = Unit
+    override fun addSubscription(request: RpcMapRequest, updateType: UpdateType) {
+        Timber.tag(TAG).d("Add subscription for request = $request, client = $client")
+        client?.addSubscription(request) { data ->
+            launch(Dispatchers.Default) {
+                Timber.tag(TAG).d("Event received, data = $data")
+                updateHandlers.forEach {
+                    it.onUpdate(updateType, data ?: return@launch)
+                }
+            }
+        }
+    }
 
-    override fun onWebSocketPong() = Unit
+    override fun removeSubscription(request: RpcRequest) {
+        client?.removeSubscription(request)
+    }
+
+    override fun removeSubscription(request: RpcMapRequest) {
+        client?.removeSubscription(request)
+    }
+
+    override fun onWebSocketPong() {
+        Timber.tag(TAG).d("Server pong")
+    }
 
     override fun onConnected() {
         Timber.tag(TAG).w("Socket client is successfully connected")
@@ -110,6 +133,7 @@ class SocketUpdatesManager private constructor(
     }
 
     override fun onFailed(exception: Exception) {
+        Timber.tag(TAG).d("Event updates connection is failed: $exception")
         if (state == UpdatesState.CONNECTING) {
             launch { state = UpdatesState.CONNECTING_FAILED }
         } else {
@@ -169,9 +193,9 @@ class SocketUpdatesManager private constructor(
         state = UpdatesState.CONNECTING
         Timber.tag(TAG).d("Connecting: Update handlers are initialized, connecting to event stream")
 
-        state = UpdatesState.CONNECTED
         try {
             client = SubscriptionWebSocketClient.getInstance(endpoint, this)
+            state = UpdatesState.CONNECTED
         } catch (e: Throwable) {
             state = UpdatesState.CONNECTING_FAILED
         }

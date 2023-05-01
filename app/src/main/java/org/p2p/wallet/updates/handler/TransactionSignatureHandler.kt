@@ -1,4 +1,4 @@
-package org.p2p.wallet.infrastructure.update
+package org.p2p.wallet.updates.handler
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -19,7 +19,6 @@ class TransactionSignatureHandler(
         if (type != UpdateType.SIGNATURE_RECEIVED) {
             return
         }
-
         coroutineScope {
             launch {
                 try {
