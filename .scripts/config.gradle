@@ -7,7 +7,6 @@ android {
         buildConfigField("String", "rpcPoolApiKey", "\"${apiKeysProperties.getOrThrow('rpcPoolApiKey')}\"")
         buildConfigField("String", "moonpayKey", "\"${apiKeysProperties.getOrThrow('moonpayKey')}\"")
         buildConfigField("String", "moonpaySandboxKey", "\"${apiKeysProperties.getOrThrow('moonpaySandboxKey')}\"")
-        buildConfigField("String", "comparePublicKey", "\"${apiKeysProperties.getOrThrow('comparePublicKey')}\"")
         buildConfigField("String", "intercomApiKey", "\"${apiKeysProperties.getOrThrow('intercomApiKey')}\"")
         buildConfigField("String", "intercomAppId", "\"${apiKeysProperties.getOrThrow('intercomAppId')}\"")
         buildConfigField("String", "appsFlyerKey", "\"${apiKeysProperties.getOrThrow('appsFlyerKey')}\"")

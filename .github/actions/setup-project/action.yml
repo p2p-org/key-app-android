@@ -106,7 +106,6 @@ runs:
         echo "intercomApiKey=${{ inputs.intercom-key }}" >> apikeys.properties
         echo "intercomAppId=${{ inputs.intercom-app-id }}" >> apikeys.properties
         echo "appsFlyerKey=${{ inputs.apps-flyer-key }}" >> apikeys.properties
-        echo "comparePublicKey=${{ inputs.compare-key }}" >> apikeys.properties
         echo "lokaliseKey=${{ inputs.lokalise-key }}" >> apikeys.properties
         echo "lokaliseAppId=${{ inputs.lokalise-app-id }}" >> apikeys.properties
         echo "apikeys.properties is successfully created"
