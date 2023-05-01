@@ -33,10 +33,11 @@ class SentryFacade : CrashLoggingFacade {
                 createBreadcrumb("${error.javaClass.name}: $message", SentryLevel.ERROR)
             )
         }
-        val isErrorCoheredWithNetwork = when(error) {
+        val isErrorCoheredWithNetwork = when (error) {
             is UnknownHostException,
             is SocketTimeoutException,
             is ConnectException -> true
+
             else -> false
         }
         if (isErrorCoheredWithNetwork) {
