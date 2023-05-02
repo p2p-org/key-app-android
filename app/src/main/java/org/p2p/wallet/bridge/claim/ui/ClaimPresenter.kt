@@ -89,14 +89,18 @@ class ClaimPresenter(
                 if (messageResId != null) {
                     view?.showUiKitSnackBar(messageResId = messageResId)
                 }
-                if (isNotEnoughFundsError) {
+
+                val feeErrorRes = if (isNotEnoughFundsError) {
                     view?.setButtonText(
                         TextViewCellModel.Raw(
                             TextContainer(R.string.bridge_claim_bottom_button_add_funds)
                         )
                     )
+                    R.string.bridge_claim_fees_more_then
+                } else {
+                    R.string.bridge_claim_fees_unavailable
                 }
-                view?.showFee(TextViewCellModel.Raw(TextContainer(R.string.bridge_claim_fees_unavailable)))
+                view?.showFee(TextViewCellModel.Raw(TextContainer(feeErrorRes)))
                 view?.setClaimButtonState(isButtonEnabled = isNotEnoughFundsError)
                 view?.setBannerVisibility(isBannerVisible = isNotEnoughFundsError)
                 view?.setFeeInfoVisibility(isVisible = false)
