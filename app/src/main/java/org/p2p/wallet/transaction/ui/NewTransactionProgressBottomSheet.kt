@@ -108,6 +108,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
             }
             val totalFees = data.totalFees
             textViewFeeValue.text = if (totalFees != null) {
+                textViewFeeValue.isVisible = true
+                textViewFeeTitle.isVisible = true
                 buildSpannedString {
                     totalFees.forEach { textToHighlight ->
                         append(
@@ -121,7 +123,9 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                     }
                 }
             } else {
-                resources.getString(R.string.transaction_transaction_fee_free_value)
+                textViewFeeValue.isVisible = false
+                textViewFeeTitle.isVisible = false
+                null
             }
             buttonDone.setOnClickListener {
                 dismissAllowingStateLoss()
