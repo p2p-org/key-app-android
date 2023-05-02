@@ -3,9 +3,10 @@ package org.p2p.wallet.bridge.api.mapper
 import timber.log.Timber
 import org.p2p.wallet.bridge.model.BridgeResult
 
+private const val TAG = "BridgeServiceErrorMapper"
 class BridgeServiceErrorMapper {
     fun parseError(errorCode: Int): BridgeResult.Error {
-        Timber.i("Parsing bridge service error: $errorCode")
+        Timber.tag(TAG).i("Parsing bridge service error: $errorCode")
         return when (errorCode) {
             -32001 -> BridgeResult.Error.UnableUnwrapContractCall
             -32002 -> BridgeResult.Error.TransactionGasIsNotSet

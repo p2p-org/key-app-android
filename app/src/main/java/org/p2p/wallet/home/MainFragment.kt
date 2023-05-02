@@ -124,7 +124,7 @@ class MainFragment :
             hide(refreshErrorFragment)
         }
         connectionManager.connectionStatus.onEach { isConnected ->
-            if (!isConnected) showInternetError(true)
+            if (!isConnected) showInternetError(showError = true)
         }.launchIn(lifecycleScope)
 
         // todo: this is just a fake solution, we need to hide error when user clicks on refresh button

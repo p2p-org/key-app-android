@@ -25,12 +25,12 @@ class TransactionAddressInteractor(
         useCache: Boolean = true
     ): TransactionAddressData {
         val associatedAddress = try {
-            Timber.tag(ADDRESS_TAG).d("Searching for SPL token address")
+            Timber.tag(ADDRESS_TAG).i("Searching for SPL token address")
             findSplTokenAddress(destinationAddress, mintAddress, useCache)
         } catch (e: CancellationException) {
             throw e
         } catch (e: IllegalStateException) {
-            Timber.tag(ADDRESS_TAG).d("Searching address failed, address is wrong")
+            Timber.tag(ADDRESS_TAG).i("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")
         }
 

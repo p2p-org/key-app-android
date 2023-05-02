@@ -1,11 +1,11 @@
 package org.p2p.wallet.seed
 
-import android.content.ClipboardManager
-import android.content.Context
-import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.getSystemService
 import androidx.core.view.isVisible
+import android.content.ClipboardManager
+import android.content.Context
+import android.util.AttributeSet
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent

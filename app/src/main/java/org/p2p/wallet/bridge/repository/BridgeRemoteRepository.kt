@@ -9,6 +9,7 @@ import org.p2p.wallet.bridge.api.mapper.BridgeServiceErrorMapper
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 
+private const val TAG = "BridgeRemoteRepository"
 class BridgeRemoteRepository(
     private val api: RpcApi,
     private val gson: Gson,
@@ -25,8 +26,8 @@ class BridgeRemoteRepository(
             val result = request.parseResponse(response, gson)
             return BridgeResult.Success(result)
         } catch (e: JsonRpc.ResponseError.RpcError) {
-            Timber.i(e, "failed request for ${request.method}")
-            Timber.i("Body ${e.error.message}")
+            Timber.tag(TAG).i(e, "failed request for ${request.method}")
+            Timber.tag(TAG).i("Error body message ${e.error.message}")
             val errorCode = e.error.code
             throw errorMapper.parseError(errorCode)
         }

@@ -145,7 +145,7 @@ class HistoryTransactionDetailsPresenter(
 
     private suspend fun getTransferActorUsername(actorAddress: Base58String): UsernameDetails? {
         return runCatching { usernameInteractor.findUsernameByAddress(actorAddress) }
-            .onFailure { Timber.e(it, "Failed to find username by address") }
+            .onFailure { Timber.e(it, "Failed to find username by address: $actorAddress") }
             .getOrNull()
     }
 
