@@ -57,7 +57,7 @@
     <string name="camera_permission_not_granted">Camera permission denied</string>
 
     <!-- Error messages -->
-    <string name="error_title">Error occurred</string>
+    <string name="error_title">Failed to get data</string>
     <string name="error_general_title">Unknown error</string>
     <string name="error_general_message">❌ Something went wrong. Please, try again</string>
     <string name="error_general_message_refresh">Something went wrong</string>

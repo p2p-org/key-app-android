@@ -7,9 +7,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import org.p2p.core.common.TextContainer
+import org.p2p.core.utils.isConnectionError
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
-import org.p2p.core.common.TextContainer
 import org.p2p.wallet.common.ui.dialogs.InfoDialog
 
 fun Fragment.showInfoDialog(
@@ -35,33 +36,9 @@ fun Fragment.showInfoDialog(
     )
 }
 
-fun Fragment.showInfoDialog(
-    @StringRes titleRes: Int? = null,
-    message: String,
-    @StringRes primaryButtonRes: Int,
-    @StringRes secondaryButtonRes: Int? = null,
-    @ColorRes primaryButtonTextColor: Int? = null,
-    primaryCallback: (() -> Unit)? = null,
-    secondaryCallback: (() -> Unit)? = null,
-    isCancelable: Boolean = true
-) {
-    InfoDialog.show(
-        fragmentManager = childFragmentManager,
-        titleRes = titleRes,
-        subTitle = message,
-        primaryButtonRes = primaryButtonRes,
-        secondaryButtonRes = secondaryButtonRes,
-        primaryButtonTextColor = primaryButtonTextColor,
-        onPrimaryButtonClicked = { primaryCallback?.invoke() },
-        onSecondaryButtonClicked = { secondaryCallback?.invoke() },
-        isCancelable = isCancelable
-    )
-}
-
 fun Fragment.showErrorDialog(
     @StringRes titleRes: Int = R.string.error_title,
-    @StringRes messageRes: Int = R.string.error_general_message,
-    @DrawableRes iconRes: Int = R.drawable.ic_common_error,
+    @DrawableRes iconRes: Int = R.drawable.ic_not_found,
     actionCallback: (() -> Unit)? = null,
     dismissCallback: (() -> Unit)? = null
 ) {
@@ -69,7 +46,8 @@ fun Fragment.showErrorDialog(
         fragment = this,
         iconRes = iconRes,
         title = TextContainer(titleRes),
-        message = TextContainer(messageRes),
+        primaryButtonRes = R.string.common_try_again,
+        secondaryButtonRes = R.string.common_cancel,
         actionCallback = actionCallback,
         dismissCallback = dismissCallback
     )
@@ -77,27 +55,28 @@ fun Fragment.showErrorDialog(
 
 fun FragmentActivity.showErrorDialog(
     @StringRes titleRes: Int = R.string.error_general_title,
-    @StringRes messageRes: Int = R.string.error_general_message,
-    @DrawableRes iconRes: Int = R.drawable.ic_common_error,
+    @DrawableRes iconRes: Int = R.drawable.ic_not_found,
     actionCallback: (() -> Unit)? = null,
     dismissCallback: (() -> Unit)? = null
 ) {
     ErrorBottomSheet.show(
         activity = this,
         iconRes = iconRes,
+        primaryButtonRes = R.string.common_try_again,
+        secondaryButtonRes = R.string.common_cancel,
         title = TextContainer(titleRes),
-        message = TextContainer(messageRes),
         actionCallback = actionCallback,
         dismissCallback = dismissCallback
     )
 }
 
-fun Fragment.showErrorDialog(message: String, dismissCallback: (() -> Unit)? = null) {
+fun Fragment.showErrorDialog(title: String, dismissCallback: (() -> Unit)? = null) {
     ErrorBottomSheet.show(
         fragment = this,
-        iconRes = R.drawable.ic_common_error,
-        title = TextContainer(R.string.error_title),
-        message = TextContainer(message),
+        iconRes = R.drawable.ic_not_found,
+        title = TextContainer(title),
+        primaryButtonRes = R.string.common_try_again,
+        secondaryButtonRes = R.string.common_cancel,
         actionCallback = null,
         dismissCallback = dismissCallback
     )
@@ -106,9 +85,10 @@ fun Fragment.showErrorDialog(message: String, dismissCallback: (() -> Unit)? = n
 fun Fragment.showErrorDialog(throwable: Throwable? = null, dismissCallback: (() -> Unit)? = null) {
     ErrorBottomSheet.show(
         fragment = this,
-        iconRes = R.drawable.ic_common_error,
-        title = TextContainer(R.string.error_title),
-        message = TextContainer(throwable.getErrorMessage { res -> getString(res) }),
+        iconRes = throwable.getErrorIcon(),
+        primaryButtonRes = R.string.common_try_again,
+        secondaryButtonRes = R.string.common_cancel,
+        title = TextContainer(throwable.getErrorMessage { res -> getString(res) }),
         actionCallback = dismissCallback,
         dismissCallback = null
     )
@@ -117,12 +97,21 @@ fun Fragment.showErrorDialog(throwable: Throwable? = null, dismissCallback: (() 
 fun FragmentActivity.showErrorDialog(throwable: Throwable? = null) {
     ErrorBottomSheet.show(
         activity = this,
-        iconRes = R.drawable.ic_common_error,
-        title = TextContainer(R.string.error_title),
-        message = TextContainer(throwable.getErrorMessage { res -> getString(res) }),
+        iconRes = throwable.getErrorIcon(),
+        primaryButtonRes = R.string.common_try_again,
+        secondaryButtonRes = R.string.common_cancel,
+        title = TextContainer(throwable.getErrorMessage { res -> getString(res) }),
         actionCallback = null,
         dismissCallback = null
     )
+}
+
+private fun Throwable?.getErrorIcon(): Int {
+    return if (this?.isConnectionError() == true) {
+        R.drawable.ic_cat
+    } else {
+        R.drawable.ic_not_found
+    }
 }
 
 fun DialogFragment.showAllowingStateLoss(fragmentManager: FragmentManager) {
