@@ -353,7 +353,7 @@
     <string name="receive_num_2">2</string>
     <string name="receive_ethereum_step_1">Send %s to your Ethereum address</string>
     <string name="receive_ethereum_step_2">We bridge it to Solana with Wormhole</string>
-    <string name="receive_ethereum_banner_text">We refund bridging\ncosts for any transactions over $50</string>
+    <string name="receive_ethereum_banner_text">We refund bridging costs for\nany transactions over $50</string>
     <string name="receive_only_need_sign_transaction">You only need to sign a transaction with Key App</string>
 
 
