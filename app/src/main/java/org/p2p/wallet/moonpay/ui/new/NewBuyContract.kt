@@ -22,7 +22,7 @@ interface NewBuyContract {
         fun showMessage(message: String?, selectedTokenSymbol: String? = null)
         fun showTotal(viewData: BuyViewData)
         fun showDetailsBottomSheet(buyDetailsState: BuyDetailsState)
-        fun setCurrencySelectionEnabled(enabled: Boolean)
+        fun setCurrencySelectionIsEnabled(enabled: Boolean)
         fun clearOppositeFieldAndTotal(totalText: String)
         fun navigateToMoonpay(
             amount: String,

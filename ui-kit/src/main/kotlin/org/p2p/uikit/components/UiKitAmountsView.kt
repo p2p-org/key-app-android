@@ -135,7 +135,7 @@ class UiKitAmountsView @JvmOverloads constructor(
         }
     }
 
-    fun setCurrencySelectIconVisible(enabled: Boolean) {
+    fun setCurrencySelectIconIsVisible(enabled: Boolean) {
         binding.imageViewSelectCurrency.isVisible = enabled
     }
 
