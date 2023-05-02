@@ -122,11 +122,9 @@ class HomePresenter(
         }
         updatesManager.addUpdatesStateObserver(object : UpdatesStateObserver {
             override fun onUpdatesStateChanged(state: UpdatesState) {
-                Timber.tag("______STATE").d("$state")
                 if (state == UpdatesState.CONNECTED) {
                     updateSubscribers.forEach {
                         it.subscribe()
-                        Timber.tag("______STATE").d("$it = Subscribed")
                     }
                 }
             }

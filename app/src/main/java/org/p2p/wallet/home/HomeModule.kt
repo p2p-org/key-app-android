@@ -32,7 +32,7 @@ import org.p2p.wallet.receive.renbtc.ReceiveRenBtcContract
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcPresenter
 import org.p2p.wallet.receive.token.ReceiveTokenContract
 import org.p2p.wallet.receive.token.ReceiveTokenPresenter
-import org.p2p.wallet.updates.subscribe.BalanceUpdateSubscriber
+import org.p2p.wallet.updates.subscribe.TokenProgramSubscriber
 
 object HomeModule : InjectionModule {
 
@@ -76,7 +76,7 @@ object HomeModule : InjectionModule {
         // todo: to eliminate all this hell, we could just migrate to hilt
         factory<HomeContract.Presenter> {
             val subscribers = listOf(
-                BalanceUpdateSubscriber(get(), get())
+                TokenProgramSubscriber(get(), get(), get())
             )
             HomePresenter(
                 analytics = get(),

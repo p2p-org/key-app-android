@@ -2,11 +2,13 @@ package org.p2p.wallet.updates.subscribe
 
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.updates.UpdateType
 import org.p2p.wallet.updates.UpdatesManager
 
 class TokenProgramSubscriber(
-    private val updatesManager: UpdatesManager
+    private val updatesManager: UpdatesManager,
+    private val tokenKeyProvider: TokenKeyProvider
 ) : UpdateSubscriber {
 
     val request = RpcRequest(
@@ -14,8 +16,17 @@ class TokenProgramSubscriber(
         params = listOf(
             PROGRAM_ID,
             mapOf(
-                "Commitment" to "Confirmed",
+                "сommitment" to "сonfirmed",
                 "encoding" to "base64",
+                "filters" to listOf(
+                    mapOf("dataSize" to 165),
+                    mapOf(
+                        "memcmp" to mapOf(
+                            "offset" to 32,
+                            "bytes" to tokenKeyProvider.publicKey
+                        )
+                    )
+                )
             )
         )
     )
