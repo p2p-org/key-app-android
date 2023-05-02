@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
+import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
@@ -76,6 +77,13 @@ class ClaimPresenter(
                     minAmountForFreeFee = minAmountForFreeFee
                 )
                 val finalValue = claimUiMapper.makeResultAmount(newBundle.resultAmount)
+                val amountInFiat = finalValue.fiatAmount?.asUsd()
+                if (amountInFiat == null) {
+                    view?.setWillGetVisibility(isVisible = false)
+                } else {
+                    view?.showWillGet(TextViewCellModel.Raw(TextContainer(amountInFiat)))
+                    view?.setWillGetVisibility(isVisible = true)
+                }
                 view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
             } catch (error: Throwable) {
                 Timber.e(error, "Error on getting bundle for claim")
@@ -104,6 +112,7 @@ class ClaimPresenter(
                 view?.setClaimButtonState(isButtonEnabled = isNotEnoughFundsError)
                 view?.setBannerVisibility(isBannerVisible = isNotEnoughFundsError)
                 view?.setFeeInfoVisibility(isVisible = false)
+                view?.setWillGetVisibility(isVisible = false)
                 isLastErrorWasNotEnoughFundsError = isNotEnoughFundsError
             } finally {
                 startRefreshJob(refreshJobDelayTimeInMillis)
@@ -192,6 +201,7 @@ class ClaimPresenter(
         view?.setClaimButtonState(isButtonEnabled = false)
         view?.setBannerVisibility(isBannerVisible = false)
         view?.setFeeInfoVisibility(isVisible = true)
+        view?.setWillGetVisibility(isVisible = false)
         view?.showFee(claimUiMapper.getTextSkeleton())
     }
 
