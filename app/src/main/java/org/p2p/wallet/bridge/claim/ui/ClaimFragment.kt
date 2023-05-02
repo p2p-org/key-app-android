@@ -1,6 +1,8 @@
 package org.p2p.wallet.bridge.claim.ui
 
 import androidx.core.view.isVisible
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -54,6 +56,10 @@ class ClaimFragment :
 
     private var listener: RootListener? = null
 
+    private val willGetAnimation = ChangeBounds().apply {
+        duration = 200
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as? RootListener
@@ -65,6 +71,14 @@ class ClaimFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             layoutFeeContainer.setOnClickListener { presenter.onFeeClicked() }
             buttonBottom.setOnClickListener { presenter.onSendButtonClicked() }
+        }
+    }
+
+    override fun setWillGetVisibility(isVisible: Boolean) {
+        val wasVisible = binding.groupWillGet.isVisible
+        if (wasVisible != isVisible) {
+            TransitionManager.beginDelayedTransition(binding.layoutFeeContainer, willGetAnimation)
+            binding.groupWillGet.isVisible = isVisible
         }
     }
 
@@ -91,6 +105,10 @@ class ClaimFragment :
 
     override fun showFee(fee: TextViewCellModel) {
         binding.textViewFeeValue.bind(fee)
+    }
+
+    override fun showWillGet(willGet: TextViewCellModel) {
+        binding.textViewWillGetValue.bind(willGet)
     }
 
     override fun showClaimFeeInfo(claimDetails: ClaimDetails) {

@@ -14,6 +14,8 @@ interface ClaimContract {
         fun setTokenAmount(tokenAmount: String)
         fun setFiatAmount(fiatAmount: String)
         fun showFee(fee: TextViewCellModel)
+        fun showWillGet(willGet: TextViewCellModel)
+        fun setWillGetVisibility(isVisible: Boolean)
         fun showClaimFeeInfo(claimDetails: ClaimDetails)
         fun showClaimButtonValue(tokenAmountToClaim: String)
         fun setClaimButtonState(isButtonEnabled: Boolean)
