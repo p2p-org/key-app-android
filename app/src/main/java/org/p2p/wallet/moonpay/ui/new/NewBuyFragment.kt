@@ -214,6 +214,10 @@ class NewBuyFragment :
         )
     }
 
+    override fun setCurrencySelectionIsEnabled(enabled: Boolean) {
+        binding.amountsView.setCurrencySelectIconIsVisible(enabled)
+    }
+
     override fun setContinueButtonEnabled(isEnabled: Boolean) {
         binding.buttonBuy.isEnabled = isEnabled
         with(binding.buttonBuy) {

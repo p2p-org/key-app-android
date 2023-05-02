@@ -1,4 +1,4 @@
-package org.p2p.wallet.home.api
+package org.p2p.wallet.infrastructure.network.coingecko.response
 
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal

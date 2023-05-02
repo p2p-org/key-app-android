@@ -19,7 +19,7 @@ enum class MoonpayErrorResponseType(val stringValue: String) {
     UNKNOWN_ERROR("UnknownError");
 
     companion object {
-        fun fromStringValue(type: String): MoonpayErrorResponseType {
+        fun fromStringValue(type: String?): MoonpayErrorResponseType {
             return values().find { it.stringValue == type } ?: UNKNOWN_ERROR
         }
     }

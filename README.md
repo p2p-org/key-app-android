@@ -19,14 +19,12 @@ intercomApiKey="your_key"
 intercomAppId="your_key"
 rpcPoolApiKey="your_key"
 moonpayKey="your_key"
-comparePublicKey="your_key"
 amplitudeKey="your_key"
 ```
 Where:
 `intercomApiKey`, `intercomAppId` - API keys for [Intercom](https://www.intercom.com) library
 `rpcPoolApiKey` - API key for p2p.rpcpool.com
 `moonpayKey` - API key for api.moonpay.com
-`comparePublicKey` - API key cryptocompare.com
 `amplitudeKey` - API key for [Amplitude](https://developers.amplitude.com/docs/android) library
 
 3. Create `torus.properties` file at the root of the project. It should include the information about the verifiers and subverifiers

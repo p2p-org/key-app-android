@@ -53,7 +53,7 @@ import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
@@ -64,7 +64,7 @@ val POPULAR_TOKENS_COINGECKO_IDS = setOf(
     USDT_COINGECKO_ID,
     WETH_COINGECKO_ID,
     USDC_COINGECKO_ID
-).map { TokenId(it) }
+).map { TokenCoinGeckoId(it) }
 val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 class HomePresenter(
