@@ -20,7 +20,6 @@ import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
@@ -49,7 +48,6 @@ class NewBuyPresenter(
     private val resources: Resources,
     private val buyInteractor: BuyInteractor,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
-    bankTransferFeatureToggle: BuyWithTransferFeatureToggle,
 ) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
 
     private lateinit var tokensToBuy: List<Token>
@@ -65,7 +63,6 @@ class NewBuyPresenter(
     private var isSwappedToToken: Boolean = false
     private var buyDetailsState: BuyDetailsState? = null
     private var currentBuyViewData: BuyViewData? = null
-    private val currencySelectionEnabled = bankTransferFeatureToggle.value
 
     private var calculationJob: Job? = null
 
@@ -77,7 +74,6 @@ class NewBuyPresenter(
 
     override fun attach(view: NewBuyContract.View) {
         super.attach(view)
-        view.setCurrencySelectionIsEnabled(currencySelectionEnabled)
         loadTokensToBuy()
         loadAvailablePaymentMethods()
         val prevScreenName =
@@ -192,9 +188,7 @@ class NewBuyPresenter(
     }
 
     override fun onSelectCurrencyClicked() {
-        if (currencySelectionEnabled) {
-            view?.showCurrency(currenciesToSelect, selectedCurrency)
-        }
+        view?.showCurrency(currenciesToSelect, selectedCurrency)
     }
 
     override fun onTotalClicked() {
@@ -317,16 +311,19 @@ class NewBuyPresenter(
                 buyResultAnalytics = BuyAnalytics.BuyResult.SUCCESS
                 updateViewWithBuyCurrencyData(buyResult.data)
             }
+
             is MoonpayBuyResult.Error -> {
                 Timber.e(buyResult, "Failed to buy")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
             }
+
             is MoonpayBuyResult.MinAmountError -> {
                 Timber.i(buyResult.toString(), "Failed to buy: MinAmountError")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 showMinAmountError(buyResult.minBuyAmount)
             }
+
             is MoonpayBuyResult.MaxAmountError -> {
                 Timber.i(buyResult.toString(), "Failed to buy: MaxAmountError")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
