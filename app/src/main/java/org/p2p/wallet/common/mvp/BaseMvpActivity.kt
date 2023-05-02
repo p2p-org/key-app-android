@@ -29,7 +29,7 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
     }
 
     override fun showErrorMessage(messageResId: Int) {
-        showErrorDialog(messageRes = messageResId)
+        showErrorDialog(titleRes = messageResId)
     }
 
     override fun showErrorMessage(e: Throwable?) {

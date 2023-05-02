@@ -7,11 +7,11 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <style name="AppRoundCornersModalStyleSnow" parent="Widget.Design.BottomSheet.Modal">
+    <style name="AppRoundCornersModalStyleSnow" parent="Theme.Material3.DayNight.BottomSheetDialog">
         <item name="android:background">@drawable/bg_alert_elevation_rounded_top_snow</item>
     </style>
 
-    <style name="AppRoundCornersModalStyleSmoke" parent="Widget.Design.BottomSheet.Modal">
+    <style name="AppRoundCornersModalStyleSmoke" parent="Theme.Material3.DayNight.BottomSheetDialog">
         <item name="android:background">@drawable/bg_alert_elevation_rounded_top_smoke</item>
     </style>
 
@@ -25,7 +25,6 @@
         <item name="materialAlertDialogTitleTextStyle">@style/WalletTheme.TextAppearance.SemiBold16</item>
         <item name="buttonBarPositiveButtonStyle">@style/AccentColoredText</item>
         <item name="buttonBarNegativeButtonStyle">@style/AccentColoredText</item>
-
     </style>
 
     <style name="SwitchStyle" parent="Theme.Design.BottomSheetDialog">
