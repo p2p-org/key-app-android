@@ -15,3 +15,10 @@ data class RpcNotificationResponse(
     @SerializedName("result")
     val result: Long? = null
 )
+
+data class RpcNotificationResultResponse<T>(
+    @SerializedName("value")
+    val value: T,
+    @SerializedName("subscription")
+    val subscription: Int
+)

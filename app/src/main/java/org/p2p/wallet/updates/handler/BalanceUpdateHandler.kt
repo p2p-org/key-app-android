@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import timber.log.Timber
 import java.math.BigInteger
+import org.p2p.solanaj.model.types.RpcNotificationResultResponse
 import org.p2p.wallet.updates.UpdateHandler
 import org.p2p.wallet.updates.UpdateType
 
@@ -29,14 +30,7 @@ class BalanceUpdateHandler(
 
 private data class BalanceNotificationResponse(
     @SerializedName("result")
-    val result: BalanceResultResponse,
-)
-
-private data class BalanceResultResponse(
-    @SerializedName("value")
-    val balanceValueResponse: BalanceValueResponse,
-    @SerializedName("subscription")
-    val subscription: Int
+    val result: RpcNotificationResultResponse<BalanceValueResponse>,
 )
 
 private data class BalanceValueResponse(

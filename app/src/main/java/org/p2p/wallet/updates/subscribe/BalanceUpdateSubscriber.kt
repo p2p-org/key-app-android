@@ -45,10 +45,3 @@ class BalanceUpdateSubscriber(
         private const val PARAMS_NUMBER = "number"
     }
 }
-
-data class BalanceUpdateRequest(
-    @SerializedName("Commitment")
-    val commitment: String = "Confirmed",
-    @SerializedName("encoding")
-    val encoding: String = "jsonParsed"
-)
