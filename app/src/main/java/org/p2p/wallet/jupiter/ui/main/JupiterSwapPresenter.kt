@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.ui.main
 
+import android.content.res.Resources
 import android.view.Gravity
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
@@ -19,10 +20,10 @@ import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
@@ -32,7 +33,9 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
+import org.p2p.wallet.jupiter.interactor.model.SwapPriceImpactType
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.statemanager.SwapFeatureException
@@ -47,7 +50,6 @@ import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
@@ -71,6 +73,7 @@ class JupiterSwapPresenter(
     private val dispatchers: CoroutineDispatchers,
     private val userLocalRepository: UserLocalRepository,
     private val historyInteractor: HistoryInteractor,
+    private val resources: Resources,
     private val initialAmountA: String? = null,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
@@ -202,6 +205,7 @@ class JupiterSwapPresenter(
                     )
                     view?.showDefaultSlider()
                 }
+
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
                     val causeFailure = if (result.cause is JupiterSwapInteractor.LowSlippageRpcError) {
                         Timber.i("Swap failure: low slippage = ${currentState.slippage}")
@@ -227,7 +231,9 @@ class JupiterSwapPresenter(
             is SwapState.TokenANotZero,
             is SwapState.LoadingRoutes,
             is SwapState.RoutesLoaded,
-            is SwapState.LoadingTransaction, -> swapInteractor.getTokenAAmount(featureState)
+            is SwapState.LoadingTransaction,
+            -> swapInteractor.getTokenAAmount(featureState)
+
             is SwapState.SwapException -> swapInteractor.getTokenAAmount(featureState.previousFeatureState)
             null -> null
         }
@@ -263,12 +269,15 @@ class JupiterSwapPresenter(
             null,
             SwapState.InitialLoading,
             -> false
+
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction,
             is SwapState.SwapLoaded,
             is SwapState.TokenANotZero,
             is SwapState.RoutesLoaded,
-            is SwapState.TokenAZero, -> true
+            is SwapState.TokenAZero,
+            -> true
+
             is SwapState.SwapException -> isChangeTokenScreenAvailable(featureState.previousFeatureState)
         }
     }
@@ -351,6 +360,7 @@ class JupiterSwapPresenter(
     private fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
         Timber.i(state.featureException)
 
+        checkPriceImpact()
         rateTickerManager.handleSwapException(state)
         val (widgetAState, _) = mapWidgetStates(state.previousFeatureState)
         when (val featureException = state.featureException) {
@@ -387,6 +397,7 @@ class JupiterSwapPresenter(
                 analytics.logNotEnoughTokenA()
                 view?.setButtonState(buttonState = buttonMapper.mapTokenAmountNotEnough(tokenA))
             }
+
             is SwapFeatureException.InsufficientSolBalance -> {
                 val tokenA = state.previousFeatureState.getTokensPair().first
 
@@ -420,20 +431,40 @@ class JupiterSwapPresenter(
     }
 
     private fun checkPriceImpact() {
-        val priceImpact = swapInteractor.getPriceImpact(currentFeatureState)
-        when (val type = priceImpact?.toPriceImpactType()) {
-            null, SwapPriceImpactView.NORMAL -> {
-                view?.showPriceImpact(SwapPriceImpactView.NORMAL)
+        when (val priceImpact: SwapPriceImpactType = swapInteractor.getPriceImpact(currentFeatureState)) {
+            SwapPriceImpactType.None -> {
+                view?.showPriceImpact(SwapPriceImpactView.Hidden)
             }
-            SwapPriceImpactView.YELLOW, SwapPriceImpactView.RED -> {
-                if (type == SwapPriceImpactView.YELLOW) {
-                    analytics.logPriceImpactLow(priceImpact)
+
+            is SwapPriceImpactType.HighPriceImpact -> {
+                if (priceImpact.type == SwapPriceImpactType.HighPriceImpactType.YELLOW) {
+                    analytics.logPriceImpactLow(priceImpact.priceImpactValue)
                 } else {
-                    analytics.logPriceImpactHigh(priceImpact)
+                    analytics.logPriceImpactHigh(priceImpact.priceImpactValue)
+                }
+                val priceImpactView = when (priceImpact.type) {
+                    SwapPriceImpactType.HighPriceImpactType.YELLOW -> SwapPriceImpactView.Yellow(
+                        resources.getString(R.string.swap_main_alert)
+                    )
+                    SwapPriceImpactType.HighPriceImpactType.RED -> SwapPriceImpactView.Red(
+                        resources.getString(R.string.swap_main_alert)
+                    )
                 }
 
-                widgetBState = widgetMapper.mapPriceImpact(widgetBState, type)
-                view?.showPriceImpact(type)
+                widgetBState = widgetMapper.mapPriceImpact(widgetBState, priceImpactView)
+                view?.showPriceImpact(priceImpactView)
+                if (needToScrollPriceImpact) {
+                    view?.scrollToPriceImpact()
+                    needToScrollPriceImpact = false
+                }
+            }
+
+            is SwapPriceImpactType.HighFees -> {
+                val priceImpactView = SwapPriceImpactView.Yellow(
+                    resources.getString(R.string.swap_main_high_fee_alert, priceImpact.currentSlippage.percentValue)
+                )
+                widgetBState = widgetMapper.mapPriceImpact(widgetBState, priceImpactView)
+                view?.showPriceImpact(priceImpactView)
                 if (needToScrollPriceImpact) {
                     view?.scrollToPriceImpact()
                     needToScrollPriceImpact = false
@@ -489,12 +520,14 @@ class JupiterSwapPresenter(
             SwapState.InitialLoading ->
                 widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A) to
                     widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_B)
+
             is SwapState.LoadingRoutes ->
                 widgetMapper.mapTokenAAndSaveOldFiatAmount(
                     oldWidgetModel = widgetAState,
                     token = state.tokenA,
                     tokenAmount = state.amountTokenA
                 ) to widgetMapper.mapTokenBLoading(token = state.tokenB)
+
             is SwapState.LoadingTransaction ->
                 widgetMapper.mapTokenAAndSaveOldFiatAmount(
                     oldWidgetModel = widgetAState,
@@ -505,6 +538,7 @@ class JupiterSwapPresenter(
                     token = state.tokenB,
                     tokenAmount = state.amountTokenB,
                 )
+
             is SwapState.RoutesLoaded ->
                 widgetMapper.mapTokenAAndSaveOldFiatAmount(
                     oldWidgetModel = widgetAState,
@@ -515,6 +549,7 @@ class JupiterSwapPresenter(
                     token = state.tokenB,
                     tokenAmount = state.amountTokenB,
                 )
+
             is SwapState.SwapLoaded ->
                 widgetMapper.mapTokenAAndSaveOldFiatAmount(
                     oldWidgetModel = widgetAState,
@@ -525,9 +560,11 @@ class JupiterSwapPresenter(
                     token = state.tokenB,
                     tokenAmount = state.amountTokenB,
                 )
+
             is SwapState.TokenAZero ->
                 widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = null) to
                     widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
+
             is SwapState.TokenANotZero ->
                 widgetMapper.mapTokenAAndSaveOldFiatAmount(
                     oldWidgetModel = widgetAState,
@@ -643,14 +680,6 @@ class JupiterSwapPresenter(
                 gravity = Gravity.CENTER
             )
         )
-    }
-
-    private fun BigDecimal.toPriceImpactType(): SwapPriceImpactView {
-        return when {
-            isLessThan(onePercent) -> SwapPriceImpactView.NORMAL
-            isLessThan(threePercent) -> SwapPriceImpactView.YELLOW
-            else -> SwapPriceImpactView.RED
-        }
     }
 
     private fun SwapState.getTokensPair(): Pair<SwapTokenModel?, SwapTokenModel?> {

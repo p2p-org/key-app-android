@@ -41,6 +41,7 @@ import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.jupiter.JupiterPresenterInitialData
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.jupiter.ui.settings.JupiterSwapSettingsFragment
@@ -48,7 +49,6 @@ import org.p2p.wallet.jupiter.ui.tokens.SwapTokensFragment
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
 import org.p2p.wallet.root.ActivityVisibility
 import org.p2p.wallet.root.AppActivityVisibility
-import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.transaction.ui.JupiterTransactionBottomSheetDismissListener
 import org.p2p.wallet.transaction.ui.JupiterTransactionDismissResult
 import org.p2p.wallet.transaction.ui.JupiterTransactionProgressBottomSheet
@@ -266,11 +266,11 @@ class JupiterSwapFragment :
 
     override fun showPriceImpact(priceImpact: SwapPriceImpactView) {
         when (priceImpact) {
-            SwapPriceImpactView.NORMAL -> Unit
-            SwapPriceImpactView.YELLOW -> setYellowAlert()
-            SwapPriceImpactView.RED -> setRoseAlert()
+            SwapPriceImpactView.Hidden -> Unit
+            is SwapPriceImpactView.Yellow -> setYellowAlert(priceImpact.warningText)
+            is SwapPriceImpactView.Red -> setRoseAlert(priceImpact.warningText)
         }
-        binding.linearLayoutAlert.isVisible = priceImpact != SwapPriceImpactView.NORMAL
+        binding.linearLayoutAlert.isVisible = priceImpact != SwapPriceImpactView.Hidden
     }
 
     override fun scrollToPriceImpact() {
@@ -325,7 +325,7 @@ class JupiterSwapFragment :
         }
     }
 
-    private fun setYellowAlert() = with(binding) {
+    private fun setYellowAlert(text: String) = with(binding) {
         DrawableCellModel(
             drawable = shapeDrawable(shapeRoundedAll(8f.toPx())),
             tint = R.color.bg_light_sun,
@@ -334,9 +334,10 @@ class JupiterSwapFragment :
         ).applyBackground(linearLayoutAlert)
         imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_sun)
         textViewAlert.setTextColor(context.getColorStateList(R.color.text_night))
+        textViewAlert.text = text
     }
 
-    private fun setRoseAlert() = with(binding) {
+    private fun setRoseAlert(text: String) = with(binding) {
         DrawableCellModel(
             drawable = shapeDrawable(shapeRoundedAll(8f.toPx())),
             tint = R.color.light_rose,
@@ -345,6 +346,7 @@ class JupiterSwapFragment :
         ).applyBackground(binding.linearLayoutAlert)
         imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_rose)
         textViewAlert.setTextColor(context.getColorStateList(R.color.text_rose))
+        textViewAlert.text = text
     }
 
     override fun onDestroyView() {

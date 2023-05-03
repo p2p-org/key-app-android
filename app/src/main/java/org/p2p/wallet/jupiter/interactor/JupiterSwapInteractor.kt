@@ -2,6 +2,8 @@ package org.p2p.wallet.jupiter.interactor
 
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
+import org.p2p.core.utils.isLessThan
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
@@ -10,9 +12,13 @@ import org.p2p.wallet.infrastructure.network.data.InstructionErrorType
 import org.p2p.wallet.infrastructure.network.data.RpcError
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.jupiter.interactor.model.SwapPriceImpactType
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.statemanager.SwapState
+import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
+import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.utils.toBase58Instance
 
 private const val LOW_SLIPPAGE_ERROR_CODE = 6001
@@ -95,18 +101,62 @@ class JupiterSwapInteractor(
         return (tokenA as? SwapTokenModel.UserToken)?.details?.total
     }
 
-    fun getPriceImpact(state: SwapState?): BigDecimal? {
-        return when (state) {
-            null,
+    fun getPriceImpact(state: SwapState?): SwapPriceImpactType {
+        state ?: return SwapPriceImpactType.None
+        val activeRoute: JupiterSwapRoute = state.getActiveRoute() ?: return SwapPriceImpactType.None
+        val currentSlippage: Slippage = state.getCurrentSlippage() ?: return SwapPriceImpactType.None
+
+        val priceImpactPct: BigDecimal = activeRoute.priceImpactPct
+        val totalFeeAndDeposits: BigInteger = activeRoute.fees.totalFeeAndDepositsInSol
+        val outAmount: BigInteger = activeRoute.outAmountInLamports
+        val slippageValue: Int = activeRoute.slippageBps
+
+        val threePercent = BigDecimal.valueOf(0.03)
+        val onePercent = BigDecimal.valueOf(0.01)
+
+        return when {
+            priceImpactPct.isLessThan(onePercent) -> {
+                val isHighFeesFound = totalFeeAndDeposits / outAmount <= slippageValue.toBigInteger()
+                if (isHighFeesFound) {
+                    SwapPriceImpactType.None
+                } else {
+                    SwapPriceImpactType.HighFees(currentSlippage)
+                }
+            }
+            priceImpactPct.isLessThan(threePercent) -> {
+                SwapPriceImpactType.HighPriceImpact(priceImpactPct, SwapPriceImpactType.HighPriceImpactType.YELLOW)
+            }
+            else -> {
+                SwapPriceImpactType.HighPriceImpact(priceImpactPct, SwapPriceImpactType.HighPriceImpactType.RED)
+            }
+        }
+    }
+
+    private fun SwapState.getActiveRoute(): JupiterSwapRoute? {
+        return when (this) {
             SwapState.InitialLoading,
             is SwapState.LoadingRoutes,
             is SwapState.TokenANotZero,
             is SwapState.TokenAZero -> null
-            is SwapState.SwapException -> getPriceImpact(state.previousFeatureState)
 
-            is SwapState.LoadingTransaction -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
-            is SwapState.RoutesLoaded -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
-            is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
+            is SwapState.SwapException -> previousFeatureState.getActiveRoute()
+
+            is SwapState.LoadingTransaction -> routes.getOrNull(activeRoute)
+            is SwapState.RoutesLoaded -> routes.getOrNull(activeRoute)
+            is SwapState.SwapLoaded -> routes.getOrNull(activeRoute)
+        }
+    }
+
+    private fun SwapState.getCurrentSlippage(): Slippage? {
+        return when (this) {
+            SwapState.InitialLoading -> SwapStateManager.DEFAULT_SLIPPAGE
+            is SwapState.LoadingRoutes -> slippage
+            is SwapState.LoadingTransaction -> slippage
+            is SwapState.SwapLoaded -> slippage
+            is SwapState.TokenAZero -> slippage
+            is SwapState.TokenANotZero -> slippage
+            is SwapState.RoutesLoaded -> slippage
+            is SwapState.SwapException -> null
         }
     }
 }
