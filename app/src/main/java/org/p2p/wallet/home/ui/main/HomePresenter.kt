@@ -114,6 +114,8 @@ class HomePresenter(
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
         if (userSeedPhrase.isNotEmpty()) {
             ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+        } else {
+            Timber.e(IllegalStateException(), "ETH is not init, no seed phrase")
         }
         launch {
             awaitAll(
