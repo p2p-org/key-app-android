@@ -171,7 +171,8 @@
         android:paddingStart="16dp"
         android:paddingEnd="12dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/layoutFeeContainer">
+        app:layout_constraintTop_toBottomOf="@id/layoutFeeContainer"
+        tools:visibility="visible">
 
         <TextView
             android:layout_width="0dp"

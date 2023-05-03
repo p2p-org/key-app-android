@@ -51,7 +51,6 @@ class ClaimUiMapper(private val resources: Resources) {
 
     fun makeClaimDetails(
         isFree: Boolean,
-        tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
         minAmountForFreeFee: BigDecimal
