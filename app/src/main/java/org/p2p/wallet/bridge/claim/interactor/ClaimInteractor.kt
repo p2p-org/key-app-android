@@ -41,10 +41,9 @@ class ClaimInteractor(
     }
 
     suspend fun getListOfEthereumBundleStatuses(ethereumAddress: EthAddress): List<EthereumClaimToken> {
-        return ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress)
-            .map {
-                mapper.mapBundle(it)
-            }
+        val bundles = ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress)
+        ethereumClaimLocalRepository.saveBundles(bundles)
+        return bundles.map { mapper.mapBundle(it) }
     }
 
     suspend fun getEthereumMinAmountForFreeFee(): BigDecimal {
