@@ -1,5 +1,6 @@
 package org.p2p.wallet.bridge.api.mapper
 
+import org.threeten.bp.ZonedDateTime
 import org.p2p.core.utils.orZero
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.bridge.api.response.BridgeAmountResponse
@@ -16,6 +17,8 @@ import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionStatus
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.bridge.BridgeHistoryTransaction
 
 class BridgeMapper {
 
@@ -75,13 +78,34 @@ class BridgeMapper {
     }
 
     fun fromNetwork(response: BridgeTransactionStatusResponse): BridgeSendTransactionDetails {
-        return BridgeSendTransactionDetails()
+        return BridgeSendTransactionDetails(
+            id = response.id,
+            userWallet = response.userWallet,
+            recipient = response.recipient,
+            amount = response.amount.orZero(),
+            fees = fromNetwork(response.fees),
+            status = fromNetwork(response.status)
+        )
     }
 
     fun fromNetwork(response: BridgeSendTransactionResponse): BridgeSendTransaction {
         return BridgeSendTransaction(
             transaction = response.transaction.toBase64Instance(),
             message = response.message
+        )
+    }
+
+    fun toHistoryItem(claimBundle: BridgeBundle): HistoryTransaction {
+        return BridgeHistoryTransaction.Claim(
+            bundleId = claimBundle.bundleId,
+            date = ZonedDateTime.now()
+        )
+    }
+
+    fun toHistoryItem(sendDetails: BridgeSendTransactionDetails): HistoryTransaction {
+        return BridgeHistoryTransaction.Send(
+            id = sendDetails.id,
+            date = ZonedDateTime.now()
         )
     }
 }
