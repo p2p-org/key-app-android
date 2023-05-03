@@ -21,13 +21,13 @@ class SendBridgeValidator {
         val inputAmount = state.inputAmount ?: return
 
         val feeSum = getFeeSum(fee)
-        if (feeSum.isMoreThan(inputAmount)) throw SendFeatureException.InsufficientFunds(inputAmount)
+        if (feeSum.isMoreThan(inputAmount)) throw SendFeatureException.FeeIsMoreThanAmount(inputAmount)
     }
 
     fun validateIsFeeMoreThanTotal(state: SendState.Static, fee: SendFee.Bridge) {
         val totalAmount = state.bridgeToken?.tokenAmount
         val feeSum = getFeeSum(fee)
-        if (totalAmount != null && feeSum > totalAmount) throw SendFeatureException.FeeIsMoreThanTotal(totalAmount)
+        if (totalAmount != null && feeSum > totalAmount) throw SendFeatureException.FeeIsMoreThanAmount(totalAmount)
     }
 
     fun isFeeValid(oldFee: SendFee.Bridge?): Boolean {

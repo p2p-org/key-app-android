@@ -194,7 +194,7 @@ class BridgeSendPresenter(
                                 sliderButton = null
                             )
                         }
-                        is SendFeatureException.FeeIsMoreThanTotal -> {
+                        is SendFeatureException.FeeIsMoreThanAmount -> {
                             setInputColor(R.color.text_rose)
                             updateButtons(
                                 errorButton = TextContainer.Res(R.string.send_error_fee_more_than_amount),
