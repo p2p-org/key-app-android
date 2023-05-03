@@ -112,6 +112,7 @@ sealed class Token constructor(
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         var isClaiming: Boolean = false,
+        var latestActiveBundleId: String? = null,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,

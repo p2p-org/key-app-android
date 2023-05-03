@@ -45,12 +45,14 @@ import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
+import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenId
@@ -89,7 +91,8 @@ class HomePresenter(
     private val ethereumInteractor: EthereumInteractor,
     private val seedPhraseProvider: SeedPhraseProvider,
     private val deeplinksManager: AppDeeplinksManager,
-    private val connectionManager: ConnectionManager
+    private val connectionManager: ConnectionManager,
+    private val transactionManager: TransactionManager
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -109,7 +112,11 @@ class HomePresenter(
 
     init {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-        ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+        if (userSeedPhrase.isNotEmpty()) {
+            ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+        } else {
+            Timber.e(IllegalStateException(), "ETH is not init, no seed phrase")
+        }
         launch {
             awaitAll(
                 async { networkObserver.start() },
@@ -191,6 +198,23 @@ class HomePresenter(
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
+    }
+
+    override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
+        launch {
+            claimAnalytics.logClaimButtonClicked()
+            if (canBeClaimed) {
+                view?.showTokenClaim(token)
+            } else {
+                val latestBundleId = token.latestActiveBundleId ?: return@launch
+                val latestBundleDetails = ethereumInteractor.getProgressDetails(latestBundleId)
+                transactionManager.emitTransactionState(latestBundleId, TransactionState.ClaimProgress(latestBundleId))
+                view?.showProgressDialog(
+                    bundleId = latestBundleId,
+                    progressDetails = latestBundleDetails ?: return@launch
+                )
+            }
+        }
     }
 
     private fun handleDeeplinks() {

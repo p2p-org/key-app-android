@@ -172,6 +172,7 @@ class ClaimPresenter(
                     tokenToClaim = tokenToClaim,
                     claimDetails = claimDetails
                 )
+                ethereumInteractor.saveProgressDetails(latestBundleId, progressDetails)
                 view?.showProgressDialog(
                     bundleId = latestBundleId,
                     data = progressDetails
