@@ -208,9 +208,9 @@ class NewBuyFragment :
 
     override fun showDetailsBottomSheet(buyDetailsState: BuyDetailsState) {
         BuyDetailsBottomSheet.show(
-            childFragmentManager,
-            getString(R.string.buy_transaction_details_bottom_sheet_title),
-            buyDetailsState
+            fm = childFragmentManager,
+            title = getString(R.string.buy_transaction_details_bottom_sheet_title),
+            state = buyDetailsState
         )
     }
 

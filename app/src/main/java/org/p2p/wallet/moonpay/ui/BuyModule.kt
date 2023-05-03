@@ -1,11 +1,11 @@
 package org.p2p.wallet.moonpay.ui
 
+import android.content.res.Resources
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
-import android.content.res.Resources
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.moonpay.interactor.BuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
@@ -58,7 +58,6 @@ object BuyModule : InjectionModule {
                 userInteractor = get(),
                 paymentMethodsInteractor = get(),
                 resources = get(),
-                bankTransferFeatureToggle = get(),
                 buyInteractor = get(),
                 analyticsInteractor = get()
             )

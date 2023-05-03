@@ -36,6 +36,7 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -49,7 +50,6 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
@@ -222,15 +222,19 @@ class HomeFragment :
             ActionButton.BUY_BUTTON -> {
                 presenter.onBuyClicked()
             }
+
             ActionButton.RECEIVE_BUTTON -> {
                 replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             }
+
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
             }
+
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())
             }
+
             ActionButton.SWAP_BUTTON -> {
                 showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
             }
@@ -242,9 +246,11 @@ class HomeFragment :
             KEY_REQUEST_TOKEN -> {
                 result.getParcelableCompat<Token>(KEY_RESULT_TOKEN)?.also(::showOldBuyScreen)
             }
+
             KEY_REQUEST_TOKEN_INFO -> {
                 result.getParcelableCompat<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
             }
+
             KEY_REQUEST_ACTION -> {
                 result.getSerializableCompat<HomeAction>(KEY_RESULT_ACTION)?.also(::openScreenByHomeAction)
             }
@@ -334,10 +340,12 @@ class HomeFragment :
             R.id.home_banner_top_up -> {
                 replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             }
+
             R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
                 replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
             }
+
             R.string.home_feedback_banner_option -> {
                 browseAnalytics.logBannerFeedbackPressed()
                 IntercomService.showMessenger()
