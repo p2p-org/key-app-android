@@ -10,6 +10,7 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
+import org.p2p.wallet.transaction.model.NewShowProgress
 
 interface HomeContract {
 
@@ -35,6 +36,9 @@ interface HomeContract {
         fun showBuyInfoScreen(token: Token)
 
         fun showSendNoTokens(fallbackToken: Token)
+        fun showTokenClaim(token: Token.Eth)
+
+        fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress)
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
@@ -50,5 +54,6 @@ interface HomeContract {
         fun onAddressClicked()
         fun updateTokensIfNeeded()
         fun load()
+        fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth)
     }
 }

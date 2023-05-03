@@ -11,6 +11,7 @@ import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.transaction.model.NewShowProgress
 
 class EthereumInteractor(
     private val claimInteractor: ClaimInteractor,
@@ -63,5 +64,13 @@ class EthereumInteractor(
 
     suspend fun getClaimMinAmountForFreeFee(): BigDecimal {
         return claimInteractor.getEthereumMinAmountForFreeFee()
+    }
+
+    fun saveProgressDetails(bundleId: String, progressDetails: NewShowProgress) {
+        claimInteractor.saveProgressDetails(bundleId, progressDetails)
+    }
+
+    fun getProgressDetails(bundleId: String): NewShowProgress? {
+        return claimInteractor.getProgressDetails(bundleId)
     }
 }

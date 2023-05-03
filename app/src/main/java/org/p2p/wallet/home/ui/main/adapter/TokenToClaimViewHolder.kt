@@ -26,10 +26,8 @@ class TokenToClaimViewHolder(
         setTokenIconUrl(token.iconUrl)
         val canBeClaimed = item.isClaimEnabled
         setClaimButtonEnabled(isEnabled = canBeClaimed)
-        if (canBeClaimed) {
-            contentView.setOnClickListener { listener.onClaimTokenClicked(token) }
-            buttonClaim.setOnClickListener { listener.onClaimTokenClicked(token) }
-        }
+        contentView.setOnClickListener { listener.onClaimTokenClicked(canBeClaimed, token) }
+        buttonClaim.setOnClickListener { listener.onClaimTokenClicked(canBeClaimed, token) }
     }
 
     private fun setClaimButtonEnabled(isEnabled: Boolean) {

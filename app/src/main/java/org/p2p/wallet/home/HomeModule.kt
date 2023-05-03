@@ -96,7 +96,8 @@ object HomeModule : InjectionModule {
                 ethereumInteractor = get(),
                 seedPhraseProvider = get(),
                 deeplinksManager = get(),
-                connectionManager = get()
+                connectionManager = get(),
+                transactionManager = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

@@ -6,6 +6,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.claim.mapper.EthereumBundleMapper
+import org.p2p.wallet.bridge.claim.repository.EthereumClaimLocalRepository
 import org.p2p.wallet.bridge.claim.repository.EthereumClaimRemoteRepository
 import org.p2p.wallet.bridge.claim.repository.EthereumClaimRepository
 import org.p2p.wallet.bridge.claim.ui.ClaimContract
@@ -17,6 +18,7 @@ object ClaimModule : InjectionModule {
 
     override fun create() = module {
         singleOf(::EthereumClaimRemoteRepository) bind EthereumClaimRepository::class
+        singleOf(::EthereumClaimLocalRepository)
         factoryOf(::ClaimInteractor)
         factoryOf(::ClaimUiMapper)
         factoryOf(::ClaimPresenter) bind ClaimContract.Presenter::class
