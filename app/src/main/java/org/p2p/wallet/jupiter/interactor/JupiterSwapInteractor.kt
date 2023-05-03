@@ -106,7 +106,7 @@ class JupiterSwapInteractor(
         val activeRoute: JupiterSwapRoute = state.getActiveRoute() ?: return SwapPriceImpactType.None
         val currentSlippage: Slippage = state.getCurrentSlippage() ?: return SwapPriceImpactType.None
 
-        val priceImpactPct: BigDecimal = activeRoute.priceImpactPct
+        val priceImpactPercent: BigDecimal = activeRoute.priceImpactPct
         val totalFeeAndDeposits: BigInteger = activeRoute.fees.totalFeeAndDepositsInSol
         val outAmount: BigInteger = activeRoute.outAmountInLamports
         val slippageValue: Int = activeRoute.slippageBps
@@ -115,19 +115,19 @@ class JupiterSwapInteractor(
         val onePercent = BigDecimal.valueOf(0.01)
 
         return when {
-            priceImpactPct.isLessThan(onePercent) -> {
-                val isHighFeesFound = totalFeeAndDeposits / outAmount <= slippageValue.toBigInteger()
-                if (isHighFeesFound) {
+            priceImpactPercent.isLessThan(onePercent) -> {
+                val isHighFeesNotFound = totalFeeAndDeposits / outAmount <= slippageValue.toBigInteger()
+                if (isHighFeesNotFound) {
                     SwapPriceImpactType.None
                 } else {
                     SwapPriceImpactType.HighFees(currentSlippage)
                 }
             }
-            priceImpactPct.isLessThan(threePercent) -> {
-                SwapPriceImpactType.HighPriceImpact(priceImpactPct, SwapPriceImpactType.HighPriceImpactType.YELLOW)
+            priceImpactPercent.isLessThan(threePercent) -> {
+                SwapPriceImpactType.HighPriceImpact(priceImpactPercent, SwapPriceImpactType.HighPriceImpactType.YELLOW)
             }
             else -> {
-                SwapPriceImpactType.HighPriceImpact(priceImpactPct, SwapPriceImpactType.HighPriceImpactType.RED)
+                SwapPriceImpactType.HighPriceImpact(priceImpactPercent, SwapPriceImpactType.HighPriceImpactType.RED)
             }
         }
     }
