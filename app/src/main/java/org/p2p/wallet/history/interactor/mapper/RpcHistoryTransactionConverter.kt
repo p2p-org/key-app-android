@@ -253,9 +253,9 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
-            tokenSymbol = info?.tokenAmount?.token?.symbol.orEmpty(),
+            tokenSymbol = info.tokenAmount?.token?.symbol.orEmpty(),
             amount = RpcHistoryAmount(total, totalInUsd),
-            iconUrl = info?.tokenAmount?.token?.logoUrl,
+            iconUrl = info.tokenAmount?.token?.logoUrl,
             fees = bundleFees.parseBridgeFees() ?: transaction.fees.parseFees()
         )
     }
