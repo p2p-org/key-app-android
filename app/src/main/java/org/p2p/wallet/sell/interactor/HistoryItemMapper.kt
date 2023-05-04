@@ -312,10 +312,10 @@ class HistoryItemMapper(
 
     fun parse(item: BridgeHistoryTransaction, cache: MutableList<HistoryItem>) {
         if (item is BridgeHistoryTransaction.Send) {
-            val item = HistoryItem.BridgeSendItem(item.id)
+            val item = HistoryItem.BridgeSendItem(item.id, item.sendDetails)
             cache.add(item)
         } else if (item is BridgeHistoryTransaction.Claim) {
-            val item = HistoryItem.BridgeClaimItem(item.bundleId)
+            val item = HistoryItem.BridgeClaimItem(item.bundleId, item.bundle)
             cache.add(item)
         }
     }

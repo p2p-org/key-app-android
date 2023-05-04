@@ -51,6 +51,7 @@ class HistoryAdapter(
             TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onHistoryItemClicked)
             TRANSACTION_USER_SEND_LINKS_VIEW_TYPE -> HistoryUserSendLinksViewHolder(parent, onHistoryItemClicked)
             SWAP_BANNER_VIEW_TYPE -> HistorySwapBannerViewHolder(parent, onHistoryItemClicked)
+            WORMHOLE_LOCAL_VIEW_TYPE -> TransactionViewHolder(parent, glideManager, onHistoryItemClicked)
             else -> ErrorViewHolder(parent)
         }
     }

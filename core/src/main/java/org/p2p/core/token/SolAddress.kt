@@ -1,4 +1,8 @@
 package org.p2p.core.token
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 @JvmInline
-value class SolAddress(val raw: String)
+@Parcelize
+value class SolAddress(val raw: String): Parcelable
