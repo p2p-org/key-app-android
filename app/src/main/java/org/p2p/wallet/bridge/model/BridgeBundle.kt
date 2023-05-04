@@ -5,9 +5,9 @@ import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.Signature
+import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.date.toZonedDateTime
-import org.p2p.wallet.bridge.claim.model.ClaimStatus
 
 data class BridgeBundle(
     val bundleId: String,
@@ -20,7 +20,8 @@ data class BridgeBundle(
     val transactions: List<HexString>,
     var signatures: List<Signature>,
     val fees: BridgeBundleFees,
-    var status: ClaimStatus? = null
+    var status: ClaimStatus? = null,
+    var claimKey: String? = null
 ) {
     fun getExpirationDateInMillis(): Long {
         return expiresAt.seconds.inWholeMilliseconds.toZonedDateTime().dateMilli()
