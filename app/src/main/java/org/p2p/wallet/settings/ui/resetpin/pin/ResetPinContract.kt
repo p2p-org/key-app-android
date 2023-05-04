@@ -1,10 +1,10 @@
-package org.p2p.wallet.settings.ui.newreset.pin
+package org.p2p.wallet.settings.ui.resetpin.pin
 
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
-interface NewResetPinContract {
+interface ResetPinContract {
 
     interface View : MvpView {
         fun navigateBackToSettings()

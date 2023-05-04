@@ -49,7 +49,7 @@ import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
@@ -328,7 +328,7 @@ class HomeFragment :
     }
 
     override fun navigateToProfile() {
-        replaceFragment(NewSettingsFragment.create())
+        replaceFragment(SettingsFragment.create())
     }
 
     override fun navigateToReserveUsername() {

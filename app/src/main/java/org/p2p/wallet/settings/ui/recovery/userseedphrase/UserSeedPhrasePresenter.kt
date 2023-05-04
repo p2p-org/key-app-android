@@ -1,4 +1,4 @@
-package org.p2p.wallet.settings.ui.recovery.user_seed_phrase
+package org.p2p.wallet.settings.ui.recovery.userseedphrase
 
 import kotlinx.coroutines.launch
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord

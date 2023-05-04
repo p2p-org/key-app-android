@@ -10,7 +10,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
-import org.p2p.wallet.databinding.FragmentSettingsNetworkBinding
+import org.p2p.wallet.databinding.DialogSettingsNetworkBinding
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -21,7 +21,7 @@ private const val ARG_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class SettingsNetworkBottomSheet :
     BaseMvpBottomSheet<SettingsNetworkContract.View, SettingsNetworkContract.Presenter>(
-        R.layout.fragment_settings_network
+        R.layout.dialog_settings_network
     ),
     SettingsNetworkContract.View {
 
@@ -38,7 +38,7 @@ class SettingsNetworkBottomSheet :
 
     override val presenter: SettingsNetworkContract.Presenter by inject()
 
-    private val binding: FragmentSettingsNetworkBinding by viewBinding()
+    private val binding: DialogSettingsNetworkBinding by viewBinding()
 
     private val resultKey: String by args(ARG_RESULT_KEY)
     private val requestKey: String by args(ARG_REQUEST_KEY)
