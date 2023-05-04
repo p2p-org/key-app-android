@@ -33,7 +33,7 @@ abstract class JsonRpc<P, T>(
         return try {
             gson.fromJson(result, typeOfResult) as T
         } catch (error: Throwable) {
-            throw ResponseError.InvalidResult(result.toString())
+            throw ResponseError.InvalidResult("Error: $error.toString()\nOn result: ${result.toString()}")
         }
     }
 

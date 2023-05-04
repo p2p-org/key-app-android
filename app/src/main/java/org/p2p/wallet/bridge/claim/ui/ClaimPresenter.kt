@@ -130,7 +130,6 @@ class ClaimPresenter(
 
         claimDetails = claimUiMapper.makeClaimDetails(
             isFree = isFree,
-            tokenToClaim = tokenToClaim,
             resultAmount = resultAmount,
             fees = fees,
             minAmountForFreeFee = minAmountForFreeFee
@@ -190,7 +189,7 @@ class ClaimPresenter(
                 )
             } catch (e: BridgeResult.Error) {
                 val message = e.getErrorMessage { res -> resources.getString(res) }
-                Timber.e(e, "Failed to send signed bundle")
+                Timber.e(e, "Failed to send signed bundle: $message")
             }
         }
     }

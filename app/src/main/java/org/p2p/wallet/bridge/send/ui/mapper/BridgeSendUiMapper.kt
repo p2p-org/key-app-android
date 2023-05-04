@@ -42,18 +42,13 @@ class BridgeSendUiMapper(private val resources: Resources) {
         feeDetails: BridgeFeeDetails?
     ): NewShowProgress {
         val transactionDate = Date()
-        val feeList = listOfNotNull(
-            feeDetails?.networkFee,
-            feeDetails?.messageAccountRent,
-            feeDetails?.bridgeFee
-        )
         return NewShowProgress(
             date = transactionDate,
             tokenUrl = tokenToSend.iconUrl.orEmpty(),
             amountTokens = amountTokens,
             amountUsd = amountUsd,
             recipient = recipient,
-            totalFees = feeList.mapNotNull { it.toTextHighlighting() }
+            totalFees = feeDetails?.bridgeFee?.toTextHighlighting()?.let { listOf(it) }
         )
     }
 
