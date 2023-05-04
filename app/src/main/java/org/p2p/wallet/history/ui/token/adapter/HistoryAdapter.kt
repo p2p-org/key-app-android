@@ -14,15 +14,7 @@ import org.p2p.wallet.history.ui.model.HistoryItem.DateItem
 import org.p2p.wallet.history.ui.model.HistoryItem.MoonpayTransactionItem
 import org.p2p.wallet.history.ui.model.HistoryItem.TransactionItem
 import org.p2p.wallet.history.ui.model.HistoryItem.UserSendLinksItem
-import org.p2p.wallet.history.ui.token.adapter.holders.DateViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.ErrorViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.HistorySellTransactionViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.HistoryUserSendLinksViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.HistorySwapBannerViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.*
 
 private const val TRANSACTION_VIEW_TYPE = 1
 private const val HISTORY_DATE_VIEW_TYPE = 2
@@ -51,7 +43,7 @@ class HistoryAdapter(
             TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onHistoryItemClicked)
             TRANSACTION_USER_SEND_LINKS_VIEW_TYPE -> HistoryUserSendLinksViewHolder(parent, onHistoryItemClicked)
             SWAP_BANNER_VIEW_TYPE -> HistorySwapBannerViewHolder(parent, onHistoryItemClicked)
-            WORMHOLE_LOCAL_VIEW_TYPE -> TransactionViewHolder(parent, glideManager, onHistoryItemClicked)
+            WORMHOLE_LOCAL_VIEW_TYPE -> BridgePendingViewHolder(parent, glideManager, onHistoryItemClicked)
             else -> ErrorViewHolder(parent)
         }
     }
@@ -66,6 +58,16 @@ class HistoryAdapter(
             is ProgressViewHolder -> Unit
             is HistoryUserSendLinksViewHolder -> holder.onBind(getItem(position) as UserSendLinksItem)
             is HistorySwapBannerViewHolder -> holder.onBind(getItem(position) as HistoryItem.SwapBannerItem)
+            is BridgePendingViewHolder -> {
+                when (val item = getItem(position)) {
+                    is HistoryItem.BridgeClaimItem -> {
+                        holder.onBind(item)
+                    }
+                    is HistoryItem.BridgeSendItem -> {
+                        holder.onBind(item)
+                    }
+                }
+            }
         }
     }
 
