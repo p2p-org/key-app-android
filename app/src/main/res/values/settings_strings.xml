@@ -1,5 +1,36 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
+    <!-- Debug Settings -->
+    <string name="debug_settings_notifications_title">Notifications</string>
+    <string name="debug_settings_deeplinks_title">Deeplinks</string>
+    <string name="debug_settings_logs_title">Logs</string>
+    <string name="debug_settings_feature_toggles_title">Feature Toggles</string>
+    <string name="debug_settings_logs_subtitle">Tap to show Logs</string>
+    <string name="debug_settings_device_info">Device Info</string>
+    <string name="debug_settings_ci_info">CI Info</string>
+    <string name="debug_settings_app_info">App Info</string>
+    <string name="debug_settings_fee_relayer">Fee Relayer Environment</string>
+    <string name="debug_settings_name_service">Name Service Environment</string>
+    <string name="debug_settings_torus">Torus Environment</string>
+    <string name="debug_settings_notification_service">Notification Service Environment</string>
+    <string name="debug_settings_stub_public_key">Public key stubbing 🗡️</string>
+    <string name="debug_settings_moonpay_sandbox">Moonpay sandbox</string>
+    <string name="debug_settings_title">Settings</string>
+    <string name="debug_settings_network">Network</string>
+
+    <!-- Debug Settings -> Notifications -->
+    <string name="debug_notifications_title">Debug Notifications</string>
+    <string name="debug_notifications_item_default">Notification Default</string>
+    <string name="debug_notifications_item_receive">Notification Receive</string>
+
+    <!-- Debug Settings -> Feature Toggles -->
+    <string name="feature_toggles_title">@string/debug_settings_feature_toggles_title</string>
+
     <string name="settings_toolbar_title">Settings</string>
+
+    <string name="settings_app_version">App version</string>
+    <string name="settings_logout">Log out now</string>
+    <string name="settings_logout_title">Do you want to log out?</string>
+    <string name="settings_logout_message">You will need your social account or phone number to log in</string>
 
     <string name="settings_item_group_title_profile">Profile</string>
     <string name="settings_item_title_username">Username</string>
@@ -57,5 +88,11 @@
     <string name="seed_phrase_hint_3">Your seed phrase must never be shared. Keep it private, even from us</string>
     <string name="seed_phrase_show_key_button">Show my private key</string>
     <string name="seed_phrase_copy_key_button">Copy to clipboard</string>
+
+    <string name="recovery_kit_seed_phrase_details_title">Make sure you understand the aspects</string>
+    <string name="recovery_kit_details_seed_phrase">Details seed phrase</string>
+    <string name="recovery_kit_seed_phrase_must_never_share">Your seed phrase must never be shared</string>
+    <string name="recovery_kit_logout_title"> Do you want to see your seed phrase?</string>
+    <string name="recovery_kit_logout_message">You have to log out and log in again.</string>
 
 </resources>

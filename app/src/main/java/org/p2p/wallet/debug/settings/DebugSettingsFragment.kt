@@ -70,16 +70,16 @@ class DebugSettingsFragment :
             R.string.debug_settings_notifications_title -> {
                 replaceFragment(PushNotificationsFragment.create())
             }
-            R.string.settings_network -> {
+            R.string.debug_settings_network -> {
                 SettingsNetworkBottomSheet.show(childFragmentManager, REQUEST_KEY, BUNDLE_KEY_NEW_NETWORK_NAME)
             }
-            R.string.settings_fee_relayer -> {
+            R.string.debug_settings_fee_relayer -> {
                 replaceFragment(DebugFeeRelayerFragment.create())
             }
-            R.string.settings_notification_service -> {
+            R.string.debug_settings_notification_service -> {
                 replaceFragment(DebugPushServiceFragment.create())
             }
-            R.string.settings_torus -> {
+            R.string.debug_settings_torus -> {
                 replaceFragment(DebugTorusFragment.create())
             }
             R.string.debug_settings_logs_title -> {
@@ -88,7 +88,7 @@ class DebugSettingsFragment :
             R.string.debug_settings_feature_toggles_title -> {
                 replaceFragment(FeatureTogglesFragment.create())
             }
-            R.string.settings_stub_public_key -> {
+            R.string.debug_settings_stub_public_key -> {
                 replaceFragment(DebugPublicKeyFragment.create())
             }
         }
@@ -96,10 +96,10 @@ class DebugSettingsFragment :
 
     private fun onSettingsSwitchClicked(@StringRes titleResId: Int, isChecked: Boolean) {
         when (titleResId) {
-            R.string.settings_moonpay_sandbox -> {
+            R.string.debug_settings_moonpay_sandbox -> {
                 presenter.switchMoonpayUrl(isSandboxSelected = isChecked)
             }
-            R.string.settings_name_service -> {
+            R.string.debug_settings_name_service -> {
                 presenter.switchNameServiceUrl(isProdSelected = isChecked)
             }
         }

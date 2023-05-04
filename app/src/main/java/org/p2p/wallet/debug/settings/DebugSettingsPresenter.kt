@@ -1,12 +1,14 @@
 package org.p2p.wallet.debug.settings
 
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import android.util.DisplayMetrics
+import timber.log.Timber
+import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.AppRestarter
-import android.content.res.Resources
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
@@ -16,8 +18,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
-import timber.log.Timber
-import kotlinx.coroutines.launch
 
 class DebugSettingsPresenter(
     private val environmentManager: NetworkEnvironmentManager,
@@ -76,22 +76,22 @@ class DebugSettingsPresenter(
                 iconRes = R.drawable.ic_network
             ),
             SettingsRow.Section(
-                titleResId = R.string.settings_network,
+                titleResId = R.string.debug_settings_network,
                 subtitle = networkName,
                 iconRes = R.drawable.ic_settings_network
             ),
             SettingsRow.Section(
-                titleResId = R.string.settings_fee_relayer,
+                titleResId = R.string.debug_settings_fee_relayer,
                 subtitle = feeRelayerUrl,
                 iconRes = R.drawable.ic_network
             ),
             SettingsRow.Section(
-                titleResId = R.string.settings_torus,
+                titleResId = R.string.debug_settings_torus,
                 subtitle = torusUrl,
                 iconRes = R.drawable.ic_network
             ),
             SettingsRow.Section(
-                titleResId = R.string.settings_notification_service,
+                titleResId = R.string.debug_settings_notification_service,
                 subtitle = notificationServiceUrl,
                 iconRes = R.drawable.ic_network
             ),
@@ -100,19 +100,19 @@ class DebugSettingsPresenter(
                 iconRes = R.drawable.ic_home_settings
             ),
             SettingsRow.Section(
-                titleResId = R.string.settings_stub_public_key,
+                titleResId = R.string.debug_settings_stub_public_key,
                 subtitle = tokenKeyProvider.publicKey,
                 iconRes = R.drawable.ic_key
             ).takeIf { tokenKeyProvider.publicKey.isNotBlank() },
             SettingsRow.Switcher(
-                titleResId = R.string.settings_name_service,
+                titleResId = R.string.debug_settings_name_service,
                 iconRes = R.drawable.ic_network,
                 isDivider = false,
                 subtitle = networkServicesUrlProvider.loadNameServiceEnvironment().baseUrl,
                 isSelected = networkServicesUrlProvider.loadNameServiceEnvironment().isProductionSelected
             ),
             SettingsRow.Switcher(
-                titleResId = R.string.settings_moonpay_sandbox,
+                titleResId = R.string.debug_settings_moonpay_sandbox,
                 iconRes = R.drawable.ic_network,
                 isDivider = false,
                 subtitle = networkServicesUrlProvider.loadMoonpayEnvironment().baseServerSideUrl,

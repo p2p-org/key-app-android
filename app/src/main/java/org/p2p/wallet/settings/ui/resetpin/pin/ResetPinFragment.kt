@@ -1,15 +1,15 @@
-package org.p2p.wallet.settings.ui.newreset.pin
+package org.p2p.wallet.settings.ui.resetpin.pin
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentNewResetPinBinding
-import org.p2p.wallet.settings.ui.newreset.main.NewResetPinIntroFragment
+import org.p2p.wallet.databinding.FragmentResetPinBinding
+import org.p2p.wallet.settings.ui.resetpin.main.ResetPinIntroFragment
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
@@ -22,17 +22,17 @@ private const val CLICK_VIBRATE_DURATION = 10L
 private const val KEY_REQUEST_FORGOT_PASSWORD = "KEY_REQUEST_FORGOT_PASSWORD"
 private const val KEY_RESULT_FORGOT_PASSWORD = "KEY_RESULT_FORGOT_PASSWORD"
 
-class NewResetPinFragment :
-    BaseMvpFragment<NewResetPinContract.View, NewResetPinContract.Presenter>(R.layout.fragment_new_reset_pin),
-    NewResetPinContract.View {
+class ResetPinFragment :
+    BaseMvpFragment<ResetPinContract.View, ResetPinContract.Presenter>(R.layout.fragment_reset_pin),
+    ResetPinContract.View {
 
     companion object {
-        fun create(): NewResetPinFragment = NewResetPinFragment()
+        fun create(): ResetPinFragment = ResetPinFragment()
     }
 
-    override val presenter: NewResetPinContract.Presenter by inject()
+    override val presenter: ResetPinContract.Presenter by inject()
 
-    private val binding: FragmentNewResetPinBinding by viewBinding()
+    private val binding: FragmentResetPinBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,7 +40,7 @@ class NewResetPinFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
 
             textViewForgotPassword.setOnClickListener {
-                NewForgotPinBottomSheet.show(
+                ForgotPinBottomSheet.show(
                     fm = childFragmentManager,
                     requestKey = KEY_REQUEST_FORGOT_PASSWORD,
                     resultKey = KEY_RESULT_FORGOT_PASSWORD
@@ -58,7 +58,7 @@ class NewResetPinFragment :
                     titleRes = R.string.settings_logout_title,
                     messageRes = R.string.settings_logout_message,
                     primaryButtonRes = R.string.common_logout,
-                    primaryCallback = { presenter.logout() },
+                    primaryCallback = presenter::logout,
                     secondaryButtonRes = R.string.common_stay,
                     primaryButtonTextColor = R.color.systemErrorMain
                 )
@@ -71,7 +71,7 @@ class NewResetPinFragment :
     }
 
     override fun navigateBackToSettings() {
-        popBackStackTo(NewResetPinIntroFragment::class, inclusive = true)
+        popBackStackTo(ResetPinIntroFragment::class, inclusive = true)
     }
 
     override fun showPinCorrect() {

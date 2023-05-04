@@ -1,4 +1,4 @@
-package org.p2p.wallet.settings.ui.newreset.pin
+package org.p2p.wallet.settings.ui.resetpin.pin
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -13,10 +13,10 @@ import timber.log.Timber
 private const val VIBRATE_DURATION = 500L
 private const val PIN_ANIMATION_DURATION = 500L
 
-class NewResetPinPresenter(
+class ResetPinPresenter(
     private val authInteractor: AuthInteractor,
     private val authLogoutInteractor: AuthLogoutInteractor
-) : BasePresenter<NewResetPinContract.View>(), NewResetPinContract.Presenter {
+) : BasePresenter<ResetPinContract.View>(), ResetPinContract.Presenter {
 
     private var isCurrentPinConfirmed = false
     private var createdPin = emptyString()

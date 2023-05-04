@@ -16,8 +16,8 @@ import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
-import org.p2p.wallet.settings.ui.newreset.main.NewResetPinIntroFragment
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitFragment
+import org.p2p.wallet.settings.ui.resetpin.main.ResetPinIntroFragment
 import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.replaceFragment
@@ -26,19 +26,18 @@ import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class NewSettingsFragment :
-    BaseMvpFragment<NewSettingsContract.View, NewSettingsContract.Presenter>(R.layout.fragment_settings),
-    NewSettingsContract.View {
+private const val REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val RESULT_KEY_NEW_NETWORK = "KEY_NEW_NETWORK"
+
+class SettingsFragment :
+    BaseMvpFragment<SettingsContract.View, SettingsContract.Presenter>(R.layout.fragment_settings),
+    SettingsContract.View {
 
     companion object {
-        private const val REQUEST_KEY = "EXTRA_REQUEST_KEY"
-
-        private const val RESULT_KEY_NEW_NETWORK = "KEY_NEW_NETWORK"
-
-        fun create(): NewSettingsFragment = NewSettingsFragment()
+        fun create(): SettingsFragment = SettingsFragment()
     }
 
-    override val presenter: NewSettingsContract.Presenter by inject()
+    override val presenter: SettingsContract.Presenter by inject()
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
@@ -90,7 +89,7 @@ class NewSettingsFragment :
                 presenter.onUsernameSettingClicked()
             }
             R.string.settings_item_title_pin -> {
-                replaceFragment(NewResetPinIntroFragment.create())
+                replaceFragment(ResetPinIntroFragment.create())
             }
             R.string.settings_item_title_networks -> {
                 analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.NETWORK)
