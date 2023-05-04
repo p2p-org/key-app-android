@@ -176,6 +176,27 @@ class HistoryItemMapper(
                 startSubtitle =
                     resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
             }
+            is RpcHistoryTransaction.WormholeSend -> with(transaction) {
+                tokenIconUrl = iconUrl
+                iconRes = R.drawable.ic_transaction_send
+                startTitle = getTitle()
+                startSubtitle =
+                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                endTopValue = getUsdAmount()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
+            }
+
+            is RpcHistoryTransaction.WormholeReceive -> with(transaction) {
+                tokenIconUrl = iconUrl
+                iconRes = R.drawable.ic_transaction_send
+                startTitle = resources.getString(getTitle())
+                startSubtitle =
+                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                endTopValue = getUsdAmount()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
+            }
             is RpcHistoryTransaction.Unknown -> {
                 iconRes = R.drawable.ic_transaction_unknown
 
