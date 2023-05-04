@@ -258,7 +258,7 @@ class JupiterSwapPresenter(
         }
     }
 
-    private fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
+    private tailrec fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
         return when (featureState) {
             null,
             SwapState.InitialLoading,

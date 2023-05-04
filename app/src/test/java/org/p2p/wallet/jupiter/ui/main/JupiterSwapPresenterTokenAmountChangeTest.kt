@@ -1,22 +1,23 @@
 package org.p2p.wallet.jupiter.ui.main
 
-import io.mockk.coVerify
 import io.mockk.verify
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.wallet.R
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapTestHelpers.attachCallsLog
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
 import org.p2p.wallet.utils.back
+import org.p2p.wallet.utils.front
 import org.p2p.wallet.utils.mutableListQueueOf
 import org.p2p.wallet.utils.plantTimberToStdout
 
@@ -39,23 +40,15 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
     @Test
     fun `GIVEN swap screen WHEN onTokenAmountChange more than balance THEN check swap button disabled and message not enough balance`() = runTest {
         val (firstToken, _, presenter) = createPresenterAndTokens()
-        JupiterSwapTestHelpers.attachLogToViewCalls(view)
+        view.attachCallsLog()
         presenter.attach(view)
-        advanceUntilIdle()
-
         presenter.onTokenAmountChange((firstToken.total + BigDecimal("1")).toPlainString())
         advanceUntilIdle()
 
         val buttonStates = mutableListQueueOf<SwapButtonState>()
-        coVerify(exactly = 3) { view.setButtonState(capture(buttonStates)) }
+        verify { view.setButtonState(capture(buttonStates)) }
 
-        assertTrue(buttonStates.back() is SwapButtonState.Disabled)
-        with(buttonStates.back() as SwapButtonState.Disabled) {
-            val container = text as TextContainer.ResParams
-            assertEquals(R.string.swap_main_button_not_enough_amount, container.textRes)
-            assertEquals(1, container.args.size)
-            assertEquals(firstToken.tokenSymbol, container.args.first())
-        }
+        checkButtonStateIsNotEnoughAmount(buttonStates.back(), firstToken.tokenSymbol)
 
         presenter.detach()
     }
@@ -63,23 +56,17 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
     @Test
     fun `GIVEN swap screen WHEN onTokenAmountChange equal to balance THEN check swap button enabled`() = runTest {
         val (firstToken, secondToken, presenter) = createPresenterAndTokens()
-        JupiterSwapTestHelpers.attachLogToViewCalls(view)
+        view.attachCallsLog()
         presenter.attach(view)
-        advanceUntilIdle()
         presenter.onTokenAmountChange((firstToken.total).toPlainString())
         advanceUntilIdle()
 
         val buttonStates = mutableListQueueOf<SwapButtonState>()
-        coVerify(exactly = 3) { view.setButtonState(capture(buttonStates)) }
+        verify(atLeast = 3) { view.setButtonState(capture(buttonStates)) }
 
-        assertTrue(buttonStates.back() is SwapButtonState.ReadyToSwap)
-        with(buttonStates.back() as SwapButtonState.ReadyToSwap) {
-            val container = text as TextContainer.ResParams
-            assertEquals(R.string.swap_main_button_ready_to_swap, container.textRes)
-            assertEquals(2, container.args.size)
-            assertEquals(firstToken.tokenSymbol, container.args[0])
-            assertEquals(secondToken.tokenSymbol, container.args[1])
-        }
+        checkButtonStateIsDisabledEnterAmount(buttonStates.front())
+        checkButtonStateIsDisabledCounting(buttonStates[buttonStates.size - 2])
+        checkButtonStateIsReadyToSwap(buttonStates.back(), firstToken.tokenSymbol, secondToken.tokenSymbol)
 
         presenter.detach()
     }
@@ -87,21 +74,16 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
     @Test
     fun `GIVEN swap screen WHEN onTokenAmountChange set zero THEN check swap button disabled and message enter balance`() = runTest {
         val (_, _, presenter) = createPresenterAndTokens()
-        JupiterSwapTestHelpers.attachLogToViewCalls(view)
+        view.attachCallsLog()
         presenter.attach(view)
         advanceUntilIdle()
         presenter.onTokenAmountChange("0")
         advanceUntilIdle()
 
         val buttonStates = mutableListQueueOf<SwapButtonState>()
-        // we have only 2 calls, because state has not changed since balances loaded
-        coVerify(exactly = 2) { view.setButtonState(capture(buttonStates)) }
+        verify { view.setButtonState(capture(buttonStates)) }
 
-        assertTrue(buttonStates.back() is SwapButtonState.Disabled)
-        with(buttonStates.back() as SwapButtonState.Disabled) {
-            val container = text as TextContainer.Res
-            assertEquals(R.string.swap_main_button_enter_amount, container.textRes)
-        }
+        checkButtonStateIsDisabledEnterAmount(buttonStates.back())
 
         presenter.detach()
     }
@@ -109,24 +91,16 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
     @Test
     fun `GIVEN swap screen WHEN onTokenAmountChange set very small amount THEN check swap button enabled`() = runTest {
         val (firstToken, secondToken, presenter) = createPresenterAndTokens()
-        JupiterSwapTestHelpers.attachLogToViewCalls(view)
+        view.attachCallsLog()
         presenter.attach(view)
-        advanceUntilIdle()
         presenter.onTokenAmountChange("0.00000000000000015")
         advanceUntilIdle()
 
         val buttonStates = mutableListQueueOf<SwapButtonState>()
         // we have only 2 calls, because state has not changed since balances loaded
-        coVerify(exactly = 3) { view.setButtonState(capture(buttonStates)) }
+        verify { view.setButtonState(capture(buttonStates)) }
 
-        assertTrue(buttonStates.back() is SwapButtonState.ReadyToSwap)
-        with(buttonStates.back() as SwapButtonState.ReadyToSwap) {
-            val container = text as TextContainer.ResParams
-            assertEquals(R.string.swap_main_button_ready_to_swap, container.textRes)
-            assertEquals(2, container.args.size)
-            assertEquals(firstToken.tokenSymbol, container.args[0])
-            assertEquals(secondToken.tokenSymbol, container.args[1])
-        }
+        checkButtonStateIsReadyToSwap(buttonStates.back(), firstToken.tokenSymbol, secondToken.tokenSymbol)
 
         presenter.detach()
     }
@@ -137,26 +111,18 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
     @Test
     fun `GIVEN swap screen WHEN onTokenAmountChange set negative amount THEN check swap button enabled negative conversion`() = runTest {
         val (firstToken, secondToken, presenter) = createPresenterAndTokens()
-        JupiterSwapTestHelpers.attachLogToViewCalls(view)
+        view.attachCallsLog()
         presenter.attach(view)
-        advanceUntilIdle()
         presenter.onTokenAmountChange("-1")
         advanceUntilIdle()
 
         val firstTokenStates = mutableListQueueOf<SwapWidgetModel>()
         val buttonStates = mutableListQueueOf<SwapButtonState>()
 
-        verify(exactly = 3) { view.setButtonState(capture(buttonStates)) }
+        verify(atLeast = 1) { view.setButtonState(capture(buttonStates)) }
         verify(atLeast = 1) { view.setFirstTokenWidgetState(capture(firstTokenStates)) }
 
-        assertTrue(buttonStates.back() is SwapButtonState.ReadyToSwap)
-        with(buttonStates.back() as SwapButtonState.ReadyToSwap) {
-            val container = text as TextContainer.ResParams
-            assertEquals(R.string.swap_main_button_ready_to_swap, container.textRes)
-            assertEquals(2, container.args.size)
-            assertEquals(firstToken.tokenSymbol, container.args[0])
-            assertEquals(secondToken.tokenSymbol, container.args[1])
-        }
+        checkButtonStateIsReadyToSwap(buttonStates.back(), firstToken.tokenSymbol, secondToken.tokenSymbol)
 
         assertTrue(firstTokenStates.back() is SwapWidgetModel.Content)
         with(firstTokenStates.back() as SwapWidgetModel.Content) {
@@ -175,45 +141,89 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
     }
 
     @Test
-    fun `GIVEN swap screen WHEN onTokenAmountChange set NaN THEN check swap button disabled and message enter balance`() = runTest {
+    fun `GIVEN swap screen WHEN onTokenAmountChange set NaN THEN check swap button disabled and message enter amount`() = runTest {
         val (_, _, presenter) = createPresenterAndTokens()
-        JupiterSwapTestHelpers.attachLogToViewCalls(view)
+        view.attachCallsLog()
         presenter.attach(view)
-        advanceUntilIdle()
         presenter.onTokenAmountChange("all hell breaks loose")
         advanceUntilIdle()
 
         val buttonStates = mutableListQueueOf<SwapButtonState>()
         // we have only 2 calls, because state has not changed since balances loaded
-        verify(exactly = 2) { view.setButtonState(capture(buttonStates)) }
+        verify { view.setButtonState(capture(buttonStates)) }
 
-        assertTrue(buttonStates.back() is SwapButtonState.Disabled)
-        with(buttonStates.back() as SwapButtonState.Disabled) {
-            val container = text as TextContainer.Res
-            assertEquals(R.string.swap_main_button_enter_amount, container.textRes)
-        }
+        checkButtonStateIsDisabledEnterAmount(buttonStates.back())
 
         presenter.detach()
     }
 
     @Test
-    fun `GIVEN swap screen WHEN onTokenAmountChange set emoji THEN check swap button disabled and message enter balance`() = runTest {
+    fun `GIVEN swap screen WHEN onTokenAmountChange set emoji THEN check swap button disabled and message enter amount`() = runTest {
         val (_, _, presenter) = createPresenterAndTokens()
-        JupiterSwapTestHelpers.attachLogToViewCalls(view)
+        view.attachCallsLog()
         presenter.attach(view)
-        advanceUntilIdle()
         presenter.onTokenAmountChange("👻 🤖 🎃")
         advanceUntilIdle()
 
         val buttonStates = mutableListQueueOf<SwapButtonState>()
         // we have only 2 calls, because state has not changed since balances loaded
-        coVerify(exactly = 2) { view.setButtonState(capture(buttonStates)) }
+        verify { view.setButtonState(capture(buttonStates)) }
 
-        assertTrue(buttonStates.back() is SwapButtonState.Disabled)
-        with(buttonStates.back() as SwapButtonState.Disabled) {
-            val container = text as TextContainer.Res
-            assertEquals(R.string.swap_main_button_enter_amount, container.textRes)
+        checkButtonStateIsDisabledEnterAmount(buttonStates.back())
+
+        presenter.detach()
+    }
+
+    @Test
+    fun `GIVEN swap screen WHEN onAllAmountClick() clicked THEN check swap button disabled and message enter amount`() = runTest {
+        val firstToken = JupiterSwapTestHelpers.createUSDCToken(BigDecimal("10.28"))
+        val secondToken = JupiterSwapTestHelpers.createSOLToken(
+            amount = BigDecimal("26.48"),
+            rateToUsd = BigDecimal("20.74")
+        )
+        val presenter = createPresenter {
+            homeRepoAllTokens = mutableListOf(firstToken, secondToken)
+            homeRepoUserTokens = homeRepoAllTokens
+            jupiterSwapRoutesRepoGetSwapRoutesForSwapPair = { pair, pk ->
+                listOf(
+                    JupiterSwapTestHelpers.createSwapRoute(
+                        TestSwapRouteData(
+                            swapPair = pair,
+                            userPublicKey = pk,
+                            ratio = JupiterSwapTestHelpers.getRateFromUsd(secondToken.rate!!),
+                            inDecimals = firstToken.decimals,
+                            outDecimals = secondToken.decimals
+                        )
+                    )
+                )
+            }
         }
+        presenter.attach(view)
+        presenter.onAllAmountClick()
+        advanceUntilIdle()
+
+        val buttonStates = mutableListQueueOf<SwapButtonState>()
+        val firstTokenStates = mutableListQueueOf<SwapWidgetModel>()
+        val secondTokenStates = mutableListQueueOf<SwapWidgetModel>()
+
+        verify(atLeast = 3) { view.setButtonState(capture(buttonStates)) }
+        verify(atLeast = 1) { view.setFirstTokenWidgetState(capture(firstTokenStates)) }
+        verify(atLeast = 1) { view.setSecondTokenWidgetState(capture(secondTokenStates)) }
+
+        // total - because we used onAllAmount
+        // rate 1 SOL = 20.74 USD
+        // 10.28 / 20.74
+        // ≈ 0.495660559
+        val expectedOutAmount = firstToken.total.setScale(firstToken.decimals)
+            .divide(secondToken.rate!!, secondToken.decimals, RoundingMode.HALF_EVEN)
+            .toString()
+
+        checkButtonStateIsDisabledEnterAmount(buttonStates.front())
+        checkButtonStateIsDisabledCounting(buttonStates[buttonStates.size - 2])
+        checkButtonStateIsReadyToSwap(buttonStates.back(), firstToken.tokenSymbol, secondToken.tokenSymbol)
+
+        checkFirstSwapWidgetModel(firstToken, firstTokenStates.back(), firstToken.getFormattedTotal())
+        checkSecondSwapWidgetModel(secondToken, secondTokenStates.back(), expectedOutAmount)
 
         presenter.detach()
     }

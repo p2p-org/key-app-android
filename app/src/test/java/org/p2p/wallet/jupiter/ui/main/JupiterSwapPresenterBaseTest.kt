@@ -6,22 +6,29 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.spyk
 import io.mockk.unmockkStatic
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.jupiter.api.extension.ExtendWith
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.DecimalFormatter
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.wallet.R
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
@@ -62,6 +69,7 @@ import org.p2p.wallet.jupiter.ui.main.JupiterSwapTestHelpers.toTokenData
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapButtonMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
+import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.user.repository.UserInMemoryRepository
@@ -70,7 +78,7 @@ import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
-import org.p2p.wallet.utils.TestCoroutineDispatcher
+import org.p2p.wallet.utils.UnconfinedTestDispatchers
 
 @ExperimentalCoroutinesApi
 @ExtendWith(SpyOnInjectMockKsExtension::class, CoroutineExtension::class)
@@ -82,10 +90,10 @@ open class JupiterSwapPresenterBaseTest {
     @MockK(relaxed = true)
     lateinit var analytics: JupiterSwapMainScreenAnalytics
 
-    @MockK
+    @MockK(relaxed = true)
     lateinit var transactionManager: TransactionManager
 
-    @MockK
+    @MockK(relaxed = true)
     lateinit var historyInteractor: HistoryInteractor
 
     @MockK
@@ -117,7 +125,7 @@ open class JupiterSwapPresenterBaseTest {
 
     private var swapButtonMapperBackend = SwapButtonMapper()
 
-    protected val dispatchers = TestCoroutineDispatcher()
+    protected val dispatchers = UnconfinedTestDispatchers()
     protected val jupiterSwapStorage: JupiterSwapStorageContract = JupiterSwapStorageMock()
 
     lateinit var swapStateRoutesRefresher: SwapStateRoutesRefresher
@@ -210,6 +218,10 @@ open class JupiterSwapPresenterBaseTest {
         }
     }
 
+    private fun initRpcAmountRepository() {
+        coEvery { rpcAmountRepository.getMinBalanceForRentExemption(any()) } returns BigInteger("890880")
+    }
+
     private fun initSwapStateRoutesRefresher() {
         swapStateRoutesRefresher = spyk(
             SwapStateRoutesRefresher(
@@ -232,7 +244,9 @@ open class JupiterSwapPresenterBaseTest {
         }
     }
 
-    private fun initJupiterSwapInteractor() {
+    private fun initJupiterSwapInteractor(
+        swapper: (Base64String) -> JupiterSwapInteractor.JupiterSwapTokensResult
+    ) {
         jupiterSwapInteractor = spyk(
             JupiterSwapInteractor(
                 relaySdkFacade = relaySdkFacade,
@@ -240,6 +254,10 @@ open class JupiterSwapPresenterBaseTest {
                 rpcSolanaRepository = rpcSolanaRepository
             )
         )
+
+        coEvery { jupiterSwapInteractor.swapTokens(any()) } answers {
+            swapper(arg(0))
+        }
     }
 
     private fun initJupiterSwapTokenRepository(
@@ -395,7 +413,7 @@ open class JupiterSwapPresenterBaseTest {
             selectedSwapTokenStorage = jupiterSwapStorage,
             swapTokensRepository = jupiterSwapTokensRepository,
             swapValidator = SwapValidator(),
-            analytics = mockk(),
+            analytics = analytics,
             homeLocalRepository = homeLocalRepository,
             userTokensChangeHandler = SwapUserTokensChangeHandler(
                 jupiterSwapInteractor,
@@ -408,26 +426,36 @@ open class JupiterSwapPresenterBaseTest {
         val data = JupiterTestPresenterBuilder().apply(builder)
 
         initSwapButtonMapper()
-        initHomeLocalRepository(data.homeRepoAllTokens, data.homeRepoUserTokens)
-        initUserLocalRepository(data.homeRepoAllTokens.map { it.toTokenData() })
+        initHomeLocalRepository(
+            allTokens = data.homeRepoAllTokens,
+            userTokens = data.homeRepoUserTokens
+        )
+
+        initUserLocalRepository(
+            data.homeRepoAllTokens.map { it.toTokenData() }
+        )
+
+        initJupiterSwapTokenRepository(
+            allTokens = data.jupiterSwapTokensRepoGetTokens,
+            tokenRate = data.jupiterSwapTokensRepoGetTokenRate,
+            tokenRates = data.jupiterSwapTokensRepoGetTokensRate
+        )
+        initRpcAmountRepository()
         initSwapStateRoutesRefresher()
-        initJupiterSwapInteractor()
+        initJupiterSwapInteractor(
+            swapper = data.jupiterSwapInteractorSwapTokens
+        )
         initSwapStateManager(
-            data.initialTokenASymbol,
-            data.initialTokenBSymbol,
-            data.preinstallTokenA
+            tokenASymbol = data.initialTokenASymbol,
+            tokenBSymbol = data.initialTokenBSymbol,
+            preinstallTokenA = data.preinstallTokenA
         )
         initSwapRateTickerManager()
         initSwapRoutesRepository(
-            routesGetter = data.jupiterSwapRoutesGetter,
-            swappableTokenMintsGetter = data.jupiterSwapSwappableTokenMintsGetter,
+            routesGetter = data.jupiterSwapRoutesRepoGetSwapRoutesForSwapPair,
+            swappableTokenMintsGetter = data.jupiterSwapRoutesRepoGetSwappableTokenMints,
         )
         initJupiterSwapTransactionRepository()
-        initJupiterSwapTokenRepository(
-            data.jupiterRepoTokens,
-            data.jupiterTokenRepoGetTokenRate,
-            data.jupiterTokenRepoGetTokensRate
-        )
 
         return JupiterSwapPresenter(
             swapOpenedFrom = data.swapOpenedFrom,
@@ -451,7 +479,7 @@ open class JupiterSwapPresenterBaseTest {
         val firstToken = JupiterSwapTestHelpers.createUSDCToken(BigDecimal("10.28"))
         val secondToken = JupiterSwapTestHelpers.createSOLToken(
             amount = BigDecimal("26.48"),
-            rate = BigDecimal("20.74")
+            rateToUsd = BigDecimal("22.14")
         )
 
         val presenter = createPresenter {
@@ -461,5 +489,129 @@ open class JupiterSwapPresenterBaseTest {
         }
 
         return Triple(firstToken, secondToken, presenter)
+    }
+
+    protected fun checkFirstSwapWidgetModel(
+        token: Token.Active,
+        model: SwapWidgetModel?,
+        expectedAmount: String,
+        availableAmountNullable: Boolean = false
+    ) {
+        assertNotNull("SwapWidgetModel cannot be null", model)
+        with(model as SwapWidgetModel.Content) {
+            // "you pay"
+            with(widgetTitle as TextViewCellModel.Raw) {
+                val container = text as TextContainer.Res
+                assertEquals(R.string.swap_main_you_pay, container.textRes)
+            }
+            // amount input
+            with(amount as TextViewCellModel.Raw) {
+                val container = text as TextContainer.Raw
+                assertEquals(expectedAmount, container.text)
+            }
+            // all %s
+            if (availableAmountNullable) {
+                assertNull(availableAmount)
+            } else {
+                assertNotNull(availableAmount)
+                with(availableAmount as TextViewCellModel.Raw) {
+                    val container = text as TextContainer.Raw
+                    assertEquals(token.getFormattedTotal(true), container.text)
+                }
+            }
+            // balance %s
+            with(balance as TextViewCellModel.Raw) {
+                val container = text as TextContainer.ResParams
+                assertEquals(R.string.swap_main_balance_amount, container.textRes)
+                assertEquals(1, container.args.size)
+                assertEquals(token.getFormattedTotal(), container.args.first() as String)
+            }
+            // token symbol
+            with(currencyName as TextViewCellModel.Raw) {
+                val textContainer = text as TextContainer.Raw
+                assertEquals(token.tokenSymbol, textContainer.text)
+            }
+            // check token decimals
+            assertEquals(token.decimals, amountMaxDecimals)
+        }
+    }
+
+    protected fun checkSecondSwapWidgetModel(
+        token: Token.Active,
+        model: SwapWidgetModel?,
+        expectedAmount: String = ""
+    ) {
+        assertNotNull("SwapWidgetModel cannot be null", model)
+        assertTrue(model is SwapWidgetModel.Content)
+        with(model as SwapWidgetModel.Content) {
+            // "you receive"
+            with(widgetTitle as TextViewCellModel.Raw) {
+                val textContainer = text as TextContainer.Res
+                assertEquals(R.string.swap_main_you_receive, textContainer.textRes)
+            }
+            // amount input (disabled)
+            with(amount as TextViewCellModel.Raw) {
+                val textContainer = text as TextContainer.Raw
+                assertEquals(expectedAmount, textContainer.text)
+            }
+            // balance %s
+            with(balance as TextViewCellModel.Raw) {
+                val textContainer = text as TextContainer.ResParams
+                assertEquals(R.string.swap_main_balance_amount, textContainer.textRes)
+                assertEquals(1, textContainer.args.size)
+                assertEquals(token.getFormattedTotal(), textContainer.args.first() as String)
+            }
+            // all %s - not available for second token
+            assertNull(availableAmount)
+
+            with(currencyName as TextViewCellModel.Raw) {
+                val textContainer = text as TextContainer.Raw
+                assertEquals(token.tokenSymbol, textContainer.text)
+            }
+            assertEquals(token.decimals, amountMaxDecimals)
+        }
+    }
+
+    protected fun checkButtonStateIsDisabled(state: SwapButtonState?, textRes: Int) {
+        assertTrue(state is SwapButtonState.Disabled)
+        with(state as SwapButtonState.Disabled) {
+            assertTrue("Wrong button text type: expected TextContainer.Res", text is TextContainer.Res)
+            val container = text as TextContainer.Res
+            assertEquals(textRes, container.textRes)
+        }
+    }
+
+    protected fun checkButtonStateIsReadyToSwap(state: SwapButtonState?, firstToken: String, secondToken: String) {
+        assertNotNull("Button state is null", state)
+        assertTrue(state is SwapButtonState.ReadyToSwap)
+        with(state as SwapButtonState.ReadyToSwap) {
+            assertTrue(text is TextContainer.ResParams)
+            val container = text as TextContainer.ResParams
+
+            assertEquals(R.string.swap_main_button_ready_to_swap, container.textRes)
+            assertEquals(2, container.args.size)
+            assertEquals(firstToken, container.args[0])
+            assertEquals(secondToken, container.args[1])
+        }
+    }
+
+    protected fun checkButtonStateIsDisabledEnterAmount(state: SwapButtonState?) {
+        assertNotNull("Button state is null", state)
+        checkButtonStateIsDisabled(state, R.string.swap_main_button_enter_amount)
+    }
+
+    protected fun checkButtonStateIsDisabledCounting(state: SwapButtonState?) {
+        checkButtonStateIsDisabled(state, R.string.swap_main_button_loading)
+    }
+
+    protected fun checkButtonStateIsNotEnoughAmount(state: SwapButtonState?, tokenSymbol: String) {
+        assertNotNull("Button state is null", state)
+        assertTrue(state is SwapButtonState.Disabled)
+        with(state as SwapButtonState.Disabled) {
+            val container = text as TextContainer.ResParams
+            assertEquals(R.string.swap_main_button_not_enough_amount, container.textRes)
+            assertEquals(1, container.args.size)
+            assertEquals(tokenSymbol, container.args.first())
+        }
     }
 }

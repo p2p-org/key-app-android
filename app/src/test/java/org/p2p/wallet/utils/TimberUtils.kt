@@ -14,7 +14,7 @@ fun plantTimberToStdout(
     excludeMessages: List<String> = emptyList(),
     excludeStacktraceForMessages: List<String> = emptyList()
 ) {
-    Timber.plant(object : Timber.Tree() {
+    Timber.plant(object : Timber.DebugTree() {
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
             if (excludeMessages.any { message.startsWith(it) }) {
                 return
@@ -31,14 +31,19 @@ fun plantTimberToStdout(
                 Log.ERROR -> sb.append("E")
                 Log.ASSERT -> sb.append("A")
             }
-            sb.append("[${(tag ?: defaultTag)}]")
+            sb.append("[${(tag ?: defaultTag)}] ")
 
             if (t == null) {
                 sb.append(message)
                 printer.println(sb.toString())
             } else {
                 // exclude from message that in exclusion list
-                if (excludeStacktraceForMessages.none { message.startsWith(it) || t.message?.startsWith(it) == true }) {
+                if (excludeStacktraceForMessages.none {
+                    message.startsWith(it) ||
+                        t.message?.startsWith(it) == true ||
+                        t.cause?.message?.startsWith(it) == true
+                }
+                ) {
                     printer.println("[$priority] $tag: ${t.stackTraceToString()}")
                 } else {
                     // there's case, when we getting exception with message == null but message itself contains full stacktrace

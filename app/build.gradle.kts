@@ -179,4 +179,7 @@ dependencies {
     val junitJupiterVersion = "5.8.2"
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:$junitJupiterVersion")
+
+    // timezone for unit testing
+    testImplementation("org.threeten:threetenbp:1.6.8")
 }

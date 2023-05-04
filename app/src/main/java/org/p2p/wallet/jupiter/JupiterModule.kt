@@ -192,7 +192,13 @@ object JupiterModule : InjectionModule {
         }
         factoryOf(::SwapTokenRateLoader)
         singleOf(::SwapStateManagerHolder)
-        singleOf(::SwapRateTickerManager)
+        single {
+            SwapRateTickerManager(
+                swapScope = get(),
+                userLocalRepository = get(),
+                swapTokensRepository = get()
+            )
+        }
 
         factory { (
             initialToken: Token.Active?,

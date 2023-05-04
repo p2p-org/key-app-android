@@ -14,11 +14,9 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapFees
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMode
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
-import org.p2p.wallet.jupiter.ui.main.JupiterSwapTestHelpers.toReadableString
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.utils.Base58String
@@ -49,6 +47,9 @@ object JupiterSwapTestHelpers {
         JUPITER_SOL_TOKEN.tokenMint,
         JUPITER_USDC_TOKEN.tokenMint,
     )
+
+    val SOL_TO_USD_RATE = BigDecimal("20.74")
+    val USD_TO_SOL_RATE = BigDecimal.ONE.setScale(18, RoundingMode.UP).divide(SOL_TO_USD_RATE, RoundingMode.UP).setScale(18)
 
     fun SwapButtonState.toReadableString(): String {
         return when (this) {
@@ -98,119 +99,78 @@ object JupiterSwapTestHelpers {
      * For debug purposes only
      * Note: `every` overwrites previous `every` call, so it should be used only to display which methods are calling
      */
-    fun attachLogToViewCalls(view: JupiterSwapContract.View) {
-        every { view.setFirstTokenWidgetState(any()) } answers {
-            Timber.i("setFirstTokenWidgetState: ${arg<SwapWidgetModel>(0).toReadableString()}")
+    fun JupiterSwapContract.View.attachCallsLog() {
+        val logger = Timber.tag("JupiterSwapContract.View")
+        every { setFirstTokenWidgetState(any()) } answers {
+            logger.i("setFirstTokenWidgetState: ${arg<SwapWidgetModel>(0).toReadableString()}")
         }
-        every { view.setSecondTokenWidgetState(any()) } answers {
-            Timber.i("setSecondTokenWidgetState: ${arg<SwapWidgetModel>(0).toReadableString()}")
+        every { setSecondTokenWidgetState(any()) } answers {
+            logger.i("setSecondTokenWidgetState: ${arg<SwapWidgetModel>(0).toReadableString()}")
         }
-        every { view.setRatioState(any()) } answers {
-            Timber.i("setRatioState: ${arg<TextViewCellModel?>(0).toReadableString()}")
+        every { setRatioState(any()) } answers {
+            logger.i("setRatioState: ${arg<TextViewCellModel?>(0).toReadableString()}")
         }
-        every { view.setButtonState(any()) } answers {
-            Timber.i("setButtonState: ${arg<SwapButtonState>(0).toReadableString()}")
+        every { setButtonState(any()) } answers {
+            logger.i("setButtonState: ${arg<SwapButtonState>(0).toReadableString()}")
         }
-        every { view.setAmountFiat(any()) } answers {
-            Timber.i("setAmountFiat: ${arg<String>(0)}")
+        every { setAmountFiat(any()) } answers {
+            logger.i("setAmountFiat: ${arg<String>(0)}")
         }
-        every { view.setAmountFiat(any()) } answers {
-            Timber.i("setAmountFiat 2: ${arg<String>(0)}")
+        every { setAmountFiat(any()) } answers {
+            logger.i("setAmountFiat 2: ${arg<String>(0)}")
         }
-        every { view.showSolErrorToast() } answers {
-            Timber.i("showSolErrorToast")
+        every { showSolErrorToast() } answers {
+            logger.i("showSolErrorToast")
         }
-        every { view.closeScreen() } answers {
-            Timber.i("closeScreen")
+        every { closeScreen() } answers {
+            logger.i("closeScreen")
         }
-        every { view.openChangeTokenAScreen() } answers {
-            Timber.i("openChangeTokenAScreen")
+        every { openChangeTokenAScreen() } answers {
+            logger.i("openChangeTokenAScreen")
         }
-        every { view.openChangeTokenBScreen() } answers {
-            Timber.i("openChangeTokenBScreen")
+        every { openChangeTokenBScreen() } answers {
+            logger.i("openChangeTokenBScreen")
         }
-        every { view.openChangeTokenBScreen() } answers {
-            Timber.i("openChangeTokenBScreen")
+        every { openChangeTokenBScreen() } answers {
+            logger.i("openChangeTokenBScreen")
         }
-        every { view.showPriceImpact(any()) } answers {
-            Timber.i("showPriceImpact: ${arg<SwapPriceImpactView>(0)}")
+        every { showPriceImpact(any()) } answers {
+            logger.i("showPriceImpact: ${arg<SwapPriceImpactView>(0)}")
         }
-        every { view.scrollToPriceImpact() } answers {
-            Timber.i("scrollToPriceImpact")
+        every { scrollToPriceImpact() } answers {
+            logger.i("scrollToPriceImpact")
         }
-        every { view.showProgressDialog(any(), any()) } answers {
-            Timber.i("showProgressDialog: ${arg<String>(0)} ${arg<SwapTransactionBottomSheetData>(1)}")
+        every { showProgressDialog(any(), any()) } answers {
+            logger.i("showProgressDialog: ${arg<String>(0)} ${arg<SwapTransactionBottomSheetData>(1)}")
         }
-        every { view.showDefaultSlider() } answers {
-            Timber.i("showDefaultSlider")
+        every { showDefaultSlider() } answers {
+            logger.i("showDefaultSlider")
         }
-        every { view.showFullScreenError() } answers {
-            Timber.i("showFullScreenError")
+        every { showFullScreenError() } answers {
+            logger.i("showFullScreenError")
         }
-        every { view.hideFullScreenError() } answers {
-            Timber.i("hideFullScreenError")
+        every { hideFullScreenError() } answers {
+            logger.i("hideFullScreenError")
         }
-        every { view.showKeyboard() } answers {
-            Timber.i("showKeyboard")
+        every { showKeyboard() } answers {
+            logger.i("showKeyboard")
         }
     }
 
-    class TestSwapRouteData {
-        var inputMint: Base58String
-        var outputMint: Base58String
-        var amountIn: BigDecimal
-        var amountOut: BigDecimal
-        var priceImpact: BigDecimal = BigDecimal("0.0000001")
-        var decimals: Int = 9
-
-        constructor(
-            inputMint: Base58String,
-            outputMint: Base58String,
-            amountIn: BigDecimal,
-            amountOut: BigDecimal,
-            priceImpact: BigDecimal = BigDecimal("0.0000001")
-        ) {
-            this.inputMint = inputMint
-            this.outputMint = outputMint
-            this.amountIn = amountIn
-            this.amountOut = amountOut
-            this.priceImpact = priceImpact
-        }
-
-        constructor(
-            inputMint: Base58String,
-            outputMint: Base58String,
-            amountIn: BigDecimal,
-            ratio: BigDecimal
-        ) {
-            this.inputMint = inputMint
-            this.outputMint = outputMint
-            this.amountIn = amountIn
-            this.amountOut = amountIn * ratio
-        }
-
-        constructor(
-            swapPair: JupiterSwapPair,
-            userPublicKey: Base58String,
-            ratio: BigDecimal = SOL_TO_USD_RATE,
-            priceImpact: BigDecimal = BigDecimal("0.0000001")
-        ) {
-            inputMint = swapPair.inputMint
-            outputMint = swapPair.outputMint
-            amountIn = swapPair.amountInLamports.toBigDecimal(9)
-            amountOut = amountIn * ratio
-            this.priceImpact = priceImpact
-        }
+    fun BigInteger.minusPercent(value: Double): BigInteger {
+        val source = toBigDecimal()
+        val percent = BigDecimal.ONE - value.toBigDecimal()
+        return (source * percent).toBigInteger()
     }
 
     fun createSwapRoute(data: TestSwapRouteData): JupiterSwapRoute {
-        val amountIn = data.amountIn.toLamports(data.decimals)
-        val amountOut = data.amountOut.toLamports(data.decimals)
+        val amountIn = data.amountIn.toLamports(data.inDecimals)
+        val amountOut = data.amountOut.toLamports(data.outDecimals)
 
         return JupiterSwapRoute(
             amountInLamports = amountIn,
             inAmountInLamports = amountIn,
-            outAmountInLamports = amountIn,
+            outAmountInLamports = amountOut,
             priceImpactPct = data.priceImpact,
             marketInfos = listOf(
                 JupiterSwapMarketInformation(
@@ -237,8 +197,8 @@ object JupiterSwapTestHelpers {
                     )
                 )
             ),
-            slippageBps = 50,
-            otherAmountThreshold = "22744918",
+            slippageBps = data.slippageBps,
+            otherAmountThreshold = amountOut.minusPercent(data.slippage.doubleValue).toString(),
             swapMode = JupiterSwapMode.EXACT_IN,
             fees = JupiterSwapFees(
                 signatureFee = BigInteger("0"),
@@ -267,12 +227,13 @@ object JupiterSwapTestHelpers {
         }
     }
 
-    val SOL_TO_USD_RATE = BigDecimal("20.74")
-    val USD_TO_SOL_RATE = BigDecimal.ONE.setScale(18, RoundingMode.UP).divide(SOL_TO_USD_RATE, RoundingMode.UP).setScale(18)
+    fun getRateFromUsd(usdRate: BigDecimal): BigDecimal {
+        return BigDecimal.ONE.setScale(18, RoundingMode.UP).divide(usdRate, RoundingMode.UP).setScale(18)
+    }
 
     fun createSOLToken(
         amount: BigDecimal = BigDecimal("100.3456"),
-        rate: BigDecimal = SOL_TO_USD_RATE
+        rateToUsd: BigDecimal = SOL_TO_USD_RATE
     ): Token.Active =
         Token.createSOL(
             "some public key",
@@ -288,13 +249,13 @@ object JupiterSwapTestHelpers {
                 coingeckoId = JUPITER_SOL_TOKEN.coingeckoId,
             ),
             amount.toLamports(JUPITER_SOL_TOKEN.decimals).toLong(),
-            rate
+            rateToUsd
         )
 
     fun createUSDCToken(amount: BigDecimal = BigDecimal("10.28")): Token.Active =
         Token.createSOL(
-            "some public key",
-            TokenData(
+            publicKey = "some public key",
+            tokenData = TokenData(
                 JUPITER_USDC_TOKEN.tokenMint.base58Value,
                 JUPITER_USDC_TOKEN.tokenName,
                 JUPITER_USDC_TOKEN.tokenSymbol,
@@ -305,8 +266,8 @@ object JupiterSwapTestHelpers {
                 serumV3Usdt = null,
                 coingeckoId = JUPITER_USDC_TOKEN.coingeckoId
             ),
-            amount.toLamports(JUPITER_USDC_TOKEN.decimals).toLong(),
-            BigDecimal("1")
+            amount = amount.toLamports(JUPITER_USDC_TOKEN.decimals).toLong(),
+            solPrice = BigDecimal("1")
         )
 
     fun Token.Active.toTokenData(): TokenData {
