@@ -116,12 +116,15 @@ class JupiterSwapInteractor(
 
         return when {
             priceImpactPercent.isLessThan(onePercent) -> {
-                val isHighFeesNotFound = totalFeeAndDeposits / outAmount <= slippageValue.toBigInteger()
-                if (isHighFeesNotFound) {
-                    SwapPriceImpactType.None
-                } else {
-                    SwapPriceImpactType.HighFees(currentSlippage)
-                }
+                SwapPriceImpactType.None
+                // commented due to PWN-8092 new requirements
+                // this codes goes to 2.7.0, but needed in 2.7.1 so i removed it temporarily
+//                val isHighFeesNotFound = checkForHighFees(totalFeeAndDeposits, outAmount, slippageValue)
+//                if (isHighFeesNotFound) {
+//                    SwapPriceImpactType.None
+//                } else {
+//                    SwapPriceImpactType.HighFees(currentSlippage)
+//                }
             }
             priceImpactPercent.isLessThan(threePercent) -> {
                 SwapPriceImpactType.HighPriceImpact(priceImpactPercent, SwapPriceImpactType.HighPriceImpactType.YELLOW)
@@ -158,5 +161,22 @@ class JupiterSwapInteractor(
             is SwapState.RoutesLoaded -> slippage
             is SwapState.SwapException -> null
         }
+    }
+
+    /**
+     * We need to cast BigIntegers to Double to keep numbers after dot when dividing.
+     * We had an error when we divided 2039280 / 955187 and got only 2 instead of full 2.13
+     * which caused invalid behaviour in case of slippage 2.1%
+     */
+    private fun checkForHighFees(
+        totalFeesAndDeposit: BigInteger,
+        outAmount: BigInteger,
+        slippageValuePercent: Int
+    ): Boolean {
+        val feesValuePercent: Int =
+            (totalFeesAndDeposit.toDouble() / outAmount.toDouble())
+                .times(100)
+                .toInt()
+        return feesValuePercent <= slippageValuePercent
     }
 }

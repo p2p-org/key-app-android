@@ -4,6 +4,7 @@ import android.util.Log
 import timber.log.Timber
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import kotlinx.coroutines.CancellationException
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
@@ -24,11 +25,13 @@ class TimberCrashTree(
             crashLogger.logInformation("[$tag] [$priorityAsString] $message")
         }
 
-        val isNetworkError = t is SocketTimeoutException || t is UnknownHostException
-        val userHasNoInternet = !networkProvider.hasConnection()
-        if (isNetworkError && userHasNoInternet && isThrowablePriority) {
+        val isNetworkError = t is SocketTimeoutException ||
+            t is UnknownHostException ||
+            t is CancellationException
+        if (isNetworkError && isThrowablePriority) {
             // log as info, do not create entry in Sentry or Crashlytics
             log(Log.INFO, tag, message, t)
+            return
         }
 
         when {
@@ -42,6 +45,10 @@ class TimberCrashTree(
                 crashLogger.logInformation("[$tag] [$priorityAsString] ($message): $t")
             }
             isInformationPriority -> {
+                crashLogger.logInformation("[$tag] [$priorityAsString] $message")
+            }
+            else -> {
+                t?.also { crashLogger.logInformation("[$tag] [$priorityAsString] ${t.stackTraceToString()}") }
                 crashLogger.logInformation("[$tag] [$priorityAsString] $message")
             }
         }
