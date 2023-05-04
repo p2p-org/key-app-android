@@ -107,6 +107,7 @@ class HistoryAdapter(
             is MoonpayTransactionItem -> TRANSACTION_MOONPAY_VIEW_TYPE
             is UserSendLinksItem -> TRANSACTION_USER_SEND_LINKS_VIEW_TYPE
             is HistoryItem.SwapBannerItem -> SWAP_BANNER_VIEW_TYPE
+            else -> -1
         }
     }
 
