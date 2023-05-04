@@ -7,7 +7,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemHistoryTransactionBinding
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.utils.viewbinding.context
-import org.p2p.wallet.utils.viewbinding.inflateViewBinding
+import org.p2p.wallet.history.ui.model.HistoryItem
 
 class BridgePendingViewHolder(
     parent: ViewGroup,
@@ -30,6 +30,9 @@ class BridgePendingViewHolder(
             endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))
             endAmountView.bottomValue = item.sendDetails.amount.toString()
             startAmountView.setSubtitleDrawable(left = R.drawable.ic_state_pending)
+            transactionTokenImageView.apply {
+                ERC20Tokens.ETH.tokenIconUrl.also { setTokenImage(glideManager, it) }
+            }
         }
     }
 
@@ -47,7 +50,6 @@ class BridgePendingViewHolder(
             endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))
             endAmountView.bottomValue = item.bundle.resultAmount.amountInToken.toString()
             startAmountView.setSubtitleDrawable(left = R.drawable.ic_state_pending)
-
         }
     }
 }
