@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.api.mapper
 
 import org.threeten.bp.ZonedDateTime
+import org.p2p.core.utils.Constants
 import org.p2p.core.utils.orZero
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.bridge.api.response.BridgeAmountResponse
@@ -100,17 +101,25 @@ class BridgeMapper {
         )
     }
 
-    fun toHistoryItem(claimBundle: BridgeBundle): HistoryTransaction {
-        return BridgeHistoryTransaction.Claim(
-            bundleId = claimBundle.bundleId,
-            date = ZonedDateTime.now()
-        )
+    fun toHistoryItem(claimBundle: BridgeBundle, mintAddress: String): HistoryTransaction? {
+        if (claimBundle.recipient.raw == mintAddress || mintAddress == Constants.WRAPPED_SOL_MINT) {
+            return BridgeHistoryTransaction.Claim(
+                bundleId = claimBundle.bundleId,
+                date = ZonedDateTime.now(),
+                bundle = claimBundle
+            )
+        }
+        return null
     }
 
-    fun toHistoryItem(sendDetails: BridgeSendTransactionDetails): HistoryTransaction {
-        return BridgeHistoryTransaction.Send(
-            id = sendDetails.id,
-            date = ZonedDateTime.now()
-        )
+    fun toHistoryItem(sendDetails: BridgeSendTransactionDetails, mintAddress: String): HistoryTransaction? {
+        if (sendDetails.recipient.raw == mintAddress || mintAddress == Constants.WRAPPED_SOL_MINT) {
+            return BridgeHistoryTransaction.Send(
+                id = sendDetails.id,
+                date = ZonedDateTime.now(),
+                sendDetails = sendDetails
+            )
+        }
+        return null
     }
 }

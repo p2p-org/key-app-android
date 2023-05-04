@@ -241,15 +241,15 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
-            tokenSymbol = info?.tokenAmount?.symbol.orEmpty(),
+            tokenSymbol = info?.tokenAmount?.token?.symbol.orEmpty(),
             amount = RpcHistoryAmount(total, totalInUsd),
-            iconUrl = info?.tokenAmount?.logoUrl,
+            iconUrl = info?.tokenAmount?.token?.logoUrl,
             fees = transaction.fees.parseFees()
         )
     }
 
     private fun parseWormholeSend(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.WormholeReceive>(transaction.info.toString())
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.WormholeSend>(transaction.info.toString())
             ?: error("Parsing error: cannot parse json object  ${transaction.info}")
         val total = info.amount?.amount.toBigDecimalOrZero()
         val totalInUsd = info.amount?.usdAmount.toBigDecimalOrZero()
@@ -260,9 +260,9 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
-            tokenSymbol = info.tokenAmount?.symbol.orEmpty(),
+            tokenSymbol = info.tokenAmount?.token?.symbol.orEmpty(),
             amount = RpcHistoryAmount(total, totalInUsd),
-            iconUrl = info.tokenAmount?.logoUrl,
+            iconUrl = info.tokenAmount?.token?.logoUrl,
             fees = transaction.fees.parseFees(),
             sourceAddress = info.to?.address.orEmpty()
         )
