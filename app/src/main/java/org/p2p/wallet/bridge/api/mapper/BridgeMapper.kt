@@ -31,6 +31,7 @@ class BridgeMapper {
             signatures = response.signatures.orEmpty(),
             fees = fromNetwork(response.fees),
             status = response.status,
+            claimKey = response.claimKey,
             compensationDeclineReason = response.compensationDeclineReason.orEmpty()
         )
     }
