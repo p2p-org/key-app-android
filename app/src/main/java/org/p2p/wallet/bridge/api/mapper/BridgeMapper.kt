@@ -37,7 +37,8 @@ class BridgeMapper {
 
     fun fromNetwork(response: BridgeBundleFeesResponse?): BridgeBundleFees {
         return BridgeBundleFees(
-            gasEth = fromNetwork(response?.gasFee),
+            gasFee = fromNetwork(response?.gasFee),
+            gasFeeInToken = fromNetwork(response?.gasFeeInToken),
             arbiterFee = fromNetwork(response?.arbiterFee),
             createAccount = fromNetwork(response?.createAccountFee)
         )
@@ -58,8 +59,11 @@ class BridgeMapper {
     fun fromNetwork(response: BridgeSendFeesResponse): BridgeSendFees {
         return BridgeSendFees(
             networkFee = fromNetwork(response.networkFee),
+            networkFeeInToken = fromNetwork(response.networkFeeInToken),
             messageAccountRent = fromNetwork(response.messageAccountRent),
+            messageAccountRentInToken = fromNetwork(response.messageAccountRentInToken),
             bridgeFee = fromNetwork(response.bridgeFee),
+            bridgeFeeInToken = fromNetwork(response.bridgeFeeInToken),
             arbiterFee = fromNetwork(response.arbiterFee),
             resultAmount = fromNetwork(response.resultAmount),
         )
