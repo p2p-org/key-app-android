@@ -191,9 +191,6 @@ class HistoryTransactionDetailsBottomSheetFragment :
                 )
             }
         }
-        // hide only if transaction if not pending
-        textViewFeeTitle.isGone = !isReceivePending
-        textViewFeeValue.isGone = !isReceivePending
     }
 
     override fun showReceiverAddress(
@@ -248,6 +245,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     override fun showFee(fees: List<RpcFee>?) = with(binding) {
+        textViewFeeTitle.isVisible = true
         textViewFeeValue.isVisible = true
         textViewFeeValue.text = fees.formatFees(lessThenMinString)
     }

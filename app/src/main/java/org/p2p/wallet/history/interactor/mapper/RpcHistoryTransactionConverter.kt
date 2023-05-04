@@ -242,8 +242,8 @@ class RpcHistoryTransactionConverter(
             bundle?.fees?.arbiterFee,
             bundle?.fees?.gasFeeInToken
         )
-        val total = info.amount?.amount.toBigDecimalOrZero() - bundleFees.sumOf { it.amountInToken }
-        val totalInUsd = info.amount?.usdAmount.toBigDecimalOrZero() - bundleFees.sumOf {
+        val total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero() - bundleFees.sumOf { it.amountInToken }
+        val totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero() - bundleFees.sumOf {
             it.amountInUsd.toBigDecimalOrZero()
         }
 
@@ -269,8 +269,8 @@ class RpcHistoryTransactionConverter(
             sendDetails?.fees?.bridgeFeeInToken,
             sendDetails?.fees?.networkFeeInToken,
         )
-        val total = info.amount?.amount.toBigDecimalOrZero() - bundleFees.sumOf { it.amountInToken }
-        val totalInUsd = info.amount?.usdAmount.toBigDecimalOrZero() - bundleFees.sumOf {
+        val total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero() - bundleFees.sumOf { it.amountInToken }
+        val totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero() - bundleFees.sumOf {
             it.amountInUsd.toBigDecimalOrZero()
         }
 

@@ -81,7 +81,9 @@ class HistoryTransactionDetailsPresenter(
             val usdTotal = transaction.getReceivedUsdAmount()
             val total = transaction.getFormattedAmountWithArrow()
             showAmount(total, usdTotal)
-            showFee(transaction.fees)
+            if (!transaction.status.isPending()) {
+                showFee(transaction.fees)
+            }
 
             val sourceIcon = transaction.sourceIconUrl
             val destinationIcon = transaction.destinationIconUrl
@@ -101,7 +103,9 @@ class HistoryTransactionDetailsPresenter(
                 showProgressTransactionInProgress()
             }
             showTransferView(transaction.iconUrl, transaction.getIcon())
-            showFee(transaction.fees)
+            if (!transaction.status.isPending()) {
+                showFee(transaction.fees)
+            }
             showAmount(
                 amountToken = transaction.getFormattedTotal(),
                 amountUsd = transaction.getFormattedAmount()
@@ -150,7 +154,9 @@ class HistoryTransactionDetailsPresenter(
             val usdTotal = transaction.getFormattedAmount()
             val total = transaction.getFormattedAbsTotal()
             showAmount(total, usdTotal)
-            showFee(transaction.fees)
+            if (!transaction.status.isPending()) {
+                showFee(transaction.fees)
+            }
             showTransferView(transaction.iconUrl, R.drawable.ic_placeholder_image)
             showStateTitleValue(
                 resources.getString(
@@ -169,7 +175,9 @@ class HistoryTransactionDetailsPresenter(
                 showProgressTransactionInProgress()
             }
             showTransferView(transaction.iconUrl, R.drawable.ic_placeholder_image)
-            showFee(transaction.fees)
+            if (transaction.fees != null && !transaction.status.isPending()) {
+                showFee(transaction.fees)
+            }
             showAmount(
                 amountToken = transaction.getFormattedTotal(),
                 amountUsd = transaction.getFormattedUsdAmount()
@@ -191,7 +199,9 @@ class HistoryTransactionDetailsPresenter(
                 showProgressTransactionInProgress()
             }
             showTransferView(transaction.iconUrl, R.drawable.ic_placeholder_image)
-            showFee(transaction.fees)
+            if (transaction.fees != null && !transaction.status.isPending()) {
+                showFee(transaction.fees)
+            }
             showAmount(
                 amountToken = transaction.getFormattedTotal(),
                 amountUsd = transaction.getFormattedUsdAmount()

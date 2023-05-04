@@ -18,6 +18,7 @@ import org.p2p.core.utils.scaleShortOrFirstNotZero
 import org.p2p.wallet.R
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
+import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
 
@@ -341,7 +342,7 @@ sealed class RpcHistoryTransaction(
 
         fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
 
-        fun getTotal(): String = "$+${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+        fun getTotal(): String = "+${amount.total.scaleMedium().formatToken()} $tokenSymbol"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
@@ -356,7 +357,7 @@ sealed class RpcHistoryTransaction(
             else -> R.color.text_mint
         }
 
-        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(false))
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asPositiveUsdTransaction()
     }
 
     @Parcelize
@@ -378,7 +379,7 @@ sealed class RpcHistoryTransaction(
 
         fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
 
-        fun getTitle(): String = "To $sourceAddress"
+        fun getTitle(): String = "To ${sourceAddress.cutStart()}"
 
         fun getTotal(): String = "${getSymbol(isSend)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
 
@@ -393,7 +394,7 @@ sealed class RpcHistoryTransaction(
             return if (isNegativeOperation) "" else "+"
         }
 
-        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isSend))
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asNegativeUsdTransaction()
 
         @ColorRes
         fun getTextColor(): Int = when {
