@@ -144,6 +144,12 @@ class HistoryAdapter(
                     oldItem.date.isSameAs(newItem.date)
                 oldItem is UserSendLinksItem && newItem is UserSendLinksItem ->
                     oldItem.linksCount == newItem.linksCount
+                oldItem is HistoryItem.BridgeSendItem && newItem is HistoryItem.BridgeSendItem -> {
+                    oldItem.transactionId == newItem.transactionId
+                }
+                oldItem is HistoryItem.BridgeClaimItem && newItem is HistoryItem.BridgeClaimItem -> {
+                    oldItem.transactionId == newItem.transactionId
+                }
                 oldItem is HistoryItem.SwapBannerItem && newItem is HistoryItem.SwapBannerItem -> {
                     oldItem.date.isSameAs(newItem.date)
                 }
@@ -159,6 +165,12 @@ class HistoryAdapter(
                 }
                 oldItem is HistoryItem.SwapBannerItem && newItem is HistoryItem.SwapBannerItem -> {
                     oldItem.date.isSameAs(newItem.date)
+                }
+                oldItem is HistoryItem.BridgeSendItem && newItem is HistoryItem.BridgeSendItem -> {
+                    oldItem.transactionId == newItem.transactionId
+                }
+                oldItem is HistoryItem.BridgeClaimItem && newItem is HistoryItem.BridgeClaimItem -> {
+                    oldItem.transactionId == newItem.transactionId
                 }
                 else -> {
                     oldItem.transactionId == newItem.transactionId && oldItem.date.isSameAs(newItem.date)
