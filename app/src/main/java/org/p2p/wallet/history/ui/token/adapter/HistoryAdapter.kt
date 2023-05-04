@@ -32,6 +32,7 @@ private const val TRANSACTION_SWAP_VIEW_TYPE = 5
 private const val TRANSACTION_MOONPAY_VIEW_TYPE = 6
 private const val TRANSACTION_USER_SEND_LINKS_VIEW_TYPE = 7
 private const val SWAP_BANNER_VIEW_TYPE = 8
+private const val WORMHOLE_LOCAL_VIEW_TYPE = 9
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
@@ -107,6 +108,8 @@ class HistoryAdapter(
             is MoonpayTransactionItem -> TRANSACTION_MOONPAY_VIEW_TYPE
             is UserSendLinksItem -> TRANSACTION_USER_SEND_LINKS_VIEW_TYPE
             is HistoryItem.SwapBannerItem -> SWAP_BANNER_VIEW_TYPE
+            is HistoryItem.BridgeClaimItem,
+            is HistoryItem.BridgeSendItem -> WORMHOLE_LOCAL_VIEW_TYPE
         }
     }
 

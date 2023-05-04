@@ -66,4 +66,18 @@ sealed interface HistoryItem {
         override val date: ZonedDateTime = ZonedDateTime.now()
         override val transactionId: String = emptyString()
     }
+
+    data class BridgeSendItem(
+        val id: String
+    ) : HistoryItem {
+        override val date: ZonedDateTime = ZonedDateTime.now()
+        override val transactionId: String = id
+    }
+
+    data class BridgeClaimItem(
+        val bundleId: String
+    ) : HistoryItem {
+        override val date: ZonedDateTime = ZonedDateTime.now()
+        override val transactionId: String = bundleId
+    }
 }

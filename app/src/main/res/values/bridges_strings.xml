@@ -45,6 +45,7 @@
     <string name="bridge_usdc_usdt_swap_message">To make a transfer to ETH you have to swap USDC to USDCet</string>
     <string name="bridge_usdc_usdt_swap_action">Swap USDC → USDCet</string>
     <string name="bridge_how_to_claim_for_free_title">How to claim for free</string>
-    <string name="bridge_claim_description_progress">It usually takes 10–15 minutes for a transaction to complete</string>
+    <string name="bridge_claim_description_progress">It usually takes 15–20 minutes for a transaction to complete</string>
+    <string name="common_claimed">Claimed</string>
 
 </resources>

@@ -324,6 +324,86 @@ sealed class RpcHistoryTransaction(
     }
 
     @Parcelize
+    data class WormholeReceive(
+        override val signature: String,
+        override val date: ZonedDateTime,
+        override val blockNumber: Int,
+        override val status: HistoryTransactionStatus,
+        override val type: RpcHistoryTransactionType,
+        val amount: RpcHistoryAmount,
+        val tokenSymbol: String,
+        val iconUrl: String?,
+        val fees: List<RpcFee>?,
+    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
+
+        @StringRes
+        fun getTitle(): Int = R.string.common_claimed
+
+        fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
+
+        fun getTotal(): String = "$+${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String =
+            if (scaleMedium) {
+                "${amount.total.scaleMedium().toPlainString()} $tokenSymbol"
+            } else {
+                "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
+            }
+
+        @ColorRes
+        fun getTextColor(): Int = when {
+            !status.isCompleted() -> R.color.text_rose
+            else -> R.color.text_mint
+        }
+
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(false))
+    }
+
+    @Parcelize
+    data class WormholeSend(
+        override val signature: String,
+        override val date: ZonedDateTime,
+        override val blockNumber: Int,
+        override val status: HistoryTransactionStatus,
+        override val type: RpcHistoryTransactionType,
+        val amount: RpcHistoryAmount,
+        val sourceAddress: String,
+        val tokenSymbol: String,
+        val iconUrl: String?,
+        val fees: List<RpcFee>?,
+    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
+        @IgnoredOnParcel
+        val isSend: Boolean
+            get() = type == RpcHistoryTransactionType.WORMHOLE_SEND
+
+        fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
+
+        fun getTitle(): String = "To $sourceAddress"
+
+        fun getTotal(): String = "${getSymbol(isSend)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String =
+            if (scaleMedium) {
+                "${amount.total.scaleMedium().toPlainString()} $tokenSymbol"
+            } else {
+                "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
+            }
+
+        override fun getSymbol(isNegativeOperation: Boolean): String {
+            return if (isNegativeOperation) "" else "+"
+        }
+
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isSend))
+
+        @ColorRes
+        fun getTextColor(): Int = when {
+            !status.isCompleted() -> R.color.text_rose
+            isSend -> R.color.text_night
+            else -> R.color.text_mint
+        }
+    }
+
+    @Parcelize
     data class Unknown(
         override val signature: String,
         override val date: ZonedDateTime,

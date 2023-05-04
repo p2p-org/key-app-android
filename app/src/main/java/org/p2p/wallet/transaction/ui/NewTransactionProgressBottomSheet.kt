@@ -173,9 +173,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
 
     private fun handleClaimProgress(state: TransactionState.ClaimProgress) {
         val message = getString(R.string.bridge_claim_description_progress)
-        val signature = state.bundleId
         with(binding) {
-            textViewTitle.text = progressStateFormat.format(getString(R.string.bridge_claiming_button_text))
+            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_submitted))
             progressStateTransaction.setDescriptionText(message)
             buttonDone.setText(R.string.common_done)
         }
