@@ -14,7 +14,16 @@ import org.p2p.wallet.history.ui.model.HistoryItem.DateItem
 import org.p2p.wallet.history.ui.model.HistoryItem.MoonpayTransactionItem
 import org.p2p.wallet.history.ui.model.HistoryItem.TransactionItem
 import org.p2p.wallet.history.ui.model.HistoryItem.UserSendLinksItem
-import org.p2p.wallet.history.ui.token.adapter.holders.*
+import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistorySwapBannerViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.BridgePendingViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.DateViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.ErrorViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistorySellTransactionViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistoryUserSendLinksViewHolder
 
 private const val TRANSACTION_VIEW_TYPE = 1
 private const val HISTORY_DATE_VIEW_TYPE = 2
