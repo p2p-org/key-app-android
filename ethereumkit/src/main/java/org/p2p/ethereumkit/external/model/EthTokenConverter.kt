@@ -16,7 +16,7 @@ object EthTokenConverter {
             totalInUsd = metadata.balance.fromLamports(metadata.decimals).times(metadata.price),
             total = metadata.balance.fromLamports(metadata.decimals),
             rate = metadata.price,
-            isClaiming = isClaiming,
+            isClaiming = true,
             latestActiveBundleId = bundleId
         )
 }
