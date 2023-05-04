@@ -253,9 +253,9 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
-            tokenSymbol = info.tokenAmount?.symbol.orEmpty(),
+            tokenSymbol = info?.tokenAmount?.token?.symbol.orEmpty(),
             amount = RpcHistoryAmount(total, totalInUsd),
-            iconUrl = info.tokenAmount?.logoUrl,
+            iconUrl = info?.tokenAmount?.token?.logoUrl,
             fees = bundleFees.parseBridgeFees() ?: transaction.fees.parseFees()
         )
     }
@@ -280,9 +280,9 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
-            tokenSymbol = info.tokenAmount?.symbol.orEmpty(),
+            tokenSymbol = info.tokenAmount?.token?.symbol.orEmpty(),
             amount = RpcHistoryAmount(total, totalInUsd),
-            iconUrl = info.tokenAmount?.logoUrl,
+            iconUrl = info.tokenAmount?.token?.logoUrl,
             fees = bundleFees.parseBridgeFees() ?: transaction.fees.parseFees(),
             sourceAddress = info.to?.address.orEmpty()
         )

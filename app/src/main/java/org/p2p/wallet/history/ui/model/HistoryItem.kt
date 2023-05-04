@@ -4,6 +4,8 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import org.threeten.bp.ZonedDateTime
 import org.p2p.uikit.utils.recycler.RoundedItem
+import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.emptyString
 
@@ -68,14 +70,16 @@ sealed interface HistoryItem {
     }
 
     data class BridgeSendItem(
-        val id: String
+        val id: String,
+        val sendDetails: BridgeSendTransactionDetails
     ) : HistoryItem {
         override val date: ZonedDateTime = ZonedDateTime.now()
         override val transactionId: String = id
     }
 
     data class BridgeClaimItem(
-        val bundleId: String
+        val bundleId: String,
+        val bundle: BridgeBundle
     ) : HistoryItem {
         override val date: ZonedDateTime = ZonedDateTime.now()
         override val transactionId: String = bundleId

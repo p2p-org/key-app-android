@@ -92,17 +92,18 @@ sealed class RpcHistoryTransactionInfoResponse {
         @SerializedName("bridge_service_key")
         val bridgeServiceKey: String?,
         @SerializedName("token_amount")
-        val tokenAmount: RpcHistoryTokenResponse?,
+        val tokenAmount: RpcHistoryTokenAmountResponse?,
         @SerializedName("amount")
         val amount: RpcHistoryAmountResponse?,
     )
+
     data class WormholeSend(
         @SerializedName("to")
         val to: RpcHistoryAccountResponse?,
         @SerializedName("bridge_service_key")
         val bridgeServiceKey: String?,
         @SerializedName("token_amount")
-        val tokenAmount: RpcHistoryTokenResponse?,
+        val tokenAmount: RpcHistoryTokenAmountResponse?,
         @SerializedName("amount")
         val amount: RpcHistoryAmountResponse?,
     )

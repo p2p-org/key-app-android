@@ -1,7 +1,10 @@
 package org.p2p.core.wrapper.eth
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-data class EthAddress(var raw: ByteArray) {
+@Parcelize
+data class EthAddress(var raw: ByteArray): Parcelable{
     init {
         if (raw.size == 32) {
             raw = raw.copyOfRange(12, raw.size)
