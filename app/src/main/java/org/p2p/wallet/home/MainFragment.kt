@@ -118,7 +118,7 @@ class MainFragment :
         }
 
         parentFragmentManager.commit {
-            if(!refreshErrorFragment.isAdded) {
+            if (!refreshErrorFragment.isAdded) {
                 add(R.id.rootContainer, refreshErrorFragment)
             }
             hide(refreshErrorFragment)
