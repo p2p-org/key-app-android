@@ -32,6 +32,10 @@ class EthereumBridgeInMemoryRepository : EthereumBridgeLocalRepository {
         return bridgeBundlesMap.values.toList()
     }
 
+    override fun getAllSendDetails(): List<BridgeSendTransactionDetails> {
+        return bridgeSendDetailsMap.values.toList()
+    }
+
     override fun saveSendDetails(items: List<BridgeSendTransactionDetails>) {
         items.forEach { sendDetails ->
             bridgeSendDetailsMap[sendDetails.id] = sendDetails
