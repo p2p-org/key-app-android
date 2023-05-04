@@ -5,6 +5,7 @@ import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 import java.util.Locale
 import kotlinx.coroutines.launch
+import org.p2p.core.utils.emptyString
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
@@ -61,6 +62,8 @@ class HistoryTransactionDetailsPresenter(
             is RpcHistoryTransaction.Swap -> parseSwap(transaction)
             is RpcHistoryTransaction.Transfer -> parseTransfer(transaction)
             is RpcHistoryTransaction.BurnOrMint -> parseBurnOrMint(transaction)
+            is RpcHistoryTransaction.WormholeReceive -> parseWormholeReceive(transaction)
+            is RpcHistoryTransaction.WormholeSend -> parseWormholeSend(transaction)
             is RpcHistoryTransaction.CreateAccount -> parseCreateAccount(transaction)
             is RpcHistoryTransaction.CloseAccount -> parseCloseAccount(transaction)
             is RpcHistoryTransaction.StakeUnstake -> parseStakeUnstake(transaction)
@@ -107,29 +110,31 @@ class HistoryTransactionDetailsPresenter(
                 isSend = transaction.isSend,
                 senderAddress = transaction.senderAddress,
                 receiverAddress = transaction.destination,
-                isPendingSend = transaction.status.isPending()
+                isPending = transaction.status.isPending()
             )
         }
     }
 
     private suspend fun showTransferAddress(
         isSend: Boolean,
-        isPendingSend: Boolean,
+        isPending: Boolean,
         senderAddress: String,
-        receiverAddress: String
+        receiverAddress: String,
+        toEth: Boolean = false
     ) {
         val transferActorAddress = if (isSend) receiverAddress.toBase58Instance() else senderAddress.toBase58Instance()
         val transferActorUsername: UsernameDetails? = getTransferActorUsername(transferActorAddress)
         if (isSend) {
             view?.showReceiverAddress(
                 receiverAddress = transferActorAddress,
-                receiverUsername = transferActorUsername?.username?.fullUsername
+                receiverUsername = transferActorUsername?.username?.fullUsername,
+                toEth = toEth
             )
         } else {
             view?.showSenderAddress(
                 senderAddress = transferActorAddress,
                 senderUsername = transferActorUsername?.username?.fullUsername,
-                isReceivePending = isPendingSend
+                isReceivePending = isPending
             )
         }
     }
@@ -153,6 +158,50 @@ class HistoryTransactionDetailsPresenter(
                     else R.string.transaction_details_mint
                 ),
                 transaction.signature.cutMiddle()
+            )
+        }
+    }
+
+    private suspend fun parseWormholeReceive(transaction: RpcHistoryTransaction.WormholeReceive) {
+        view?.apply {
+            if (transaction.status.isPending()) {
+                view?.showSubtitle(resources.getString(R.string.details_pending))
+                showProgressTransactionInProgress()
+            }
+            showTransferView(transaction.iconUrl, R.drawable.ic_placeholder_image)
+            showFee(transaction.fees)
+            showAmount(
+                amountToken = transaction.getFormattedTotal(),
+                amountUsd = transaction.getFormattedUsdAmount()
+            )
+            showTransferAddress(
+                isSend = false,
+                senderAddress = resources.getString(R.string.bridge_details_receive),
+                receiverAddress = emptyString(),
+                isPending = transaction.status.isPending(),
+                toEth = true
+            )
+        }
+    }
+
+    private suspend fun parseWormholeSend(transaction: RpcHistoryTransaction.WormholeSend) {
+        view?.apply {
+            if (transaction.status.isPending()) {
+                view?.showSubtitle(resources.getString(R.string.details_pending))
+                showProgressTransactionInProgress()
+            }
+            showTransferView(transaction.iconUrl, R.drawable.ic_placeholder_image)
+            showFee(transaction.fees)
+            showAmount(
+                amountToken = transaction.getFormattedTotal(),
+                amountUsd = transaction.getFormattedUsdAmount()
+            )
+            showTransferAddress(
+                isSend = true,
+                senderAddress = emptyString(),
+                receiverAddress = transaction.sourceAddress,
+                isPending = transaction.status.isPending(),
+                toEth = true
             )
         }
     }

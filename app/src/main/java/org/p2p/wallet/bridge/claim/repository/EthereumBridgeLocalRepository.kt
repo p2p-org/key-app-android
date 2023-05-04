@@ -10,6 +10,7 @@ interface EthereumBridgeLocalRepository {
 
     fun saveBundles(items: List<BridgeBundle>)
     fun getBundle(bundleId: String): BridgeBundle?
+    fun getBundleByKey(claimKey: String): BridgeBundle?
     fun getAllBundles(): List<BridgeBundle>
     fun getAllSendDetails(): List<BridgeSendTransactionDetails>
 

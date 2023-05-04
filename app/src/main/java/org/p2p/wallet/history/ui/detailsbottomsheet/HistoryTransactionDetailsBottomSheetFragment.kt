@@ -196,9 +196,19 @@ class HistoryTransactionDetailsBottomSheetFragment :
         textViewFeeValue.isGone = !isReceivePending
     }
 
-    override fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?) = with(binding) {
+    override fun showReceiverAddress(
+        receiverAddress: Base58String,
+        receiverUsername: String?,
+        toEth: Boolean
+    ) = with(binding) {
         textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled_16, 0)
-        textViewSendReceiveTitle.text = getString(R.string.transaction_details_send_to)
+        textViewSendReceiveTitle.text = getString(
+            if (toEth) {
+                R.string.transaction_details_send_to
+            } else {
+                R.string.bridge_details_send
+            }
+        )
         if (receiverUsername != null) {
             textViewSendReceiveValue.text = usernameFormatter.format(receiverUsername)
             textViewSendReceiveValue.setOnClickListener {

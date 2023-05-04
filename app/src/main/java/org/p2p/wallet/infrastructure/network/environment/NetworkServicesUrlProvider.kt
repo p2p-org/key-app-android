@@ -61,7 +61,7 @@ class NetworkServicesUrlProvider(
     fun loadNotificationServiceEnvironment(): NotificationServiceEnvironment {
         val url = sharedPreferences.getString(
             KEY_NOTIFICATION_SERVICE_BASE_URL,
-            context.getString(R.string.notificationServiceBaseUrl)
+            context.getString(R.string.notificationServiceTestBaseUrl)
         ).orEmpty()
 
         return NotificationServiceEnvironment(url)

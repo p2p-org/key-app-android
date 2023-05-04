@@ -48,4 +48,7 @@
     <string name="bridge_claim_description_progress">It usually takes 15–20 minutes for a transaction to complete</string>
     <string name="common_claimed">Claimed</string>
 
+    <string name="bridge_details_receive">Wormhole Bridge</string>
+    <string name="bridge_details_send">Send to Ethereum</string>
+
 </resources>
