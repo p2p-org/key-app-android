@@ -117,6 +117,10 @@ class MainFragment :
             onCreateActions = arrayListOf()
         }
 
+        parentFragmentManager.commit {
+            add(R.id.rootContainer, refreshErrorFragment)
+            hide(refreshErrorFragment)
+        }
         connectionManager.connectionStatus.onEach { isConnected ->
             if (!isConnected) showInternetError(true)
         }.launchIn(lifecycleScope)
@@ -148,13 +152,11 @@ class MainFragment :
     private fun showInternetError(showError: Boolean) {
         parentFragmentManager.commit {
             if (showError) {
-                if (!refreshErrorFragment.isAdded) {
-                    add(R.id.rootContainer, refreshErrorFragment)
-                }
                 show(refreshErrorFragment)
+                hide(this@MainFragment)
             } else {
-                hide(refreshErrorFragment)
                 show(this@MainFragment)
+                hide(refreshErrorFragment)
             }
         }
     }
