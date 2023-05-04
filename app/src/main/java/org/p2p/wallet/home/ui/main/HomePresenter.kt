@@ -311,7 +311,7 @@ class HomePresenter(
 
     override fun onSendClicked(clickSource: SearchOpenedFromScreen) {
         launch {
-            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethTokens.isEmpty()
+            val isEmptyAccount = state.tokens.all { it.isZero }
             if (isEmptyAccount) {
                 // this cannot be empty
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
