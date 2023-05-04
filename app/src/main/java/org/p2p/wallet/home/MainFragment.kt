@@ -118,7 +118,9 @@ class MainFragment :
         }
 
         parentFragmentManager.commit {
-            add(R.id.rootContainer, refreshErrorFragment)
+            if(!refreshErrorFragment.isAdded) {
+                add(R.id.rootContainer, refreshErrorFragment)
+            }
             hide(refreshErrorFragment)
         }
         connectionManager.connectionStatus.onEach { isConnected ->
