@@ -2,6 +2,7 @@ package org.p2p.wallet.home
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -77,8 +78,8 @@ object HomeModule : InjectionModule {
         // todo: to eliminate all this hell, we could just migrate to hilt
         factory<HomeContract.Presenter> {
             val subscribers = listOf(
-                TokenProgramSubscriber(get(), get()),
-                BalanceUpdateSubscriber(get(),get())
+                new(::TokenProgramSubscriber),
+                new(::BalanceUpdateSubscriber)
             )
             HomePresenter(
                 analytics = get(),

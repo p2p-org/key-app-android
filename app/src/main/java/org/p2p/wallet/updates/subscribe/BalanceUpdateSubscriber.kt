@@ -1,6 +1,5 @@
 package org.p2p.wallet.updates.subscribe
 
-import com.google.gson.annotations.SerializedName
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
