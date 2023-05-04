@@ -14,11 +14,11 @@ import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.model.findTokenByMint
-import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
+import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 
 class JupiterSwapFeeBuilder(
-    private val swapStateManager: SwapStateManager,
+    private val rateLoader: SwapTokenRateLoader,
     private val dispatchers: CoroutineDispatchers,
 ) {
 
@@ -77,7 +77,7 @@ class JupiterSwapFeeBuilder(
     }
 
     private suspend fun loadRateForToken(token: JupiterSwapToken): SwapRateLoaderState.Loaded? {
-        return swapStateManager.getTokenRate(SwapTokenModel.JupiterToken(token))
+        return rateLoader.getRate(SwapTokenModel.JupiterToken(token))
             .onEach { Timber.i("JupiterSwapFeeBuilder loading rate for $token") }
             .filterIsInstance<SwapRateLoaderState.Loaded>()
             .firstOrNull()
