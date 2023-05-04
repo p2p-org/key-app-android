@@ -19,6 +19,7 @@ class BridgePendingViewHolder(
     fun onBind(item: HistoryItem.BridgeSendItem) {
         itemView.setOnClickListener { onHistoryClicked(item) }
         with(binding) {
+            //TODO fix this
             transactionTokenImageView.apply {
                 ERC20Tokens.values().firstOrNull { it.mintAddress == item.sendDetails.recipient.raw }
                     ?.let { setTokenImage(glideManager, it.tokenIconUrl) }
@@ -35,6 +36,7 @@ class BridgePendingViewHolder(
     fun onBind(item: HistoryItem.BridgeClaimItem) {
         itemView.setOnClickListener { onHistoryClicked(item) }
         with(binding) {
+            //TODO fix this
             transactionTokenImageView.apply {
                 ERC20Tokens.values().firstOrNull { it.mintAddress == item.bundle.recipient.raw }
                     ?.let { setTokenImage(glideManager, it.tokenIconUrl) }
@@ -45,6 +47,7 @@ class BridgePendingViewHolder(
             endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))
             endAmountView.bottomValue = item.bundle.resultAmount.amountInToken.toString()
             startAmountView.setSubtitleDrawable(left = R.drawable.ic_state_pending)
+
         }
     }
 }
