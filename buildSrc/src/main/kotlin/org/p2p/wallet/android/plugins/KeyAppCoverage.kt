@@ -45,23 +45,22 @@ class KeyAppCoverage : Plugin<Project> {
     override fun apply(target: Project) {
         val config = target.extensions.create("keyappCoverage", KeyAppCoverageConfig::class.java)
 
-        if (config.jacocoConfig == null) {
-            config.configureJacoco {
-                toolVersion = "0.8.8"
-                reportsDirectory.set(target.file("${target.buildDir}/reports/jacoco"))
-            }
-        }
-
         target.pluginManager.apply("jacoco")
-        target.extensions.configure<JacocoPluginExtension>(
-            JacocoPluginExtension::class.java,
-            object : Action<JacocoPluginExtension> {
-                override fun execute(t: JacocoPluginExtension) {
-                    t.apply(config.jacocoConfig!!)
-                }
-            })
 
-        target.gradle.projectsEvaluated {
+        target.afterEvaluate {
+            if (config.jacocoConfig == null) {
+                config.configureJacoco {
+                    toolVersion = "0.8.8"
+                    reportsDirectory.set(target.file("${target.buildDir}/reports/jacoco"))
+                }
+            }
+            target.extensions.configure<JacocoPluginExtension>(
+                JacocoPluginExtension::class.java,
+                object : Action<JacocoPluginExtension> {
+                    override fun execute(t: JacocoPluginExtension) {
+                        t.apply(config.jacocoConfig!!)
+                    }
+                })
             generateTasks(target, config)
         }
     }
