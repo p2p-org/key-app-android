@@ -12,8 +12,6 @@ plugins {
 keyappCoverage {
     enableForConfiguration += "debug"
     reportXml = true
-    reportHtml = false
-    reportCsv = false
     excludes += listOf(
         "org/p2p/wallet/databinding/*",
         "com/bumptech/glide/*"

@@ -77,8 +77,8 @@ class KeyAppCoverage : Plugin<Project> {
                 dependsOn(testTaskName)
 
                 // Set the coverage data source files
-                val coverageExecutionData = target.fileTree("${project.buildDir}/outputs")
-                    .include("**/**/*.exec")
+                val coverageExecutionData = target.fileTree("${project.buildDir}/jacoco")
+                    .include("*.exec")
                 executionData(coverageExecutionData)
 
                 sourceDirectories.setFrom(config.sourceDirs)
