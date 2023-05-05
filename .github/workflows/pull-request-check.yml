@@ -75,7 +75,7 @@ jobs:
       - name: Attach coverage to pull request
         uses: madrapps/jacoco-report@v1.3
         with:
-          paths: ${{ github.workspace }}/build/reports/jacoco/testCoverage/testCoverage.xml
+          paths: ${{ github.workspace }}/app/build/reports/jacoco/testCoverage/testCoverage.xml
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Print coverage information
         run: |
