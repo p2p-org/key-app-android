@@ -33,7 +33,7 @@ class KeyAppCoverage : Plugin<Project> {
             "src/androidTest/kotlin"
         )
         var builtClassesSubdir = "org.p2p.wallet"
-        val enableForConfiguration: MutableList<String> = arrayListOf()
+        val enableForConfiguration: MutableList<String> = mutableListOf()
 
         internal var jacocoConfig: (JacocoPluginExtension.() -> Unit)? = null
 
@@ -61,10 +61,12 @@ class KeyAppCoverage : Plugin<Project> {
                 }
             })
 
-        configureJacoco(target, config)
+        target.gradle.projectsEvaluated {
+            generateTasks(target, config)
+        }
     }
 
-    private fun configureJacoco(target: Project, config: KeyAppCoverageConfig) {
+    private fun generateTasks(target: Project, config: KeyAppCoverageConfig) {
         config.enableForConfiguration.forEach { buildTypeName ->
             val sourceName = buildTypeName.capitalize()
             val testTaskName = "test${sourceName.capitalize()}UnitTest"
