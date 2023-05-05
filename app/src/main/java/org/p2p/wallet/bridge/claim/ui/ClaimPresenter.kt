@@ -81,10 +81,9 @@ class ClaimPresenter(
                 if (amountInFiat == null) {
                     view?.setWillGetVisibility(isVisible = false)
                 } else {
-                    view?.showWillGet(TextViewCellModel.Raw(TextContainer(amountInFiat)))
+                    view?.showWillGet(TextViewCellModel.Raw(TextContainer(finalValue.formattedTokenAmount.orEmpty())))
                     view?.setWillGetVisibility(isVisible = true)
                 }
-                view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
             } catch (error: Throwable) {
                 Timber.e(error, "Error on getting bundle for claim")
                 val isNotEnoughFundsError = error is NotEnoughAmount || error is ContractError
@@ -110,7 +109,6 @@ class ClaimPresenter(
                 }
                 view?.showFee(TextViewCellModel.Raw(TextContainer(feeErrorRes)))
                 view?.setClaimButtonState(isButtonEnabled = isNotEnoughFundsError)
-                view?.setBannerVisibility(isBannerVisible = isNotEnoughFundsError)
                 view?.setFeeInfoVisibility(isVisible = false)
                 view?.setWillGetVisibility(isVisible = false)
                 isLastErrorWasNotEnoughFundsError = isNotEnoughFundsError
@@ -199,7 +197,6 @@ class ClaimPresenter(
         claimDetails = null
         isLastErrorWasNotEnoughFundsError = false
         view?.setClaimButtonState(isButtonEnabled = false)
-        view?.setBannerVisibility(isBannerVisible = false)
         view?.setFeeInfoVisibility(isVisible = true)
         view?.setWillGetVisibility(isVisible = false)
         view?.showFee(claimUiMapper.getTextSkeleton())
