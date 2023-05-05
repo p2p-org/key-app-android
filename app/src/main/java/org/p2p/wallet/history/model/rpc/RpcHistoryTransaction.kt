@@ -18,7 +18,6 @@ import org.p2p.core.utils.scaleShortOrFirstNotZero
 import org.p2p.wallet.R
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
 
@@ -338,7 +337,7 @@ sealed class RpcHistoryTransaction(
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         @StringRes
-        fun getTitle(): Int = R.string.common_claimed
+        fun getTitle(): Int = R.string.transaction_history_receive
 
         fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
 

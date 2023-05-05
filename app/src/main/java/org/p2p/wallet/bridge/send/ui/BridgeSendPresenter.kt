@@ -400,8 +400,6 @@ class BridgeSendPresenter(
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transaction = buildTransaction(result, token)
-                val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
-                transactionManager.emitTransactionState(internalTransactionId, transactionState)
                 historyInteractor.addPendingTransaction(
                     txSignature = result,
                     transaction = transaction,
