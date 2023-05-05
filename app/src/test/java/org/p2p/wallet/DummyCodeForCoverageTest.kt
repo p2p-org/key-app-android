@@ -20,6 +20,6 @@ class DummyCodeForCoverageTest {
     @Test
     fun testDummyC() {
         val dummy = DummyCodeForCoverage()
-        // don't check return value for test
+        assertEquals("42", dummy.dummyC(dummy.dymmyB()))
     }
 }
