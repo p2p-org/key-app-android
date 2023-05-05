@@ -3,10 +3,27 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("org.p2p.wallet.android.application")
+    id("org.p2p.wallet.android.coverage")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("io.sentry.android.gradle") version "3.2.0"
 }
+
+keyappCoverage {
+    enableForConfiguration += "debug"
+    reportXml = true
+    reportHtml = false
+    reportCsv = false
+    excludes += listOf(
+        "org/p2p/wallet/databinding/*",
+        "com/bumptech/glide/*"
+    )
+    configureJacoco {
+        reportsDirectory.set(file("${buildDir}/reports/jacoco"))
+    }
+}
+
+
 
 android {
     applicationVariants.all {
