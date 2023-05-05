@@ -19,8 +19,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
+import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
@@ -37,6 +39,7 @@ class UserTokensPolling(
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val ethereumInteractor: EthereumInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val ethereumSendRepository: EthereumSendRepository,
     private val appScope: AppScope
 ) : CoroutineScope {
     override val coroutineContext: CoroutineContext
@@ -110,6 +113,7 @@ class UserTokensPolling(
     private suspend fun fetchEthereumTokens() {
         if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
             val ethBundles = ethereumInteractor.getListOfEthereumBundleStatuses()
+            ethereumSendRepository.getSendTransactionsDetail(SolAddress(tokenKeyProvider.publicKey))
             ethereumInteractor.loadWalletTokens(ethBundles)
         }
     }

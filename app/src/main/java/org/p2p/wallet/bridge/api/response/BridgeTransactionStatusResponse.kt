@@ -1,7 +1,6 @@
 package org.p2p.wallet.bridge.api.response
 
 import com.google.gson.annotations.SerializedName
-import java.math.BigInteger
 import org.p2p.core.token.SolAddress
 
 class BridgeTransactionStatusResponse(
@@ -12,7 +11,7 @@ class BridgeTransactionStatusResponse(
     @SerializedName("recipient")
     val recipient: SolAddress,
     @SerializedName("amount")
-    val amount: BigInteger,
+    val amount: BridgeAmountResponse?,
     @SerializedName("fees")
     val fees: BridgeSendFeesResponse,
     @SerializedName("status")
