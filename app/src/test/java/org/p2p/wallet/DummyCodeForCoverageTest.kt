@@ -3,7 +3,6 @@ package org.p2p.wallet
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-
 class DummyCodeForCoverageTest {
 
     @Test
