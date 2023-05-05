@@ -19,7 +19,7 @@ class BridgePendingViewHolder(
     fun onBind(item: HistoryItem.BridgeSendItem) {
         itemView.setOnClickListener { onHistoryClicked(item) }
         with(binding) {
-            // TODO fix this
+            // TODO fix icons
             transactionTokenImageView.apply {
                 ERC20Tokens.values()
                     .firstOrNull { it.mintAddress == item.sendDetails.recipient.raw }
@@ -28,9 +28,9 @@ class BridgePendingViewHolder(
             }
             startAmountView.title = context.getString(R.string.bridge_ethereum_network)
             startAmountView.subtitle = context.getString(R.string.bridge_send_pending)
-            endAmountView.topValue = item.sendDetails.amount.toString()
+            endAmountView.topValue = item.getFormattedFiatValue()
             endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))
-            endAmountView.bottomValue = item.sendDetails.amount.toString()
+            endAmountView.bottomValue = item.getFormattedTotal()
             startAmountView.setSubtitleDrawable(left = R.drawable.ic_state_pending)
         }
     }
@@ -38,7 +38,7 @@ class BridgePendingViewHolder(
     fun onBind(item: HistoryItem.BridgeClaimItem) {
         itemView.setOnClickListener { onHistoryClicked(item) }
         with(binding) {
-            // TODO fix this
+            // TODO fix icons
             transactionTokenImageView.apply {
                 ERC20Tokens.values().firstOrNull { it.replaceTokenSymbol == item.bundle.resultAmount.symbol }
                     ?.let { setTokenImage(glideManager, it.tokenIconUrl) }

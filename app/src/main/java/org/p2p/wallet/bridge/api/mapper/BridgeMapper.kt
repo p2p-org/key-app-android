@@ -89,7 +89,7 @@ class BridgeMapper {
             id = response.id,
             userWallet = response.userWallet,
             recipient = response.recipient,
-            amount = response.amount.orZero(),
+            amount = fromNetwork(response.amount),
             fees = fromNetwork(response.fees),
             status = fromNetwork(response.status)
         )
