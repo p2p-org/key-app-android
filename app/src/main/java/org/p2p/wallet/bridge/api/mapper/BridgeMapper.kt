@@ -3,6 +3,7 @@ package org.p2p.wallet.bridge.api.mapper
 import org.threeten.bp.ZonedDateTime
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.orZero
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.bridge.api.response.BridgeAmountResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleFeesResponse
@@ -102,7 +103,15 @@ class BridgeMapper {
     }
 
     fun toHistoryItem(claimBundle: BridgeBundle, mintAddress: String): HistoryTransaction? {
-        if (claimBundle.recipient.raw == mintAddress || mintAddress == Constants.WRAPPED_SOL_MINT) {
+        val tokenContractAddress = ERC20Tokens.values().firstOrNull { it.mintAddress == mintAddress }
+        val isEth =
+            claimBundle.resultAmount.symbol == Constants.ETH_SYMBOL &&
+                tokenContractAddress?.contractAddress == ERC20Tokens.ETH.contractAddress
+        val isHexEquals = (tokenContractAddress?.contractAddress == claimBundle.resultAmount.token?.hex)
+        val isAllHistory = mintAddress == Constants.WRAPPED_SOL_MINT
+        val isEthereumHistory = isEth && !isHexEquals
+        val isEthTokenHistory = !isEth && isHexEquals
+        if (isEthereumHistory || isEthTokenHistory || isAllHistory) {
             return BridgeHistoryTransaction.Claim(
                 bundleId = claimBundle.bundleId,
                 date = ZonedDateTime.now(),

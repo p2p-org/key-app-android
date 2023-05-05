@@ -21,8 +21,10 @@ class BridgePendingViewHolder(
         with(binding) {
             // TODO fix this
             transactionTokenImageView.apply {
-                ERC20Tokens.values().firstOrNull { it.mintAddress == item.sendDetails.recipient.raw }
+                ERC20Tokens.values()
+                    .firstOrNull { it.mintAddress == item.sendDetails.recipient.raw }
                     ?.let { setTokenImage(glideManager, it.tokenIconUrl) }
+                    ?: setTransactionIcon(R.drawable.ic_transaction_send)
             }
             startAmountView.title = context.getString(R.string.bridge_ethereum_network)
             startAmountView.subtitle = context.getString(R.string.bridge_send_pending)
@@ -30,9 +32,6 @@ class BridgePendingViewHolder(
             endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))
             endAmountView.bottomValue = item.sendDetails.amount.toString()
             startAmountView.setSubtitleDrawable(left = R.drawable.ic_state_pending)
-            transactionTokenImageView.apply {
-                ERC20Tokens.ETH.tokenIconUrl.also { setTokenImage(glideManager, it) }
-            }
         }
     }
 
@@ -41,14 +40,15 @@ class BridgePendingViewHolder(
         with(binding) {
             // TODO fix this
             transactionTokenImageView.apply {
-                ERC20Tokens.values().firstOrNull { it.mintAddress == item.bundle.recipient.raw }
+                ERC20Tokens.values().firstOrNull { it.replaceTokenSymbol == item.bundle.resultAmount.symbol }
                     ?.let { setTokenImage(glideManager, it.tokenIconUrl) }
+                    ?: setTransactionIcon(R.drawable.ic_transaction_receive)
             }
             startAmountView.title = context.getString(R.string.bridge_ethereum_network)
-            startAmountView.subtitle = context.getString(R.string.bridge_send_pending)
-            endAmountView.topValue = item.bundle.resultAmount.amountInUsd
+            startAmountView.subtitle = context.getString(R.string.bridge_claim_pending)
+            endAmountView.topValue = item.getFormattedFiatValue()
             endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))
-            endAmountView.bottomValue = item.bundle.resultAmount.amountInToken.toString()
+            endAmountView.bottomValue = item.getFormattedTotal()
             startAmountView.setSubtitleDrawable(left = R.drawable.ic_state_pending)
         }
     }
