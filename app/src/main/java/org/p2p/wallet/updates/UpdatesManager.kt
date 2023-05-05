@@ -1,5 +1,8 @@
 package org.p2p.wallet.updates
 
+import org.p2p.solanaj.model.types.RpcMapRequest
+import org.p2p.solanaj.model.types.RpcRequest
+
 interface UpdatesManager {
     fun start()
 
@@ -14,11 +17,15 @@ interface UpdatesManager {
      */
     suspend fun restart()
 
-    fun subscribeToTransaction(signature: String)
-
-    fun unsubscribeFromTransaction(signature: String)
-
     fun addUpdatesStateObserver(observer: UpdatesStateObserver)
 
     fun removeUpdatesStateObserver(observer: UpdatesStateObserver)
+
+    fun addSubscription(request: RpcRequest, updateType: UpdateType)
+
+    fun addSubscription(request: RpcMapRequest, updateType: UpdateType)
+
+    fun removeSubscription(request: RpcRequest)
+
+    fun removeSubscription(request: RpcMapRequest)
 }

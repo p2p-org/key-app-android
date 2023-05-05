@@ -12,14 +12,16 @@ import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.dispatchers.DefaultDispatchers
-import org.p2p.wallet.infrastructure.update.TransactionSignatureHandler
+import org.p2p.wallet.updates.handler.TransactionSignatureHandler
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.solana.SolanaNetworkObserver
+import org.p2p.wallet.updates.handler.BalanceUpdateHandler
 import org.p2p.wallet.updates.SocketUpdatesManager
 import org.p2p.wallet.updates.UpdatesManager
+import org.p2p.wallet.updates.handler.TokensBalanceUpdateHandler
 import org.p2p.wallet.utils.UsernameFormatter
 
 object InfrastructureModule : InjectionModule {
@@ -28,12 +30,18 @@ object InfrastructureModule : InjectionModule {
         singleOf(::GlideManager)
 
         singleOf(::TransactionSignatureHandler)
+        singleOf(::BalanceUpdateHandler)
+        singleOf(::TokensBalanceUpdateHandler)
         single {
             SocketUpdatesManager(
                 appScope = get(),
                 environmentManager = get(),
                 connectionStateProvider = get(),
-                updateHandlers = listOf(get<TransactionSignatureHandler>())
+                updateHandlers = listOf(
+                    get<TransactionSignatureHandler>(),
+                    get<BalanceUpdateHandler>(),
+                    get<TokensBalanceUpdateHandler>(),
+                )
             )
         } bind UpdatesManager::class
 

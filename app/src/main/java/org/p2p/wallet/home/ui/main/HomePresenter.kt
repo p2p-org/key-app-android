@@ -54,6 +54,9 @@ import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.UpdatesManager
+import org.p2p.wallet.updates.UpdatesState
+import org.p2p.wallet.updates.UpdatesStateObserver
+import org.p2p.wallet.updates.subscribe.UpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.ellipsizeAddress
@@ -92,7 +95,8 @@ class HomePresenter(
     private val seedPhraseProvider: SeedPhraseProvider,
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
-    private val transactionManager: TransactionManager
+    private val transactionManager: TransactionManager,
+    private val updateSubscribers: List<UpdateSubscriber>,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -123,6 +127,15 @@ class HomePresenter(
                 async { metadataInteractor.tryLoadAndSaveMetadata() }
             )
         }
+        updatesManager.addUpdatesStateObserver(object : UpdatesStateObserver {
+            override fun onUpdatesStateChanged(state: UpdatesState) {
+                if (state == UpdatesState.CONNECTED) {
+                    updateSubscribers.forEach {
+                        it.subscribe()
+                    }
+                }
+            }
+        })
     }
 
     override fun attach(view: HomeContract.View) {

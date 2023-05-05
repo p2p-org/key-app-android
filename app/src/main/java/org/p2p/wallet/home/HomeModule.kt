@@ -2,6 +2,7 @@ package org.p2p.wallet.home
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -32,6 +33,8 @@ import org.p2p.wallet.receive.renbtc.ReceiveRenBtcContract
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcPresenter
 import org.p2p.wallet.receive.token.ReceiveTokenContract
 import org.p2p.wallet.receive.token.ReceiveTokenPresenter
+import org.p2p.wallet.updates.subscribe.BalanceUpdateSubscriber
+import org.p2p.wallet.updates.subscribe.TokenProgramSubscriber
 
 object HomeModule : InjectionModule {
 
@@ -74,6 +77,10 @@ object HomeModule : InjectionModule {
         // todo: do something with this dependenices!
         // todo: to eliminate all this hell, we could just migrate to hilt
         factory<HomeContract.Presenter> {
+            val subscribers = listOf(
+                new(::TokenProgramSubscriber),
+                new(::BalanceUpdateSubscriber)
+            )
             HomePresenter(
                 analytics = get(),
                 claimAnalytics = get(),
@@ -97,7 +104,8 @@ object HomeModule : InjectionModule {
                 seedPhraseProvider = get(),
                 deeplinksManager = get(),
                 connectionManager = get(),
-                transactionManager = get()
+                transactionManager = get(),
+                updateSubscribers = subscribers
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

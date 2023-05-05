@@ -10,6 +10,7 @@ import org.p2p.wallet.swap.model.orca.OrcaConverter
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
+import org.p2p.wallet.updates.subscribe.SignatureSubscriber
 
 class OrcaSwapRemoteRepository(
     private val orcaApi: OrcaApi,
@@ -44,6 +45,10 @@ class OrcaSwapRemoteRepository(
 
     override suspend fun sendAndWait(serializedTransaction: String) {
         val signature = rpcTransactionRepository.sendTransaction(serializedTransaction)
-        updatesManager.subscribeToTransaction(signature)
+        val subscriber = SignatureSubscriber(
+            txSignature = signature,
+            updatesManager = updatesManager
+        )
+        subscriber.subscribe()
     }
 }
