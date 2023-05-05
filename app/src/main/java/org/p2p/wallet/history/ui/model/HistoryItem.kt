@@ -3,11 +3,11 @@ package org.p2p.wallet.history.ui.model
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import org.threeten.bp.ZonedDateTime
+import org.p2p.core.utils.asUsdTransaction
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.scaleShortOrFirstNotZero
 import org.p2p.core.utils.toBigDecimalOrZero
-import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.asUsdTransaction
 import org.p2p.uikit.utils.recycler.RoundedItem
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
@@ -80,6 +80,23 @@ sealed interface HistoryItem {
     ) : HistoryItem, RoundedItem {
         override val date: ZonedDateTime = ZonedDateTime.now()
         override val transactionId: String = id
+
+        fun getFormattedFiatValue(): String {
+            return sendDetails.amount.amountInUsd.toBigDecimalOrZero()
+                .scaleShortOrFirstNotZero()
+                .asUsdTransaction("+")
+        }
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String {
+            val totalAmount = sendDetails.amount.amountInToken
+            val tokenSymbol = sendDetails.amount.symbol
+
+            return if (scaleMedium) {
+                "${totalAmount.scaleMedium().formatToken()} $tokenSymbol"
+            } else {
+                "${totalAmount.formatToken()} $tokenSymbol"
+            }
+        }
     }
 
     data class BridgeClaimItem(
