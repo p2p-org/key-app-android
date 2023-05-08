@@ -93,7 +93,6 @@ class SocketUpdatesManager(
     override fun addSubscription(request: RpcMapRequest, updateType: UpdateType) {
         Timber.tag(TAG).d("add subscription for request, client = $client")
         val listener = createNotificationEventListener(updateType)
-
         client?.addSubscription(request, listener)
     }
 
