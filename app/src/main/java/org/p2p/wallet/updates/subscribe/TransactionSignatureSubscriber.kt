@@ -2,15 +2,19 @@ package org.p2p.wallet.updates.subscribe
 
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.updates.UpdateType
-import org.p2p.wallet.updates.UpdatesManager
 
-class SignatureSubscriber(
-    private val txSignature: String,
-    private val updatesManager: UpdatesManager
-) : UpdateSubscriber {
+private const val SUBSCRIBE_METHOD_NAME = "signatureSubscribe"
+private const val UNSUBSCRIBE_METHOD_NAME = "signatureUnsubscribe"
+private const val PARAMS_NUMBER = "number"
 
-    val request = RpcRequest(
+class TransactionSignatureSubscriber(
+    txSignature: String,
+    private val updatesManager: SubscriptionUpdatesManager
+) : SubscriptionUpdateSubscriber {
+
+    private val request = RpcRequest(
         method = SUBSCRIBE_METHOD_NAME,
         params = listOf(txSignature)
     )
@@ -21,16 +25,10 @@ class SignatureSubscriber(
     )
 
     override fun subscribe() {
-        updatesManager.addSubscription(request, UpdateType.SIGNATURE_RECEIVED)
+        updatesManager.addSubscription(request, UpdateType.TX_SIGNATURE_UPDATED)
     }
 
     override fun unSubscribe() {
         updatesManager.removeSubscription(cancelRequest)
-    }
-
-    companion object {
-        private const val SUBSCRIBE_METHOD_NAME = "signatureSubscribe"
-        private const val UNSUBSCRIBE_METHOD_NAME = "signatureUnsubscribe"
-        private const val PARAMS_NUMBER = "number"
     }
 }

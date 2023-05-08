@@ -13,7 +13,7 @@ data class RpcNotificationResponse(
     @SerializedName("id")
     val id: String? = null,
     @SerializedName("result")
-    val result: Long? = null
+    val subscriptionId: Long? = null
 )
 
 data class RpcNotificationResultResponse<T>(
