@@ -30,6 +30,7 @@ import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.network.alarmlogger.AlarmErrorsLogger
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
@@ -74,6 +75,7 @@ class JupiterSwapPresenter(
     private val userLocalRepository: UserLocalRepository,
     private val historyInteractor: HistoryInteractor,
     private val resources: Resources,
+    private val alarmErrorsLogger: AlarmErrorsLogger,
     private val initialAmountA: String? = null,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
@@ -208,9 +210,11 @@ class JupiterSwapPresenter(
 
                 is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
                     val causeFailure = if (result.cause is JupiterSwapInteractor.LowSlippageRpcError) {
+                        alarmErrorsLogger.sendSwapAlarm(currentState, result.cause.cause)
                         Timber.i("Swap failure: low slippage = ${currentState.slippage}")
                         TransactionStateSwapFailureReason.LowSlippage(currentState.slippage)
                     } else {
+                        alarmErrorsLogger.sendSwapAlarm(currentState, result.cause)
                         Timber.i("Swap failure: low slippage = unknown")
                         TransactionStateSwapFailureReason.Unknown(result.message.orEmpty())
                     }
@@ -367,6 +371,7 @@ class JupiterSwapPresenter(
             is SwapFeatureException.SameTokens -> {
                 view?.setButtonState(buttonState = buttonMapper.mapSameToken())
             }
+
             is SwapFeatureException.SmallTokenAAmount -> {
                 val tokenA = state.previousFeatureState.getTokensPair().first
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
@@ -376,10 +381,12 @@ class JupiterSwapPresenter(
                 )
                 view?.setButtonState(buttonState = buttonMapper.mapSmallTokenAAmount())
             }
+
             is SwapFeatureException.RoutesNotFound -> {
                 analytics.logSwapPairNotExists()
                 view?.setButtonState(buttonState = buttonMapper.mapRouteNotFound())
             }
+
             is SwapFeatureException.NotValidTokenA -> {
                 val tokenA = state.previousFeatureState.getTokensPair().first
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
