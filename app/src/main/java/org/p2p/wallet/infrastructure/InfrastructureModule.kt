@@ -41,7 +41,8 @@ object InfrastructureModule : InjectionModule {
                     get<TransactionSignatureHandler>(),
                     get<SolanaAccountUpdateHandler>(),
                     get<SplTokenProgramUpdateHandler>(),
-                )
+                ),
+                socketEnabledFeatureToggle = get()
             )
         } bind SubscriptionUpdatesManager::class
 

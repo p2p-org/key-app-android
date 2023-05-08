@@ -31,7 +31,7 @@ private const val DELAY_MS = 5000L
 
 private const val TAG = "Sockets:SocketUpdatesManager"
 
-class SocketUpdatesManager private constructor(
+class SocketUpdatesManager(
     appScope: AppScope,
     private val environmentManager: NetworkEnvironmentManager,
     private val connectionStateProvider: NetworkConnectionStateProvider,
@@ -55,7 +55,9 @@ class SocketUpdatesManager private constructor(
 
     override fun start() {
         if (isStarted || !socketEnabledFeatureToggle.isFeatureEnabled) {
-            Timber.tag(TAG).i("Unable to start socket manager: flag=${socketEnabledFeatureToggle.value}")
+            Timber.tag(TAG).i(
+                "Unable to start socket manager: isStarted=${isStarted } flag=${socketEnabledFeatureToggle.value}"
+            )
             return
         }
 
@@ -83,13 +85,13 @@ class SocketUpdatesManager private constructor(
     }
 
     override fun addSubscription(request: RpcRequest, updateType: UpdateType) {
-        Timber.tag(TAG).d("Add subscription for request = $request, client = $client")
+        Timber.tag(TAG).d("add subscription for request, client = $client")
         val listener = createNotificationEventListener(updateType)
         client?.addSubscription(request, listener)
     }
 
     override fun addSubscription(request: RpcMapRequest, updateType: UpdateType) {
-        Timber.tag(TAG).d("Add subscription for request = $request, client = $client")
+        Timber.tag(TAG).d("add subscription for request, client = $client")
         val listener = createNotificationEventListener(updateType)
 
         client?.addSubscription(request, listener)
@@ -98,7 +100,7 @@ class SocketUpdatesManager private constructor(
     private fun createNotificationEventListener(updateType: UpdateType): NotificationEventListener =
         NotificationEventListener { data: JsonObject ->
             launch(Dispatchers.Default) {
-                Timber.tag(TAG).d("Event received, data = $data")
+                Timber.tag(TAG).d("NotificationEventListener triggered($updateType): $data")
 
                 updateHandlers.forEach {
                     it.onUpdate(updateType, data)

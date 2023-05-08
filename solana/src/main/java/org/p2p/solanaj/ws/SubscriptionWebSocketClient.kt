@@ -71,14 +71,14 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
     }
 
     fun addSubscription(request: RpcMapRequest, listener: NotificationEventListener) {
-        Timber.tag(TAG).i("Add subscription for request = $request")
+        Timber.tag(TAG).i("addSubscription(RpcMapRequest) = $request")
         subscriptions[request.id] = SubscriptionParams(request, listener)
         requestsIdsToSubscriptionIds[request.id] = null
         updateSubscriptions()
     }
 
     fun addSubscription(request: RpcRequest, listener: NotificationEventListener) {
-        Timber.tag(TAG).i("Add subscription for request = $request")
+        Timber.tag(TAG).i("addSubscription(RpcRequest) = $request")
         subscriptions[request.id] = SubscriptionParams(request, listener)
         requestsIdsToSubscriptionIds[request.id] = null
         updateSubscriptions()
@@ -113,7 +113,7 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
     }
 
     override fun onMessage(message: String) {
-        Timber.tag(TAG).d("New message received: %s", message)
+        Timber.tag(TAG).d("New message received: $message")
         try {
             val response = gson.fromJson(message, RpcNotificationResponse::class.java)
             val requestId = response?.id
@@ -124,7 +124,7 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
                 handleSubscriptionNewUpdate(response)
             }
         } catch (e: Throwable) {
-            Timber.tag(TAG).e(e, "Error on reading message")
+            Timber.tag(TAG).e(e, "Error on reading message, $message")
         }
     }
 
@@ -135,8 +135,8 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
         listener?.onNotificationEvent(response.params)
 
         val logString = buildString {
-            append("Find listener for subscription = $subscriptionId in")
-            append(" ${subscriptionListeners.keys.map(Long::toString)}")
+            append("Find listener for subscription = $subscriptionId in ")
+            append("${subscriptionListeners.keys.map(Long::toString)}")
         }
         Timber.tag(TAG).d(logString)
     }
@@ -156,25 +156,21 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
 
     private fun updateSubscriptions() {
         if (instance?.isOpen == true) {
-            for (sub in subscriptions.values) {
-                when (sub?.request) {
-                    is RpcRequest -> {
-                        val requestJson = gson.toJson(sub.request as RpcRequest)
-                        send(requestJson)
-                        Timber.tag(TAG).d("Add subscription for request = $requestJson")
-                    }
-                    is RpcMapRequest -> {
-                        val requestJson = gson.toJson(sub.request as RpcMapRequest)
-                        send(requestJson)
-                        Timber.tag(TAG).d("Add subscription for request = $requestJson")
-                    }
+            for (sub in subscriptions.values.filterNotNull()) {
+                val requestJson = when (sub.request) {
+                    is RpcRequest -> gson.toJson(sub.request)
+                    is RpcMapRequest -> gson.toJson(sub.request)
+                    else -> return
                 }
+
+                send(requestJson)
+                Timber.tag(TAG).d("making subscription request = $requestJson")
             }
         }
     }
 
     private fun handleSubscribeResponse(requestId: String, subscriptionId: Long) {
-        Timber.tag(TAG).d("Add subscription listeners, ${subscriptionListeners.keys.map { it.toString() }}")
+        Timber.tag(TAG).d("handleSubscribeResponse: current=${subscriptionListeners.keys.joinToString()}")
         if (requestId in requestsIdsToSubscriptionIds) {
             requestsIdsToSubscriptionIds[requestId] = subscriptionId
             subscriptions[requestId]?.listener?.also { listener ->
@@ -182,6 +178,7 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
             }
             subscriptions.remove(requestId)
         }
+        Timber.tag(TAG).d("handleSubscribeResponse: after=${subscriptionListeners.keys.joinToString()}")
     }
 
     private class SubscriptionParams<RpcRequest>(
