@@ -105,6 +105,7 @@ object HomeModule : InjectionModule {
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
+                ethereumSendRepository = get(),
                 updateSubscribers = subscribers
             )
         }

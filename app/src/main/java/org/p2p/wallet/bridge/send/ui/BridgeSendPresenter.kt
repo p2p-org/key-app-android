@@ -357,7 +357,12 @@ class BridgeSendPresenter(
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
 
         val fee = currentState.lastStaticState.bridgeFee?.fee?.let { fees ->
-            val feeList = listOf(fees.networkFee, fees.messageAccountRent, fees.bridgeFee, fees.arbiterFee)
+            val feeList = listOf(
+                fees.networkFeeInToken,
+                fees.messageAccountRentInToken,
+                fees.bridgeFeeInToken,
+                fees.arbiterFee
+            )
             feeList.sumOf { it.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
         } ?: BigDecimal.ZERO
         logSendClicked(
@@ -395,8 +400,6 @@ class BridgeSendPresenter(
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transaction = buildTransaction(result, token)
-                val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
-                transactionManager.emitTransactionState(internalTransactionId, transactionState)
                 historyInteractor.addPendingTransaction(
                     txSignature = result,
                     transaction = transaction,

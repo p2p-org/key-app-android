@@ -88,7 +88,7 @@ class SendBridgeFeeRelayerCounter constructor(
         try {
             val expectedFee = FeeAmount(
                 transaction = bridgeFees.networkFee.amount?.toBigIntegerOrNull().orZero() +
-                    bridgeFees.bridgeFee.amount?.toBigIntegerOrNull().orZero(),
+                    bridgeFees.bridgeFeeInToken.amount?.toBigIntegerOrNull().orZero(),
                 accountBalances = bridgeFees.messageAccountRent.amount?.toBigIntegerOrNull().orZero()
             )
 
