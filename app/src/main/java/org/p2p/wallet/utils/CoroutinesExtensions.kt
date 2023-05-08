@@ -1,8 +1,8 @@
 package org.p2p.wallet.utils
 
-import kotlinx.coroutines.delay
 import timber.log.Timber
 import java.io.IOException
+import kotlinx.coroutines.delay
 
 private const val INITIAL_DELAY = 100L
 private const val MAX_DELAY = 1000L
@@ -21,7 +21,8 @@ suspend fun <T> retryRequest(
         try {
             return block()
         } catch (e: IOException) {
-            Timber.tag("Coroutines").d("Retrying request since it failed")
+            Timber.tag("Coroutines").i(e)
+            Timber.tag("Coroutines").i("Retrying request since it failed")
         }
         delay(currentDelay)
         currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
