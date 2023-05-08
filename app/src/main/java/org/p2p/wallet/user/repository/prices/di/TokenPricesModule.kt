@@ -1,6 +1,5 @@
 package org.p2p.wallet.user.repository.prices.di
 
-import org.java_websocket.protocols.Protocol
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -37,8 +36,8 @@ object TokenPricesModule : InjectionModule {
         single {
             val baseUrl = androidContext().getString(R.string.coinGeckoBaseUrl)
             val client = getClient(
-                connectTimeOut = COINGECKO_TIMEOUT,
-                readTimeOut = COINGECKO_TIMEOUT,
+                connectTimeoutSec = COINGECKO_TIMEOUT,
+                readTimeoutSec = COINGECKO_TIMEOUT,
                 tag = "CoinGecko",
                 clientProtocols = listOf(okhttp3.Protocol.HTTP_1_1)
             )
