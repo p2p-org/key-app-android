@@ -136,7 +136,7 @@ class HomePresenter(
                     try {
                         userInteractor.loadUserRates(solTokens)
                     } catch (t: Throwable) {
-                        Timber.e(t, "Error on loading Sol rates")
+                        Timber.e(t, "Error on loading user rates")
                         view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
                     }
                 }
