@@ -132,7 +132,14 @@ class HomePresenter(
                 view?.showRefreshing(true)
                 userInteractor.loadAllTokensDataIfEmpty()
                 val solTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
-                async { userInteractor.loadUserRates(solTokens) }
+                async {
+                    try {
+                        userInteractor.loadUserRates(solTokens)
+                    } catch (t: Throwable) {
+                        Timber.e(t, "Error on loading Sol rates")
+                        view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
+                    }
+                }
                 async {
                     val bundles = ethereumInteractor.getListOfEthereumBundleStatuses()
                     ethereumInteractor.loadWalletTokens(bundles)
