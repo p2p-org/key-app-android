@@ -34,7 +34,7 @@ class TimberCrashTree(
                 crashLogger.logInformation("[$tag] [$priorityAsString] $message")
             }
             else -> {
-                t?.also { crashLogger.logInformation("[$tag] [$priorityAsString] ${t.stackTraceToString()}") }
+                t?.also { crashLogger.logInformation("[$tag] [$priorityAsString] ${t.toString()}") }
                 crashLogger.logInformation("[$tag] [$priorityAsString] $message")
             }
         }

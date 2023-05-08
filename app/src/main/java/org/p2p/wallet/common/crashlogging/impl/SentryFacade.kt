@@ -9,6 +9,7 @@ import io.sentry.protocol.User
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import kotlinx.coroutines.CancellationException
 import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
 
 private const val BREADCRUMB_CATEGORY = "SentryFacade"
@@ -36,7 +37,8 @@ class SentryFacade : CrashLoggingFacade {
         val isErrorCoheredWithNetwork = when (error) {
             is UnknownHostException,
             is SocketTimeoutException,
-            is ConnectException -> true
+            is ConnectException,
+            is CancellationException -> true
 
             else -> false
         }
