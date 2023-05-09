@@ -89,9 +89,6 @@ class NewSendPresenter(
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
-        selectedToken?.let { initToken ->
-            checkTokenRatesAndSetSwitchAmountState(initToken)
-        }
         initialize(view)
     }
 
