@@ -80,7 +80,7 @@ fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECI
  * @param decimals - number of decimals to show
  * @return formatted string
  */
-private fun BigDecimal.formatWithDecimals(decimals: Int): String = this.stripTrailingZeros().run {
+fun BigDecimal.formatWithDecimals(decimals: Int): String = this.stripTrailingZeros().run {
     if (isZero()) this.setScale(0).toString() else DecimalFormatter.format(this, decimals)
 }
 

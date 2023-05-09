@@ -8,6 +8,7 @@ import org.p2p.core.utils.isZero
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.fee
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
@@ -30,9 +31,10 @@ class AmountChangeActionHandler(
         newAction: SendFeatureAction
     ): Flow<SendState> = flow {
         val token = lastStaticState.bridgeToken ?: return@flow
+        val feeTotalAmount = getFeeTotalInToken(lastStaticState)
         val newAmount = when (newAction) {
             is SendFeatureAction.AmountChange -> newAction.amount
-            SendFeatureAction.MaxAmount -> token.tokenAmount
+            SendFeatureAction.MaxAmount -> token.tokenAmount - feeTotalAmount
             SendFeatureAction.ZeroAmount -> BigDecimal.ZERO
             is SendFeatureAction.NewToken,
             is SendFeatureAction.RefreshFee,
@@ -42,7 +44,7 @@ class AmountChangeActionHandler(
         val newState = if (newAmount.isZero()) {
             SendState.Static.TokenZero(token, lastStaticState.fee)
         } else {
-            validator.validateInputAmount(token, newAmount)
+            validator.validateInputAmount(token, newAmount = newAmount, newAmountWithFee = newAmount + feeTotalAmount)
             mapper.updateInputAmount(lastStaticState, newAmount)
         }
         emit(newState)
@@ -52,6 +54,17 @@ class AmountChangeActionHandler(
         }
         transactionLoader.prepareTransaction(newState).collect {
             emit(it)
+        }
+    }
+
+    private fun getFeeTotalInToken(lastStaticState: SendState.Static): BigDecimal {
+        val bridgeFee = lastStaticState.bridgeFee
+        return listOfNotNull(
+            bridgeFee?.fee?.arbiterFee,
+            bridgeFee?.fee?.bridgeFeeInToken,
+            bridgeFee?.fee?.networkFeeInToken,
+        ).sumOf {
+            it.amountInToken
         }
     }
 }

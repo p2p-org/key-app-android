@@ -14,12 +14,16 @@ import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatWithDecimals
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.analytics.SendBridgesAnalytics
+import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
@@ -27,6 +31,7 @@ import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
+import org.p2p.wallet.bridge.send.statemachine.inputAmount
 import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
@@ -51,8 +56,11 @@ import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toBase58Instance
+
+private val MAX_FEE_AMOUNT = BigDecimal(30)
 
 class BridgeSendPresenter(
     private val recipientAddress: SearchResult,
@@ -103,23 +111,20 @@ class BridgeSendPresenter(
             SendState.Static.Empty -> Unit
             is SendState.Static.ReadyToSend -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
-                val token = bridgeToken.token
                 updateTokenAndInput(bridgeToken, state.amount)
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
+                handleUpdateTotal(sendFee = state.fee)
 
-                val textResId = R.string.send_format
-                val resultTokenAmount = state.bridgeFee?.fee?.resultAmount?.amountInToken
-                    ?: state.amount.formatToken(token.decimals)
-                val value = "$resultTokenAmount ${token.tokenSymbol}"
                 updateButtons(
                     errorButton = null,
-                    sliderButton = resources.getString(textResId, value)
+                    sliderButton = resources.getString(R.string.bridge_send)
                 )
             }
             is SendState.Static.TokenNotZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.amount)
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
+                handleUpdateTotal(sendFee = state.fee)
                 updateButtons(
                     errorButton = TextContainer.Res(R.string.main_enter_the_amount),
                     sliderButton = null
@@ -127,8 +132,9 @@ class BridgeSendPresenter(
             }
             is SendState.Static.TokenZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
-                updateTokenAndInput(bridgeToken, BigDecimal.ZERO)
+                updateTokenAndInput(bridgeToken, state.inputAmount.orZero())
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = true)
+                handleUpdateTotal(sendFee = state.fee)
                 updateButtons(
                     errorButton = TextContainer.Res(R.string.main_enter_the_amount),
                     sliderButton = null
@@ -148,8 +154,8 @@ class BridgeSendPresenter(
             when (state) {
                 is SendState.Loading.Fee -> {
                     showFeeViewVisible(isVisible = true)
-                    setFeeLabel(resources.getString(R.string.send_fees))
                     showFeeViewLoading(isLoading = true)
+                    showBottomFeeValue(bridgeSendUiMapper.getFeeTextSkeleton())
                     updateButtons(
                         errorButton = TextContainer.Res(R.string.send_calculating_fees),
                         sliderButton = null
@@ -167,8 +173,8 @@ class BridgeSendPresenter(
                     showFeeViewLoading(isLoading = false)
                     when (val featureException = state.featureException) {
                         is SendFeatureException.FeeLoadingError -> {
-                            setFeeLabel(resources.getString(R.string.send_fees))
                             showFeeViewVisible(false)
+                            showBottomFeeValue(TextViewCellModel.Raw(TextContainer(emptyString())))
                             updateButtons(
                                 errorButton = TextContainer.Res(R.string.send_cant_calculate_fees_error),
                                 sliderButton = null
@@ -272,15 +278,54 @@ class BridgeSendPresenter(
         if (oldInputAmount != inputAmount && calculationMode.getCurrencyMode() !is CurrencyMode.Fiat) {
             updateInputValue(inputAmount, true)
         }
-        view?.setMaxButtonVisible(calculationMode.inputAmountDecimal.isZero())
+        val feeTotalInToken = getFeeTotalInToken()
+        val validAmount = token.token.total - feeTotalInToken > BigDecimal.ZERO
+        view?.setMaxButtonVisible(calculationMode.inputAmountDecimal.isZero() && validAmount)
+    }
+
+    private fun BridgeSendContract.View.handleUpdateTotal(sendFee: SendFee?) {
+        calculationMode.isCurrentInputEmpty()
+        val amount = calculationMode.inputAmountDecimal.orZero()
+        val total = countTotal(amount, sendFee)
+        val totalFormatted = if (amount.isZero()) {
+            emptyString()
+        } else {
+            total.formatWithDecimals(calculationMode.getCurrencyMode().fractionLength)
+        }
+        setTotalValue(totalFormatted)
+    }
+
+    private fun countTotal(amount: BigDecimal, sendFee: SendFee?): BigDecimal {
+        val bridgeFee = sendFee as? SendFee.Bridge
+        val fees = getFeeList(bridgeFee)
+        val fee = if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+            fees.sumOf {
+                it.amountInUsd.toBigDecimalOrZero()
+            }
+        } else {
+            fees.sumOf {
+                it.amountInToken
+            }
+        }
+        return amount + fee
     }
 
     private fun BridgeSendContract.View.handleUpdateFee(sendFee: SendFee?, isInputEmpty: Boolean) {
+        val bridgeFee = sendFee as? SendFee.Bridge
         val fees = bridgeSendUiMapper.getFeesFormatted(
-            bridgeFee = sendFee as? SendFee.Bridge,
+            bridgeFee = bridgeFee,
             isInputEmpty = isInputEmpty
         )
-        setFeeLabel(fees)
+        val totalInUsd = getFeeTotalInUsd()
+        val isHighFees = totalInUsd >= MAX_FEE_AMOUNT
+        val feeColor = if (isHighFees) R.color.text_rose else R.color.text_mountain
+        setFeeColor(feeColor)
+        showBottomFeeValue(
+            TextViewCellModel.Raw(
+                TextContainer(fees),
+                textColor = feeColor
+            )
+        )
     }
 
     override fun onTokenClicked() {
@@ -299,6 +344,7 @@ class BridgeSendPresenter(
 
     override fun switchCurrencyMode() {
         view?.updateInputValue(calculationMode.switchAndUpdateInputAmount(), true)
+        view?.handleUpdateTotal(currentState.lastStaticState.bridgeFee)
     }
 
     override fun updateInputAmount(amount: String) {
@@ -314,12 +360,34 @@ class BridgeSendPresenter(
     }
 
     override fun onMaxButtonClicked() {
+        val feeTotalInToken = getFeeTotalInToken()
         val token = currentState.lastStaticState.bridgeToken?.token ?: return
         stateMachine.newAction(SendFeatureAction.MaxAmount)
-        calculationMode.updateTokenAmount(token.total)
+        calculationMode.updateTokenAmount(token.total - feeTotalInToken)
         view?.updateInputValue(calculationMode.formatInputAmount, true)
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showToast(TextContainer.Raw(message))
+    }
+
+    private fun getFeeTotalInToken(): BigDecimal {
+        return getFeeList().sumOf {
+            it.amountInToken
+        }
+    }
+
+    private fun getFeeTotalInUsd(): BigDecimal {
+        return getFeeList().sumOf {
+            it.amountInUsd.toBigDecimalOrZero()
+        }
+    }
+
+    private fun getFeeList(bridgeSendFee: SendFee.Bridge? = null): List<BridgeFee> {
+        val bridgeFee = bridgeSendFee ?: currentState.lastStaticState.bridgeFee
+        return listOfNotNull(
+            bridgeFee?.fee?.arbiterFee,
+            bridgeFee?.fee?.bridgeFeeInToken,
+            bridgeFee?.fee?.networkFeeInToken,
+        )
     }
 
     override fun onFeeInfoClicked() {

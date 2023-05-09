@@ -36,6 +36,10 @@
     <string name="receive_network_dialog_title">Choose network</string>
 
     <!--Send-->
+    <string name="bridge_send">Send</string>
+    <string name="bridge_send_fees">FEES</string>
+    <string name="bridge_send_total">TOTAL AMOUNT</string>
+    <string name="bridge_send_subtitle">Would be completed on the Ethereum network</string>
     <string name="bridge_send_fee_details_title">Transaction details</string>
     <string name="bridge_send_fee_details_address">Recipient\'s address</string>
     <string name="bridge_send_fee_details_gets">Recipient gets</string>
