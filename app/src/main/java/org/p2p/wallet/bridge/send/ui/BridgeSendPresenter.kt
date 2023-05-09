@@ -13,7 +13,6 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
-import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatWithDecimals
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
