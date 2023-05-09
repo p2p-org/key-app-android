@@ -59,13 +59,13 @@ sealed class RpcHistoryTransaction(
 
         fun getUsdAmount(): String = "${getFormattedAmount()}"
 
-        fun getTotal(): String = "${getSymbol(isBurn)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+        fun getTotal(): String = "${getSymbol(isBurn)}${amount.total.abs().scaleMedium().formatToken()} $tokenSymbol"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
-                "${amount.total.scaleMedium().toPlainString()} $tokenSymbol"
+                "${amount.total.abs().scaleMedium().toPlainString()} $tokenSymbol"
             } else {
-                "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
+                "${amount.total.abs().scaleLong().toPlainString()} $tokenSymbol"
             }
 
         fun getFormattedAbsTotal(): String {
@@ -83,7 +83,7 @@ sealed class RpcHistoryTransaction(
             else -> R.color.text_mint
         }
 
-        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isBurn))
+        fun getFormattedAmount(): String? = amount.totalInUsd?.abs()?.asUsdTransaction(getSymbol(isBurn))
     }
 
     @Parcelize
@@ -356,7 +356,7 @@ sealed class RpcHistoryTransaction(
             else -> R.color.text_mint
         }
 
-        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asPositiveUsdTransaction()
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.abs()?.asPositiveUsdTransaction()
     }
 
     @Parcelize
@@ -393,7 +393,7 @@ sealed class RpcHistoryTransaction(
             return if (isNegativeOperation) "" else "+"
         }
 
-        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asNegativeUsdTransaction()
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.abs()?.asNegativeUsdTransaction()
 
         @ColorRes
         fun getTextColor(): Int = when {
