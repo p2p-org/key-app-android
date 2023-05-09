@@ -49,7 +49,6 @@ class JupiterSwapInteractor(
             recentBlockhash = null
         )
 
-        error("failed to send invalid transaction")
         val firstTransactionSignature = rpcSolanaRepository.sendTransaction(
             serializedTransaction = signedSwapTransaction.transaction.base58Value,
             encoding = Encoding.BASE58
