@@ -26,25 +26,44 @@ class AlarmErrorsLogger(
 ) {
     private class AlarmErrorsError(override val cause: Throwable) : Throwable(cause)
 
+    enum class SwapAlarmError {
+        BLOCKCHAIN_ERROR, LOW_SLIPPAGE, UNKNOWN
+    }
+
     private val userPublicKey: Base58String
         get() = tokenKeyProvider.publicKey.toBase58Instance()
 
     private val isReleaseBuild: Boolean
         get() = BuildConfig.BUILD_TYPE == "release"
 
-    fun sendSwapAlarm(swapState: SwapState.SwapLoaded, swapError: Throwable) {
-        if (isReleaseBuild) {
+    fun sendSwapAlarm(
+        swapErrorType: SwapAlarmError,
+        swapState: SwapState.SwapLoaded,
+        swapError: Throwable
+    ) {
+        if (true) {
             appScope.launch {
                 try {
-                    val request = gson.toJsonObject(createSwapRequest(swapState, swapError)).toString()
-                    retryRequest(block = {
-                        api.sendAlarm(AlarmErrorsRequest(logsTitle = "Swap Android Alarm", payload = request))
-                    })
+                    val errorTitle = getSwapErrorTitle(swapErrorType)
+                    val request = gson.toJsonObject(createSwapRequest(swapState, swapError))
+                        .let {
+                            AlarmErrorsRequest(
+                                logsTitle = "Swap Android Alarm ($errorTitle)",
+                                payload = it.toString()
+                            )
+                        }
+                    retryRequest(block = { api.sendAlarm(request) })
                 } catch (error: Throwable) {
                     Timber.e(AlarmErrorsError(error), "Failed to send alarm")
                 }
             }
         }
+    }
+
+    private fun getSwapErrorTitle(type: SwapAlarmError): String = when (type) {
+        SwapAlarmError.BLOCKCHAIN_ERROR -> "#blockhain"
+        SwapAlarmError.LOW_SLIPPAGE -> "#low_slippage"
+        SwapAlarmError.UNKNOWN -> "#unknown"
     }
 
     private fun createSwapRequest(swapState: SwapState.SwapLoaded, swapError: Throwable) = swapState.run {
