@@ -337,7 +337,14 @@ sealed class RpcHistoryTransaction(
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         @StringRes
-        fun getTitle(): Int = R.string.transaction_history_receive
+        fun getTitle(): Int = R.string.transaction_history_wh_claim
+
+        @StringRes
+        fun getSubtitle(): Int = if (status.isPending()) {
+            R.string.transaction_history_claim_pending
+        } else {
+            R.string.transaction_history_receive
+        }
 
         fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
 
@@ -378,7 +385,15 @@ sealed class RpcHistoryTransaction(
 
         fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
 
-        fun getTitle(): String = "To ${sourceAddress.cutStart()}"
+        @StringRes
+        fun getTitle(): Int = R.string.transaction_history_wh_send
+
+        @StringRes
+        fun getSubtitle(): Int = if (status.isPending()) {
+            R.string.transaction_history_send_pending
+        } else {
+            R.string.transaction_history_send
+        }
 
         fun getTotal(): String = "${getSymbol(isSend)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
 
