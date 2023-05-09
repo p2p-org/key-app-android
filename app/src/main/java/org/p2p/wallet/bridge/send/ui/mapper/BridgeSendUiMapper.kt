@@ -88,7 +88,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
 
     private fun BridgeAmount.toTextHighlighting(): TextHighlighting? {
         if (isZero) return null
-        val usdText = formattedFiatAmount.orEmpty()
+        val usdText = fiatAmount?.asApproximateUsd(withBraces = true).orEmpty()
         val commonText = "$formattedTokenAmount $usdText"
         return TextHighlighting(
             commonText = commonText,
