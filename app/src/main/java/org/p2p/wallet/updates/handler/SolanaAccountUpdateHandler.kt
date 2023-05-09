@@ -5,18 +5,20 @@ import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import timber.log.Timber
 import java.math.BigInteger
-import org.p2p.core.token.Token
-import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.Constants
 import org.p2p.solanaj.model.types.RpcNotificationResultResponse
-import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.home.repository.UserTokensRepository
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.updates.SubscriptionUpdateHandler
 import org.p2p.wallet.updates.UpdateType
+import org.p2p.wallet.utils.toBase58Instance
 
 private const val TAG = "BalanceUpdateManager"
 
 class SolanaAccountUpdateHandler(
     private val gson: Gson,
-    private val homeLocalRepository: HomeLocalRepository
+    private val tokensRepository: UserTokensRepository,
+    private val tokenKeyProvider: TokenKeyProvider
 ) : SubscriptionUpdateHandler {
 
     override suspend fun initialize() = Unit
@@ -28,26 +30,13 @@ class SolanaAccountUpdateHandler(
             .result
             .value
 
-        updateSolToken(response)
+        tokensRepository.updateUserToken(
+            newBalanceLamports = response.lamports,
+            tokenMint = Constants.WRAPPED_SOL_MINT.toBase58Instance(),
+            accountPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
+        )
 
-        Timber.tag(TAG).d("Balance received, data = $data")
-    }
-
-    private suspend fun updateSolToken(response: BalanceValueResponse) {
-        val cachedTokens = homeLocalRepository.getUserTokens().toMutableList()
-
-        // faster then just map that iterates over all tokens
-        val indexOfSolToken = cachedTokens.indexOfFirst(Token.Active::isSOL)
-        if (indexOfSolToken == -1) return
-        cachedTokens[indexOfSolToken] = cachedTokens[indexOfSolToken].let { solToken ->
-            val newTotalAmount = response.lamports.fromLamports(solToken.decimals)
-            val newTotalInUsd = solToken.rate?.let(newTotalAmount::times)
-            solToken.copy(
-                total = newTotalAmount,
-                totalInUsd = newTotalInUsd,
-            )
-        }
-        homeLocalRepository.updateTokens(cachedTokens)
+        Timber.tag(TAG).d("New sol balance received, data = $data")
     }
 }
 
