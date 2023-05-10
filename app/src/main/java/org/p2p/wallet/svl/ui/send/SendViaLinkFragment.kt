@@ -9,6 +9,7 @@ import java.math.BigInteger
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -167,6 +168,18 @@ class SendViaLinkFragment :
 
     override fun setFeeLabel(text: String) {
         binding.widgetSendDetails.setFeeLabel(text)
+    }
+
+    override fun showBottomFeeValue(fee: TextViewCellModel) {
+        binding.widgetSendDetails.showBottomFeeValue(fee)
+    }
+
+    override fun setFeeColor(@ColorRes colorRes: Int) {
+        binding.widgetSendDetails.setBottomFeeColor(colorRes)
+    }
+
+    override fun setTotalValue(text: String) {
+        binding.widgetSendDetails.setTotalValue(text)
     }
 
     override fun setSwitchLabel(symbol: String) {
