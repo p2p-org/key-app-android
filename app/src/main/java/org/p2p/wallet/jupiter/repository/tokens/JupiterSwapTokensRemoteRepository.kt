@@ -13,7 +13,7 @@ import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
@@ -77,7 +77,7 @@ internal class JupiterSwapTokensRemoteRepository(
 
     override suspend fun getTokensRates(tokens: List<JupiterSwapToken>): Map<Base58String, TokenPrice> {
         val tokenMints = tokens.map(JupiterSwapToken::tokenMint)
-        val tokensCoingeckoIds = tokens.mapNotNull { it.coingeckoId?.let(::TokenId) }
+        val tokensCoingeckoIds = tokens.mapNotNull { it.coingeckoId?.let(::TokenCoinGeckoId) }
 
         if (tokensCoingeckoIds.isEmpty()) {
             return emptyMap()

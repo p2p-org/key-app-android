@@ -11,6 +11,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.insets.appleInsetPadding
 import org.p2p.core.utils.insets.consume
@@ -28,6 +29,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
@@ -35,12 +37,8 @@ import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.SystemIconsStyle
-import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
-import org.p2p.wallet.settings.ui.security.SecurityFragment
-import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.emptyString
-import timber.log.Timber
-import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 
 private const val EXTRA_OVERRIDDEN_ENTER_ANIMATION = "EXTRA_OVERRIDDEN_ENTER_ANIMATION"
 private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMATION"
@@ -128,13 +126,11 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     fun getAnalyticsName(): String = when (this) {
         is SeedPhraseFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
         is NewCreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
-        is SeedInfoFragment -> ScreenNames.OnBoarding.SEED_INFO
         is DerivableAccountsFragment -> ScreenNames.OnBoarding.DERIVATION
         is ReserveUsernameFragment -> ScreenNames.OnBoarding.USERNAME_RESERVE
         is HomeFragment -> ScreenNames.Main.MAIN
-        is NewSettingsFragment -> ScreenNames.Settings.MAIN
+        is SettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
-        is SecurityFragment -> ScreenNames.Settings.SECURITY
         is JupiterSwapFragment -> ScreenNames.Swap.MAIN
         is TokenHistoryFragment -> ScreenNames.Token.TOKEN_SCREEN
         is SignInPinFragment -> ScreenNames.Lock.SCREEN

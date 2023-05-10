@@ -46,7 +46,7 @@ import org.p2p.wallet.solend.SolendModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
-import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
+import org.p2p.wallet.user.repository.prices.di.CoinGeckoTokenPricesModule
 
 object AppModule {
     fun create(restartAction: () -> Unit) = module {
@@ -85,7 +85,7 @@ object AppModule {
                 PushNotificationsModule.create(),
                 RestoreModule.create(),
                 UserModule.create(),
-                TokenPricesModule.create(),
+                CoinGeckoTokenPricesModule.create(),
                 HomeModule.create(),
                 BuyModule.create(),
                 RenBtcModule.create(),

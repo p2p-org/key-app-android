@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.receive.list.TokenListData
@@ -79,9 +80,10 @@ class UserInMemoryRepository(
     }
 
     private fun setSearchResult(key: String) {
+        val filteredResult = searchTextByTokens[key].orEmpty().filter { it.symbol != Constants.WSOL_SYMBOL }
         val searchResult = TokenListData(
             searchText = key,
-            result = searchTextByTokens[key].orEmpty()
+            result = filteredResult
         )
         tokensSearchResultFlow.value = searchResult
     }

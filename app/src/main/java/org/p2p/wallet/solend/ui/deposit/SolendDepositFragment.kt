@@ -29,6 +29,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
+import org.p2p.wallet.utils.getParcelableCompat
 
 private const val ARG_DEPOSIT_TOKEN = "ARG_DEPOSIT_TOKEN"
 private const val ARG_ALL_DEPOSITS = "ARG_ALL_DEPOSITS"
@@ -105,7 +106,7 @@ class SolendDepositFragment :
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
-                result.getParcelable<SolendDepositToken>(KEY_RESULT_TOKEN)?.let {
+                result.getParcelableCompat<SolendDepositToken>(KEY_RESULT_TOKEN)?.let {
                     presenter.selectTokenToDeposit(it)
                 }
             }

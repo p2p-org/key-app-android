@@ -42,6 +42,6 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
     }
 
     override fun showErrorMessage(@StringRes messageResId: Int) {
-        showErrorDialog(messageRes = messageResId)
+        showErrorDialog(titleRes = messageResId)
     }
 }

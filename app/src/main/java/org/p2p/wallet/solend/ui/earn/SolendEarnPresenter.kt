@@ -189,7 +189,7 @@ class SolendEarnPresenter(
             .asFlow()
             .onEach { delay(1_000) }
 
-        timerJob = launch() {
+        timerJob = launch {
             lastDepositTickerBalance = initialBalance
             timer.collect {
                 lastDepositTickerBalance += delta

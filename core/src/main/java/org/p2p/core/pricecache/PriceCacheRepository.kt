@@ -18,8 +18,8 @@ class PriceCacheRepository {
         cachedPrices[key] = value
     }
 
-    fun filterKeysForExpiredPrices(tokenKeys: List<String>): List<String> {
-        return tokenKeys.filterNot { cachedPrices[it]?.isValid() == true }
+    fun getExpiredPricesIds(tokenIds: List<String>): List<String> {
+        return tokenIds.filterNot { cachedPrices[it]?.isValid() == true }
     }
 
     fun mergeCache(newItems: Map<String, TokenPriceWithMark>) {

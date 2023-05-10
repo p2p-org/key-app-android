@@ -17,6 +17,7 @@ import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.ui.derivable.bottomsheet.SelectDerivableAccountBottomSheet
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.getSerializableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -69,13 +70,13 @@ class DerivableAccountsFragment :
                 }
                 false
             }
-            accountsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-            accountsRecyclerView.adapter = accountsAdapter
+            recyclerViewAccounts.layoutManager = LinearLayoutManager(requireContext())
+            recyclerViewAccounts.adapter = accountsAdapter
 
             /* By default, we should create Bip44Change account */
-            derivationPathView.textViewSubtitle.text = selectedPath.stringValue
+            viewDerivationPath.textViewSubtitle.text = selectedPath.stringValue
 
-            derivationPathView.root.setOnClickListener {
+            viewDerivationPath.root.setOnClickListener {
                 SelectDerivableAccountBottomSheet.show(
                     fm = childFragmentManager,
                     currentPath = selectedPath,
@@ -84,7 +85,7 @@ class DerivableAccountsFragment :
                 )
             }
 
-            restoreButton.setOnClickListener { presenter.createAndSaveAccount() }
+            buttonRestore.setOnClickListener { presenter.createAndSaveAccount() }
         }
 
         presenter.loadData()
@@ -105,20 +106,20 @@ class DerivableAccountsFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.restoreButton.setLoading(isLoading)
+        binding.buttonRestore.setLoading(isLoading)
 
-        binding.restoreButton.isEnabled = !isLoading
-        binding.accountsRecyclerView.isEnabled = !isLoading
-        binding.derivationPathInputLayout.isEnabled = !isLoading
+        binding.buttonRestore.isEnabled = !isLoading
+        binding.recyclerViewAccounts.isEnabled = !isLoading
+        binding.textInputLayoutDerivationPath.isEnabled = !isLoading
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
             KEY_REQUEST_PATH -> {
-                (result.getSerializable(KEY_RESULT_PATH) as? DerivationPath)?.let {
+                result.getSerializableCompat<DerivationPath>(KEY_RESULT_PATH)?.let {
                     presenter.setNewPath(it)
                     selectedPath = it
-                    binding.derivationPathView.textViewSubtitle.text = it.stringValue
+                    binding.viewDerivationPath.textViewSubtitle.text = it.stringValue
                 }
             }
         }

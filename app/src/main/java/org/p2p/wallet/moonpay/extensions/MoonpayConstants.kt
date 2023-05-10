@@ -2,8 +2,8 @@ package org.p2p.wallet.moonpay.extensions
 
 object MoonpayConstants {
     object CountryAlpha3Code {
-        val UK = "GBR"
-        val US = "USA"
+        const val UK = "GBR"
+        const val US = "USA"
         val EU = setOf(
             "AND",
             "AUT",

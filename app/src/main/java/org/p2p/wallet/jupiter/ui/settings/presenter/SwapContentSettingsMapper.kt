@@ -94,6 +94,7 @@ class SwapContentSettingsMapper(
         showMinimumReceivedAmount: Boolean = true,
     ): List<AnyCellItem> = buildList {
         addRouteCell(routes, activeRouteIndex, jupiterTokens)
+
         this += commonMapper.getNetworkFeeCell()
 
         val route: JupiterSwapRoute? = routes.getOrNull(activeRouteIndex)
