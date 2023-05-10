@@ -27,12 +27,6 @@ class SendBridgeValidator {
     }
 
     private fun getFeeSum(fee: SendFee.Bridge): BigDecimal {
-        return listOfNotNull(
-            fee.fee.arbiterFee,
-            fee.fee.bridgeFeeInToken,
-            fee.fee.networkFeeInToken,
-        ).sumOf {
-            it.amountInToken
-        }
+        return fee.fee.getFeeList().sumOf { it.amountInToken }
     }
 }

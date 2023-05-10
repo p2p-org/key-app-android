@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.p2p.core.utils.isZero
+import org.p2p.wallet.bridge.send.model.getFeeList
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
@@ -58,13 +59,6 @@ class AmountChangeActionHandler(
     }
 
     private fun getFeeTotalInToken(lastStaticState: SendState.Static): BigDecimal {
-        val bridgeFee = lastStaticState.bridgeFee
-        return listOfNotNull(
-            bridgeFee?.fee?.arbiterFee,
-            bridgeFee?.fee?.bridgeFeeInToken,
-            bridgeFee?.fee?.networkFeeInToken,
-        ).sumOf {
-            it.amountInToken
-        }
+        return lastStaticState.bridgeFee?.fee.getFeeList().sumOf { it.amountInToken }
     }
 }

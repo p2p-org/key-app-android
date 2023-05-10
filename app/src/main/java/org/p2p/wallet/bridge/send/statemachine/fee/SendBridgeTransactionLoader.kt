@@ -11,6 +11,7 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
+import org.p2p.wallet.bridge.send.model.getFeeList
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
@@ -62,14 +63,7 @@ class SendBridgeTransactionLoader constructor(
     }
 
     private fun getFeeTotalInToken(lastStaticState: SendState.Static): BigDecimal {
-        val bridgeFee = lastStaticState.bridgeFee
-        return listOfNotNull(
-            bridgeFee?.fee?.arbiterFee,
-            bridgeFee?.fee?.bridgeFeeInToken,
-            bridgeFee?.fee?.networkFeeInToken,
-        ).sumOf {
-            it.amountInToken
-        }
+        return lastStaticState.bridgeFee?.fee.getFeeList().sumOf { it.amountInToken }
     }
 
     private suspend fun loadFee(

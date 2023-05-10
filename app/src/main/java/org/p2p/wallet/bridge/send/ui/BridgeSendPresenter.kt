@@ -24,6 +24,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.analytics.SendBridgesAnalytics
 import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
+import org.p2p.wallet.bridge.send.model.getFeeList
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
@@ -298,13 +299,9 @@ class BridgeSendPresenter(
         val bridgeFee = sendFee as? SendFee.Bridge
         val fees = getFeeList(bridgeFee)
         val fee = if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
-            fees.sumOf {
-                it.amountInUsd.toBigDecimalOrZero()
-            }
+            fees.sumOf { it.amountInUsd.toBigDecimalOrZero() }
         } else {
-            fees.sumOf {
-                it.amountInToken
-            }
+            fees.sumOf { it.amountInToken }
         }
         return amount + fee
     }
@@ -369,24 +366,16 @@ class BridgeSendPresenter(
     }
 
     private fun getFeeTotalInToken(): BigDecimal {
-        return getFeeList().sumOf {
-            it.amountInToken
-        }
+        return getFeeList().sumOf { it.amountInToken }
     }
 
     private fun getFeeTotalInUsd(): BigDecimal {
-        return getFeeList().sumOf {
-            it.amountInUsd.toBigDecimalOrZero()
-        }
+        return getFeeList().sumOf { it.amountInUsd.toBigDecimalOrZero() }
     }
 
     private fun getFeeList(bridgeSendFee: SendFee.Bridge? = null): List<BridgeFee> {
         val bridgeFee = bridgeSendFee ?: currentState.lastStaticState.bridgeFee
-        return listOfNotNull(
-            bridgeFee?.fee?.arbiterFee,
-            bridgeFee?.fee?.bridgeFeeInToken,
-            bridgeFee?.fee?.networkFeeInToken,
-        )
+        return bridgeFee?.fee.getFeeList()
     }
 
     override fun onFeeInfoClicked() {
