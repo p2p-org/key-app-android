@@ -8,6 +8,7 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.SwapFailure
 import org.p2p.wallet.utils.Base58String
 import kotlinx.coroutines.withContext
+import org.p2p.wallet.utils.retryOnException
 
 class JupiterSwapTransactionRemoteRepository(
     private val api: SwapJupiterApi,
@@ -20,8 +21,10 @@ class JupiterSwapTransactionRemoteRepository(
     ): Base64String = withContext(dispatchers.io) {
         try {
             val request = mapper.toNetwork(route, userPublicKey)
-            api.createRouteSwapTransaction(request)
-                .let(mapper::fromNetwork)
+            val response = retryOnException {
+                api.createRouteSwapTransaction(request)
+            }
+            response.let(mapper::fromNetwork)
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (error: Throwable) {
