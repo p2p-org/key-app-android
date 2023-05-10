@@ -48,6 +48,7 @@ class JupiterSwapInteractor(
             // if pass our own recent blockhash, there is an error
             recentBlockhash = null
         )
+
         val firstTransactionSignature = rpcSolanaRepository.sendTransaction(
             serializedTransaction = signedSwapTransaction.transaction.base58Value,
             encoding = Encoding.BASE58

@@ -64,6 +64,7 @@ class UsernameInteractor(
     }
 
     suspend fun findUsernameByAddress(address: Base58String): UsernameDetails? {
+        if (address.base58Value.isBlank()) return null
         return usernameRepository.findUsernameDetailsByAddress(address).firstOrNull()
     }
 
