@@ -5,6 +5,7 @@ import java.math.BigInteger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.p2p.core.token.Token
+import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.home.db.TokenDao
@@ -27,6 +28,10 @@ class UserTokensLocalRepository(
     override fun observeUserTokens(): Flow<List<Token.Active>> =
         tokenDao.getTokensFlow()
             .mapToDomain()
+
+    override fun observeUserToken(mintAddress: Base58String): Flow<Token.Active> =
+        observeUserTokens()
+            .map { it.findByMintAddress(mintAddress.base58Value) ?: error("Failed to find token to observe") }
 
     private fun Flow<List<TokenEntity>>.mapToDomain(): Flow<List<Token.Active>> {
         return map {
