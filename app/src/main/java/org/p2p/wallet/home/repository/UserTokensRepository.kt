@@ -7,5 +7,6 @@ import org.p2p.wallet.utils.Base58String
 
 interface UserTokensRepository {
     fun observeUserTokens(): Flow<List<Token.Active>>
+    fun observeUserToken(mintAddress: Base58String): Flow<Token.Active>
     suspend fun updateUserToken(newBalanceLamports: BigInteger, tokenMint: Base58String, accountPublicKey: Base58String)
 }

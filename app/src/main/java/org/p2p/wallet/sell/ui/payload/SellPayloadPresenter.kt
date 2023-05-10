@@ -1,6 +1,17 @@
 package org.p2p.wallet.sell.ui.payload
 
 import android.content.res.Resources
+import timber.log.Timber
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.utils.MOONPAY_DECIMAL
 import org.p2p.core.utils.formatFiat
@@ -27,14 +38,6 @@ import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.sell.ui.payload.SellPayloadContract.ViewState
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
-import java.math.BigDecimal
-import java.math.RoundingMode
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 
 private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
 private const val SELL_QUOTE_NEW_AMOUNT_DELAY = 1_000L
@@ -79,14 +82,12 @@ class SellPayloadPresenter(
                 needCheckForSellLock = true
                 // call order is important!
                 checkForSellLock(isInitialCheck = true)
-                sellInteractor.getTokenForSell().also {
-                    tokenCurrencyMode = CurrencyMode.Token(
-                        symbol = it.tokenSymbol,
-                        fractionLength = MOONPAY_DECIMAL
-                    )
-                    userSolBalance = it.total
-                    view.updateToolbarTitle(it.tokenSymbol)
-                }
+                val tokenToSell = sellInteractor.observeTokenForSell().first()
+                tokenCurrencyMode = CurrencyMode.Token(
+                    symbol = tokenToSell.tokenSymbol,
+                    fractionLength = MOONPAY_DECIMAL
+                )
+                view.updateToolbarTitle(tokenToSell.tokenSymbol)
 
                 // if the screen launched from the fresh - make tokenCurrencyMode default
                 if (!this@SellPayloadPresenter::selectedCurrencyMode.isInitialized) {
@@ -107,6 +108,21 @@ class SellPayloadPresenter(
                 handleError(error)
             }
         }
+    }
+
+    private fun subscribeToSellTokenBalance() {
+        sellInteractor.observeTokenForSell()
+            .onEach {
+                userSolBalance = it.total
+
+                val stateWithNewBalance = viewState.widgetViewState.copy(availableTokenAmount = userSolBalance)
+                viewState = viewState.copy(
+                    cashOutButtonState = determineButtonState(),
+                    widgetViewState = stateWithNewBalance,
+                )
+                view?.updateViewState(viewState)
+            }
+            .launchIn(this)
     }
 
     private suspend fun checkForSellLock(isInitialCheck: Boolean) {
@@ -166,6 +182,7 @@ class SellPayloadPresenter(
             fiat = fiatCurrencyMode.toSellFiatCurrency()
         )
         onSellQuoteLoaded(sellQuote)
+        subscribeToSellTokenBalance()
     }
 
     private fun handleError(error: Throwable) {
