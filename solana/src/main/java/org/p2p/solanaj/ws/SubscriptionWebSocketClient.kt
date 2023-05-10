@@ -17,13 +17,16 @@ import org.p2p.solanaj.model.types.RpcRequest
 
 private const val TAG = "Sockets:SubscriptionSocketClient"
 
-class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI), KoinComponent {
+class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSocketClient(serverURI), KoinComponent {
 
     companion object {
         private var instance: SubscriptionWebSocketClient? = null
         private var socketStateListener: SocketStateListener? = null
 
-        fun getInstance(endpoint: String, stateListener: SocketStateListener?): SubscriptionWebSocketClient? {
+        fun getInstance(
+            endpoint: String,
+            stateListener: SocketStateListener?
+        ): SubscriptionWebSocketClient? {
             val endpointURI: URI
             val serverURI: URI
             socketStateListener = stateListener
@@ -55,7 +58,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI),
 
     private val gson: Gson by inject()
     private val subscriptions = mutableMapOf<String, SubscriptionParams<*>?>()
-    private val subscriptionIds = mutableMapOf<String, Long?>()
+    private val requestsIdsToSubscriptionIds = mutableMapOf<String, Long?>()
     private val subscriptionListeners = mutableMapOf<Long, NotificationEventListener>()
 
     fun ping() {
@@ -68,16 +71,16 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI),
     }
 
     fun addSubscription(request: RpcMapRequest, listener: NotificationEventListener) {
-        Timber.tag(TAG).i("Add subscription for request = $request")
+        Timber.tag(TAG).i("addSubscription(RpcMapRequest) = $request")
         subscriptions[request.id] = SubscriptionParams(request, listener)
-        subscriptionIds[request.id] = null
+        requestsIdsToSubscriptionIds[request.id] = null
         updateSubscriptions()
     }
 
     fun addSubscription(request: RpcRequest, listener: NotificationEventListener) {
-        Timber.tag(TAG).i("Add subscription for request = $request")
+        Timber.tag(TAG).i("addSubscription(RpcRequest) = $request")
         subscriptions[request.id] = SubscriptionParams(request, listener)
-        subscriptionIds[request.id] = null
+        requestsIdsToSubscriptionIds[request.id] = null
         updateSubscriptions()
     }
 
@@ -85,7 +88,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI),
         send(gson.toJson(request))
 
         subscriptions[request.id] = null
-        subscriptionIds[request.id] = null
+        requestsIdsToSubscriptionIds[request.id] = null
 
         updateSubscriptions()
     }
@@ -94,7 +97,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI),
         send(gson.toJson(request))
 
         subscriptions[request.id] = null
-        subscriptionIds[request.id] = null
+        requestsIdsToSubscriptionIds[request.id] = null
 
         updateSubscriptions()
     }
@@ -110,36 +113,39 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI),
     }
 
     override fun onMessage(message: String) {
-        Timber.tag(TAG).d("New message received: %s", message)
+        Timber.tag(TAG).d("New message received: $message")
         try {
-            val jsonParsed = gson.fromJson(message, RpcNotificationResponse::class.java)
-            val id = jsonParsed?.id
-            val result = jsonParsed?.result
-            if (id != null && result != null) {
-                addResultAndNotify(id, result)
-                Timber.tag(TAG).d("Add subscription listeners, ${subscriptionListeners.keys.map { it.toString() }}")
+            val response = gson.fromJson(message, RpcNotificationResponse::class.java)
+            val requestId = response?.id
+            val subscriptionId = response?.subscriptionId
+            if (requestId != null && subscriptionId != null) {
+                handleSubscribeResponse(requestId, subscriptionId)
             } else {
-                jsonParsed?.params ?: return
-                val subscriptionId = jsonParsed.params.get("subscription").asInt.toLong()
-                val listener = subscriptionListeners[subscriptionId]
-                listener?.onNotificationEvent(jsonParsed.params)
-
-                val logString = buildString {
-                    append("Find listener for subscription = $subscriptionId in")
-                    append(" ${subscriptionListeners.keys.map(Long::toString)}")
-                }
-                Timber.tag(TAG).d(logString)
+                handleSubscriptionNewUpdate(response)
             }
         } catch (e: Throwable) {
-            Timber.tag(TAG).e(e, "Error on reading message")
+            Timber.tag(TAG).e(e, "Error on reading message, $message")
         }
+    }
+
+    private fun handleSubscriptionNewUpdate(response: RpcNotificationResponse?){
+        response?.params ?: return
+        val subscriptionId = response.params.get("subscription").asInt.toLong()
+        val listener = subscriptionListeners[subscriptionId]
+        listener?.onNotificationEvent(response.params)
+
+        val logString = buildString {
+            append("Find listener for subscription = $subscriptionId in ")
+            append("${subscriptionListeners.keys.map(Long::toString)}")
+        }
+        Timber.tag(TAG).d(logString)
     }
 
     override fun onClose(code: Int, reason: String, remote: Boolean) {
         val closedFrom = if (remote) "remote peer" else "us"
         socketStateListener?.onClosed(
-            code,
-            "Connection closed by $closedFrom Code: $code Reason: $reason"
+            code = code,
+            message = "Connection closed by $closedFrom Code: $code Reason: $reason"
         )
     }
 
@@ -149,48 +155,34 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI),
     }
 
     private fun updateSubscriptions() {
-        if (instance?.isOpen == true && subscriptions.isNotEmpty()) {
-            for (sub in subscriptions.values) {
-                when (sub?.request) {
-                    is RpcRequest -> {
-                        val requestJson = gson.toJson(sub.request as RpcRequest)
-                        send(requestJson)
-                        Timber.tag(TAG).d("Add subscription for request = $requestJson")
-                    }
-                    is RpcMapRequest -> {
-                        val requestJson = gson.toJson(sub.request as RpcMapRequest)
-                        send(requestJson)
-                        Timber.tag(TAG).d("Add subscription for request = $requestJson")
-                    }
+        if (instance?.isOpen == true) {
+            for (sub in subscriptions.values.filterNotNull()) {
+                val requestJson = when (sub.request) {
+                    is RpcRequest -> gson.toJson(sub.request)
+                    is RpcMapRequest -> gson.toJson(sub.request)
+                    else -> return
                 }
+
+                send(requestJson)
+                Timber.tag(TAG).d("making subscription request = $requestJson")
             }
         }
     }
 
-    private fun addResultAndNotify(resultId: String, subscriptionId: Long) {
-        if (subscriptionIds.containsKey(resultId)) {
-            subscriptionIds[resultId] = subscriptionId
-            subscriptions[resultId]?.listener?.let { listener ->
+    private fun handleSubscribeResponse(requestId: String, subscriptionId: Long) {
+        Timber.tag(TAG).d("handleSubscribeResponse: current=${subscriptionListeners.keys.joinToString()}")
+        if (requestId in requestsIdsToSubscriptionIds) {
+            requestsIdsToSubscriptionIds[requestId] = subscriptionId
+            subscriptions[requestId]?.listener?.also { listener ->
                 subscriptionListeners[subscriptionId] = listener
             }
-            subscriptions.remove(resultId)
+            subscriptions.remove(requestId)
         }
+        Timber.tag(TAG).d("handleSubscribeResponse: after=${subscriptionListeners.keys.joinToString()}")
     }
 
     private class SubscriptionParams<RpcRequest>(
-        var request: RpcRequest,
-        var listener: NotificationEventListener
+        val request: RpcRequest,
+        val listener: NotificationEventListener
     )
-
-    enum class NotificationType(val type: String) {
-        SIGNATURE("signatureNotification"),
-        ACCOUNT("accountNotification"),
-        PROGRAM("programNotification");
-
-        companion object {
-            fun valueOf(type: String?): NotificationType? {
-                return values().firstOrNull { it.type == type }
-            }
-        }
-    }
 }

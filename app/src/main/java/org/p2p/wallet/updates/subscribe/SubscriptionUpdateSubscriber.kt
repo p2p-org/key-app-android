@@ -1,8 +1,6 @@
 package org.p2p.wallet.updates.subscribe
 
-interface UpdateSubscriber {
-
+interface SubscriptionUpdateSubscriber {
     fun subscribe()
-
     fun unSubscribe()
 }

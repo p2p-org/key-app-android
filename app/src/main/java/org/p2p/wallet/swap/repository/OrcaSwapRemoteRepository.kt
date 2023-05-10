@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.repository
 
+import timber.log.Timber
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
@@ -7,16 +8,15 @@ import org.p2p.wallet.swap.api.OrcaApi
 import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.swap.model.orca.OrcaConfigs
 import org.p2p.wallet.swap.model.orca.OrcaConverter
-import org.p2p.wallet.updates.UpdatesManager
+import org.p2p.wallet.updates.SubscriptionUpdatesManager
+import org.p2p.wallet.updates.subscribe.TransactionSignatureSubscriber
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
-import org.p2p.wallet.updates.subscribe.SignatureSubscriber
 
 class OrcaSwapRemoteRepository(
     private val orcaApi: OrcaApi,
     private val rpcTransactionRepository: RpcTransactionRepository,
     private val rpcTokenRepository: RpcBalanceRepository,
-    private val updatesManager: UpdatesManager
+    private val updatesManager: SubscriptionUpdatesManager
 ) : OrcaSwapRepository {
 
     private var configs: OrcaConfigs? = null
@@ -45,7 +45,7 @@ class OrcaSwapRemoteRepository(
 
     override suspend fun sendAndWait(serializedTransaction: String) {
         val signature = rpcTransactionRepository.sendTransaction(serializedTransaction)
-        val subscriber = SignatureSubscriber(
+        val subscriber = TransactionSignatureSubscriber(
             txSignature = signature,
             updatesManager = updatesManager
         )

@@ -55,10 +55,10 @@ import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.transaction.model.TransactionState
-import org.p2p.wallet.updates.UpdatesManager
-import org.p2p.wallet.updates.UpdatesState
-import org.p2p.wallet.updates.UpdatesStateObserver
-import org.p2p.wallet.updates.subscribe.UpdateSubscriber
+import org.p2p.wallet.updates.SocketState
+import org.p2p.wallet.updates.SubscriptionUpdatesManager
+import org.p2p.wallet.updates.SubscriptionUpdatesStateObserver
+import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.utils.ellipsizeAddress
@@ -77,7 +77,7 @@ val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 class HomePresenter(
     private val analytics: HomeAnalytics,
     private val claimAnalytics: ClaimAnalytics,
-    private val updatesManager: UpdatesManager,
+    private val updatesManager: SubscriptionUpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
@@ -99,7 +99,7 @@ class HomePresenter(
     private val connectionManager: ConnectionManager,
     private val transactionManager: TransactionManager,
     private val ethereumSendRepository: EthereumSendRepository,
-    private val updateSubscribers: List<UpdateSubscriber>,
+    private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -130,9 +130,9 @@ class HomePresenter(
                 async { metadataInteractor.tryLoadAndSaveMetadata() }
             )
         }
-        updatesManager.addUpdatesStateObserver(object : UpdatesStateObserver {
-            override fun onUpdatesStateChanged(state: UpdatesState) {
-                if (state == UpdatesState.CONNECTED) {
+        updatesManager.addUpdatesStateObserver(object : SubscriptionUpdatesStateObserver {
+            override fun onUpdatesStateChanged(state: SocketState) {
+                if (state == SocketState.CONNECTED) {
                     updateSubscribers.forEach {
                         it.subscribe()
                     }
