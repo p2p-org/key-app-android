@@ -174,15 +174,15 @@ object NetworkModule : InjectionModule {
     }
 
     fun Scope.getClient(
-        readTimeOut: Long = DEFAULT_READ_TIMEOUT_SECONDS,
-        connectTimeOut: Long = DEFAULT_CONNECT_TIMEOUT_SECONDS,
+        readTimeoutSec: Long = DEFAULT_READ_TIMEOUT_SECONDS,
+        connectTimeoutSec: Long = DEFAULT_CONNECT_TIMEOUT_SECONDS,
         tag: String?,
         interceptor: Interceptor? = null,
         clientProtocols: List<Protocol>? = null
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(readTimeoutSec, TimeUnit.SECONDS)
+            .connectTimeout(connectTimeoutSec, TimeUnit.SECONDS)
             .apply {
                 if (interceptor != null) {
                     addInterceptor(interceptor)
