@@ -55,7 +55,7 @@ class ClaimUiMapper(private val resources: Resources) {
         fees: BridgeBundleFees?,
         minAmountForFreeFee: BigDecimal
     ): ClaimDetails {
-        val defaultFee = fees?.gasEth.toBridgeAmount()
+        val defaultFee = fees?.gasFeeInToken.toBridgeAmount()
         return ClaimDetails(
             isFree = isFree,
             willGetAmount = resultAmount.toBridgeAmount(),
@@ -82,7 +82,7 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     fun mapFeeTextContainer(fees: BridgeBundleFees, isFree: Boolean): TextViewCellModel.Raw {
-        val feeList = listOf(fees.arbiterFee, fees.gasEth, fees.createAccount)
+        val feeList = listOf(fees.arbiterFee, fees.gasFeeInToken, fees.createAccount)
         val fee: BigDecimal = feeList.sumOf { it.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
         val feeValue = if (isFree) {
             resources.getString(R.string.bridge_claim_fees_free)

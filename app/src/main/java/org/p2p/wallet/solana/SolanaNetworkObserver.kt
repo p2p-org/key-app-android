@@ -54,7 +54,7 @@ class SolanaNetworkObserver(
                     val samples = rpcSolanaRepository.getRecentPerformanceSamples(SAMPLE_COUNT)
                     handleSamples(samples)
                 } catch (e: CancellationException) {
-                    Timber.w("Fetching recent performance samples cancelled")
+                    Timber.i("Fetching recent performance samples cancelled")
                 } catch (e: UnknownHostException) {
                     Timber.i(e, "Error loading recent samples with UnknownHostException")
                 } catch (e: SocketTimeoutException) {

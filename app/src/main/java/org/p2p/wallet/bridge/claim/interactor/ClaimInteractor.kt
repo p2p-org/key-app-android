@@ -6,7 +6,7 @@ import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.claim.mapper.EthereumBundleMapper
-import org.p2p.wallet.bridge.claim.repository.EthereumClaimLocalRepository
+import org.p2p.wallet.bridge.claim.repository.EthereumBridgeLocalRepository
 import org.p2p.wallet.bridge.claim.repository.EthereumClaimRepository
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -16,7 +16,7 @@ const val DEFAULT_ERC20_TOKEN_SLIPPAGE = 15
 
 class ClaimInteractor(
     private val ethereumClaimRepository: EthereumClaimRepository,
-    private val ethereumClaimLocalRepository: EthereumClaimLocalRepository,
+    private val ethereumClaimLocalRepository: EthereumBridgeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val mapper: EthereumBundleMapper,
 ) {
@@ -41,10 +41,9 @@ class ClaimInteractor(
     }
 
     suspend fun getListOfEthereumBundleStatuses(ethereumAddress: EthAddress): List<EthereumClaimToken> {
-        return ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress)
-            .map {
-                mapper.mapBundle(it)
-            }
+        val bundles = ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress)
+        ethereumClaimLocalRepository.saveBundles(bundles)
+        return bundles.map { mapper.mapBundle(it) }
     }
 
     suspend fun getEthereumMinAmountForFreeFee(): BigDecimal {

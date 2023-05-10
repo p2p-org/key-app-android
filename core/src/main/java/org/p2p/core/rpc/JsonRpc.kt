@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName
 import timber.log.Timber
 import java.lang.reflect.Type
 
+private const val TAG = "JsonRpcParser"
+
 abstract class JsonRpc<P, T>(
     @SerializedName("method")
     val method: String,
@@ -23,7 +25,7 @@ abstract class JsonRpc<P, T>(
     fun parseResponse(response: RpcResponse, gson: Gson): T {
         if (response.error != null) {
             val error = ResponseError.RpcError(response.error)
-            Timber.e(error, "RPC error returned")
+            Timber.tag(TAG).i(error, "RPC error returned")
             throw error
         }
         return parseResult(response.result, gson)
@@ -33,6 +35,8 @@ abstract class JsonRpc<P, T>(
         return try {
             gson.fromJson(result, typeOfResult) as T
         } catch (error: Throwable) {
+            Timber.tag(TAG).i(result.toString())
+            Timber.tag(TAG).i(error)
             throw ResponseError.InvalidResult("Error: $error.toString()\nOn result: ${result.toString()}")
         }
     }

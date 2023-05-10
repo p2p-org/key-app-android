@@ -14,15 +14,16 @@ import org.p2p.wallet.history.ui.model.HistoryItem.DateItem
 import org.p2p.wallet.history.ui.model.HistoryItem.MoonpayTransactionItem
 import org.p2p.wallet.history.ui.model.HistoryItem.TransactionItem
 import org.p2p.wallet.history.ui.model.HistoryItem.UserSendLinksItem
-import org.p2p.wallet.history.ui.token.adapter.holders.DateViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.ErrorViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.HistorySellTransactionViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.HistoryUserSendLinksViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.HistorySwapBannerViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.BridgePendingViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.DateViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.ErrorViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistorySellTransactionViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistoryUserSendLinksViewHolder
 
 private const val TRANSACTION_VIEW_TYPE = 1
 private const val HISTORY_DATE_VIEW_TYPE = 2
@@ -32,6 +33,7 @@ private const val TRANSACTION_SWAP_VIEW_TYPE = 5
 private const val TRANSACTION_MOONPAY_VIEW_TYPE = 6
 private const val TRANSACTION_USER_SEND_LINKS_VIEW_TYPE = 7
 private const val SWAP_BANNER_VIEW_TYPE = 8
+private const val WORMHOLE_LOCAL_VIEW_TYPE = 9
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
@@ -50,6 +52,7 @@ class HistoryAdapter(
             TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onHistoryItemClicked)
             TRANSACTION_USER_SEND_LINKS_VIEW_TYPE -> HistoryUserSendLinksViewHolder(parent, onHistoryItemClicked)
             SWAP_BANNER_VIEW_TYPE -> HistorySwapBannerViewHolder(parent, onHistoryItemClicked)
+            WORMHOLE_LOCAL_VIEW_TYPE -> BridgePendingViewHolder(parent, glideManager, onHistoryItemClicked)
             else -> ErrorViewHolder(parent)
         }
     }
@@ -64,6 +67,16 @@ class HistoryAdapter(
             is ProgressViewHolder -> Unit
             is HistoryUserSendLinksViewHolder -> holder.onBind(getItem(position) as UserSendLinksItem)
             is HistorySwapBannerViewHolder -> holder.onBind(getItem(position) as HistoryItem.SwapBannerItem)
+            is BridgePendingViewHolder -> {
+                when (val item = getItem(position)) {
+                    is HistoryItem.BridgeClaimItem -> {
+                        holder.onBind(item)
+                    }
+                    is HistoryItem.BridgeSendItem -> {
+                        holder.onBind(item)
+                    }
+                }
+            }
         }
     }
 
@@ -107,6 +120,8 @@ class HistoryAdapter(
             is MoonpayTransactionItem -> TRANSACTION_MOONPAY_VIEW_TYPE
             is UserSendLinksItem -> TRANSACTION_USER_SEND_LINKS_VIEW_TYPE
             is HistoryItem.SwapBannerItem -> SWAP_BANNER_VIEW_TYPE
+            is HistoryItem.BridgeClaimItem,
+            is HistoryItem.BridgeSendItem -> WORMHOLE_LOCAL_VIEW_TYPE
         }
     }
 
@@ -129,6 +144,12 @@ class HistoryAdapter(
                     oldItem.date.isSameAs(newItem.date)
                 oldItem is UserSendLinksItem && newItem is UserSendLinksItem ->
                     oldItem.linksCount == newItem.linksCount
+                oldItem is HistoryItem.BridgeSendItem && newItem is HistoryItem.BridgeSendItem -> {
+                    oldItem.transactionId == newItem.transactionId
+                }
+                oldItem is HistoryItem.BridgeClaimItem && newItem is HistoryItem.BridgeClaimItem -> {
+                    oldItem.transactionId == newItem.transactionId
+                }
                 oldItem is HistoryItem.SwapBannerItem && newItem is HistoryItem.SwapBannerItem -> {
                     oldItem.date.isSameAs(newItem.date)
                 }
@@ -144,6 +165,12 @@ class HistoryAdapter(
                 }
                 oldItem is HistoryItem.SwapBannerItem && newItem is HistoryItem.SwapBannerItem -> {
                     oldItem.date.isSameAs(newItem.date)
+                }
+                oldItem is HistoryItem.BridgeSendItem && newItem is HistoryItem.BridgeSendItem -> {
+                    oldItem.transactionId == newItem.transactionId
+                }
+                oldItem is HistoryItem.BridgeClaimItem && newItem is HistoryItem.BridgeClaimItem -> {
+                    oldItem.transactionId == newItem.transactionId
                 }
                 else -> {
                     oldItem.transactionId == newItem.transactionId && oldItem.date.isSameAs(newItem.date)

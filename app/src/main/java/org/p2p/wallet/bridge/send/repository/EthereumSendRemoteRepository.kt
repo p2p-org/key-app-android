@@ -7,6 +7,7 @@ import org.p2p.wallet.bridge.api.request.GetSolanaFeesRpcRequest
 import org.p2p.wallet.bridge.api.request.SolanaTransferStatusRpcRequest
 import org.p2p.wallet.bridge.api.request.SolanaTransferStatusesRpcRequest
 import org.p2p.wallet.bridge.api.request.TransferFromSolanaRpcRequest
+import org.p2p.wallet.bridge.claim.repository.EthereumBridgeLocalRepository
 import org.p2p.wallet.bridge.repository.BridgeRepository
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
@@ -14,6 +15,7 @@ import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 
 class EthereumSendRemoteRepository(
     private val bridgeRepository: BridgeRepository,
+    private val bridgeLocalRepository: EthereumBridgeLocalRepository,
     private val mapper: BridgeMapper,
 ) : EthereumSendRepository {
 
@@ -46,7 +48,9 @@ class EthereumSendRemoteRepository(
     override suspend fun getSendTransactionsDetail(userWallet: SolAddress): List<BridgeSendTransactionDetails> {
         val request = SolanaTransferStatusesRpcRequest(userWallet)
         val result = bridgeRepository.launch(request)
-        return result.data.map { mapper.fromNetwork(it) }
+        return result.data.map { mapper.fromNetwork(it) }.also {
+            bridgeLocalRepository.saveSendDetails(it)
+        }
     }
 
     override suspend fun getSendFee(

@@ -11,6 +11,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.bridge.BridgeHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -42,6 +43,7 @@ class HistoryItemMapper(
     ) {
         val rpcHistoryItems = mutableListOf<HistoryItem>()
         val sellHistoryItems = mutableListOf<HistoryItem>()
+        val bridgeHistoryItems = mutableListOf<HistoryItem>()
         withContext(dispatchers.io) {
 
             transactions.forEachIndexed { _, item ->
@@ -55,6 +57,9 @@ class HistoryItemMapper(
                             parse(item, sellHistoryItems)
                         }
                     }
+                    is BridgeHistoryTransaction -> {
+                        parse(item, bridgeHistoryItems)
+                    }
                 }
             }
 
@@ -63,6 +68,7 @@ class HistoryItemMapper(
 
             val historyItems = listOfNotNull(swapBannerItem, userSendLinksItem)
                 .plus(sellHistoryItems)
+                .plus(bridgeHistoryItems)
                 .plus(rpcHistoryItems)
             historyItemFlow.emit(historyItems)
         }
@@ -169,6 +175,27 @@ class HistoryItemMapper(
                 startTitle = resources.getString(R.string.transaction_history_closed)
                 startSubtitle =
                     resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+            }
+            is RpcHistoryTransaction.WormholeSend -> with(transaction) {
+                tokenIconUrl = iconUrl
+                iconRes = R.drawable.ic_transaction_send
+                startTitle = getTitle()
+                startSubtitle =
+                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                endTopValue = getUsdAmount()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
+            }
+
+            is RpcHistoryTransaction.WormholeReceive -> with(transaction) {
+                tokenIconUrl = iconUrl
+                iconRes = R.drawable.ic_transaction_send
+                startTitle = resources.getString(getTitle())
+                startSubtitle =
+                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                endTopValue = getUsdAmount()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.Unknown -> {
                 iconRes = R.drawable.ic_transaction_unknown
@@ -281,6 +308,16 @@ class HistoryItemMapper(
                 date = transaction.updatedAt.toZonedDateTime()
             )
         )
+    }
+
+    fun parse(item: BridgeHistoryTransaction, cache: MutableList<HistoryItem>) {
+        if (item is BridgeHistoryTransaction.Send) {
+            val item = HistoryItem.BridgeSendItem(item.id, item.sendDetails)
+            cache.add(item)
+        } else if (item is BridgeHistoryTransaction.Claim) {
+            val item = HistoryItem.BridgeClaimItem(item.bundleId, item.bundle)
+            cache.add(item)
+        }
     }
 
     fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {
