@@ -8,8 +8,10 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.math.BigDecimal
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
+import org.p2p.core.utils.asUsd
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.setTextColorRes
@@ -117,6 +119,13 @@ class ClaimFragment :
 
     override fun showClaimButtonValue(tokenAmountToClaim: String) {
         binding.buttonBottom.text = getString(R.string.bridge_claim_bottom_button_format, tokenAmountToClaim)
+    }
+
+    override fun setMinAmountForFreeFee(minAmountForFreeFee: BigDecimal) {
+        binding.textViewBanner.text = getString(
+            R.string.receive_ethereum_banner_text_format,
+            minAmountForFreeFee.asUsd()
+        )
     }
 
     override fun showProgressDialog(bundleId: String, data: NewShowProgress) {

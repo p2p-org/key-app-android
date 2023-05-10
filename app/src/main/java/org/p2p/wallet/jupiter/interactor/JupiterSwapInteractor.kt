@@ -30,7 +30,7 @@ class JupiterSwapInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val rpcSolanaRepository: RpcSolanaRepository
 ) {
-    class LowSlippageRpcError(cause: ServerException) : Throwable(cause.message)
+    class LowSlippageRpcError(override val cause: ServerException) : Throwable(cause.message)
 
     sealed interface JupiterSwapTokensResult {
         data class Success(val signature: String) : JupiterSwapTokensResult
@@ -48,6 +48,7 @@ class JupiterSwapInteractor(
             // if pass our own recent blockhash, there is an error
             recentBlockhash = null
         )
+
         val firstTransactionSignature = rpcSolanaRepository.sendTransaction(
             serializedTransaction = signedSwapTransaction.transaction.base58Value,
             encoding = Encoding.BASE58

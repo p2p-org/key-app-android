@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.send.ui.mapper
 
 import android.content.res.Resources
+import android.view.Gravity
 import java.math.BigDecimal
 import java.util.Date
 import org.p2p.core.model.TextHighlighting
@@ -9,14 +10,16 @@ import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.uikit.utils.skeleton.SkeletonCellModel
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.model.BridgeAmount
 import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
-import org.p2p.wallet.newsend.model.FeesStringFormat
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.utils.toPx
 
 class BridgeSendUiMapper(private val resources: Resources) {
 
@@ -52,17 +55,19 @@ class BridgeSendUiMapper(private val resources: Resources) {
     }
 
     fun getFeesFormatted(bridgeFee: SendFee.Bridge?, isInputEmpty: Boolean): String {
-        val feesLabel = getFeesInToken(
+        return getFeesInToken(
             bridgeFee = bridgeFee,
             isInputEmpty = isInputEmpty
         )
-        return feesLabel.format(resources)
     }
 
-    private fun getFeesInToken(bridgeFee: SendFee.Bridge?, isInputEmpty: Boolean): FeesStringFormat {
+    private fun getFeesInToken(bridgeFee: SendFee.Bridge?, isInputEmpty: Boolean): String {
         if (bridgeFee == null) {
-            val textRes = if (isInputEmpty) R.string.send_fees_free else R.string.send_fees_zero
-            return FeesStringFormat(textRes)
+            return if (isInputEmpty) {
+                resources.getString(R.string.send_fees_free)
+            } else {
+                BigDecimal.ZERO.asApproximateUsd()
+            }
         }
         val fees = bridgeFee.fee
         val feeList = listOf(
@@ -72,9 +77,18 @@ class BridgeSendUiMapper(private val resources: Resources) {
             fees.arbiterFee
         )
         val fee: BigDecimal = feeList.sumOf { it.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
-        val feesLabel = fee.asApproximateUsd(withBraces = false)
+        return fee.asApproximateUsd(withBraces = false)
+    }
 
-        return FeesStringFormat(R.string.send_fees_format, feesLabel)
+    fun getFeeTextSkeleton(): TextViewCellModel.Skeleton {
+        return TextViewCellModel.Skeleton(
+            SkeletonCellModel(
+                height = 16.toPx(),
+                width = 56.toPx(),
+                radius = 4f.toPx(),
+                gravity = Gravity.END
+            )
+        )
     }
 
     private fun BridgeFee?.toBridgeAmount(): BridgeAmount {
@@ -88,7 +102,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
 
     private fun BridgeAmount.toTextHighlighting(): TextHighlighting? {
         if (isZero) return null
-        val usdText = formattedFiatAmount.orEmpty()
+        val usdText = fiatAmount?.asApproximateUsd(withBraces = true).orEmpty()
         val commonText = "$formattedTokenAmount $usdText"
         return TextHighlighting(
             commonText = commonText,

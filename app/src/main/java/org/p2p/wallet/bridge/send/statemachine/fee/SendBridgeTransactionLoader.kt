@@ -11,9 +11,11 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
+import org.p2p.wallet.bridge.send.model.getFeeList
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
@@ -48,15 +50,20 @@ class SendBridgeTransactionLoader constructor(
         val updatedFee = mapper.updateFee(lastStaticState, fee)
         val inputAmount = updatedFee.inputAmount
         if (inputAmount != null) {
-            val inputLamports = inputAmount.toLamports(token.token.decimals)
+            val amountWithFee = inputAmount + getFeeTotalInToken(lastStaticState)
+            val inputLamports = amountWithFee.toLamports(token.token.decimals)
             validator.validateIsFeeMoreThanTotal(updatedFee, fee)
-            validator.validateIsFeeMoreThanAmount(updatedFee, fee)
+            validator.validateIsFeeMoreThanAmount(fee, inputAmount, amountWithFee)
             val sendTransaction = createTransaction(token.token, inputLamports)
             emit(SendState.Static.ReadyToSend(token, fee, inputAmount, sendTransaction))
         } else {
             emit(SendState.Static.TokenZero(token, fee))
             validator.validateIsFeeMoreThanTotal(updatedFee, fee)
         }
+    }
+
+    private fun getFeeTotalInToken(lastStaticState: SendState.Static): BigDecimal {
+        return lastStaticState.bridgeFee?.fee.getFeeList().sumOf { it.amountInToken }
     }
 
     private suspend fun loadFee(

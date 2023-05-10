@@ -11,12 +11,12 @@
     <string name="bridge_claim_will_get">You will get</string>
     <string name="bridge_claim_fees_free">Paid by Key App</string>
     <string name="bridge_claim_fees_unavailable">Value is unavailable</string>
-    <string name="bridge_claim_fees_more_then">More than the sent amount</string>
+    <string name="bridge_claim_fees_more_then">More than the received amount</string>
     <string name="bridge_claim_bottom_button">Claim</string>
     <string name="bridge_claim_bottom_button_format">Claim %s</string>
     <string name="bridge_claim_bottom_button_add_funds">Add funds</string>
     <string name="bridge_claim_fees_bigger_error">The fees are bigger than the transaction amount</string>
-    <string name="bridge_claim_fees_common_error">Wormhole Bridge is currently unable. Please try again later.</string>
+    <string name="bridge_claim_fees_common_error">Wormhole Bridge is currently not available. Please try again later.</string>
 
     <string name="bridge_info_free_transaction_message">All transactions over $%d are free. Key App will cover all fees for you.</string>
     <string name="bridge_info_transaction_free">Free</string>
@@ -36,6 +36,10 @@
     <string name="receive_network_dialog_title">Choose network</string>
 
     <!--Send-->
+    <string name="bridge_send">Send</string>
+    <string name="bridge_send_fees">FEES</string>
+    <string name="bridge_send_total">TOTAL AMOUNT</string>
+    <string name="bridge_send_subtitle">Would be completed on the Ethereum network</string>
     <string name="bridge_send_fee_details_title">Transaction details</string>
     <string name="bridge_send_fee_details_address">Recipient\'s address</string>
     <string name="bridge_send_fee_details_gets">Recipient gets</string>

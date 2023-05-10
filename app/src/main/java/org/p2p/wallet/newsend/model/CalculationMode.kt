@@ -182,12 +182,7 @@ class CalculationMode(
     }
 
     private fun handleFractionUpdate(mode: CurrencyMode) {
-        val newInputFractionLength = when (mode) {
-            is CurrencyMode.Token -> mode.fractionLength
-            is CurrencyMode.Fiat -> mode.fractionLength
-        }
-
-        onInputFractionUpdated?.invoke(newInputFractionLength)
+        onInputFractionUpdated?.invoke(mode.fractionLength)
     }
 
     private fun handleCalculationUpdate(value: String, symbol: String) {

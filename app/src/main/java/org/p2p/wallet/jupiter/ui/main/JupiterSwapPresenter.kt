@@ -30,9 +30,13 @@ import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.network.alarmlogger.AlarmErrorsLogger
+import org.p2p.wallet.infrastructure.network.alarmlogger.AlarmErrorsLogger.SwapAlarmError
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
+import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.interactor.model.SwapPriceImpactType
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
@@ -74,6 +78,7 @@ class JupiterSwapPresenter(
     private val userLocalRepository: UserLocalRepository,
     private val historyInteractor: HistoryInteractor,
     private val resources: Resources,
+    private val alarmErrorsLogger: AlarmErrorsLogger,
     private val initialAmountA: String? = null,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
@@ -184,7 +189,7 @@ class JupiterSwapPresenter(
             val swapTransaction = currentState.jupiterSwapTransaction
 
             when (val result = swapInteractor.swapTokens(swapTransaction)) {
-                is JupiterSwapInteractor.JupiterSwapTokensResult.Success -> {
+                is JupiterSwapTokensResult.Success -> {
                     analytics.logApproveSwapClicked(
                         tokenA = currentState.tokenA,
                         tokenB = currentState.tokenB,
@@ -206,7 +211,8 @@ class JupiterSwapPresenter(
                     view?.showDefaultSlider()
                 }
 
-                is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
+                is JupiterSwapTokensResult.Failure -> {
+                    logSwapAlarm(result, currentState)
                     val causeFailure = if (result.cause is JupiterSwapInteractor.LowSlippageRpcError) {
                         Timber.i("Swap failure: low slippage = ${currentState.slippage}")
                         TransactionStateSwapFailureReason.LowSlippage(currentState.slippage)
@@ -221,6 +227,16 @@ class JupiterSwapPresenter(
                 }
             }
         }
+    }
+
+    private fun logSwapAlarm(failure: JupiterSwapTokensResult.Failure, currentState: SwapState.SwapLoaded) {
+        val (errorType, swapError: Throwable) = when (failure.cause) {
+            // cause.cause to get ServerException inside, not LowSlippageRpcError
+            is JupiterSwapInteractor.LowSlippageRpcError -> SwapAlarmError.LOW_SLIPPAGE to failure.cause.cause
+            is ServerException -> SwapAlarmError.BLOCKCHAIN_ERROR to failure.cause
+            else -> SwapAlarmError.UNKNOWN to failure.cause
+        }
+        alarmErrorsLogger.sendSwapAlarm(errorType, currentState, swapError)
     }
 
     override fun onAllAmountClick() {
@@ -367,6 +383,7 @@ class JupiterSwapPresenter(
             is SwapFeatureException.SameTokens -> {
                 view?.setButtonState(buttonState = buttonMapper.mapSameToken())
             }
+
             is SwapFeatureException.SmallTokenAAmount -> {
                 val tokenA = state.previousFeatureState.getTokensPair().first
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
@@ -376,10 +393,12 @@ class JupiterSwapPresenter(
                 )
                 view?.setButtonState(buttonState = buttonMapper.mapSmallTokenAAmount())
             }
+
             is SwapFeatureException.RoutesNotFound -> {
                 analytics.logSwapPairNotExists()
                 view?.setButtonState(buttonState = buttonMapper.mapRouteNotFound())
             }
+
             is SwapFeatureException.NotValidTokenA -> {
                 val tokenA = state.previousFeatureState.getTokensPair().first
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
@@ -687,7 +706,7 @@ class JupiterSwapPresenter(
     }
 
     private fun buildPendingTransaction(
-        result: JupiterSwapInteractor.JupiterSwapTokensResult.Success,
+        result: JupiterSwapTokensResult.Success,
         currentState: SwapState.SwapLoaded,
     ): RpcHistoryTransaction.Swap {
         return RpcHistoryTransaction.Swap(

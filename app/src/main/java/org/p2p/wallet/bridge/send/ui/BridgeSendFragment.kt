@@ -11,6 +11,7 @@ import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.ui.dialog.BridgeSendFeeBottomSheet
@@ -88,6 +89,7 @@ class BridgeSendFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setupToolbar()
         binding.widgetSendDetails.apply {
+            switchToBottomFee()
             tokenClickListener = presenter::onTokenClicked
             amountListener = presenter::updateInputAmount
             maxButtonClickListener = presenter::onMaxButtonClicked
@@ -96,9 +98,14 @@ class BridgeSendFragment :
             if (inputAmount == null) {
                 focusAndShowKeyboard()
             }
+            setFeeLabel(getString(R.string.bridge_send_fees))
+            setTotalLabel(getString(R.string.bridge_send_total))
         }
         binding.sliderSend.onSlideCompleteListener = { presenter.checkInternetConnection() }
         binding.sliderSend.onSlideCollapseCompleted = { presenter.send() }
+
+        binding.textViewMessage.isVisible = true
+        binding.textViewMessage.setText(R.string.bridge_send_subtitle)
 
         binding.textViewDebug.isVisible = BuildConfig.DEBUG
 
@@ -193,6 +200,18 @@ class BridgeSendFragment :
 
     override fun setFeeLabel(text: String) {
         binding.widgetSendDetails.setFeeLabel(text)
+    }
+
+    override fun showBottomFeeValue(fee: TextViewCellModel) {
+        binding.widgetSendDetails.showBottomFeeValue(fee)
+    }
+
+    override fun setFeeColor(@ColorRes colorRes: Int) {
+        binding.widgetSendDetails.setBottomFeeColor(colorRes)
+    }
+
+    override fun setTotalValue(text: String) {
+        binding.widgetSendDetails.setTotalValue(text)
     }
 
     override fun setSwitchLabel(symbol: String) {
