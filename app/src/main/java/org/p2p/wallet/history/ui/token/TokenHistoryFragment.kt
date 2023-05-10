@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.BuildConfig
@@ -120,7 +119,6 @@ class TokenHistoryFragment :
     }
 
     override fun loadTokenHistoryList() {
-        Timber.e("Fetching history")
         binding.layoutHistoryList.loadHistory()
     }
 
