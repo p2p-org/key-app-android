@@ -30,20 +30,22 @@ class NewSelectTokenPresenter(
     override fun attach(view: NewSelectTokenContract.View) {
         super.attach(view)
 
-        if (selectableTokens != null) {
-            initTokensToSelect(selectableTokens)
+        userTokensRepository.observeUserTokens()
+            .map(::getTokensToSelect)
+            .onEach(::initTokensToSelect)
+            .launchIn(this)
+    }
+
+    private fun getTokensToSelect(userTokens: List<Token.Active>): List<Token.Active> {
+        return if (selectableTokens != null) {
+            userTokens.filter { it.mintAddress in selectableTokens.map(Token.Active::mintAddress) }
         } else {
-            userTokensRepository.observeUserTokens()
-                .map { it.filterNot(Token.Active::isZero) }
-                .onEach(::initTokensToSelect)
-                .launchIn(this)
-        }
+            userTokens
+        }.filterNot(Token.Active::isZero)
     }
 
     private fun initTokensToSelect(tokensToSelect: List<Token.Active>) {
-        val selectedToken = selectedTokenMintAddress?.let {
-            tokensToSelect.firstOrNull { it.mintAddress == selectedTokenMintAddress }
-        }
+        val selectedToken = tokensToSelect.firstOrNull { it.mintAddress == selectedTokenMintAddress }
         mappedTokens = mapInitialTokens(selectedToken, tokensToSelect)
     }
 
@@ -57,14 +59,14 @@ class NewSelectTokenPresenter(
         }
 
         // start searching
-        val filteredItems = mappedTokens.filter { item ->
-            if (item !is SelectableToken) return@filter false
+        val filteredItems = mappedTokens
+            .filterIsInstance<SelectableToken>()
+            .filter { item ->
+                val tokenName = item.token.tokenName.lowercase()
+                val tokenSymbol = item.token.tokenSymbol.lowercase()
 
-            val tokenName = item.token.tokenName.lowercase()
-            val tokenSymbol = item.token.tokenSymbol.lowercase()
-
-            tokenName.contains(tokenNameQuery) || tokenSymbol.contains(tokenNameQuery)
-        }
+                tokenName.contains(tokenNameQuery) || tokenSymbol.contains(tokenNameQuery)
+            }
             .toMutableList()
 
         @Suppress("UNCHECKED_CAST")
