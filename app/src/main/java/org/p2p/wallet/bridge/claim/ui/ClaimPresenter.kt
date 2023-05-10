@@ -68,8 +68,9 @@ class ClaimPresenter(
             delay(delayMillis)
             reset()
             try {
-                val newBundle = fetchBundle()
                 minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee()
+                view?.setMinAmountForFreeFee(minAmountForFreeFee)
+                val newBundle = fetchBundle()
                 showFees(
                     resultAmount = newBundle.resultAmount,
                     fees = newBundle.fees,
