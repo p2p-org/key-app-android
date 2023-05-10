@@ -1,5 +1,7 @@
 package org.p2p.wallet.bridge.claim.repository
 
+import org.p2p.core.token.Token
+import org.p2p.wallet.bridge.claim.model.isProcessing
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -30,6 +32,16 @@ class EthereumBridgeInMemoryRepository : EthereumBridgeLocalRepository {
 
     override fun getBundleByKey(claimKey: String): BridgeBundle? {
         return bridgeBundlesMap.values.find { it.claimKey == claimKey }
+    }
+
+    override fun getBundleByToken(token: Token.Eth): BridgeBundle? {
+        return if (token.isEth) {
+            bridgeBundlesMap.values.filter { it.status.isProcessing() }
+                .lastOrNull() { it.resultAmount.token == null }
+        } else {
+            bridgeBundlesMap.values.filter { it.status.isProcessing() }
+                .lastOrNull() { token.publicKey == it.resultAmount.token?.hex }
+        }
     }
 
     override fun getAllBundles(): List<BridgeBundle> {

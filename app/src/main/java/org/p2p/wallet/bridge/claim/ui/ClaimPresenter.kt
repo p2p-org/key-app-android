@@ -1,6 +1,5 @@
 package org.p2p.wallet.bridge.claim.ui
 
-import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
@@ -40,7 +39,6 @@ class ClaimPresenter(
     private val ethereumInteractor: EthereumInteractor,
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
-    private val resources: Resources,
     private val appScope: AppScope,
     private val claimAnalytics: ClaimAnalytics
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {

@@ -73,4 +73,8 @@ class EthereumInteractor(
     fun getProgressDetails(bundleId: String): NewShowProgress? {
         return claimInteractor.getProgressDetails(bundleId)
     }
+
+    fun getBundleByToken(token: Token.Eth): BridgeBundle? {
+        return claimInteractor.getBundleByToken(token)
+    }
 }
