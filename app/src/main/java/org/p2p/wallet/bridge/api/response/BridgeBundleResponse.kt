@@ -2,6 +2,7 @@ package org.p2p.wallet.bridge.api.response
 
 import com.google.gson.annotations.SerializedName
 import org.p2p.core.token.SolAddress
+import org.p2p.core.utils.MillisSinceEpoch
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.Signature
@@ -32,4 +33,6 @@ class BridgeBundleResponse(
     val status: ClaimStatus? = null,
     @SerializedName("claim_key")
     val claimKey: String? = null,
+    @SerializedName("created")
+    val dateCreated: MillisSinceEpoch
 )

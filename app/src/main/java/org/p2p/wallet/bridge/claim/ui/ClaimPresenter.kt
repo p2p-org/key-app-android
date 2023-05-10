@@ -25,7 +25,6 @@ import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
 import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
-import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -128,7 +127,8 @@ class ClaimPresenter(
             isFree = isFree,
             resultAmount = resultAmount,
             fees = fees,
-            minAmountForFreeFee = minAmountForFreeFee
+            minAmountForFreeFee = minAmountForFreeFee,
+            transactionDate = ZonedDateTime.now()
         )
         view?.setClaimButtonState(isButtonEnabled = true)
     }
@@ -208,7 +208,7 @@ class ClaimPresenter(
         ).also { newBundle ->
             latestBundle = newBundle
             latestBundleId = newBundle.bundleId
-            refreshJobDelayTimeInMillis = newBundle.getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
+            refreshJobDelayTimeInMillis = newBundle.getExpirationDateInMillis() - ZonedDateTime.now().toEpochSecond()
             latestTransactions = newBundle.transactions
         }
     }
