@@ -238,10 +238,9 @@ class NewSendFragment :
         binding.textViewDebug.text = text
     }
 
-    override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
+    override fun showTokenSelection(selectedToken: Token.Active?) {
         addFragment(
             target = NewSelectTokenFragment.create(
-                tokens = tokens,
                 selectedToken = selectedToken,
                 requestKey = KEY_REQUEST_SEND,
                 resultKey = KEY_RESULT_TOKEN_TO_SEND

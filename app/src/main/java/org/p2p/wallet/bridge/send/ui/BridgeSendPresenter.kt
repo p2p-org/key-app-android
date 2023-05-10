@@ -288,7 +288,7 @@ class BridgeSendPresenter(
         launch {
             val token = currentState.lastStaticState.bridgeToken?.token
             val tokens = bridgeInteractor.supportedSendTokens()
-            view?.showTokenSelection(tokens = tokens, selectedToken = token)
+            view?.showTokenSelection(supportedTokens = tokens, selectedToken = token)
         }
     }
 

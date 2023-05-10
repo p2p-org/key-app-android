@@ -211,10 +211,10 @@ class BridgeSendFragment :
         binding.textViewDebug.text = text
     }
 
-    override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
+    override fun showTokenSelection(supportedTokens: List<Token.Active>, selectedToken: Token.Active?) {
         addFragment(
             target = NewSelectTokenFragment.create(
-                tokens = tokens,
+                tokensToSelectFrom = supportedTokens,
                 selectedToken = selectedToken,
                 requestKey = KEY_REQUEST_SEND,
                 resultKey = KEY_RESULT_TOKEN_TO_SEND
