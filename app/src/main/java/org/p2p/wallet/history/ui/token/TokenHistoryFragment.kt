@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.BuildConfig
@@ -18,6 +19,7 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBot
 import org.p2p.wallet.history.ui.historylist.HistoryListViewClickListener
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewType
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -31,7 +33,6 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
@@ -83,9 +84,7 @@ class TokenHistoryFragment :
     private fun FragmentTokenHistoryBinding.setupView() {
         toolbar.setupToolbar()
 
-        totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
-        usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
-        viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
+        viewActionButtons.onButtonClicked = ::onActionButtonClicked
         binding.layoutHistoryList.bind(
             presenter = historyListPresenter,
             clickListener = this@TokenHistoryFragment,
@@ -113,6 +112,16 @@ class TokenHistoryFragment :
                 isHandled
             }
         }
+    }
+
+    override fun renderTokenAmounts(token: Token.Active) {
+        binding.totalTextView.text = token.getFormattedTotal(includeSymbol = true)
+        binding.usdTotalTextView.text = token.getFormattedUsdTotal()
+    }
+
+    override fun loadTokenHistoryList() {
+        Timber.e("Fetching history")
+        binding.layoutHistoryList.loadHistory()
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
