@@ -24,7 +24,7 @@ class JupiterSwapInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val rpcSolanaRepository: RpcSolanaRepository
 ) {
-    class LowSlippageRpcError(cause: ServerException) : Throwable(cause.message)
+    class LowSlippageRpcError(override val cause: ServerException) : Throwable(cause.message)
 
     sealed interface JupiterSwapTokensResult {
         data class Success(val signature: String) : JupiterSwapTokensResult
