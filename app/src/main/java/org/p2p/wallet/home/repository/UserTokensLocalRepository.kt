@@ -5,17 +5,22 @@ import java.math.BigInteger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.home.db.TokenDao
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.Base58String
 
 class UserTokensLocalRepository(
     private val homeLocalRepository: HomeLocalRepository,
-    private val userLocalRepository: UserLocalRepository,
+    private val tokenPricesRepository: TokenPricesRemoteRepository,
+    private val tokenDataRepository: UserLocalRepository,
     private val tokenDao: TokenDao,
     private val mapper: TokenConverter
 ) : UserTokensRepository {
@@ -54,13 +59,13 @@ class UserTokensLocalRepository(
         homeLocalRepository.updateTokens(cachedTokens)
     }
 
-    private fun createNewToken(
+    private suspend fun createNewToken(
         tokenMint: Base58String,
         newBalanceLamports: BigInteger,
         accountPublicKey: Base58String
     ): Token.Active? {
-        val tokenData = userLocalRepository.findTokenData(tokenMint.base58Value) ?: return null
-        val price = userLocalRepository.getPriceByTokenId(tokenData.coingeckoId)
+        val tokenData = tokenDataRepository.findTokenData(tokenMint.base58Value) ?: return null
+        val price = tokenData.coingeckoId?.let { getNewTokenPrice(it) }
         return mapper.fromNetwork(
             mintAddress = tokenMint.base58Value,
             totalLamports = newBalanceLamports,
@@ -68,6 +73,17 @@ class UserTokensLocalRepository(
             tokenData = tokenData,
             price = price
         )
+    }
+
+    private suspend fun getNewTokenPrice(coingeckoId: String): TokenPrice? {
+        return kotlin.runCatching {
+            tokenPricesRepository.getTokenPriceById(
+                tokenId = TokenId(coingeckoId),
+                targetCurrency = USD_READABLE_SYMBOL
+            )
+        }
+            .onFailure { Timber.i(it) }
+            .getOrNull()
     }
 
     private fun createUpdatedToken(tokenToUpdate: Token.Active, newBalance: BigInteger): Token.Active {

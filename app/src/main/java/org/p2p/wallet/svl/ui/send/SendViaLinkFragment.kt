@@ -188,7 +188,7 @@ class SendViaLinkFragment :
     override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
         addFragment(
             target = NewSelectTokenFragment.create(
-                tokens = tokens,
+                tokensToSelectFrom = tokens,
                 selectedToken = selectedToken,
                 requestKey = KEY_REQUEST_SEND,
                 resultKey = KEY_RESULT_TOKEN_TO_SEND
