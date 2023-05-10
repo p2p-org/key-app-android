@@ -59,13 +59,13 @@ sealed class RpcHistoryTransaction(
 
         fun getUsdAmount(): String = "${getFormattedAmount()}"
 
-        fun getTotal(): String = "${getSymbol(isBurn)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+        fun getTotal(): String = "${getSymbol(isBurn)}${amount.total.abs().scaleMedium().formatToken()} $tokenSymbol"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
-                "${amount.total.scaleMedium().toPlainString()} $tokenSymbol"
+                "${amount.total.abs().scaleMedium().toPlainString()} $tokenSymbol"
             } else {
-                "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
+                "${amount.total.abs().scaleLong().toPlainString()} $tokenSymbol"
             }
 
         fun getFormattedAbsTotal(): String {
@@ -83,7 +83,7 @@ sealed class RpcHistoryTransaction(
             else -> R.color.text_mint
         }
 
-        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isBurn))
+        fun getFormattedAmount(): String? = amount.totalInUsd?.abs()?.asUsdTransaction(getSymbol(isBurn))
     }
 
     @Parcelize
@@ -337,7 +337,14 @@ sealed class RpcHistoryTransaction(
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         @StringRes
-        fun getTitle(): Int = R.string.transaction_history_receive
+        fun getTitle(): Int = R.string.transaction_history_wh_claim
+
+        @StringRes
+        fun getSubtitle(): Int = if (status.isPending()) {
+            R.string.transaction_history_claim_pending
+        } else {
+            R.string.transaction_history_receive
+        }
 
         fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
 
@@ -356,7 +363,7 @@ sealed class RpcHistoryTransaction(
             else -> R.color.text_mint
         }
 
-        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asPositiveUsdTransaction()
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.abs()?.asPositiveUsdTransaction()
     }
 
     @Parcelize
@@ -378,7 +385,15 @@ sealed class RpcHistoryTransaction(
 
         fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
 
-        fun getTitle(): String = "To ${sourceAddress.cutStart()}"
+        @StringRes
+        fun getTitle(): Int = R.string.transaction_history_wh_send
+
+        @StringRes
+        fun getSubtitle(): Int = if (status.isPending()) {
+            R.string.transaction_history_send_pending
+        } else {
+            R.string.transaction_history_send
+        }
 
         fun getTotal(): String = "${getSymbol(isSend)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
 
@@ -393,7 +408,7 @@ sealed class RpcHistoryTransaction(
             return if (isNegativeOperation) "" else "+"
         }
 
-        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.asNegativeUsdTransaction()
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.abs()?.asNegativeUsdTransaction()
 
         @ColorRes
         fun getTextColor(): Int = when {

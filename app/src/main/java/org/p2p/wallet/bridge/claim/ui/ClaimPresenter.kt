@@ -32,7 +32,6 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.getErrorMessage
 
 const val DEFAULT_DELAY_IN_MILLIS = 30_000L
 
@@ -68,8 +67,9 @@ class ClaimPresenter(
             delay(delayMillis)
             reset()
             try {
-                val newBundle = fetchBundle()
                 minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee()
+                view?.setMinAmountForFreeFee(minAmountForFreeFee)
+                val newBundle = fetchBundle()
                 showFees(
                     resultAmount = newBundle.resultAmount,
                     fees = newBundle.fees,
@@ -186,8 +186,7 @@ class ClaimPresenter(
                     state = transactionState
                 )
             } catch (e: BridgeResult.Error) {
-                val message = e.getErrorMessage { res -> resources.getString(res) }
-                Timber.e(e, "Failed to send signed bundle: $message")
+                Timber.e(e, "Failed to send signed bundle: ${e.message}")
             }
         }
     }
