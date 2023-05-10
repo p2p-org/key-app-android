@@ -41,7 +41,7 @@ class AlarmErrorsLogger(
         swapState: SwapState.SwapLoaded,
         swapError: Throwable
     ) {
-        if (true) {
+        if (isReleaseBuild) {
             appScope.launch {
                 try {
                     val errorTitle = getSwapErrorTitle(swapErrorType)
