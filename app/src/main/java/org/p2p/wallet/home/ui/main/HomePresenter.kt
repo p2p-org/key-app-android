@@ -250,7 +250,8 @@ class HomePresenter(
                 resultAmount = bridgeBundle.resultAmount,
                 fees = bridgeBundle.fees,
                 isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
-                minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee()
+                minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
+                transactionDate = bridgeBundle.dateCreated
             )
             progressDetails = claimUiMapper.prepareShowProgress(
                 tokenToClaim = token,
