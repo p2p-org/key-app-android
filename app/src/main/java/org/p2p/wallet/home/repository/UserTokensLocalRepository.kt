@@ -3,6 +3,8 @@ package org.p2p.wallet.home.repository
 import timber.log.Timber
 import java.math.BigInteger
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
@@ -29,9 +31,11 @@ class UserTokensLocalRepository(
         tokenDao.getTokensFlow()
             .mapToDomain()
 
-    override fun observeUserToken(mintAddress: Base58String): Flow<Token.Active> =
+    override fun observeUserToken(tokenMint: Base58String): Flow<Token.Active> =
         observeUserTokens()
-            .map { it.findByMintAddress(mintAddress.base58Value) ?: error("Failed to find token to observe") }
+            .distinctUntilChanged()
+            .map { tokens -> tokens.findByMintAddress(tokenMint.base58Value) }
+            .filterNotNull()
 
     private fun Flow<List<TokenEntity>>.mapToDomain(): Flow<List<Token.Active>> {
         return map {
@@ -52,13 +56,18 @@ class UserTokensLocalRepository(
         val indexOfTokenToChange = cachedTokens.indexOfFirst { it.mintAddress == tokenMint.base58Value }
         val newTokenAppeared = indexOfTokenToChange == -1
         if (newTokenAppeared) {
+            Timber.d("New token appeared: $tokenMint")
             createNewToken(tokenMint, newBalanceLamports, accountPublicKey)
                 ?.also(cachedTokens::add)
                 ?: kotlin.run {
-                    Timber.i(NullPointerException("Failed to add new token ${tokenMint.base58Value}"))
+                    Timber.e(NullPointerException("Failed to add new token ${tokenMint.base58Value}"))
                 }
         } else {
             val tokenToChange = cachedTokens[indexOfTokenToChange]
+            Timber.d(
+                "Old token changed: %s; %s; diff=%s",
+                tokenMint.base58Value, tokenToChange.tokenName, tokenToChange.totalInLamports - newBalanceLamports
+            )
             cachedTokens[indexOfTokenToChange] = createUpdatedToken(tokenToChange, newBalanceLamports)
         }
         homeLocalRepository.updateTokens(cachedTokens)
