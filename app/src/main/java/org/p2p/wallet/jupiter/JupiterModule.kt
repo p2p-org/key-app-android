@@ -115,6 +115,7 @@ object JupiterModule : InjectionModule {
                 analytics = get(),
                 historyInteractor = get(),
                 initialAmountA = initialData.initialAmountA,
+                alarmErrorsLogger = get()
             )
         } bind JupiterSwapContract.Presenter::class
 
