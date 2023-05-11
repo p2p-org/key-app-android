@@ -21,9 +21,9 @@ interface SubscriptionUpdatesManager {
 
     fun removeUpdatesStateObserver(observer: SubscriptionUpdatesStateObserver)
 
-    fun addSubscription(request: RpcRequest, updateType: UpdateType)
+    fun addSubscription(request: RpcRequest, updateType: SocketSubscriptionUpdateType)
 
-    fun addSubscription(request: RpcMapRequest, updateType: UpdateType)
+    fun addSubscription(request: RpcMapRequest, updateType: SocketSubscriptionUpdateType)
 
     fun removeSubscription(request: RpcRequest)
 

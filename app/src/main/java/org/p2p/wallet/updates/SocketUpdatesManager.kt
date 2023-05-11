@@ -18,9 +18,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.solanaj.ws.NotificationEventListener
+import org.p2p.solanaj.ws.SocketClientCreateResult
 import org.p2p.solanaj.ws.SocketStateListener
-import org.p2p.solanaj.ws.SubscriptionWebSocketClient
+import org.p2p.solanaj.ws.SubscriptionEventListener
+import org.p2p.solanaj.ws.SubscriptionSocketClient
+import org.p2p.solanaj.ws.SubscriptionSocketClientFactory
+import org.p2p.solanaj.ws.impl.SocketClientException
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SocketSubscriptionsFeatureToggle
@@ -42,7 +45,7 @@ class SocketUpdatesManager(
 
     private val networkEnvironment: NetworkEnvironment
         get() = environmentManager.loadCurrentEnvironment()
-    private var client: SubscriptionWebSocketClient? = null
+    private var client: SubscriptionSocketClient? = null
     private var connectionJob: Job? = null
 
     private val observers = mutableListOf<SubscriptionUpdatesStateObserver>()
@@ -51,12 +54,14 @@ class SocketUpdatesManager(
         if (oldValue != newValue) observers.lastOrNull()?.onUpdatesStateChanged(newValue)
     }
 
+    private val socketFactory = SubscriptionSocketClientFactory()
+
     private var isStarted = false
 
     override fun start() {
         if (isStarted || !socketEnabledFeatureToggle.isFeatureEnabled) {
             Timber.tag(TAG).i(
-                "Unable to start socket manager: isStarted=${isStarted } flag=${socketEnabledFeatureToggle.value}"
+                "Unable to start socket manager: isStarted=$isStarted flag=${socketEnabledFeatureToggle.value}"
             )
             return
         }
@@ -84,22 +89,22 @@ class SocketUpdatesManager(
         launch { observers.remove(observer) }
     }
 
-    override fun addSubscription(request: RpcRequest, updateType: UpdateType) {
+    override fun addSubscription(request: RpcRequest, updateType: SocketSubscriptionUpdateType) {
         Timber.tag(TAG).d("add subscription for request, client = $client")
-        val listener = createNotificationEventListener(updateType)
+        val listener = createEventListener(updateType)
         client?.addSubscription(request, listener)
     }
 
-    override fun addSubscription(request: RpcMapRequest, updateType: UpdateType) {
+    override fun addSubscription(request: RpcMapRequest, updateType: SocketSubscriptionUpdateType) {
         Timber.tag(TAG).d("add subscription for request, client = $client")
-        val listener = createNotificationEventListener(updateType)
+        val listener = createEventListener(updateType)
         client?.addSubscription(request, listener)
     }
 
-    private fun createNotificationEventListener(updateType: UpdateType): NotificationEventListener =
-        NotificationEventListener { data: JsonObject ->
+    private fun createEventListener(updateType: SocketSubscriptionUpdateType): SubscriptionEventListener =
+        SubscriptionEventListener { data: JsonObject ->
             launch(Dispatchers.Default) {
-                Timber.tag(TAG).d("NotificationEventListener triggered($updateType): $data")
+                Timber.tag(TAG).d("New socket event triggered($updateType): $data")
 
                 updateHandlers.forEach {
                     it.onUpdate(updateType, data)
@@ -185,7 +190,7 @@ class SocketUpdatesManager(
             Timber.tag(TAG).i("Connecting: Network OK, initializing update handlers")
             updateHandlers.forEach { it.initialize() }
         } catch (e: Throwable) {
-            Timber.tag(TAG).i(e)
+            Timber.tag(TAG).i(SocketClientException(e), "Awaiting network failed")
             state = SocketState.INITIALIZATION_FAILED
             return
         }
@@ -194,20 +199,33 @@ class SocketUpdatesManager(
         Timber.tag(TAG).i("Connecting: Update handlers are initialized, connecting to event stream")
 
         try {
-            val endpoint = networkEnvironment.endpoint
-            val validatedEndpoint = if (networkEnvironment == NetworkEnvironment.RPC_POOL) {
-                endpoint.toUri()
-                    .buildUpon()
-                    .appendEncodedPath(BuildConfig.rpcPoolApiKey)
-                    .toString()
-            } else {
-                endpoint
+            val validatedEndpoint = createValidatedEndpoint()
+            when (val result = socketFactory.create(validatedEndpoint, this)) {
+                is SocketClientCreateResult.Created -> {
+                    client = result.instance
+                    if (client?.isSocketOpen == false) {
+                        client?.connect()
+                        Timber.tag(TAG).i("Connection created for : $client")
+                    }
+                    state = SocketState.CONNECTED
+                }
+                is SocketClientCreateResult.Failed -> throw result
             }
-            client = SubscriptionWebSocketClient.getInstance(validatedEndpoint, this)
-            state = SocketState.CONNECTED
         } catch (e: Throwable) {
-            Timber.tag(TAG).i(e)
+            Timber.tag(TAG).e(SocketClientException(e), "Connecting failed")
             state = SocketState.CONNECTING_FAILED
+        }
+    }
+
+    private fun createValidatedEndpoint(): String {
+        val endpoint = networkEnvironment.endpoint
+        return if (networkEnvironment == NetworkEnvironment.RPC_POOL) {
+            endpoint.toUri()
+                .buildUpon()
+                .appendEncodedPath(BuildConfig.rpcPoolApiKey)
+                .toString()
+        } else {
+            endpoint
         }
     }
 

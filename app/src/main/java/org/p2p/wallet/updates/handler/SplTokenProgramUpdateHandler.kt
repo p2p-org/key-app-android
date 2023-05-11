@@ -9,8 +9,8 @@ import org.p2p.solanaj.model.types.RpcNotificationResultResponse
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.home.repository.UserTokensRepository
+import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdateHandler
-import org.p2p.wallet.updates.UpdateType
 import org.p2p.wallet.utils.toBase58Instance
 
 private const val TAG = "TokensBalanceUpdateManager"
@@ -22,8 +22,8 @@ class SplTokenProgramUpdateHandler(
 
     override suspend fun initialize() = Unit
 
-    override suspend fun onUpdate(type: UpdateType, data: JsonObject) {
-        if (type != UpdateType.SPL_TOKEN_PROGRAM_UPDATED) return
+    override suspend fun onUpdate(type: SocketSubscriptionUpdateType, data: JsonObject) {
+        if (type != SocketSubscriptionUpdateType.SPL_TOKEN_PROGRAM_UPDATED) return
 
         val response = gson.fromJson(data, TokenProgramNotificationResponse::class.java).result.value
 
