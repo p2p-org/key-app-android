@@ -104,7 +104,11 @@ class UserTokensPolling(
         userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
 
     private suspend fun fetchEthereumTokens() {
-        ethereumInteractor.loadWalletTokens()
+        try {
+            ethereumInteractor.loadWalletTokens()
+        } catch (t: Throwable) {
+            Timber.e(t, "Error on loading ethereum Tokens")
+        }
     }
 
     private fun getEthereumTokensFlow(): Flow<List<Token.Eth>> {

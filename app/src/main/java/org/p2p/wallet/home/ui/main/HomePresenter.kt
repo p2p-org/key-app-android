@@ -155,7 +155,7 @@ class HomePresenter(
                     try {
                         ethereumInteractor.loadWalletTokens()
                     } catch (t: Throwable) {
-                        Timber.i(t, "Error on loading ethereum Tokens")
+                        Timber.e(t, "Error on loading ethereum Tokens")
                     }
                 }
                 attachToPollingTokens()
