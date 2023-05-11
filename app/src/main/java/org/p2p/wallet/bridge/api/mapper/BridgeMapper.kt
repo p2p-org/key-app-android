@@ -40,7 +40,7 @@ class BridgeMapper {
             status = response.status,
             claimKey = response.claimKey,
             compensationDeclineReason = response.compensationDeclineReason.orEmpty(),
-            dateCreated = response.dateCreated.seconds.inWholeMilliseconds.toZonedDateTime()
+            dateCreated = response.dateCreatedSec.seconds.inWholeMilliseconds.toZonedDateTime()
         )
     }
 
@@ -95,7 +95,7 @@ class BridgeMapper {
             amount = fromNetwork(response.amount),
             fees = fromNetwork(response.fees),
             status = fromNetwork(response.status),
-            dateCreated = response.dateCreated.seconds.inWholeMilliseconds.toZonedDateTime()
+            dateCreated = response.dateCreatedSec.seconds.inWholeMilliseconds.toZonedDateTime()
         )
     }
 
