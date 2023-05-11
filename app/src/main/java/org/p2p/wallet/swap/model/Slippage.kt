@@ -33,6 +33,10 @@ sealed class Slippage(val doubleValue: Double, val percentValue: String) : Parce
     @Parcelize
     data class Custom(val value: Double) : Slippage(doubleValue = value, "${value.times(PERCENT_DIVIDE_VALUE)}%")
 
+    override fun toString(): String {
+        return "Slippage.${this::class.java.simpleName}(doubleValue = $doubleValue, percentValue = $percentValue)"
+    }
+
     companion object {
         const val PERCENT_DIVIDE_VALUE = 100
         const val MAX_ALLOWED_SLIPPAGE = 50
