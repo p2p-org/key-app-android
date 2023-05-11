@@ -1,6 +1,5 @@
 package org.p2p.wallet.bridge.claim.ui
 
-import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
@@ -26,7 +25,6 @@ import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
 import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
-import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -40,7 +38,6 @@ class ClaimPresenter(
     private val ethereumInteractor: EthereumInteractor,
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
-    private val resources: Resources,
     private val appScope: AppScope,
     private val claimAnalytics: ClaimAnalytics
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
@@ -130,7 +127,8 @@ class ClaimPresenter(
             isFree = isFree,
             resultAmount = resultAmount,
             fees = fees,
-            minAmountForFreeFee = minAmountForFreeFee
+            minAmountForFreeFee = minAmountForFreeFee,
+            transactionDate = ZonedDateTime.now()
         )
         view?.setClaimButtonState(isButtonEnabled = true)
     }
@@ -210,7 +208,7 @@ class ClaimPresenter(
         ).also { newBundle ->
             latestBundle = newBundle
             latestBundleId = newBundle.bundleId
-            refreshJobDelayTimeInMillis = newBundle.getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
+            refreshJobDelayTimeInMillis = newBundle.getExpirationDateInMillis() - ZonedDateTime.now().toEpochSecond()
             latestTransactions = newBundle.transactions
         }
     }

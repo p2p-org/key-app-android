@@ -2,6 +2,7 @@ package org.p2p.wallet.bridge.claim.interactor
 
 import java.math.BigDecimal
 import org.p2p.core.token.SolAddress
+import org.p2p.core.token.Token
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.internal.models.Signature
@@ -56,5 +57,9 @@ class ClaimInteractor(
 
     fun getProgressDetails(bundleId: String): NewShowProgress? {
         return ethereumClaimLocalRepository.getProgressDetails(bundleId)
+    }
+
+    fun getBundleByToken(token: Token.Eth): BridgeBundle? {
+        return ethereumClaimLocalRepository.getBundleByToken(token)
     }
 }

@@ -32,4 +32,6 @@ class BridgeBundleResponse(
     val status: ClaimStatus? = null,
     @SerializedName("claim_key")
     val claimKey: String? = null,
+    @SerializedName("created")
+    val dateCreatedSec: Long
 )
