@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
-import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
@@ -33,7 +32,6 @@ import org.p2p.wallet.bridge.analytics.ClaimAnalytics
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -98,7 +96,6 @@ class HomePresenter(
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
     private val transactionManager: TransactionManager,
-    private val ethereumSendRepository: EthereumSendRepository,
     private val claimUiMapper: ClaimUiMapper,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
@@ -155,9 +152,11 @@ class HomePresenter(
                     }
                 }
                 async {
-                    val bundles = ethereumInteractor.getListOfEthereumBundleStatuses()
-                    ethereumSendRepository.getSendTransactionsDetail(SolAddress(tokenKeyProvider.publicKey))
-                    ethereumInteractor.loadWalletTokens(bundles)
+                    try {
+                        ethereumInteractor.loadWalletTokens()
+                    } catch (t: Throwable) {
+                        Timber.e(t, "Error on loading ethereum Tokens")
+                    }
                 }
                 attachToPollingTokens()
             } catch (e: Throwable) {
