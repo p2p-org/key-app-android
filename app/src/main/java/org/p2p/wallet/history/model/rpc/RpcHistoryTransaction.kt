@@ -406,7 +406,7 @@ sealed class RpcHistoryTransaction(
         @ColorRes
         fun getTextColor(): Int = when {
             !status.isCompleted() -> R.color.text_rose
-            else ->  R.color.text_night
+            else -> R.color.text_night
         }
     }
 
