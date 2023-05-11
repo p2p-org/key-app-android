@@ -14,32 +14,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
-import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
 
 private val POLLING_ETH_DELAY = 30.toDuration(DurationUnit.SECONDS)
-private val TAG = "UserTokensPolling"
 
 class UserTokensPolling(
     private val appFeatureFlags: InAppFeatureFlags,
     private val userInteractor: UserInteractor,
-    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val ethereumInteractor: EthereumInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val ethereumSendRepository: EthereumSendRepository,
     private val appScope: AppScope
 ) : CoroutineScope {
     override val coroutineContext: CoroutineContext
@@ -111,19 +104,15 @@ class UserTokensPolling(
         userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
 
     private suspend fun fetchEthereumTokens() {
-        if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            val ethBundles = ethereumInteractor.getListOfEthereumBundleStatuses()
-            ethereumSendRepository.getSendTransactionsDetail(SolAddress(tokenKeyProvider.publicKey))
-            ethereumInteractor.loadWalletTokens(ethBundles)
+        try {
+            ethereumInteractor.loadWalletTokens()
+        } catch (t: Throwable) {
+            Timber.e(t, "Error on loading ethereum Tokens")
         }
     }
 
     private fun getEthereumTokensFlow(): Flow<List<Token.Eth>> {
-        return if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            ethereumInteractor.getTokensFlow()
-        } else {
-            flowOf(emptyList())
-        }
+        return ethereumInteractor.getTokensFlow()
     }
 }
 

@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.model
 
 import android.os.Parcelable
+import org.threeten.bp.ZonedDateTime
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.SolAddress
@@ -23,6 +24,7 @@ data class BridgeBundle(
     val transactions: List<HexString>,
     var signatures: List<Signature>,
     val fees: BridgeBundleFees,
+    val dateCreated: ZonedDateTime,
     var status: ClaimStatus? = null,
     var claimKey: String? = null
 ) : Parcelable {

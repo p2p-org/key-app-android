@@ -15,5 +15,7 @@ class BridgeTransactionStatusResponse(
     @SerializedName("fees")
     val fees: BridgeSendFeesResponse,
     @SerializedName("status")
-    val status: BridgeSendStatusResponse
+    val status: BridgeSendStatusResponse,
+    @SerializedName("created")
+    val dateCreatedSec: Long
 )

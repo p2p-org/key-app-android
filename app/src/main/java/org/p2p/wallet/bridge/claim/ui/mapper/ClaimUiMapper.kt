@@ -3,7 +3,7 @@ package org.p2p.wallet.bridge.claim.ui.mapper
 import android.content.res.Resources
 import android.view.Gravity
 import java.math.BigDecimal
-import java.util.Date
+import org.threeten.bp.ZonedDateTime
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
@@ -29,7 +29,7 @@ class ClaimUiMapper(private val resources: Resources) {
         tokenToClaim: Token.Eth,
         claimDetails: ClaimDetails?
     ): NewShowProgress {
-        val transactionDate = Date()
+        val transactionDate = claimDetails?.transactionDate ?: ZonedDateTime.now()
         val willGetAmount = claimDetails?.willGetAmount
         val amountTokens = willGetAmount?.formattedTokenAmount.orEmpty()
         val amountUsd = willGetAmount?.fiatAmount.orZero()
@@ -53,7 +53,8 @@ class ClaimUiMapper(private val resources: Resources) {
         isFree: Boolean,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
-        minAmountForFreeFee: BigDecimal
+        minAmountForFreeFee: BigDecimal,
+        transactionDate: ZonedDateTime,
     ): ClaimDetails {
         val defaultFee = fees?.gasFeeInToken.toBridgeAmount()
         return ClaimDetails(
@@ -62,7 +63,8 @@ class ClaimUiMapper(private val resources: Resources) {
             networkFee = defaultFee,
             accountCreationFee = fees?.createAccount.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(),
-            minAmountForFreeFee = minAmountForFreeFee
+            minAmountForFreeFee = minAmountForFreeFee,
+            transactionDate = transactionDate
         )
     }
 
