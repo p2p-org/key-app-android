@@ -15,6 +15,7 @@ interface UserLocalRepository {
     fun getTokenPrices(): Flow<List<TokenPrice>>
     fun getPriceByTokenId(tokenId: String?): TokenPrice?
     fun setTokenData(data: List<TokenData>)
+    fun getTokensData(): List<TokenData>
     fun fetchTokens(searchText: String, count: Int, refresh: Boolean)
     fun getTokenListFlow(): Flow<TokenListData>
     fun findTokenData(mintAddress: String): TokenData?

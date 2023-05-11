@@ -79,6 +79,14 @@ class HistoryFragment :
         )
     }
 
+    override fun onBridgeSendClicked(transactionId: String) {
+        presenter.onSendPendingClicked(transactionId)
+    }
+
+    override fun onBridgeClaimClicked(transactionId: String) {
+        presenter.onClaimPendingClicked(transactionId)
+    }
+
     private fun listenForSellTransactionDialogDismiss() {
         childFragmentManager.setFragmentResultListener(
             SellTransactionDetailsBottomSheet.REQUEST_KEY_DISMISSED, this

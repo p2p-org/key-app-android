@@ -177,6 +177,14 @@ class TokenHistoryFragment :
         )
     }
 
+    override fun onBridgeSendClicked(transactionId: String) {
+        // TODO
+    }
+
+    override fun onBridgeClaimClicked(transactionId: String) {
+        // TODO
+    }
+
     override fun onUserSendLinksClicked() = Unit
 
     override fun showError(@StringRes resId: Int, argument: String) {

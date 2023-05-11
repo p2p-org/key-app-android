@@ -12,6 +12,7 @@ import org.p2p.wallet.bridge.api.response.BridgeSendFeesResponse
 import org.p2p.wallet.bridge.api.response.BridgeSendStatusResponse
 import org.p2p.wallet.bridge.api.response.BridgeSendTransactionResponse
 import org.p2p.wallet.bridge.api.response.BridgeTransactionStatusResponse
+import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeFee
@@ -35,7 +36,7 @@ class BridgeMapper {
             transactions = response.transactions.orEmpty(),
             signatures = response.signatures.orEmpty(),
             fees = fromNetwork(response.fees),
-            status = response.status,
+            status = ClaimStatus.IN_PROGRESS,
             claimKey = response.claimKey,
             compensationDeclineReason = response.compensationDeclineReason.orEmpty()
         )
@@ -103,15 +104,9 @@ class BridgeMapper {
     }
 
     fun toHistoryItem(claimBundle: BridgeBundle, mintAddress: String): HistoryTransaction? {
-        val tokenContractAddress = ERC20Tokens.values().firstOrNull { it.mintAddress == mintAddress }
-        val isEth =
-            claimBundle.resultAmount.symbol == Constants.ETH_SYMBOL &&
-                tokenContractAddress?.contractAddress == ERC20Tokens.ETH.contractAddress
-        val isHexEquals = (tokenContractAddress?.contractAddress == claimBundle.resultAmount.token?.hex)
-        val isAllHistory = mintAddress == Constants.WRAPPED_SOL_MINT
-        val isEthereumHistory = isEth && !isHexEquals
-        val isEthTokenHistory = !isEth && isHexEquals
-        if (isEthereumHistory || isEthTokenHistory || isAllHistory) {
+        val foundTokenSymbol =
+            ERC20Tokens.values().firstOrNull { it.replaceTokenSymbol == claimBundle.resultAmount.symbol }
+        if (foundTokenSymbol?.mintAddress == mintAddress || mintAddress == Constants.WRAPPED_SOL_MINT) {
             return BridgeHistoryTransaction.Claim(
                 bundleId = claimBundle.bundleId,
                 date = ZonedDateTime.now(),

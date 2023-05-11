@@ -86,6 +86,8 @@ class HistoryAdapter(
             is DateItem -> item.date.hashCode().toLong()
             is UserSendLinksItem -> item.linksCount.hashCode().toLong()
             is HistoryItem.SwapBannerItem -> item.date.hashCode().toLong()
+            is HistoryItem.BridgeClaimItem -> item.transactionId.toLong()
+            is HistoryItem.BridgeSendItem -> item.transactionId.toLong()
             else -> RecyclerView.NO_ID
         }
     }

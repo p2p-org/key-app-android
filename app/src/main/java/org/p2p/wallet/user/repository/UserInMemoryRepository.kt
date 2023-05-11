@@ -41,6 +41,8 @@ class UserInMemoryRepository(
         allTokensFlow.value = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
 
+    override fun getTokensData(): List<TokenData> = allTokensFlow.value
+
     override fun fetchTokens(searchText: String, count: Int, refresh: Boolean) {
         if (refresh) {
             searchTextByTokens.clear()

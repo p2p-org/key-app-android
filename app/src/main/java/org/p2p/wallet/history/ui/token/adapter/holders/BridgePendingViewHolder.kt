@@ -19,14 +19,13 @@ class BridgePendingViewHolder(
     fun onBind(item: HistoryItem.BridgeSendItem) {
         itemView.setOnClickListener { onHistoryClicked(item) }
         with(binding) {
-            // TODO fix icons
             transactionTokenImageView.apply {
                 ERC20Tokens.values()
                     .firstOrNull { it.mintAddress == item.sendDetails.recipient.raw }
                     ?.let { setTokenImage(glideManager, it.tokenIconUrl) }
                     ?: setTransactionIcon(R.drawable.ic_transaction_send)
             }
-            startAmountView.title = context.getString(R.string.bridge_ethereum_network)
+            startAmountView.title = context.getString(R.string.bridge_to_ethereum)
             startAmountView.subtitle = context.getString(R.string.bridge_send_pending)
             endAmountView.topValue = item.getFormattedFiatValue()
             endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))
@@ -38,13 +37,14 @@ class BridgePendingViewHolder(
     fun onBind(item: HistoryItem.BridgeClaimItem) {
         itemView.setOnClickListener { onHistoryClicked(item) }
         with(binding) {
-            // TODO fix icons
+            item.tokenIconUrl?.let { transactionTokenImageView.setTokenImage(glideManager, it) }
+                ?: transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_unknown)
             transactionTokenImageView.apply {
                 ERC20Tokens.values().firstOrNull { it.replaceTokenSymbol == item.bundle.resultAmount.symbol }
                     ?.let { setTokenImage(glideManager, it.tokenIconUrl) }
                     ?: setTransactionIcon(R.drawable.ic_transaction_receive)
             }
-            startAmountView.title = context.getString(R.string.bridge_ethereum_network)
+            startAmountView.title = context.getString(R.string.bridge_from_ethereum)
             startAmountView.subtitle = context.getString(R.string.bridge_claim_pending)
             endAmountView.topValue = item.getFormattedFiatValue()
             endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))

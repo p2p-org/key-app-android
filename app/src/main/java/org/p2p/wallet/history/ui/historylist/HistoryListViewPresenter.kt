@@ -150,6 +150,12 @@ class HistoryListViewPresenter(
                         openedFrom = historyItem.openedFrom
                     )
                 }
+                is HistoryItem.BridgeSendItem -> {
+                    view?.onBridgeSendClicked(historyItem.transactionId)
+                }
+                is HistoryItem.BridgeClaimItem -> {
+                    view?.onBridgeClaimClicked(historyItem.transactionId)
+                }
                 else -> {
                     val errorMessage = "Unsupported Transaction click! $historyItem"
                     Timber.e(UnsupportedOperationException(errorMessage))

@@ -16,5 +16,7 @@ interface HistoryContract {
         fun onBuyClicked()
         fun onTransactionClicked(transactionId: String)
         fun onSellTransactionClicked(transactionId: String)
+        fun onClaimPendingClicked(transactionId: String)
+        fun onSendPendingClicked(transactionId: String)
     }
 }

@@ -24,4 +24,10 @@ class HistoryPresenter(
     override fun onSellTransactionClicked(transactionId: String) {
         view?.openSellTransactionDetails(transactionId)
     }
+
+    override fun onClaimPendingClicked(transactionId: String) {
+    }
+
+    override fun onSendPendingClicked(transactionId: String) {
+    }
 }
