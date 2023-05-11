@@ -5,8 +5,8 @@ import timber.log.Timber
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.p2p.wallet.transaction.interactor.TransactionStatusInteractor
+import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdateHandler
-import org.p2p.wallet.updates.UpdateType
 
 private const val TAG = "TransactionSignatureHandler"
 class TransactionSignatureHandler(
@@ -15,8 +15,8 @@ class TransactionSignatureHandler(
 
     override suspend fun initialize() = Unit
 
-    override suspend fun onUpdate(type: UpdateType, data: JsonObject) {
-        if (type != UpdateType.TX_SIGNATURE_UPDATED) {
+    override suspend fun onUpdate(type: SocketSubscriptionUpdateType, data: JsonObject) {
+        if (type != SocketSubscriptionUpdateType.TX_SIGNATURE_UPDATED) {
             return
         }
         coroutineScope {

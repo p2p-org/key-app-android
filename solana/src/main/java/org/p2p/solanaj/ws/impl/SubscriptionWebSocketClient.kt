@@ -1,4 +1,4 @@
-package org.p2p.solanaj.ws
+package org.p2p.solanaj.ws.impl
 
 import com.google.gson.Gson
 import org.java_websocket.WebSocket
@@ -10,81 +10,67 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
 import java.net.URI
-import java.net.URISyntaxException
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcNotificationResponse
 import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.solanaj.ws.SocketStateListener
+import org.p2p.solanaj.ws.SubscriptionEventListener
+import org.p2p.solanaj.ws.SubscriptionSocketClient
 
 private const val TAG = "Sockets:SubscriptionSocketClient"
+private typealias SubscriptionId = Long
 
-class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSocketClient(serverURI), KoinComponent {
+class SocketClientException(
+    override val cause: Throwable,
+    override val message: String? = cause.message,
+): Throwable()
 
-    companion object {
-        private var instance: SubscriptionWebSocketClient? = null
-        private var socketStateListener: SocketStateListener? = null
+internal class SubscriptionWebSocketClient internal constructor(
+    serverURI: URI,
+    private val stateListener: SocketStateListener,
+) : WebSocketClient(serverURI), KoinComponent, SubscriptionSocketClient {
 
-        fun getInstance(
-            endpoint: String,
-            stateListener: SocketStateListener?
-        ): SubscriptionWebSocketClient? {
-            val endpointURI: URI
-            val serverURI: URI
-            socketStateListener = stateListener
-            try {
-                endpointURI = URI(endpoint)
-                val scheme = if (endpointURI.scheme === "https") "wss" else "ws"
-                serverURI = URI("$scheme://${endpointURI.host}${endpointURI.path}")
-            } catch (e: URISyntaxException) {
-                Timber.tag(TAG).i(e)
-                throw IllegalArgumentException(e)
-            }
-            Timber.tag(TAG).d("Creating connection, uri: $serverURI + host: $endpointURI")
-            try {
-                if (instance == null) {
-                    instance = SubscriptionWebSocketClient(serverURI)
-                }
-                Timber.tag(TAG).i("Web socket client is created for : $serverURI")
-            } catch (e: Throwable) {
-                Timber.tag(TAG).e("Error on creating web socket client, error = $e")
-            }
-
-            if (instance?.isOpen == false) {
-                instance?.connect()
-                Timber.tag(TAG).i("Connection created for : $serverURI")
-            }
-            return instance
-        }
-    }
+    private class SubscriptionParams<RpcRequest>(
+        val request: RpcRequest,
+        val listener: SubscriptionEventListener
+    )
 
     private val gson: Gson by inject()
     private val subscriptions = mutableMapOf<String, SubscriptionParams<*>?>()
-    private val requestsIdsToSubscriptionIds = mutableMapOf<String, Long?>()
-    private val subscriptionListeners = mutableMapOf<Long, NotificationEventListener>()
+    private val requestsIdsToSubscriptionIds = mutableMapOf<String, SubscriptionId?>()
+    private val subscriptionListeners = mutableMapOf<SubscriptionId, SubscriptionEventListener>()
 
-    fun ping() {
+    override val isSocketOpen: Boolean
+        get() = super.isOpen()
+
+    override fun ping() {
         try {
-            if (instance?.isOpen == true) instance?.sendPing()
-            Timber.tag(TAG).d("Server PING")
+            if (isSocketOpen) {
+                Timber.tag(TAG).d("Server PING")
+                sendPing()
+            }
         } catch (error: WebsocketNotConnectedException) {
-            Timber.tag(TAG).e(error, "Error on ping socket")
+            Timber.tag(TAG).e(SocketClientException(error), "Error on ping socket")
         }
     }
 
-    fun addSubscription(request: RpcMapRequest, listener: NotificationEventListener) {
+    override fun addSubscription(request: RpcMapRequest, listener: SubscriptionEventListener) {
         Timber.tag(TAG).i("addSubscription(RpcMapRequest) = $request")
+
         subscriptions[request.id] = SubscriptionParams(request, listener)
         requestsIdsToSubscriptionIds[request.id] = null
         updateSubscriptions()
     }
 
-    fun addSubscription(request: RpcRequest, listener: NotificationEventListener) {
+    override fun addSubscription(request: RpcRequest, listener: SubscriptionEventListener) {
         Timber.tag(TAG).i("addSubscription(RpcRequest) = $request")
+
         subscriptions[request.id] = SubscriptionParams(request, listener)
         requestsIdsToSubscriptionIds[request.id] = null
         updateSubscriptions()
     }
 
-    fun removeSubscription(request: RpcMapRequest) {
+    override fun removeSubscription(request: RpcMapRequest) {
         send(gson.toJson(request))
 
         subscriptions[request.id] = null
@@ -93,7 +79,7 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
         updateSubscriptions()
     }
 
-    fun removeSubscription(request: RpcRequest) {
+    override fun removeSubscription(request: RpcRequest) {
         send(gson.toJson(request))
 
         subscriptions[request.id] = null
@@ -104,11 +90,11 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
 
     override fun onWebsocketPong(socket: WebSocket, framedata: Framedata) {
         super.onWebsocketPong(socket, framedata)
-        socketStateListener?.onWebSocketPong()
+        stateListener.onWebSocketPong()
     }
 
     override fun onOpen(handshakedata: ServerHandshake) {
-        socketStateListener?.onConnected()
+        stateListener.onConnected()
         updateSubscriptions()
     }
 
@@ -124,15 +110,15 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
                 handleSubscriptionNewUpdate(response)
             }
         } catch (e: Throwable) {
-            Timber.tag(TAG).e(e, "Error on reading message, $message")
+            Timber.tag(TAG).e(SocketClientException(e), "Error on reading message, $message")
         }
     }
 
-    private fun handleSubscriptionNewUpdate(response: RpcNotificationResponse?){
+    private fun handleSubscriptionNewUpdate(response: RpcNotificationResponse?) {
         response?.params ?: return
         val subscriptionId = response.params.get("subscription").asInt.toLong()
         val listener = subscriptionListeners[subscriptionId]
-        listener?.onNotificationEvent(response.params)
+        listener?.onSubscriptionUpdated(response.params)
 
         val logString = buildString {
             append("Find listener for subscription = $subscriptionId in ")
@@ -143,19 +129,19 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
 
     override fun onClose(code: Int, reason: String, remote: Boolean) {
         val closedFrom = if (remote) "remote peer" else "us"
-        socketStateListener?.onClosed(
+        stateListener.onClosed(
             code = code,
             message = "Connection closed by $closedFrom Code: $code Reason: $reason"
         )
     }
 
     override fun onError(ex: Exception) {
-        Timber.tag(TAG).e(ex, "Error on socket working")
-        socketStateListener?.onFailed(ex)
+        Timber.tag(TAG).e(SocketClientException(ex), "Error on socket working")
+        stateListener.onFailed(ex)
     }
 
     private fun updateSubscriptions() {
-        if (instance?.isOpen == true) {
+        if (isSocketOpen) {
             for (sub in subscriptions.values.filterNotNull()) {
                 val requestJson = when (sub.request) {
                     is RpcRequest -> gson.toJson(sub.request)
@@ -169,7 +155,7 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
         }
     }
 
-    private fun handleSubscribeResponse(requestId: String, subscriptionId: Long) {
+    private fun handleSubscribeResponse(requestId: String, subscriptionId: SubscriptionId) {
         Timber.tag(TAG).d("handleSubscribeResponse: current=${subscriptionListeners.keys.joinToString()}")
         if (requestId in requestsIdsToSubscriptionIds) {
             requestsIdsToSubscriptionIds[requestId] = subscriptionId
@@ -180,9 +166,4 @@ class SubscriptionWebSocketClient private constructor(serverURI: URI?) : WebSock
         }
         Timber.tag(TAG).d("handleSubscribeResponse: after=${subscriptionListeners.keys.joinToString()}")
     }
-
-    private class SubscriptionParams<RpcRequest>(
-        val request: RpcRequest,
-        val listener: NotificationEventListener
-    )
 }

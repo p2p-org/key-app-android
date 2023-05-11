@@ -5,8 +5,8 @@ import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
-import org.p2p.wallet.updates.UpdateType
 
 private const val SUBSCRIBE_METHOD_NAME = "programSubscribe"
 private const val UNSUBSCRIBE_METHOD_NAME = "programUnsubscribe"
@@ -23,7 +23,7 @@ class SplTokenProgramSubscriber(
         params = listOf(
             SystemProgram.SPL_TOKEN_PROGRAM_ID.toBase58(),
             mapOf(
-                "сommitment" to "сonfirmed",
+                "commitment" to "confirmed",
                 "encoding" to "base64",
                 "filters" to listOf(
                     mapOf("dataSize" to TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH),
@@ -46,7 +46,7 @@ class SplTokenProgramSubscriber(
     override fun subscribe() {
         updatesManager.addSubscription(
             request = request,
-            updateType = UpdateType.SPL_TOKEN_PROGRAM_UPDATED
+            updateType = SocketSubscriptionUpdateType.SPL_TOKEN_PROGRAM_UPDATED
         )
     }
 

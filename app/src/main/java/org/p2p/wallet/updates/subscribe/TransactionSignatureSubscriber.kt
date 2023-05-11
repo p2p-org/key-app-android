@@ -2,8 +2,8 @@ package org.p2p.wallet.updates.subscribe
 
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
-import org.p2p.wallet.updates.UpdateType
 
 private const val SUBSCRIBE_METHOD_NAME = "signatureSubscribe"
 private const val UNSUBSCRIBE_METHOD_NAME = "signatureUnsubscribe"
@@ -25,7 +25,7 @@ class TransactionSignatureSubscriber(
     )
 
     override fun subscribe() {
-        updatesManager.addSubscription(request, UpdateType.TX_SIGNATURE_UPDATED)
+        updatesManager.addSubscription(request, SocketSubscriptionUpdateType.TX_SIGNATURE_UPDATED)
     }
 
     override fun unSubscribe() {
