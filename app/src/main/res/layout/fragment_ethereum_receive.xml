@@ -120,8 +120,8 @@
 
                 <ImageView
                     android:id="@+id/imageViewMoney"
-                    android:layout_width="100dp"
-                    android:layout_height="88dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:src="@drawable/placeholder_receive_banner"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
