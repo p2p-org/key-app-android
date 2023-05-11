@@ -240,7 +240,7 @@ class HomePresenter(
     private suspend fun tryGetProgressByToken(token: Token.Eth) {
         ethereumInteractor.getBundleByToken(token)?.let { bridgeBundle ->
             getProgressDetails(token, bridgeBundle)
-        } ?: Timber.i("No bundle found associated to token: $token to show claim details!")
+        } ?: Timber.e("No bundle found associated to token: $token to show claim details!")
     }
 
     private suspend fun getProgressDetails(token: Token.Eth, bridgeBundle: BridgeBundle) {

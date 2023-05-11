@@ -35,13 +35,14 @@ class EthereumBridgeInMemoryRepository : EthereumBridgeLocalRepository {
     }
 
     override fun getBundleByToken(token: Token.Eth): BridgeBundle? {
-        return if (token.isEth) {
-            bridgeBundlesMap.values.filter { it.status.isProcessing() }
-                .lastOrNull() { it.resultAmount.token == null }
-        } else {
-            bridgeBundlesMap.values.filter { it.status.isProcessing() }
-                .lastOrNull() { token.publicKey == it.resultAmount.token?.hex }
-        }
+        return bridgeBundlesMap.values.filter { it.status.isProcessing() }
+            .lastOrNull() {
+                if (token.isEth) {
+                    it.resultAmount.token == null
+                } else {
+                    token.publicKey == it.resultAmount.token?.hex
+                }
+            }
     }
 
     override fun getAllBundles(): List<BridgeBundle> {
