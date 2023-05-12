@@ -17,6 +17,7 @@ class ReceiveEthereumPresenter(
         launch {
             try {
                 view?.showLoading(isLoading = true)
+                view?.setMinAmountForFreeFee(ethereumInteractor.getClaimMinAmountForFreeFee())
                 val tokenAddressInHexString = ethereumInteractor.getEthAddress().hex
                 val qr = qrCodeInteractor.generateQrCode(tokenAddressInHexString)
                 view?.showQrAndAddress(qr, tokenAddressInHexString)
