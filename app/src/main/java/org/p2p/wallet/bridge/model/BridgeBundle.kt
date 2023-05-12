@@ -5,8 +5,6 @@ import org.threeten.bp.ZonedDateTime
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.SolAddress
-import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.ERC20Tokens

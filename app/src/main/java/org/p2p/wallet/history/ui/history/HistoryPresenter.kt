@@ -59,7 +59,8 @@ class HistoryPresenter(
                 bundleId = bridgeBundle.bundleId,
                 progressDetails = progressDetails
             )
-        }    }
+        }
+    }
 
     override fun onSendPendingClicked(transactionId: String) {
     }
