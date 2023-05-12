@@ -65,7 +65,8 @@ class UserTokensPolling(
             try {
                 isRefreshingFlow.emit(true)
                 fetchEthereumTokens()
-                fetchSolTokens()
+                val userTokens = fetchSolTokens()
+                userInteractor.loadUserRatesIfEmpty(userTokens)
                 startPolling()
             } catch (e: CancellationException) {
                 Timber.i("Cancelled tokens remote update")
