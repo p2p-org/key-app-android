@@ -74,6 +74,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
 
         val encoding = HashMap<String, String>()
         encoding[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED
+        encoding[RpcConstants.REQUEST_PARAMETER_KEY_COMMITMENT] = RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
 
         val params = listOf(
             owner.toBase58(),
