@@ -34,6 +34,10 @@ class EthereumBridgeInMemoryRepository : EthereumBridgeLocalRepository {
         return bridgeBundlesMap.values.find { it.claimKey == claimKey }
     }
 
+    override fun getBundleById(bundleId: String): BridgeBundle? {
+        return bridgeBundlesMap[bundleId]
+    }
+
     override fun getBundleByToken(token: Token.Eth): BridgeBundle? {
         return bridgeBundlesMap.values.filter { it.status.isProcessing() }
             .lastOrNull() {

@@ -164,7 +164,8 @@ class ClaimPresenter(
                     ethereumInteractor.signClaimTransaction(transaction = unsignedTransaction)
                 }
                 val progressDetails = claimUiMapper.prepareShowProgress(
-                    tokenToClaim = tokenToClaim,
+                    amountToClaim = tokenToClaim.total,
+                    iconUrl = tokenToClaim.iconUrl.orEmpty(),
                     claimDetails = claimDetails
                 )
                 ethereumInteractor.saveProgressDetails(latestBundleId, progressDetails)

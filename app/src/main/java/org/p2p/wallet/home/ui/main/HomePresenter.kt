@@ -220,52 +220,30 @@ class HomePresenter(
             if (canBeClaimed) {
                 view?.showTokenClaim(token)
             } else {
-                token.latestActiveBundleId?.let { latestBundleId ->
-                    val latestBundleDetails = ethereumInteractor.getProgressDetails(latestBundleId)
-                    transactionManager.emitTransactionState(
-                        latestBundleId,
-                        TransactionState.ClaimProgress(latestBundleId)
-                    )
-                    if (latestBundleDetails != null) {
-                        showClaimProgressDetails(latestBundleId, latestBundleDetails)
-                    } else {
-                        tryGetProgressByToken(token)
-                    }
-                } ?: tryGetProgressByToken(token)
+                val latestActiveBundleId = token.latestActiveBundleId ?: return@launch
+                val bridgeBundle = ethereumInteractor.getBundleById(latestActiveBundleId) ?: return@launch
+                val claimDetails = claimUiMapper.makeClaimDetails(
+                    resultAmount = bridgeBundle.resultAmount,
+                    fees = bridgeBundle.fees,
+                    isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
+                    minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
+                    transactionDate = bridgeBundle.dateCreated
+                )
+                val progressDetails = claimUiMapper.prepareShowProgress(
+                    amountToClaim = bridgeBundle.resultAmount.amountInToken,
+                    iconUrl = token.iconUrl.orEmpty(),
+                    claimDetails = claimDetails
+                )
+                transactionManager.emitTransactionState(
+                    latestActiveBundleId,
+                    TransactionState.ClaimProgress(latestActiveBundleId)
+                )
+                view?.showProgressDialog(
+                    bundleId = bridgeBundle.bundleId,
+                    progressDetails = progressDetails
+                )
             }
         }
-    }
-
-    private suspend fun tryGetProgressByToken(token: Token.Eth) {
-        ethereumInteractor.getBundleByToken(token)?.let { bridgeBundle ->
-            getProgressDetails(token, bridgeBundle)
-        } ?: Timber.e("No bundle found associated to token: $token to show claim details!")
-    }
-
-    private suspend fun getProgressDetails(token: Token.Eth, bridgeBundle: BridgeBundle) {
-        var progressDetails = ethereumInteractor.getProgressDetails(bridgeBundle.bundleId)
-        if (progressDetails == null) {
-            val claimDetails = claimUiMapper.makeClaimDetails(
-                resultAmount = bridgeBundle.resultAmount,
-                fees = bridgeBundle.fees,
-                isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
-                minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
-                transactionDate = bridgeBundle.dateCreated
-            )
-            progressDetails = claimUiMapper.prepareShowProgress(
-                tokenToClaim = token,
-                claimDetails = claimDetails
-            )
-            ethereumInteractor.saveProgressDetails(bridgeBundle.bundleId, progressDetails)
-        }
-        showClaimProgressDetails(bridgeBundle.bundleId, progressDetails)
-    }
-
-    private fun showClaimProgressDetails(bundleId: String, bundleDetails: NewShowProgress) {
-        view?.showProgressDialog(
-            bundleId = bundleId,
-            progressDetails = bundleDetails
-        )
     }
 
     private fun handleDeeplinks() {

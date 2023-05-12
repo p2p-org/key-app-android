@@ -97,7 +97,6 @@ class HomeFragment :
 
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
-    private val claimAnalytics: ClaimAnalytics by inject()
 
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val layoutManager: LinearLayoutManager by lazy {

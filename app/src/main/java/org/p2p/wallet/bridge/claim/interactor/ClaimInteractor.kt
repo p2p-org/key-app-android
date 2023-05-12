@@ -62,4 +62,8 @@ class ClaimInteractor(
     fun getBundleByToken(token: Token.Eth): BridgeBundle? {
         return ethereumClaimLocalRepository.getBundleByToken(token)
     }
+
+    fun getBundleById(bundleId: String): BridgeBundle? {
+        return ethereumClaimLocalRepository.getBundleById(bundleId)
+    }
 }

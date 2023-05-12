@@ -26,14 +26,14 @@ import org.p2p.wallet.utils.toPx
 class ClaimUiMapper(private val resources: Resources) {
 
     fun prepareShowProgress(
-        tokenToClaim: Token.Eth,
+        amountToClaim: BigDecimal,
+        iconUrl: String,
         claimDetails: ClaimDetails?
     ): NewShowProgress {
         val transactionDate = claimDetails?.transactionDate ?: ZonedDateTime.now()
         val willGetAmount = claimDetails?.willGetAmount
         val amountTokens = willGetAmount?.formattedTokenAmount.orEmpty()
         val amountUsd = willGetAmount?.fiatAmount.orZero()
-        val amountToClaim = tokenToClaim.total
         val minAmountForFreeFee = claimDetails?.minAmountForFreeFee.orZero()
         val isFreeTransaction = amountToClaim >= minAmountForFreeFee
         val feeList = claimDetails?.let {
@@ -41,7 +41,7 @@ class ClaimUiMapper(private val resources: Resources) {
         }?.filter { !isFreeTransaction }?.ifEmpty { null }
         return NewShowProgress(
             date = transactionDate,
-            tokenUrl = tokenToClaim.iconUrl.orEmpty(),
+            tokenUrl = iconUrl,
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
             recipient = null,

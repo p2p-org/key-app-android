@@ -13,6 +13,7 @@ interface EthereumBridgeLocalRepository {
     fun getBundle(bundleId: String): BridgeBundle?
     fun getBundleByToken(token: Token.Eth): BridgeBundle?
     fun getBundleByKey(claimKey: String): BridgeBundle?
+    fun getBundleById(bundleId: String): BridgeBundle?
     fun getAllBundles(): List<BridgeBundle>
     fun getAllSendDetails(): List<BridgeSendTransactionDetails>
 
