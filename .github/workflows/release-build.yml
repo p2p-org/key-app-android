@@ -42,6 +42,8 @@ jobs:
           svl-memo-send: ${{ secrets.SVL_MEMO_SEND }}
           svl-memo-claim: ${{ secrets.SVL_MEMO_CLAIM }}
           salt-prefix: ${{ secrets.SALT_PREFIX }}
+      - name: "Generate changelog"
+        uses: ./.github/actions/setup-changelog
       - name: "Send start deploy message to slack"
         run: bash bash_scripts/slack_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Generate a unique version build"
