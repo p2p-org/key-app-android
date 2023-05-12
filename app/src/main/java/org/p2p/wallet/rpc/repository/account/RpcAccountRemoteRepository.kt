@@ -72,14 +72,15 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         val programIdParam = HashMap<String, String>()
         programIdParam["programId"] = programId.toBase58()
 
-        val encoding = HashMap<String, String>()
-        encoding[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED
-        encoding[RpcConstants.REQUEST_PARAMETER_KEY_COMMITMENT] = RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
+        val config = RequestConfiguration(
+            encoding = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED,
+            commitment = RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
+        )
 
         val params = listOf(
             owner.toBase58(),
             programIdParam,
-            encoding
+            config
         )
 
         val rpcRequest = RpcRequest("getTokenAccountsByOwner", params)
@@ -89,12 +90,13 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
     override suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo {
         val keys = publicKeys.map { it.toBase58() }
 
-        val encoding = HashMap<String, String>()
-        encoding[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED
+        val config = RequestConfiguration(
+            encoding = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED,
+        )
 
         val params = listOf(
             keys,
-            encoding
+            config
         )
 
         val rpcRequest = RpcRequest("getMultipleAccounts", params)
