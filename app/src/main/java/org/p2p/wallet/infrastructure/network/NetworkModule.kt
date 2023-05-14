@@ -28,6 +28,9 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Base58TypeAdapter
 import org.p2p.wallet.home.model.Base64TypeAdapter
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionInstructionErrorParser
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
@@ -63,11 +66,15 @@ object NetworkModule : InjectionModule {
         single { CertificateManager(get(), get()) }
 
         single {
+            val transactionErrorTypeAdapter = RpcTransactionErrorTypeAdapter(
+                RpcTransactionInstructionErrorParser()
+            )
             GsonBuilder()
                 .apply { if (BuildConfig.DEBUG) setPrettyPrinting() }
                 .registerTypeAdapter(BigDecimal::class.java, BigDecimalTypeAdapter)
                 .registerTypeAdapter(Base58String::class.java, Base58TypeAdapter)
                 .registerTypeAdapter(Base64String::class.java, Base64TypeAdapter)
+                .registerTypeAdapter(RpcTransactionError::class.java, transactionErrorTypeAdapter)
                 .setLenient()
                 .disableHtmlEscaping()
                 .create()

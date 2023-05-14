@@ -80,6 +80,8 @@
 -keep public class * implements org.p2p.wallet.auth.model.RestoreUserResult
 -keep public class * implements org.p2p.wallet.jupiter.statemanager.SwapStateAction
 -keep public class * extends org.p2p.wallet.moonpay.model.MoonpayBuyResult
+-keep public class * implements org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
+-keep public class * implements org.p2p.wallet.infrastructure.network.data.transactionerrors.TransactionInstructionError
 
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }
