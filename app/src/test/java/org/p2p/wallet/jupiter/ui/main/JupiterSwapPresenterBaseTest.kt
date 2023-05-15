@@ -6,6 +6,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.spyk
 import io.mockk.unmockkStatic
@@ -289,8 +290,8 @@ open class JupiterSwapPresenterBaseTest {
                     dispatchers = dispatchers,
                     homeLocalRepository = homeLocalRepository,
                     savedSelectedSwapTokenStorage = jupiterSwapStorage,
-                    preinstallTokenA = tokenASymbol,
-                    preinstallTokenB = tokenBSymbol,
+                    preinstallTokenASymbol = tokenASymbol,
+                    preinstallTokenBSymbol = tokenBSymbol,
                 )
             }
 
@@ -471,6 +472,8 @@ open class JupiterSwapPresenterBaseTest {
             dispatchers = dispatchers,
             userLocalRepository = userLocalRepository,
             historyInteractor = historyInteractor,
+            resources = mockk(relaxed = true),
+            alarmErrorsLogger = mockk(relaxed = true),
             initialAmountA = data.initialAmountA
         )
     }
