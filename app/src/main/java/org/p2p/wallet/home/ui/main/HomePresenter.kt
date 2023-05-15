@@ -146,7 +146,9 @@ class HomePresenter(
             try {
                 view?.showRefreshing(true)
                 userInteractor.loadAllTokensDataIfEmpty()
-                val userSolTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
+                val userSolTokens = userInteractor.loadUserTokensAndUpdateLocal(
+                    tokenKeyProvider.publicKey.toPublicKey()
+                )
                 async {
                     try {
                         userInteractor.loadUserRates(userSolTokens)

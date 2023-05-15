@@ -126,7 +126,12 @@ class UserInteractor(
         when {
             // if prices are not loaded at all, load them
             !userLocalRepository.arePricesLoaded() -> {
-                loadUserRates(userTokens)
+                try {
+                    loadUserRates(userTokens)
+                } catch (t: Throwable) {
+                    // info level because it's not critical
+                    Timber.i(t, "Error on loading user rates")
+                }
             }
 
             // if prices are loaded, but user tokens are not updated, update them
