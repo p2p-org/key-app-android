@@ -10,7 +10,6 @@ import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConf
 import org.p2p.wallet.common.feature_toggles.remote_config.FeatureTogglesValuesSource
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
-import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDebounceFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
@@ -39,7 +38,6 @@ object FeatureTogglesModule : InjectionModule {
             setOf(
                 get<SslPinningFeatureToggle>(),
                 get<NewBuyFeatureToggle>(),
-                get<BuyWithTransferFeatureToggle>(),
                 get<SettingsNetworkListFeatureToggle>(),
                 get<NetworkObservationFeatureToggle>(),
                 get<SendViaLinkFeatureToggle>(),
@@ -55,7 +53,6 @@ object FeatureTogglesModule : InjectionModule {
 
         factoryOf(::SslPinningFeatureToggle)
         factoryOf(::NewBuyFeatureToggle)
-        factoryOf(::BuyWithTransferFeatureToggle)
         factoryOf(::SettingsNetworkListFeatureToggle)
         factoryOf(::SolendEnabledFeatureToggle)
         factoryOf(::NetworkObservationFeatureToggle)

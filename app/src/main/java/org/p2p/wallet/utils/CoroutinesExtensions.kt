@@ -4,8 +4,8 @@ import timber.log.Timber
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
-import kotlin.reflect.KClass
 import kotlinx.coroutines.delay
+import kotlin.reflect.KClass
 
 private const val INITIAL_DELAY = 100L
 private const val MAX_DELAY = 1000L

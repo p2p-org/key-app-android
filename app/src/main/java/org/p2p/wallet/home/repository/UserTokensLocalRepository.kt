@@ -16,7 +16,7 @@ import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.Base58String
 
@@ -92,7 +92,7 @@ class UserTokensLocalRepository(
     private suspend fun getNewTokenPrice(coingeckoId: String): TokenPrice? {
         return kotlin.runCatching {
             tokenPricesRepository.getTokenPriceById(
-                tokenId = TokenId(coingeckoId),
+                tokenId = TokenCoinGeckoId(coingeckoId),
                 targetCurrency = USD_READABLE_SYMBOL
             )
         }

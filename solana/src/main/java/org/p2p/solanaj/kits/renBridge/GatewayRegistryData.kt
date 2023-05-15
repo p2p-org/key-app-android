@@ -13,7 +13,7 @@ private const val GATEWAY_REGISTRY_DATA_LENGTH =
         ByteUtils.UINT_32_LENGTH +
         (32 * PublicKey.PUBLIC_KEY_LENGTH)
 
-class GatewayRegistryData(private val data: ByteArray) : AbstractData(data, GATEWAY_REGISTRY_DATA_LENGTH) {
+class GatewayRegistryData(data: ByteArray) : AbstractData(data, GATEWAY_REGISTRY_DATA_LENGTH) {
 
     companion object {
         fun decode(data: ByteArray) = GatewayRegistryData(data)

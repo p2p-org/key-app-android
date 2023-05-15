@@ -37,7 +37,7 @@ class SeedPhraseProvider(
         get() = getSeedPhraseProviderFromStorage()
         set(value) {
             field = value
-            value.let { saveSeedPhraseProviderToStorage(it) }
+            saveSeedPhraseProviderToStorage(value)
             Timber.tag(TAG).i("updating user seed phrase provider: $value")
         }
 

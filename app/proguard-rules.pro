@@ -40,6 +40,7 @@
 -keepnames class * extends org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 -keepnames class * extends org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 -keepnames class * extends com.google.android.material.bottomsheet.BottomSheetDialogFragment
+-keepnames class * extends org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 -keepnames class androidx.biometric.BiometricFragment
 -keepnames class androidx.biometric.FingerprintDialogFragment
 

@@ -6,7 +6,7 @@ import org.p2p.uikit.databinding.ItemFinanceBlockBinding
 
 class BaseCellViewHolder(
     private val binding: ItemFinanceBlockBinding,
-    private val inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
+    inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
     private val onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit)? = null,
 ) : RecyclerView.ViewHolder(binding.root) {
 

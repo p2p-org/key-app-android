@@ -1,6 +1,6 @@
 package org.p2p.wallet.auth.statemachine
 
-class RestoreStateMachine() {
+class RestoreStateMachine {
 
     private lateinit var currentState: RestoreState
 

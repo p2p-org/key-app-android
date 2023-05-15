@@ -1,6 +1,8 @@
 package org.p2p.wallet.common.ui.bottomsheet
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -11,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.core.common.TextContainer
+import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogErrorBottomSheetBinding
 import org.p2p.wallet.utils.args
@@ -25,35 +28,55 @@ class ErrorBottomSheet(
     companion object {
         private const val EXTRA_ICON = "EXTRA_ICON"
         private const val EXTRA_TITLE = "EXTRA_TITLE"
-        private const val EXTRA_MESSAGE = "EXTRA_MESSAGE"
+        private const val EXTRA_PRIMARY_BUTTON = "EXTRA_PRIMARY_BUTTON"
+        private const val EXTRA_SECONDARY_BUTTON = "EXTRA_SECONDARY_BUTTON"
 
         fun show(
             activity: FragmentActivity,
-            @DrawableRes iconRes: Int,
+            @DrawableRes iconRes: Int? = null,
             title: TextContainer,
-            message: TextContainer,
+            @StringRes primaryButtonRes: Int,
+            @StringRes secondaryButtonRes: Int,
             actionCallback: (() -> Unit)? = null,
             dismissCallback: (() -> Unit)? = null
         ) {
-            show(activity.supportFragmentManager, iconRes, title, message, actionCallback, dismissCallback)
+            show(
+                fragmentManager = activity.supportFragmentManager,
+                iconRes = iconRes,
+                title = title,
+                primaryButtonRes = primaryButtonRes,
+                secondaryButtonRes = secondaryButtonRes,
+                actionCallback = actionCallback,
+                dismissCallback = dismissCallback
+            )
         }
 
         fun show(
             fragment: Fragment,
-            @DrawableRes iconRes: Int,
+            @DrawableRes iconRes: Int? = null,
             title: TextContainer,
-            message: TextContainer,
+            @StringRes primaryButtonRes: Int,
+            @StringRes secondaryButtonRes: Int,
             actionCallback: (() -> Unit)? = null,
             dismissCallback: (() -> Unit)? = null
         ) {
-            show(fragment.childFragmentManager, iconRes, title, message, actionCallback, dismissCallback)
+            show(
+                fragmentManager = fragment.childFragmentManager,
+                iconRes = iconRes,
+                title = title,
+                primaryButtonRes = primaryButtonRes,
+                secondaryButtonRes = secondaryButtonRes,
+                actionCallback = actionCallback,
+                dismissCallback = dismissCallback
+            )
         }
 
         fun show(
             fragmentManager: FragmentManager,
-            @DrawableRes iconRes: Int,
+            @DrawableRes iconRes: Int? = null,
             title: TextContainer,
-            message: TextContainer,
+            @StringRes primaryButtonRes: Int,
+            @StringRes secondaryButtonRes: Int,
             actionCallback: (() -> Unit)? = null,
             dismissCallback: (() -> Unit)? = null
         ) {
@@ -64,7 +87,8 @@ class ErrorBottomSheet(
                 .withArgs(
                     EXTRA_ICON to iconRes,
                     EXTRA_TITLE to title,
-                    EXTRA_MESSAGE to message
+                    EXTRA_PRIMARY_BUTTON to primaryButtonRes,
+                    EXTRA_SECONDARY_BUTTON to secondaryButtonRes,
                 )
                 .show(fragmentManager, ErrorBottomSheet::javaClass.name)
         }
@@ -72,9 +96,10 @@ class ErrorBottomSheet(
 
     private val binding: DialogErrorBottomSheetBinding by viewBinding()
 
-    private val icon: Int by args(EXTRA_ICON)
+    private val icon: Int? by args(EXTRA_ICON)
     private val title: TextContainer by args(EXTRA_TITLE)
-    private val message: TextContainer by args(EXTRA_MESSAGE)
+    private val primaryButtonRes: Int by args(EXTRA_PRIMARY_BUTTON)
+    private val secondaryButtonRes: Int by args(EXTRA_SECONDARY_BUTTON)
 
     override fun show(manager: FragmentManager, tag: String?) {
         val ft = manager.beginTransaction()
@@ -88,14 +113,17 @@ class ErrorBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            titleTextView.text = title.getString(requireContext())
-            messageTextView.text = message.getString(requireContext())
+            textViewTitle.text = title.getString(requireContext())
 
-            iconImageView.setImageResource(icon)
-
-            actionButton.clipToOutline = true
-            actionButton.setOnClickListener {
+            imageViewIcon.withImageOrGone(icon)
+            buttonDone.setText(primaryButtonRes)
+            buttonDone.isVisible = actionCallback != null
+            buttonDone.setOnClickListener {
                 actionCallback?.invoke()
+                dismissAllowingStateLoss()
+            }
+            buttonCancel.setText(secondaryButtonRes)
+            buttonCancel.setOnClickListener {
                 dismissAllowingStateLoss()
             }
         }

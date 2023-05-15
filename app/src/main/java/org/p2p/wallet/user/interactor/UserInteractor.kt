@@ -23,7 +23,7 @@ import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
-import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.emptyString
 
@@ -126,7 +126,7 @@ class UserInteractor(
         Timber.i("Loading user rates for ${userTokens.size}")
         val tokenIds = userTokens.mapNotNull { token ->
             val coingeckoId = userLocalRepository.findTokenData(token.mintAddress)?.coingeckoId
-            coingeckoId?.let { TokenId(id = it) }
+            coingeckoId?.let { TokenCoinGeckoId(id = it) }
         }
 
         val allTokenIds = (tokenIds + POPULAR_TOKENS_COINGECKO_IDS).distinct()
@@ -152,8 +152,13 @@ class UserInteractor(
 
         val newTokens = cachedTokens.map { token ->
             val price = prices.find { it.tokenId == token.coingeckoId }
-            val totalInUsd = price?.price?.let { token.total.times(it) }
-            token.copy(rate = price?.price, totalInUsd = totalInUsd)
+
+            val newTotalInUsd = price?.price?.let { token.total.times(it) }
+            val oldTotalInUsd = token.totalInUsd
+
+            val tokenRate = token.rate ?: price?.price
+            val totalInUsd = oldTotalInUsd ?: newTotalInUsd
+            token.copy(rate = tokenRate, totalInUsd = totalInUsd)
         }.sortedWith(TokenComparator())
 
         homeLocalRepository.clear()

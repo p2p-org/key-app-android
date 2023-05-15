@@ -50,12 +50,7 @@ class NodeWebSocket(
     init {
         val backoffStrategy = ExponentialWithJitterBackoffStrategy(RETRY_BASE_DURATION, RETRY_MAX_DURATION)
 
-        val loggingInterceptor = HttpLoggingInterceptor(
-            object : HttpLoggingInterceptor.Logger {
-                override fun log(message: String) {
-                    logger.info(message)
-                }
-            })
+        val loggingInterceptor = HttpLoggingInterceptor { message -> logger.info(message) }
             .setLevel(HttpLoggingInterceptor.Level.BASIC)
 
         val headersInterceptor = Interceptor { chain ->

@@ -37,6 +37,7 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -48,13 +49,14 @@ import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
-import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
+import org.p2p.wallet.utils.getParcelableCompat
+import org.p2p.wallet.utils.getSerializableCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
@@ -153,8 +155,8 @@ class HomeFragment :
         }
     }
 
-    override fun showAddressCopied(addressAndUsername: String) {
-        requireContext().copyToClipBoard(addressAndUsername)
+    override fun showAddressCopied(addressOrUsername: String) {
+        requireContext().copyToClipBoard(addressOrUsername)
         showUiKitSnackBar(
             message = getString(R.string.home_address_snackbar_text),
             actionButtonResId = R.string.common_ok,
@@ -230,15 +232,19 @@ class HomeFragment :
             ActionButton.BUY_BUTTON -> {
                 presenter.onBuyClicked()
             }
+
             ActionButton.RECEIVE_BUTTON -> {
                 replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             }
+
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
             }
+
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())
             }
+
             ActionButton.SWAP_BUTTON -> {
                 showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
             }
@@ -248,13 +254,15 @@ class HomeFragment :
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
-                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.also(::showOldBuyScreen)
+                result.getParcelableCompat<Token>(KEY_RESULT_TOKEN)?.also(::showOldBuyScreen)
             }
+
             KEY_REQUEST_TOKEN_INFO -> {
-                result.getParcelable<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
+                result.getParcelableCompat<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
             }
+
             KEY_REQUEST_ACTION -> {
-                (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.also(::openScreenByHomeAction)
+                result.getSerializableCompat<HomeAction>(KEY_RESULT_ACTION)?.also(::openScreenByHomeAction)
             }
         }
     }
@@ -338,7 +346,7 @@ class HomeFragment :
     }
 
     override fun navigateToProfile() {
-        replaceFragment(NewSettingsFragment.create())
+        replaceFragment(SettingsFragment.create())
     }
 
     override fun navigateToReserveUsername() {
@@ -350,10 +358,12 @@ class HomeFragment :
             R.id.home_banner_top_up -> {
                 replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             }
+
             R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
                 replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
             }
+
             R.string.home_feedback_banner_option -> {
                 browseAnalytics.logBannerFeedbackPressed()
                 IntercomService.showMessenger()

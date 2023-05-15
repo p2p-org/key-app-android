@@ -29,6 +29,7 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -119,7 +120,7 @@ class BridgeSendFragment :
         when {
             // will be more!
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
-                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
+                val token = result.getParcelableCompat<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
                 presenter.updateToken(token)
             }
         }

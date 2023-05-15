@@ -44,7 +44,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.sell.interactor.SellInteractor
-import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
@@ -218,7 +218,7 @@ class MainFragment :
             when (fragment) {
                 is HomeFragment -> tabCachedFragments.put(R.id.homeItem, fragment)
                 is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
-                is NewSettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
+                is SettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
                 is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
                 is JupiterSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
             }
@@ -278,7 +278,7 @@ class MainFragment :
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
-                ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
+                ScreenTab.SETTINGS_SCREEN -> SettingsFragment.create()
                 ScreenTab.SWAP_SCREEN -> JupiterSwapFragment.create(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
                 else -> error("Can't create fragment for $clickedTab")
             }

@@ -1,11 +1,8 @@
 package org.p2p.wallet.moonpay.interactor
 
 import org.p2p.wallet.R
-import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRepository
-import kotlinx.coroutines.withContext
 
 const val GBP_BANK_TRANSFER = "gbp_bank_transfer"
 const val SEPA_BANK_TRANSFER = "sepa_bank_transfer"
@@ -31,34 +28,23 @@ private val BANK_TRANSFER_PAYMENT_METHOD = PaymentMethod(
     paymentType = SEPA_BANK_TRANSFER
 )
 
-class PaymentMethodsInteractor(
-    private val repository: NewMoonpayBuyRepository,
-    private val dispatchers: CoroutineDispatchers,
-    private val bankTransferFeatureToggle: BuyWithTransferFeatureToggle
-) {
+class PaymentMethodsInteractor(private val repository: NewMoonpayBuyRepository) {
 
-    fun getAvailablePaymentMethods(alpha3Code: String): List<PaymentMethod> = when {
-        bankTransferFeatureToggle.value && bankTransferIsAvailable(alpha3Code) -> {
-            listOf(
-                BANK_TRANSFER_PAYMENT_METHOD.copy(
-                    paymentType = if (alpha3Code == BANK_TRANSFER_UK_CODE) {
-                        GBP_BANK_TRANSFER
-                    } else {
-                        SEPA_BANK_TRANSFER
-                    },
-                    isSelected = true
-                ),
-                CARD_PAYMENT_METHOD.copy()
+    fun getAvailablePaymentMethods(alpha3Code: String): List<PaymentMethod> =
+        if (bankTransferIsAvailable(alpha3Code)) {
+            val validatedBankTransfer = BANK_TRANSFER_PAYMENT_METHOD.copy(
+                paymentType = if (alpha3Code == BANK_TRANSFER_UK_CODE) GBP_BANK_TRANSFER else SEPA_BANK_TRANSFER,
+                isSelected = true
             )
-        }
-        else -> {
+            val cardPayment = CARD_PAYMENT_METHOD.copy()
+            listOf(
+                validatedBankTransfer, cardPayment
+            )
+        } else {
             listOf(CARD_PAYMENT_METHOD.copy(isSelected = true))
         }
-    }
 
     private fun bankTransferIsAvailable(alpha3Code: String): Boolean = BANK_TRANSFER_ALPHA3_CODES.contains(alpha3Code)
 
-    suspend fun getBankTransferAlphaCode(): String = withContext(dispatchers.io) {
-        repository.getIpAddressData().currentCountryAbbreviation
-    }
+    suspend fun getBankTransferAlphaCode(): String = repository.getIpAddressData().currentCountryAbbreviation
 }

@@ -1,70 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_alert_elevation_rounded_top_snow"
-    android:orientation="vertical">
+    android:layout_gravity="bottom"
+    android:background="@drawable/bg_rounded_transparent_8"
+    android:backgroundTint="@color/backgroundPrimary">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="center_vertical"
-            android:background="@color/strokeSecondary" />
-
-        <org.p2p.uikit.atoms.UiKitRoundedImageView
-            android:id="@+id/iconImageView"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_connection_error" />
-    </FrameLayout>
+    <View
+        android:id="@+id/viewPointer"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/titleTextView"
+        android:id="@+id/textViewTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginVertical="16dp"
         android:gravity="center"
-        android:text="@string/error_network_title"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Bold18" />
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewPointer"
+        tools:text="@string/error_network_message" />
 
-    <TextView
-        android:id="@+id/messageTextView"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/imageViewIcon"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="4dp"
-        android:gravity="center"
-        android:text="@string/error_network_message"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="@color/textIconSecondary" />
+        android:layout_marginVertical="20dp"
+        android:contentDescription="@string/details_transaction_not_found"
+        android:src="@drawable/ic_not_found"
+        app:layout_constraintBottom_toTopOf="@+id/buttonDone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
 
-    <Space
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonDone"
+        style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
-        android:layout_height="40dp" />
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/common_try_again"
+        android:textColor="@color/snow"
+        app:iconGravity="textEnd"
+        app:iconSize="24dp"
+        app:iconTint="@color/icons_snow"
+        app:layout_constraintBottom_toTopOf="@id/buttonCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/actionButton"
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonCancel"
+        style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginHorizontal="20dp"
-        android:background="@drawable/bg_lightblue_rounded"
-        android:foreground="?selectableItemBackground"
-        android:text="@string/common_ok"
-        android:textAllCaps="false"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="@color/backgroundButtonPrimary"
-        tools:ignore="UnusedAttribute" />
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/bg_snow"
+        android:text="@string/common_cancel"
+        android:textColor="@color/night"
+        app:iconSize="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

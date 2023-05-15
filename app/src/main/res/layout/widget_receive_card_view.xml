@@ -36,7 +36,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/settings_network"
+                        android:text="@string/debug_settings_network"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
                         app:layout_constraintBottom_toBottomOf="@id/arrowImageView"
                         app:layout_constraintStart_toStartOf="parent"

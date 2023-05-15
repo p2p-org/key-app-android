@@ -22,6 +22,7 @@ import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationFragment
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -85,7 +86,7 @@ class SendViaLinkFragment :
         when {
             // will be more!
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
-                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
+                val token = result.getParcelableCompat<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
                 presenter.updateToken(token)
             }
         }

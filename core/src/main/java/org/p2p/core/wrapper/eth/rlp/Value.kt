@@ -39,7 +39,7 @@ class Value(obj: Any?) {
     fun asList(): List<Any> {
         decode()
         val valueArray = value as Array<Any>
-        return Arrays.asList(*valueArray)
+        return listOf(*valueArray)
     }
 
     fun decode() {

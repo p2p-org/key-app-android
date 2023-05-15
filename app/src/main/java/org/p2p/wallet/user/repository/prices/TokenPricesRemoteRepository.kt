@@ -4,17 +4,17 @@ import org.p2p.wallet.home.model.TokenPrice
 
 interface TokenPricesRemoteRepository {
     suspend fun getTokenPriceByIds(
-        tokenIds: List<TokenId>,
+        tokenIds: List<TokenCoinGeckoId>,
         targetCurrency: String
     ): List<TokenPrice>
 
     suspend fun getTokenPricesByIdsMap(
-        tokenIds: List<TokenId>,
+        tokenIds: List<TokenCoinGeckoId>,
         targetCurrency: String
-    ): Map<TokenId, TokenPrice>
+    ): Map<TokenCoinGeckoId, TokenPrice>
 
     suspend fun getTokenPriceById(
-        tokenId: TokenId,
+        tokenId: TokenCoinGeckoId,
         targetCurrency: String
     ): TokenPrice
 }

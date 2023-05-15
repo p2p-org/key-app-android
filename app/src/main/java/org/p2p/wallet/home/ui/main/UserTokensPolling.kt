@@ -27,6 +27,7 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
 
 private val POLLING_ETH_DELAY = 30.toDuration(DurationUnit.SECONDS)
+private const val TAG = "UserTokensPolling"
 
 class UserTokensPolling(
     private val appFeatureFlags: InAppFeatureFlags,

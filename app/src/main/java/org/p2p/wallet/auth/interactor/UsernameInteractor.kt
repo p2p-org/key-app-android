@@ -45,7 +45,7 @@ class UsernameInteractor(
 
     suspend fun tryRestoreUsername(owner: Base58String) {
         try {
-            val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
+            val usernameDetails = findUsernameByAddress(owner)
             sharedPreferences.edit {
                 if (usernameDetails != null) {
                     putString(KEY_USERNAME, usernameDetails.username.value)
@@ -63,9 +63,15 @@ class UsernameInteractor(
         }
     }
 
+    /**
+     * Priority in search is given to .key usernames, return them at first
+     */
     suspend fun findUsernameByAddress(address: Base58String): UsernameDetails? {
         if (address.base58Value.isBlank()) return null
-        return usernameRepository.findUsernameDetailsByAddress(address).firstOrNull()
+        return usernameRepository.findUsernameDetailsByAddress(address)
+            .run {
+                firstOrNull { it.username.domainPrefix == usernameDomainFeatureToggle.value } ?: firstOrNull()
+            }
     }
 
     fun isUsernameExist(): Boolean = sharedPreferences.contains(KEY_USERNAME)
@@ -97,7 +103,6 @@ class UsernameInteractor(
         return isUsernameItemCanBeShown || isRegisterUsernameItemCanBeShown
     }
 
-    fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? = fileLocalRepository.saveQr(
-        name, bitmap, forSharing
-    )
+    fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? =
+        fileLocalRepository.saveQr(name, bitmap, forSharing)
 }

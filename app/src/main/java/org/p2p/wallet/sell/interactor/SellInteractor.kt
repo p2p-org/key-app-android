@@ -61,7 +61,7 @@ class SellInteractor(
             append("isSellAllowedForUser=${sellRepository.isSellAllowedForUser()}")
         }
         Timber.i("Checking if sell is available: $debugInfo")
-        return true
+        return isSellAvailable
     }
 
     private suspend fun isUserBalancePositive(): Boolean {
