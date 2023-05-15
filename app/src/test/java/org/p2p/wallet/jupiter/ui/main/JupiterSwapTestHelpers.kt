@@ -207,7 +207,7 @@ object JupiterSwapTestHelpers {
                 totalFeeAndDepositsInSol = BigInteger("0"),
                 minimumSolForTransaction = BigInteger("0")
             ),
-            keyAppFee = "0",
+            keyAppFeeInLamports = BigInteger.ZERO,
             keyAppRefundableFee = "0",
             keyAppHash = "86cdfab8becfda70a17bac0c2b0704a3afe5458812a60af2e93154d11dc34abe"
         )
