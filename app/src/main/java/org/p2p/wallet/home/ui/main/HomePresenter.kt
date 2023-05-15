@@ -151,14 +151,20 @@ class HomePresenter(
     }
 
     private fun loadSolanaTokens() {
+        launch {
+            // ignore internet state; tokens must display regardless of any error
+            attachToPollingTokens()
+        }
         launchInternetAware(connectionManager) {
             try {
                 view?.showRefreshing(true)
                 userInteractor.loadAllTokensDataIfEmpty()
-                val solTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
+                val userSolTokens = userInteractor.loadUserTokensAndUpdateLocal(
+                    tokenKeyProvider.publicKey.toPublicKey()
+                )
                 async {
                     try {
-                        userInteractor.loadUserRates(solTokens)
+                        userInteractor.loadUserRates(userSolTokens)
                     } catch (t: Throwable) {
                         Timber.i(t, "Error on loading user rates")
                         view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
@@ -171,11 +177,27 @@ class HomePresenter(
                         Timber.e(t, "Error on loading ethereum Tokens")
                     }
                 }
-                attachToPollingTokens()
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading Sol tokens")
             } finally {
                 view?.showRefreshing(false)
+            }
+        }
+    }
+
+    override fun refreshTokens() {
+        launchInternetAware(connectionManager) {
+            try {
+                view?.showRefreshing(isRefreshing = true)
+                tokensPolling.refreshTokens()
+                initializeActionButtons(isRefreshing = true)
+            } catch (cancelled: CancellationException) {
+                Timber.i("Loading tokens job cancelled")
+            } catch (error: Throwable) {
+                Timber.e(error, "Error refreshing user tokens")
+                view?.showErrorMessage(error)
+            } finally {
+                view?.showRefreshing(isRefreshing = false)
             }
         }
     }
@@ -433,23 +455,6 @@ class HomePresenter(
         logBalance(BigDecimal.ZERO)
 
         view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
-    }
-
-    override fun refreshTokens() {
-        launchInternetAware(connectionManager) {
-            try {
-                view?.showRefreshing(isRefreshing = true)
-                tokensPolling.refreshTokens()
-                initializeActionButtons(isRefreshing = true)
-            } catch (cancelled: CancellationException) {
-                Timber.i("Loading tokens job cancelled")
-            } catch (error: Throwable) {
-                Timber.e(error, "Error refreshing user tokens")
-                view?.showErrorMessage(error)
-            } finally {
-                view?.showRefreshing(isRefreshing = false)
-            }
-        }
     }
 
     override fun toggleTokenVisibility(token: Token.Active) {

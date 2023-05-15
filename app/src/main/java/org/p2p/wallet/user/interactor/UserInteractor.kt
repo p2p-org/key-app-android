@@ -122,6 +122,25 @@ class UserInteractor(
         }
     }
 
+    suspend fun loadUserRatesIfEmpty(userTokens: List<Token.Active>) {
+        when {
+            // if prices are not loaded at all, load them
+            !userLocalRepository.arePricesLoaded() -> {
+                try {
+                    loadUserRates(userTokens)
+                } catch (t: Throwable) {
+                    // info level because it's not critical
+                    Timber.i(t, "Error on loading user rates")
+                }
+            }
+
+            // if prices are loaded, but user tokens are not updated, update them
+            userTokens.filterNotSol().count { it.totalInUsd == null } != 0 -> {
+                updateUserTokenRates(userLocalRepository.getCachedTokenPrices())
+            }
+        }
+    }
+
     suspend fun loadUserRates(userTokens: List<Token.Active>) {
         Timber.i("Loading user rates for ${userTokens.size}")
         val tokenIds = userTokens.mapNotNull { token ->
@@ -221,4 +240,7 @@ class UserInteractor(
     }
 
     suspend fun getRecipients(): List<SearchResult> = recipientsLocalRepository.getRecipients()
+
+    private fun List<Token.Active>.filterNotSol(): List<Token.Active> =
+        filterNot { it.mintAddress == Constants.WRAPPED_SOL_MINT }
 }
