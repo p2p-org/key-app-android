@@ -3,16 +3,20 @@ package org.p2p.wallet.history.ui.token
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
+import org.p2p.core.utils.asNegativeUsdTransaction
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
+import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.user.repository.UserLocalRepository
 
 class TokenHistoryPresenter(
     private val token: Token.Active,
@@ -20,7 +24,9 @@ class TokenHistoryPresenter(
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val ethereumInteractor: EthereumInteractor,
     private val transactionManager: TransactionManager,
-    private val claimUiMapper: ClaimUiMapper
+    private val claimUiMapper: ClaimUiMapper,
+    private val userRepository: UserLocalRepository,
+    private val bridgeSendUiMapper: BridgeSendUiMapper
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     override fun attach(view: TokenHistoryContract.View) {
@@ -52,7 +58,7 @@ class TokenHistoryPresenter(
 
     override fun onBridgePendingClaimClicked(transactionId: String) {
         launch {
-            val bridgeBundle = ethereumInteractor.getBundleById(transactionId) ?: return@launch
+            val bridgeBundle = ethereumInteractor.getClaimBundleById(transactionId) ?: return@launch
             val claimDetails = claimUiMapper.makeClaimDetails(
                 resultAmount = bridgeBundle.resultAmount,
                 fees = bridgeBundle.fees,
@@ -80,6 +86,27 @@ class TokenHistoryPresenter(
     }
 
     override fun onBridgePendingSendClicked(transactionId: String) {
+        launch {
+            val sendBundle = ethereumInteractor.getSendBundleById(transactionId) ?: return@launch
+            val token = userRepository.getTokensData().firstOrNull { it.mintAddress == sendBundle.recipient.raw }
+            val feeDetails = bridgeSendUiMapper.makeBridgeFeeDetails(
+                recipientAddress = sendBundle.recipient.raw,
+                fees = sendBundle.fees
+            )
+            val progressDetails = bridgeSendUiMapper.prepareShowProgress(
+                iconUrl = token?.iconUrl.orEmpty(),
+                amountTokens = "${sendBundle.amount.amountInToken.toPlainString()} ${token?.symbol}",
+                amountUsd = sendBundle.amount.amountInUsd.toBigDecimalOrZero().asNegativeUsdTransaction(),
+                recipient = sendBundle.recipient.raw,
+                feeDetails = feeDetails
+            )
+            val progressState = TransactionState.Progress(
+                description = R.string.bridge_send_transaction_description_progress
+            )
+
+            transactionManager.emitTransactionState(transactionId, progressState)
+            view?.showProgressDialog(transactionId, progressDetails)
+        }
     }
 
     override fun closeAccount() {

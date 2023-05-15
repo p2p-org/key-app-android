@@ -36,4 +36,8 @@ data class BridgeBundle(
     fun findToken(): EthAddress {
         return resultAmount.token ?: EthAddress(ERC20Tokens.ETH.contractAddress)
     }
+
+    fun isProcessing(): Boolean {
+        return this.status == ClaimStatus.IN_PROGRESS || this.status == ClaimStatus.PENDING
+    }
 }

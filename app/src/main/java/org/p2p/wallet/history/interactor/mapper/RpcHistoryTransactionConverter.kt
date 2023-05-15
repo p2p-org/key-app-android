@@ -237,7 +237,7 @@ class RpcHistoryTransactionConverter(
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.WormholeReceive>(transaction.info.toString())
             ?: error("Parsing error: cannot parse json object  ${transaction.info}")
         val claimKey = info.bridgeServiceKey.orEmpty()
-        val bundle = bridgeInMemoryRepository.getBundleByKey(claimKey)
+        val bundle = bridgeInMemoryRepository.getClaimBundleByKey(claimKey)
         val bundleFees = listOfNotNull(
             bundle?.fees?.arbiterFee,
             bundle?.fees?.gasFeeInToken

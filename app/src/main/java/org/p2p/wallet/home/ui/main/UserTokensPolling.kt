@@ -86,7 +86,8 @@ class UserTokensPolling(
                         delay(POLLING_ETH_DELAY.inWholeMilliseconds)
                         joinAll(
                             async { fetchSolTokens() },
-                            async { fetchEthereumTokens() }
+                            async { fetchEthereumTokens() },
+                            // TODO - move this code to separate worker
                         )
                     }
                 } catch (e: CancellationException) {

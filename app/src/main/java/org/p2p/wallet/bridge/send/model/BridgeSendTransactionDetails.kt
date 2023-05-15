@@ -15,4 +15,9 @@ data class BridgeSendTransactionDetails(
     val fees: BridgeSendFees,
     val status: BridgeSendTransactionStatus,
     val dateCreated: ZonedDateTime,
-) : Parcelable
+) : Parcelable {
+
+    fun isInProgress(): Boolean {
+        return status == BridgeSendTransactionStatus.IN_PROGRESS || status == BridgeSendTransactionStatus.PENDING
+    }
+}

@@ -2,9 +2,10 @@ package org.p2p.wallet.history.repository.remote
 
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.bridge.api.mapper.BridgeMapper
-import org.p2p.wallet.bridge.claim.model.canBeClaimed
+import org.p2p.wallet.bridge.claim.model.isProcessing
 import org.p2p.wallet.bridge.claim.repository.EthereumBridgeLocalRepository
-import org.p2p.wallet.bridge.send.model.BridgeSendTransactionStatus
+import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
@@ -20,16 +21,14 @@ class BridgeHistoryRepository(
         return if (ethereumFeatureToggle.isFeatureEnabled) {
             val list = buildList {
                 addAll(
-                    claimLocalRepository.getAllBundles()
-                        .filter { it.status?.canBeClaimed() == false }
+                    claimLocalRepository.getAllClaimBundles()
+                        .filter(BridgeBundle::isProcessing)
                         .mapNotNull { bridgeMapper.toHistoryItem(it, mintAddress) },
                 )
                 addAll(
                     claimLocalRepository.getAllSendDetails()
-                        .filter {
-                            it.status == BridgeSendTransactionStatus.PENDING ||
-                                it.status == BridgeSendTransactionStatus.IN_PROGRESS
-                        }.mapNotNull { bridgeMapper.toHistoryItem(it, mintAddress) }
+                        .filter(BridgeSendTransactionDetails::isInProgress)
+                        .mapNotNull { bridgeMapper.toHistoryItem(it, mintAddress) }
                 )
             }
             HistoryPagingResult.Success(list)
@@ -43,7 +42,7 @@ class BridgeHistoryRepository(
     }
 
     override suspend fun findTransactionById(id: String): HistoryTransaction? {
-        val claimTransaction = claimLocalRepository.getBundle(id)
+        val claimTransaction = claimLocalRepository.getClaimBundleById(id)
             ?.let { bridgeMapper.toHistoryItem(claimBundle = it, mintAddress = Constants.WRAPPED_SOL_MINT) }
         val sendTransaction = claimLocalRepository.getSendDetails(id)
             ?.let { bridgeMapper.toHistoryItem(sendDetails = it, mintAddress = Constants.WRAPPED_SOL_MINT) }

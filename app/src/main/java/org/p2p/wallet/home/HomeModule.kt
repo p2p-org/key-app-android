@@ -69,7 +69,7 @@ object HomeModule : InjectionModule {
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
-        factoryOf(::UserTokensPolling)
+        singleOf(::UserTokensPolling)
         /* Cached data exists, therefore creating singleton */
         // todo: do something with this dependenices!
         // todo: to eliminate all this hell, we could just migrate to hilt

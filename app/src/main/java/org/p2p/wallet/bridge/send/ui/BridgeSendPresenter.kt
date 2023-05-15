@@ -437,7 +437,7 @@ class BridgeSendPresenter(
             try {
                 val feeDetails = getFeeDetails()
                 val progressDetails = bridgeSendUiMapper.prepareShowProgress(
-                    tokenToSend = token,
+                    iconUrl = token.iconUrl.orEmpty(),
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd?.asNegativeUsdTransaction(),
                     recipient = recipientAddress.nicknameOrAddress(),

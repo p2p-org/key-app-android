@@ -219,7 +219,7 @@ class HomePresenter(
                 view?.showTokenClaim(token)
             } else {
                 val latestActiveBundleId = token.latestActiveBundleId ?: return@launch
-                val bridgeBundle = ethereumInteractor.getBundleById(latestActiveBundleId) ?: return@launch
+                val bridgeBundle = ethereumInteractor.getClaimBundleById(latestActiveBundleId) ?: return@launch
                 val claimDetails = claimUiMapper.makeClaimDetails(
                     resultAmount = bridgeBundle.resultAmount,
                     fees = bridgeBundle.fees,

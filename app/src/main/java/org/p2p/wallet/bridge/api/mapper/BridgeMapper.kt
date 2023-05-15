@@ -13,7 +13,6 @@ import org.p2p.wallet.bridge.api.response.BridgeSendFeesResponse
 import org.p2p.wallet.bridge.api.response.BridgeSendStatusResponse
 import org.p2p.wallet.bridge.api.response.BridgeSendTransactionResponse
 import org.p2p.wallet.bridge.api.response.BridgeTransactionStatusResponse
-import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeFee
@@ -38,7 +37,7 @@ class BridgeMapper {
             transactions = response.transactions.orEmpty(),
             signatures = response.signatures.orEmpty(),
             fees = fromNetwork(response.fees),
-            status = ClaimStatus.IN_PROGRESS,
+            status = response.status,
             claimKey = response.claimKey,
             compensationDeclineReason = response.compensationDeclineReason.orEmpty(),
             dateCreated = response.dateCreatedSec.seconds.inWholeMilliseconds.toZonedDateTime()
@@ -95,7 +94,7 @@ class BridgeMapper {
             recipient = response.recipient,
             amount = fromNetwork(response.amount),
             fees = fromNetwork(response.fees),
-            status = fromNetwork(response.status),
+            status = BridgeSendTransactionStatus.IN_PROGRESS,
             dateCreated = response.dateCreatedSec.seconds.inWholeMilliseconds.toZonedDateTime()
         )
     }

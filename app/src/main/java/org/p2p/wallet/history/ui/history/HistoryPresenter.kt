@@ -1,20 +1,27 @@
 package org.p2p.wallet.history.ui.history
 
 import kotlinx.coroutines.launch
+import org.p2p.core.utils.asNegativeUsdTransaction
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.ethereumkit.external.model.ERC20Tokens
+import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
+import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.ifNotEmpty
 
 class HistoryPresenter(
     private val userInteractor: UserInteractor,
     private val ethereumInteractor: EthereumInteractor,
     private val claimUiMapper: ClaimUiMapper,
-    private val transactionManager: TransactionManager
+    private val bridgeSendUiMapper: BridgeSendUiMapper,
+    private val transactionManager: TransactionManager,
+    private val userRepository: UserLocalRepository
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     override fun onBuyClicked() {
@@ -35,7 +42,7 @@ class HistoryPresenter(
 
     override fun onClaimPendingClicked(transactionId: String) {
         launch {
-            val bridgeBundle = ethereumInteractor.getBundleById(transactionId) ?: return@launch
+            val bridgeBundle = ethereumInteractor.getClaimBundleById(transactionId) ?: return@launch
             val claimDetails = claimUiMapper.makeClaimDetails(
                 resultAmount = bridgeBundle.resultAmount,
                 fees = bridgeBundle.fees,
@@ -63,5 +70,26 @@ class HistoryPresenter(
     }
 
     override fun onSendPendingClicked(transactionId: String) {
+        launch {
+            val sendBundle = ethereumInteractor.getSendBundleById(transactionId) ?: return@launch
+            val token = userRepository.getTokensData().firstOrNull { it.mintAddress == sendBundle.recipient.raw }
+            val feeDetails = bridgeSendUiMapper.makeBridgeFeeDetails(
+                recipientAddress = sendBundle.recipient.raw,
+                fees = sendBundle.fees
+            )
+            val progressDetails = bridgeSendUiMapper.prepareShowProgress(
+                iconUrl = token?.iconUrl.orEmpty(),
+                amountTokens = "${sendBundle.amount.amountInToken.toPlainString()} ${token?.symbol}",
+                amountUsd = sendBundle.amount.amountInUsd.toBigDecimalOrZero().asNegativeUsdTransaction(),
+                recipient = sendBundle.recipient.raw,
+                feeDetails = feeDetails
+            )
+            val progressState = TransactionState.Progress(
+                description = R.string.bridge_send_transaction_description_progress
+            )
+
+            transactionManager.emitTransactionState(transactionId, progressState)
+            view?.showProgressDialog(transactionId, progressDetails)
+        }
     }
 }

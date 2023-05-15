@@ -2,7 +2,6 @@ package org.p2p.wallet.bridge.claim.interactor
 
 import java.math.BigDecimal
 import org.p2p.core.token.SolAddress
-import org.p2p.core.token.Token
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.internal.models.Signature
@@ -10,8 +9,8 @@ import org.p2p.wallet.bridge.claim.mapper.EthereumBundleMapper
 import org.p2p.wallet.bridge.claim.repository.EthereumBridgeLocalRepository
 import org.p2p.wallet.bridge.claim.repository.EthereumClaimRepository
 import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.transaction.model.NewShowProgress
 
 const val DEFAULT_ERC20_TOKEN_SLIPPAGE = 15
 
@@ -43,7 +42,7 @@ class ClaimInteractor(
 
     suspend fun getListOfEthereumBundleStatuses(ethereumAddress: EthAddress): List<EthereumClaimToken> {
         val bundles = ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress)
-        ethereumClaimLocalRepository.saveBundles(bundles)
+        ethereumClaimLocalRepository.saveClaimBundles(bundles)
         return bundles.map { mapper.mapBundle(it) }
     }
 
@@ -51,19 +50,11 @@ class ClaimInteractor(
         return ethereumClaimRepository.getEthereumMinAmountForFreeFee()
     }
 
-    fun saveProgressDetails(bundleId: String, progressDetails: NewShowProgress) {
-        ethereumClaimLocalRepository.saveProgressDetails(bundleId, progressDetails)
+    fun getClaimBundleById(bundleId: String): BridgeBundle? {
+        return ethereumClaimLocalRepository.getClaimBundleById(bundleId)
     }
 
-    fun getProgressDetails(bundleId: String): NewShowProgress? {
-        return ethereumClaimLocalRepository.getProgressDetails(bundleId)
-    }
-
-    fun getBundleByToken(token: Token.Eth): BridgeBundle? {
-        return ethereumClaimLocalRepository.getBundleByToken(token)
-    }
-
-    fun getBundleById(bundleId: String): BridgeBundle? {
-        return ethereumClaimLocalRepository.getBundleById(bundleId)
+    fun getSendBundleById(bundleId: String): BridgeSendTransactionDetails? {
+        return ethereumClaimLocalRepository.getSendDetails(bundleId)
     }
 }
