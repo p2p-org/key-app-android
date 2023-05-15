@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
+import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
@@ -92,12 +93,14 @@ internal class EthereumKitRepository(
 
                 (listOf(getEthToken()) + localTokensMetadata).map { metadata ->
                     var isClaiming = false
+                    var latestBundleId: String? = null
                     claimingTokens.forEach {
                         if (metadata.contractAddress == it.contractAddress && it.isClaiming) {
                             isClaiming = true
+                            latestBundleId = it.bundleId
                         }
                     }
-                    EthTokenConverter.ethMetadataToToken(metadata, isClaiming)
+                    EthTokenConverter.ethMetadataToToken(metadata, isClaiming, latestBundleId)
                 }.filter { token ->
                     val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
                     val tokenFiatAmount = token.totalInUsd.orZero()

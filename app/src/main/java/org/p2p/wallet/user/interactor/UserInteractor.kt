@@ -35,7 +35,7 @@ const val TOKENS_FILE_NAME = "tokens.json"
 class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
-    private val mainLocalRepository: HomeLocalRepository,
+    private val homeLocalRepository: HomeLocalRepository,
     private val recipientsLocalRepository: RecipientsLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val sharedPreferences: SharedPreferences,
@@ -52,7 +52,7 @@ class UserInteractor(
     }
 
     fun getUserTokensFlow(): Flow<List<Token.Active>> =
-        mainLocalRepository.getTokensFlow()
+        homeLocalRepository.getTokensFlow()
 
     suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY): Token? =
         getTokensForBuy(availableTokensSymbols).firstOrNull()
@@ -143,12 +143,12 @@ class UserInteractor(
 
     suspend fun loadUserTokensAndUpdateLocal(publicKey: PublicKey): List<Token.Active> {
         val newTokens = userRepository.loadUserTokens(publicKey)
-        val cachedTokens = mainLocalRepository.getUserTokens()
+        val cachedTokens = homeLocalRepository.getUserTokens()
         return updateLocalTokens(cachedTokens, newTokens)
     }
 
     private suspend fun updateUserTokenRates(prices: List<TokenPrice>) {
-        val cachedTokens = mainLocalRepository.getUserTokens()
+        val cachedTokens = homeLocalRepository.getUserTokens()
 
         val newTokens = cachedTokens.map { token ->
             val price = prices.find { it.tokenId == token.coingeckoId }
@@ -159,10 +159,10 @@ class UserInteractor(
             val tokenRate = token.rate ?: price?.price
             val totalInUsd = oldTotalInUsd ?: newTotalInUsd
             token.copy(rate = tokenRate, totalInUsd = totalInUsd)
-        }
+        }.sortedWith(TokenComparator())
 
-        mainLocalRepository.clear()
-        mainLocalRepository.updateTokens(newTokens)
+        homeLocalRepository.clear()
+        homeLocalRepository.updateTokens(newTokens)
     }
 
     private suspend fun updateLocalTokens(
@@ -176,29 +176,29 @@ class UserInteractor(
                 newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
             }
             .sortedWith(TokenComparator())
-        mainLocalRepository.clear()
-        mainLocalRepository.updateTokens(newTokensToCache)
+        homeLocalRepository.clear()
+        homeLocalRepository.updateTokens(newTokensToCache)
         return newTokensToCache
     }
 
     suspend fun getUserTokens(): List<Token.Active> =
-        mainLocalRepository.getUserTokens()
+        homeLocalRepository.getUserTokens()
 
     suspend fun getNonZeroUserTokens(): List<Token.Active> =
-        mainLocalRepository.getUserTokens()
+        homeLocalRepository.getUserTokens()
             .filterNot { it.isZero }
 
     suspend fun getUserSolToken(): Token.Active? =
-        mainLocalRepository.getUserTokens().find { it.isSOL }
+        homeLocalRepository.getUserTokens().find { it.isSOL }
 
     suspend fun findUserToken(mintAddress: String): Token.Active? =
-        mainLocalRepository.getUserTokens().find { it.mintAddress == mintAddress }
+        homeLocalRepository.getUserTokens().find { it.mintAddress == mintAddress }
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
-        mainLocalRepository.setTokenHidden(mintAddress, visibility)
+        homeLocalRepository.setTokenHidden(mintAddress, visibility)
 
     suspend fun hasAccount(address: String): Boolean {
-        val userTokens = mainLocalRepository.getUserTokens()
+        val userTokens = homeLocalRepository.getUserTokens()
         return userTokens.any { it.publicKey == address }
     }
 

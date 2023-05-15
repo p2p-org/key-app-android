@@ -3,7 +3,7 @@ package org.p2p.wallet.bridge.claim.ui.mapper
 import android.content.res.Resources
 import android.view.Gravity
 import java.math.BigDecimal
-import java.util.Date
+import org.threeten.bp.ZonedDateTime
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
@@ -29,7 +29,7 @@ class ClaimUiMapper(private val resources: Resources) {
         tokenToClaim: Token.Eth,
         claimDetails: ClaimDetails?
     ): NewShowProgress {
-        val transactionDate = Date()
+        val transactionDate = claimDetails?.transactionDate ?: ZonedDateTime.now()
         val willGetAmount = claimDetails?.willGetAmount
         val amountTokens = willGetAmount?.formattedTokenAmount.orEmpty()
         val amountUsd = willGetAmount?.fiatAmount.orZero()
@@ -51,19 +51,20 @@ class ClaimUiMapper(private val resources: Resources) {
 
     fun makeClaimDetails(
         isFree: Boolean,
-        tokenToClaim: Token.Eth,
         resultAmount: BridgeFee,
         fees: BridgeBundleFees?,
-        minAmountForFreeFee: BigDecimal
+        minAmountForFreeFee: BigDecimal,
+        transactionDate: ZonedDateTime,
     ): ClaimDetails {
-        val defaultFee = fees?.gasEth.toBridgeAmount()
+        val defaultFee = fees?.gasFeeInToken.toBridgeAmount()
         return ClaimDetails(
             isFree = isFree,
             willGetAmount = resultAmount.toBridgeAmount(),
             networkFee = defaultFee,
             accountCreationFee = fees?.createAccount.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(),
-            minAmountForFreeFee = minAmountForFreeFee
+            minAmountForFreeFee = minAmountForFreeFee,
+            transactionDate = transactionDate
         )
     }
 
@@ -83,7 +84,7 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     fun mapFeeTextContainer(fees: BridgeBundleFees, isFree: Boolean): TextViewCellModel.Raw {
-        val feeList = listOf(fees.arbiterFee, fees.gasEth, fees.createAccount)
+        val feeList = listOf(fees.arbiterFee, fees.gasFeeInToken, fees.createAccount)
         val fee: BigDecimal = feeList.sumOf { it.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
         val feeValue = if (isFree) {
             resources.getString(R.string.bridge_claim_fees_free)

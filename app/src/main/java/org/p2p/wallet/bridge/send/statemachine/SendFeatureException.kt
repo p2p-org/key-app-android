@@ -14,7 +14,7 @@ sealed class SendFeatureException(
         val invalidAmount: BigDecimal,
     ) : SendFeatureException()
 
-    data class FeeIsMoreThanTotal(
+    data class FeeIsMoreThanAmount(
         val totalAmount: BigDecimal,
     ) : SendFeatureException()
 

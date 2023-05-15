@@ -2,6 +2,7 @@ package org.p2p.wallet.newsend.interactor
 
 import timber.log.Timber
 import java.math.BigInteger
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
@@ -138,6 +139,9 @@ class SendInteractor(
                     FeeCalculationState.PoolsNotFound(FeeRelayerFee(fees, poolsStateFee.feeInSOL, expectedFee))
                 }
             }
+        } catch (e: CancellationException) {
+            Timber.tag(SEND_TAG).i("Fee calculation cancelled")
+            return FeeCalculationState.Cancelled
         } catch (e: Throwable) {
             Timber.tag(SEND_TAG).i(e, "Failed to calculateFeesForFeeRelayer")
             return FeeCalculationState.Error(e)

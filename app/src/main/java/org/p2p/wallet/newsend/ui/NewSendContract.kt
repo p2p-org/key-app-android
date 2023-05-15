@@ -17,7 +17,7 @@ interface NewSendContract {
         fun showFreeTransactionsInfo()
         fun showTransactionDetails(sendFeeTotal: SendFeeTotal)
         fun showProgressDialog(internalTransactionId: String, data: NewShowProgress)
-        fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)
+        fun showTokenSelection(selectedToken: Token.Active?)
         fun showDebugInfo(text: CharSequence)
 
         fun setBottomButtonText(text: TextContainer?)

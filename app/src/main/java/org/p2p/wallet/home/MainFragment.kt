@@ -20,6 +20,7 @@ import org.p2p.core.network.ConnectionManager
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
+import org.p2p.core.utils.launchRestartable
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
@@ -117,9 +118,18 @@ class MainFragment :
             onCreateActions = arrayListOf()
         }
 
-        connectionManager.connectionStatus.onEach { isConnected ->
-            if (!isConnected) showInternetError(true)
-        }.launchIn(lifecycleScope)
+        parentFragmentManager.commit {
+            if (!refreshErrorFragment.isAdded) {
+                add(R.id.rootContainer, refreshErrorFragment)
+            }
+            hide(refreshErrorFragment)
+        }
+
+        lifecycle.launchRestartable {
+            connectionManager.connectionStatus.onEach { isConnected ->
+                if (!isConnected) showInternetError(showError = true)
+            }.launchIn(this)
+        }
 
         // todo: this is just a fake solution, we need to hide error when user clicks on refresh button
         refreshErrorInteractor.getRefreshEventFlow()
@@ -148,13 +158,11 @@ class MainFragment :
     private fun showInternetError(showError: Boolean) {
         parentFragmentManager.commit {
             if (showError) {
-                if (!refreshErrorFragment.isAdded) {
-                    add(R.id.rootContainer, refreshErrorFragment)
-                }
                 show(refreshErrorFragment)
+                hide(this@MainFragment)
             } else {
-                hide(refreshErrorFragment)
                 show(this@MainFragment)
+                hide(refreshErrorFragment)
             }
         }
     }

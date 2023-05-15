@@ -1,14 +1,12 @@
 package org.p2p.wallet.rpc.interactor
 
 import timber.log.Timber
+import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.TokenData
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.wallet.R
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.model.AddressValidation
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -18,25 +16,8 @@ private const val ADDRESS_TAG = "Address"
 
 class TransactionAddressInteractor(
     private val userAccountRepository: UserAccountRepository,
-    private val userLocalRepository: UserLocalRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val userLocalRepository: UserLocalRepository
 ) {
-
-    suspend fun validateAddress(destinationAddress: PublicKey, mintAddress: String): AddressValidation {
-        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
-
-        if (destinationAddress.equals(userPublicKey)) {
-            return AddressValidation.Error(R.string.main_send_to_yourself_error)
-        }
-
-        try {
-            findSplTokenAddressData(destinationAddress, mintAddress)
-        } catch (e: IllegalStateException) {
-            return AddressValidation.WrongWallet
-        }
-
-        return AddressValidation.Valid
-    }
 
     suspend fun findSplTokenAddressData(
         destinationAddress: PublicKey,
@@ -46,6 +27,8 @@ class TransactionAddressInteractor(
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).i("Searching for SPL token address")
             findSplTokenAddress(destinationAddress, mintAddress, useCache)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: IllegalStateException) {
             Timber.tag(ADDRESS_TAG).i("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")
@@ -68,9 +51,11 @@ class TransactionAddressInteractor(
         useCache: Boolean
     ): PublicKey {
         val accountInfo = userAccountRepository.getAccountInfo(destinationAddress.toBase58(), useCache)
+        Timber.d("### getAccountInfo $accountInfo")
 
         // detect if it is a direct token address
         val info = TokenTransaction.decodeAccountInfo(accountInfo)
+        Timber.d("### direct token address: $info")
         if (info != null && userLocalRepository.findTokenData(info.mint.toBase58()) != null) {
             Timber.tag(ADDRESS_TAG).d("Token by mint was found. Continuing with direct address")
             return destinationAddress
@@ -78,12 +63,17 @@ class TransactionAddressInteractor(
 
         // create associated token address
         val value = accountInfo?.value
+        Timber.d("### create associated token address: $value")
         if (value == null || value.data?.get(0).isNullOrEmpty()) {
+            Timber.d("### getAssociatedTokenAddress")
+
             Timber.tag(ADDRESS_TAG).d("No information found, creating associated token address")
             return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
         }
 
         // detect if destination address is already a SPLToken address
+        Timber.d("### destination address is already a SPLToken address")
+
         if (info?.mint == destinationAddress) {
             Timber.tag(ADDRESS_TAG).d("Destination address is already an SPL Token address, returning")
             return destinationAddress

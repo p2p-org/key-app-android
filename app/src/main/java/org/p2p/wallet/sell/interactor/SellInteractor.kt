@@ -4,10 +4,13 @@ import androidx.core.content.edit
 import android.content.SharedPreferences
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.flow.Flow
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
@@ -29,6 +32,7 @@ class SellInteractor(
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val userInteractor: UserInteractor,
+    private val userTokensRepository: UserTokensRepository,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val sharedPreferences: SharedPreferences,
@@ -81,10 +85,8 @@ class SellInteractor(
         return sellRepository.getSellQuoteForToken(solToken, solAmount, fiat)
     }
 
-    suspend fun getTokenForSell(): Token.Active =
-        requireNotNull(userInteractor.getUserSolToken()) {
-            "SOL token is not found for current user, can't sell"
-        }
+    fun observeTokenForSell(): Flow<Token.Active> =
+        userTokensRepository.observeUserToken(Constants.WRAPPED_SOL_MINT.toBase58Instance())
 
     suspend fun getSolCurrency(): MoonpayCurrency {
         return currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)

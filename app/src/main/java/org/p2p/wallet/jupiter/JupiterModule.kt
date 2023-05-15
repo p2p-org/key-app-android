@@ -14,7 +14,6 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.SwapTokensInteractor
-import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesInMemoryRepository
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesLocalRepository
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesMapper
@@ -43,9 +42,8 @@ import org.p2p.wallet.jupiter.statemanager.handler.SwapStateSwapLoadedHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateTokenANotZeroHandler
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
 import org.p2p.wallet.jupiter.statemanager.rate.SwapRateTickerManager
-import org.p2p.wallet.jupiter.statemanager.token_selector.CommonSwapTokenSelector
-import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokenASelector
-import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokensBySymbolSelector
+import org.p2p.wallet.jupiter.statemanager.token_selector.SwapInitialTokenSelector
+import org.p2p.wallet.jupiter.statemanager.token_selector.SwapInitialTokensData
 import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.jupiter.ui.info.SwapInfoMapper
@@ -99,7 +97,14 @@ object JupiterModule : InjectionModule {
         factoryOf(::SwapRateTickerMapper)
 
         factory { (initialData: JupiterPresenterInitialData) ->
-            val stateManager: SwapStateManager = getSwapStateManager(initialData)
+            val stateManager: SwapStateManager = getSwapStateManager(
+                initialTokensData = SwapInitialTokensData(
+                    initialData.initialToken,
+                    initialData.tokenASymbol,
+                    initialData.tokenBSymbol
+                ),
+                stateManagerHolderKey = initialData.stateManagerHolderKey
+            )
             JupiterSwapPresenter(
                 swapOpenedFrom = initialData.swapOpenedFrom,
                 managerHolder = get(),
@@ -115,6 +120,7 @@ object JupiterModule : InjectionModule {
                 analytics = get(),
                 historyInteractor = get(),
                 initialAmountA = initialData.initialAmountA,
+                resources = get(),
                 alarmErrorsLogger = get()
             )
         } bind JupiterSwapContract.Presenter::class
@@ -125,41 +131,14 @@ object JupiterModule : InjectionModule {
     }
 
     private fun Module.initJupiterSwapStateManager() {
-        factory { (initialData: JupiterPresenterInitialData) ->
-            when {
-                !initialData.tokenASymbol.isNullOrBlank() && !initialData.tokenBSymbol.isNullOrBlank() -> {
-                    PreinstallTokensBySymbolSelector(
-                        jupiterTokensRepository = get(),
-                        dispatchers = get(),
-                        homeLocalRepository = get(),
-                        savedSelectedSwapTokenStorage = get(),
-                        preinstallTokenA = initialData.tokenASymbol,
-                        preinstallTokenB = initialData.tokenBSymbol,
-                    )
-                }
-                initialData.initialToken != null -> {
-                    PreinstallTokenASelector(
-                        jupiterTokensRepository = get(),
-                        dispatchers = get(),
-                        homeLocalRepository = get(),
-                        savedSelectedSwapTokenStorage = get(),
-                        preinstallTokenA = initialData.initialToken,
-                    )
-                }
-                else -> {
-                    CommonSwapTokenSelector(
-                        jupiterTokensRepository = get(),
-                        homeLocalRepository = get(),
-                        dispatchers = get(),
-                        selectedSwapTokenStorage = get()
-                    )
-                }
-            }
+        factory<SwapInitialTokenSelector> { (initialSwapData: SwapInitialTokensData) ->
+            SwapInitialTokenSelectorFactory.create(this, initialSwapData)
         }
-        factory { (initialData: JupiterPresenterInitialData) ->
+        factory { (data: SwapInitialTokensData) ->
+            val selectorParams = { parametersOf(data) }
             SwapStateInitialLoadingHandler(
                 dispatchers = get(),
-                initialTokenSelector = get(parameters = { parametersOf(initialData) })
+                initialTokenSelector = get(parameters = selectorParams)
             )
         }
         factoryOf(::SwapStateLoadingRoutesHandler)
@@ -169,9 +148,9 @@ object JupiterModule : InjectionModule {
         factoryOf(::SwapStateTokenAZeroHandler)
         factoryOf(::SwapStateTokenANotZeroHandler)
 
-        factory { (initialData: JupiterPresenterInitialData) ->
+        factory<Set<SwapStateHandler>> { (initialTokensData: SwapInitialTokensData) ->
             setOf(
-                get<SwapStateInitialLoadingHandler>(parameters = { parametersOf(initialData) }),
+                get<SwapStateInitialLoadingHandler>(parameters = { parametersOf(initialTokensData) }),
                 get<SwapStateLoadingRoutesHandler>(),
                 get<SwapStateLoadingTransactionHandler>(),
                 get<SwapStateSwapLoadedHandler>(),
@@ -184,9 +163,10 @@ object JupiterModule : InjectionModule {
         singleOf(::SwapStateManagerHolder)
         singleOf(::SwapRateTickerManager)
 
-        factory { (initialData: JupiterPresenterInitialData) ->
-            get<SwapStateManagerHolder>().getOrCreate(key = initialData.stateManagerHolderKey) {
-                val handlers: Set<SwapStateHandler> = get(parameters = { parametersOf(initialData) })
+        factory<SwapStateManager> { (initialData: SwapInitialTokensData, stateManagerHolderKey: String) ->
+            val managerHolder: SwapStateManagerHolder = get()
+            val handlers: Set<SwapStateHandler> = get(parameters = { parametersOf(initialData) })
+            managerHolder.getOrCreate(key = stateManagerHolderKey) {
                 SwapStateManager(
                     dispatchers = get(),
                     handlers = handlers,
@@ -202,6 +182,19 @@ object JupiterModule : InjectionModule {
     }
 
     private fun Module.initJupiterSwapSettings() {
+        factory { (stateManagerHolderKey: String) ->
+            SwapTokensInteractor(
+                homeLocalRepository = get(),
+                swapTokensRepository = get(),
+                swapRoutesRepository = get(),
+                jupiterSwapInteractor = get(),
+                swapStateManager = getSwapStateManager(
+                    initialTokensData = SwapInitialTokensData.NO_DATA,
+                    stateManagerHolderKey = stateManagerHolderKey
+                )
+            )
+        }
+
         factoryOf(::SwapCommonSettingsMapper)
         factoryOf(::SwapInfoMapper)
         factoryOf(::SwapSelectRoutesMapper)
@@ -232,25 +225,6 @@ object JupiterModule : InjectionModule {
         factoryOf(::SwapTokensAMapper)
         factoryOf(::SwapTokensBMapper)
         factoryOf(::SearchSwapTokensMapper)
-
-        factory { (stateManagerHolderKey: String) ->
-            SwapTokensInteractor(
-                homeLocalRepository = get(),
-                swapTokensRepository = get(),
-                swapRoutesRepository = get(),
-                jupiterSwapInteractor = get(),
-                swapStateManager = getSwapStateManager(
-                    initialData = JupiterPresenterInitialData(
-                        stateManagerHolderKey = stateManagerHolderKey,
-                        swapOpenedFrom = SwapOpenedFrom.MAIN_SCREEN,
-                        initialToken = null,
-                        initialAmountA = null,
-                        tokenASymbol = null
-                    )
-                )
-            )
-        }
-
         factory { (mode: SwapTokensListMode, stateManagerHolderKey: String) ->
             SwapTokensPresenter(
                 tokenToChange = mode,
@@ -262,6 +236,11 @@ object JupiterModule : InjectionModule {
         } bind SwapTokensContract.Presenter::class
     }
 
-    private fun Scope.getSwapStateManager(initialData: JupiterPresenterInitialData): SwapStateManager =
-        get(parameters = { parametersOf(initialData) })
+    private fun Scope.getSwapStateManager(
+        initialTokensData: SwapInitialTokensData,
+        stateManagerHolderKey: String
+    ): SwapStateManager {
+        val params = { parametersOf(initialTokensData, stateManagerHolderKey) }
+        return get(parameters = params)
+    }
 }

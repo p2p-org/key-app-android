@@ -202,13 +202,13 @@ class SwapWidgetMapper {
             ?.fiatAmount as? TextViewCellModel.Raw
             ?: return oldWidgetModel
         return when (priceImpact) {
-            SwapPriceImpactView.NORMAL -> {
+            SwapPriceImpactView.Hidden -> {
                 oldWidgetModel
             }
-            SwapPriceImpactView.YELLOW -> {
+            is SwapPriceImpactView.Yellow -> {
                 oldWidgetModel.copy(fiatAmount = fiatAmount.copy(textColor = R.color.text_sun))
             }
-            SwapPriceImpactView.RED -> {
+            is SwapPriceImpactView.Red -> {
                 oldWidgetModel.copy(fiatAmount = fiatAmount.copy(textColor = R.color.text_rose))
             }
         }

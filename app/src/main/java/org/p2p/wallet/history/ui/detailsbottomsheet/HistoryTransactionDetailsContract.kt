@@ -20,7 +20,7 @@ interface HistoryTransactionDetailsContract {
         fun showFee(fees: List<RpcFee>?)
         fun showLoading(isLoading: Boolean)
         fun showError(@StringRes messageId: Int)
-        fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?)
+        fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?, toEth: Boolean)
         fun showStateTitleValue(title: String, value: String)
         fun hideSendReceiveTitleAndValue()
         fun showSenderAddress(senderAddress: Base58String, senderUsername: String?, isReceivePending: Boolean)

@@ -5,10 +5,15 @@ import timber.log.Timber
 import java.math.BigInteger
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
+import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -61,8 +66,16 @@ class SendViaLinkPresenter(
     override fun attach(view: SendViaLinkContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
-
+        subscribeToSelectedTokenUpdates()
         initialize(view)
+    }
+
+    private fun subscribeToSelectedTokenUpdates() {
+        userInteractor.getUserTokensFlow()
+            .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
+            .filterNotNull()
+            .onEach { token = it }
+            .launchIn(this)
     }
 
     override fun setInitialData(selectedToken: Token.Active?) {
