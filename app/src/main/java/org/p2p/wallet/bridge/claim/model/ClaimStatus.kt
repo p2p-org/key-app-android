@@ -25,3 +25,10 @@ fun ClaimStatus?.canBeClaimed(): Boolean {
     }
     return this != ClaimStatus.IN_PROGRESS && this != ClaimStatus.PENDING
 }
+
+fun ClaimStatus?.isProcessing(): Boolean {
+    if (this == null) {
+        return false
+    }
+    return this == ClaimStatus.IN_PROGRESS || this == ClaimStatus.PENDING
+}

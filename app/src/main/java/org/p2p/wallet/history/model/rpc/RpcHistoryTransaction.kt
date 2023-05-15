@@ -379,9 +379,6 @@ sealed class RpcHistoryTransaction(
         val iconUrl: String?,
         val fees: List<RpcFee>?,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
-        @IgnoredOnParcel
-        val isSend: Boolean
-            get() = type == RpcHistoryTransactionType.WORMHOLE_SEND
 
         fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
 
@@ -395,7 +392,7 @@ sealed class RpcHistoryTransaction(
             R.string.transaction_history_send
         }
 
-        fun getTotal(): String = "${getSymbol(isSend)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+        fun getTotal(): String = "${amount.total.scaleMedium().formatToken()} $tokenSymbol"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
@@ -404,17 +401,12 @@ sealed class RpcHistoryTransaction(
                 "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
             }
 
-        override fun getSymbol(isNegativeOperation: Boolean): String {
-            return if (isNegativeOperation) "" else "+"
-        }
-
         fun getFormattedUsdAmount(): String? = amount.totalInUsd?.abs()?.asNegativeUsdTransaction()
 
         @ColorRes
         fun getTextColor(): Int = when {
             !status.isCompleted() -> R.color.text_rose
-            isSend -> R.color.text_night
-            else -> R.color.text_mint
+            else -> R.color.text_night
         }
     }
 

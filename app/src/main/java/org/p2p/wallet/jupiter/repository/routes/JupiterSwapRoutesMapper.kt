@@ -22,7 +22,7 @@ class JupiterSwapRoutesMapper {
                 otherAmountThreshold = route.otherAmountThreshold,
                 swapMode = route.swapMode,
                 fees = route.fees.toSwapFee(),
-                keyAppFee = route.keyAppFees.fee,
+                keyAppFeeInLamports = route.keyAppFees.fee.toBigInteger(),
                 keyAppRefundableFee = route.keyAppFees.refundableFee,
                 keyAppHash = route.keyAppFees.hash
             )

@@ -23,6 +23,7 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
@@ -435,7 +436,7 @@ class NewSendPresenter(
         )
 
         appScope.launch {
-            val transactionDate = Date()
+            val transactionDate = ZonedDateTime.now()
             try {
                 val progressDetails = NewShowProgress(
                     date = transactionDate,
@@ -448,7 +449,7 @@ class NewSendPresenter(
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
-                userInteractor.addRecipient(recipientAddress, transactionDate)
+                userInteractor.addRecipient(recipientAddress, Date(transactionDate.dateMilli()))
                 val transaction = buildTransaction(result, token)
                 val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)

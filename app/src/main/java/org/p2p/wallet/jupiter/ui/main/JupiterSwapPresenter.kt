@@ -675,22 +675,28 @@ class JupiterSwapPresenter(
 
             bestRoute.marketInfos.forEachIndexed { index, info ->
                 if (index == 0) {
-                    val fromTokenData = userLocalRepository.findTokenData(info.inputMint.base58Value) ?: return
-                    val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value) ?: return
-                    append(fromTokenData.symbol)
+                    val fromTokenData = userLocalRepository.findTokenData(info.inputMint.base58Value)?.symbol
+                        ?: "(UNKNOWN)"
+                    val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value)?.symbol
+                        ?: "(UNKNOWN)"
+                    append(fromTokenData)
                     append(" -> ")
-                    append(toTokenData.symbol)
+                    append(toTokenData)
                     return@forEachIndexed
                 }
 
-                val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value) ?: return
+                val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value)?.symbol
+                    ?: "(UNKNOWN)"
+
                 append(" -> ")
-                append(toTokenData.symbol)
+                append(toTokenData)
             }
 
             appendLine()
             appendLine()
             append("Slippage: ${slippage.percentValue}")
+            appendLine()
+            append("KeyApp fee: ${bestRoute.keyAppFeeInLamports}")
         }
 
         view?.showDebugInfo(

@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
-import java.text.SimpleDateFormat
+import org.threeten.bp.format.DateTimeFormatter
 import java.util.Locale
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.SpanUtils
@@ -70,8 +70,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private val data: NewShowProgress by args(EXTRA_DATA)
     private val transactionId: String by args(EXTRA_TRANSACTION_ID)
 
-    private val dateFormat by unsafeLazy { SimpleDateFormat(DATE_FORMAT, Locale.US) }
-    private val timeFormat by unsafeLazy { SimpleDateFormat(TIME_FORMAT, Locale.US) }
+    private val dateFormat by unsafeLazy { DateTimeFormatter.ofPattern(DATE_FORMAT, Locale.US) }
+    private val timeFormat by unsafeLazy { DateTimeFormatter.ofPattern(TIME_FORMAT, Locale.US) }
 
     private lateinit var progressStateFormat: String
 

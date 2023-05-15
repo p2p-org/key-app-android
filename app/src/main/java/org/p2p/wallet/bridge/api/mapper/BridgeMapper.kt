@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.api.mapper
 
 import org.threeten.bp.ZonedDateTime
+import kotlin.time.Duration.Companion.seconds
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.orZero
 import org.p2p.ethereumkit.external.model.ERC20Tokens
@@ -19,6 +20,7 @@ import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionStatus
+import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.bridge.BridgeHistoryTransaction
 
@@ -37,7 +39,8 @@ class BridgeMapper {
             fees = fromNetwork(response.fees),
             status = response.status,
             claimKey = response.claimKey,
-            compensationDeclineReason = response.compensationDeclineReason.orEmpty()
+            compensationDeclineReason = response.compensationDeclineReason.orEmpty(),
+            dateCreated = response.dateCreatedSec.seconds.inWholeMilliseconds.toZonedDateTime()
         )
     }
 
@@ -91,7 +94,8 @@ class BridgeMapper {
             recipient = response.recipient,
             amount = fromNetwork(response.amount),
             fees = fromNetwork(response.fees),
-            status = fromNetwork(response.status)
+            status = fromNetwork(response.status),
+            dateCreated = response.dateCreatedSec.seconds.inWholeMilliseconds.toZonedDateTime()
         )
     }
 
