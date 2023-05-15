@@ -187,10 +187,7 @@ class BridgeSendPresenter(
                             val bridgeToken = state.lastStaticState.bridgeToken ?: return
                             updateTokenAndInput(bridgeToken, featureException.invalidAmount)
                             updateButtons(
-                                errorButton = TextContainer.ResParams(
-                                    R.string.send_max_warning_text_format,
-                                    listOf(bridgeToken.tokenAmount, bridgeToken.token.tokenSymbol)
-                                ),
+                                errorButton = TextContainer.Res(R.string.send_error_insufficient_funds),
                                 sliderButton = null
                             )
                         }
