@@ -13,7 +13,8 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
-import org.p2p.core.utils.formatWithDecimals
+import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
@@ -290,20 +291,27 @@ class BridgeSendPresenter(
         val totalFormatted = if (amount.isZero()) {
             emptyString()
         } else {
-            total.formatWithDecimals(calculationMode.getCurrencyMode().fractionLength)
+            total
         }
         setTotalValue(totalFormatted)
     }
 
-    private fun countTotal(amount: BigDecimal, sendFee: SendFee?): BigDecimal {
+    private fun countTotal(amount: BigDecimal, sendFee: SendFee?): String {
+        val mode = calculationMode.getCurrencyMode()
         val bridgeFee = sendFee as? SendFee.Bridge
         val fees = getFeeList(bridgeFee)
-        val fee = if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+        val fee = if (mode is CurrencyMode.Fiat.Usd) {
             fees.sumOf { it.amountInUsd.toBigDecimalOrZero() }
         } else {
             fees.sumOf { it.amountInToken }
         }
-        return amount + fee
+        val total = amount + fee
+        return if (mode is CurrencyMode.Fiat.Usd) {
+            total.asUsd()
+        } else {
+            val tokenSymbol = (mode as? CurrencyMode.Token)?.symbol.orEmpty()
+            "${total.formatToken(mode.fractionLength)} $tokenSymbol"
+        }
     }
 
     private fun BridgeSendContract.View.handleUpdateFee(sendFee: SendFee?, isInputEmpty: Boolean) {
