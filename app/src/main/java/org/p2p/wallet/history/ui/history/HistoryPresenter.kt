@@ -72,7 +72,7 @@ class HistoryPresenter(
     override fun onSendPendingClicked(transactionId: String) {
         launch {
             val sendBundle = ethereumInteractor.getSendBundleById(transactionId) ?: return@launch
-            val token = userRepository.getTokensData().firstOrNull { it.mintAddress == sendBundle.recipient.raw }
+            val token = userRepository.getTokensData().firstOrNull { it.symbol == sendBundle.amount.symbol }
             val feeDetails = bridgeSendUiMapper.makeBridgeFeeDetails(
                 recipientAddress = sendBundle.recipient.raw,
                 fees = sendBundle.fees

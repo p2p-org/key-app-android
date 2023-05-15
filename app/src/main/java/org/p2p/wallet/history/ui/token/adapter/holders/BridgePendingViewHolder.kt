@@ -19,11 +19,13 @@ class BridgePendingViewHolder(
     fun onBind(item: HistoryItem.BridgeSendItem) {
         itemView.setOnClickListener { onHistoryClicked(item) }
         with(binding) {
-            transactionTokenImageView.apply {
-                ERC20Tokens.values()
-                    .firstOrNull { it.mintAddress == item.sendDetails.recipient.raw }
-                    ?.let { setTokenImage(glideManager, it.tokenIconUrl) }
-                    ?: setTransactionIcon(R.drawable.ic_transaction_send)
+            val foundToken = ERC20Tokens.values()
+                .firstOrNull { it.replaceTokenSymbol == item.sendDetails.amount.symbol }
+            val iconUrl = item.tokenIconUrl ?: foundToken?.tokenIconUrl
+            if (iconUrl != null) {
+                transactionTokenImageView.setTokenImage(glideManager, iconUrl)
+            } else {
+                transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_unknown)
             }
             startAmountView.title = context.getString(R.string.bridge_to_ethereum)
             startAmountView.subtitle = context.getString(R.string.bridge_send_pending)
@@ -37,12 +39,13 @@ class BridgePendingViewHolder(
     fun onBind(item: HistoryItem.BridgeClaimItem) {
         itemView.setOnClickListener { onHistoryClicked(item) }
         with(binding) {
-            item.tokenIconUrl?.let { transactionTokenImageView.setTokenImage(glideManager, it) }
-                ?: transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_unknown)
-            transactionTokenImageView.apply {
-                ERC20Tokens.values().firstOrNull { it.replaceTokenSymbol == item.bundle.resultAmount.symbol }
-                    ?.let { setTokenImage(glideManager, it.tokenIconUrl) }
-                    ?: setTransactionIcon(R.drawable.ic_transaction_receive)
+            val foundToken = ERC20Tokens.values()
+                .firstOrNull { it.replaceTokenSymbol == item.bundle.resultAmount.symbol }
+            val iconUrl = item.tokenIconUrl ?: foundToken?.tokenIconUrl
+            if (iconUrl != null) {
+                transactionTokenImageView.setTokenImage(glideManager, iconUrl)
+            } else {
+                transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_unknown)
             }
             startAmountView.title = context.getString(R.string.bridge_from_ethereum)
             startAmountView.subtitle = context.getString(R.string.bridge_claim_pending)
