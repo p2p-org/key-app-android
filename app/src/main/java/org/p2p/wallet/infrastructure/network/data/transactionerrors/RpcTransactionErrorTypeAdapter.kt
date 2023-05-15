@@ -1,9 +1,11 @@
 package org.p2p.wallet.infrastructure.network.data.transactionerrors
 
+import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
+import timber.log.Timber
 import org.p2p.core.utils.nextArray
 import org.p2p.core.utils.nextObject
 
@@ -44,10 +46,8 @@ class RpcTransactionErrorTypeAdapter(
                 else -> RpcTransactionError.Unknown("Failed to parse error for $errKeyType in ${reader.path}")
             }
         } catch (parsingFatalError: Throwable) {
-            throw TransactionErrorParseFailed(
-                "Failed to parse $reader",
-                parsingFatalError
-            )
+            logParsingError(parsingFatalError, reader)
+            RpcTransactionError.Unknown("Failed to parse error in ${reader.path}")
         }
     }
 
@@ -75,14 +75,23 @@ class RpcTransactionErrorTypeAdapter(
         }
     }
 
-    override fun write(out: JsonWriter, value: RpcTransactionError?) {
-        error("No writing implemented, no need for now")
-    }
-
     private fun createPrimitiveError(value: String): RpcTransactionError {
         return RpcTransactionError::class.nestedClasses
             .firstOrNull { it.simpleName == value }
             ?.objectInstance as? RpcTransactionError
             ?: RpcTransactionError.Unknown(value)
+    }
+
+    private fun logParsingError(error: Throwable, originalReader: JsonReader) {
+        val wholeJson = runCatching { Gson().fromJson<String>(originalReader, String::class.java) }
+            .getOrDefault("parsing failed")
+        Timber.tag("RpcTransactionErrorTypeAdapter").i(wholeJson)
+        Timber.tag("RpcTransactionErrorTypeAdapter").e(
+            TransactionErrorParseFailed("Encountered fatal error", error)
+        )
+    }
+
+    override fun write(out: JsonWriter, value: RpcTransactionError?) {
+        error("No writing implemented, no need for now")
     }
 }

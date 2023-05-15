@@ -8,4 +8,6 @@ class SendViaLinkFeatureToggle(
     override val featureKey: String = "send_via_link_enabled"
     override val featureDescription: String = "Enabled Sending via link"
     override val defaultValue: Boolean = false
+    override val value: Boolean
+        get() = true
 }
