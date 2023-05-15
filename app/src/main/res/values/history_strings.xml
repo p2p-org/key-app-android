@@ -14,7 +14,10 @@
     <string name="transaction_history_stake">Stake</string>
     <string name="transaction_history_unstake">Unstake</string>
     <string name="transaction_history_send_pending">Sending</string>
+    <string name="transaction_history_claim_pending">Claiming</string>
     <string name="transaction_history_receive">Receive</string>
+    <string name="transaction_history_wh_send">To Ethereum</string>
+    <string name="transaction_history_wh_claim">From Ethereum</string>
     <string name="transaction_history_receive_pending">Processing</string>
     <string name="transaction_history_create">Create account</string>
     <string name="transaction_history_closed">Close account</string>

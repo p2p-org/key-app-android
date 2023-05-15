@@ -7,16 +7,23 @@ import java.math.BigDecimal
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
+import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
@@ -38,6 +45,7 @@ import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
+import org.p2p.wallet.newsend.model.FeeRelayerStateError
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendSolanaFee
@@ -89,10 +97,16 @@ class NewSendPresenter(
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
-        selectedToken?.let { initToken ->
-            checkTokenRatesAndSetSwitchAmountState(initToken)
-        }
         initialize(view)
+        subscribeToSelectedTokenUpdates()
+    }
+
+    private fun subscribeToSelectedTokenUpdates() {
+        userInteractor.getUserTokensFlow()
+            .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
+            .filterNotNull()
+            .onEach { token = it }
+            .launchIn(this)
     }
 
     override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) {
@@ -220,7 +234,18 @@ class NewSendPresenter(
 
             is FeeRelayerState.Failure -> {
                 Timber.e(newState, "FeeRelayerState has error")
-                if (newState.isFeeCalculationError()) view.showFeeViewVisible(isVisible = false)
+                if (newState.isFeeCalculationError()) {
+                    view.showFeeViewVisible(isVisible = false)
+
+                    newState.errorStateError as FeeRelayerStateError.FeesCalculationError
+                    if (newState.errorStateError.cause is CancellationException) {
+                        Timber.i(newState)
+                    } else {
+                        Timber.e(newState, "FeeRelayerState has calculation error")
+                    }
+                } else {
+                    Timber.e(newState, "FeeRelayerState has error")
+                }
                 updateButton(requireToken(), newState)
             }
 
@@ -249,11 +274,7 @@ class NewSendPresenter(
 
     override fun onTokenClicked() {
         newSendAnalytics.logTokenSelectionClicked()
-        launch {
-            val tokens = userInteractor.getUserTokens()
-            val result = tokens.filterNot(Token.Active::isZero)
-            view?.showTokenSelection(tokens = result, selectedToken = token)
-        }
+        view?.showTokenSelection(selectedToken = token)
     }
 
     override fun updateToken(newToken: Token.Active) {
@@ -415,7 +436,7 @@ class NewSendPresenter(
         )
 
         appScope.launch {
-            val transactionDate = Date()
+            val transactionDate = ZonedDateTime.now()
             try {
                 val progressDetails = NewShowProgress(
                     date = transactionDate,
@@ -428,7 +449,7 @@ class NewSendPresenter(
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
-                userInteractor.addRecipient(recipientAddress, transactionDate)
+                userInteractor.addRecipient(recipientAddress, Date(transactionDate.dateMilli()))
                 val transaction = buildTransaction(result, token)
                 val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)

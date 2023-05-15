@@ -72,7 +72,7 @@
         app:layout_constraintTop_toBottomOf="@id/textViewTokenAmount"
         tools:text="~ $1 219.87" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutFeeContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,20 +89,21 @@
         app:layout_constraintTop_toBottomOf="@+id/textViewFiatAmount">
 
         <TextView
+            android:id="@+id/textViewFees"
             style="@style/UiKit.TextAppearance.Regular.Text4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/bridge_claim_fees"
             android:textColor="@color/text_night"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/dividerView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewTokenAmount" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textViewFeeValue"
             style="@style/UiKit.TextAppearance.Regular.Text4"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="12dp"
             android:gravity="end|center_vertical"
@@ -110,10 +111,54 @@
             android:textColor="@color/text_mountain"
             app:drawableEndCompat="@drawable/ic_info_outline"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewTokenAmount" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+        <View
+            android:id="@+id/dividerView"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="12dp"
+            android:background="@color/bg_rain"
+            app:layout_constraintTop_toBottomOf="@id/textViewFees" />
+
+        <TextView
+            android:id="@+id/textViewWillGet"
+            style="@style/UiKit.TextAppearance.Regular.Text4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="@string/bridge_claim_will_get"
+            android:textColor="@color/text_night"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dividerView" />
+
+
+        <TextView
+            android:id="@+id/textViewWillGetValue"
+            style="@style/UiKit.TextAppearance.SemiBold.Text3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:drawablePadding="12dp"
+            android:gravity="end|center_vertical"
+            android:textColor="@color/text_night"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dividerView"
+            tools:text="0.00089 WETH" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/groupWillGet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="textViewWillGet, textViewWillGetValue, dividerView"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerBanner"
@@ -125,10 +170,11 @@
         android:backgroundTint="@color/light_grass"
         android:paddingStart="16dp"
         android:paddingEnd="12dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/layoutFeeContainer">
+        app:layout_constraintTop_toBottomOf="@id/layoutFeeContainer"
+        tools:visibility="visible">
 
         <TextView
+            android:id="@+id/textViewBanner"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="start|center_vertical"
@@ -140,8 +186,8 @@
 
         <ImageView
             android:id="@+id/imageViewMoney"
-            android:layout_width="100dp"
-            android:layout_height="88dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:src="@drawable/placeholder_receive_banner"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

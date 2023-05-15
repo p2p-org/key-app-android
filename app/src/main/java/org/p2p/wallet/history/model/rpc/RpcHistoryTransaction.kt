@@ -59,13 +59,13 @@ sealed class RpcHistoryTransaction(
 
         fun getUsdAmount(): String = "${getFormattedAmount()}"
 
-        fun getTotal(): String = "${getSymbol(isBurn)}${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+        fun getTotal(): String = "${getSymbol(isBurn)}${amount.total.abs().scaleMedium().formatToken()} $tokenSymbol"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
-                "${amount.total.scaleMedium().toPlainString()} $tokenSymbol"
+                "${amount.total.abs().scaleMedium().toPlainString()} $tokenSymbol"
             } else {
-                "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
+                "${amount.total.abs().scaleLong().toPlainString()} $tokenSymbol"
             }
 
         fun getFormattedAbsTotal(): String {
@@ -83,7 +83,7 @@ sealed class RpcHistoryTransaction(
             else -> R.color.text_mint
         }
 
-        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isBurn))
+        fun getFormattedAmount(): String? = amount.totalInUsd?.abs()?.asUsdTransaction(getSymbol(isBurn))
     }
 
     @Parcelize
@@ -321,6 +321,93 @@ sealed class RpcHistoryTransaction(
         }
 
         fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isStake))
+    }
+
+    @Parcelize
+    data class WormholeReceive(
+        override val signature: String,
+        override val date: ZonedDateTime,
+        override val blockNumber: Int,
+        override val status: HistoryTransactionStatus,
+        override val type: RpcHistoryTransactionType,
+        val amount: RpcHistoryAmount,
+        val tokenSymbol: String,
+        val iconUrl: String?,
+        val fees: List<RpcFee>?,
+    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
+
+        @StringRes
+        fun getTitle(): Int = R.string.transaction_history_wh_claim
+
+        @StringRes
+        fun getSubtitle(): Int = if (status.isPending()) {
+            R.string.transaction_history_claim_pending
+        } else {
+            R.string.transaction_history_receive
+        }
+
+        fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
+
+        fun getTotal(): String = "+${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String =
+            if (scaleMedium) {
+                "${amount.total.scaleMedium().toPlainString()} $tokenSymbol"
+            } else {
+                "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
+            }
+
+        @ColorRes
+        fun getTextColor(): Int = when {
+            !status.isCompleted() -> R.color.text_rose
+            else -> R.color.text_mint
+        }
+
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.abs()?.asPositiveUsdTransaction()
+    }
+
+    @Parcelize
+    data class WormholeSend(
+        override val signature: String,
+        override val date: ZonedDateTime,
+        override val blockNumber: Int,
+        override val status: HistoryTransactionStatus,
+        override val type: RpcHistoryTransactionType,
+        val amount: RpcHistoryAmount,
+        val sourceAddress: String,
+        val tokenSymbol: String,
+        val iconUrl: String?,
+        val fees: List<RpcFee>?,
+    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
+
+        fun getUsdAmount(): String = "${getFormattedUsdAmount()}"
+
+        @StringRes
+        fun getTitle(): Int = R.string.transaction_history_wh_send
+
+        @StringRes
+        fun getSubtitle(): Int = if (status.isPending()) {
+            R.string.transaction_history_send_pending
+        } else {
+            R.string.transaction_history_send
+        }
+
+        fun getTotal(): String = "${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String =
+            if (scaleMedium) {
+                "${amount.total.scaleMedium().toPlainString()} $tokenSymbol"
+            } else {
+                "${amount.total.scaleLong().toPlainString()} $tokenSymbol"
+            }
+
+        fun getFormattedUsdAmount(): String? = amount.totalInUsd?.abs()?.asNegativeUsdTransaction()
+
+        @ColorRes
+        fun getTextColor(): Int = when {
+            !status.isCompleted() -> R.color.text_rose
+            else -> R.color.text_night
+        }
     }
 
     @Parcelize

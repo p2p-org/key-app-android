@@ -17,7 +17,7 @@ interface BridgeSendContract {
         fun showFreeTransactionsInfo()
         fun showTransactionDetails(bridgeFeeDetails: BridgeFeeDetails)
         fun showProgressDialog(internalTransactionId: String, data: NewShowProgress)
-        fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)
+        fun showTokenSelection(supportedTokens: List<Token.Active>, selectedToken: Token.Active?)
         fun showDebugInfo(text: CharSequence)
 
         fun setBottomButtonText(text: TextContainer?)

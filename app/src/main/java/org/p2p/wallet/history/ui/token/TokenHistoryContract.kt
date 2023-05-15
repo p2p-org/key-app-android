@@ -2,6 +2,7 @@ package org.p2p.wallet.history.ui.token
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.DefaultLifecycleObserver
+import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
@@ -17,6 +18,8 @@ interface TokenHistoryContract {
         fun showReceiveNetworkDialog()
         fun openReceiveInSolana()
         fun openReceiveInEthereum()
+        fun renderTokenAmounts(token: Token.Active)
+        fun loadTokenHistoryList()
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {

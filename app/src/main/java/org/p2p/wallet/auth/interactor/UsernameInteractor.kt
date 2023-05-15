@@ -55,7 +55,9 @@ class UsernameInteractor(
                     remove(KEY_USERNAME)
                 }
             }
-            crashLogger.setCustomKey("username", usernameDetails?.username?.fullUsername.orEmpty())
+            usernameDetails?.username?.fullUsername?.let {
+                crashLogger.setCustomKey("username", it)
+            }
         } catch (error: Throwable) {
             Timber.e(error, "Failed to restore username for ${owner.base58Value}")
         }
@@ -65,6 +67,7 @@ class UsernameInteractor(
      * Priority in search is given to .key usernames, return them at first
      */
     suspend fun findUsernameByAddress(address: Base58String): UsernameDetails? {
+        if (address.base58Value.isBlank()) return null
         return usernameRepository.findUsernameDetailsByAddress(address)
             .run {
                 firstOrNull { it.username.domainPrefix == usernameDomainFeatureToggle.value } ?: firstOrNull()

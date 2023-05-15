@@ -28,11 +28,17 @@ class UserInMemoryRepository(
         return allTokensFlow.value.isNotEmpty()
     }
 
+    override fun arePricesLoaded(): Boolean {
+        return pricesFlow.value.isNotEmpty()
+    }
+
     override fun setTokenPrices(prices: List<TokenPrice>) {
         pricesFlow.value = prices
     }
 
     override fun getTokenPrices(): Flow<List<TokenPrice>> = pricesFlow
+
+    override fun getCachedTokenPrices(): List<TokenPrice> = pricesFlow.value
 
     override fun getPriceByTokenId(tokenId: String?): TokenPrice? {
         return pricesFlow.value.firstOrNull { it.tokenId == tokenId }

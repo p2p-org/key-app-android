@@ -10,5 +10,7 @@ enum class RpcHistoryTransactionType {
     CREATE_ACCOUNT,
     CLOSE_ACCOUNT,
     BURN,
-    MINT
+    MINT,
+    WORMHOLE_RECEIVE,
+    WORMHOLE_SEND
 }

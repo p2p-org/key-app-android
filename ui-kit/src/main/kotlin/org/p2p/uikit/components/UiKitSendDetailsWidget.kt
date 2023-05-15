@@ -7,6 +7,8 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
+import android.widget.TextView
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.atomic.AtomicInteger
@@ -18,6 +20,8 @@ import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.bind
 
 private const val MAX_FRACTION_LENGTH = 9
 private const val PROGRESS_DELAY_IN_MS = 200L
@@ -38,6 +42,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     var maxButtonClickListener: (() -> Unit)? = null
     var feeButtonClickListener: (() -> Unit)? = null
 
+    private var isBottomFeeMode = false
+
     private var maxFractionLength: AtomicInteger = AtomicInteger(MAX_FRACTION_LENGTH)
 
     init {
@@ -48,17 +54,44 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
             viewSwitchToClickArea.setOnClickListener {
                 switchListener?.invoke()
             }
-            textViewFee.setOnClickListener {
-                feeButtonClickListener?.invoke()
-            }
-            imageViewFeesInfo.setOnClickListener {
-                feeButtonClickListener?.invoke()
-            }
+            val feeClickListener: (View) -> Unit = { feeButtonClickListener?.invoke() }
+            textViewFee.setOnClickListener(feeClickListener)
+            textViewBottomFee.setOnClickListener(feeClickListener)
+            imageViewFeesInfo.setOnClickListener(feeClickListener)
+            imageViewBottomFeesInfo.setOnClickListener(feeClickListener)
             textViewMax.setOnClickListener {
                 maxButtonClickListener?.invoke()
             }
         }
     }
+
+    private val feeInfo: View
+        get() = if (isBottomFeeMode) {
+            binding.layoutBottomFeeInfo
+        } else {
+            binding.layoutFeeInfo
+        }
+
+    private val progressBarFees: View
+        get() = if (isBottomFeeMode) {
+            binding.progressBarBottomFees
+        } else {
+            binding.progressBarFees
+        }
+
+    private val imageViewFeesInfo: View
+        get() = if (isBottomFeeMode) {
+            binding.imageViewBottomFeesInfo
+        } else {
+            binding.imageViewFeesInfo
+        }
+
+    private val textViewFee: TextView
+        get() = if (isBottomFeeMode) {
+            binding.textViewBottomFee
+        } else {
+            binding.textViewFee
+        }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -79,6 +112,14 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
     }
 
+    fun switchToBottomFee() {
+        isBottomFeeMode = true
+        with(binding) {
+            groupTopFee.isInvisible = true
+            groupBottomFee.isVisible = true
+        }
+    }
+
     fun setTokenContainerEnabled(isEnabled: Boolean) {
         binding.containerToken.isEnabled = isEnabled
         binding.imageViewSelectToken.isVisible = isEnabled
@@ -93,16 +134,34 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     }
 
     fun setFeeLabel(text: String) {
-        binding.textViewFee.text = text
+        textViewFee.text = text
+    }
+
+    fun setTotalLabel(text: String) {
+        binding.textViewBottomTotal.text = text
+    }
+
+    fun setTotalValue(text: String) {
+        binding.textViewBottomTotalValue.text = text
     }
 
     fun showFeeVisible(isVisible: Boolean) {
-        binding.layoutFeeInfo.isVisible = isVisible
+        feeInfo.isVisible = isVisible
     }
 
     fun showFeeLoading(isLoading: Boolean) {
-        binding.progressBarFees.isVisible = isLoading
-        binding.imageViewFeesInfo.isVisible = !isLoading
+        progressBarFees.isVisible = isLoading
+        imageViewFeesInfo.isVisible = !isLoading
+    }
+
+    fun showBottomFeeValue(fee: TextViewCellModel) {
+        binding.textViewBottomFeeValue.bind(fee)
+    }
+
+    fun setBottomFeeColor(@ColorRes colorRes: Int) = with(binding) {
+        textViewBottomFee.setTextColor(getColor(colorRes))
+        textViewBottomFeeValue.setTextColor(getColor(colorRes))
+        imageViewBottomFeesInfo.setColorFilter(getColor(colorRes))
     }
 
     fun showDelayedFeeViewLoading(isLoading: Boolean) {
@@ -113,8 +172,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
 
         handler.postDelayed(PROGRESS_DELAY_IN_MS) {
-            binding.progressBarFees.isVisible = true
-            binding.imageViewFeesInfo.isVisible = false
+            progressBarFees.isVisible = true
+            imageViewFeesInfo.isVisible = false
         }
     }
 
@@ -209,6 +268,9 @@ interface UiKitSendDetailsWidgetContract {
     fun setMainAmountLabel(symbol: String)
     fun setMaxButtonVisible(isVisible: Boolean)
     fun setFeeLabel(text: String)
+    fun showBottomFeeValue(fee: TextViewCellModel)
+    fun setFeeColor(@ColorRes colorRes: Int)
+    fun setTotalValue(text: String)
     fun setTokenContainerEnabled(isEnabled: Boolean)
     fun setInputEnabled(isEnabled: Boolean)
     fun showFeeViewVisible(isVisible: Boolean)

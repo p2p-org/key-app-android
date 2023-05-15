@@ -1,6 +1,5 @@
 package org.p2p.wallet.bridge.claim.ui
 
-import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
@@ -9,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
+import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
@@ -25,13 +25,11 @@ import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
 import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
-import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.getErrorMessage
 
 const val DEFAULT_DELAY_IN_MILLIS = 30_000L
 
@@ -40,7 +38,6 @@ class ClaimPresenter(
     private val ethereumInteractor: EthereumInteractor,
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
-    private val resources: Resources,
     private val appScope: AppScope,
     private val claimAnalytics: ClaimAnalytics
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
@@ -67,8 +64,9 @@ class ClaimPresenter(
             delay(delayMillis)
             reset()
             try {
-                val newBundle = fetchBundle()
                 minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee()
+                view?.setMinAmountForFreeFee(minAmountForFreeFee)
+                val newBundle = fetchBundle()
                 showFees(
                     resultAmount = newBundle.resultAmount,
                     fees = newBundle.fees,
@@ -76,7 +74,13 @@ class ClaimPresenter(
                     minAmountForFreeFee = minAmountForFreeFee
                 )
                 val finalValue = claimUiMapper.makeResultAmount(newBundle.resultAmount)
-                view?.showClaimButtonValue(finalValue.formattedTokenAmount.orEmpty())
+                val amountInFiat = finalValue.fiatAmount?.asUsd()
+                if (amountInFiat == null) {
+                    view?.setWillGetVisibility(isVisible = false)
+                } else {
+                    view?.showWillGet(TextViewCellModel.Raw(TextContainer(finalValue.formattedTokenAmount.orEmpty())))
+                    view?.setWillGetVisibility(isVisible = true)
+                }
             } catch (error: Throwable) {
                 Timber.e(error, "Error on getting bundle for claim")
                 val isNotEnoughFundsError = error is NotEnoughAmount || error is ContractError
@@ -89,17 +93,21 @@ class ClaimPresenter(
                 if (messageResId != null) {
                     view?.showUiKitSnackBar(messageResId = messageResId)
                 }
-                if (isNotEnoughFundsError) {
+
+                val feeErrorRes = if (isNotEnoughFundsError) {
                     view?.setButtonText(
                         TextViewCellModel.Raw(
                             TextContainer(R.string.bridge_claim_bottom_button_add_funds)
                         )
                     )
+                    R.string.bridge_claim_fees_more_then
+                } else {
+                    R.string.bridge_claim_fees_unavailable
                 }
-                view?.showFee(TextViewCellModel.Raw(TextContainer(R.string.bridge_claim_fees_unavailable)))
+                view?.showFee(TextViewCellModel.Raw(TextContainer(feeErrorRes)))
                 view?.setClaimButtonState(isButtonEnabled = isNotEnoughFundsError)
-                view?.setBannerVisibility(isBannerVisible = isNotEnoughFundsError)
                 view?.setFeeInfoVisibility(isVisible = false)
+                view?.setWillGetVisibility(isVisible = false)
                 isLastErrorWasNotEnoughFundsError = isNotEnoughFundsError
             } finally {
                 startRefreshJob(refreshJobDelayTimeInMillis)
@@ -117,10 +125,10 @@ class ClaimPresenter(
 
         claimDetails = claimUiMapper.makeClaimDetails(
             isFree = isFree,
-            tokenToClaim = tokenToClaim,
             resultAmount = resultAmount,
             fees = fees,
-            minAmountForFreeFee = minAmountForFreeFee
+            minAmountForFreeFee = minAmountForFreeFee,
+            transactionDate = ZonedDateTime.now()
         )
         view?.setClaimButtonState(isButtonEnabled = true)
     }
@@ -159,6 +167,7 @@ class ClaimPresenter(
                     tokenToClaim = tokenToClaim,
                     claimDetails = claimDetails
                 )
+                ethereumInteractor.saveProgressDetails(latestBundleId, progressDetails)
                 view?.showProgressDialog(
                     bundleId = latestBundleId,
                     data = progressDetails
@@ -175,8 +184,7 @@ class ClaimPresenter(
                     state = transactionState
                 )
             } catch (e: BridgeResult.Error) {
-                val message = e.getErrorMessage { res -> resources.getString(res) }
-                Timber.e(e, "Failed to send signed bundle")
+                Timber.e(e, "Failed to send signed bundle: ${e.message}")
             }
         }
     }
@@ -186,8 +194,8 @@ class ClaimPresenter(
         claimDetails = null
         isLastErrorWasNotEnoughFundsError = false
         view?.setClaimButtonState(isButtonEnabled = false)
-        view?.setBannerVisibility(isBannerVisible = false)
         view?.setFeeInfoVisibility(isVisible = true)
+        view?.setWillGetVisibility(isVisible = false)
         view?.showFee(claimUiMapper.getTextSkeleton())
     }
 
@@ -200,7 +208,7 @@ class ClaimPresenter(
         ).also { newBundle ->
             latestBundle = newBundle
             latestBundleId = newBundle.bundleId
-            refreshJobDelayTimeInMillis = newBundle.getExpirationDateInMillis() - ZonedDateTime.now().dateMilli()
+            refreshJobDelayTimeInMillis = newBundle.getExpirationDateInMillis() - ZonedDateTime.now().toEpochSecond()
             latestTransactions = newBundle.transactions
         }
     }

@@ -29,7 +29,9 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.analytics.ClaimAnalytics
+import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
+import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -45,13 +47,19 @@ import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
-import org.p2p.wallet.updates.UpdatesManager
+import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.updates.SocketState
+import org.p2p.wallet.updates.SubscriptionUpdatesManager
+import org.p2p.wallet.updates.SubscriptionUpdatesStateObserver
+import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.utils.ellipsizeAddress
@@ -70,7 +78,7 @@ val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 class HomePresenter(
     private val analytics: HomeAnalytics,
     private val claimAnalytics: ClaimAnalytics,
-    private val updatesManager: UpdatesManager,
+    private val updatesManager: SubscriptionUpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
@@ -89,7 +97,10 @@ class HomePresenter(
     private val ethereumInteractor: EthereumInteractor,
     seedPhraseProvider: SeedPhraseProvider,
     private val deeplinksManager: AppDeeplinksManager,
-    private val connectionManager: ConnectionManager
+    private val connectionManager: ConnectionManager,
+    private val transactionManager: TransactionManager,
+    private val claimUiMapper: ClaimUiMapper,
+    private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -109,13 +120,26 @@ class HomePresenter(
 
     init {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-        ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+        if (userSeedPhrase.isNotEmpty()) {
+            ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+        } else {
+            Timber.e(IllegalStateException(), "ETH is not init, no seed phrase")
+        }
         launch {
             awaitAll(
                 async { networkObserver.start() },
                 async { metadataInteractor.tryLoadAndSaveMetadata() }
             )
         }
+        updatesManager.addUpdatesStateObserver(object : SubscriptionUpdatesStateObserver {
+            override fun onUpdatesStateChanged(state: SocketState) {
+                if (state == SocketState.CONNECTED) {
+                    updateSubscribers.forEach {
+                        it.subscribe()
+                    }
+                }
+            }
+        })
     }
 
     override fun attach(view: HomeContract.View) {
@@ -127,28 +151,53 @@ class HomePresenter(
     }
 
     private fun loadSolanaTokens() {
+        launch {
+            // ignore internet state; tokens must display regardless of any error
+            attachToPollingTokens()
+        }
         launchInternetAware(connectionManager) {
             try {
                 view?.showRefreshing(true)
                 userInteractor.loadAllTokensDataIfEmpty()
-                val solTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
+                val userSolTokens = userInteractor.loadUserTokensAndUpdateLocal(
+                    tokenKeyProvider.publicKey.toPublicKey()
+                )
                 async {
                     try {
-                        userInteractor.loadUserRates(solTokens)
+                        userInteractor.loadUserRates(userSolTokens)
                     } catch (t: Throwable) {
                         Timber.i(t, "Error on loading user rates")
                         view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
                     }
                 }
                 async {
-                    val bundles = ethereumInteractor.getListOfEthereumBundleStatuses()
-                    ethereumInteractor.loadWalletTokens(bundles)
+                    try {
+                        ethereumInteractor.loadWalletTokens()
+                    } catch (t: Throwable) {
+                        Timber.e(t, "Error on loading ethereum Tokens")
+                    }
                 }
-                attachToPollingTokens()
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading Sol tokens")
             } finally {
                 view?.showRefreshing(false)
+            }
+        }
+    }
+
+    override fun refreshTokens() {
+        launchInternetAware(connectionManager) {
+            try {
+                view?.showRefreshing(isRefreshing = true)
+                tokensPolling.refreshTokens()
+                initializeActionButtons(isRefreshing = true)
+            } catch (cancelled: CancellationException) {
+                Timber.i("Loading tokens job cancelled")
+            } catch (error: Throwable) {
+                Timber.e(error, "Error refreshing user tokens")
+                view?.showErrorMessage(error)
+            } finally {
+                view?.showRefreshing(isRefreshing = false)
             }
         }
     }
@@ -198,6 +247,60 @@ class HomePresenter(
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
+    }
+
+    override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
+        launch {
+            claimAnalytics.logClaimButtonClicked()
+            if (canBeClaimed) {
+                view?.showTokenClaim(token)
+            } else {
+                token.latestActiveBundleId?.let { latestBundleId ->
+                    val latestBundleDetails = ethereumInteractor.getProgressDetails(latestBundleId)
+                    transactionManager.emitTransactionState(
+                        latestBundleId,
+                        TransactionState.ClaimProgress(latestBundleId)
+                    )
+                    if (latestBundleDetails != null) {
+                        showClaimProgressDetails(latestBundleId, latestBundleDetails)
+                    } else {
+                        tryGetProgressByToken(token)
+                    }
+                } ?: tryGetProgressByToken(token)
+            }
+        }
+    }
+
+    private suspend fun tryGetProgressByToken(token: Token.Eth) {
+        ethereumInteractor.getBundleByToken(token)?.let { bridgeBundle ->
+            getProgressDetails(token, bridgeBundle)
+        } ?: Timber.e("No bundle found associated to token: $token to show claim details!")
+    }
+
+    private suspend fun getProgressDetails(token: Token.Eth, bridgeBundle: BridgeBundle) {
+        var progressDetails = ethereumInteractor.getProgressDetails(bridgeBundle.bundleId)
+        if (progressDetails == null) {
+            val claimDetails = claimUiMapper.makeClaimDetails(
+                resultAmount = bridgeBundle.resultAmount,
+                fees = bridgeBundle.fees,
+                isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
+                minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
+                transactionDate = bridgeBundle.dateCreated
+            )
+            progressDetails = claimUiMapper.prepareShowProgress(
+                tokenToClaim = token,
+                claimDetails = claimDetails
+            )
+            ethereumInteractor.saveProgressDetails(bridgeBundle.bundleId, progressDetails)
+        }
+        showClaimProgressDetails(bridgeBundle.bundleId, progressDetails)
+    }
+
+    private fun showClaimProgressDetails(bundleId: String, bundleDetails: NewShowProgress) {
+        view?.showProgressDialog(
+            bundleId = bundleId,
+            progressDetails = bundleDetails
+        )
     }
 
     private fun handleDeeplinks() {
@@ -294,7 +397,7 @@ class HomePresenter(
 
     override fun onSendClicked(clickSource: SearchOpenedFromScreen) {
         launch {
-            val isEmptyAccount = state.tokens.all { it.isZero } && state.ethTokens.isEmpty()
+            val isEmptyAccount = state.tokens.all { it.isZero }
             if (isEmptyAccount) {
                 // this cannot be empty
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
@@ -352,23 +455,6 @@ class HomePresenter(
         logBalance(BigDecimal.ZERO)
 
         view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
-    }
-
-    override fun refreshTokens() {
-        launchInternetAware(connectionManager) {
-            try {
-                view?.showRefreshing(isRefreshing = true)
-                tokensPolling.refreshTokens()
-                initializeActionButtons(isRefreshing = true)
-            } catch (cancelled: CancellationException) {
-                Timber.i("Loading tokens job cancelled")
-            } catch (error: Throwable) {
-                Timber.e(error, "Error refreshing user tokens")
-                view?.showErrorMessage(error)
-            } finally {
-                view?.showRefreshing(isRefreshing = false)
-            }
-        }
     }
 
     override fun toggleTokenVisibility(token: Token.Active) {

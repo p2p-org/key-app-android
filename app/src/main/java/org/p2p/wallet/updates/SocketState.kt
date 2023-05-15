@@ -1,6 +1,6 @@
 package org.p2p.wallet.updates
 
-enum class UpdatesState {
+enum class SocketState {
     DISCONNECTED,
     INITIALIZING,
     INITIALIZATION_FAILED,

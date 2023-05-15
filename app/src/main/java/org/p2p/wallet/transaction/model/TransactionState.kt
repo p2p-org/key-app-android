@@ -16,6 +16,12 @@ sealed class TransactionState {
         val sourceTokenSymbol: String
     ) : TransactionState()
 
+    data class ClaimProgress(
+        val bundleId: String,
+        @StringRes val message: Int = R.string.bridge_claiming_button_text,
+        @StringRes val description: Int = R.string.bridge_claim_description_progress
+    ) : TransactionState()
+
     data class ClaimSuccess(
         val bundleId: String,
         val sourceTokenSymbol: String

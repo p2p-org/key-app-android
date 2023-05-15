@@ -11,6 +11,7 @@ import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -224,6 +225,18 @@ class NewSendFragment :
         binding.widgetSendDetails.setFeeLabel(text)
     }
 
+    override fun showBottomFeeValue(fee: TextViewCellModel) {
+        binding.widgetSendDetails.showBottomFeeValue(fee)
+    }
+
+    override fun setFeeColor(@ColorRes colorRes: Int) {
+        binding.widgetSendDetails.setBottomFeeColor(colorRes)
+    }
+
+    override fun setTotalValue(text: String) {
+        binding.widgetSendDetails.setTotalValue(text)
+    }
+
     override fun setSwitchLabel(symbol: String) {
         binding.widgetSendDetails.setSwitchLabel(getString(R.string.send_switch_to_token, symbol))
     }
@@ -240,10 +253,9 @@ class NewSendFragment :
         binding.textViewDebug.text = text
     }
 
-    override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
+    override fun showTokenSelection(selectedToken: Token.Active?) {
         addFragment(
             target = NewSelectTokenFragment.create(
-                tokens = tokens,
                 selectedToken = selectedToken,
                 requestKey = KEY_REQUEST_SEND,
                 resultKey = KEY_RESULT_TOKEN_TO_SEND

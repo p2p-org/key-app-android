@@ -17,7 +17,7 @@ enum class ERC20Tokens(
     val contractAddress: String,
     val mintAddress: String,
     val coingeckoId: String,
-    val tokenIconUrl: String? = null,
+    val tokenIconUrl: String,
     val replaceTokenName: String? = null,
     val replaceTokenSymbol: String? = null,
     val receiveFromTokens: List<String> = listOf(mintAddress),

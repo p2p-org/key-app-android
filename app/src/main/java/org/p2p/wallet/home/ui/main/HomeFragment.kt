@@ -4,6 +4,7 @@ import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
@@ -48,8 +49,10 @@ import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
@@ -83,6 +86,8 @@ class HomeFragment :
     private val glideManager: GlideManager by inject()
     private val analytics: AnalyticsPushChannel by inject()
 
+    private var listener: RootListener? = null
+
     private val contentAdapter: TokenAdapter by unsafeLazy {
         TokenAdapter(
             glideManager = glideManager,
@@ -99,6 +104,11 @@ class HomeFragment :
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val layoutManager: LinearLayoutManager by lazy {
         HomeScreenLayoutManager(requireContext())
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = context as? RootListener
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -279,6 +289,14 @@ class HomeFragment :
         replaceFragment(SendUnavailableFragment.create(fallbackToken))
     }
 
+    override fun showTokenClaim(token: Token.Eth) {
+        replaceFragment(ClaimFragment.create(ethereumToken = token))
+    }
+
+    override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
+        listener?.showTransactionProgress(bundleId, progressDetails)
+    }
+
     override fun showNewBuyScreen(token: Token, fiatToken: String?, fiatAmount: String?) {
         replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
     }
@@ -369,11 +387,8 @@ class HomeFragment :
         presenter.toggleTokenVisibility(token)
     }
 
-    override fun onClaimTokenClicked(token: Token.Eth) {
-        claimAnalytics.logClaimButtonClicked()
-        replaceFragment(
-            ClaimFragment.create(ethereumToken = token)
-        )
+    override fun onClaimTokenClicked(canBeClaimed: Boolean, token: Token.Eth) {
+        presenter.onClaimClicked(canBeClaimed, token)
     }
 
     override fun onDestroy() {

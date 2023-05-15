@@ -6,6 +6,16 @@ import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.utils.Base58String
 
+data class SwapInitialTokensData(
+    val token: Token.Active?,
+    val tokenASymbol: String?,
+    val tokenBSymbol: String?
+) {
+    companion object {
+        val NO_DATA = SwapInitialTokensData(token = null, tokenASymbol = null, tokenBSymbol = null)
+    }
+}
+
 interface SwapInitialTokenSelector {
 
     suspend fun getTokenPair(): Pair<SwapTokenModel, SwapTokenModel>

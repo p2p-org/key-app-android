@@ -7,13 +7,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
+import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
+import org.p2p.wallet.bridge.send.model.getFeeList
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
@@ -44,19 +47,31 @@ class SendBridgeTransactionLoader constructor(
         val token = lastStaticState.bridgeToken ?: return@flow
 
         emit(SendState.Loading.Fee(lastStaticState))
-        val fee = loadFee(token, lastStaticState.inputAmount.orZero())
+        val lastFeeInToken = getFeeTotalInToken(lastStaticState)
+        val currentAmount = lastStaticState.inputAmount.orZero()
+        val finalAmount = if (currentAmount.isZero()) {
+            currentAmount
+        } else {
+            currentAmount + lastFeeInToken
+        }
+        val fee = loadFee(token, finalAmount)
         val updatedFee = mapper.updateFee(lastStaticState, fee)
         val inputAmount = updatedFee.inputAmount
         if (inputAmount != null) {
-            val inputLamports = inputAmount.toLamports(token.token.decimals)
+            val amountWithFee = inputAmount + lastFeeInToken
+            val inputLamports = amountWithFee.toLamports(token.token.decimals)
             validator.validateIsFeeMoreThanTotal(updatedFee, fee)
-            validator.validateIsFeeMoreThanAmount(updatedFee, fee)
+            validator.validateIsFeeMoreThanAmount(fee, inputAmount, amountWithFee)
             val sendTransaction = createTransaction(token.token, inputLamports)
             emit(SendState.Static.ReadyToSend(token, fee, inputAmount, sendTransaction))
         } else {
             emit(SendState.Static.TokenZero(token, fee))
             validator.validateIsFeeMoreThanTotal(updatedFee, fee)
         }
+    }
+
+    private fun getFeeTotalInToken(lastStaticState: SendState.Static): BigDecimal {
+        return lastStaticState.bridgeFee?.fee.getFeeList().sumOf { it.amountInToken }
     }
 
     private suspend fun loadFee(

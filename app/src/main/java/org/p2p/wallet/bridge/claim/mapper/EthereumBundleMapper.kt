@@ -12,6 +12,7 @@ class EthereumBundleMapper(
         val contractAddress = item.resultAmount.token ?: ethereumRepository.getAddress()
         val canBeClaimed = item.status.canBeClaimed()
         return EthereumClaimToken(
+            bundleId = item.bundleId,
             contractAddress = contractAddress,
             isClaiming = !canBeClaimed
         )

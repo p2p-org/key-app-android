@@ -5,7 +5,9 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import java.math.BigDecimal
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.utils.asUsd
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentEthereumReceiveBinding
@@ -77,5 +79,12 @@ class EthereumReceiveFragment :
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+    }
+
+    override fun setMinAmountForFreeFee(minAmountForFreeFee: BigDecimal) {
+        binding.textViewBanner.text = getString(
+            R.string.receive_ethereum_banner_text_format,
+            minAmountForFreeFee.asUsd()
+        )
     }
 }

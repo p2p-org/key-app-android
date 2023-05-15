@@ -1,6 +1,6 @@
 package org.p2p.wallet.home.model
 
-import java.math.BigDecimal
+import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.token.TokenVisibility
@@ -27,28 +27,48 @@ object TokenConverter {
         )
 
     fun fromNetwork(
-        account: Account,
+        mintAddress: String,
+        totalLamports: BigInteger,
+        accountPublicKey: String,
         tokenData: TokenData,
         price: TokenPrice?
     ): Token.Active {
-        val data = account.account.data
-        val mintAddress = data.parsed.info.mint
-        val total = data.parsed.info.tokenAmount.amount.toBigInteger()
+        val totalInUsd = price?.let {
+            totalLamports.fromLamports(tokenData.decimals).times(it.price)
+        }
+        val total = totalLamports.toBigDecimal().divide(tokenData.decimals.toPowerValue())
         return Token.Active(
-            publicKey = account.pubkey,
+            publicKey = accountPublicKey,
             tokenSymbol = tokenData.symbol,
             decimals = tokenData.decimals,
             mintAddress = mintAddress,
             tokenName = tokenData.name,
             iconUrl = tokenData.iconUrl,
             coingeckoId = tokenData.coingeckoId,
-            totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(it.price) },
-            total = BigDecimal(total).divide(tokenData.decimals.toPowerValue()),
+            totalInUsd = totalInUsd,
+            total = total,
             rate = price?.price,
             visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = tokenData.serumV3Usdc,
             serumV3Usdt = tokenData.serumV3Usdt,
             isWrapped = tokenData.isWrapped
+        )
+    }
+
+    fun fromNetwork(
+        account: Account,
+        tokenData: TokenData,
+        price: TokenPrice?
+    ): Token.Active {
+        val data = account.account.data.parsed.info
+        val mintAddress = data.mint
+        val total = data.tokenAmount.amount.toBigInteger()
+        return fromNetwork(
+            mintAddress = mintAddress,
+            totalLamports = total,
+            accountPublicKey = account.pubkey,
+            tokenData = tokenData,
+            price = price
         )
     }
 
