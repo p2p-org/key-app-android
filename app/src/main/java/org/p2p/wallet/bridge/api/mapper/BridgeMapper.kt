@@ -94,7 +94,7 @@ class BridgeMapper {
             recipient = response.recipient,
             amount = fromNetwork(response.amount),
             fees = fromNetwork(response.fees),
-            status = BridgeSendTransactionStatus.IN_PROGRESS,
+            status = fromNetwork(response.status),
             dateCreated = response.dateCreatedSec.seconds.inWholeMilliseconds.toZonedDateTime()
         )
     }
