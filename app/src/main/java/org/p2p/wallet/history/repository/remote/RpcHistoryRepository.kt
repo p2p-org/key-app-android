@@ -39,7 +39,7 @@ class RpcHistoryRepository(
             tokenPagingState.clear()
             return@withContext try {
                 val response = fetchHistoryTransactions(limit, mintAddress.takeIf { it != Constants.WRAPPED_SOL_MINT })
-                val domainItems = response.map { converter.toDomain(it) }
+                val domainItems = response.mapNotNull { converter.toDomain(it) }
                 HistoryPagingResult.Success(domainItems)
             } catch (e: Throwable) {
                 HistoryPagingResult.Error(e)
@@ -50,7 +50,7 @@ class RpcHistoryRepository(
         withContext(coroutineDispatchers.io) {
             return@withContext try {
                 val response = fetchHistoryTransactions(limit, mintAddress.takeIf { it != Constants.WRAPPED_SOL_MINT })
-                val domainItems = response.map { converter.toDomain(it) }
+                val domainItems = response.mapNotNull { converter.toDomain(it) }
                 HistoryPagingResult.Success(domainItems)
             } catch (e: Throwable) {
                 HistoryPagingResult.Error(e)

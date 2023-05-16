@@ -37,7 +37,7 @@ class BridgeHistoryRepository(
     }
 
     override suspend fun loadNextPage(limit: Int, mintAddress: String): HistoryPagingResult {
-        return loadHistory(limit, mintAddress)
+        return HistoryPagingResult.Success(emptyList())
     }
 
     override suspend fun findTransactionById(id: String): HistoryTransaction? {

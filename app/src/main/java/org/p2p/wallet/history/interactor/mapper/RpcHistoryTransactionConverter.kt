@@ -29,7 +29,7 @@ class RpcHistoryTransactionConverter(
 
     fun toDomain(
         transaction: RpcHistoryTransactionResponse,
-    ): RpcHistoryTransaction =
+    ): RpcHistoryTransaction? =
         when (transaction.type) {
             RpcHistoryTypeResponse.SEND -> parseSend(transaction)
             RpcHistoryTypeResponse.RECEIVE -> parseReceive(transaction)
@@ -42,7 +42,8 @@ class RpcHistoryTransactionConverter(
             RpcHistoryTypeResponse.BURN -> parseBurn(transaction)
             RpcHistoryTypeResponse.WORMHOLE_RECEIVE -> parseWormholeReceive(transaction)
             RpcHistoryTypeResponse.WORMHOLE_SEND -> parseWormholeSend(transaction)
-            else -> parseUnknown(transaction)
+            RpcHistoryTypeResponse.UNKNOWN -> parseUnknown(transaction)
+            else -> null
         }
 
     private fun parseReceive(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
@@ -313,7 +314,7 @@ private fun RpcHistoryStatusResponse.toDomain(): HistoryTransactionStatus {
     }
 }
 
-private fun RpcHistoryTypeResponse.toDomain(): RpcHistoryTransactionType {
+private fun RpcHistoryTypeResponse?.toDomain(): RpcHistoryTransactionType {
     return when (this) {
         RpcHistoryTypeResponse.SEND -> RpcHistoryTransactionType.SEND
         RpcHistoryTypeResponse.RECEIVE -> RpcHistoryTransactionType.RECEIVE

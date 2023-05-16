@@ -177,10 +177,7 @@ class ClaimPresenter(
 
                 ethereumInteractor.sendClaimBundle(signatures = signatures)
 
-                val transactionState = TransactionState.ClaimSuccess(
-                    bundleId = latestBundleId,
-                    sourceTokenSymbol = tokenToClaim.tokenSymbol
-                )
+                val transactionState = TransactionState.ClaimProgress(bundleId = latestBundleId)
                 transactionManager.emitTransactionState(
                     transactionId = latestBundleId,
                     state = transactionState
