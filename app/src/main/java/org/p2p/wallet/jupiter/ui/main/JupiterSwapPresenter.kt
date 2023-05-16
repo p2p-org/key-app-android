@@ -80,7 +80,7 @@ class JupiterSwapPresenter(
     private val resources: Resources,
     private val alarmErrorsLogger: AlarmErrorsLogger,
     private val initialAmountA: String? = null,
-) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
+) : BasePresenter<JupiterSwapContract.View>(dispatchers.ui), JupiterSwapContract.Presenter {
 
     private var needToShowKeyboard = true
     private var needToScrollPriceImpact = true
@@ -280,7 +280,7 @@ class JupiterSwapPresenter(
         }
     }
 
-    private fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
+    private tailrec fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
         return when (featureState) {
             null,
             SwapState.InitialLoading,

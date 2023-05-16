@@ -94,7 +94,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         onPhoneChanged: (String) -> Unit,
         onCountryClickListener: () -> Unit
     ) = with(binding) {
-        countryCode?.phoneCode.let { editTextCountryCode.setText(it) }
+        countryCode?.phoneCode.let { editTextCountryCode.text = it }
 
         val flagEmoji = countryCode?.flagEmoji ?: EMOJI_NO_FLAG
         textViewFlagEmoji.text = flagEmoji
@@ -168,7 +168,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         inputViewContainer.background = if (!text.isNullOrEmpty()) bgRed else bgNormal
     }
 
-    fun onFoundNewCountry(countryCode: CountryCode) = with(binding) {
+    fun onFoundNewCountry(countryCode: CountryCode) {
         // TODO implement if need find country outside the mask
     }
 

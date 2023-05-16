@@ -16,9 +16,9 @@ import java.io.IOException
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.RpcError
 import org.p2p.wallet.infrastructure.network.data.ServerErrorResponse
 import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 
@@ -139,7 +139,9 @@ class RpcInterceptor(
         val errorMessage = serverError.error.data?.getErrorLog() ?: serverError.error.message
 
         val errorType = serverError.error.data?.rpcErrorDetails
-        val domainErrorType = runCatching { errorType?.let(RpcError::from) }.getOrNull()
+        val domainErrorType = runCatching {
+            gson.fromJson(errorType, RpcTransactionError::class.java)
+        }.getOrNull()
 
         ServerException(
             errorCode = serverError.error.code ?: ErrorCode.SERVER_ERROR,

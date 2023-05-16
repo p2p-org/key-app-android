@@ -80,7 +80,7 @@ class UiKitAmountsView @JvmOverloads constructor(
 
     fun setOnTokenAmountChangeListener(onTokenAmountChange: (String) -> Unit) {
         tokenTextWatcher = AmountFractionTextWatcher.installOn(binding.editTextTokenAmount) {
-            val amountWithoutSpaces = it.toString().replace(" ", "")
+            val amountWithoutSpaces = it.replace(" ", "")
             onTokenAmountChange(amountWithoutSpaces)
         }
     }

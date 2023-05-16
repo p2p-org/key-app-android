@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.infrastructure.coroutines.hasTestScheduler
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
@@ -155,6 +156,9 @@ class SwapStateManager(
     }
 
     private fun startRefreshJob() {
+        // this prevents route requests flooding in tests
+        val singleShot = coroutineContext.hasTestScheduler
+
         refreshJob = launch {
             try {
                 while (refreshJob?.isActive == true) {
@@ -162,6 +166,8 @@ class SwapStateManager(
                     val action = SwapStateAction.RefreshRoutes
                     lastSwapStateAction = action
                     handleNewAction(action)
+
+                    if (singleShot) break
                 }
             } catch (e: Throwable) {
                 handleHandlerError(SwapStateAction.RefreshRoutes, e)

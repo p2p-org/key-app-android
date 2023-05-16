@@ -7,6 +7,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.home.repository.UserTokensLocalRepository
+import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -34,5 +36,6 @@ object UserModule : InjectionModule {
         singleOf(::UserInMemoryRepository) bind UserLocalRepository::class
 
         factoryOf(::UserInteractor)
+        factoryOf(::UserTokensLocalRepository) bind UserTokensRepository::class
     }
 }

@@ -107,7 +107,7 @@ fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$ 0.01" else "$ ${for
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
     isZero() -> "$0"
     lessThenMinValue() -> "(<$0.01)"
-    withBraces -> "~($${formatFiat()})"
+    withBraces -> "(~$${formatFiat()})"
     else -> "~$${formatFiat()}"
 }
 

@@ -2,7 +2,7 @@ package org.p2p.ethereumkit.internal.spv.net
 
 import org.p2p.ethereumkit.internal.spv.core.*
 
-class PeerGroup(private val peerProvider: PeerProvider) : IPeer, IPeerListener {
+class PeerGroup(peerProvider: PeerProvider) : IPeer, IPeerListener {
 
     private val peers: MutableList<IPeer> = ArrayList()
 

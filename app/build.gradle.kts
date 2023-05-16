@@ -3,10 +3,25 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("org.p2p.wallet.android.application")
+    id("org.p2p.wallet.android.coverage")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("io.sentry.android.gradle") version "3.2.0"
 }
+
+keyappCoverage {
+    enableForConfiguration += "debug"
+    reportXml = true
+    excludes += listOf(
+        "org/p2p/wallet/databinding/*",
+        "com/bumptech/glide/*"
+    )
+    configureJacoco {
+        reportsDirectory.set(file("${buildDir}/reports/jacoco"))
+    }
+}
+
+
 
 android {
     applicationVariants.all {
@@ -168,11 +183,10 @@ dependencies {
     testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("io.insert-koin:koin-test-junit4:$koinVersion")
 
-    testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
     testImplementation("org.slf4j:slf4j-nop:1.7.30")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation("org.assertj:assertj-core:3.22.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.8.2") {
         because("This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.")
@@ -180,4 +194,7 @@ dependencies {
     val junitJupiterVersion = "5.8.2"
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:$junitJupiterVersion")
+
+    // timezone for unit testing
+    testImplementation("org.threeten:threetenbp:1.6.8")
 }

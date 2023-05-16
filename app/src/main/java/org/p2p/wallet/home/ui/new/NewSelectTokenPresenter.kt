@@ -1,5 +1,10 @@
 package org.p2p.wallet.home.ui.new
 
+import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.SelectTokenItem
@@ -9,17 +14,39 @@ import org.p2p.wallet.home.model.SelectableTokenRoundedState.BOTTOM_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.NOT_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.TOP_ROUNDED
-import org.p2p.core.token.Token
+import org.p2p.wallet.home.repository.UserTokensRepository
 
-class NewSelectTokenPresenter : BasePresenter<NewSelectTokenContract.View>(), NewSelectTokenContract.Presenter {
+class NewSelectTokenPresenter(
+    private val userTokensRepository: UserTokensRepository,
+    private val selectedTokenMintAddress: String?,
+    private val selectableTokens: List<Token.Active>?
+) : BasePresenter<NewSelectTokenContract.View>(), NewSelectTokenContract.Presenter {
 
-    private val mappedTokens = mutableListOf<SelectTokenItem>()
+    private var mappedTokens: List<SelectTokenItem> by observable(emptyList()) { _, _, new ->
+        view?.showTokens(new)
+        view?.showEmptyState(isVisible = new.isEmpty())
+    }
 
-    override fun load(tokens: List<Token.Active>, selectedToken: Token.Active?) {
-        mapInitialTokens(selectedToken, tokens)
+    override fun attach(view: NewSelectTokenContract.View) {
+        super.attach(view)
 
-        view?.showTokens(mappedTokens)
-        view?.showEmptyState(isVisible = mappedTokens.isEmpty())
+        userTokensRepository.observeUserTokens()
+            .map(::getTokensToSelect)
+            .onEach(::initTokensToSelect)
+            .launchIn(this)
+    }
+
+    private fun getTokensToSelect(userTokens: List<Token.Active>): List<Token.Active> {
+        return if (selectableTokens != null) {
+            userTokens.filter { it.mintAddress in selectableTokens.map(Token.Active::mintAddress) }
+        } else {
+            userTokens
+        }.filterNot(Token.Active::isZero)
+    }
+
+    private fun initTokensToSelect(tokensToSelect: List<Token.Active>) {
+        val selectedToken = tokensToSelect.firstOrNull { it.mintAddress == selectedTokenMintAddress }
+        mappedTokens = mapInitialTokens(selectedToken, tokensToSelect)
     }
 
     override fun search(tokenNameQuery: String) {
@@ -33,9 +60,8 @@ class NewSelectTokenPresenter : BasePresenter<NewSelectTokenContract.View>(), Ne
 
         // start searching
         val filteredItems = mappedTokens
+            .filterIsInstance<SelectableToken>()
             .filter { item ->
-                if (item !is SelectableToken) return@filter false
-
                 val tokenName = item.token.tokenName.lowercase()
                 val tokenSymbol = item.token.tokenSymbol.lowercase()
 
@@ -59,18 +85,18 @@ class NewSelectTokenPresenter : BasePresenter<NewSelectTokenContract.View>(), Ne
     private fun mapInitialTokens(
         selectedToken: Token.Active?,
         tokens: List<Token.Active>
-    ) {
+    ): List<SelectTokenItem> = buildList {
         if (selectedToken != null) {
-            mappedTokens += CategoryTitle(R.string.send_pick_token_chosen)
-            mappedTokens += SelectableToken(selectedToken, ROUNDED)
+            this += CategoryTitle(R.string.send_pick_token_chosen)
+            this += SelectableToken(selectedToken, ROUNDED)
         }
 
         val otherTokens = tokens.filterNot { it.publicKey == selectedToken?.publicKey }
         if (otherTokens.isNotEmpty()) {
-            mappedTokens += CategoryTitle(R.string.send_pick_token_other)
+            this += CategoryTitle(R.string.send_pick_token_other)
 
             val otherTokensSize = otherTokens.size
-            mappedTokens += otherTokens.mapIndexed { index, token ->
+            this += otherTokens.mapIndexed { index, token ->
                 if (otherTokensSize == 1) {
                     return@mapIndexed SelectableToken(token, ROUNDED)
                 }

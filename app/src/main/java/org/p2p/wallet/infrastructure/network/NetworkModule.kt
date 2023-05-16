@@ -1,5 +1,6 @@
 package org.p2p.wallet.infrastructure.network
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -28,6 +29,9 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Base58TypeAdapter
 import org.p2p.wallet.home.model.Base64TypeAdapter
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionInstructionErrorParser
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
@@ -56,24 +60,26 @@ object NetworkModule : InjectionModule {
     }
 
     override fun create() = module {
-        single { NetworkServicesUrlProvider(get(), get()) }
-        single { NetworkEnvironmentManager(get(), get(), get()) }
+        singleOf(::NetworkServicesUrlProvider)
+        singleOf(::NetworkEnvironmentManager)
         singleOf(::TokenKeyProvider)
         singleOf(::SeedPhraseProvider)
-        single { CertificateManager(get(), get()) }
+        singleOf(::CertificateManager)
 
-        single {
+        single<Gson> {
+            val transactionErrorTypeAdapter = RpcTransactionErrorTypeAdapter(RpcTransactionInstructionErrorParser())
             GsonBuilder()
                 .apply { if (BuildConfig.DEBUG) setPrettyPrinting() }
                 .registerTypeAdapter(BigDecimal::class.java, BigDecimalTypeAdapter)
                 .registerTypeAdapter(Base58String::class.java, Base58TypeAdapter)
                 .registerTypeAdapter(Base64String::class.java, Base64TypeAdapter)
+                .registerTypeAdapter(RpcTransactionError::class.java, transactionErrorTypeAdapter)
                 .setLenient()
                 .disableHtmlEscaping()
                 .create()
         }
 
-        single { NetworkConnectionStateProvider(get()) }
+        singleOf(::NetworkConnectionStateProvider)
 
         createMoonpayNetworkModule()
 

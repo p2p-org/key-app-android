@@ -8,9 +8,9 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.wallet.infrastructure.network.data.InstructionErrorType
-import org.p2p.wallet.infrastructure.network.data.RpcError
 import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.TransactionInstructionError
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.interactor.model.SwapPriceImpactType
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
@@ -60,8 +60,8 @@ class JupiterSwapInteractor(
         Timber.tag(TAG).i(error, "Failed swapping transaction")
         val domainErrorType = error.domainErrorType
         if (domainErrorType != null &&
-            domainErrorType is RpcError.InstructionError &&
-            domainErrorType.instructionErrorType is InstructionErrorType.Custom &&
+            domainErrorType is RpcTransactionError.InstructionError &&
+            domainErrorType.instructionErrorType is TransactionInstructionError.Custom &&
             domainErrorType.instructionErrorType.programErrorId == LOW_SLIPPAGE_ERROR_CODE.toLong()
         ) {
             JupiterSwapTokensResult.Failure(LowSlippageRpcError(error))

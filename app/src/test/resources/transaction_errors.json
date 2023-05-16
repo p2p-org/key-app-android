@@ -1,0 +1,47 @@
+[
+  {
+    "err": "InvalidWritableAccount"
+  },
+  {
+    "err": {
+      "DuplicateInstruction": [
+        5
+      ]
+    }
+  },
+  {
+    "err": {
+      "InsufficientFundsForRent": {
+        "account_index": 10
+      }
+    }
+  },
+  {
+    "err": {
+      "InstructionError": [
+        3,
+        {
+          "Custom": 6022
+        }
+      ]
+    }
+  },
+  {
+    "err": {
+      "InstructionError": [
+        3,
+        "ArithmeticOverflow"
+      ]
+    }
+  },
+  {
+    "err": {
+      "InstructionError": [
+        3,
+        {
+          "BorshIoError": "BorshIoError value"
+        }
+      ]
+    }
+  }
+]

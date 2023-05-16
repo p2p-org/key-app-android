@@ -40,6 +40,7 @@
 -keepnames class * extends org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 -keepnames class * extends org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 -keepnames class * extends com.google.android.material.bottomsheet.BottomSheetDialogFragment
+-keepnames class * extends org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 -keepnames class androidx.biometric.BiometricFragment
 -keepnames class androidx.biometric.FingerprintDialogFragment
 
@@ -79,6 +80,8 @@
 -keep public class * implements org.p2p.wallet.auth.model.RestoreUserResult
 -keep public class * implements org.p2p.wallet.jupiter.statemanager.SwapStateAction
 -keep public class * extends org.p2p.wallet.moonpay.model.MoonpayBuyResult
+-keep public class * implements org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
+-keep public class * implements org.p2p.wallet.infrastructure.network.data.transactionerrors.TransactionInstructionError
 -keep public class * implements org.p2p.wallet.newsend.model.FeeRelayerStateError
 -keep public class * implements org.p2p.wallet.feerelayer.model.FeeCalculationState
 -keep public class * implements org.p2p.wallet.bridge.model.BridgeResult

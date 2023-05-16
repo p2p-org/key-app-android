@@ -19,26 +19,16 @@ import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.divideSafe
 
 private const val TAG = "SwapRateTickerManager"
 
-class SwapRateTickerManager private constructor(
+class SwapRateTickerManager(
     swapScope: SwapCoroutineScope,
     private val userLocalRepository: UserLocalRepository,
     private val swapTokensRepository: JupiterSwapTokensRepository,
-    private val initDispatcher: CoroutineDispatcher
+    private val initDispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 ) : CoroutineScope by (swapScope + initDispatcher) {
-
-    constructor(
-        swapScope: SwapCoroutineScope,
-        userLocalRepository: UserLocalRepository,
-        swapTokensRepository: JupiterSwapTokensRepository
-    ) : this(
-        swapScope = swapScope,
-        userLocalRepository = userLocalRepository,
-        swapTokensRepository = swapTokensRepository,
-        initDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    )
 
     private var currentTokenA: SwapTokenModel? = null
     private var currentTokenB: SwapTokenModel? = null
@@ -63,12 +53,12 @@ class SwapRateTickerManager private constructor(
 
         val rateText = when {
             !newTokenA.isStableCoin() && newTokenB.isStableCoin() -> {
-                val newRate = (state.amountTokenB / state.amountTokenA).formatToken(newTokenB.decimals)
+                val newRate = state.amountTokenB.divideSafe(state.amountTokenA).formatToken(newTokenB.decimals)
                 formatRateString(newTokenA.tokenSymbol, newRate, newTokenB.tokenSymbol)
             }
             else -> {
-                val newRate = (state.amountTokenA / state.amountTokenB).formatToken(newTokenA.decimals)
-                formatRateString(newTokenB.tokenSymbol, newRate, newTokenA.tokenSymbol)
+                val newRate = state.amountTokenA.divideSafe(state.amountTokenB)
+                formatRateString(newTokenB.tokenSymbol, newRate.formatToken(newTokenA.decimals), newTokenA.tokenSymbol)
             }
         }
 

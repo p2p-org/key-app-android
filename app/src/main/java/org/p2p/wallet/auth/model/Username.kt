@@ -1,8 +1,11 @@
 package org.p2p.wallet.auth.model
 
+/**
+ * @see [org.p2p.wallet.auth.username.repository.UsernameParser]
+ */
 data class Username(
     val value: String,
     val domainPrefix: String,
-    // FIXME: New version of name service returns domain as well. We should remove domainPrefix asap
+) {
     val fullUsername: String = value + domainPrefix
-)
+}

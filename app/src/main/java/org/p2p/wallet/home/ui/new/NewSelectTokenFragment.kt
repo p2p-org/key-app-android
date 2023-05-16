@@ -11,6 +11,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.attachAdapter
@@ -30,7 +31,7 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-private const val ARG_ALL_TOKENS = "ARG_ALL_TOKENS"
+private const val ARG_SELECTABLE_TOKENS = "ARG_ALL_TOKENS"
 private const val ARG_SELECTED_TOKEN = "ARG_SELECTED_TOKEN"
 private const val ARG_REQUEST_KEY = "ARG_REQUEST_KEY"
 private const val ARG_RESULT_KEY = "ARG_RESULT_KEY"
@@ -43,28 +44,30 @@ class NewSelectTokenFragment :
 
     companion object {
         fun create(
-            tokens: List<Token.Active>,
-            selectedToken: Token.Active?,
+            tokensToSelectFrom: List<Token.Active>? = null,
+            selectedToken: Token.Active? = null,
             requestKey: String,
             resultKey: String,
             title: String? = null
         ) = NewSelectTokenFragment()
             .withArgs(
-                ARG_ALL_TOKENS to tokens,
-                ARG_SELECTED_TOKEN to selectedToken,
+                ARG_SELECTABLE_TOKENS to tokensToSelectFrom,
+                ARG_SELECTED_TOKEN to selectedToken?.mintAddress,
                 ARG_REQUEST_KEY to requestKey,
                 ARG_RESULT_KEY to resultKey,
                 ARG_TITLE to title
             )
     }
 
-    private val tokens: List<Token.Active> by args(ARG_ALL_TOKENS)
-    private val selectedToken: Token.Active? by args(ARG_SELECTED_TOKEN)
+    private val selectableTokens: List<Token.Active>? by args(ARG_SELECTABLE_TOKENS)
+    private val selectedTokenMintAddress: String? by args(ARG_SELECTED_TOKEN)
     private val resultKey: String by args(ARG_RESULT_KEY)
     private val requestKey: String by args(ARG_REQUEST_KEY)
     private val title: String? by args(ARG_TITLE)
 
-    override val presenter: NewSelectTokenContract.Presenter by inject()
+    override val presenter: NewSelectTokenContract.Presenter by inject {
+        parametersOf(selectedTokenMintAddress, selectableTokens)
+    }
 
     private val buyAnalytics: BuyAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
@@ -93,8 +96,6 @@ class NewSelectTokenFragment :
             inflateSearchMenu(toolbar)
             recyclerViewTokens.layoutManager = LinearLayoutManager(requireContext())
             recyclerViewTokens.attachAdapter(tokenAdapter)
-
-            presenter.load(tokens, selectedToken)
         }
     }
 

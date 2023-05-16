@@ -23,7 +23,7 @@ import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.transaction.interactor.TransactionStatusInteractor
 import org.p2p.wallet.utils.retryRequest
 import org.p2p.wallet.utils.toPublicKey
-
+@Deprecated("Old swap")
 class OrcaNativeSwapInteractor(
     private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val rpcTransactionRepository: RpcTransactionRepository,
