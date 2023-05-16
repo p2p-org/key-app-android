@@ -35,8 +35,6 @@ class JupiterSwapRouteValidator(
     private val userPublicKey: Base58String
         get() = tokenKeyProvider.publicKey.toBase58Instance()
 
-    private val userAccount = Account(tokenKeyProvider.keyPair)
-
     suspend fun validateRoutes(
         routes: List<JupiterSwapRoute>,
     ): List<JupiterSwapRoute> = withContext(dispatchers.io) {
@@ -74,6 +72,7 @@ class JupiterSwapRouteValidator(
 
     private suspend fun checkThatRouteValid(route: JupiterSwapRoute): Boolean {
         return try {
+            val userAccount = Account(tokenKeyProvider.keyPair)
             val routeTransaction = swapTransactionRepository.createSwapTransactionForRoute(route, userPublicKey)
             val signedSwapTransaction = relaySdkFacade.signTransaction(
                 transaction = routeTransaction,
