@@ -2,6 +2,7 @@ package org.p2p.wallet.transaction.model
 
 import androidx.annotation.StringRes
 import org.p2p.wallet.R
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.history.model.HistoryTransaction
 
 sealed class TransactionState {
@@ -14,6 +15,11 @@ sealed class TransactionState {
     data class SendSuccess(
         val transaction: HistoryTransaction,
         val sourceTokenSymbol: String
+    ) : TransactionState()
+
+    data class BridgeSendSuccess(
+        val transactionId: String,
+        val sendDetails: BridgeSendTransactionDetails
     ) : TransactionState()
 
     data class ClaimProgress(

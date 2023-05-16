@@ -82,8 +82,8 @@ class TokenHistoryPresenter(
                 transactionDate = bridgeBundle.dateCreated
             )
             val amountToClaim = bridgeBundle.resultAmount.amountInToken
-            val iconUrl =
-                ERC20Tokens.values().firstOrNull { it.contractAddress == bridgeBundle.findToken().hex }?.tokenIconUrl
+            val iconUrl = ERC20Tokens.findToken(bridgeBundle.findTokenOrDefaultEth()).tokenIconUrl
+
             val progressDetails = claimUiMapper.prepareShowProgress(
                 amountToClaim = amountToClaim,
                 iconUrl = iconUrl.orEmpty(),

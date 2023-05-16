@@ -20,4 +20,8 @@ data class BridgeSendTransactionDetails(
     fun isInProgress(): Boolean {
         return status == BridgeSendTransactionStatus.IN_PROGRESS || status == BridgeSendTransactionStatus.PENDING
     }
+
+    fun isFinalized(): Boolean {
+        return !isInProgress()
+    }
 }

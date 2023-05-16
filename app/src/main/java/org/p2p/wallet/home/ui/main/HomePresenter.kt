@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.LifecycleOwner
+import android.content.Context
 import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
@@ -31,6 +32,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.analytics.ClaimAnalytics
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -60,6 +62,7 @@ import org.p2p.wallet.updates.SubscriptionUpdatesStateObserver
 import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
+import org.p2p.wallet.user.worker.PendingTransactionMergeWorker
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
@@ -99,6 +102,8 @@ class HomePresenter(
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
     private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
+    private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
+    private val context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -118,8 +123,9 @@ class HomePresenter(
 
     init {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-        if (userSeedPhrase.isNotEmpty()) {
+        if (userSeedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled) {
             ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+            PendingTransactionMergeWorker.scheduleWorker(context)
         } else {
             Timber.e(IllegalStateException(), "ETH is not init, no seed phrase")
         }

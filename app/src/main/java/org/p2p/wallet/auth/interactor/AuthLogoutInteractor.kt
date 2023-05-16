@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.interactor
 
 import androidx.core.content.edit
+import androidx.work.WorkManager
 import android.content.Context
 import android.content.SharedPreferences
 import timber.log.Timber
@@ -64,6 +65,7 @@ class AuthLogoutInteractor(
             pushNotificationsInteractor.deleteDeviceToken(publicKey)
         }.invokeOnCompletion {
             appScope.cancel()
+            WorkManager.getInstance(context).cancelAllWork()
         }
     }
 }

@@ -33,11 +33,15 @@ data class BridgeBundle(
         return expiresAt.seconds.inWholeMilliseconds.toZonedDateTime().dateMilli()
     }
 
-    fun findToken(): EthAddress {
+    fun findTokenOrDefaultEth(): EthAddress {
         return resultAmount.token ?: EthAddress(ERC20Tokens.ETH.contractAddress)
     }
 
     fun isProcessing(): Boolean {
         return this.status == ClaimStatus.IN_PROGRESS || this.status == ClaimStatus.PENDING
+    }
+
+    fun isFinalized(): Boolean {
+        return !isProcessing()
     }
 }

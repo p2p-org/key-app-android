@@ -5,7 +5,6 @@ import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Date
-import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -433,9 +432,8 @@ class BridgeSendPresenter(
             fee = fee.toPlainString()
         )
 
-        // the internal id for controlling the transaction state
-        val internalTransactionId = UUID.randomUUID().toString()
         val sendTransaction = (currentState as? SendState.Static.ReadyToSend)?.sendTransaction ?: return
+        val transactionId = sendTransaction.message ?: return
 
         appScope.launch {
             val transactionDate = Date()
@@ -449,11 +447,11 @@ class BridgeSendPresenter(
                     feeDetails = feeDetails
                 )
 
-                view?.showProgressDialog(internalTransactionId, progressDetails)
+                view?.showProgressDialog(transactionId, progressDetails)
                 val progressState = TransactionState.Progress(
                     description = R.string.bridge_send_transaction_description_progress
                 )
-                transactionManager.emitTransactionState(internalTransactionId, progressState)
+                transactionManager.emitTransactionState(transactionId, progressState)
 
                 val result = bridgeInteractor.sendTransaction(
                     sendTransaction = sendTransaction,
@@ -469,7 +467,7 @@ class BridgeSendPresenter(
             } catch (e: Throwable) {
                 Timber.e(e)
                 val message = e.getErrorMessage { res -> resources.getString(res) }
-                transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
+                transactionManager.emitTransactionState(transactionId, TransactionState.Error(message))
             }
         }
     }
