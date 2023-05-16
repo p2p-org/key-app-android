@@ -46,7 +46,8 @@ import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 
-class RootActivity :
+class
+RootActivity :
     BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
     RootContract.View,
     RootListener,

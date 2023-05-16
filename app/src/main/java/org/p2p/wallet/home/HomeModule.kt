@@ -98,7 +98,9 @@ object HomeModule : InjectionModule {
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
-                claimUiMapper = get()
+                claimUiMapper = get(),
+                bridgeFeatureToggle = get(),
+                context = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

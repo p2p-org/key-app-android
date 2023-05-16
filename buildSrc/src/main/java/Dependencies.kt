@@ -22,8 +22,8 @@ object Dependencies {
     const val activityKtx = "androidx.activity:activity-ktx:$activityKtxVersion"
     const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
     const val adapterDelegates = "com.hannesdorfmann:adapterdelegates4-kotlin-dsl:$adapterDelegatesVersion"
-    const val adapterDelegatesBinding = "com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:$adapterDelegatesVersion"
-
+    const val adapterDelegatesBinding =
+        "com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:$adapterDelegatesVersion"
     const val androidBuildTools = "com.android.tools.build.gradle:$androidBuildToolsVersion"
 
     val baseAndroidLibraries = listOf(

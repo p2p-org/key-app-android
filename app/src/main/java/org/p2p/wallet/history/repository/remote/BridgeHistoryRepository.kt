@@ -2,7 +2,6 @@ package org.p2p.wallet.history.repository.remote
 
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.bridge.api.mapper.BridgeMapper
-import org.p2p.wallet.bridge.claim.model.isProcessing
 import org.p2p.wallet.bridge.claim.repository.EthereumBridgeLocalRepository
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
