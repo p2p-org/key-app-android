@@ -13,7 +13,8 @@ interface HistoryListViewContract {
         fun scrollToTop()
         fun showHistory(history: List<HistoryItem>)
         fun onTransactionClicked(transactionId: String)
-
+        fun onBridgeClaimClicked(transactionId: String)
+        fun onBridgeSendClicked(transactionId: String)
         fun onSellTransactionClicked(transactionId: String)
         fun onSwapBannerItemClicked(
             sourceTokenMint: String,

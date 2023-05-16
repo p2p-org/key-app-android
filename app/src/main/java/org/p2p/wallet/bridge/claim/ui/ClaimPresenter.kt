@@ -27,6 +27,7 @@ import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
 import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.ui.main.UserTokensPolling
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.emptyString
@@ -39,7 +40,8 @@ class ClaimPresenter(
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
     private val appScope: AppScope,
-    private val claimAnalytics: ClaimAnalytics
+    private val claimAnalytics: ClaimAnalytics,
+    private val userTokensPolling: UserTokensPolling
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
     private var refreshJob: Job? = null
@@ -164,10 +166,10 @@ class ClaimPresenter(
                     ethereumInteractor.signClaimTransaction(transaction = unsignedTransaction)
                 }
                 val progressDetails = claimUiMapper.prepareShowProgress(
-                    tokenToClaim = tokenToClaim,
+                    amountToClaim = tokenToClaim.total,
+                    iconUrl = tokenToClaim.iconUrl.orEmpty(),
                     claimDetails = claimDetails
                 )
-                ethereumInteractor.saveProgressDetails(latestBundleId, progressDetails)
                 view?.showProgressDialog(
                     bundleId = latestBundleId,
                     data = progressDetails
@@ -175,14 +177,12 @@ class ClaimPresenter(
 
                 ethereumInteractor.sendClaimBundle(signatures = signatures)
 
-                val transactionState = TransactionState.ClaimSuccess(
-                    bundleId = latestBundleId,
-                    sourceTokenSymbol = tokenToClaim.tokenSymbol
-                )
+                val transactionState = TransactionState.ClaimProgress(bundleId = latestBundleId)
                 transactionManager.emitTransactionState(
                     transactionId = latestBundleId,
                     state = transactionState
                 )
+                userTokensPolling.refreshTokens()
             } catch (e: BridgeResult.Error) {
                 Timber.e(e, "Failed to send signed bundle: ${e.message}")
             }

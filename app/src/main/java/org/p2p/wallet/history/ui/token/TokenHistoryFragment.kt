@@ -2,6 +2,7 @@ package org.p2p.wallet.history.ui.token
 
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -32,6 +33,8 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
+import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
@@ -67,6 +70,12 @@ class TokenHistoryFragment :
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
     private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
+    private var listener: RootListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = context as? RootListener
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -184,6 +193,14 @@ class TokenHistoryFragment :
         )
     }
 
+    override fun onBridgeSendClicked(transactionId: String) {
+        presenter.onBridgePendingSendClicked(transactionId)
+    }
+
+    override fun onBridgeClaimClicked(transactionId: String) {
+        presenter.onBridgePendingClaimClicked(transactionId)
+    }
+
     override fun onUserSendLinksClicked() = Unit
 
     override fun showError(@StringRes resId: Int, argument: String) {
@@ -235,5 +252,9 @@ class TokenHistoryFragment :
                 tokenSymbol = tokenSymbol
             )
         )
+    }
+
+    override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
+        listener?.showTransactionProgress(bundleId, progressDetails)
     }
 }

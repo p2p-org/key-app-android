@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.LifecycleOwner
+import android.content.Context
 import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
@@ -31,7 +32,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.analytics.ClaimAnalytics
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
-import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -54,7 +55,6 @@ import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
-import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SocketState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
@@ -62,6 +62,7 @@ import org.p2p.wallet.updates.SubscriptionUpdatesStateObserver
 import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
+import org.p2p.wallet.user.worker.PendingTransactionMergeWorker
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
@@ -101,6 +102,8 @@ class HomePresenter(
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
     private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
+    private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
+    private val context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -120,8 +123,9 @@ class HomePresenter(
 
     init {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-        if (userSeedPhrase.isNotEmpty()) {
+        if (userSeedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled) {
             ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+            PendingTransactionMergeWorker.scheduleWorker(context)
         } else {
             Timber.e(IllegalStateException(), "ETH is not init, no seed phrase")
         }
@@ -255,52 +259,30 @@ class HomePresenter(
             if (canBeClaimed) {
                 view?.showTokenClaim(token)
             } else {
-                token.latestActiveBundleId?.let { latestBundleId ->
-                    val latestBundleDetails = ethereumInteractor.getProgressDetails(latestBundleId)
-                    transactionManager.emitTransactionState(
-                        latestBundleId,
-                        TransactionState.ClaimProgress(latestBundleId)
-                    )
-                    if (latestBundleDetails != null) {
-                        showClaimProgressDetails(latestBundleId, latestBundleDetails)
-                    } else {
-                        tryGetProgressByToken(token)
-                    }
-                } ?: tryGetProgressByToken(token)
+                val latestActiveBundleId = token.latestActiveBundleId ?: return@launch
+                val bridgeBundle = ethereumInteractor.getClaimBundleById(latestActiveBundleId) ?: return@launch
+                val claimDetails = claimUiMapper.makeClaimDetails(
+                    resultAmount = bridgeBundle.resultAmount,
+                    fees = bridgeBundle.fees,
+                    isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
+                    minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
+                    transactionDate = bridgeBundle.dateCreated
+                )
+                val progressDetails = claimUiMapper.prepareShowProgress(
+                    amountToClaim = bridgeBundle.resultAmount.amountInToken,
+                    iconUrl = token.iconUrl.orEmpty(),
+                    claimDetails = claimDetails
+                )
+                transactionManager.emitTransactionState(
+                    latestActiveBundleId,
+                    TransactionState.ClaimProgress(latestActiveBundleId)
+                )
+                view?.showProgressDialog(
+                    bundleId = bridgeBundle.bundleId,
+                    progressDetails = progressDetails
+                )
             }
         }
-    }
-
-    private suspend fun tryGetProgressByToken(token: Token.Eth) {
-        ethereumInteractor.getBundleByToken(token)?.let { bridgeBundle ->
-            getProgressDetails(token, bridgeBundle)
-        } ?: Timber.e("No bundle found associated to token: $token to show claim details!")
-    }
-
-    private suspend fun getProgressDetails(token: Token.Eth, bridgeBundle: BridgeBundle) {
-        var progressDetails = ethereumInteractor.getProgressDetails(bridgeBundle.bundleId)
-        if (progressDetails == null) {
-            val claimDetails = claimUiMapper.makeClaimDetails(
-                resultAmount = bridgeBundle.resultAmount,
-                fees = bridgeBundle.fees,
-                isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
-                minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
-                transactionDate = bridgeBundle.dateCreated
-            )
-            progressDetails = claimUiMapper.prepareShowProgress(
-                tokenToClaim = token,
-                claimDetails = claimDetails
-            )
-            ethereumInteractor.saveProgressDetails(bridgeBundle.bundleId, progressDetails)
-        }
-        showClaimProgressDetails(bridgeBundle.bundleId, progressDetails)
-    }
-
-    private fun showClaimProgressDetails(bundleId: String, bundleDetails: NewShowProgress) {
-        view?.showProgressDialog(
-            bundleId = bundleId,
-            progressDetails = bundleDetails
-        )
     }
 
     private fun handleDeeplinks() {

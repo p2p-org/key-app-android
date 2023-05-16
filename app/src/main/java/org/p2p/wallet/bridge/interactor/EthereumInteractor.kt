@@ -1,7 +1,6 @@
 package org.p2p.wallet.bridge.interactor
 
 import java.math.BigDecimal
-import java.math.BigInteger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.p2p.core.token.SolAddress
@@ -13,10 +12,10 @@ import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.transaction.model.NewShowProgress
 
 class EthereumInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
@@ -28,14 +27,6 @@ class EthereumInteractor(
 
     fun setup(userSeedPhrase: List<String>) {
         ethereumRepository.init(userSeedPhrase)
-    }
-
-    suspend fun getWalletBalance(): BigInteger {
-        return ethereumRepository.getBalance()
-    }
-
-    suspend fun getPriceForToken(tokenAddress: String): BigDecimal {
-        return ethereumRepository.getPriceForToken(tokenAddress)
     }
 
     suspend fun loadWalletTokens() {
@@ -84,15 +75,11 @@ class EthereumInteractor(
         return claimInteractor.getEthereumMinAmountForFreeFee()
     }
 
-    fun saveProgressDetails(bundleId: String, progressDetails: NewShowProgress) {
-        claimInteractor.saveProgressDetails(bundleId, progressDetails)
+    fun getClaimBundleById(bundleId: String): BridgeBundle? {
+        return claimInteractor.getClaimBundleById(bundleId)
     }
 
-    fun getProgressDetails(bundleId: String): NewShowProgress? {
-        return claimInteractor.getProgressDetails(bundleId)
-    }
-
-    fun getBundleByToken(token: Token.Eth): BridgeBundle? {
-        return claimInteractor.getBundleByToken(token)
+    fun getSendBundleById(bundleId: String): BridgeSendTransactionDetails? {
+        return claimInteractor.getSendBundleById(bundleId)
     }
 }

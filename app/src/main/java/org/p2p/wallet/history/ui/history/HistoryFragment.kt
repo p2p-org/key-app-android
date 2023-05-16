@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.ui.history
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -17,6 +18,8 @@ import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
+import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -39,6 +42,13 @@ class HistoryFragment :
      */
     private val historyListPresenter: HistoryListViewContract.Presenter by inject()
     private val binding: FragmentHistoryBinding by viewBinding()
+
+    private var listener: RootListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = context as? RootListener
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,6 +89,14 @@ class HistoryFragment :
         )
     }
 
+    override fun onBridgeSendClicked(transactionId: String) {
+        presenter.onSendPendingClicked(transactionId)
+    }
+
+    override fun onBridgeClaimClicked(transactionId: String) {
+        presenter.onClaimPendingClicked(transactionId)
+    }
+
     private fun listenForSellTransactionDialogDismiss() {
         childFragmentManager.setFragmentResultListener(
             SellTransactionDetailsBottomSheet.REQUEST_KEY_DISMISSED, this
@@ -98,5 +116,9 @@ class HistoryFragment :
 
     override fun openSellTransactionDetails(transactionId: String) {
         SellTransactionDetailsBottomSheet.show(childFragmentManager, transactionId)
+    }
+
+    override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
+        listener?.showTransactionProgress(bundleId, progressDetails)
     }
 }

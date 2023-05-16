@@ -12,6 +12,8 @@ interface HistoryListViewClickListener {
         destinationSymbol: String,
         openedFrom: SwapOpenedFrom
     )
+    fun onBridgeSendClicked(transactionId: String)
+    fun onBridgeClaimClicked(transactionId: String)
 
     fun onUserSendLinksClicked()
 }

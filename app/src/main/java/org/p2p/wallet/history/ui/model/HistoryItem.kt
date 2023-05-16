@@ -76,7 +76,8 @@ sealed interface HistoryItem {
 
     data class BridgeSendItem(
         val id: String,
-        val sendDetails: BridgeSendTransactionDetails
+        val sendDetails: BridgeSendTransactionDetails,
+        val tokenIconUrl: String?
     ) : HistoryItem, RoundedItem {
         override val date: ZonedDateTime = ZonedDateTime.now()
         override val transactionId: String = id
@@ -101,7 +102,8 @@ sealed interface HistoryItem {
 
     data class BridgeClaimItem(
         val bundleId: String,
-        val bundle: BridgeBundle
+        val bundle: BridgeBundle,
+        val tokenIconUrl: String?
     ) : HistoryItem, RoundedItem {
         override val date: ZonedDateTime = ZonedDateTime.now()
         override val transactionId: String = bundleId

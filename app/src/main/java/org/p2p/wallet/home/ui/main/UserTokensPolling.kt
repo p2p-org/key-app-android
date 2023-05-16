@@ -7,7 +7,6 @@ import kotlin.time.toDuration
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
@@ -65,7 +63,6 @@ class UserTokensPolling(
         launch {
             try {
                 isRefreshingFlow.emit(true)
-                fetchEthereumTokens()
                 val userTokens = fetchSolTokens()
                 userInteractor.loadUserRatesIfEmpty(userTokens)
                 startPolling()
@@ -86,10 +83,7 @@ class UserTokensPolling(
                 try {
                     while (isActive) {
                         delay(POLLING_ETH_DELAY.inWholeMilliseconds)
-                        joinAll(
-                            async { fetchSolTokens() },
-                            async { fetchEthereumTokens() }
-                        )
+                        fetchSolTokens()
                     }
                 } catch (e: CancellationException) {
                     Timber.i("Cancelled tokens remote update")
@@ -104,14 +98,6 @@ class UserTokensPolling(
 
     private suspend fun fetchSolTokens(): List<Token.Active> =
         userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
-
-    private suspend fun fetchEthereumTokens() {
-        try {
-            ethereumInteractor.loadWalletTokens()
-        } catch (t: Throwable) {
-            Timber.e(t, "Error on loading ethereum Tokens")
-        }
-    }
 
     private fun getEthereumTokensFlow(): Flow<List<Token.Eth>> {
         return ethereumInteractor.getTokensFlow()

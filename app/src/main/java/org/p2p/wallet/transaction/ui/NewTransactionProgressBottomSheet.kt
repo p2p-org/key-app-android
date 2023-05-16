@@ -153,6 +153,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                     is TransactionState.SwapSuccess -> handleSwapSuccess(state)
                     is TransactionState.ClaimSuccess -> handleClaimSuccess(state)
                     is TransactionState.ClaimProgress -> handleClaimProgress(state)
+                    is TransactionState.BridgeSendSuccess -> handleSendSuccess(state)
                     is TransactionState.Error -> handleError(state)
                 }
             }
@@ -168,6 +169,12 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun handleSendSuccess(state: TransactionState.SendSuccess) {
         val message = getString(R.string.send_successfully_format, state.sourceTokenSymbol)
         val signature = state.transaction.getHistoryTransactionId()
+        setSuccessState(message, signature)
+    }
+
+    private fun handleSendSuccess(state: TransactionState.BridgeSendSuccess) {
+        val message = getString(R.string.send_successfully_format, state.sendDetails.amount.symbol)
+        val signature = state.transactionId
         setSuccessState(message, signature)
     }
 

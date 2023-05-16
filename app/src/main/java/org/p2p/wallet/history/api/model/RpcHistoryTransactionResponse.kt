@@ -11,7 +11,7 @@ data class RpcHistoryTransactionResponse(
     @SerializedName("status")
     val status: RpcHistoryStatusResponse,
     @SerializedName("type")
-    val type: RpcHistoryTypeResponse,
+    val type: RpcHistoryTypeResponse?,
     @SerializedName("fees")
     val fees: List<RpcHistoryFeeResponse>,
     @SerializedName("block_number")
