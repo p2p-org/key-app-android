@@ -105,7 +105,6 @@ object HomeModule : InjectionModule {
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
-                claimUiMapper = get(),
                 updateSubscribers = subscribers,
                 claimUiMapper = get(),
                 bridgeFeatureToggle = get(),
