@@ -13,7 +13,6 @@ import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
-import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeFeeRelayerCounter
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.AmountChangeActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.InitFeatureActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.NewTokenActionHandler
@@ -35,7 +34,6 @@ object BridgeSendModule : InjectionModule {
         factoryOf(::EthereumSendRemoteRepository) bind EthereumSendRepository::class
         factoryOf(::SendBridgeStaticStateMapper)
         factoryOf(::SendBridgeValidator)
-        factoryOf(::SendBridgeFeeRelayerCounter)
         factory {
             BridgeSendInteractor(
                 ethereumSendRepository = get(),

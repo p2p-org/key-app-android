@@ -6,7 +6,10 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 sealed interface SendFeatureAction {
 
     object InitFeature : SendFeatureAction
-    object RefreshFee : SendFeatureAction
+
+    data class RefreshFee(
+        val amount: BigDecimal?
+    ) : SendFeatureAction
 
     data class NewToken(
         val token: SendToken

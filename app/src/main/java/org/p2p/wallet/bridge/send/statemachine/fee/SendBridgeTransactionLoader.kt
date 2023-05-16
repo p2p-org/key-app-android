@@ -41,14 +41,15 @@ class SendBridgeTransactionLoader constructor(
     private var freeTransactionFeeLimits: TransactionFeeLimits? = null
 
     fun prepareTransaction(
-        lastStaticState: SendState.Static
+        lastStaticState: SendState.Static,
+        lastAmount: BigDecimal? = null
     ): Flow<SendState> = flow {
 
         val token = lastStaticState.bridgeToken ?: return@flow
 
         emit(SendState.Loading.Fee(lastStaticState))
         val lastFeeInToken = getFeeTotalInToken(lastStaticState)
-        val currentAmount = lastStaticState.inputAmount.orZero()
+        val currentAmount = lastAmount ?: lastStaticState.inputAmount.orZero()
         val finalAmount = if (currentAmount.isZero()) {
             currentAmount
         } else {
@@ -60,13 +61,13 @@ class SendBridgeTransactionLoader constructor(
         if (inputAmount != null) {
             val amountWithFee = inputAmount + lastFeeInToken
             val inputLamports = amountWithFee.toLamports(token.token.decimals)
-            validator.validateIsFeeMoreThanTotal(updatedFee, fee)
+            validator.validateIsFeeMoreThanTotal(token, fee, inputAmount)
             validator.validateIsFeeMoreThanAmount(fee, inputAmount, amountWithFee)
             val sendTransaction = createTransaction(token.token, inputLamports)
             emit(SendState.Static.ReadyToSend(token, fee, inputAmount, sendTransaction))
         } else {
             emit(SendState.Static.TokenZero(token, fee))
-            validator.validateIsFeeMoreThanTotal(updatedFee, fee)
+            validator.validateIsFeeMoreThanTotal(token, fee, currentAmount)
         }
     }
 
@@ -108,7 +109,7 @@ class SendBridgeTransactionLoader constructor(
         } catch (e: SendFeatureException) {
             throw e
         } catch (e: Throwable) {
-            throw SendFeatureException.FeeLoadingError(e.message)
+            throw SendFeatureException.FeeLoadingError(e.message, amount)
         }
     }
 

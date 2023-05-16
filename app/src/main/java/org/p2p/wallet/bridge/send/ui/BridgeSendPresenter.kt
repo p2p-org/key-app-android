@@ -171,36 +171,24 @@ class BridgeSendPresenter(
             when (state) {
                 is SendState.Exception.Feature -> {
                     showFeeViewLoading(isLoading = false)
-                    when (val featureException = state.featureException) {
+                    val bridgeToken = state.lastStaticState.bridgeToken ?: return
+                    updateTokenAndInput(bridgeToken, state.featureException.amount)
+                    handleUpdateTotal(state.lastStaticState.bridgeFee)
+                    when (state.featureException) {
                         is SendFeatureException.FeeLoadingError -> {
-                            showFeeViewVisible(false)
+                            showFeeViewVisible(isVisible = false)
                             showBottomFeeValue(TextViewCellModel.Raw(TextContainer(emptyString())))
                             updateButtons(
                                 errorButton = TextContainer.Res(R.string.send_cant_calculate_fees_error),
                                 sliderButton = null
                             )
                         }
-                        is SendFeatureException.NotEnoughAmount -> {
-                            setInputColor(R.color.text_rose)
-
-                            val bridgeToken = state.lastStaticState.bridgeToken ?: return
-                            updateTokenAndInput(bridgeToken, featureException.invalidAmount)
-                            updateButtons(
-                                errorButton = TextContainer.Res(R.string.send_error_insufficient_funds),
-                                sliderButton = null
-                            )
-                        }
-                        is SendFeatureException.InsufficientFunds -> {
-                            setInputColor(R.color.text_rose)
-                            updateButtons(
-                                errorButton = TextContainer.Res(R.string.send_error_insufficient_funds),
-                                sliderButton = null
-                            )
-                        }
+                        is SendFeatureException.NotEnoughAmount,
+                        is SendFeatureException.InsufficientFunds,
                         is SendFeatureException.FeeIsMoreThanAmount -> {
                             setInputColor(R.color.text_rose)
                             updateButtons(
-                                errorButton = TextContainer.Res(R.string.send_error_fee_more_than_amount),
+                                errorButton = TextContainer.Res(R.string.send_error_insufficient_funds),
                                 sliderButton = null
                             )
                         }
@@ -281,7 +269,6 @@ class BridgeSendPresenter(
     }
 
     private fun BridgeSendContract.View.handleUpdateTotal(sendFee: SendFee?) {
-        calculationMode.isCurrentInputEmpty()
         val amount = calculationMode.inputAmountDecimal.orZero()
         val total = countTotal(amount, sendFee)
         val totalFormatted = if (amount.isZero()) {

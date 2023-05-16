@@ -10,7 +10,7 @@ interface SendActionHandler {
     ): Boolean
 
     fun handle(
-        lastStaticState: SendState.Static,
+        currentState: SendState,
         newAction: SendFeatureAction,
     ): Flow<SendState>
 }
