@@ -5,7 +5,9 @@ import kotlinx.coroutines.flow.flow
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.fee
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
+import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
 class NewTokenActionHandler(
@@ -16,15 +18,21 @@ class NewTokenActionHandler(
         newEvent is SendFeatureAction.NewToken && newEvent.token is SendToken.Bridge
 
     override fun handle(
-        lastStaticState: SendState.Static,
+        currentState: SendState,
         newAction: SendFeatureAction
     ): Flow<SendState> = flow {
+        val lastStaticState = currentState.lastStaticState
         val action = newAction as SendFeatureAction.NewToken
         val newToken = action.token as SendToken.Bridge
 
-        val state = SendState.Static.TokenZero(newToken, null)
+        val state = SendState.Static.TokenZero(newToken, lastStaticState.fee)
         emit(state)
-        transactionLoader.prepareTransaction(state).collect {
+        val lastStateAmount = if (currentState is SendState.Exception.Feature) {
+            currentState.featureException.amount
+        } else {
+            null
+        }
+        transactionLoader.prepareTransaction(state, lastStateAmount).collect {
             emit(it)
         }
     }

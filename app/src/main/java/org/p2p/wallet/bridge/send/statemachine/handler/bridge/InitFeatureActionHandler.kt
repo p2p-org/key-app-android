@@ -22,7 +22,7 @@ class InitFeatureActionHandler(
     ): Boolean = newEvent is SendFeatureAction.InitFeature
 
     override fun handle(
-        lastStaticState: SendState.Static,
+        currentState: SendState,
         newAction: SendFeatureAction
     ): Flow<SendState> = flow {
         val userTokens = interactor.supportedSendTokens()

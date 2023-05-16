@@ -3,8 +3,6 @@ package org.p2p.wallet.bridge.send.statemachine.validator
 import java.math.BigDecimal
 import org.p2p.core.utils.isMoreThan
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
-import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
@@ -20,10 +18,10 @@ class SendBridgeValidator {
         if (feeSum.isMoreThan(newAmountWithFee)) throw SendFeatureException.FeeIsMoreThanAmount(newAmount)
     }
 
-    fun validateIsFeeMoreThanTotal(state: SendState.Static, fee: SendFee.Bridge) {
-        val totalAmount = state.bridgeToken?.tokenAmount
+    fun validateIsFeeMoreThanTotal(token: SendToken.Bridge, fee: SendFee.Bridge, newAmount: BigDecimal) {
+        val totalAmount = token.tokenAmount
         val feeSum = getFeeSum(fee)
-        if (totalAmount != null && feeSum > totalAmount) throw SendFeatureException.FeeIsMoreThanAmount(totalAmount)
+        if (feeSum > totalAmount) throw SendFeatureException.FeeIsMoreThanAmount(newAmount)
     }
 
     private fun getFeeSum(fee: SendFee.Bridge): BigDecimal {

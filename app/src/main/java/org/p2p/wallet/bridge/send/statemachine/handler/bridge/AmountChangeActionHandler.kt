@@ -13,6 +13,7 @@ import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.fee
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
+import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 
@@ -28,9 +29,10 @@ class AmountChangeActionHandler(
             newEvent is SendFeatureAction.ZeroAmount
 
     override fun handle(
-        lastStaticState: SendState.Static,
+        currentState: SendState,
         newAction: SendFeatureAction
     ): Flow<SendState> = flow {
+        val lastStaticState = currentState.lastStaticState
         val token = lastStaticState.bridgeToken ?: return@flow
         val feeTotalAmount = getFeeTotalInToken(lastStaticState)
         val newAmount = when (newAction) {
