@@ -9,7 +9,7 @@ sealed class GetOnboardingMetadataFailed(
         cause = cause
     )
 
-    class GetOnboardingMetadataNoAccount() : GetOnboardingMetadataFailed(
+    class GetOnboardingMetadataNoAccount : GetOnboardingMetadataFailed(
         message = "!!! Account not found for such request !!!"
     )
 

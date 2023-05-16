@@ -127,7 +127,7 @@ class SolanaNetworkObserver(
     * Checking if user already saw the error message and we should show the message again or not
     * according to the frequency value from RemoteConfig
     * */
-    private suspend fun showError() {
+    private fun showError() {
         when (errorFrequencyFeatureToggle.frequency) {
             NetworkStatusFrequency.ONCE -> {
                 updateState(Offline)

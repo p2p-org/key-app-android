@@ -1,15 +1,18 @@
 package org.p2p.wallet.moonpay.repository.buy
 
+import java.math.BigDecimal
+import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse
-import java.math.BigDecimal
 
 class NewMoonpayBuyRemoteRepository(
     private val api: MoonpayClientSideApi,
+    private val dispatchers: CoroutineDispatchers
 ) : NewMoonpayBuyRepository {
 
     private val moonpayApiKey: String = BuildConfig.moonpayKey
@@ -36,8 +39,8 @@ class NewMoonpayBuyRemoteRepository(
         return response.amountInUsd
     }
 
-    override suspend fun getIpAddressData(): MoonpayIpAddressResponse {
-        return api.getIpAddress(moonpayApiKey)
+    override suspend fun getIpAddressData(): MoonpayIpAddressResponse = withContext(dispatchers.io) {
+        api.getIpAddress(moonpayApiKey)
     }
 
     private val Token.tokenSymbolForMoonPay: String

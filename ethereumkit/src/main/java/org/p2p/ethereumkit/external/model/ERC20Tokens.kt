@@ -98,7 +98,7 @@ enum class ERC20Tokens(
         }
 
         fun findTokenByMint(mintAddress: String): ERC20Tokens? {
-            return values().firstOrNull() { mintAddress.contains(it.mintAddress, ignoreCase = true) }
+            return values().firstOrNull { mintAddress.contains(it.mintAddress, ignoreCase = true) }
         }
     }
 }

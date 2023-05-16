@@ -32,7 +32,7 @@ interface HomeContract {
 
         fun navigateToProfile()
         fun navigateToReserveUsername()
-        fun showAddressCopied(addressAndUsername: String)
+        fun showAddressCopied(addressOrUsername: String)
         fun showBuyInfoScreen(token: Token)
 
         fun showSendNoTokens(fallbackToken: Token)

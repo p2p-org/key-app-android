@@ -87,12 +87,12 @@ class SendStateMachine(
 
     private fun startFeeTimerIfNeed(newState: SendState) {
         val needStart = when (newState) {
-            SendState.Static.Empty,
-            is SendState.Exception -> false
+            SendState.Static.Empty -> false
             is SendState.Loading.Fee -> {
                 refreshFeeTimer?.cancel()
                 false
             }
+            is SendState.Exception,
             is SendState.Static.ReadyToSend,
             is SendState.Static.TokenNotZero,
             is SendState.Static.TokenZero -> true

@@ -9,7 +9,7 @@ object EIP55 {
     }
 
     fun format(address: String): String {
-        val lowercaseAddress = address.stripHexPrefix().toLowerCase(Locale.ENGLISH)
+        val lowercaseAddress = address.stripHexPrefix().lowercase(Locale.ENGLISH)
         val addressHash = CryptoUtils.sha3(lowercaseAddress.toByteArray()).toRawHexString()
 
         val result = StringBuilder(lowercaseAddress.length + 2)
@@ -18,7 +18,7 @@ object EIP55 {
 
         for (i in lowercaseAddress.indices) {
             if (Integer.parseInt(addressHash[i].toString(), 16) >= 8) {
-                result.append(lowercaseAddress[i].toString().toUpperCase(Locale.ENGLISH))
+                result.append(lowercaseAddress[i].toString().uppercase(Locale.ENGLISH))
             } else {
                 result.append(lowercaseAddress[i])
             }

@@ -29,6 +29,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
+import org.p2p.wallet.utils.getParcelableCompat
 
 private const val ARG_WITHDRAW_TOKEN = "ARG_Withdraw_TOKEN"
 private const val ARG_ALL_DEPOSITS = "ARG_ALL_DEPOSITS"
@@ -53,7 +54,7 @@ class SolendWithdrawFragment :
     private val deposit: SolendDepositToken.Active by args(ARG_WITHDRAW_TOKEN)
     private val userDeposits: List<SolendDepositToken> by args(ARG_ALL_DEPOSITS)
 
-    override val presenter: SolendWithdrawContract.Presenter by inject() {
+    override val presenter: SolendWithdrawContract.Presenter by inject {
         parametersOf(deposit)
     }
 
@@ -83,7 +84,7 @@ class SolendWithdrawFragment :
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
-                result.getParcelable<SolendDepositToken.Active>(KEY_RESULT_TOKEN)?.let {
+                result.getParcelableCompat<SolendDepositToken.Active>(KEY_RESULT_TOKEN)?.let {
                     presenter.selectTokenToWithdraw(it)
                 }
             }

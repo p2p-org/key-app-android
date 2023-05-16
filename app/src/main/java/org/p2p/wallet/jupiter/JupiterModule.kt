@@ -127,6 +127,7 @@ object JupiterModule : InjectionModule {
 
         initJupiterSwapStateManager()
         initJupiterSwapTokensList()
+        initJupiterSwapSettings()
     }
 
     private fun Module.initJupiterSwapStateManager() {
@@ -160,7 +161,13 @@ object JupiterModule : InjectionModule {
         }
         factoryOf(::SwapTokenRateLoader)
         singleOf(::SwapStateManagerHolder)
-        singleOf(::SwapRateTickerManager)
+        single {
+            SwapRateTickerManager(
+                swapScope = get(),
+                userLocalRepository = get(),
+                swapTokensRepository = get()
+            )
+        }
 
         factory<SwapStateManager> { (initialData: SwapInitialTokensData, stateManagerHolderKey: String) ->
             val managerHolder: SwapStateManagerHolder = get()
@@ -180,7 +187,7 @@ object JupiterModule : InjectionModule {
         }
     }
 
-    private fun Module.initJupiterSwapTokensList() {
+    private fun Module.initJupiterSwapSettings() {
         factory { (stateManagerHolderKey: String) ->
             SwapTokensInteractor(
                 homeLocalRepository = get(),
@@ -201,6 +208,7 @@ object JupiterModule : InjectionModule {
         factoryOf(::SwapLoadingSettingsMapper)
         factoryOf(::SwapContentSettingsMapper)
         factoryOf(::JupiterSwapFeeBuilder)
+
         factory { (stateManagerHolderKey: String) ->
             val managerHolder: SwapStateManagerHolder = get()
             val stateManager = managerHolder.get(stateManagerHolderKey)
@@ -216,6 +224,9 @@ object JupiterModule : InjectionModule {
                 analytics = get()
             )
         } bind JupiterSwapSettingsContract.Presenter::class
+    }
+
+    private fun Module.initJupiterSwapTokensList() {
         factoryOf(::SwapTokensCommonMapper)
         factoryOf(::SwapTokensAMapper)
         factoryOf(::SwapTokensBMapper)

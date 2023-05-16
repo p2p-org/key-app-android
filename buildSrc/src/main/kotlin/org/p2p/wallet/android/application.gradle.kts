@@ -44,6 +44,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = false
             isShrinkResources = false
+            isDebuggable = true
             versionNameSuffix = ".${AppVersions.VERSION_BUILD}-debug"
         }
 

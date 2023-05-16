@@ -21,6 +21,7 @@ class SpyOnInjectMockKsExtension : TestInstancePostProcessor {
         assignSpyKOnInjectMockKs(testInstance)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun assignSpyKOnInjectMockKs(target: Any) {
         val property: KProperty1<Any, Any> = target::class.memberProperties
             .map { it as KProperty1<Any, Any> }

@@ -27,7 +27,7 @@ private const val GatewayStateKey = "GatewayStateV0.1.4"
 class RpcSolanaInteractor(
     private val rpcSolanaRepository: RpcSolanaRepository,
     private val rpcEnvironment: RpcEnvironment,
-    private val appScope: CoroutineScope
+    appScope: CoroutineScope
 ) {
     private var gatewayRegistryData: GatewayRegistryData? = null
 
@@ -163,7 +163,7 @@ class RpcSolanaInteractor(
             }
 
             val signatures = rpcSolanaRepository.getConfirmedSignaturesForAddress(mintLogAccount, 1)
-            signature = signatures.get(0).signature
+            signature = signatures[0].signature
         } catch (e: Exception) {
             // TODO provide exception logging
         }

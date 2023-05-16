@@ -37,7 +37,7 @@ class GetProofsMessage : IOutMessage {
         return "GetProofs [requestID: $requestID; proofRequests: [${proofRequests.joinToString(separator = ",") { it.toString() }}]]"
     }
 
-    class ProofRequest(val blockHash: ByteArray, val key: ByteArray, val key2: ByteArray, val fromLevel: Int) {
+    class ProofRequest(val blockHash: ByteArray, val key: ByteArray, key2: ByteArray, val fromLevel: Int) {
 
         private val keyHash: ByteArray = CryptoUtils.sha3(key)
         private val key2Hash: ByteArray

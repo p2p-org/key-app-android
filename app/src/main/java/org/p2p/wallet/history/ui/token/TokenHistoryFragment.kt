@@ -19,6 +19,7 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBot
 import org.p2p.wallet.history.ui.historylist.HistoryListViewClickListener
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewType
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -32,7 +33,6 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.args
@@ -92,9 +92,7 @@ class TokenHistoryFragment :
     private fun FragmentTokenHistoryBinding.setupView() {
         toolbar.setupToolbar()
 
-        totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
-        usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
-        viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
+        viewActionButtons.onButtonClicked = ::onActionButtonClicked
         binding.layoutHistoryList.bind(
             presenter = historyListPresenter,
             clickListener = this@TokenHistoryFragment,
@@ -122,6 +120,15 @@ class TokenHistoryFragment :
                 isHandled
             }
         }
+    }
+
+    override fun renderTokenAmounts(token: Token.Active) {
+        binding.totalTextView.text = token.getFormattedTotal(includeSymbol = true)
+        binding.usdTotalTextView.text = token.getFormattedUsdTotal()
+    }
+
+    override fun loadTokenHistoryList() {
+        binding.layoutHistoryList.loadHistory()
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {

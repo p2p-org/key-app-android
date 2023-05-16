@@ -9,10 +9,15 @@ import java.util.UUID
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
+import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -93,6 +98,15 @@ class NewSendPresenter(
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
         initialize(view)
+        subscribeToSelectedTokenUpdates()
+    }
+
+    private fun subscribeToSelectedTokenUpdates() {
+        userInteractor.getUserTokensFlow()
+            .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
+            .filterNotNull()
+            .onEach { token = it }
+            .launchIn(this)
     }
 
     override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) {
@@ -260,11 +274,7 @@ class NewSendPresenter(
 
     override fun onTokenClicked() {
         newSendAnalytics.logTokenSelectionClicked()
-        launch {
-            val tokens = userInteractor.getUserTokens()
-            val result = tokens.filterNot(Token.Active::isZero)
-            view?.showTokenSelection(tokens = result, selectedToken = token)
-        }
+        view?.showTokenSelection(selectedToken = token)
     }
 
     override fun updateToken(newToken: Token.Active) {

@@ -260,3 +260,11 @@ sealed class Token constructor(
 fun List<Token.Active>.findSolOrThrow(): Token.Active = first { it.isSOL }
 
 fun List<Token.Active>.findSolOrNull(): Token.Active? = firstOrNull { it.isSOL }
+
+fun List<Token.Active>.findByMintAddress(mintAddress: String): Token.Active? =
+    firstOrNull { it.mintAddress == mintAddress }
+
+@JvmName("findByNullableMintAddress")
+fun List<Token.Active>.findByMintAddress(mintAddress: String?): Token.Active? =
+    mintAddress?.let(::findByMintAddress)
+
