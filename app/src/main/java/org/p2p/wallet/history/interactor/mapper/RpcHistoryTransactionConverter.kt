@@ -257,14 +257,16 @@ class RpcHistoryTransactionConverter(
             tokenSymbol = info.tokenAmount?.token?.symbol.orEmpty(),
             amount = RpcHistoryAmount(total, totalInUsd),
             iconUrl = info.tokenAmount?.token?.logoUrl,
-            fees = bundleFees.parseBridgeFees() ?: transaction.fees.parseFees()
+            fees = bundleFees.parseBridgeFees() ?: transaction.fees.parseFees(),
+            claimKey = claimKey
         )
     }
 
     private fun parseWormholeSend(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.WormholeSend>(transaction.info.toString())
             ?: error("Parsing error: cannot parse json object  ${transaction.info}")
-        val sendDetails = bridgeInMemoryRepository.getSendDetails(info.bridgeServiceKey.orEmpty())
+        val message = info.bridgeServiceKey.orEmpty()
+        val sendDetails = bridgeInMemoryRepository.getSendDetails(message)
         val bundleFees = listOfNotNull(
             sendDetails?.fees?.arbiterFee,
             sendDetails?.fees?.bridgeFeeInToken,
@@ -285,7 +287,8 @@ class RpcHistoryTransactionConverter(
             amount = RpcHistoryAmount(total, totalInUsd),
             iconUrl = info.tokenAmount?.token?.logoUrl,
             fees = bundleFees.parseBridgeFees() ?: transaction.fees.parseFees(),
-            sourceAddress = info.to?.address.orEmpty()
+            sourceAddress = info.to?.address.orEmpty(),
+            message = message
         )
     }
 

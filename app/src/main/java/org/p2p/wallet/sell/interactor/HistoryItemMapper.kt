@@ -46,12 +46,16 @@ class HistoryItemMapper(
         val rpcHistoryItems = mutableListOf<HistoryItem>()
         val sellHistoryItems = mutableListOf<HistoryItem>()
         val bridgeHistoryItems = mutableListOf<HistoryItem>()
+        val filterBundleIds = transactions.filterIsInstance<BridgeHistoryTransaction>()
+            .filter { it.isProcessing() }
+            .map { it.getHistoryTransactionId() }
         withContext(dispatchers.io) {
-
             transactions.forEachIndexed { _, item ->
                 when (item) {
                     is RpcHistoryTransaction -> {
-                        parse(item, rpcHistoryItems)
+                        if (item.isNotProcessing(filterBundleIds)) {
+                            parse(item, rpcHistoryItems)
+                        }
                     }
                     is SellTransaction -> {
                         // Sell transactions with cancel reason, should not appear in history
@@ -73,6 +77,14 @@ class HistoryItemMapper(
                 .plus(bridgeHistoryItems)
                 .plus(rpcHistoryItems)
             historyItemFlow.emit(historyItems)
+        }
+    }
+
+    private fun RpcHistoryTransaction.isNotProcessing(filterBundleIds: List<String>): Boolean {
+        return when (this) {
+            is RpcHistoryTransaction.WormholeReceive -> claimKey !in filterBundleIds
+            is RpcHistoryTransaction.WormholeSend -> message !in filterBundleIds
+            else -> true
         }
     }
 

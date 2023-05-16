@@ -9,12 +9,17 @@ import org.p2p.wallet.history.model.HistoryTransaction
 
 sealed class BridgeHistoryTransaction : HistoryTransaction(), Parcelable {
 
+    abstract fun isProcessing(): Boolean
+
     @Parcelize
     data class Claim(
         val bundleId: String,
         val bundle: BridgeBundle,
         override val date: ZonedDateTime
     ) : BridgeHistoryTransaction() {
+        override fun isProcessing(): Boolean {
+            return bundle.isProcessing()
+        }
 
         override fun getHistoryTransactionId(): String {
             return bundleId
@@ -27,6 +32,9 @@ sealed class BridgeHistoryTransaction : HistoryTransaction(), Parcelable {
         val sendDetails: BridgeSendTransactionDetails,
         override val date: ZonedDateTime
     ) : BridgeHistoryTransaction() {
+        override fun isProcessing(): Boolean {
+            return sendDetails.isInProgress()
+        }
 
         override fun getHistoryTransactionId(): String {
             return id
