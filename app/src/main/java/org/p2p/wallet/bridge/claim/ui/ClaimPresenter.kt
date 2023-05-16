@@ -217,7 +217,6 @@ class ClaimPresenter(
         val screenData = claimUiMapper.mapScreenData(tokenToClaim)
         val view = view ?: return
         with(view) {
-            setTitle(screenData.title)
             setTokenIconUrl(screenData.tokenIconUrl)
             setTokenAmount(screenData.tokenFormattedAmount)
             setFiatAmount(screenData.fiatFormattedAmount)

@@ -16,8 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back_night"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
-        app:titleTextColor="@color/text_night"
-        tools:title="Claim WETH" />
+        app:titleTextColor="@color/text_night"/>
 
     <TextView
         android:id="@+id/textViewTitle"
