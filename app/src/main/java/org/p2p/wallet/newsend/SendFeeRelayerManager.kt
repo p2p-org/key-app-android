@@ -32,6 +32,8 @@ import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.user.interactor.UserInteractor
 
+private const val TAG = "SendFeeRelayerManager"
+
 class SendFeeRelayerManager(
     private val sendInteractor: SendInteractor,
     private val userInteractor: UserInteractor
@@ -41,7 +43,7 @@ class SendFeeRelayerManager(
     var onFeeLoading: ((FeeLoadingState) -> Unit)? = null
 
     private var currentState: FeeRelayerState by observable(FeeRelayerState.Idle) { _, oldState, newState ->
-        Timber.i("Switching send fee relayer state to $oldState to $newState")
+        Timber.tag(TAG).i("Switching send fee relayer state to $oldState to $newState")
         onStateUpdated?.invoke(newState)
     }
 
@@ -59,7 +61,7 @@ class SendFeeRelayerManager(
         solToken: Token.Active,
         recipientAddress: SearchResult
     ) {
-        Timber.i("initialize for SendFeeRelayerManager")
+        Timber.tag(TAG).i("initialize for SendFeeRelayerManager")
         this.recipientAddress = recipientAddress
         this.solToken = solToken
 
@@ -68,7 +70,7 @@ class SendFeeRelayerManager(
             initializeWithToken(initialToken)
             initializeCompleted = true
         } catch (e: Throwable) {
-            Timber.i(e, "initialize for SendFeeRelayerManager failed")
+            Timber.tag(TAG).i(e, "initialize for SendFeeRelayerManager failed")
             initializeCompleted = false
             handleError(FeesCalculationError(e))
         } finally {
@@ -77,7 +79,7 @@ class SendFeeRelayerManager(
     }
 
     private suspend fun initializeWithToken(initialToken: Token.Active) {
-        Timber.i("initialize for SendFeeRelayerManager with token ${initialToken.mintAddress}")
+        Timber.tag(TAG).i("initialize for SendFeeRelayerManager with token ${initialToken.mintAddress}")
         minRentExemption = sendInteractor.getMinRelayRentExemption()
         feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
         sendInteractor.initialize(initialToken)
@@ -137,7 +139,11 @@ class SendFeeRelayerManager(
                     sendInteractor.setFeePayerToken(sourceToken)
                 }
                 is FeeCalculationState.PoolsNotFound -> {
-                    val solanaFee = buildSolanaFee(solToken, sourceToken, feeState.feeInSol)
+                    val solanaFee = buildSolanaFee(
+                        newFeePayer = solToken,
+                        source = sourceToken,
+                        feeRelayerFee = feeState.feeInSol
+                    )
                     currentState = UpdateFee(solanaFee = solanaFee, feeLimitInfo = feeLimitInfo)
                     sendInteractor.setFeePayerToken(solToken)
                 }
@@ -153,15 +159,15 @@ class SendFeeRelayerManager(
                     )
                 }
                 is FeeCalculationState.Error -> {
-                    Timber.e(feeState.error, "Error during FeeRelayer fee calculation")
+                    Timber.tag(TAG).e(feeState.error, "Error during FeeRelayer fee calculation")
                     handleError(FeesCalculationError(feeState.error))
                 }
                 is FeeCalculationState.Cancelled -> Unit
             }
         } catch (e: CancellationException) {
-            Timber.i("Smart selection job was cancelled")
+            Timber.tag(TAG).i("Smart selection job was cancelled")
         } catch (e: Throwable) {
-            Timber.e(e, "Error during FeeRelayer fee calculation")
+            Timber.tag(TAG).e(e, "Error during FeeRelayer fee calculation")
         } finally {
             onFeeLoading?.invoke(FeeLoadingState(isLoading = false, isDelayed = useCache))
         }
@@ -327,10 +333,10 @@ class SendFeeRelayerManager(
                 result = recipientAddress
             )
         } catch (e: CancellationException) {
-            Timber.i("Fee calculation is cancelled")
+            Timber.tag(TAG).i("Fee calculation is cancelled")
             null
         } catch (e: Throwable) {
-            Timber.e(e, "Error calculating fees")
+            Timber.tag(TAG).e(e, "Error calculating fees")
             handleError(FeesCalculationError(e))
             null
         }

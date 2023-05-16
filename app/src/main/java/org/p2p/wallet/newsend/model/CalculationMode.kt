@@ -19,6 +19,8 @@ import org.p2p.core.utils.toUsd
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.utils.divideSafe
 
+private const val TAG = "CalculationMode"
+
 class CalculationMode(
     private val sendModeProvider: SendModeProvider,
     private val lessThenMinString: String
@@ -51,16 +53,17 @@ class CalculationMode(
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
     fun updateToken(newToken: Token.Active) {
-        if (::token.isInitialized && newToken.mintAddress == this.token.mintAddress) return
-        this.token = newToken
+        if (::token.isInitialized && newToken.mintAddress == this.token.mintAddress) {
+            updateLabels()
+        } else {
+            this.token = newToken
+            if (currencyMode is CurrencyMode.Token) {
+                currencyMode = CurrencyMode.Token(newToken)
+            }
 
-        if (currencyMode is CurrencyMode.Token) {
-            currencyMode = CurrencyMode.Token(newToken)
+            handleFractionUpdate(currencyMode)
+            updateLabels()
         }
-
-        handleFractionUpdate(currencyMode)
-
-        updateLabels()
     }
 
     fun updateInputAmount(newInputAmount: String) {

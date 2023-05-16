@@ -62,6 +62,8 @@ import org.p2p.wallet.utils.toPublicKey
 
 private const val ACCEPTABLE_RATE_DIFF = 0.02
 
+private const val TAG = "NewSendPresenter"
+
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
@@ -158,7 +160,7 @@ class NewSendPresenter(
             // We should find SOL anyway because SOL is needed for Selection Mechanism
             val userNonZeroTokens = userInteractor.getNonZeroUserTokens()
             if (userNonZeroTokens.isEmpty()) {
-                Timber.e(SendFatalError("User non-zero tokens can't be empty!"))
+                Timber.tag(TAG).e(SendFatalError("User non-zero tokens can't be empty!"))
                 // we cannot proceed if user tokens are not loaded
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
                 return@launch
@@ -176,7 +178,7 @@ class NewSendPresenter(
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                Timber.e(SendFatalError("Couldn't find user's SOL account!"))
+                Timber.tag(TAG).e(SendFatalError("Couldn't find user's SOL account!"))
                 return@launch
             }
 
@@ -233,18 +235,17 @@ class NewSendPresenter(
             }
 
             is FeeRelayerState.Failure -> {
-                Timber.e(newState, "FeeRelayerState has error")
                 if (newState.isFeeCalculationError()) {
                     view.showFeeViewVisible(isVisible = false)
 
                     newState.errorStateError as FeeRelayerStateError.FeesCalculationError
                     if (newState.errorStateError.cause is CancellationException) {
-                        Timber.i(newState)
+                        Timber.tag(TAG).i(newState)
                     } else {
-                        Timber.e(newState, "FeeRelayerState has calculation error")
+                        Timber.tag(TAG).e(newState, "FeeRelayerState has calculation error")
                     }
                 } else {
-                    Timber.e(newState, "FeeRelayerState has error")
+                    Timber.tag(TAG).e(newState, "FeeRelayerState has error")
                 }
                 updateButton(requireToken(), newState)
             }
@@ -354,17 +355,17 @@ class NewSendPresenter(
                 strategy = NO_ACTION
             )
         } catch (e: Throwable) {
-            Timber.e(SendFatalError(cause = e), "Error updating fee payer token")
+            Timber.tag(TAG).e(SendFatalError(cause = e), "Error updating fee payer token")
         }
     }
 
     override fun onMaxButtonClicked() {
         val token = token ?: kotlin.run {
-            Timber.e(SendFatalError("Token can't be null"))
+            Timber.tag(TAG).e(SendFatalError("Token can't be null"))
             return
         }
         val totalAvailable = calculationMode.getMaxAvailableAmount() ?: kotlin.run {
-            Timber.e(SendFatalError("totalAvailable is unavailable"))
+            Timber.tag(TAG).e(SendFatalError("totalAvailable is unavailable"))
             return
         }
         view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
@@ -459,7 +460,7 @@ class NewSendPresenter(
                     mintAddress = token.mintAddress.toBase58Instance()
                 )
             } catch (e: Throwable) {
-                Timber.e(e, "Failed sending transaction!")
+                Timber.tag(TAG).e(e, "Failed sending transaction!")
                 val message = e.getErrorMessage { res -> resources.getString(res) }
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
             }
