@@ -37,6 +37,5 @@ enum class RpcHistoryTypeResponse {
     WORMHOLE_SEND,
 
     @SerializedName("unknown")
-    UNKNOWN,
-
+    UNKNOWN
 }
