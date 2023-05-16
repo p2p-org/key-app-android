@@ -25,6 +25,7 @@ import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.network.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
@@ -61,7 +62,13 @@ object AppModule {
                 tokenKeyProvider = get()
             )
         }
-        singleOf(::ConnectionManager)
+        single {
+            ConnectionManager(
+                context = androidContext(),
+                scope = get<AppScope>(),
+                checkInetDispatcher = get<CoroutineDispatchers>().io
+            )
+        }
 
         singleOf(::AppCreatedAction)
 

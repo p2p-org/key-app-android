@@ -10,6 +10,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
 import java.net.URI
+import java.net.UnknownHostException
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcNotificationResponse
 import org.p2p.solanaj.model.types.RpcRequest
@@ -136,7 +137,13 @@ internal class SubscriptionWebSocketClient internal constructor(
     }
 
     override fun onError(ex: Exception) {
-        Timber.tag(TAG).e(SocketClientException(ex), "Error on socket working")
+        val logger = Timber.tag(TAG)
+        if(ex is UnknownHostException) {
+            logger.w(SocketClientException(ex), "Error on socket working")
+        } else {
+            logger.e(SocketClientException(ex), "Error on socket working")
+        }
+
         stateListener.onFailed(ex)
     }
 

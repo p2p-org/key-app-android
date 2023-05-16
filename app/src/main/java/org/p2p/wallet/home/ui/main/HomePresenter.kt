@@ -229,7 +229,7 @@ class HomePresenter(
         launch {
             connectionManager.connectionStatus.collect { hasConnection ->
                 if (hasConnection) {
-                    updatesManager.start()
+                    updatesManager.restart()
                 } else {
                     updatesManager.stop()
                 }
