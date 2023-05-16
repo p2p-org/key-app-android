@@ -82,12 +82,8 @@ class HistoryItemMapper(
 
     private fun RpcHistoryTransaction.isNotProcessing(filterBundleIds: List<String>): Boolean {
         return when (this) {
-            is RpcHistoryTransaction.WormholeReceive -> {
-                claimKey !in filterBundleIds
-            }
-            is RpcHistoryTransaction.WormholeSend -> {
-                message !in filterBundleIds
-            }
+            is RpcHistoryTransaction.WormholeReceive -> claimKey !in filterBundleIds
+            is RpcHistoryTransaction.WormholeSend -> message !in filterBundleIds
             else -> true
         }
     }
