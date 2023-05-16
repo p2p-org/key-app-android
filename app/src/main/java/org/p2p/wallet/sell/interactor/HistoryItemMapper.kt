@@ -18,6 +18,7 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
@@ -27,7 +28,8 @@ private const val USDC_ETH_TOKEN_SYMBOL = "USDCet"
 
 class HistoryItemMapper(
     private val resources: Resources,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val userLocalRepository: UserLocalRepository
 ) {
 
     private val historyItemFlow = MutableStateFlow<List<HistoryItem>?>(null)
@@ -310,10 +312,28 @@ class HistoryItemMapper(
 
     fun parse(item: BridgeHistoryTransaction, cache: MutableList<HistoryItem>) {
         if (item is BridgeHistoryTransaction.Send) {
-            val item = HistoryItem.BridgeSendItem(item.id, item.sendDetails)
+            val sendTokenSymbol = item.sendDetails.amount.symbol
+            val tokenIconUrl = userLocalRepository.getTokensData()
+                .firstOrNull { it.symbol == sendTokenSymbol }
+                ?.iconUrl
+
+            val item = HistoryItem.BridgeSendItem(
+                id = item.id,
+                sendDetails = item.sendDetails,
+                tokenIconUrl = tokenIconUrl
+            )
             cache.add(item)
         } else if (item is BridgeHistoryTransaction.Claim) {
-            val item = HistoryItem.BridgeClaimItem(item.bundleId, item.bundle)
+            val claimTokenSymbol = item.bundle.resultAmount.symbol
+            val tokenIconUrl = userLocalRepository.getTokensData()
+                .firstOrNull { it.symbol == claimTokenSymbol }
+                ?.iconUrl
+
+            val item = HistoryItem.BridgeClaimItem(
+                bundleId = item.bundleId,
+                bundle = item.bundle,
+                tokenIconUrl = tokenIconUrl
+            )
             cache.add(item)
         }
     }

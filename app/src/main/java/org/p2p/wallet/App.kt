@@ -39,8 +39,6 @@ class App : Application(), Configuration.Provider {
         super.onCreate()
         setupKoin()
 
-        setupWorkManager()
-
         setupTimber()
 
         setupCrashLoggingService()
@@ -55,6 +53,7 @@ class App : Application(), Configuration.Provider {
         appCreatedAction.invoke()
         appsFlyerService.install(this, BuildConfig.appsFlyerKey)
         LokaliseService.setup(this, BuildConfig.lokaliseKey, BuildConfig.lokaliseAppId)
+        setupWorkManager()
     }
 
     override fun getWorkManagerConfiguration(): Configuration {

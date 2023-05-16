@@ -107,15 +107,9 @@ class BridgeMapper {
     }
 
     fun toHistoryItem(claimBundle: BridgeBundle, mintAddress: String): HistoryTransaction? {
-        val tokenContractAddress = ERC20Tokens.values().firstOrNull { it.mintAddress == mintAddress }
-        val isEth =
-            claimBundle.resultAmount.symbol == Constants.ETH_SYMBOL &&
-                tokenContractAddress?.contractAddress == ERC20Tokens.ETH.contractAddress
-        val isHexEquals = (tokenContractAddress?.contractAddress == claimBundle.resultAmount.token?.hex)
-        val isAllHistory = mintAddress == Constants.WRAPPED_SOL_MINT
-        val isEthereumHistory = isEth && !isHexEquals
-        val isEthTokenHistory = !isEth && isHexEquals
-        if (isEthereumHistory || isEthTokenHistory || isAllHistory) {
+        val foundTokenSymbol =
+            ERC20Tokens.values().firstOrNull { it.replaceTokenSymbol == claimBundle.resultAmount.symbol }
+        if (foundTokenSymbol?.mintAddress == mintAddress || mintAddress == Constants.WRAPPED_SOL_MINT) {
             return BridgeHistoryTransaction.Claim(
                 bundleId = claimBundle.bundleId,
                 date = ZonedDateTime.now(),

@@ -72,7 +72,7 @@ object HomeModule : InjectionModule {
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
-        factoryOf(::UserTokensPolling)
+        singleOf(::UserTokensPolling)
         /* Cached data exists, therefore creating singleton */
         // todo: do something with this dependenices!
         // todo: to eliminate all this hell, we could just migrate to hilt
@@ -105,8 +105,10 @@ object HomeModule : InjectionModule {
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
-                claimUiMapper = get(),
                 updateSubscribers = subscribers,
+                claimUiMapper = get(),
+                bridgeFeatureToggle = get(),
+                context = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

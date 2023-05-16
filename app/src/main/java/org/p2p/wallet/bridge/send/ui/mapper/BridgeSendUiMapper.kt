@@ -5,7 +5,6 @@ import android.view.Gravity
 import java.math.BigDecimal
 import org.threeten.bp.ZonedDateTime
 import org.p2p.core.model.TextHighlighting
-import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.orZero
@@ -37,7 +36,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
     }
 
     fun prepareShowProgress(
-        tokenToSend: Token.Active,
+        iconUrl: String,
         amountTokens: String,
         amountUsd: String?,
         recipient: String,
@@ -46,7 +45,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
         val transactionDate = ZonedDateTime.now()
         return NewShowProgress(
             date = transactionDate,
-            tokenUrl = tokenToSend.iconUrl.orEmpty(),
+            tokenUrl = iconUrl,
             amountTokens = amountTokens,
             amountUsd = amountUsd,
             recipient = recipient,

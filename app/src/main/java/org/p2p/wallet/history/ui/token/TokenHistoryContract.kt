@@ -6,6 +6,7 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
+import org.p2p.wallet.transaction.model.NewShowProgress
 
 interface TokenHistoryContract {
 
@@ -20,6 +21,7 @@ interface TokenHistoryContract {
         fun openReceiveInEthereum()
         fun renderTokenAmounts(token: Token.Active)
         fun loadTokenHistoryList()
+        fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress)
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
@@ -29,5 +31,7 @@ interface TokenHistoryContract {
 
         fun onTransactionClicked(transactionId: String)
         fun onSellTransactionClicked(transactionId: String)
+        fun onBridgePendingClaimClicked(transactionId: String)
+        fun onBridgePendingSendClicked(transactionId: String)
     }
 }

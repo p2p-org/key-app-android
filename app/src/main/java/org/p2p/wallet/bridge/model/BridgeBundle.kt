@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.claim.model.ClaimStatus
 import org.p2p.wallet.common.date.dateMilli
@@ -30,5 +31,17 @@ data class BridgeBundle(
 ) : Parcelable {
     fun getExpirationDateInMillis(): Long {
         return expiresAt.seconds.inWholeMilliseconds.toZonedDateTime().dateMilli()
+    }
+
+    fun findTokenOrDefaultEth(): EthAddress {
+        return resultAmount.token ?: EthAddress(ERC20Tokens.ETH.contractAddress)
+    }
+
+    fun isProcessing(): Boolean {
+        return this.status == ClaimStatus.IN_PROGRESS || this.status == ClaimStatus.PENDING
+    }
+
+    fun isFinalized(): Boolean {
+        return !isProcessing()
     }
 }
