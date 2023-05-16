@@ -334,6 +334,7 @@ sealed class RpcHistoryTransaction(
         val tokenSymbol: String,
         val iconUrl: String?,
         val fees: List<RpcFee>?,
+        val claimKey: String
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         @StringRes
@@ -378,6 +379,7 @@ sealed class RpcHistoryTransaction(
         val tokenSymbol: String,
         val iconUrl: String?,
         val fees: List<RpcFee>?,
+        val message: String
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         fun getUsdAmount(): String = "${getFormattedUsdAmount()}"

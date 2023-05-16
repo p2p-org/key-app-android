@@ -10,6 +10,7 @@ import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.claim.model.ClaimStatus
+import org.p2p.wallet.bridge.claim.model.isProcessing
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.date.toZonedDateTime
 
@@ -38,7 +39,7 @@ data class BridgeBundle(
     }
 
     fun isProcessing(): Boolean {
-        return this.status == ClaimStatus.IN_PROGRESS || this.status == ClaimStatus.PENDING
+        return status.isProcessing()
     }
 
     fun isFinalized(): Boolean {
