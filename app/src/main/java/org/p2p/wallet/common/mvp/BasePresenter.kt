@@ -50,20 +50,26 @@ abstract class BasePresenter<V : MvpView>(
         }
     }
 
+    /**
+     * Launch a coroutine that is aware of the internet connection status.
+     * If there is no internet connection, the coroutine will be canceled.
+     * @return The actual coroutine job, or null if the job was canceled/not launched.
+     */
     protected fun launchInternetAware(
         connectionManager: ConnectionManager,
         block: suspend CoroutineScope.() -> Unit
-    ): Job {
+    ): Job? {
         var job: Job? = null
 
         return launch {
             connectionManager.connectionStatus.collect { hasConnection ->
-                if (hasConnection) {
-                    job = launch { block() }
+                job = if (hasConnection) {
+                    launch { block() }
                 } else {
                     job?.cancel()
+                    null
                 }
             }
-        }
+        }.let { job }
     }
 }

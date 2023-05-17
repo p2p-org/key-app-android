@@ -155,11 +155,7 @@ class HomePresenter(
     }
 
     private fun loadSolanaTokens() {
-        launch {
-            // ignore internet state; tokens must display regardless of any error
-            attachToPollingTokens()
-        }
-        launchInternetAware(connectionManager) {
+        val initLoadJob = launchInternetAware(connectionManager) {
             try {
                 view?.showRefreshing(true)
                 userInteractor.loadAllTokensDataIfEmpty()
@@ -186,6 +182,14 @@ class HomePresenter(
             } finally {
                 view?.showRefreshing(false)
             }
+        }
+        launch {
+            // wait for main init logic is completed
+            // if not do this, polling will notify empty token list until they are loaded
+            // as a result, user will see the banner with no tokens
+            initLoadJob?.join()
+            // ignore internet state; tokens must display regardless of any error
+            attachToPollingTokens()
         }
     }
 
