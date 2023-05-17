@@ -4,6 +4,7 @@ import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.net.UnknownHostException
 import kotlinx.coroutines.launch
+import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
@@ -24,7 +25,6 @@ import org.p2p.wallet.svl.model.SendViaLinkClaimingState
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toPublicKey
@@ -33,7 +33,7 @@ class ReceiveViaLinkPresenter(
     private val receiveViaLinkInteractor: ReceiveViaLinkInteractor,
     private val receiveViaLinkMapper: ReceiveViaLinkMapper,
     private val historyInteractor: HistoryInteractor,
-    private val connectionStateProvider: NetworkConnectionStateProvider,
+    private val connectionStateProvider: ConnectionManager,
     private val tokenKeyProvider: TokenKeyProvider,
     private val usernameInteractor: UsernameInteractor,
     private val appScope: AppScope
@@ -130,7 +130,7 @@ class ReceiveViaLinkPresenter(
     }
 
     private fun isInternetConnectionEnabled(): Boolean =
-        connectionStateProvider.hasConnection()
+        connectionStateProvider.connectionStatus.value
 
     private fun buildPendingTransaction(
         transactionId: String,
