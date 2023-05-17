@@ -2,8 +2,8 @@ package org.p2p.wallet.bridge.claim.ui.mapper
 
 import android.content.res.Resources
 import android.view.Gravity
-import java.math.BigDecimal
 import org.threeten.bp.ZonedDateTime
+import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
@@ -45,7 +45,8 @@ class ClaimUiMapper(private val resources: Resources) {
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
             recipient = null,
-            totalFees = feeList?.let { listOf(toTextHighlighting(feeList)) }
+            totalFees = feeList?.let { listOf(toTextHighlighting(feeList)) },
+            amountColor = R.color.text_mint
         )
     }
 

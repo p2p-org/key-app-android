@@ -100,6 +100,9 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                 textViewAmountUsd.text = data.amountTokens
                 textViewAmountTokens.isVisible = false
             }
+            data.amountColor?.let { amountColorRes ->
+                textViewAmountUsd.setTextColorRes(amountColorRes)
+            }
             if (data.recipient == null) {
                 textViewSendToTitle.isVisible = false
                 textViewSendToValue.isVisible = false
