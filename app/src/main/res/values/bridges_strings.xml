@@ -6,7 +6,7 @@
     <string name="bridge_claiming_button_text">Claiming…</string>
 
     <string name="bridge_claim_title_format">Claim %s</string>
-    <string name="bridge_claim_sub_title_format">Confirm claiming the tokens</string>
+    <string name="bridge_claim_sub_title_format">Confirm claiming\nthe tokens</string>
     <string name="bridge_claim_fees">Fees</string>
     <string name="bridge_claim_will_get">You will get</string>
     <string name="bridge_claim_fees_free">Paid by Key App</string>
