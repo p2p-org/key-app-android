@@ -282,7 +282,14 @@ class HistoryTransactionDetailsPresenter(
                 val isTransactionTransfer = transaction is RpcHistoryTransaction.Transfer && transaction.isSend
                 val isTransactionBurn = transaction is RpcHistoryTransaction.BurnOrMint && transaction.isBurn
                 val isTransactionSwap = transaction is RpcHistoryTransaction.Swap
-                colorRes = if (isTransactionTransfer || isTransactionBurn || isTransactionSwap) {
+                val isWormholeSend = transaction is RpcHistoryTransaction.WormholeSend
+                val conditionsList = listOf(
+                    isTransactionTransfer,
+                    isTransactionBurn,
+                    isTransactionSwap,
+                    isWormholeSend
+                )
+                colorRes = if (conditionsList.any { it }) {
                     R.color.text_night
                 } else {
                     R.color.text_mint
