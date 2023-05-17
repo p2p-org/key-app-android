@@ -5,6 +5,7 @@ import org.p2p.core.utils.Constants.FEE_RELAYER_ACCOUNTS
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.bridge.claim.repository.EthereumBridgeInMemoryRepository
 import org.p2p.wallet.bridge.model.BridgeFee
+import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.api.model.RpcHistoryFeeResponse
 import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
@@ -243,10 +244,9 @@ class RpcHistoryTransactionConverter(
             bundle?.fees?.arbiterFee,
             bundle?.fees?.gasFeeInToken
         )
-        val total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero() - bundleFees.sumOf { it.amountInToken }
-        val totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero() - bundleFees.sumOf {
-            it.amountInUsd.toBigDecimalOrZero()
-        }
+        val bridgeAmount = bundle?.resultAmount?.toBridgeAmount()
+        val total = bridgeAmount?.tokenAmount ?: info.tokenAmount?.amount?.amount.toBigDecimalOrZero()
+        val totalInUsd = bridgeAmount?.fiatAmount ?: info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero()
 
         return RpcHistoryTransaction.WormholeReceive(
             signature = transaction.signature,
@@ -272,10 +272,9 @@ class RpcHistoryTransactionConverter(
             sendDetails?.fees?.bridgeFeeInToken,
             sendDetails?.fees?.networkFeeInToken,
         )
-        val total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero() - bundleFees.sumOf { it.amountInToken }
-        val totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero() - bundleFees.sumOf {
-            it.amountInUsd.toBigDecimalOrZero()
-        }
+        val bridgeAmount = sendDetails?.amount?.toBridgeAmount()
+        val total = bridgeAmount?.tokenAmount ?: info.tokenAmount?.amount?.amount.toBigDecimalOrZero()
+        val totalInUsd = bridgeAmount?.fiatAmount ?: info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero()
 
         return RpcHistoryTransaction.WormholeSend(
             signature = transaction.signature,

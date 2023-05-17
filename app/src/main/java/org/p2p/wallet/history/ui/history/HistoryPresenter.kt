@@ -54,7 +54,7 @@ class HistoryPresenter(
             val iconUrl = ERC20Tokens.findToken(bridgeBundle.findTokenOrDefaultEth()).tokenIconUrl
             val progressDetails = claimUiMapper.prepareShowProgress(
                 amountToClaim = amountToClaim,
-                iconUrl = iconUrl.orEmpty(),
+                iconUrl = iconUrl,
                 claimDetails = claimDetails
             )
             transactionManager.emitTransactionState(

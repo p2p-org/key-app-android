@@ -2,16 +2,14 @@ package org.p2p.wallet.bridge.claim.ui.mapper
 
 import android.content.res.Resources
 import android.view.Gravity
-import java.math.BigDecimal
 import org.threeten.bp.ZonedDateTime
+import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asPositiveUsdTransaction
-import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
@@ -20,6 +18,7 @@ import org.p2p.wallet.bridge.claim.ui.model.ClaimScreenData
 import org.p2p.wallet.bridge.model.BridgeAmount
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeFee
+import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.toPx
 
@@ -45,7 +44,8 @@ class ClaimUiMapper(private val resources: Resources) {
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
             recipient = null,
-            totalFees = feeList?.let { listOf(toTextHighlighting(feeList)) }
+            totalFees = feeList?.let { listOf(toTextHighlighting(feeList)) },
+            amountColor = R.color.text_mint
         )
     }
 
@@ -100,18 +100,6 @@ class ClaimUiMapper(private val resources: Resources) {
             tokenIconUrl = tokenToClaim.iconUrl,
             tokenFormattedAmount = tokenToClaim.getFormattedTotal(includeSymbol = true),
             fiatFormattedAmount = tokenToClaim.totalInUsd.orZero().asApproximateUsd(withBraces = false),
-        )
-    }
-
-    /**
-     * metadata.balance.fromLamports(metadata.decimals)
-     */
-    private fun BridgeFee?.toBridgeAmount(): BridgeAmount {
-        return BridgeAmount(
-            tokenSymbol = this?.symbol.orEmpty(),
-            tokenDecimals = this?.decimals.orZero(),
-            tokenAmount = this?.amountInToken?.takeIf { !it.isNullOrZero() },
-            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
         )
     }
 
