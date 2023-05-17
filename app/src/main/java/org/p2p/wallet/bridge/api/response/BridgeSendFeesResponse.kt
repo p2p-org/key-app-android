@@ -17,6 +17,8 @@ data class BridgeSendFeesResponse(
     val bridgeFeeInToken: BridgeAmountResponse?,
     @SerializedName("arbiter_fee")
     val arbiterFee: BridgeAmountResponse?,
-    @SerializedName("result_amount")
-    val resultAmount: BridgeAmountResponse?
+    @SerializedName("total_amount")
+    val totalAmount: BridgeAmountResponse?,
+    @SerializedName("recipient_gets_amount")
+    val recipientGetsAmount: BridgeAmountResponse?
 )
