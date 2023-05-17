@@ -15,6 +15,7 @@ import org.p2p.core.utils.toLamports
 import org.p2p.core.wrapper.HexString
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.bridge.analytics.ClaimAnalytics
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
@@ -41,7 +42,8 @@ class ClaimPresenter(
     private val claimUiMapper: ClaimUiMapper,
     private val appScope: AppScope,
     private val claimAnalytics: ClaimAnalytics,
-    private val userTokensPolling: UserTokensPolling
+    private val userTokensPolling: UserTokensPolling,
+    private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
     private var refreshJob: Job? = null
@@ -185,6 +187,7 @@ class ClaimPresenter(
                 userTokensPolling.refreshTokens()
             } catch (e: BridgeResult.Error) {
                 Timber.e(e, "Failed to send signed bundle: ${e.message}")
+                logClaimErrorAlarm(e)
             }
         }
     }
@@ -226,5 +229,14 @@ class ClaimPresenter(
     override fun detach() {
         refreshJob?.cancel()
         super.detach()
+    }
+
+    private fun logClaimErrorAlarm(error: Throwable) {
+        val claimAmount = latestBundle?.resultAmount?.amountInToken?.toPlainString() ?: "0"
+        alarmErrorsLogger.triggerBridgeClaimAlarm(
+            tokenToClaim = tokenToClaim,
+            claimAmount = claimAmount,
+            error = error
+        )
     }
 }

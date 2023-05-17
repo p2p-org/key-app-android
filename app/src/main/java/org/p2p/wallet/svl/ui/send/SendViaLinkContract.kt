@@ -22,7 +22,12 @@ interface SendViaLinkContract {
         fun disableSwitchAmounts()
         fun disableInputs()
 
-        fun navigateToLinkGeneration(account: TemporaryAccount, token: Token.Active, lamports: BigInteger)
+        fun navigateToLinkGeneration(
+            account: TemporaryAccount,
+            token: Token.Active,
+            lamports: BigInteger,
+            currencyModeSymbol: String
+        )
     }
 
     interface Presenter : MvpPresenter<View> {

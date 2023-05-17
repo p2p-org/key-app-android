@@ -17,7 +17,8 @@ interface SendLinkGenerationContract {
             recipient: TemporaryAccount,
             token: Token.Active,
             lamports: BigInteger,
-            isSimulation: Boolean
+            isSimulation: Boolean,
+            currencyModeSymbol: String
         )
     }
 }

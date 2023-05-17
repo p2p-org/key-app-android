@@ -33,7 +33,7 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 
 private const val DELAY_MS = 5000L
 
-private const val TAG = "Sockets:SocketUpdatesManager"
+private const val TAG = "SocketUpdatesManager"
 
 class SocketUpdatesManager(
     appScope: AppScope,

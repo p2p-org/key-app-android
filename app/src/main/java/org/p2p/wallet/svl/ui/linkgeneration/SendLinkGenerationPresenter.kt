@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
 import org.p2p.wallet.infrastructure.sendvialink.model.UserSendLink
@@ -16,7 +17,8 @@ import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 
 class SendLinkGenerationPresenter(
     private val sendViaLinkInteractor: SendViaLinkInteractor,
-    private val userSendLinksRepository: UserSendLinksLocalRepository
+    private val userSendLinksRepository: UserSendLinksLocalRepository,
+    private val alertErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<SendLinkGenerationContract.View>(),
     SendLinkGenerationContract.Presenter {
 
@@ -24,7 +26,8 @@ class SendLinkGenerationPresenter(
         recipient: TemporaryAccount,
         token: Token.Active,
         lamports: BigInteger,
-        isSimulation: Boolean
+        isSimulation: Boolean,
+        currencyModeSymbol: String
     ) {
         launch {
             val result = try {
@@ -47,6 +50,12 @@ class SendLinkGenerationPresenter(
                 )
             } catch (e: Throwable) {
                 Timber.e(e, "Error generating send link for ${recipient.publicKey.toBase58()}")
+                logSvlError(
+                    token = token,
+                    currency = currencyModeSymbol,
+                    lamports = lamports,
+                    error = e
+                )
                 LinkGenerationState.Error
             }
             view?.showResult(result)
@@ -62,6 +71,20 @@ class SendLinkGenerationPresenter(
                 amount = sendAmount.fromLamports(token.decimals),
                 dateCreated = System.currentTimeMillis()
             )
+        )
+    }
+
+    private fun logSvlError(
+        token: Token.Active,
+        currency: String,
+        lamports: BigInteger,
+        error: Throwable
+    ) {
+        alertErrorsLogger.triggerSendViaLinkAlarm(
+            token = token,
+            currency = currency,
+            lamports = lamports,
+            error = error
         )
     }
 }

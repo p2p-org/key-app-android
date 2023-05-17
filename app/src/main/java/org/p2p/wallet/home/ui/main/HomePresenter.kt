@@ -127,7 +127,7 @@ class HomePresenter(
             ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
             PendingTransactionMergeWorker.scheduleWorker(context)
         } else {
-            Timber.e(IllegalStateException(), "ETH is not init, no seed phrase")
+            Timber.w("ETH is not initialized, no seed phrase or disabled")
         }
         launch {
             awaitAll(

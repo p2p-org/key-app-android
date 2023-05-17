@@ -67,6 +67,7 @@ object SendModule : InjectionModule {
                 newSendAnalytics = get(),
                 appScope = get(),
                 sendModeProvider = get(),
+                alertErrorsLogger = get(),
                 historyInteractor = get()
             )
         } bind NewSendContract.Presenter::class

@@ -232,7 +232,12 @@ class SendViaLinkPresenter(
         logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.orZero().toPlainString())
 
         svlAnalytics.logCreateLinkClicked(token.tokenSymbol, currentAmount.toPlainString(), recipient)
-        view?.navigateToLinkGeneration(recipient, token, lamports)
+        view?.navigateToLinkGeneration(
+            account = recipient,
+            token = token,
+            lamports = lamports,
+            currencyModeSymbol = calculationMode.getCurrencyMode().getCurrencyModeSymbol()
+        )
     }
 
     private fun showMaxButtonIfNeeded() {
@@ -256,6 +261,7 @@ class SendViaLinkPresenter(
                 view?.setSliderText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
+
             is NewSendButtonState.State.Enabled -> {
                 view?.setSliderText(resources.getString(R.string.send_via_link_action_text))
                 view?.setBottomButtonText(null)

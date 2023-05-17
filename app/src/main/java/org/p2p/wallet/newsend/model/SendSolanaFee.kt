@@ -95,14 +95,14 @@ data class SendSolanaFee constructor(
             .scaleLong()
 
     @IgnoredOnParcel
-    private val feePayerTotalLamports: BigInteger
-        get() = feePayerToken.total.toLamports(feePayerToken.decimals)
-
-    @IgnoredOnParcel
-    private val transactionDecimals: BigDecimal =
+    val transactionDecimals: BigDecimal =
         (if (feePayerToken.isSOL) feeRelayerFee.transactionFeeInSol else feeRelayerFee.transactionFeeInSpl)
             .fromLamports(feePayerToken.decimals)
             .scaleLong()
+
+    @IgnoredOnParcel
+    private val feePayerTotalLamports: BigInteger
+        get() = feePayerToken.total.toLamports(feePayerToken.decimals)
 
     @IgnoredOnParcel
     val totalFeeDecimals: BigDecimal
