@@ -7,6 +7,7 @@ import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.auth.username.api.RegisterUsernameServiceApi
 import org.p2p.wallet.auth.username.repository.mapper.RegisterUsernameServiceApiMapper
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
+import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.Base58String
 
@@ -43,6 +44,8 @@ class UsernameRemoteRepository(
                 userPrivateKey = ownerPrivateKey.decodeToBytes()
             )
             val response = usernameService.createUsername(request)
+
+            throw UsernameServiceError.InvalidUsername("Testing username alarms")
             val createNameTransaction = mapper.fromNetwork(response).serializedSignedCreateNameTransaction
             val resultSignature = rpcSolanaRepository.sendSerializedTransaction(createNameTransaction, Encoding.BASE64)
             Timber.i("Create name transaction is sent: $resultSignature")

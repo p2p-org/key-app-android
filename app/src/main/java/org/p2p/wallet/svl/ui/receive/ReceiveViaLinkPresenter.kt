@@ -8,6 +8,7 @@ import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -36,6 +37,7 @@ class ReceiveViaLinkPresenter(
     private val connectionStateProvider: ConnectionManager,
     private val tokenKeyProvider: TokenKeyProvider,
     private val usernameInteractor: UsernameInteractor,
+    private val alertErrorsLogger: AlarmErrorsLogger,
     private val appScope: AppScope
 ) : BasePresenter<ReceiveViaLinkContract.View>(),
     ReceiveViaLinkContract.Presenter {
@@ -64,6 +66,10 @@ class ReceiveViaLinkPresenter(
                 view?.renderState(state)
             } catch (e: Throwable) {
                 Timber.e(ReceiveViaLinkError("Error claiming token", e))
+                logCvlError(
+                    token = token,
+                    error = e
+                )
                 val textRes = if (e is UnknownHostException) {
                     R.string.transaction_description_internet_error
                 } else {
@@ -117,12 +123,15 @@ class ReceiveViaLinkPresenter(
                     tokenIcon = receiveViaLinkMapper.mapTokenIcon(state.token)
                 )
             }
+
             is TemporaryAccountState.ParsingFailed -> {
                 view?.renderState(SendViaLinkClaimingState.ParsingFailed.buildUnknownError())
             }
+
             is TemporaryAccountState.EmptyBalance -> {
                 view?.showLinkError(SendViaLinkError.ALREADY_CLAIMED)
             }
+
             is TemporaryAccountState.BrokenLink -> {
                 view?.showLinkError(SendViaLinkError.BROKEN_LINK)
             }
@@ -152,4 +161,14 @@ class ReceiveViaLinkPresenter(
             iconUrl = token.iconUrl,
             symbol = token.tokenSymbol
         )
+
+    private fun logCvlError(
+        token: Token.Active,
+        error: Throwable
+    ) {
+        alertErrorsLogger.triggerClaimViaLinkAlarm(
+            token = token,
+            error = error
+        )
+    }
 }

@@ -31,6 +31,8 @@ import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.newsend.model.SendFatalError
+import org.p2p.wallet.newsend.model.SendTransactionFailed
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
@@ -134,6 +136,7 @@ class SendInteractor(
                     Timber.tag(TAG).i("FeePoolsState is calculated")
                     FeeCalculationState.Success(FeeRelayerFee(fees, poolsStateFee.feeInSpl, expectedFee))
                 }
+
                 is FeePoolsState.Failed -> {
                     Timber.tag(TAG).i("FeePoolsState is failed")
                     FeeCalculationState.PoolsNotFound(FeeRelayerFee(fees, poolsStateFee.feeInSOL, expectedFee))

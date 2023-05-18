@@ -1,17 +1,19 @@
 package org.p2p.wallet.auth.ui.reserveusername
 
-import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
+import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.utils.emptyString
 
 class ReserveUsernamePresenter(
     private val usernameValidator: UsernameValidator,
     private val usernameInteractor: UsernameInteractor,
+    private val alertLogger: AlarmErrorsLogger
 ) : BasePresenter<ReserveUsernameContract.View>(),
     ReserveUsernameContract.Presenter {
 
@@ -62,6 +64,7 @@ class ReserveUsernamePresenter(
                 view?.close(isUsernameCreated = true)
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while creating username: $currentUsernameEntered")
+                logUsernameError(currentUsernameEntered, e)
                 view?.showUsernameNotAvailable()
                 view?.showCreateUsernameFailed()
             }
@@ -72,5 +75,12 @@ class ReserveUsernamePresenter(
         checkUsernameJob?.cancel()
         reserveUsernameJob?.cancel()
         super.detach()
+    }
+
+    private fun logUsernameError(username: String, error: Throwable) {
+        alertLogger.triggerUsernameAlarm(
+            username = username,
+            error = error
+        )
     }
 }

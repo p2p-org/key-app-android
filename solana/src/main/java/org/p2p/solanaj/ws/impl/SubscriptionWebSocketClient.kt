@@ -18,7 +18,7 @@ import org.p2p.solanaj.ws.SocketStateListener
 import org.p2p.solanaj.ws.SubscriptionEventListener
 import org.p2p.solanaj.ws.SubscriptionSocketClient
 
-private const val TAG = "Sockets:SubscriptionSocketClient"
+private const val TAG = "SubscriptionSocketClient"
 private typealias SubscriptionId = Long
 
 class SocketClientException(

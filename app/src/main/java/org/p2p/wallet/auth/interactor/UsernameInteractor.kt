@@ -100,7 +100,8 @@ class UsernameInteractor(
 
         // if username already exist - show it
         // if it's not, check for web3auth sign up and feature toggle
-        return isUsernameItemCanBeShown || isRegisterUsernameItemCanBeShown
+//        return isUsernameItemCanBeShown || isRegisterUsernameItemCanBeShown
+        return true
     }
 
     fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? =

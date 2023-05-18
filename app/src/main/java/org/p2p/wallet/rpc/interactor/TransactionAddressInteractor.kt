@@ -51,11 +51,9 @@ class TransactionAddressInteractor(
         useCache: Boolean
     ): PublicKey {
         val accountInfo = userAccountRepository.getAccountInfo(destinationAddress.toBase58(), useCache)
-        Timber.d("### getAccountInfo $accountInfo")
 
         // detect if it is a direct token address
         val info = TokenTransaction.decodeAccountInfo(accountInfo)
-        Timber.d("### direct token address: $info")
         if (info != null && userLocalRepository.findTokenData(info.mint.toBase58()) != null) {
             Timber.tag(ADDRESS_TAG).d("Token by mint was found. Continuing with direct address")
             return destinationAddress
@@ -63,17 +61,12 @@ class TransactionAddressInteractor(
 
         // create associated token address
         val value = accountInfo?.value
-        Timber.d("### create associated token address: $value")
         if (value == null || value.data?.get(0).isNullOrEmpty()) {
-            Timber.d("### getAssociatedTokenAddress")
-
             Timber.tag(ADDRESS_TAG).d("No information found, creating associated token address")
             return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
         }
 
         // detect if destination address is already a SPLToken address
-        Timber.d("### destination address is already a SPLToken address")
-
         if (info?.mint == destinationAddress) {
             Timber.tag(ADDRESS_TAG).d("Destination address is already an SPL Token address, returning")
             return destinationAddress

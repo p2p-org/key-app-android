@@ -314,7 +314,7 @@ class SendFeeRelayerManager(
             }
             is FeePayerState.ReduceInputAmount -> {
                 sendInteractor.setFeePayerToken(sourceToken)
-                currentState = ReduceAmount(state.maxAllowedAmount)
+                currentState = ReduceAmount(fee, state.maxAllowedAmount)
             }
         }
 
@@ -363,6 +363,7 @@ class SendFeeRelayerManager(
     }
 
     private fun handleError(error: FeeRelayerStateError) {
-        currentState = Failure(error)
+        val previousState = currentState
+        currentState = Failure(previousState, error)
     }
 }

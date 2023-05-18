@@ -24,14 +24,14 @@ import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
+import org.p2p.wallet.alarmlogger.model.SwapAlarmError
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.network.alarmlogger.AlarmErrorsLogger
-import org.p2p.wallet.infrastructure.network.alarmlogger.AlarmErrorsLogger.SwapAlarmError
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
@@ -236,7 +236,7 @@ class JupiterSwapPresenter(
             is ServerException -> SwapAlarmError.BLOCKCHAIN_ERROR to failure.cause
             else -> SwapAlarmError.UNKNOWN to failure.cause
         }
-        alarmErrorsLogger.sendSwapAlarm(errorType, currentState, swapError)
+        alarmErrorsLogger.triggerSwapAlarm(errorType, currentState, swapError)
     }
 
     override fun onAllAmountClick() {
@@ -465,6 +465,7 @@ class JupiterSwapPresenter(
                     SwapPriceImpactType.HighPriceImpactType.YELLOW -> SwapPriceImpactView.Yellow(
                         resources.getString(R.string.swap_main_alert)
                     )
+
                     SwapPriceImpactType.HighPriceImpactType.RED -> SwapPriceImpactView.Red(
                         resources.getString(R.string.swap_main_alert)
                     )

@@ -1,4 +1,4 @@
-package org.p2p.wallet.infrastructure.network.alarmlogger.api
+package org.p2p.wallet.alarmlogger.api
 
 import retrofit2.http.Body
 import retrofit2.http.POST
