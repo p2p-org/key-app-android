@@ -7,6 +7,7 @@ import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.solanaj.model.types.ConfirmationStatus
 import org.p2p.solanaj.programs.MemoProgram
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
@@ -46,7 +47,8 @@ class SendViaLinkInteractor(
         lamports: BigInteger,
         memo: String,
         isSimulation: Boolean,
-        shouldCloseAccount: Boolean = false
+        shouldCloseAccount: Boolean = false,
+        preflightCommitment: ConfirmationStatus = ConfirmationStatus.FINALIZED
     ): String {
         val statistics = FeeRelayerStatistics(
             operationType = OperationType.TRANSFER,
@@ -68,7 +70,8 @@ class SendViaLinkInteractor(
             preparedTransaction = preparedTransaction,
             statistics = statistics,
             isRetryEnabled = false,
-            isSimulation = isSimulation
+            isSimulation = isSimulation,
+            preflightCommitment = preflightCommitment
         )
     }
 
