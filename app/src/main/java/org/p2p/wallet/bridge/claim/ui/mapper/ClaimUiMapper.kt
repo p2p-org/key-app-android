@@ -16,6 +16,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.model.ClaimScreenData
 import org.p2p.wallet.bridge.model.BridgeAmount
+import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.model.BridgeBundleFees
 import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.toBridgeAmount
@@ -34,7 +35,7 @@ class ClaimUiMapper(private val resources: Resources) {
         val amountTokens = willGetAmount?.formattedTokenAmount.orEmpty()
         val amountUsd = willGetAmount?.fiatAmount.orZero()
         val minAmountForFreeFee = claimDetails?.minAmountForFreeFee.orZero()
-        val isFreeTransaction = amountToClaim >= minAmountForFreeFee
+        val isFreeTransaction = amountToClaim >= minAmountForFreeFee || claimDetails?.isFree == true
         val feeList = claimDetails?.let {
             listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
         }?.filter { !isFreeTransaction }?.ifEmpty { null }
@@ -46,6 +47,19 @@ class ClaimUiMapper(private val resources: Resources) {
             recipient = null,
             totalFees = feeList?.let { listOf(toTextHighlighting(feeList)) },
             amountColor = R.color.text_mint
+        )
+    }
+
+    fun makeClaimDetails(
+        bridgeBundle: BridgeBundle,
+        minAmountForFreeFee: BigDecimal
+    ): ClaimDetails {
+        return makeClaimDetails(
+            resultAmount = bridgeBundle.resultAmount,
+            fees = bridgeBundle.fees,
+            isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
+            minAmountForFreeFee = minAmountForFreeFee,
+            transactionDate = bridgeBundle.dateCreated
         )
     }
 

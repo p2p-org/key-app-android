@@ -266,11 +266,8 @@ class HomePresenter(
                 val latestActiveBundleId = token.latestActiveBundleId ?: return@launch
                 val bridgeBundle = ethereumInteractor.getClaimBundleById(latestActiveBundleId) ?: return@launch
                 val claimDetails = claimUiMapper.makeClaimDetails(
-                    resultAmount = bridgeBundle.resultAmount,
-                    fees = bridgeBundle.fees,
-                    isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
+                    bridgeBundle = bridgeBundle,
                     minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
-                    transactionDate = bridgeBundle.dateCreated
                 )
                 val progressDetails = claimUiMapper.prepareShowProgress(
                     amountToClaim = bridgeBundle.resultAmount.amountInToken,
