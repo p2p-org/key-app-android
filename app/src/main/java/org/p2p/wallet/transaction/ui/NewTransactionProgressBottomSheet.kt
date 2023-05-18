@@ -123,7 +123,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                         append("\n")
                     }
                 }
-            }  else {
+            } else {
                 resources.getString(R.string.transaction_transaction_fee_free_value)
             }
             buttonDone.setOnClickListener {
