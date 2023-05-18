@@ -22,7 +22,7 @@ data class AlarmErrorsSwapRequest(
     @SerializedName("fee_relayer_transaction")
     val jupiterTransaction: String,
     @SerializedName("platform")
-    val platform: String = "Android ${Build.VERSION.SDK_INT}",
+    val platform: String = "Android ${Build.VERSION.SDK_INT}, ${Build.MANUFACTURER}, ${Build.MODEL}",
     @SerializedName("app_version")
     val appVersion: String = BuildConfig.VERSION_NAME,
     @SerializedName("timestamp")

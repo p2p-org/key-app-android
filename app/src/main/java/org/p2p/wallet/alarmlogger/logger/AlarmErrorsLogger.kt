@@ -33,8 +33,8 @@ class AlarmErrorsLogger(
     private val userPublicKey: Base58String
         get() = tokenKeyProvider.publicKey.toBase58Instance()
 
-    private val isReleaseBuild: Boolean
-        get() = !BuildConfig.DEBUG
+    private val isDebugBuild: Boolean
+        get() = BuildConfig.DEBUG
 
     fun triggerSendAlarm(
         token: Token.Active,
@@ -47,11 +47,11 @@ class AlarmErrorsLogger(
         recipientAddress: SearchResult,
         error: Throwable
     ) {
-        if (!isReleaseBuild) return
+        if (isDebugBuild) return
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toSendError(
+                val request = sendErrorConverter.toSendErrorRequest(
                     token = token,
                     currencyMode = currencyMode,
                     amount = amount,
@@ -78,11 +78,11 @@ class AlarmErrorsLogger(
         lamports: BigInteger,
         error: Throwable
     ) {
-        if (!isReleaseBuild) return
+        if (isDebugBuild) return
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toSendViaLinkError(
+                val request = sendErrorConverter.toSendViaLinkErrorRequest(
                     userPublicKey = userPublicKey,
                     token = token,
                     lamports = lamports,
@@ -100,11 +100,11 @@ class AlarmErrorsLogger(
         token: Token.Active,
         error: Throwable
     ) {
-        if (!isReleaseBuild) return
+        if (isDebugBuild) return
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toClaimViaLinkError(
+                val request = sendErrorConverter.toClaimViaLinkErrorRequest(
                     userPublicKey = userPublicKey,
                     token = token,
                     lamports = token.totalInLamports,
@@ -123,7 +123,7 @@ class AlarmErrorsLogger(
         swapState: SwapState.SwapLoaded,
         swapError: Throwable
     ) {
-        if (!isReleaseBuild) return
+        if (isDebugBuild) return
 
         appScope.launch {
             try {
@@ -145,17 +145,50 @@ class AlarmErrorsLogger(
         claimAmount: String,
         error: Throwable
     ) {
-        if (!isReleaseBuild) return
+        if (isDebugBuild) return
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toBridgeClaimError(
+                val request = sendErrorConverter.toBridgeClaimErrorRequest(
                     userPublicKey = userPublicKey,
                     userEthAddress = ethereumInteractor.getEthAddress().hex,
                     token = tokenToClaim,
                     claimAmount = claimAmount,
                     error = error
                 )
+                retryRequest(block = { api.sendAlarm(request) })
+            } catch (error: Throwable) {
+                Timber.e(AlarmErrorsError(error), "Failed to send alarm")
+            }
+        }
+    }
+
+    fun triggerUsernameAlarm(
+        username: String,
+        error: Throwable
+    ) {
+        if (isDebugBuild) return
+
+        appScope.launch {
+            try {
+                val request = sendErrorConverter.toUsernameErrorRequest(
+                    username = username,
+                    userPublicKey = userPublicKey,
+                    error = error
+                )
+                retryRequest(block = { api.sendAlarm(request) })
+            } catch (error: Throwable) {
+                Timber.e(AlarmErrorsError(error), "Failed to send alarm")
+            }
+        }
+    }
+
+    fun triggerWeb3Alarm(web3Error: String) {
+        if (isDebugBuild) return
+
+        appScope.launch {
+            try {
+                val request = sendErrorConverter.toWeb3ErrorRequest(web3Error)
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")

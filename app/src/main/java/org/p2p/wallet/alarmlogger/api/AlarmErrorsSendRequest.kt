@@ -14,7 +14,7 @@ data class AlarmErrorsSendRequest(
     @SerializedName("fees")
     val fees: Fees,
     @SerializedName("relay_account_state")
-    val relayAccountState: RelayAccountState,
+    val relayAccountState: RelayAccountStateRequest,
     @SerializedName("user_pubkey")
     val userPubkey: Base58String,
     @SerializedName("recipient_pubkey")
@@ -22,7 +22,7 @@ data class AlarmErrorsSendRequest(
     @SerializedName("recipient_name")
     val recipientName: String,
     @SerializedName("platform")
-    val platform: String = "Android ${Build.VERSION.SDK_INT}",
+    val platform: String = "Android ${Build.VERSION.SDK_INT}, ${Build.MANUFACTURER}, ${Build.MODEL}",
     @SerializedName("app_version")
     val appVersion: String = BuildConfig.VERSION_NAME,
     @SerializedName("timestamp")
@@ -66,7 +66,7 @@ data class AlarmErrorsSendRequest(
         val mint: Base58String
     )
 
-    data class RelayAccountState(
+    data class RelayAccountStateRequest(
         @SerializedName("created")
         val created: Boolean,
         @SerializedName("balance")

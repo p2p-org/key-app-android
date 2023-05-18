@@ -16,6 +16,7 @@ import com.google.android.gms.common.api.ApiException
 import timber.log.Timber
 import java.util.UUID
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 
 private const val USER_CANCELED_DIALOG_CODE = 16
@@ -25,7 +26,7 @@ private const val PREFS_KEY_TOKEN_EXPIRE_TIME = "PREFS_KEY_TOKEN_EXPIRE_TIME"
 class GoogleSignInHelper(
     private val connectionStateProvider: NetworkConnectionStateProvider,
     private val sharedPreferences: SharedPreferences,
-    private val web3AuthApi: Web3AuthApi
+    private val alarmErrorsLogger: AlarmErrorsLogger
 ) {
     private fun getSignInClient(context: Context): SignInClient {
         return Identity.getSignInClient(context)
@@ -44,11 +45,13 @@ class GoogleSignInHelper(
                     try {
                         googleSignInLauncher.launch(IntentSenderRequest.Builder(it).build())
                     } catch (e: SendIntentException) {
+                        logWeb3Alarm("Google Client Launch Error: ${e.javaClass.simpleName}, ${e.message}")
                         Timber.e(e, "Error on SignInIntent")
                         Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
                     }
                 }
                 .addOnFailureListener {
+                    logWeb3Alarm("Google Client Sign In Error: ${it.message}")
                     Timber.e(it, "Failure on SignInIntent")
                     Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
                 }
@@ -67,6 +70,7 @@ class GoogleSignInHelper(
                 putLong(PREFS_KEY_TOKEN_EXPIRE_TIME, 0)
             }
             if (shouldErrorBeHandled(ex)) {
+                logWeb3Alarm("Google Client Error: ${ex.statusCode}, ${ex.status.statusMessage}")
                 Timber.e(ex, "Error on getting Credential from result: ${ex.status.statusMessage}")
                 if (connectionStateProvider.hasConnection()) {
                     errorHandler.onCommonError()
@@ -81,6 +85,10 @@ class GoogleSignInHelper(
     private fun shouldErrorBeHandled(exception: ApiException): Boolean {
         return exception.statusCode != USER_CANCELED_DIALOG_CODE &&
             exception.statusCode != INTERNAL_ERROR_CODE
+    }
+
+    private fun logWeb3Alarm(errorMessage: String) {
+        alarmErrorsLogger.triggerWeb3Alarm(errorMessage)
     }
 
     interface GoogleSignInErrorHandler {
