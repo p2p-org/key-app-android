@@ -23,6 +23,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.analytics.SendBridgesAnalytics
 import org.p2p.wallet.bridge.model.BridgeFee
+import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.getFeeList
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
@@ -270,7 +271,7 @@ class BridgeSendPresenter(
 
     private fun BridgeSendContract.View.handleUpdateTotal(sendFee: SendFee?) {
         val amount = calculationMode.inputAmountDecimal.orZero()
-        val total = countTotal(amount, sendFee)
+        val total = countTotal(amount, bridgeFee = sendFee as? SendFee.Bridge)
         val totalFormatted = if (amount.isZero()) {
             emptyString()
         } else {
@@ -279,21 +280,29 @@ class BridgeSendPresenter(
         setTotalValue(totalFormatted)
     }
 
-    private fun countTotal(amount: BigDecimal, sendFee: SendFee?): String {
+    private fun countTotal(amount: BigDecimal, bridgeFee: SendFee.Bridge?): String {
         val mode = calculationMode.getCurrencyMode()
-        val bridgeFee = sendFee as? SendFee.Bridge
         val fees = getFeeList(bridgeFee)
         val fee = if (mode is CurrencyMode.Fiat.Usd) {
             fees.sumOf { it.amountInUsd.toBigDecimalOrZero() }
         } else {
             fees.sumOf { it.amountInToken }
         }
-        val total = amount + fee
-        return if (mode is CurrencyMode.Fiat.Usd) {
-            total.asUsd()
+        val bridgeFeeAmount = bridgeFee?.fee?.totalAmount?.toBridgeAmount()
+        return if (bridgeFeeAmount != null && !bridgeFeeAmount.isZero) {
+            if (mode is CurrencyMode.Fiat.Usd) {
+                bridgeFeeAmount.fiatAmount.orZero().asUsd()
+            } else {
+                bridgeFeeAmount.formattedTokenAmount.orEmpty()
+            }
         } else {
-            val tokenSymbol = (mode as? CurrencyMode.Token)?.symbol.orEmpty()
-            "${total.formatToken(mode.fractionLength)} $tokenSymbol"
+            val total = amount + fee
+            if (mode is CurrencyMode.Fiat.Usd) {
+                total.asUsd()
+            } else {
+                val tokenSymbol = (mode as? CurrencyMode.Token)?.symbol.orEmpty()
+                "${total.formatToken(mode.fractionLength)} $tokenSymbol"
+            }
         }
     }
 

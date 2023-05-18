@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
+import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.orZero
@@ -80,7 +81,10 @@ class ClaimPresenter(
                 if (amountInFiat == null) {
                     view?.setWillGetVisibility(isVisible = false)
                 } else {
-                    view?.showWillGet(TextViewCellModel.Raw(TextContainer(finalValue.formattedTokenAmount.orEmpty())))
+                    val formattedTokenAmount = finalValue.formattedTokenAmount.orEmpty()
+                    val amountInFiatApproximate = finalValue.fiatAmount.asApproximateUsd()
+                    val userWillGet = "$formattedTokenAmount $amountInFiatApproximate"
+                    view?.showWillGet(TextViewCellModel.Raw(TextContainer(userWillGet)))
                     view?.setWillGetVisibility(isVisible = true)
                 }
             } catch (error: Throwable) {

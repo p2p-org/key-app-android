@@ -25,7 +25,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
     ): BridgeFeeDetails {
         return BridgeFeeDetails(
             recipientAddress = recipientAddress,
-            willGetAmount = fees?.resultAmount.toBridgeAmount(),
+            willGetAmount = fees?.recipientGetsAmount.toBridgeAmount(),
             networkFee = fees?.networkFee.toBridgeAmount(),
             messageAccountRent = fees?.messageAccountRent.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount()
