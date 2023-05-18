@@ -137,13 +137,13 @@
 
         <TextView
             android:id="@+id/textViewWillGetValue"
-            style="@style/UiKit.TextAppearance.SemiBold.Text3"
+            style="@style/UiKit.TextAppearance.Regular.Text4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:drawablePadding="12dp"
             android:gravity="end|center_vertical"
-            android:textColor="@color/text_night"
+            android:textColor="@color/text_mountain"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dividerView"
