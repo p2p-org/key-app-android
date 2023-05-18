@@ -201,9 +201,9 @@ class HistoryTransactionDetailsBottomSheetFragment :
         textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled_16, 0)
         textViewSendReceiveTitle.text = getString(
             if (toEth) {
-                R.string.transaction_details_send_to
-            } else {
                 R.string.bridge_details_send
+            } else {
+                R.string.transaction_details_send_to
             }
         )
         if (receiverUsername != null) {
