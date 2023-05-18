@@ -18,9 +18,9 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.rpc.interactor.TokenInteractor
-import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.toBase58Instance
 
 class TokenHistoryPresenter(
     // has old data inside, use userTokensRepository to get fresh one
@@ -75,18 +75,15 @@ class TokenHistoryPresenter(
         launch {
             val bridgeBundle = ethereumInteractor.getClaimBundleById(transactionId) ?: return@launch
             val claimDetails = claimUiMapper.makeClaimDetails(
-                resultAmount = bridgeBundle.resultAmount,
-                fees = bridgeBundle.fees,
-                isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
+                bridgeBundle = bridgeBundle,
                 minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
-                transactionDate = bridgeBundle.dateCreated
             )
             val amountToClaim = bridgeBundle.resultAmount.amountInToken
             val iconUrl = ERC20Tokens.findToken(bridgeBundle.findTokenOrDefaultEth()).tokenIconUrl
 
             val progressDetails = claimUiMapper.prepareShowProgress(
                 amountToClaim = amountToClaim,
-                iconUrl = iconUrl.orEmpty(),
+                iconUrl = iconUrl,
                 claimDetails = claimDetails
             )
             transactionManager.emitTransactionState(
