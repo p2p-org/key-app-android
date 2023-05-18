@@ -6,10 +6,12 @@ import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
@@ -22,6 +24,8 @@ import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WETH_COINGECKO_ID
 import org.p2p.core.utils.Constants.WETH_SYMBOL
+import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -84,7 +88,7 @@ class HomePresenter(
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
     private val environmentManager: NetworkEnvironmentManager,
-    private val tokenKeyProvider: TokenKeyProvider,
+    tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper,
     private val resources: Resources,
     private val tokensPolling: UserTokensPolling,
@@ -102,14 +106,18 @@ class HomePresenter(
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
     private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
-    private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
-    private val context: Context
+    bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
+    context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
 
     private var state = HomeScreenViewState(areZerosHidden = settingsInteractor.areZerosHidden())
     private val buttonsStateFlow = MutableStateFlow<List<ActionButton>>(emptyList())
+
+    private val userPublicKey: String by unsafeLazy { tokenKeyProvider.publicKey }
+    private var homeStateSubscribed = false
+    private var loadSolTokensJob: Job? = null
 
     private val deeplinkHandler by unsafeLazy {
         HomePresenterDeeplinkHandler(
@@ -134,7 +142,16 @@ class HomePresenter(
                 async { networkObserver.start() },
                 async { metadataInteractor.tryLoadAndSaveMetadata() }
             )
+
+            // save the job to prevent do the same job twice in observeInternetConnection
+            loadSolTokensJob = loadSolTokensAndRates()
+            loadSolTokensJob?.join()
+            loadSolTokensJob = null
+
+            loadEthTokens()
+            attachToPollingTokens()
         }
+
         updatesManager.addUpdatesStateObserver(object : SubscriptionUpdatesStateObserver {
             override fun onUpdatesStateChanged(state: SocketState) {
                 if (state == SocketState.CONNECTED) {
@@ -149,46 +166,9 @@ class HomePresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         observeInternetConnection()
-        loadSolanaTokens()
         observeActionButtonState()
         handleDeeplinks()
-    }
-
-    private fun loadSolanaTokens() {
-        val initLoadJob = launchInternetAware(connectionManager) {
-            try {
-                view?.showRefreshing(true)
-                userInteractor.loadAllTokensDataIfEmpty()
-                val userSolTokens = userInteractor.loadUserTokensAndUpdateLocal(
-                    tokenKeyProvider.publicKey.toPublicKey()
-                )
-                async {
-                    try {
-                        userInteractor.loadUserRates(userSolTokens)
-                    } catch (t: Throwable) {
-                        Timber.i(t, "Error on loading user rates")
-                        view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
-                    }
-                }
-                async {
-                    try {
-                        ethereumInteractor.loadWalletTokens()
-                    } catch (t: Throwable) {
-                        Timber.e(t, "Error on loading ethereum Tokens")
-                    }
-                }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error on loading Sol tokens")
-            } finally {
-                view?.showRefreshing(false)
-            }
-        }
         launch {
-            // wait for main init logic is completed
-            // if not do this, polling will notify empty token list until they are loaded
-            // as a result, user will see the banner with no tokens
-            initLoadJob?.join()
-            // ignore internet state; tokens must display regardless of any error
             attachToPollingTokens()
         }
     }
@@ -211,9 +191,18 @@ class HomePresenter(
     }
 
     private suspend fun attachToPollingTokens() {
+        if (homeStateSubscribed) return
+        homeStateSubscribed = true
+
         tokensPolling.shareTokenPollFlowIn(this)
             .filterNotNull()
+            .onCompletion { homeStateSubscribed = false }
             .collect { homeState ->
+                run {
+                    val solTokensLog = homeState.solTokens
+                        .joinToString { "${it.tokenSymbol}(${it.total.formatToken()}; ${it.totalInUsd?.formatFiat()})" }
+                    Timber.i("Home state solTokens: $solTokensLog")
+                }
                 state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
                 initializeActionButtons()
                 handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
@@ -233,9 +222,22 @@ class HomePresenter(
         launch {
             connectionManager.connectionStatus.collect { hasConnection ->
                 if (hasConnection) {
-                    updatesManager.restart()
+                    if (!updatesManager.isStarted()) {
+                        updatesManager.restart()
+                    }
+
+                    // we should reload tokens if we have internet restored
+                    // but don't load if this job is already running in constructor
+                    if (loadSolTokensJob == null) {
+                        loadSolTokensJob = loadSolTokensAndRates()
+                        // join and set null to be able to relaunch this job after second reconnection
+                        loadSolTokensJob?.join()
+                        loadSolTokensJob = null
+                    }
                 } else {
-                    updatesManager.stop()
+                    if (updatesManager.isStarted()) {
+                        updatesManager.stop()
+                    }
                 }
             }
         }
@@ -251,7 +253,7 @@ class HomePresenter(
 
         updatesManager.start()
 
-        val userId = username?.value ?: tokenKeyProvider.publicKey
+        val userId = username?.value ?: userPublicKey
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
@@ -285,6 +287,34 @@ class HomePresenter(
                     bundleId = bridgeBundle.bundleId,
                     progressDetails = progressDetails
                 )
+            }
+        }
+    }
+
+    /**
+     * Don't split this method, as it could lead to one more data race as rates are loading asynchronously
+     */
+    private fun loadSolTokensAndRates(): Job? = launchInternetAware(connectionManager) {
+        // this job also depends on the internet
+        userInteractor.loadAllTokensDataIfEmpty()
+
+        val tokens = userInteractor.loadUserTokensAndUpdateLocal(userPublicKey.toPublicKey())
+        async {
+            try {
+                userInteractor.loadUserRates(tokens)
+            } catch (t: Throwable) {
+                Timber.i(t, "Error on loading user rates")
+                view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
+            }
+        }
+    }
+
+    private fun loadEthTokens() {
+        async {
+            try {
+                ethereumInteractor.loadWalletTokens()
+            } catch (t: Throwable) {
+                Timber.e(t, "Error on loading ethereum Tokens")
             }
         }
     }
@@ -327,7 +357,7 @@ class HomePresenter(
 
     private fun showUserAddressAndUsername() {
         this.username = usernameInteractor.getUsername()
-        val userAddress = username?.fullUsername ?: tokenKeyProvider.publicKey.ellipsizeAddress()
+        val userAddress = username?.fullUsername ?: userPublicKey.ellipsizeAddress()
         view?.showUserAddress(userAddress)
         state = state.copy(
             username = username,
@@ -336,7 +366,7 @@ class HomePresenter(
     }
 
     override fun onAddressClicked() {
-        view?.showAddressCopied(username?.fullUsername ?: tokenKeyProvider.publicKey)
+        view?.showAddressCopied(username?.fullUsername ?: userPublicKey)
     }
 
     override fun onBuyClicked() {

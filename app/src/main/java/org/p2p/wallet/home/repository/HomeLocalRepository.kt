@@ -9,6 +9,7 @@ interface HomeLocalRepository {
     suspend fun removeIfExists(publicKey: String, symbol: String)
     fun getTokensFlow(): Flow<List<Token.Active>>
     suspend fun getUserTokens(): List<Token.Active>
+    suspend fun findUserTokenByMint(mintAddress: String): Token.Active?
     suspend fun setTokenHidden(mintAddress: String, visibility: String)
     suspend fun clear()
     fun observeUserBalance(): Flow<BigDecimal>

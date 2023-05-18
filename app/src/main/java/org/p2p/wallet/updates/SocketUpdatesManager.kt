@@ -80,6 +80,8 @@ class SocketUpdatesManager(
         start()
     }
 
+    override fun isStarted(): Boolean = isStarted
+
     override fun addUpdatesStateObserver(observer: SubscriptionUpdatesStateObserver) {
         launch {
             observer.onUpdatesStateChanged(state)

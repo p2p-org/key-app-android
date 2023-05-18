@@ -35,8 +35,7 @@ class SolanaAccountUpdateHandler(
             tokenMint = Constants.WRAPPED_SOL_MINT.toBase58Instance(),
             accountPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
         )
-
-        Timber.tag(TAG).d("New sol balance received, data = $data")
+        Timber.tag(TAG).d("New SOL balance received, amountInLamports=${response.lamports}, data = $data")
     }
 }
 
