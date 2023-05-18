@@ -1,18 +1,18 @@
 package org.p2p.wallet.rpc.repository.balance
 
+import java.math.BigInteger
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.model.types.ConfirmationStatus
+import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenSupply
 import org.p2p.wallet.rpc.api.RpcBalanceApi
-import java.math.BigInteger
-import org.p2p.solanaj.model.types.RequestConfiguration
-import org.p2p.wallet.rpc.RpcConstants
 
 class RpcBalanceRemoteRepository(private val rpcApi: RpcBalanceApi) : RpcBalanceRepository {
 
     private val defaultRequestConfig = RequestConfiguration(
-        commitment = RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
+        commitment = ConfirmationStatus.CONFIRMED.value
     )
 
     override suspend fun getBalance(account: PublicKey): Long {

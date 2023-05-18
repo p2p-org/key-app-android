@@ -1,6 +1,7 @@
 package org.p2p.wallet.rpc.repository.history
 
 import org.p2p.solanaj.core.Transaction
+import org.p2p.solanaj.model.types.ConfirmationStatus
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
@@ -12,7 +13,10 @@ class RpcTransactionRemoteRepository(
     private val rpcApi: RpcTransactionApi
 ) : RpcTransactionRepository {
 
-    override suspend fun sendTransaction(transaction: Transaction): String {
+    override suspend fun sendTransaction(
+        transaction: Transaction,
+        preflightCommitment: ConfirmationStatus
+    ): String {
         val serializedTransaction = transaction.serialize()
 
         val base64Transaction = Base64Utils.encode(serializedTransaction)
@@ -20,13 +24,41 @@ class RpcTransactionRemoteRepository(
 
         val params = buildList {
             add(base64Transaction)
-            add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
+            add(
+                RequestConfiguration(
+                    encoding = Encoding.BASE64.encoding,
+                    preflightCommitment = preflightCommitment.value
+                )
+            )
         }
         val rpcRequest = RpcRequest("sendTransaction", params)
         return rpcApi.sendTransaction(rpcRequest).result
     }
 
-    override suspend fun simulateTransaction(transaction: Transaction): String {
+    override suspend fun sendTransaction(
+        serializedTransaction: String,
+        preflightCommitment: ConfirmationStatus
+    ): String {
+        val base64Transaction = serializedTransaction.replace("\n", emptyString())
+
+        val params = buildList<Any> {
+            add(base64Transaction)
+            add(
+                RequestConfiguration(
+                    encoding = Encoding.BASE64.encoding,
+                    preflightCommitment = preflightCommitment.value
+                )
+            )
+        }
+
+        val rpcRequest = RpcRequest("sendTransaction", params)
+        return rpcApi.sendTransaction(rpcRequest).result
+    }
+
+    override suspend fun simulateTransaction(
+        transaction: Transaction,
+        preflightCommitment: ConfirmationStatus
+    ): String {
         val serializedTransaction = transaction.serialize()
 
         val base64Transaction = Base64Utils.encode(serializedTransaction)
@@ -34,7 +66,12 @@ class RpcTransactionRemoteRepository(
 
         val params = buildList<Any> {
             add(base64Transaction)
-            add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
+            add(
+                RequestConfiguration(
+                    encoding = Encoding.BASE64.encoding,
+                    preflightCommitment = preflightCommitment.value
+                )
+            )
         }
 
         val rpcRequest = RpcRequest("simulateTransaction", params)
@@ -46,24 +83,20 @@ class RpcTransactionRemoteRepository(
         }
     }
 
-    override suspend fun sendTransaction(serializedTransaction: String): String {
+    override suspend fun simulateTransaction(
+        serializedTransaction: String,
+        preflightCommitment: ConfirmationStatus
+    ): String {
         val base64Transaction = serializedTransaction.replace("\n", emptyString())
 
         val params = buildList<Any> {
             add(base64Transaction)
-            add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
-        }
-
-        val rpcRequest = RpcRequest("sendTransaction", params)
-        return rpcApi.sendTransaction(rpcRequest).result
-    }
-
-    override suspend fun simulateTransaction(serializedTransaction: String): String {
-        val base64Transaction = serializedTransaction.replace("\n", emptyString())
-
-        val params = buildList<Any> {
-            add(base64Transaction)
-            add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
+            add(
+                RequestConfiguration(
+                    encoding = Encoding.BASE64.encoding,
+                    preflightCommitment = preflightCommitment.value
+                )
+            )
         }
 
         val rpcRequest = RpcRequest("simulateTransaction", params)
