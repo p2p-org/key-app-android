@@ -74,16 +74,13 @@ class ClaimUiMapper(private val resources: Resources) {
         return ClaimDetails(
             isFree = isFree,
             willGetAmount = resultAmount.toBridgeAmount(),
+            totalAmount = resultAmount.toBridgeAmount(),
             networkFee = defaultFee,
             accountCreationFee = fees?.createAccount.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(),
             minAmountForFreeFee = minAmountForFreeFee,
             transactionDate = transactionDate
         )
-    }
-
-    fun makeResultAmount(resultAmount: BridgeFee): BridgeAmount {
-        return resultAmount.toBridgeAmount()
     }
 
     fun getTextSkeleton(): TextViewCellModel.Skeleton {
