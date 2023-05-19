@@ -24,6 +24,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListF
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SocketSubscriptionsFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesValidationEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 
@@ -47,7 +48,8 @@ object FeatureTogglesModule : InjectionModule {
                 get<RegisterUsernameSkipEnabledFeatureToggle>(),
                 get<SellEnabledFeatureToggle>(),
                 get<EthAddressEnabledFeatureToggle>(),
-                get<SocketSubscriptionsFeatureToggle>()
+                get<SocketSubscriptionsFeatureToggle>(),
+                get<SwapRoutesValidationEnabledFeatureToggle>()
             ).toList()
         }
 
@@ -67,5 +69,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::SellEnabledFeatureToggle)
         factoryOf(::EthAddressEnabledFeatureToggle)
         factoryOf(::SocketSubscriptionsFeatureToggle)
+        factoryOf(::SwapRoutesValidationEnabledFeatureToggle)
     }
 }

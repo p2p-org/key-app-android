@@ -24,7 +24,8 @@ class JupiterSwapRoutesRemoteRepository(
     private val dispatchers: CoroutineDispatchers,
     private val mapper: JupiterSwapRoutesMapper,
     private val localRepository: JupiterSwapRoutesLocalRepository,
-    private val swapStorage: JupiterSwapStorageContract
+    private val swapStorage: JupiterSwapStorageContract,
+    private val routeValidator: JupiterSwapRouteValidator
 ) : JupiterSwapRoutesRepository {
 
     override suspend fun loadAndCacheAllSwapRoutes() {
@@ -66,7 +67,7 @@ class JupiterSwapRoutesRemoteRepository(
     override suspend fun getSwapRoutesForSwapPair(
         jupiterSwapPair: JupiterSwapPair,
         userPublicKey: Base58String
-    ): List<JupiterSwapRoute> = with(dispatchers.io) {
+    ): List<JupiterSwapRoute> = withContext(dispatchers.io) {
         try {
             // SocketTimeoutException can occur even when there's no real problem with the network
             // It may happen if a socket becomes stale/dangling due unstable/changed network or by server side
@@ -82,6 +83,7 @@ class JupiterSwapRoutesRemoteRepository(
                 )
             }
             mapper.fromNetwork(response)
+                .let { routeValidator.validateRoutes(it) }
         } catch (e: HttpException) {
             val isTooSmallAmountError = try {
                 val json = JSONObject(e.response()?.errorBody()?.string() ?: emptyString())
