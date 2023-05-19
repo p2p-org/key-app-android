@@ -49,11 +49,6 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
         setDoneButtonVisibility(isVisible = false)
         with(binding) {
             layoutFreeTransactions.bindLayoutFreeTransactions()
-            layoutWillGetAmount.bindDetailsLineWithFee(
-                title = getString(R.string.bridge_info_you_will_get),
-                fee = claimDetails.willGetAmount,
-                isFree = false
-            )
             layoutNetworkFee.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_info_network_fee),
                 fee = claimDetails.networkFee,
@@ -63,6 +58,16 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
                 title = getString(R.string.bridge_info_account_creation_fee),
                 fee = claimDetails.accountCreationFee,
                 isFree = claimDetails.isFree
+            )
+            layoutWillGetAmount.bindDetailsLineWithFee(
+                title = getString(R.string.bridge_info_you_will_get),
+                fee = claimDetails.willGetAmount,
+                isFree = false
+            )
+            layoutTotal.bindDetailsLineWithFee(
+                title = getString(R.string.bridge_info_total),
+                fee = claimDetails.willGetAmount,
+                isFree = false
             )
         }
     }

@@ -6,14 +6,10 @@ import java.math.BigInteger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
-import org.p2p.core.utils.emptyString
-import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
@@ -33,7 +29,7 @@ import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.Signature
 
-private val MINIMAL_DUST = BigDecimal("1")
+private val MINIMAL_DUST = BigDecimal("5")
 
 internal class EthereumKitRepository(
     private val tokensRepository: EthereumTokensRepository,
@@ -94,13 +90,23 @@ internal class EthereumKitRepository(
                 (listOf(getEthToken()) + localTokensMetadata).map { metadata ->
                     var isClaiming = false
                     var latestBundleId: String? = null
+                    var tokenAmount: BigDecimal? = null
+                    var fiatAmount: BigDecimal? = null
                     claimingTokens.forEach {
                         if (metadata.contractAddress == it.contractAddress && it.isClaiming) {
                             isClaiming = true
                             latestBundleId = it.bundleId
+                            tokenAmount = it.tokenAmount
+                            fiatAmount = it.fiatAmount
                         }
                     }
-                    EthTokenConverter.ethMetadataToToken(metadata, isClaiming, latestBundleId)
+                    EthTokenConverter.ethMetadataToToken(
+                        metadata = metadata,
+                        isClaiming = isClaiming,
+                        bundleId = latestBundleId,
+                        tokenAmount = tokenAmount,
+                        fiatAmount = fiatAmount
+                    )
                 }.filter { token ->
                     val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
                     val tokenFiatAmount = token.totalInUsd.orZero()
@@ -126,7 +132,7 @@ internal class EthereumKitRepository(
             mintAddress = ERC20Tokens.ETH.mintAddress,
             balance = getBalance(),
             decimals = ERC20Tokens.ETH_DECIMALS,
-            logoUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty(),
+            logoUrl = ERC20Tokens.ETH.tokenIconUrl,
             tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
             symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
             price = tokenPrice,

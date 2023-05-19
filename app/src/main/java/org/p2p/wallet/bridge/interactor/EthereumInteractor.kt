@@ -58,7 +58,7 @@ class EthereumInteractor(
         )
     }
 
-    suspend fun getListOfEthereumBundleStatuses(): List<EthereumClaimToken> {
+    private suspend fun getListOfEthereumBundleStatuses(): List<EthereumClaimToken> {
         val ethereumAddress: EthAddress = ethereumRepository.getAddress()
         return claimInteractor.getListOfEthereumBundleStatuses(ethereumAddress)
     }

@@ -23,6 +23,7 @@
     <string name="bridge_info_you_will_get">You will get</string>
     <string name="bridge_info_network_fee">Network Fee</string>
     <string name="bridge_info_account_creation_fee">Account creation Fee</string>
+    <string name="bridge_info_total">Total Amount</string>
 
     <string name="bridge_claim_success_state">The transaction has been successfully completed 🤟</string>
 
@@ -44,6 +45,7 @@
     <string name="bridge_send_fee_details_gets">Recipient gets</string>
     <string name="bridge_send_fee_details_network">Network Fees</string>
     <string name="bridge_send_fee_details_wormhole">Using Wormhole bridge</string>
+    <string name="bridge_send_fee_details_total">Total</string>
     <string name="bridge_send_transaction_description_progress">It usually takes 15–20 minutes for a transaction to complete</string>
     <string name="bridge_usdc_usdt_swap_message">To make a transfer to ETH you have to swap USDC to USDCet</string>
     <string name="bridge_usdc_usdt_swap_action">Swap USDC → USDCet</string>

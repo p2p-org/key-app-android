@@ -1,7 +1,6 @@
 package org.p2p.wallet.bridge.send.ui
 
 import android.content.res.Resources
-import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Date
@@ -42,18 +41,11 @@ import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.interactor.mapper.parseBridgeFees
-import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.rpc.RpcFee
-import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
-import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
-import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -61,7 +53,6 @@ import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
-import org.p2p.wallet.utils.toBase58Instance
 
 private val MAX_FEE_AMOUNT = BigDecimal(30)
 
@@ -456,18 +447,6 @@ class BridgeSendPresenter(
                     token = token
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
-                val fees = currentState.lastStaticState.bridgeFee?.fee
-                val transaction = buildTransaction(
-                    transactionId = result,
-                    token = token,
-                    message = sendTransaction.message,
-                    bridgeFees = fees.getFeeList().parseBridgeFees()
-                )
-                historyInteractor.addPendingTransaction(
-                    txSignature = result,
-                    transaction = transaction,
-                    mintAddress = token.mintAddress.toBase58Instance()
-                )
             } catch (e: Throwable) {
                 Timber.e(e)
                 val message = e.getErrorMessage { res -> resources.getString(res) }
@@ -488,26 +467,6 @@ class BridgeSendPresenter(
         return if (this is SearchResult.UsernameFound) formattedUsername
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
-
-    private fun buildTransaction(
-        transactionId: String,
-        token: Token.Active,
-        message: String,
-        bridgeFees: List<RpcFee>?
-    ): HistoryTransaction =
-        RpcHistoryTransaction.WormholeSend(
-            signature = transactionId,
-            date = ZonedDateTime.now(),
-            blockNumber = -1,
-            type = RpcHistoryTransactionType.WORMHOLE_SEND,
-            amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
-            fees = bridgeFees,
-            status = HistoryTransactionStatus.PENDING,
-            iconUrl = token.iconUrl,
-            tokenSymbol = token.tokenSymbol,
-            sourceAddress = tokenKeyProvider.publicKey,
-            message = message
-        )
 
     private fun isInternetConnectionEnabled(): Boolean =
         connectionStateProvider.hasConnection()

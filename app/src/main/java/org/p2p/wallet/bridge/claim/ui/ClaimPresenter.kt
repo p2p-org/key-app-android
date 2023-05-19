@@ -27,6 +27,7 @@ import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
 import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
+import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.main.UserTokensPolling
@@ -78,7 +79,7 @@ class ClaimPresenter(
                     isFree = newBundle.compensationDeclineReason.isEmpty(),
                     minAmountForFreeFee = minAmountForFreeFee
                 )
-                val finalValue = claimUiMapper.makeResultAmount(newBundle.resultAmount)
+                val finalValue = newBundle.resultAmount.toBridgeAmount()
                 val amountInFiat = finalValue.fiatAmount?.asUsd()
                 if (amountInFiat == null) {
                     view?.setWillGetVisibility(isVisible = false)
