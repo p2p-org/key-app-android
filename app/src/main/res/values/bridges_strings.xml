@@ -23,7 +23,6 @@
     <string name="bridge_info_you_will_get">You will get</string>
     <string name="bridge_info_network_fee">Network Fee</string>
     <string name="bridge_info_account_creation_fee">Account creation Fee</string>
-    <string name="bridge_info_bridge_fee">Wormhole Bridge and Transaction Fee</string>
 
     <string name="bridge_claim_success_state">The transaction has been successfully completed 🤟</string>
 
