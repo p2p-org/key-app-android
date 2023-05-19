@@ -65,10 +65,6 @@ class HomeDatabaseRepository(
         tokenDao.getTokens()
             .map(TokenConverter::fromDatabase)
 
-    override suspend fun findUserTokenByMint(mintAddress: String): Token.Active? {
-        return tokenDao.findByMintAddress(mintAddress)?.let(TokenConverter::fromDatabase)
-    }
-
     override suspend fun setTokenHidden(mintAddress: String, visibility: String) {
         tokenDao.updateVisibility(mintAddress, visibility)
     }

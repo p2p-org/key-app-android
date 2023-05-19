@@ -201,7 +201,7 @@ class HomePresenter(
                 run {
                     val solTokensLog = homeState.solTokens
                         .joinToString { "${it.tokenSymbol}(${it.total.formatToken()}; ${it.totalInUsd?.formatFiat()})" }
-                    Timber.i("Home state solTokens: $solTokensLog")
+                    Timber.d("Home state solTokens: $solTokensLog")
                 }
                 state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
                 initializeActionButtons()
@@ -226,11 +226,11 @@ class HomePresenter(
                         updatesManager.restart()
                     }
 
-                    // we should reload tokens if we have internet restored
+                    // we should reload tokens if we have reconnected internet
                     // but don't load if this job is already running in constructor
                     if (loadSolTokensJob == null) {
                         loadSolTokensJob = loadSolTokensAndRates()
-                        // join and set null to be able to relaunch this job after second reconnection
+                        // join and set null to be able to relaunch this job after next reconnections
                         loadSolTokensJob?.join()
                         loadSolTokensJob = null
                     }
@@ -292,7 +292,7 @@ class HomePresenter(
     }
 
     /**
-     * Don't split this method, as it could lead to one more data race as rates are loading asynchronously
+     * Don't split this method, as it could lead to one more data race since rates are loading asynchronously
      */
     private fun loadSolTokensAndRates(): Job? = launchInternetAware(connectionManager) {
         // this job also depends on the internet

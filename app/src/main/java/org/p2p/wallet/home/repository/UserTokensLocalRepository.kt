@@ -49,13 +49,17 @@ class UserTokensLocalRepository(
         tokenMint: Base58String,
         accountPublicKey: Base58String
     ) {
-        val token = homeLocalRepository.findUserTokenByMint(tokenMint.base58Value)
+        val tokenToUpdate = findUserTokenByMint(tokenMint)
             ?.let { createUpdatedToken(it, newBalanceLamports) }
             ?: createNewToken(tokenMint, newBalanceLamports, accountPublicKey)
 
-        if (token != null) {
-            homeLocalRepository.updateTokens(listOf(token))
+        if (tokenToUpdate != null) {
+            homeLocalRepository.updateTokens(listOf(tokenToUpdate))
         }
+    }
+
+    override suspend fun findUserTokenByMint(mintAddress: Base58String): Token.Active? {
+        return tokenDao.findByMintAddress(mintAddress.base58Value)?.let(TokenConverter::fromDatabase)
     }
 
     private suspend fun createNewToken(
