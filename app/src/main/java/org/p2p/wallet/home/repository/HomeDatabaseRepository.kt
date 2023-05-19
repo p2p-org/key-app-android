@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import org.p2p.core.token.Token
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.db.TokenDao
@@ -43,12 +44,11 @@ class HomeDatabaseRepository(
                 Timber.tag(TAG).d(
                     buildString {
                         append("Token(${newToken.tokenSymbol}) changed: ")
-                        append("oldTotal=${oldTokenChanged.total}; ")
-                        append("newTotal=${newToken.total}")
+                        append("${oldTokenChanged.total} -> ${newToken.total}")
                     }
                 )
             } else if (oldTokenChanged == null) {
-                Timber.tag(TAG).d("New token appeared: ${newToken.tokenName} ${newToken.tokenSymbol}")
+                Timber.tag(TAG).d("New token appeared: ${newToken.tokenSymbol}(${newToken.total.formatToken()})")
             }
         }
     }

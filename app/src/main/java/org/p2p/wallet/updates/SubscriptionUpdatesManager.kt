@@ -17,6 +17,11 @@ interface SubscriptionUpdatesManager {
      */
     suspend fun restart()
 
+    /**
+     * Check if updates manager is already started.
+     */
+    fun isStarted(): Boolean
+
     fun addUpdatesStateObserver(observer: SubscriptionUpdatesStateObserver)
 
     fun removeUpdatesStateObserver(observer: SubscriptionUpdatesStateObserver)
