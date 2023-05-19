@@ -9,7 +9,7 @@ enum class Encoding(
     @SerializedName("base64")
     BASE64("base64"),
 
-    @Deprecated("Slow for solana, use Base 58")
+    @Deprecated("Slow for solana, use Base 64")
     @SerializedName("base58")
     BASE58("base58");
 }
