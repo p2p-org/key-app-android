@@ -454,7 +454,7 @@ class BridgeSendPresenter(
                     token = token
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
-                val transaction = buildTransaction(result, token)
+                val transaction = buildTransaction(result, token, sendTransaction.message)
                 historyInteractor.addPendingTransaction(
                     txSignature = result,
                     transaction = transaction,
@@ -481,20 +481,19 @@ class BridgeSendPresenter(
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
-    private fun buildTransaction(transactionId: String, token: Token.Active): HistoryTransaction =
-        RpcHistoryTransaction.Transfer(
+    private fun buildTransaction(transactionId: String, token: Token.Active, message: String): HistoryTransaction =
+        RpcHistoryTransaction.WormholeSend(
             signature = transactionId,
             date = ZonedDateTime.now(),
             blockNumber = -1,
-            type = RpcHistoryTransactionType.SEND,
-            senderAddress = tokenKeyProvider.publicKey,
+            type = RpcHistoryTransactionType.WORMHOLE_SEND,
             amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
-            destination = recipientAddress.addressState.address,
-            counterPartyUsername = recipientAddress.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
             iconUrl = token.iconUrl,
-            symbol = token.tokenSymbol
+            tokenSymbol = token.tokenSymbol,
+            sourceAddress = tokenKeyProvider.publicKey,
+            message = message
         )
 
     private fun isInternetConnectionEnabled(): Boolean =
