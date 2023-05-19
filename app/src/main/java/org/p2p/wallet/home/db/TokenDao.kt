@@ -50,6 +50,9 @@ interface TokenDao {
     @Query("SELECT * FROM token_table WHERE public_key = :publicKey")
     suspend fun findByPublicKey(publicKey: String): TokenEntity?
 
+    @Query("SELECT * FROM token_table WHERE mint_address = :mintAddress")
+    suspend fun findByMintAddress(mintAddress: String): TokenEntity?
+
     @Query("SELECT * FROM token_table")
     fun getTokensFlow(): Flow<List<TokenEntity>>
 

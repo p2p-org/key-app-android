@@ -34,8 +34,10 @@ class SplTokenProgramUpdateHandler(
             tokenMint = updatedTokenData.mint.toBase58().toBase58Instance(),
             accountPublicKey = response.accountPublicKey.toBase58Instance()
         )
-
-        Timber.tag(TAG).d("SPL Token data received, data = $data")
+        Timber.tag(TAG).d(
+            "SPL Token data received, " +
+                "amountInLamports=${updatedTokenData.amount}, mint=${updatedTokenData.mint}, data = $data"
+        )
     }
 }
 
