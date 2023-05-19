@@ -29,7 +29,7 @@ import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.Signature
 
-private val MINIMAL_DUST = BigDecimal("1")
+private val MINIMAL_DUST = BigDecimal("5")
 
 internal class EthereumKitRepository(
     private val tokensRepository: EthereumTokensRepository,
@@ -132,7 +132,7 @@ internal class EthereumKitRepository(
             mintAddress = ERC20Tokens.ETH.mintAddress,
             balance = getBalance(),
             decimals = ERC20Tokens.ETH_DECIMALS,
-            logoUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty(),
+            logoUrl = ERC20Tokens.ETH.tokenIconUrl,
             tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
             symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
             price = tokenPrice,
