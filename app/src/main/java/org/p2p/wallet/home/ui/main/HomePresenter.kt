@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
+import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -291,18 +292,25 @@ class HomePresenter(
     /**
      * Don't split this method, as it could lead to one more data race since rates are loading asynchronously
      */
-    private fun loadSolTokensAndRates(): Job? = launchInternetAware(connectionManager) {
-        // this job also depends on the internet
-        userInteractor.loadAllTokensDataIfEmpty()
-
-        val tokens = userInteractor.loadUserTokensAndUpdateLocal(userPublicKey.toPublicKey())
-        async {
-            try {
-                userInteractor.loadUserRates(tokens)
-            } catch (t: Throwable) {
-                Timber.i(t, "Error on loading user rates")
-                view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
+    private fun loadSolTokensAndRates(): Job = launch {
+        try {
+            // this job also depends on the internet
+            userInteractor.loadAllTokensDataIfEmpty()
+            val tokens = userInteractor.loadUserTokensAndUpdateLocal(userPublicKey.toPublicKey())
+            async {
+                try {
+                    userInteractor.loadUserRates(tokens)
+                } catch (t: Throwable) {
+                    Timber.i(t, "Error on loading user rates")
+                    view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
+                }
             }
+        } catch (e: CancellationException) {
+            Timber.d("Loading sol tokens job cancelled")
+        } catch (e: UnknownHostException) {
+            Timber.d("Cannot load sol tokens: no internet")
+        } catch (t: Throwable) {
+            Timber.e(t, "Error on loading sol tokens")
         }
     }
 
