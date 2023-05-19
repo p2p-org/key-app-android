@@ -42,7 +42,9 @@ import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.interactor.mapper.parseBridgeFees
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcFee
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
@@ -454,7 +456,13 @@ class BridgeSendPresenter(
                     token = token
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
-                val transaction = buildTransaction(result, token)
+                val fees = currentState.lastStaticState.bridgeFee?.fee
+                val transaction = buildTransaction(
+                    transactionId = result,
+                    token = token,
+                    message = sendTransaction.message,
+                    bridgeFees = fees.getFeeList().parseBridgeFees()
+                )
                 historyInteractor.addPendingTransaction(
                     txSignature = result,
                     transaction = transaction,
@@ -481,20 +489,24 @@ class BridgeSendPresenter(
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
-    private fun buildTransaction(transactionId: String, token: Token.Active): HistoryTransaction =
-        RpcHistoryTransaction.Transfer(
+    private fun buildTransaction(
+        transactionId: String,
+        token: Token.Active,
+        message: String,
+        bridgeFees: List<RpcFee>?
+    ): HistoryTransaction =
+        RpcHistoryTransaction.WormholeSend(
             signature = transactionId,
             date = ZonedDateTime.now(),
             blockNumber = -1,
-            type = RpcHistoryTransactionType.SEND,
-            senderAddress = tokenKeyProvider.publicKey,
+            type = RpcHistoryTransactionType.WORMHOLE_SEND,
             amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
-            destination = recipientAddress.addressState.address,
-            counterPartyUsername = recipientAddress.nicknameOrAddress(),
-            fees = null,
+            fees = bridgeFees,
             status = HistoryTransactionStatus.PENDING,
             iconUrl = token.iconUrl,
-            symbol = token.tokenSymbol
+            tokenSymbol = token.tokenSymbol,
+            sourceAddress = tokenKeyProvider.publicKey,
+            message = message
         )
 
     private fun isInternetConnectionEnabled(): Boolean =

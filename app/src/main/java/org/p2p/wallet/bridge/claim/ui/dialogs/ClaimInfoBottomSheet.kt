@@ -64,11 +64,6 @@ class ClaimInfoBottomSheet : BaseDoneBottomSheet() {
                 fee = claimDetails.accountCreationFee,
                 isFree = claimDetails.isFree
             )
-            layoutBridgeFee.bindDetailsLineWithFee(
-                title = getString(R.string.bridge_info_bridge_fee),
-                fee = claimDetails.bridgeFee,
-                isFree = claimDetails.isFree
-            )
         }
     }
 

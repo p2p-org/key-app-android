@@ -22,4 +22,5 @@ enum class HistoryTransactionStatus(@StringRes val resValue: Int) {
 
     fun isCompleted(): Boolean = this == COMPLETED
     fun isPending(): Boolean = this == PENDING
+    fun isError(): Boolean = this == ERROR
 }
