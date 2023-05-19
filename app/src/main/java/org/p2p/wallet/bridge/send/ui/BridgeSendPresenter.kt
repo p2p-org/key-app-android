@@ -42,7 +42,9 @@ import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.interactor.mapper.parseBridgeFees
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcFee
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
@@ -454,7 +456,13 @@ class BridgeSendPresenter(
                     token = token
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
-                val transaction = buildTransaction(result, token, sendTransaction.message)
+                val fees = currentState.lastStaticState.bridgeFee?.fee
+                val transaction = buildTransaction(
+                    transactionId = result,
+                    token = token,
+                    message = sendTransaction.message,
+                    bridgeFees = fees.getFeeList().parseBridgeFees()
+                )
                 historyInteractor.addPendingTransaction(
                     txSignature = result,
                     transaction = transaction,
@@ -481,14 +489,19 @@ class BridgeSendPresenter(
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
-    private fun buildTransaction(transactionId: String, token: Token.Active, message: String): HistoryTransaction =
+    private fun buildTransaction(
+        transactionId: String,
+        token: Token.Active,
+        message: String,
+        bridgeFees: List<RpcFee>?
+    ): HistoryTransaction =
         RpcHistoryTransaction.WormholeSend(
             signature = transactionId,
             date = ZonedDateTime.now(),
             blockNumber = -1,
             type = RpcHistoryTransactionType.WORMHOLE_SEND,
             amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
-            fees = null,
+            fees = bridgeFees,
             status = HistoryTransactionStatus.PENDING,
             iconUrl = token.iconUrl,
             tokenSymbol = token.tokenSymbol,

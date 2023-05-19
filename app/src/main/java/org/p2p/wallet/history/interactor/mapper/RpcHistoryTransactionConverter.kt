@@ -364,7 +364,7 @@ private fun List<RpcHistoryFeeResponse>.parseFees(): List<RpcFee>? {
     }
 }
 
-private fun List<BridgeFee>.parseBridgeFees(): List<RpcFee>? {
+fun List<BridgeFee>.parseBridgeFees(): List<RpcFee>? {
     return if (isEmpty()) {
         null
     } else {
