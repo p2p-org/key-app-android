@@ -242,9 +242,11 @@ class NewSendPresenter(
                     view.showFeeViewVisible(isVisible = false)
 
                     newState.errorStateError as FeeRelayerStateError.FeesCalculationError
-                    if (newState.errorStateError.cause is CancellationException) {
+                    val exception = newState.errorStateError.cause
+                    if (exception is CancellationException) {
                         Timber.tag(TAG).i(newState)
                     } else {
+                        logSendError(token, Throwable("Fee calculation error", exception))
                         Timber.tag(TAG).e(newState, "FeeRelayerState has calculation error")
                     }
                 } else {
@@ -466,10 +468,7 @@ class NewSendPresenter(
                 Timber.tag(TAG).e(e, "Failed sending transaction!")
                 val message = e.getErrorMessage { res -> resources.getString(res) }
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
-                logSendError(
-                    token = token,
-                    error = e
-                )
+                logSendError(token, e)
             }
         }
     }
@@ -578,23 +577,27 @@ class NewSendPresenter(
         )
     }
 
-    private suspend fun logSendError(
-        token: Token.Active,
+    private fun logSendError(
+        token: Token.Active?,
         error: Throwable
     ) {
-        val fee = feeRelayerManager.getState().getFee()
-        val accountCreationFee = fee?.accountCreationFeeDecimals?.toPlainString()
-        val transactionFee = fee?.transactionDecimals?.toPlainString()
-        alertErrorsLogger.triggerSendAlarm(
-            token = token,
-            currencyMode = calculationMode.getCurrencyMode(),
-            amount = calculationMode.getCurrentAmount().toPlainString(),
-            feePayerToken = sendInteractor.getFeePayerToken(),
-            accountCreationFee = accountCreationFee,
-            transactionFee = transactionFee,
-            relayAccount = sendInteractor.getUserRelayAccount(),
-            recipientAddress = recipientAddress,
-            error = error
-        )
+        if (token == null) return
+
+        launch {
+            val fee = feeRelayerManager.getState().getFee()
+            val accountCreationFee = fee?.accountCreationFeeDecimals?.toPlainString()
+            val transactionFee = fee?.transactionDecimals?.toPlainString()
+            alertErrorsLogger.triggerSendAlarm(
+                token = token,
+                currencyMode = calculationMode.getCurrencyMode(),
+                amount = calculationMode.getCurrentAmount().toPlainString(),
+                feePayerToken = sendInteractor.getFeePayerToken(),
+                accountCreationFee = accountCreationFee,
+                transactionFee = transactionFee,
+                relayAccount = sendInteractor.getUserRelayAccount(),
+                recipientAddress = recipientAddress,
+                error = error
+            )
+        }
     }
 }

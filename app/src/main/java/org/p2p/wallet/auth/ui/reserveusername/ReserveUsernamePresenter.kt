@@ -51,6 +51,7 @@ class ReserveUsernamePresenter(
                 view?.showUsernameNotAvailable()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while checking username: $newUsername")
+                logUsernameError(currentUsernameEntered, e)
             }
         }
     }
