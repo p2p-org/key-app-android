@@ -324,7 +324,7 @@ class NewSendPresenter(
          * */
         executeSmartSelection(
             token = requireToken(),
-            feePayerToken = sendInteractor.getFeePayerToken(),
+            feePayerToken = requireToken(),
             strategy = SELECT_FEE_PAYER
         )
     }
