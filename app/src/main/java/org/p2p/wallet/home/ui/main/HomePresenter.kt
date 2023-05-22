@@ -170,7 +170,9 @@ class HomePresenter(
         observeActionButtonState()
         handleDeeplinks()
         launch {
-            attachToPollingTokens()
+            if (loadSolTokensJob == null) {
+                attachToPollingTokens()
+            }
         }
     }
 
