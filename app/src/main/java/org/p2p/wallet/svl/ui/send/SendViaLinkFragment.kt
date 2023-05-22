@@ -100,10 +100,19 @@ class SendViaLinkFragment :
     override fun navigateToLinkGeneration(
         account: TemporaryAccount,
         token: Token.Active,
-        lamports: BigInteger
+        lamports: BigInteger,
+        currencyModeSymbol: String
     ) {
         val isSimulationEnabled = binding.switchDebug.isChecked
-        replaceFragment(SendLinkGenerationFragment.create(account, token, lamports, isSimulationEnabled))
+        replaceFragment(
+            SendLinkGenerationFragment.create(
+                recipient = account,
+                token = token,
+                lamports = lamports,
+                isSimulation = isSimulationEnabled,
+                currencyModeSymbol = currencyModeSymbol
+            )
+        )
     }
 
     override fun updateInputValue(textValue: String, forced: Boolean) {

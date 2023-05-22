@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import org.p2p.core.network.ConnectionManager
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.ws.SocketClientCreateResult
@@ -32,12 +33,12 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 
 private const val DELAY_MS = 5000L
 
-private const val TAG = "Sockets:SocketUpdatesManager"
+private const val TAG = "SocketUpdatesManager"
 
 class SocketUpdatesManager(
     appScope: AppScope,
     private val environmentManager: NetworkEnvironmentManager,
-    private val connectionStateProvider: NetworkConnectionStateProvider,
+    private val connectionStateProvider: ConnectionManager,
     private val updateHandlers: List<SubscriptionUpdateHandler>,
     private val socketEnabledFeatureToggle: SocketSubscriptionsFeatureToggle,
     private val initDispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -66,6 +67,7 @@ class SocketUpdatesManager(
             return
         }
 
+        Timber.tag(TAG).i("Starting update manager")
         launch { startActual() }
     }
 
@@ -77,6 +79,8 @@ class SocketUpdatesManager(
         withContext(initDispatcher) { stopActual() }
         start()
     }
+
+    override fun isStarted(): Boolean = isStarted
 
     override fun addUpdatesStateObserver(observer: SubscriptionUpdatesStateObserver) {
         launch {
@@ -125,7 +129,7 @@ class SocketUpdatesManager(
     }
 
     override fun onConnected() {
-        Timber.tag(TAG).w("Socket client is successfully connected")
+        Timber.tag(TAG).i("Socket client is successfully connected")
         connectionJob?.cancel()
         connectionJob = launch {
             state = SocketState.CONNECTED
@@ -186,7 +190,7 @@ class SocketUpdatesManager(
         Timber.tag(TAG).i("Connecting: Waiting for network")
 
         try {
-            withTimeout(DELAY_MS) { connectionStateProvider.awaitNetwork() }
+            withTimeout(DELAY_MS) { connectionStateProvider.connectionStatus.value }
             Timber.tag(TAG).i("Connecting: Network OK, initializing update handlers")
             updateHandlers.forEach { it.initialize() }
         } catch (e: Throwable) {
@@ -207,6 +211,12 @@ class SocketUpdatesManager(
                         client?.connect()
                         Timber.tag(TAG).i("Connection created for : $client")
                     }
+                    state = SocketState.CONNECTED
+                }
+                is SocketClientCreateResult.Reused -> {
+                    client = result.instance
+                    client?.reconnect()
+                    Timber.tag(TAG).i("Connection reused for : $client")
                     state = SocketState.CONNECTED
                 }
                 is SocketClientCreateResult.Failed -> throw result

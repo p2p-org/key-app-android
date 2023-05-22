@@ -1,10 +1,13 @@
 package org.p2p.wallet.history.interactor.mapper
 
 import com.google.gson.Gson
+import java.math.BigDecimal
 import org.p2p.core.utils.Constants.FEE_RELAYER_ACCOUNTS
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.bridge.claim.repository.EthereumBridgeInMemoryRepository
 import org.p2p.wallet.bridge.model.BridgeFee
+import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.api.model.RpcHistoryFeeResponse
 import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
@@ -243,9 +246,18 @@ class RpcHistoryTransactionConverter(
             bundle?.fees?.arbiterFee,
             bundle?.fees?.gasFeeInToken
         )
-        val total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero() - bundleFees.sumOf { it.amountInToken }
-        val totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero() - bundleFees.sumOf {
-            it.amountInUsd.toBigDecimalOrZero()
+
+        val total: BigDecimal
+        val totalInUsd: BigDecimal
+        if (bundle == null || bundle.compensationDeclineReason.isEmpty()) {
+            total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero()
+            totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero()
+        } else {
+            val bridgeAmount = bundle.resultAmount.toBridgeAmount()
+            total = bridgeAmount.tokenAmount.orZero() - bundleFees.sumOf { it.amountInToken }
+            totalInUsd = bridgeAmount.fiatAmount.orZero() - bundleFees.sumOf {
+                it.amountInUsd.toBigDecimalOrZero()
+            }
         }
 
         return RpcHistoryTransaction.WormholeReceive(
@@ -272,6 +284,7 @@ class RpcHistoryTransactionConverter(
             sendDetails?.fees?.bridgeFeeInToken,
             sendDetails?.fees?.networkFeeInToken,
         )
+
         val total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero() - bundleFees.sumOf { it.amountInToken }
         val totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero() - bundleFees.sumOf {
             it.amountInUsd.toBigDecimalOrZero()
@@ -351,7 +364,7 @@ private fun List<RpcHistoryFeeResponse>.parseFees(): List<RpcFee>? {
     }
 }
 
-private fun List<BridgeFee>.parseBridgeFees(): List<RpcFee>? {
+fun List<BridgeFee>.parseBridgeFees(): List<RpcFee>? {
     return if (isEmpty()) {
         null
     } else {

@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
+import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.orZero
@@ -15,6 +16,7 @@ import org.p2p.core.utils.toLamports
 import org.p2p.core.wrapper.HexString
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.bridge.analytics.ClaimAnalytics
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
@@ -25,6 +27,7 @@ import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
 import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
+import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.main.UserTokensPolling
@@ -41,7 +44,8 @@ class ClaimPresenter(
     private val claimUiMapper: ClaimUiMapper,
     private val appScope: AppScope,
     private val claimAnalytics: ClaimAnalytics,
-    private val userTokensPolling: UserTokensPolling
+    private val userTokensPolling: UserTokensPolling,
+    private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
     private var refreshJob: Job? = null
@@ -75,12 +79,15 @@ class ClaimPresenter(
                     isFree = newBundle.compensationDeclineReason.isEmpty(),
                     minAmountForFreeFee = minAmountForFreeFee
                 )
-                val finalValue = claimUiMapper.makeResultAmount(newBundle.resultAmount)
+                val finalValue = newBundle.resultAmount.toBridgeAmount()
                 val amountInFiat = finalValue.fiatAmount?.asUsd()
                 if (amountInFiat == null) {
                     view?.setWillGetVisibility(isVisible = false)
                 } else {
-                    view?.showWillGet(TextViewCellModel.Raw(TextContainer(finalValue.formattedTokenAmount.orEmpty())))
+                    val formattedTokenAmount = finalValue.formattedTokenAmount.orEmpty()
+                    val amountInFiatApproximate = finalValue.fiatAmount.asApproximateUsd()
+                    val userWillGet = "$formattedTokenAmount $amountInFiatApproximate"
+                    view?.showWillGet(TextViewCellModel.Raw(TextContainer(userWillGet)))
                     view?.setWillGetVisibility(isVisible = true)
                 }
             } catch (error: Throwable) {
@@ -185,6 +192,7 @@ class ClaimPresenter(
                 userTokensPolling.refreshTokens()
             } catch (e: BridgeResult.Error) {
                 Timber.e(e, "Failed to send signed bundle: ${e.message}")
+                logClaimErrorAlarm(e)
             }
         }
     }
@@ -226,5 +234,14 @@ class ClaimPresenter(
     override fun detach() {
         refreshJob?.cancel()
         super.detach()
+    }
+
+    private fun logClaimErrorAlarm(error: Throwable) {
+        val claimAmount = latestBundle?.resultAmount?.amountInToken?.toPlainString() ?: "0"
+        alarmErrorsLogger.triggerBridgeClaimAlarm(
+            tokenToClaim = tokenToClaim,
+            claimAmount = claimAmount,
+            error = error
+        )
     }
 }

@@ -1,4 +1,4 @@
-package org.p2p.wallet.infrastructure.network.alarmlogger.api
+package org.p2p.wallet.alarmlogger.api
 
 import com.google.gson.annotations.SerializedName
 

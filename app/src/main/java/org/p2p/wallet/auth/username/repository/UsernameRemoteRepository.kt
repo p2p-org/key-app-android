@@ -43,6 +43,7 @@ class UsernameRemoteRepository(
                 userPrivateKey = ownerPrivateKey.decodeToBytes()
             )
             val response = usernameService.createUsername(request)
+
             val createNameTransaction = mapper.fromNetwork(response).serializedSignedCreateNameTransaction
             val resultSignature = rpcSolanaRepository.sendSerializedTransaction(createNameTransaction, Encoding.BASE64)
             Timber.i("Create name transaction is sent: $resultSignature")

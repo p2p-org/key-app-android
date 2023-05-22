@@ -13,7 +13,8 @@ data class BridgeSendFees(
     val bridgeFee: BridgeFee,
     val bridgeFeeInToken: BridgeFee,
     val arbiterFee: BridgeFee,
-    val resultAmount: BridgeFee,
+    val totalAmount: BridgeFee,
+    val recipientGetsAmount: BridgeFee,
 ) : Parcelable {
     fun getFeeList(): List<BridgeFee> {
         return listOf(

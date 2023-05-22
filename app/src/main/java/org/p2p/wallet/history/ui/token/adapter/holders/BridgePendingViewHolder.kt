@@ -27,8 +27,8 @@ class BridgePendingViewHolder(
             } else {
                 transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_unknown)
             }
-            startAmountView.title = context.getString(R.string.bridge_to_ethereum)
-            startAmountView.subtitle = context.getString(R.string.bridge_send_pending)
+            startAmountView.title = context.getString(R.string.transaction_history_wh_send)
+            startAmountView.subtitle = context.getString(R.string.transaction_history_send_pending)
             endAmountView.topValue = item.getFormattedFiatValue()
             endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))
             endAmountView.bottomValue = item.getFormattedTotal()
@@ -47,10 +47,10 @@ class BridgePendingViewHolder(
             } else {
                 transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_unknown)
             }
-            startAmountView.title = context.getString(R.string.bridge_from_ethereum)
-            startAmountView.subtitle = context.getString(R.string.bridge_claim_pending)
+            startAmountView.title = context.getString(R.string.transaction_history_wh_claim)
+            startAmountView.subtitle = context.getString(R.string.transaction_history_claim_pending)
             endAmountView.topValue = item.getFormattedFiatValue()
-            endAmountView.setTopValueTextColor(context.getColor(R.color.text_night))
+            endAmountView.setTopValueTextColor(context.getColor(R.color.text_mint))
             endAmountView.bottomValue = item.getFormattedTotal()
             startAmountView.setSubtitleDrawable(left = R.drawable.ic_state_pending)
         }

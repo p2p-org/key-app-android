@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.ui.main
 
 import timber.log.Timber
+import java.net.UnknownHostException
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -68,6 +69,8 @@ class UserTokensPolling(
                 startPolling()
             } catch (e: CancellationException) {
                 Timber.i("Cancelled tokens remote update")
+            } catch (e: UnknownHostException) {
+                Timber.i(e, "Failed polling tokens: no internet connection")
             } catch (e: Throwable) {
                 Timber.e(e, "Failed polling tokens")
             } finally {
@@ -87,6 +90,8 @@ class UserTokensPolling(
                     }
                 } catch (e: CancellationException) {
                     Timber.i("Cancelled tokens remote update")
+                } catch (e: UnknownHostException) {
+                    Timber.i(e, "Failed polling tokens: no internet connection")
                 } catch (e: Throwable) {
                     Timber.e(e, "Failed polling tokens")
                 }

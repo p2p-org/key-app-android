@@ -102,7 +102,6 @@ object BridgeSendModule : InjectionModule {
                 userInteractor = get(),
                 bridgeInteractor = get(),
                 resources = get(),
-                tokenKeyProvider = get(),
                 transactionManager = get(),
                 connectionStateProvider = get(),
                 sendBridgesAnalytics = get(),
@@ -111,7 +110,7 @@ object BridgeSendModule : InjectionModule {
                 initialData = initialData,
                 stateMachine = stateMachine,
                 bridgeSendUiMapper = get(),
-                historyInteractor = get()
+                alarmErrorsLogger = get()
             )
         } bind BridgeSendContract.Presenter::class
         factoryOf(::EthereumInteractor)

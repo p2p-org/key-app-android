@@ -13,6 +13,7 @@ data class ClaimDetails(
     val networkFee: BridgeAmount,
     val accountCreationFee: BridgeAmount,
     val bridgeFee: BridgeAmount,
+    val totalAmount: BridgeAmount,
     val minAmountForFreeFee: BigDecimal,
     val transactionDate: ZonedDateTime,
 ) : Parcelable

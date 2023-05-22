@@ -23,6 +23,7 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -40,7 +41,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.newsend.interactor.SendFatalError
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
@@ -48,7 +48,9 @@ import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.FeeRelayerStateError
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SendFatalError
 import org.p2p.wallet.newsend.model.SendSolanaFee
+import org.p2p.wallet.newsend.model.getFee
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
@@ -73,6 +75,7 @@ class NewSendPresenter(
     private val transactionManager: TransactionManager,
     private val connectionStateProvider: NetworkConnectionStateProvider,
     private val newSendAnalytics: NewSendAnalytics,
+    private val alertErrorsLogger: AlarmErrorsLogger,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
     private val historyInteractor: HistoryInteractor
@@ -240,9 +243,11 @@ class NewSendPresenter(
                     view.showFeeViewVisible(isVisible = false)
 
                     newState.errorStateError as FeeRelayerStateError.FeesCalculationError
-                    if (newState.errorStateError.cause is CancellationException) {
+                    val exception = newState.errorStateError.cause
+                    if (exception is CancellationException) {
                         Timber.tag(TAG).i(newState)
                     } else {
+                        logSendError(token, Throwable("Fee calculation error", exception))
                         Timber.tag(TAG).e(newState, "FeeRelayerState has calculation error")
                     }
                 } else {
@@ -464,6 +469,7 @@ class NewSendPresenter(
                 Timber.tag(TAG).e(e, "Failed sending transaction!")
                 val message = e.getErrorMessage { res -> resources.getString(res) }
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
+                logSendError(token, e)
             }
         }
     }
@@ -570,5 +576,29 @@ class NewSendPresenter(
             isFeeFree = solanaFee?.isTransactionFree ?: false,
             mode = calculationMode.getCurrencyMode()
         )
+    }
+
+    private fun logSendError(
+        token: Token.Active?,
+        error: Throwable
+    ) {
+        if (token == null) return
+
+        launch {
+            val fee = feeRelayerManager.getState().getFee()
+            val accountCreationFee = fee?.accountCreationFeeDecimals?.toPlainString()
+            val transactionFee = fee?.transactionDecimals?.toPlainString()
+            alertErrorsLogger.triggerSendAlarm(
+                token = token,
+                currencyMode = calculationMode.getCurrencyMode(),
+                amount = calculationMode.getCurrentAmount().toPlainString(),
+                feePayerToken = sendInteractor.getFeePayerToken(),
+                accountCreationFee = accountCreationFee,
+                transactionFee = transactionFee,
+                relayAccount = sendInteractor.getUserRelayAccount(),
+                recipientAddress = recipientAddress,
+                error = error
+            )
+        }
     }
 }

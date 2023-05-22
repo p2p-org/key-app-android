@@ -2,9 +2,14 @@ package org.p2p.solanaj.model.types
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Options listed here https://docs.solana.com/api/http
+ */
 data class RequestConfiguration(
     @SerializedName("commitment")
     val commitment: String? = null,
+    @SerializedName("preflightCommitment")
+    val preflightCommitment: String? = null,
     @SerializedName("encoding")
     val encoding: String? = null,
     @SerializedName("dataSlice")

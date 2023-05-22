@@ -360,8 +360,8 @@ sealed class RpcHistoryTransaction(
 
         @ColorRes
         fun getTextColor(): Int = when {
-            !status.isCompleted() -> R.color.text_rose
-            else -> R.color.text_mint
+            status.isError() -> R.color.text_rose
+            else -> R.color.text_night
         }
 
         fun getFormattedUsdAmount(): String? = amount.totalInUsd?.abs()?.asPositiveUsdTransaction()
@@ -407,7 +407,7 @@ sealed class RpcHistoryTransaction(
 
         @ColorRes
         fun getTextColor(): Int = when {
-            !status.isCompleted() -> R.color.text_rose
+            status.isError() -> R.color.text_rose
             else -> R.color.text_night
         }
     }

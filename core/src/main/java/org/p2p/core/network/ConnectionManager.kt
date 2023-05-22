@@ -5,79 +5,127 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import timber.log.Timber
+import java.io.IOException
+import java.net.InetAddress
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ConnectionManager(context: Context) {
+private const val INET_VALIDATION_MAX_RETRIES = 3
+private const val INET_VALIDATION_INTERVAL = 1000L
+
+class ConnectionManager(
+    context: Context,
+    private val scope: CoroutineScope,
+    private val checkInetDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val checkInetHost: String = "8.8.8.8",
+    private val checkInetTimeoutMs: Int = 5000
+) {
     @Deprecated("Use flow instead", ReplaceWith("connectionStatus"))
     interface Listener {
         fun onConnectionChange()
     }
 
+    @Deprecated("Use flow instead", ReplaceWith("connectionStatus"))
+    var listener: Listener? = null
+
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private var callback = ConnectionStatusCallback()
+    private var checkNetworkJob: Job? = null
 
     private val _connectionStatus = MutableStateFlow(true)
     val connectionStatus = _connectionStatus.asStateFlow()
 
-    @Deprecated("Use flow instead", ReplaceWith("connectionStatus"))
-    var listener: Listener? = null
-
-    private var callback = ConnectionStatusCallback()
-
     init {
-        connectivityManager.registerNetworkCallback(
-            NetworkRequest.Builder()
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                .build(),
-            callback
-        )
-
-        notifyHasConnection(
-            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork).hasValidatedInternet()
-        )
+        connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
+        notifyHasConnection()
     }
 
-    private fun notifyHasConnection(hasConnection: Boolean) {
+    fun stop() {
+        Timber.d("Stopping connection manager")
+        try {
+            connectivityManager.unregisterNetworkCallback(callback)
+        } catch (e: Exception) {
+            // already unregistered
+        }
+    }
+
+    /**
+     * Check if there exists any network transport.
+     */
+    private fun checkAnyTransportIsAvailable(): Boolean {
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return when {
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> true
+            else -> false
+        }
+    }
+
+    /**
+     * Check if there is a real connection to the internet (checking google dns).
+     */
+    @Suppress("BlockingMethodInNonBlockingContext")
+    private suspend fun checkRealConnection(): Boolean = withContext(checkInetDispatcher) {
+        try {
+            val inetAddress = InetAddress.getByName(checkInetHost)
+            inetAddress.isReachable(checkInetTimeoutMs)
+        } catch (e: IOException) {
+            false
+        }
+    }
+
+    private fun notifyHasConnection() {
         listener?.onConnectionChange()
-        _connectionStatus.tryEmit(hasConnection)
-    }
 
-    private fun NetworkCapabilities?.hasValidatedInternet(): Boolean {
-        if (this == null) return false
+        checkNetworkJob?.cancel()
+        checkNetworkJob = scope.launch {
+            try {
+                var retries = 0
+                var hasVerified: Boolean
+                do {
+                    hasVerified = checkAnyTransportIsAvailable() && checkRealConnection()
 
-        return hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            && hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                    if (hasVerified) break
+
+                    delay(INET_VALIDATION_INTERVAL)
+                } while (++retries < INET_VALIDATION_MAX_RETRIES)
+
+                // we should delay, connecting after this validation is not happening immediately
+                // keep this magic number, until we don't have a better solution
+                delay(1000)
+                _connectionStatus.emit(hasVerified)
+            } catch (_: CancellationException) {
+                // ignore
+            }
+        }
     }
 
     inner class ConnectionStatusCallback : ConnectivityManager.NetworkCallback() {
         override fun onLost(network: Network) {
             super.onLost(network)
-            notifyHasConnection(
-                connectivityManager.getNetworkCapabilities(network).hasValidatedInternet()
-            )
+            notifyHasConnection()
         }
 
         override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
             super.onCapabilitiesChanged(network, networkCapabilities)
-            notifyHasConnection(networkCapabilities.hasValidatedInternet())
+            notifyHasConnection()
         }
 
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
-            notifyHasConnection(
-                connectivityManager.getNetworkCapabilities(network).hasValidatedInternet()
-            )
-        }
-    }
-
-    fun stop() {
-        try {
-            connectivityManager.unregisterNetworkCallback(callback)
-        } catch (e: Exception) {
-            //already unregistered
+            notifyHasConnection()
         }
     }
 }

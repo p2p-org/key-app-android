@@ -8,6 +8,7 @@ import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isMoreThan
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.model.types.ConfirmationStatus
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
@@ -126,7 +127,8 @@ class ReceiveViaLinkInteractor(
             lamports = token.totalInLamports,
             memo = BuildConfig.svlMemoClaim,
             isSimulation = false,
-            shouldCloseAccount = true
+            shouldCloseAccount = true,
+            preflightCommitment = ConfirmationStatus.CONFIRMED
         )
     }
 }

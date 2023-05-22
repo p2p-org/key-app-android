@@ -6,14 +6,11 @@ import java.math.BigDecimal
 import org.threeten.bp.ZonedDateTime
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.utils.asApproximateUsd
-import org.p2p.core.utils.isNullOrZero
-import org.p2p.core.utils.orZero
-import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.model.BridgeAmount
-import org.p2p.wallet.bridge.model.BridgeFee
+import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
@@ -28,10 +25,11 @@ class BridgeSendUiMapper(private val resources: Resources) {
     ): BridgeFeeDetails {
         return BridgeFeeDetails(
             recipientAddress = recipientAddress,
-            willGetAmount = fees?.resultAmount.toBridgeAmount(),
+            willGetAmount = fees?.recipientGetsAmount.toBridgeAmount(),
             networkFee = fees?.networkFee.toBridgeAmount(),
             messageAccountRent = fees?.messageAccountRent.toBridgeAmount(),
-            bridgeFee = fees?.arbiterFee.toBridgeAmount()
+            bridgeFee = fees?.arbiterFee.toBridgeAmount(),
+            totalAmount = fees?.totalAmount.toBridgeAmount()
         )
     }
 
@@ -87,15 +85,6 @@ class BridgeSendUiMapper(private val resources: Resources) {
                 radius = 4f.toPx(),
                 gravity = Gravity.END
             )
-        )
-    }
-
-    private fun BridgeFee?.toBridgeAmount(): BridgeAmount {
-        return BridgeAmount(
-            tokenSymbol = this?.symbol.orEmpty(),
-            tokenDecimals = this?.decimals.orZero(),
-            tokenAmount = this?.amountInToken?.takeIf { !it.isNullOrZero() },
-            fiatAmount = this?.amountInUsd?.toBigDecimalOrZero()
         )
     }
 

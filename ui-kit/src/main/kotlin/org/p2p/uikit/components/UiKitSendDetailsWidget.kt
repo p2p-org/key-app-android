@@ -115,7 +115,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     fun switchToBottomFee() {
         isBottomFeeMode = true
         with(binding) {
-            groupTopFee.isInvisible = true
+            groupTopFee.isVisible = false
             groupBottomFee.isVisible = true
         }
     }

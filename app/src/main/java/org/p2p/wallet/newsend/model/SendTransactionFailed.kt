@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.interactor
+package org.p2p.wallet.newsend.model
 
 class SendTransactionFailed(
     transactionSignature: String,

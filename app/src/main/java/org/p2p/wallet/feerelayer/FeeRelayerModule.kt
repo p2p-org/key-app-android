@@ -22,7 +22,7 @@ import org.p2p.wallet.infrastructure.network.feerelayer.FeeRelayerInterceptor
 
 object FeeRelayerModule : InjectionModule {
 
-    const val FEE_RELAYER_QUALIFIER = "https://fee-relayer.solana.p2p.org"
+    private const val FEE_RELAYER_QUALIFIER = "https://fee-relayer.solana.p2p.org"
     override fun create() = module {
         single(named(FEE_RELAYER_QUALIFIER)) {
             val environmentManager = get<NetworkServicesUrlProvider>()

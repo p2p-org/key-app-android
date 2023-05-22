@@ -19,7 +19,7 @@ class SubscriptionSocketClientFactory {
     fun create(serverUri: String, stateListener: SocketStateListener): SocketClientCreateResult = try {
         if (instance != null) {
             Timber.i("Reusing already created client: $instance")
-            SocketClientCreateResult.Created(instance!!)
+            SocketClientCreateResult.Reused(instance!!)
         } else {
             val endpointUri = URI(serverUri)
             val socketUri = buildSocketUri(endpointUri)

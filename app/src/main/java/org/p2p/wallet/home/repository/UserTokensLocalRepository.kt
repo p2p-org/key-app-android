@@ -49,28 +49,17 @@ class UserTokensLocalRepository(
         tokenMint: Base58String,
         accountPublicKey: Base58String
     ) {
-        // we modify this list, it's more productive then do .map over N elements
-        val cachedTokens = homeLocalRepository.getUserTokens().toMutableList()
+        val tokenToUpdate = findUserTokenByMint(tokenMint)
+            ?.let { createUpdatedToken(it, newBalanceLamports) }
+            ?: createNewToken(tokenMint, newBalanceLamports, accountPublicKey)
 
-        // faster then just map that iterates over all tokens
-        val indexOfTokenToChange = cachedTokens.indexOfFirst { it.mintAddress == tokenMint.base58Value }
-        val newTokenAppeared = indexOfTokenToChange == -1
-        if (newTokenAppeared) {
-            Timber.d("New token appeared: $tokenMint")
-            createNewToken(tokenMint, newBalanceLamports, accountPublicKey)
-                ?.also(cachedTokens::add)
-                ?: kotlin.run {
-                    Timber.e(NullPointerException("Failed to add new token ${tokenMint.base58Value}"))
-                }
-        } else {
-            val tokenToChange = cachedTokens[indexOfTokenToChange]
-            Timber.d(
-                "Old token changed: %s; %s; diff=%s",
-                tokenMint.base58Value, tokenToChange.tokenName, tokenToChange.totalInLamports - newBalanceLamports
-            )
-            cachedTokens[indexOfTokenToChange] = createUpdatedToken(tokenToChange, newBalanceLamports)
+        if (tokenToUpdate != null) {
+            homeLocalRepository.updateTokens(listOf(tokenToUpdate))
         }
-        homeLocalRepository.updateTokens(cachedTokens)
+    }
+
+    override suspend fun findUserTokenByMint(mintAddress: Base58String): Token.Active? {
+        return tokenDao.findByMintAddress(mintAddress.base58Value)?.let(TokenConverter::fromDatabase)
     }
 
     private suspend fun createNewToken(

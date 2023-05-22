@@ -1,5 +1,7 @@
 package org.p2p.wallet.updates.subscribe
 
+import org.p2p.solanaj.model.types.ConfirmationStatus
+import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -20,8 +22,8 @@ class SolanaAccountUpdateSubscriber(
         params = listOf(
             tokenKeyProvider.publicKey,
             mapOf(
-                "commitment" to "confirmed",
-                "encoding" to "base64"
+                "commitment" to ConfirmationStatus.CONFIRMED.value,
+                "encoding" to Encoding.BASE64.encoding
             )
         )
     )

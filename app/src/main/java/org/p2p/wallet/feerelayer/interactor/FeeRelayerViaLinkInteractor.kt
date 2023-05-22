@@ -2,6 +2,7 @@ package org.p2p.wallet.feerelayer.interactor
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PreparedTransaction
+import org.p2p.solanaj.model.types.ConfirmationStatus
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
@@ -26,7 +27,8 @@ class FeeRelayerViaLinkInteractor(
         preparedTransaction: PreparedTransaction,
         statistics: FeeRelayerStatistics,
         isRetryEnabled: Boolean = true,
-        isSimulation: Boolean
+        isSimulation: Boolean,
+        preflightCommitment: ConfirmationStatus = ConfirmationStatus.FINALIZED
     ): String {
         // resign transaction
         val transaction = preparedTransaction.transaction
@@ -43,9 +45,19 @@ class FeeRelayerViaLinkInteractor(
          * For example: fee relayer balance is not updated yet and request will fail with insufficient balance error
          * */
         return if (isRetryEnabled) {
-            retryRequest { transactionInteractor.sendTransaction(signedTransaction.transaction, isSimulation) }
+            retryRequest {
+                transactionInteractor.sendTransaction(
+                    signedTransaction = signedTransaction.transaction,
+                    isSimulation = isSimulation,
+                    preflightCommitment = preflightCommitment
+                )
+            }
         } else {
-            transactionInteractor.sendTransaction(signedTransaction.transaction, isSimulation)
+            transactionInteractor.sendTransaction(
+                signedTransaction = signedTransaction.transaction,
+                isSimulation = isSimulation,
+                preflightCommitment = preflightCommitment
+            )
         }
     }
 }

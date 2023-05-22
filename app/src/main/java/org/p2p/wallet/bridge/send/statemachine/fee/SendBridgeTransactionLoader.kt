@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
-import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
@@ -50,17 +49,12 @@ class SendBridgeTransactionLoader constructor(
         emit(SendState.Loading.Fee(lastStaticState))
         val lastFeeInToken = getFeeTotalInToken(lastStaticState)
         val currentAmount = lastAmount ?: lastStaticState.inputAmount.orZero()
-        val finalAmount = if (currentAmount.isZero()) {
-            currentAmount
-        } else {
-            currentAmount + lastFeeInToken
-        }
-        val fee = loadFee(token, finalAmount)
+        val fee = loadFee(token, currentAmount)
         val updatedFee = mapper.updateFee(lastStaticState, fee)
         val inputAmount = updatedFee.inputAmount
         if (inputAmount != null) {
             val amountWithFee = inputAmount + lastFeeInToken
-            val inputLamports = amountWithFee.toLamports(token.token.decimals)
+            val inputLamports = inputAmount.toLamports(token.token.decimals)
             validator.validateIsFeeMoreThanTotal(token, fee, inputAmount)
             validator.validateIsFeeMoreThanAmount(fee, inputAmount, amountWithFee)
             val sendTransaction = createTransaction(token.token, inputLamports)

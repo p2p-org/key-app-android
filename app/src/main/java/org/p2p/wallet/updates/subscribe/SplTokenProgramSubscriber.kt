@@ -1,5 +1,7 @@
 package org.p2p.wallet.updates.subscribe
 
+import org.p2p.solanaj.model.types.ConfirmationStatus
+import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.programs.SystemProgram
@@ -23,8 +25,8 @@ class SplTokenProgramSubscriber(
         params = listOf(
             SystemProgram.SPL_TOKEN_PROGRAM_ID.toBase58(),
             mapOf(
-                "commitment" to "confirmed",
-                "encoding" to "base64",
+                "commitment" to ConfirmationStatus.CONFIRMED.value,
+                "encoding" to Encoding.BASE64.encoding,
                 "filters" to listOf(
                     mapOf("dataSize" to TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH),
                     mapOf(

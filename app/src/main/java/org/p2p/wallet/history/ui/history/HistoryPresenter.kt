@@ -44,17 +44,14 @@ class HistoryPresenter(
         launch {
             val bridgeBundle = ethereumInteractor.getClaimBundleById(transactionId) ?: return@launch
             val claimDetails = claimUiMapper.makeClaimDetails(
-                resultAmount = bridgeBundle.resultAmount,
-                fees = bridgeBundle.fees,
-                isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
+                bridgeBundle = bridgeBundle,
                 minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
-                transactionDate = bridgeBundle.dateCreated
             )
             val amountToClaim = bridgeBundle.resultAmount.amountInToken
             val iconUrl = ERC20Tokens.findToken(bridgeBundle.findTokenOrDefaultEth()).tokenIconUrl
             val progressDetails = claimUiMapper.prepareShowProgress(
                 amountToClaim = amountToClaim,
-                iconUrl = iconUrl.orEmpty(),
+                iconUrl = iconUrl,
                 claimDetails = claimDetails
             )
             transactionManager.emitTransactionState(

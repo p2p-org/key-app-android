@@ -1,5 +1,6 @@
 package org.p2p.wallet.transaction.model
 
+import androidx.annotation.ColorRes
 import android.os.Parcelable
 import org.threeten.bp.ZonedDateTime
 import kotlinx.parcelize.Parcelize
@@ -12,5 +13,6 @@ class NewShowProgress(
     val amountTokens: String,
     val amountUsd: String?,
     val recipient: String?,
-    val totalFees: List<TextHighlighting>?
+    val totalFees: List<TextHighlighting>?,
+    @ColorRes val amountColor: Int? = null
 ) : Parcelable

@@ -2,9 +2,10 @@ package org.p2p.wallet.jupiter.analytics
 
 import java.math.BigDecimal
 import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesValidationEnabledFeatureToggle
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
+import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
 
 private const val SWAP_START_SCREEN = "Swap_Start_Screen"
 private const val SWAP_CHANGING_TOKEN_A_CLICK = "Swap_Changing_Token_A_Click"
@@ -26,7 +27,10 @@ private const val SWAP_RETURN_FROM_CHANGING_TOKEN_A = "Swap_Return_From_Changing
 private const val SWAP_CHANGING_TOKEN_B = "Swap_Changing_Token_B"
 private const val SWAP_RETURN_FROM_CHANGING_TOKEN_B = "Swap_Return_From_Changing_Token_B"
 
-class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
+class JupiterSwapMainScreenAnalytics(
+    private val tracker: Analytics,
+    private val routesValidationEnabled: SwapRoutesValidationEnabledFeatureToggle
+) {
     fun logStartScreen(
         openedFrom: SwapOpenedFrom,
         initialTokenA: SwapTokenModel,
@@ -71,7 +75,8 @@ class JupiterSwapMainScreenAnalytics(private val tracker: Analytics) {
             event = SWAP_CHANGING_VALUE_TOKEN_B,
             params = mapOf(
                 "Token_B_Name" to tokenB.tokenSymbol,
-                "Token_B_Value" to newAmount
+                "Token_B_Value" to newAmount,
+                "Transaction_Simulation" to routesValidationEnabled.isFeatureEnabled
             )
         )
     }
