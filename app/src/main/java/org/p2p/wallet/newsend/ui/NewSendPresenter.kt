@@ -148,6 +148,7 @@ class NewSendPresenter(
         launch {
             view.showToken(token)
             calculationMode.updateToken(token)
+            checkTokenRatesAndSetSwitchAmountState(token)
 
             val userTokens = userInteractor.getNonZeroUserTokens()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
