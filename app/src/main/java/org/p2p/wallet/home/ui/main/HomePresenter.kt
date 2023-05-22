@@ -149,7 +149,6 @@ class HomePresenter(
             loadSolTokensJob?.join()
             loadSolTokensJob = null
 
-            loadEthTokens()
             attachToPollingTokens()
         }
 

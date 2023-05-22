@@ -79,9 +79,7 @@ internal class EthereumKitRepository(
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>) {
         val walletTokens = withContext(dispatchers.io) {
             try {
-                if (localTokensMetadata.isEmpty()) {
-                    localTokensMetadata.addAll(loadTokensMetadata())
-                }
+                localTokensMetadata.addAll(loadTokensMetadata())
                 getPriceForTokens(localTokensMetadata.map { it.contractAddress.hex })
                     .onEach { (address, price) ->
                         localTokensMetadata.find { it.contractAddress.hex == address }?.price = price
@@ -149,17 +147,15 @@ internal class EthereumKitRepository(
     }
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
-        localTokensMetadata.ifEmpty {
-            val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
-            val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
+        val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
+        val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
 
-            loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
-                getMetadataAsync(
-                    tokenBalance = tokenBalance,
-                    contractAddress = tokenBalance.contractAddress
-                )
-            }.awaitAll()
-        }
+        loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
+            getMetadataAsync(
+                tokenBalance = tokenBalance,
+                contractAddress = tokenBalance.contractAddress
+            )
+        }.awaitAll()
     }
 
     private suspend fun loadTokenBalances(
