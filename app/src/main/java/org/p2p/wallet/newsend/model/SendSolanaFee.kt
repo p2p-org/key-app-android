@@ -9,18 +9,12 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.isLessThan
-import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.isZeroOrLess
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
-import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
-import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
-import org.p2p.wallet.newsend.model.FeePayerState.ReduceInputAmount
-import org.p2p.wallet.newsend.model.FeePayerState.SwitchToSol
 
 /**
  * This class contains information about fees for transaction or for a new account creation
@@ -29,10 +23,7 @@ import org.p2p.wallet.newsend.model.FeePayerState.SwitchToSol
 data class SendSolanaFee constructor(
     val feePayerToken: Token.Active,
     val feeRelayerFee: FeeRelayerFee,
-    private val sourceToken: Token.Active,
-    private val solToken: Token.Active?,
-    private val alternativeFeePayerTokens: List<Token.Active>,
-    private val supportedFeePayerTokens: List<Token.Active>? = null
+    private val sourceToken: Token.Active
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -95,14 +86,14 @@ data class SendSolanaFee constructor(
             .scaleLong()
 
     @IgnoredOnParcel
+    private val feePayerTotalLamports: BigInteger
+        get() = feePayerToken.total.toLamports(feePayerToken.decimals)
+
+    @IgnoredOnParcel
     val transactionDecimals: BigDecimal =
         (if (feePayerToken.isSOL) feeRelayerFee.transactionFeeInSol else feeRelayerFee.transactionFeeInSpl)
             .fromLamports(feePayerToken.decimals)
             .scaleLong()
-
-    @IgnoredOnParcel
-    private val feePayerTotalLamports: BigInteger
-        get() = feePayerToken.total.toLamports(feePayerToken.decimals)
 
     @IgnoredOnParcel
     val totalFeeDecimals: BigDecimal
@@ -142,37 +133,4 @@ data class SendSolanaFee constructor(
         sourceTokenTotal == inputAmount + feeRelayerFee.totalInSol ||
             // added min required balance for SOL check
             (sourceTokenTotal - minRentExemption) >= inputAmount + feeRelayerFee.totalInSol
-
-    fun isEnoughSolBalance() = solToken?.let { !it.totalInLamports.isLessThan(feeRelayerFee.totalInSol) } ?: false
-
-    fun firstAlternativeTokenOrNull(): Token.Active? {
-        return alternativeFeePayerTokens.firstOrNull()
-    }
-
-    fun calculateFeePayerState(
-        strategy: FeePayerSelectionStrategy,
-        sourceTokenTotal: BigInteger,
-        inputAmount: BigInteger
-    ): FeePayerState {
-        val isSourceSol = sourceTokenSymbol == SOL_SYMBOL
-        val isAllowedToCorrectAmount = strategy == CORRECT_AMOUNT
-        val totalNeeded = feeRelayerFee.totalInSpl + inputAmount
-        val isEnoughSolBalance = isEnoughSolBalance()
-        val shouldTryReduceAmount = isAllowedToCorrectAmount && !isSourceSol && !isEnoughSolBalance
-        val hasAlternativeFeePayerTokens = alternativeFeePayerTokens.isNotEmpty()
-        val isValidToSwitchOnSource = supportedFeePayerTokens?.contains(sourceToken) ?: true
-        return when {
-            // if there is enough SPL token balance to cover amount and fee
-            !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) &&
-                isValidToSwitchOnSource -> FeePayerState.SwitchToSpl(sourceToken)
-            hasAlternativeFeePayerTokens -> FeePayerState.SwitchToSpl(alternativeFeePayerTokens.first())
-            // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount
-            shouldTryReduceAmount && sourceTokenTotal.isLessThan(totalNeeded) -> {
-                val diff = totalNeeded - sourceTokenTotal
-                val desiredAmount = if (diff.isLessThan(inputAmount)) inputAmount - diff else null
-                if (desiredAmount != null) ReduceInputAmount(desiredAmount) else SwitchToSol
-            }
-            else -> SwitchToSol
-        }
-    }
 }

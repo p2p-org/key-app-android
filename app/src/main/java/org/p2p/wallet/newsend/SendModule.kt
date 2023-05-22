@@ -15,6 +15,12 @@ import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
+import org.p2p.wallet.newsend.smartselection.AmountReducerValidator
+import org.p2p.wallet.newsend.smartselection.FeePayerSelector
+import org.p2p.wallet.newsend.smartselection.SolTokenValidator
+import org.p2p.wallet.newsend.smartselection.SourceSolTokenValidator
+import org.p2p.wallet.newsend.smartselection.SourceSplTokenValidator
+import org.p2p.wallet.newsend.smartselection.SplTokenValidator
 import org.p2p.wallet.newsend.ui.NewSendContract
 import org.p2p.wallet.newsend.ui.NewSendPresenter
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
@@ -59,7 +65,6 @@ object SendModule : InjectionModule {
             NewSendPresenter(
                 recipientAddress = get(),
                 userInteractor = get(),
-                sendInteractor = get(),
                 resources = get(),
                 tokenKeyProvider = get(),
                 transactionManager = get(),
@@ -67,8 +72,9 @@ object SendModule : InjectionModule {
                 newSendAnalytics = get(),
                 appScope = get(),
                 sendModeProvider = get(),
-                alertErrorsLogger = get(),
-                historyInteractor = get()
+                historyInteractor = get(),
+                feeRelayerManager = get(),
+                alertErrorsLogger = get()
             )
         } bind NewSendContract.Presenter::class
         factoryOf(::NewSendDetailsPresenter) bind NewSendDetailsContract.Presenter::class
@@ -78,6 +84,14 @@ object SendModule : InjectionModule {
         factoryOf(::ReceiveViaLinkPresenter) bind ReceiveViaLinkContract.Presenter::class
         factoryOf(::ReceiveViaLinkInteractor)
         factoryOf(::ReceiveViaLinkMapper)
+
+        factoryOf(::SendFeeRelayerManager)
+        factoryOf(::FeePayerSelector)
+        factoryOf(::SourceSolTokenValidator)
+        factoryOf(::SourceSplTokenValidator)
+        factoryOf(::SolTokenValidator)
+        factoryOf(::SplTokenValidator)
+        factoryOf(::AmountReducerValidator)
     }
 
     private fun Module.initDataLayer() {

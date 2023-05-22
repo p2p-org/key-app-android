@@ -41,7 +41,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
@@ -69,7 +68,6 @@ private const val TAG = "NewSendPresenter"
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
-    private val sendInteractor: SendInteractor,
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
@@ -78,7 +76,8 @@ class NewSendPresenter(
     private val alertErrorsLogger: AlarmErrorsLogger,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
-    private val historyInteractor: HistoryInteractor
+    private val historyInteractor: HistoryInteractor,
+    private val feeRelayerManager: SendFeeRelayerManager
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private var token: Token.Active? by observable(null) { _, _, newToken ->
@@ -92,7 +91,6 @@ class NewSendPresenter(
         sendModeProvider = sendModeProvider,
         lessThenMinString = resources.getString(R.string.common_less_than_minimum)
     )
-    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
     private var selectedToken: Token.Active? = null
     private var initialAmount: BigDecimal? = null
@@ -104,6 +102,11 @@ class NewSendPresenter(
         newSendAnalytics.logNewSendScreenOpened()
         initialize(view)
         subscribeToSelectedTokenUpdates()
+    }
+
+    override fun detach() {
+        feeRelayerManager.release()
+        super.detach()
     }
 
     private fun subscribeToSelectedTokenUpdates() {
@@ -148,6 +151,7 @@ class NewSendPresenter(
         launch {
             view.showToken(token)
             calculationMode.updateToken(token)
+            checkTokenRatesAndSetSwitchAmountState(token)
 
             val userTokens = userInteractor.getNonZeroUserTokens()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
@@ -328,7 +332,7 @@ class NewSendPresenter(
          * */
         executeSmartSelection(
             token = requireToken(),
-            feePayerToken = requireToken(),
+            feePayerToken = null,
             strategy = SELECT_FEE_PAYER
         )
     }
@@ -353,7 +357,7 @@ class NewSendPresenter(
 
     override fun updateFeePayerToken(feePayerToken: Token.Active) {
         try {
-            sendInteractor.setFeePayerToken(feePayerToken)
+            feeRelayerManager.updateFeePayer(feePayerToken)
             executeSmartSelection(
                 token = requireToken(),
                 feePayerToken = feePayerToken,
@@ -454,7 +458,7 @@ class NewSendPresenter(
                 )
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
-                val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
+                val result = feeRelayerManager.sendTransaction(address.toPublicKey(), token, lamports)
                 userInteractor.addRecipient(recipientAddress, Date(transactionDate.dateMilli()))
                 val transaction = buildTransaction(result, token)
                 val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
@@ -500,9 +504,9 @@ class NewSendPresenter(
             feeRelayerManager.executeSmartSelection(
                 sourceToken = token,
                 feePayerToken = feePayerToken,
-                strategy = strategy,
                 tokenAmount = calculationMode.getCurrentAmount(),
-                useCache = useCache
+                useCache = useCache,
+                strategy = strategy
             )
         }
     }
@@ -591,10 +595,10 @@ class NewSendPresenter(
                 token = token,
                 currencyMode = calculationMode.getCurrencyMode(),
                 amount = calculationMode.getCurrentAmount().toPlainString(),
-                feePayerToken = sendInteractor.getFeePayerToken(),
+                feePayerToken = feeRelayerManager.getFeePayerToken(),
                 accountCreationFee = accountCreationFee,
                 transactionFee = transactionFee,
-                relayAccount = sendInteractor.getUserRelayAccount(),
+                relayAccount = feeRelayerManager.getUserRelayAccount(),
                 recipientAddress = recipientAddress,
                 error = error
             )
