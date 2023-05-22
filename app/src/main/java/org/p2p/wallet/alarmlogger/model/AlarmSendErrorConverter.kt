@@ -8,6 +8,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsBridgeClaimRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsRequest
+import org.p2p.wallet.alarmlogger.api.AlarmErrorsSendBridgeRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsSendRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsSvlRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsUsernameRequest
@@ -177,6 +178,37 @@ class AlarmSendErrorConverter(
 
         return AlarmErrorsRequest(
             logsTitle = "Wormhole Claim Android Alarm",
+            payload = gson.toJson(request)
+        )
+    }
+
+    fun toBridgeSendErrorRequest(
+        token: Token.Active,
+        userPublicKey: Base58String,
+        currency: String,
+        sendAmount: String,
+        arbiterFeeAmount: String,
+        recipientEthPubkey: String,
+        error: Throwable
+    ): AlarmErrorsRequest {
+        val tokenToClaim = AlarmErrorsSendBridgeRequest.TokenToSend(
+            tokenName = token.tokenName,
+            mint = token.mintAddress.toBase58Instance(),
+            amount = sendAmount,
+            currency = currency
+        )
+        val request = AlarmErrorsSendBridgeRequest(
+            tokenToSend = tokenToClaim,
+            arbiterFeeAmount = arbiterFeeAmount,
+            userPubkey = userPublicKey,
+            recipientEthPubkey = recipientEthPubkey,
+            simulationError = error.getSimulationError(),
+            feeRelayerError = error.getFeeRelayerError(),
+            blockchainError = error.getBlockchainError(),
+        )
+
+        return AlarmErrorsRequest(
+            logsTitle = "Wormhole Send Android Alarm",
             payload = gson.toJson(request)
         )
     }

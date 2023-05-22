@@ -22,6 +22,10 @@ fun String?.toBigDecimalOrZero(): BigDecimal {
     return removedZeros?.toBigDecimalOrNull() ?: BigDecimal.ZERO
 }
 
+fun String?.toBigIntegerOrZero(): BigInteger {
+    return this?.toBigIntegerOrNull() ?: BigInteger.ZERO
+}
+
 fun Int.toPowerValue(): BigDecimal =
     BigDecimal(POWER_VALUE.pow(this))
 
