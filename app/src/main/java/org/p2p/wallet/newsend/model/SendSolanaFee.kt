@@ -169,17 +169,19 @@ data class SendSolanaFee constructor(
                 sourceTokenTotal.isMoreThan(totalNeeded) &&
                 isValidToSwitchOnSource
 
-        Timber.i(buildString {
-            appendLine("isSourceSol = $isSourceSol")
-            appendLine("isAllowedToCorrectAmount = $isAllowedToCorrectAmount")
-            appendLine("totalNeeded = $totalNeeded")
-            appendLine("isEnoughSolBalance = $isEnoughSolBalance")
-            appendLine("shouldTryReduceAmount = $shouldTryReduceAmount")
-            appendLine("hasAlternativeFeePayerTokens = $hasAlternativeFeePayerTokens")
-            appendLine("alternativeFeePayerTokens = ${alternativeFeePayerTokens.map(Token.Active::tokenSymbol)}")
-            appendLine("isValidToSwitchOnSource = $isValidToSwitchOnSource")
-            appendLine("shouldSwitchToSpl = $shouldSwitchToSpl")
-        })
+        Timber.i(
+            buildString {
+                appendLine("isSourceSol = $isSourceSol")
+                appendLine("isAllowedToCorrectAmount = $isAllowedToCorrectAmount")
+                appendLine("totalNeeded = $totalNeeded")
+                appendLine("isEnoughSolBalance = $isEnoughSolBalance")
+                appendLine("shouldTryReduceAmount = $shouldTryReduceAmount")
+                appendLine("hasAlternativeFeePayerTokens = $hasAlternativeFeePayerTokens")
+                appendLine("alternativeFeePayerTokens = ${alternativeFeePayerTokens.map(Token.Active::tokenSymbol)}")
+                appendLine("isValidToSwitchOnSource = $isValidToSwitchOnSource")
+                appendLine("shouldSwitchToSpl = $shouldSwitchToSpl")
+            }
+        )
         return when {
             shouldSwitchToSpl -> {
                 SwitchToSpl(sourceToken)

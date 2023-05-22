@@ -143,6 +143,10 @@ class SendViaLinkFragment :
         binding.widgetSendDetails.disableFiat()
     }
 
+    override fun enableSwitchAmounts() {
+        binding.widgetSendDetails.enableFiat()
+    }
+
     override fun disableInputs() {
         binding.widgetSendDetails.disableInputs()
     }
