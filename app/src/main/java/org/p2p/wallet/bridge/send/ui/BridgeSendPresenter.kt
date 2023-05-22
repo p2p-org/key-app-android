@@ -20,6 +20,7 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.bridge.analytics.SendBridgesAnalytics
 import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.toBridgeAmount
@@ -40,9 +41,7 @@ import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.SearchResult
@@ -61,7 +60,6 @@ class BridgeSendPresenter(
     private val userInteractor: UserInteractor,
     private val bridgeInteractor: BridgeSendInteractor,
     private val resources: Resources,
-    private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
     private val connectionStateProvider: NetworkConnectionStateProvider,
     private val sendBridgesAnalytics: SendBridgesAnalytics,
@@ -70,7 +68,7 @@ class BridgeSendPresenter(
     private val initialData: SendInitialData.Bridge,
     private val stateMachine: SendStateMachine,
     private val bridgeSendUiMapper: BridgeSendUiMapper,
-    private val historyInteractor: HistoryInteractor
+    private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
 
     private var currentState: SendState = SendState.Static.Empty
@@ -114,6 +112,7 @@ class BridgeSendPresenter(
                     sliderButton = resources.getString(R.string.bridge_send)
                 )
             }
+
             is SendState.Static.TokenNotZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.amount)
@@ -124,6 +123,7 @@ class BridgeSendPresenter(
                     sliderButton = null
                 )
             }
+
             is SendState.Static.TokenZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.inputAmount.orZero())
@@ -177,6 +177,7 @@ class BridgeSendPresenter(
                                 sliderButton = null
                             )
                         }
+
                         is SendFeatureException.NotEnoughAmount,
                         is SendFeatureException.InsufficientFunds,
                         is SendFeatureException.FeeIsMoreThanAmount -> {
@@ -188,6 +189,7 @@ class BridgeSendPresenter(
                         }
                     }
                 }
+
                 is SendState.Exception.Other -> if (state.exception.isConnectionError()) {
                     view?.showUiKitSnackBar(
                         message = resources.getString(R.string.error_no_internet_message),
@@ -448,9 +450,10 @@ class BridgeSendPresenter(
                 )
                 userInteractor.addRecipient(recipientAddress, transactionDate)
             } catch (e: Throwable) {
-                Timber.e(e)
+                Timber.e(e, "Error sending the token via bridge")
                 val message = e.getErrorMessage { res -> resources.getString(res) }
                 transactionManager.emitTransactionState(transactionId, TransactionState.Error(message))
+                logSendErrorAlarm(e)
             }
         }
     }
@@ -482,6 +485,20 @@ class BridgeSendPresenter(
             amountInToken = amountInToken,
             amountInUsd = amountInUsd,
             fee = fee,
+        )
+    }
+
+    private fun logSendErrorAlarm(e: Throwable) {
+        val lastStaticState = currentState.lastStaticState
+        val token = lastStaticState.bridgeToken?.token ?: return
+        val arbiterFeeAmount = lastStaticState.bridgeFee?.fee?.arbiterFee?.amountInToken?.toPlainString()
+        alarmErrorsLogger.triggerBridgeSendAlarm(
+            token = token,
+            currency = calculationMode.getCurrencyMode().getCurrencyModeSymbol(),
+            sendAmount = calculationMode.getCurrentAmount().toPlainString(),
+            arbiterFeeAmount = arbiterFeeAmount.orEmpty(),
+            recipientEthPubkey = recipientAddress.addressState.address,
+            error = e
         )
     }
 }

@@ -163,6 +163,34 @@ class AlarmErrorsLogger(
         }
     }
 
+    fun triggerBridgeSendAlarm(
+        token: Token.Active,
+        currency: String,
+        sendAmount: String,
+        arbiterFeeAmount: String,
+        recipientEthPubkey: String,
+        error: Throwable
+    ) {
+        if (isDebugBuild) return
+
+        appScope.launch {
+            try {
+                val request = sendErrorConverter.toBridgeSendErrorRequest(
+                    token = token,
+                    userPublicKey = userPublicKey,
+                    currency = currency,
+                    sendAmount = sendAmount,
+                    arbiterFeeAmount = arbiterFeeAmount,
+                    recipientEthPubkey = recipientEthPubkey,
+                    error = error
+                )
+                retryRequest(block = { api.sendAlarm(request) })
+            } catch (error: Throwable) {
+                Timber.e(AlarmErrorsError(error), "Failed to send alarm")
+            }
+        }
+    }
+
     fun triggerUsernameAlarm(
         username: String,
         error: Throwable
