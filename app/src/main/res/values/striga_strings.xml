@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="striga_signup_finish_title">Thank you</string>
+    <string name="striga_signup_finish_subtitle">
+        Now you need to go through document and selfie verification.
+        This is a one-time procedure to ensure safety of your account.
+    </string>
+</resources>
