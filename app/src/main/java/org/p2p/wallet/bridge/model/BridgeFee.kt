@@ -1,6 +1,7 @@
 package org.p2p.wallet.bridge.model
 
 import android.os.Parcelable
+import java.math.BigDecimal
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.orZero
@@ -18,8 +19,10 @@ data class BridgeFee(
     val name: String,
     val decimals: Int
 ) : Parcelable {
-    val amountInToken
-        get() = amount?.toBigDecimal()?.orZero()?.divide(decimals.toPowerValue()).orZero()
+    val amountInToken: BigDecimal
+        get() = amount?.toBigDecimal()
+            .orZero()
+            .divide(decimals.toPowerValue())
 }
 
 fun BridgeFee?.toBridgeAmount(): BridgeAmount {

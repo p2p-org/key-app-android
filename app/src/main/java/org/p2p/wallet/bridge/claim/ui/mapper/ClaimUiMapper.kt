@@ -10,6 +10,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.orZero
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
@@ -36,16 +37,20 @@ class ClaimUiMapper(private val resources: Resources) {
         val amountUsd = willGetAmount?.fiatAmount.orZero()
         val minAmountForFreeFee = claimDetails?.minAmountForFreeFee.orZero()
         val isFreeTransaction = amountToClaim >= minAmountForFreeFee || claimDetails?.isFree == true
-        val feeList = claimDetails?.let {
+        val feeList: List<TextHighlighting>? = claimDetails?.let {
             listOf(it.networkFee, it.accountCreationFee, it.bridgeFee)
-        }?.filter { !isFreeTransaction }?.ifEmpty { null }
+        }
+            ?.filter { !isFreeTransaction }
+            ?.ifEmpty { null }
+            ?.let { listOf(toTextHighlighting(it)) }
+
         return NewShowProgress(
             date = transactionDate,
             tokenUrl = iconUrl,
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
             recipient = null,
-            totalFees = feeList?.let { listOf(toTextHighlighting(feeList)) },
+            totalFees = feeList,
             amountColor = R.color.text_mint
         )
     }
@@ -53,15 +58,13 @@ class ClaimUiMapper(private val resources: Resources) {
     fun makeClaimDetails(
         bridgeBundle: BridgeBundle,
         minAmountForFreeFee: BigDecimal
-    ): ClaimDetails {
-        return makeClaimDetails(
-            resultAmount = bridgeBundle.resultAmount,
-            fees = bridgeBundle.fees,
-            isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
-            minAmountForFreeFee = minAmountForFreeFee,
-            transactionDate = bridgeBundle.dateCreated
-        )
-    }
+    ): ClaimDetails = makeClaimDetails(
+        resultAmount = bridgeBundle.resultAmount,
+        fees = bridgeBundle.fees,
+        isFree = bridgeBundle.compensationDeclineReason.isEmpty(),
+        minAmountForFreeFee = minAmountForFreeFee,
+        transactionDate = bridgeBundle.dateCreated
+    )
 
     fun makeClaimDetails(
         isFree: Boolean,
@@ -70,11 +73,12 @@ class ClaimUiMapper(private val resources: Resources) {
         minAmountForFreeFee: BigDecimal,
         transactionDate: ZonedDateTime,
     ): ClaimDetails {
+        val resultAmountBridge = resultAmount.toBridgeAmount()
         val defaultFee = fees?.gasFeeInToken.toBridgeAmount()
         return ClaimDetails(
             isFree = isFree,
-            willGetAmount = resultAmount.toBridgeAmount(),
-            totalAmount = resultAmount.toBridgeAmount(),
+            willGetAmount = resultAmountBridge,
+            totalAmount = resultAmountBridge + defaultFee,
             networkFee = defaultFee,
             accountCreationFee = fees?.createAccount.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(),
@@ -83,8 +87,8 @@ class ClaimUiMapper(private val resources: Resources) {
         )
     }
 
-    fun getTextSkeleton(): TextViewCellModel.Skeleton {
-        return TextViewCellModel.Skeleton(
+    fun getTextSkeleton(): TextViewCellModel.Skeleton =
+        TextViewCellModel.Skeleton(
             SkeletonCellModel(
                 height = 24.toPx(),
                 width = 100.toPx(),
@@ -92,11 +96,10 @@ class ClaimUiMapper(private val resources: Resources) {
                 gravity = Gravity.END
             )
         )
-    }
 
     fun mapFeeTextContainer(fees: BridgeBundleFees, isFree: Boolean): TextViewCellModel.Raw {
         val feeList = listOf(fees.arbiterFee, fees.gasFeeInToken, fees.createAccount)
-        val fee: BigDecimal = feeList.sumOf { it.amountInUsd?.toBigDecimal() ?: BigDecimal.ZERO }
+        val fee: BigDecimal = feeList.sumOf { it.amountInUsd.toBigDecimalOrZero() }
         val feeValue = if (isFree) {
             resources.getString(R.string.bridge_claim_fees_free)
         } else {
@@ -115,7 +118,9 @@ class ClaimUiMapper(private val resources: Resources) {
     }
 
     private fun toTextHighlighting(items: List<BridgeAmount>): TextHighlighting {
-        val usdText = items.filter { !it.isZero }.sumOf { it.fiatAmount.orZero() }.asApproximateUsd(withBraces = false)
+        val usdText = items.filter { !it.isZero }
+            .sumOf { it.fiatAmount.orZero() }
+            .asApproximateUsd(withBraces = false)
         return TextHighlighting(
             commonText = usdText,
             highlightedText = usdText
