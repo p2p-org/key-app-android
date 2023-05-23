@@ -20,9 +20,7 @@ data class BridgeFee(
     val decimals: Int
 ) : Parcelable {
     val amountInToken: BigDecimal
-        get() = amount?.toBigDecimal()
-            .orZero()
-            .divide(decimals.toPowerValue())
+        get() = amount?.toBigDecimal()?.let { it.divide(decimals.toPowerValue()) }.orZero()
 }
 
 fun BridgeFee?.toBridgeAmount(): BridgeAmount {
