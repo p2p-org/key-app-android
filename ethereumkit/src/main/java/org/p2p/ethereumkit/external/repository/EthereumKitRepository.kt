@@ -38,7 +38,6 @@ internal class EthereumKitRepository(
 ) : EthereumRepository {
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
-    private var localTokensMetadata = mutableListOf<EthTokenMetadata>()
     private var ethereumTokensFlow = MutableStateFlow<List<Token.Eth>>(emptyList())
 
     override fun init(seedPhrase: List<String>) {
@@ -79,13 +78,13 @@ internal class EthereumKitRepository(
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>) {
         val walletTokens = withContext(dispatchers.io) {
             try {
-                localTokensMetadata.addAll(loadTokensMetadata())
-                getPriceForTokens(localTokensMetadata.map { it.contractAddress.hex })
+                val tokensMetadata = loadTokensMetadata()
+                getPriceForTokens(tokensMetadata.map { it.contractAddress.hex })
                     .onEach { (address, price) ->
-                        localTokensMetadata.find { it.contractAddress.hex == address }?.price = price
+                        tokensMetadata.find { it.contractAddress.hex == address }?.price = price
                     }
 
-                (listOf(getEthToken()) + localTokensMetadata).map { metadata ->
+                (listOf(getEthToken()) + tokensMetadata).map { metadata ->
                     var isClaiming = false
                     var latestBundleId: String? = null
                     var tokenAmount: BigDecimal? = null
