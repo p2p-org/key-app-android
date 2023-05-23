@@ -75,10 +75,15 @@ class ClaimUiMapper(private val resources: Resources) {
     ): ClaimDetails {
         val resultAmountBridge = resultAmount.toBridgeAmount()
         val defaultFee = fees?.gasFeeInToken.toBridgeAmount()
+        val totalAmount = if (isFree) {
+            resultAmountBridge
+        } else {
+            resultAmountBridge + defaultFee
+        }
         return ClaimDetails(
             isFree = isFree,
             willGetAmount = resultAmountBridge,
-            totalAmount = resultAmountBridge + defaultFee,
+            totalAmount = totalAmount,
             networkFee = defaultFee,
             accountCreationFee = fees?.createAccount.toBridgeAmount(),
             bridgeFee = fees?.arbiterFee.toBridgeAmount(),

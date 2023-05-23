@@ -8,6 +8,7 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.wallet.utils.divideSafe
 
 @Parcelize
 data class BridgeFee(
@@ -20,7 +21,7 @@ data class BridgeFee(
     val decimals: Int
 ) : Parcelable {
     val amountInToken: BigDecimal
-        get() = amount?.toBigDecimal()?.let { it.divide(decimals.toPowerValue()) }.orZero()
+        get() = amount.toBigDecimalOrZero().divideSafe(decimals.toPowerValue())
 }
 
 fun BridgeFee?.toBridgeAmount(): BridgeAmount {
