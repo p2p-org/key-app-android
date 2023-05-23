@@ -2,7 +2,13 @@ package org.p2p.wallet.striga.repository
 
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 
-sealed interface StrigaDataLayerResult<out T, out E : StrigaDataLayerError> {
-    data class Success<T, E : StrigaDataLayerError>(val value: T) : StrigaDataLayerResult<T, E>
-    class Failure<T, E : StrigaDataLayerError>(val error: E) : StrigaDataLayerResult<T, E>
+sealed interface StrigaDataLayerResult<out T> {
+    data class Success<T>(val value: T) : StrigaDataLayerResult<T>
+    class Failure<T>(val error: StrigaDataLayerError) : StrigaDataLayerResult<T>
+
+    @Throws(StrigaDataLayerError::class)
+    fun unwrap(): T = when (this) {
+        is Success -> value
+        is Failure -> throw error
+    }
 }

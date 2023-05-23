@@ -12,8 +12,6 @@ import org.p2p.wallet.utils.Base58String
 
 private const val TAG = "StrigaSignupDataDatabaseRepository"
 
-private typealias NoResult = StrigaDataLayerResult<Unit, StrigaDataLayerError>
-
 class StrigaSignupDataDatabaseRepository(
     private val dao: StrigaSignupDataDao,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -24,24 +22,22 @@ class StrigaSignupDataDatabaseRepository(
     private val currentUserPublicKey: Base58String
         get() = tokenKeyProvider.publicKeyBase58
 
-    override suspend fun getUserSignupData():
-        StrigaDataLayerResult<List<StrigaSignupDataEntity>, StrigaDataLayerError> = try {
+    override suspend fun getUserSignupData(): StrigaDataLayerResult<List<StrigaSignupData>> = try {
         dao.getSignupDataForUser(currentUserPublicKey.base58Value)
+            .map(mapper::fromEntity)
             .toSuccessResult()
     } catch (error: Throwable) {
-        StrigaDataLayerError.DatabaseError(error)
-            .toFailureResult()
+        StrigaDataLayerError.DatabaseError(error).toFailureResult()
     }
 
-    override suspend fun createUserSignupData(): StrigaDataLayerResult<Unit, StrigaDataLayerError> = try {
+    override suspend fun createUserSignupData(): StrigaDataLayerResult<Unit> = try {
         val isUserHasNoSavedData: Boolean = dao.countSignupDataForUser(tokenKeyProvider.publicKey) == 0
         if (isUserHasNoSavedData) {
             prefillDataForUser()
         }
         success()
     } catch (error: Throwable) {
-        StrigaDataLayerError.DatabaseError(error)
-            .toFailureResult()
+        StrigaDataLayerError.DatabaseError(error).toFailureResult()
     }
 
     private suspend fun prefillDataForUser() {
@@ -55,7 +51,7 @@ class StrigaSignupDataDatabaseRepository(
             .also { dao.updateOrInsertData(it) }
     }
 
-    override suspend fun updateSignupData(newData: StrigaSignupData): NoResult = try {
+    override suspend fun updateSignupData(newData: StrigaSignupData): StrigaDataLayerResult<Unit> = try {
         val entity = mapper.toEntity(newData, currentUserPublicKey)
         dao.updateOrInsertData(entity)
         success()
@@ -63,20 +59,19 @@ class StrigaSignupDataDatabaseRepository(
         handleError(error)
     }
 
-    private fun <T> handleError(error: Throwable): StrigaDataLayerResult.Failure<T, StrigaDataLayerError> =
+    private fun <T> handleError(error: Throwable): StrigaDataLayerResult.Failure<T> =
         if (error is StrigaDataLayerError) {
             error
         } else {
             StrigaDataLayerError.InternalError(error)
-        }
-            .toFailureResult()
+        }.toFailureResult()
 
-    private fun <T, E : StrigaDataLayerError> E.toFailureResult(): StrigaDataLayerResult.Failure<T, E> =
+    private fun <T, E : StrigaDataLayerError> E.toFailureResult(): StrigaDataLayerResult.Failure<T> =
         StrigaDataLayerResult.Failure(this)
 
-    private fun <T, E : StrigaDataLayerError> T.toSuccessResult(): StrigaDataLayerResult.Success<T, E> =
+    private fun <T> T.toSuccessResult(): StrigaDataLayerResult.Success<T> =
         StrigaDataLayerResult.Success(this)
 
-    private fun success(): NoResult =
+    private fun success(): StrigaDataLayerResult.Success<Unit> =
         StrigaDataLayerResult.Success(Unit)
 }
