@@ -33,4 +33,3 @@ class StrigaKycDataInMemoryRepositoryTest {
         assertThat(result).isNotEmpty()
     }
 }
-
