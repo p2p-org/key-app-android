@@ -368,13 +368,14 @@ fun List<BridgeFee>.parseBridgeFees(): List<RpcFee>? {
     return if (isEmpty()) {
         null
     } else {
+        val tokenForMetadata = firstOrNull { it.symbol.isNotEmpty() }
         val feeInTokens = sumOf { it.amountInToken }
         val feeInFiat = sumOf { it.amountInUsd.toBigDecimalOrZero() }
         val finalFee = RpcFee(
             totalInTokens = feeInTokens,
             totalInUsd = feeInFiat,
-            tokensDecimals = firstOrNull()?.decimals,
-            tokenSymbol = firstOrNull()?.symbol
+            tokensDecimals = tokenForMetadata?.decimals,
+            tokenSymbol = tokenForMetadata?.symbol
         )
         listOf(finalFee)
     }
