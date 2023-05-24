@@ -1,10 +1,14 @@
 package org.p2p.wallet.striga.ui
 
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
+import kotlinx.coroutines.launch
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
+import org.p2p.core.token.Token
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -17,30 +21,43 @@ import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
-import org.p2p.wallet.databinding.DialogStrigaOnRampBinding
+import org.p2p.wallet.databinding.DialogTopupWalletBinding
+import org.p2p.wallet.moonpay.ui.BuySolanaFragment
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.receive.ReceiveFragmentFactory
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class StrigaOnRampBottomSheet : BaseBottomSheet(R.layout.dialog_striga_on_ramp) {
+private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+
+class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
 
     companion object {
-        fun show(fm: FragmentManager) {
-            val tag = StrigaOnRampBottomSheet::javaClass.name
+        fun show(token: Token.Active? = null, fm: FragmentManager) {
+            val tag = TopUpWalletBottomSheet::javaClass.name
             if (fm.findFragmentByTag(tag) != null) return
-            StrigaOnRampBottomSheet().show(fm, tag)
+            TopUpWalletBottomSheet().show(fm, tag)
         }
     }
 
-    private val binding: DialogStrigaOnRampBinding by viewBinding()
+    private val binding: DialogTopupWalletBinding by viewBinding()
+    private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
+    private val token: Token.Active? by args(EXTRA_TOKEN)
+    private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
+    private val userInteractor: UserInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             bankTransferView.bind(
                 model = getFinanceBlock(
-                    titleResId = R.string.striga_bank_transfer_title,
-                    subtitleRes = R.string.striga_bank_transfer_subtitle,
-                    iconResId = R.drawable.ic_striga_bank_transfer,
+                    titleResId = R.string.bank_transfer_title,
+                    subtitleRes = R.string.bank_transfer_subtitle,
+                    iconResId = R.drawable.ic_bank_transfer,
                     backgroundTintId = R.color.light_grass
                 )
             )
@@ -49,25 +66,32 @@ class StrigaOnRampBottomSheet : BaseBottomSheet(R.layout.dialog_striga_on_ramp) 
             }
             bankCardView.bind(
                 model = getFinanceBlock(
-                    titleResId = R.string.striga_bank_card_title,
-                    subtitleRes = R.string.striga_bank_card_subtitle,
-                    iconResId = R.drawable.ic_striga_bank_card,
+                    titleResId = R.string.bank_card_title,
+                    subtitleRes = R.string.bank_card_subtitle,
+                    iconResId = R.drawable.ic_bank_card,
                     backgroundTintId = R.color.light_sea
                 )
             )
             bankCardView.setOnClickAction { _, _ ->
-                // TODO PWN-8457
+                lifecycleScope.launch {
+                    val tokenForBuy = token ?: userInteractor.getTokensForBuy().firstOrNull() ?: return@launch
+                    if (newBuyFeatureToggle.isFeatureEnabled) {
+                        replaceFragment(NewBuyFragment.create(tokenForBuy))
+                    } else {
+                        replaceFragment(BuySolanaFragment.create(tokenForBuy))
+                    }
+                }
             }
             cryptoView.bind(
                 model = getFinanceBlock(
-                    titleResId = R.string.striga_crypto_title,
-                    subtitleRes = R.string.striga_crypto_subtitle,
-                    iconResId = R.drawable.ic_striga_crypto,
+                    titleResId = R.string.crypto_title,
+                    subtitleRes = R.string.crypto_subtitle,
+                    iconResId = R.drawable.ic_crypto,
                     backgroundTintId = R.color.light_sun
                 )
             )
             cryptoView.setOnClickAction { _, _ ->
-                // TODO PWN-8457
+                replaceFragment(receiveFragmentFactory.receiveFragment())
             }
         }
     }

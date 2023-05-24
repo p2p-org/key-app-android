@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="striga_topup_your_account">Top up your account</string>
-    <string name="striga_bank_transfer_title">Bank transfer</string>
-    <string name="striga_bank_transfer_subtitle">Up to 3 days · 0% fees</string>
-    <string name="striga_bank_card_title">Bank card</string>
-    <string name="striga_bank_card_subtitle">Instant · 4,5% fees</string>
-    <string name="striga_crypto_title">Crypto</string>
-    <string name="striga_crypto_subtitle">Up to 1 hour · 0% fees</string>
+    <string name="topup_your_account">Top up your account</string>
+    <string name="bank_transfer_title">Bank transfer</string>
+    <string name="bank_transfer_subtitle">Up to 3 days · 0% fees</string>
+    <string name="bank_card_title">Bank card</string>
+    <string name="bank_card_subtitle">Instant · 4,5% fees</string>
+    <string name="crypto_title">Crypto</string>
+    <string name="crypto_subtitle">Up to 1 hour · 0% fees</string>
 </resources>
