@@ -6,8 +6,9 @@ package org.p2p.solanaj.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
-import java.lang.System;
 import java.util.concurrent.atomic.AtomicLong;
+
+import androidx.annotation.NonNull;
 
 /*
  * @description
@@ -16,6 +17,12 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class TweetNaclFast {
 
     private final static String TAG = "TweetNaclFast";
+
+    static class SignFailed extends Exception {
+        SignFailed(Exception cause) {
+            super("TweetNaclFast signature failed", cause);
+        }
+    }
 
     /*
      * @description
@@ -760,12 +767,17 @@ public final class TweetNaclFast {
          * @description
          *   Signs the message using the secret key and returns a signature.
          * */
-        public byte [] detached(byte [] message) {
-            byte[] signedMsg = this.sign(message);
-            byte[] sig = new byte[signatureLength];
-            for (int i = 0; i < sig.length; i++)
-                sig[i] = signedMsg[i];
-            return sig;
+        @NonNull
+        public byte [] detached(byte [] message) throws SignFailed {
+            try {
+                byte[] signedMsg = this.sign(message);
+                byte[] sig = new byte[signatureLength];
+                for (int i = 0; i < sig.length; i++)
+                    sig[i] = signedMsg[i];
+                return sig;
+            } catch (Exception signError) {
+                throw new SignFailed(signError);
+            }
         }
 
         /*

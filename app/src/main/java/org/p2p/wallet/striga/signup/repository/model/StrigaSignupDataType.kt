@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.model
+package org.p2p.wallet.striga.signup.repository.model
 
 import androidx.annotation.StringRes
 import android.content.res.Resources

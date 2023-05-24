@@ -1,13 +1,16 @@
-package org.p2p.wallet.striga.repository
+package org.p2p.wallet.striga.signup.repository
 
 import android.content.res.Resources
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaSignupData
-import org.p2p.wallet.striga.model.StrigaSignupDataType
-import org.p2p.wallet.striga.repository.dao.StrigaSignupDataDao
-import org.p2p.wallet.striga.repository.dao.StrigaSignupDataEntity
-import org.p2p.wallet.striga.repository.mapper.StrigaSignupDataMapper
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.signup.dao.StrigaSignupDataDao
+import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
+import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
+import org.p2p.wallet.striga.model.toFailureResult
+import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.utils.Base58String
 
 private const val TAG = "StrigaSignupDataDatabaseRepository"
@@ -65,12 +68,6 @@ class StrigaSignupDataDatabaseRepository(
         } else {
             StrigaDataLayerError.InternalError(error)
         }.toFailureResult()
-
-    private fun <T, E : StrigaDataLayerError> E.toFailureResult(): StrigaDataLayerResult.Failure<T> =
-        StrigaDataLayerResult.Failure(this)
-
-    private fun <T> T.toSuccessResult(): StrigaDataLayerResult.Success<T> =
-        StrigaDataLayerResult.Success(this)
 
     private fun success(): StrigaDataLayerResult.Success<Unit> =
         StrigaDataLayerResult.Success(Unit)

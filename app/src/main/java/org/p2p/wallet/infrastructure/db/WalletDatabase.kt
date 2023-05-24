@@ -24,8 +24,8 @@ import org.p2p.wallet.newsend.db.RecipientEntity
 import org.p2p.wallet.newsend.db.RecipientsDao
 import org.p2p.wallet.renbtc.db.SessionDao
 import org.p2p.wallet.renbtc.db.SessionEntity
-import org.p2p.wallet.striga.repository.dao.StrigaSignupDataDao
-import org.p2p.wallet.striga.repository.dao.StrigaSignupDataEntity
+import org.p2p.wallet.striga.signup.dao.StrigaSignupDataDao
+import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
 
 @Database(
     entities = [
