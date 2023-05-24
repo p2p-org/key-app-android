@@ -53,7 +53,9 @@ class StrigaSmsInputFragment : BaseSmsInputFragment() {
             .setIcon(R.drawable.ic_key_app_circle)
             .setTitle(getString(R.string.striga_exit_sms_input_warning_dialog_title))
             .setMessage(getString(R.string.striga_exit_sms_input_warning_dialog_message))
-            .setNegativeButton(R.string.striga_exit_sms_input_warning_dialog_btn_negative) { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton(R.string.striga_exit_sms_input_warning_dialog_btn_negative) { dialog, _ ->
+                dialog.dismiss()
+            }
             .setPositiveButton(R.string.striga_exit_sms_input_warning_dialog_btn_positive) { _, _ -> popBackStack() }
             .show()
     }

@@ -3,9 +3,7 @@ package org.p2p.wallet.smsinput.striga
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.smsinput.SmsInputContract
 
-class StrigaSmsInputPresenter(
-
-) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
+class StrigaSmsInputPresenter() : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
 
     override fun attach(view: SmsInputContract.View) {
         super.attach(view)
