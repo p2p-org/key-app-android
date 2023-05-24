@@ -18,4 +18,10 @@
     <string name="striga_powered_by_url">https://striga.com</string>
     <string name="striga_onboarding_country_subtitle">Your country</string>
     <string name="string_onboarding_title">Open IBAN account for international transfers with zero fees</string>
+    <string name="striga_sms_input_title">To start verification confirm your phone number %1$s</string>
+    <string name="striga_sms_input_toolbar_title">Step 3 of 3</string>
+    <string name="striga_exit_sms_input_warning_dialog_title">Do you want to stop registration?</string>
+    <string name="striga_exit_sms_input_warning_dialog_message">You can confirm the phone number and finish the registration later</string>
+    <string name="striga_exit_sms_input_warning_dialog_btn_positive">Yes, leave the page</string>
+    <string name="striga_exit_sms_input_warning_dialog_btn_negative">No, continue</string>
 </resources>
