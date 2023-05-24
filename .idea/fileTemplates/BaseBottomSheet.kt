@@ -13,9 +13,9 @@ class ${NAME}Presenter :
     BasePresenter<${NAME}Contract.View>(),
     ${NAME}Contract.Presenter
 
-class ${NAME}Fragment :
-    BaseMvpFragment<${NAME}Contract.View, ${NAME}Contract.Presenter>(),
-    ${NAME}Contract.View {
+class ${NAME}BottomSheet :
+    BaseMvpBottomSheet<${NAME}Contract.View, ${NAME}Contract.Presenter>(),
+    ${NAME}Contract.View  {
 
     override val presenter: ${NAME}Contract.Presenter by inject()
 

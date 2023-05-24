@@ -3,7 +3,7 @@
 import android.os.Bundle
 import android.view.View
 
-class NewNoOpFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpView>>() {
+class ${NAME}Fragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpView>>() {
 
     override val presenter = NoOpPresenter<MvpView>()
 

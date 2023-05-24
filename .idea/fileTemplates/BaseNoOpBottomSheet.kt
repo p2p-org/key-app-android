@@ -3,7 +3,7 @@
 import android.os.Bundle
 import android.view.View
 
-class NewNoOpBottomSheet : BaseMvpBottomSheet<MvpView, NoOpPresenter<MvpView>>() {
+class ${NAME}BottomSheet : BaseMvpBottomSheet<MvpView, NoOpPresenter<MvpView>>() {
 
     override val presenter = NoOpPresenter<MvpView>()
 
