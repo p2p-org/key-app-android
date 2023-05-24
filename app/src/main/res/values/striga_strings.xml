@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="striga_onboarding_button_change_country">Change Country</string>
+    <string name="striga_powered_by">Powered by Striga</string>
+    <string name="striga_powered_by_url">https://striga.com</string>
+    <string name="striga_onboarding_country_subtitle">Your country</string>
+    <string name="string_onboarding_title">Open IBAN account for international transfers with zero fees</string>
+</resources>
