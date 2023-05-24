@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="topup_your_account">Top up your account</string>
+    <string name="bank_transfer_title">Bank transfer</string>
+    <string name="bank_transfer_subtitle">Up to 3 days · 0% fees</string>
+    <string name="bank_card_title">Bank card</string>
+    <string name="bank_card_subtitle">Instant · 4,5% fees</string>
+    <string name="crypto_title">Crypto</string>
+    <string name="crypto_subtitle">Up to 1 hour · 0% fees</string>
+
+    <string name="striga_signup_finish_title">Thank you</string>
+    <string name="striga_signup_finish_subtitle">
+        Now you need to go through document and selfie verification.
+        This is a one-time procedure to ensure safety of your account.
+    </string>
     <string name="striga_sms_input_title">To start verification confirm your phone number %1$s</string>
     <string name="striga_sms_input_toolbar_title">Step 3 of 3</string>
     <string name="striga_exit_sms_input_warning_dialog_title">Do you want to stop registration?</string>

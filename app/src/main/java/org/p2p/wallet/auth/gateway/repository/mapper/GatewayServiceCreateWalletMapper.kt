@@ -118,12 +118,17 @@ class GatewayServiceCreateWalletMapper(
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
+        val timestamp = System.currentTimeMillis()
         val encryptedMetadata: GatewayOnboardingMetadataCiphered = onboardingMetadataCipher.encryptMetadata(
             mnemonicPhrase = userSeedPhrase,
             onboardingMetadata = GatewayOnboardingMetadata(
+                ethPublic = etheriumAddress.lowercase(),
+                metaTimestamp = timestamp,
                 deviceShareDeviceName = Build.MANUFACTURER + ' ' + Build.MODEL,
                 customSharePhoneNumberE164 = phoneNumber.e164Formatted(),
-                socialShareOwnerEmail = socialShareOwnerId
+                phoneNumberTimestamp = timestamp,
+                socialShareOwnerEmail = socialShareOwnerId,
+                emailTimestamp = timestamp,
             )
         )
 
