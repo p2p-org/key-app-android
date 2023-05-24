@@ -23,7 +23,7 @@ class StrigaOnboardingPresenter(
 
     override fun onCountrySelected(country: Country) {
         view?.setCurrentCountry(country)
-        if (isSupportedCountry(country)) {
+        if (isCountrySupported(country)) {
             view?.setButtonState(StrigaOnboardingContract.View.ButtonState.Continue)
 
             // todo: save country
@@ -41,7 +41,7 @@ class StrigaOnboardingPresenter(
         view?.openCountrySelection()
     }
 
-    private fun isSupportedCountry(country: Country): Boolean {
-        return strigaPresetDataLocalRepository.checkIsSupportedCountry(country)
+    private fun isCountrySupported(country: Country): Boolean {
+        return strigaPresetDataLocalRepository.checkIsCountrySupported(country)
     }
 }

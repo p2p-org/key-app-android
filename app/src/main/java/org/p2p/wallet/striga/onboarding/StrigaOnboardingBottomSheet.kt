@@ -1,13 +1,10 @@
 package org.p2p.wallet.striga.onboarding
 
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentManager
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import org.koin.android.ext.android.inject
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
@@ -21,6 +18,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogStrigaOnboardingBinding
+import org.p2p.wallet.utils.viewbinding.getDrawable
+import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class StrigaOnboardingBottomSheet :
     BaseMvpBottomSheet<StrigaOnboardingContract.View, StrigaOnboardingContract.Presenter>(
@@ -40,12 +39,7 @@ class StrigaOnboardingBottomSheet :
 
     override val presenter: StrigaOnboardingContract.Presenter by inject()
 
-    private lateinit var binding: DialogStrigaOnboardingBinding
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DialogStrigaOnboardingBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    private val binding: DialogStrigaOnboardingBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,7 +48,8 @@ class StrigaOnboardingBottomSheet :
             presenter.onClickChangeCountry()
         }
         binding.textViewPoweredBy.setOnClickListener {
-            Intent(Intent.ACTION_VIEW, getString(R.string.striga_powered_by_url).toUri()).also { startActivity(it) }
+            Intent(Intent.ACTION_VIEW, getString(R.string.striga_powered_by_url).toUri())
+                .also { startActivity(it) }
         }
     }
 
@@ -83,7 +78,7 @@ class StrigaOnboardingBottomSheet :
     }
 
     private fun mapCountryView(countryName: String, countryFlag: String) {
-        binding.changeCountryBlock.bind(
+        binding.blockChangeCountry.bind(
             FinanceBlockCellModel(
                 background = null,
                 leftSideCellModel = LeftSideCellModel.IconWithText(
@@ -127,8 +122,10 @@ class StrigaOnboardingBottomSheet :
         with(binding.buttonContinue) {
             setText(state.textRes)
             icon = if (state.showArrowRight) {
-                ContextCompat.getDrawable(requireContext(), R.drawable.ic_chevron_right)
-            } else null
+                binding.getDrawable(R.drawable.ic_chevron_right)
+            } else {
+                null
+            }
         }
     }
 }

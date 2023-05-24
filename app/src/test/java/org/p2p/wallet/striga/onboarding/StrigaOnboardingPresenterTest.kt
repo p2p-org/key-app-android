@@ -59,7 +59,7 @@ class StrigaOnboardingPresenterTest {
     @Test
     fun `GIVEN unsupported country WHEN presenter initialized THEN check button state is ChangeCountry`() = runTest {
         coEvery { countryRepository.detectCountryOrDefault() } returns UnsupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsSupportedCountry(any()) } answers {
+        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
             arg<Country>(0) == SupportedCountry
         }
 
@@ -74,15 +74,18 @@ class StrigaOnboardingPresenterTest {
         verify(exactly = 1) { view.setCurrentCountry(capture(countryStates)) }
         verify(exactly = 1) { view.setButtonState(capture(buttonStates)) }
         verify(exactly = 0) { view.openCountrySelection() }
+        verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(UnsupportedCountry, countryStates.back())
         assertEquals(StrigaOnboardingContract.View.ButtonState.ChangeCountry, buttonStates.back())
+
+        presenter.detach()
     }
 
     @Test
     fun `GIVEN supported country WHEN presenter initialized THEN check button state is Continue`() = runTest {
         coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsSupportedCountry(any()) } answers {
+        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
             arg<Country>(0) == SupportedCountry
         }
 
@@ -97,15 +100,18 @@ class StrigaOnboardingPresenterTest {
         verify(exactly = 1) { view.setCurrentCountry(capture(countryStates)) }
         verify(exactly = 1) { view.setButtonState(capture(buttonStates)) }
         verify(exactly = 0) { view.openCountrySelection() }
+        verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(SupportedCountry, countryStates.back())
         assertEquals(StrigaOnboardingContract.View.ButtonState.Continue, buttonStates.back())
+
+        presenter.detach()
     }
 
     @Test
     fun `GIVEN unsupported country and changed to supported WHEN presenter initialized THEN check button state is Continue`() = runTest {
         coEvery { countryRepository.detectCountryOrDefault() } returns UnsupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsSupportedCountry(any()) } answers {
+        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
             arg<Country>(0) == SupportedCountry
         }
 
@@ -123,17 +129,49 @@ class StrigaOnboardingPresenterTest {
         verify(exactly = 2) { view.setCurrentCountry(capture(countryStates)) }
         verify(exactly = 2) { view.setButtonState(capture(buttonStates)) }
         verify(exactly = 0) { view.openCountrySelection() }
+        verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(UnsupportedCountry, countryStates.front())
         assertEquals(SupportedCountry, countryStates.back())
         assertEquals(StrigaOnboardingContract.View.ButtonState.ChangeCountry, buttonStates.front())
         assertEquals(StrigaOnboardingContract.View.ButtonState.Continue, buttonStates.back())
+
+        presenter.detach()
+    }
+
+    @Test
+    fun `GIVEN initial state WHEN selected unsupported country THEN check button state is ChangeCountry`() = runTest {
+        coEvery { countryRepository.detectCountryOrDefault() } returns UnsupportedCountry
+        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
+            arg<Country>(0) == SupportedCountry
+        }
+
+        val view: StrigaOnboardingContract.View = mockk(relaxed = true)
+
+        val presenter = createPresenter()
+        presenter.attach(view)
+
+        // changing country
+        presenter.onCountrySelected(UnsupportedCountry)
+        advanceUntilIdle()
+
+        val countryStates = mutableListQueueOf<Country>()
+        val buttonStates = mutableListQueueOf<StrigaOnboardingContract.View.ButtonState>()
+        verify(exactly = 2) { view.setCurrentCountry(capture(countryStates)) }
+        verify(exactly = 2) { view.setButtonState(capture(buttonStates)) }
+        verify(exactly = 0) { view.openCountrySelection() }
+        verify(exactly = 0) { view.navigateNext() }
+
+        assertEquals(UnsupportedCountry, countryStates.back())
+        assertEquals(StrigaOnboardingContract.View.ButtonState.ChangeCountry, buttonStates.back())
+
+        presenter.detach()
     }
 
     @Test
     fun `GIVEN initial state WHEN clicked country THEN check country selection is opened`() = runTest {
         coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsSupportedCountry(any()) } answers {
+        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
             arg<Country>(0) == SupportedCountry
         }
 
@@ -145,12 +183,14 @@ class StrigaOnboardingPresenterTest {
         advanceUntilIdle()
 
         verify(exactly = 1) { view.openCountrySelection() }
+
+        presenter.detach()
     }
 
     @Test
     fun `GIVEN supported country WHEN clicked continue THEN check navigate to next destination`() = runTest {
         coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsSupportedCountry(any()) } answers {
+        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
             arg<Country>(0) == SupportedCountry
         }
 
@@ -162,5 +202,7 @@ class StrigaOnboardingPresenterTest {
         advanceUntilIdle()
 
         verify(exactly = 1) { view.navigateNext() }
+
+        presenter.detach()
     }
 }

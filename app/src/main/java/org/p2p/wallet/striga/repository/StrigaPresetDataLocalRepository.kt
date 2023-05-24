@@ -11,5 +11,5 @@ interface StrigaPresetDataLocalRepository {
     /**
      * @return true if the country is supported by Striga
      */
-    fun checkIsSupportedCountry(country: Country): Boolean
+    fun checkIsCountrySupported(country: Country): Boolean
 }

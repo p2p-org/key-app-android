@@ -28,7 +28,7 @@
         android:layout_marginTop="16dp"
         android:paddingHorizontal="16dp"
         android:paddingTop="16dp"
-        app:layout_constraintBottom_toTopOf="@id/button_continue"
+        app:layout_constraintBottom_toTopOf="@id/buttonContinue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/viewPointer">
@@ -55,7 +55,7 @@
             app:layout_constraintTop_toBottomOf="@id/image" />
 
         <org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
-            android:id="@+id/change_country_block"
+            android:id="@+id/blockChangeCountry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -66,7 +66,7 @@
             app:layout_constraintTop_toBottomOf="@id/title" />
 
         <TextView
-            android:id="@+id/text_view_powered_by"
+            android:id="@+id/textViewPoweredBy"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -76,11 +76,11 @@
             android:textColor="@color/sky"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/change_country_block" />
+            app:layout_constraintTop_toBottomOf="@id/blockChangeCountry" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/button_continue"
+        android:id="@+id/buttonContinue"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="@dimen/ui_kit_button_large_height"
@@ -93,15 +93,15 @@
         app:icon="@drawable/ic_arrow_right"
         app:iconGravity="textEnd"
         app:iconTint="@color/lime"
-        app:layout_constraintBottom_toTopOf="@id/space_button"
+        app:layout_constraintBottom_toTopOf="@id/spaceForButton"
         app:layout_constraintTop_toBottomOf="@id/viewInner" />
 
-    <View
-        android:id="@+id/space_button"
+    <Space
+        android:id="@+id/spaceForButton"
         android:layout_width="0dp"
         android:layout_height="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_continue" />
+        app:layout_constraintTop_toBottomOf="@id/buttonContinue" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

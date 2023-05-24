@@ -14,7 +14,11 @@ keyappCoverage {
     reportXml = true
     excludes += listOf(
         "org/p2p/wallet/databinding/*",
-        "com/bumptech/glide/*"
+        "com/bumptech/glide/*",
+        "**/*Module.class",
+        "**/*Fragment.class",
+        "**/*BottomSheet.class",
+        "**/*Activity.class",
     )
     configureJacoco {
         reportsDirectory.set(file("${buildDir}/reports/jacoco"))

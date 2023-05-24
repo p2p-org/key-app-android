@@ -52,7 +52,7 @@ class StrigaPresetDataInMemoryRepository(
         return cachedSourceOfFunds.ifEmpty(::parseSourceOfFundsFile)
     }
 
-    override fun checkIsSupportedCountry(country: Country): Boolean {
+    override fun checkIsCountrySupported(country: Country): Boolean {
         return country.code.lowercase() in supportedStrigaCountries
     }
 
