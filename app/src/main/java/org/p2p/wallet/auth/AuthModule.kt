@@ -65,9 +65,9 @@ import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundPresenter
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenContract
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
-import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract
-import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
-import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
+import org.p2p.wallet.smsinput.SmsInputContract
+import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputPresenter
+import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule
@@ -170,7 +170,7 @@ object AuthModule {
         factoryOf(::RestoreErrorScreenPresenter) bind RestoreErrorScreenContract.Presenter::class
 
         singleOf(::SmsInputTimer)
-        factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
+        factoryOf(::OnboardingSmsInputPresenter) bind SmsInputContract.Presenter::class
 
         factoryOf(::RestoreUserResultHandler)
 

@@ -7,7 +7,7 @@ import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
+import org.p2p.wallet.smsinput.SmsInputTimer
 
 class RestoreWalletInteractor(
     private val customShareRestoreInteractor: CustomShareRestoreInteractor,
@@ -64,6 +64,6 @@ class RestoreWalletInteractor(
     }
 
     private fun resetTimer() {
-        smsInputTimer.smsResendCount = 0
+        smsInputTimer.resetSmsCount()
     }
 }
