@@ -2,16 +2,16 @@ package org.p2p.wallet.auth.repository
 
 import android.content.Context
 import android.telephony.TelephonyManager
+import timber.log.Timber
 import kotlinx.coroutines.withContext
-import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
+import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import timber.log.Timber
 
 class CountryCodeInMemoryRepository(
     private val dispatchers: CoroutineDispatchers,
     private val context: Context,
-    private val countryCodeHelper: CountryCodeHelper
+    private val countryCodeHelper: CountryCodeXmlParser
 ) : CountryCodeLocalRepository {
 
     private val allCountryCodes = mutableListOf<CountryCode>()
