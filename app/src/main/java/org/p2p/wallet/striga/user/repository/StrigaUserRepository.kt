@@ -4,5 +4,5 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.user.model.StrigaUserDetails
 
 interface StrigaUserRepository {
-    fun getUserDetails(): StrigaDataLayerResult<StrigaUserDetails>
+    suspend fun getUserDetails(): StrigaDataLayerResult<StrigaUserDetails>
 }

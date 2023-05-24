@@ -13,12 +13,15 @@ class StrigaUserRemoteRepository(
     private val strigaUserIdProvider: StrigaUserIdProvider,
     private val mapper: StrigaUserRepositoryMapper
 ) : StrigaUserRepository {
-    override fun getUserDetails(): StrigaDataLayerResult<StrigaUserDetails> {
+    override suspend fun getUserDetails(): StrigaDataLayerResult<StrigaUserDetails> {
         return try {
             val response = api.getUserDetails(strigaUserIdProvider.getUserId())
             mapper.fromNetwork(response).toSuccessResult()
         } catch (error: Throwable) {
-            StrigaDataLayerError.InternalError(error).toFailureResult()
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            ).toFailureResult()
         }
     }
 }

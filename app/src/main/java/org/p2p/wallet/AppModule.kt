@@ -6,6 +6,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.p2p.core.network.ConnectionManager
 import org.p2p.ethereumkit.EthereumKitService
+import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
 import org.p2p.wallet.bridge.claim.ClaimModule
@@ -27,7 +28,6 @@ import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.NetworkModule
-import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
 import org.p2p.wallet.moonpay.MoonpayModule
@@ -44,6 +44,7 @@ import org.p2p.wallet.sdk.di.AppSdkModule
 import org.p2p.wallet.sell.SellModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.solend.SolendModule
+import org.p2p.wallet.striga.di.StrigaSignupModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
@@ -109,7 +110,8 @@ object AppModule {
                 ReceiveModule.create(),
                 BridgeSendModule.create(),
                 ClaimModule.create(),
-                BridgeModule.create()
+                BridgeModule.create(),
+                StrigaSignupModule.create(),
             ) + EthereumKitService.getEthereumKitModules()
         )
     }

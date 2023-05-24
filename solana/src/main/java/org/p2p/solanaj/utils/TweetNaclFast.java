@@ -702,10 +702,11 @@ public final class TweetNaclFast {
             this.mySecretKey = mySecretKey;
         }
 
-        /*
-         * @description
-         *   Signs the message using the secret key and returns a signed message.
-         * */
+        /**
+         * Signs the message using the secret key and returns a SIGNED MESSAGE.
+         * @param message message to sign
+         * @return [signature + original message]
+         */
         public byte [] sign(byte [] message) {
             if (message==null) return null;
 
@@ -763,10 +764,11 @@ public final class TweetNaclFast {
             return msg;
         }
 
-        /*
-         * @description
-         *   Signs the message using the secret key and returns a signature.
-         * */
+        /**
+         * Signs the message using the secret key and returns a SIGNATURE.
+         * @param message message to sign
+         * @return signature with size of only 64 bytes, even if the message length more then that
+         */
         @NonNull
         public byte [] detached(byte [] message) throws SignFailed {
             try {

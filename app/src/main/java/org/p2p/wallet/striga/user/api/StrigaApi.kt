@@ -6,5 +6,5 @@ import org.p2p.wallet.striga.user.api.response.StrigaUserDetailsResponse
 
 interface StrigaApi {
     @POST("v1/user/{userId}")
-    fun getUserDetails(@Path("userId") userId: String): StrigaUserDetailsResponse
+    suspend fun getUserDetails(@Path("userId") userId: String): StrigaUserDetailsResponse
 }

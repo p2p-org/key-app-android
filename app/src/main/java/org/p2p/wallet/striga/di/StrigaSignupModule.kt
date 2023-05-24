@@ -1,6 +1,7 @@
 package org.p2p.wallet.striga.di
 
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.new
 import org.koin.dsl.bind
@@ -21,20 +22,25 @@ import org.p2p.wallet.striga.user.repository.StrigaUserRepositoryMapper
 
 object StrigaSignupModule : InjectionModule {
     override fun create() = module {
-        factoryOf(::StrigaSignupDataDatabaseRepository) bind StrigaSignupDataLocalRepository::class
-        factoryOf(::StrigaSignupDataMapper)
+        initDataLayer()
+    }
 
-        factoryOf(::StrigaUserIdProvider)
-        factoryOf(::StrigaUserRepositoryMapper)
-        factoryOf(::StrigaUserRemoteRepository) bind StrigaUserRepository::class
-
+    private fun Module.initDataLayer() {
         single<StrigaApi> {
-            val url = androidContext().getString(R.string.strigaProxyServiceBaseUrl)
+            val url = androidContext().getString(R.string.strigaProxyServiceProdBaseUrl)
             getRetrofit(
                 baseUrl = url,
                 tag = "StrigaProxyApi",
                 interceptor = new(::StrigaProxyApiInterceptor)
             ).create()
         }
+
+        factoryOf(::StrigaUserRepositoryMapper)
+        factoryOf(::StrigaUserRemoteRepository) bind StrigaUserRepository::class
+
+        factoryOf(::StrigaSignupDataDatabaseRepository) bind StrigaSignupDataLocalRepository::class
+        factoryOf(::StrigaSignupDataMapper)
+
+        factoryOf(::StrigaUserIdProvider)
     }
 }

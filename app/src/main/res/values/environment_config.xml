@@ -42,6 +42,7 @@
 
     <string name="alarmErrorsServiceBaseUrl">https://oncall.keyapp.org/</string>
 
-    <string name="strigaProxyServiceBaseUrl">https://payment.keyapp.org/striga/api</string>
+    <string name="strigaProxyServiceBaseUrl">https://payment.keyapp.org/striga/api/</string>
+    <string name="strigaProxyServiceProdBaseUrl">https://payment.key.app/striga/api/</string>
     <!--TODO PWN-4266 migrate googleClientId to CI for secure-->
 </resources>
