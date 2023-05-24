@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import timber.log.Timber
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.utils.getStringResourceByName
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
@@ -19,7 +20,8 @@ private const val KEY_BRIDGES_SERVICE_BASE_URL = "KEY_BRIDGES_SERVICE_BASE_URL"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val crashLogger: CrashLogger
 ) {
 
     fun loadFeeRelayerEnvironment(): FeeRelayerEnvironment {
@@ -28,6 +30,7 @@ class NetworkServicesUrlProvider(
             context.getString(R.string.feeRelayerBaseUrl)
         ).orEmpty()
 
+        crashLogger.setCustomKey(KEY_FEE_RELAYER_BASE_URL, url)
         return FeeRelayerEnvironment(url)
     }
 
@@ -42,6 +45,8 @@ class NetworkServicesUrlProvider(
         ).orEmpty()
 
         val isProductionSelected = url == context.getString(R.string.registerUsernameServiceProductionUrl)
+
+        crashLogger.setCustomKey(KEY_NAME_SERVICE_BASE_URL, url)
 
         return NameServiceEnvironment(url, isProductionSelected)
     }
@@ -64,6 +69,7 @@ class NetworkServicesUrlProvider(
             context.getString(R.string.notificationServiceBaseUrl)
         ).orEmpty()
 
+        crashLogger.setCustomKey(KEY_NOTIFICATION_SERVICE_BASE_URL, url)
         return NotificationServiceEnvironment(url)
     }
 
@@ -76,6 +82,8 @@ class NetworkServicesUrlProvider(
             KEY_BRIDGES_SERVICE_BASE_URL,
             context.getString(R.string.bridgesServiceBaseUrl)
         ).orEmpty()
+
+        crashLogger.setCustomKey(KEY_BRIDGES_SERVICE_BASE_URL, url)
 
         return BridgesServiceEnvironment(url)
     }
@@ -135,6 +143,9 @@ class NetworkServicesUrlProvider(
         val serverSideBaseUrl = sharedPreferences.getString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, defaultUrl).orEmpty()
         val clientSideBaseUrl = context.getString(R.string.moonpayClientSideBaseUrl)
         val isSandboxEnabled = serverSideBaseUrl == context.getString(R.string.moonpayServerSideProxySandboxUrl)
+
+        crashLogger.setCustomKey(KEY_MOONPAY_SERVER_SIDE_BASE_URL, serverSideBaseUrl)
+        crashLogger.setCustomKey("KEY_MOONPAY_CLIENT_SIDE_BASE_URL", clientSideBaseUrl)
 
         return MoonpayEnvironment(
             baseServerSideUrl = serverSideBaseUrl,
