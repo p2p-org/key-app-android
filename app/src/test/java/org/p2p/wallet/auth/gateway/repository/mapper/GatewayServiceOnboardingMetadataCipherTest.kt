@@ -19,6 +19,7 @@ class GatewayServiceOnboardingMetadataCipherTest {
             .split(" ")
 
     private val givenGatewayMetadata: GatewayOnboardingMetadata = GatewayOnboardingMetadata(
+        metaTimestamp = System.currentTimeMillis(),
         deviceShareDeviceName = "device name",
         customSharePhoneNumberE164 = "+7111111111",
         socialShareOwnerEmail = "example@email.com"
