@@ -7,4 +7,10 @@
     <string name="bank_card_subtitle">Instant · 4,5% fees</string>
     <string name="crypto_title">Crypto</string>
     <string name="crypto_subtitle">Up to 1 hour · 0% fees</string>
+
+    <string name="striga_signup_finish_title">Thank you</string>
+    <string name="striga_signup_finish_subtitle">
+        Now you need to go through document and selfie verification.
+        This is a one-time procedure to ensure safety of your account.
+    </string>
 </resources>
