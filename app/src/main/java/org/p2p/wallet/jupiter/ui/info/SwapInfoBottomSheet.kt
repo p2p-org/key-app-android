@@ -5,9 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import org.koin.android.ext.android.inject
@@ -53,7 +51,7 @@ enum class SwapInfoType {
 
 private typealias LoadRateBox = Triple<JupiterSwapMarketInformation, FinanceBlockCellModel, SwapRateLoaderState>
 
-class SwapInfoBottomSheet : BaseBottomSheet() {
+class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
 
     companion object {
         fun show(
@@ -91,10 +89,6 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
     )
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.dialog_swap_info, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
