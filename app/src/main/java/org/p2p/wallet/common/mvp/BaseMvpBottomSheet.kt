@@ -4,9 +4,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.core.common.TextContainer
@@ -17,17 +15,9 @@ import org.p2p.wallet.utils.showErrorDialog
 
 abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
     @LayoutRes val layoutRes: Int
-) : BaseBottomSheet(), MvpView {
+) : BaseBottomSheet(layoutRes), MvpView {
 
     abstract val presenter: P
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(layoutRes, container, false)
-    }
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
