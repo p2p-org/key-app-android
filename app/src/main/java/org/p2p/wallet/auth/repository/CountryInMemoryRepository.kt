@@ -11,11 +11,11 @@ class CountryInMemoryRepository(
     }
 
     override suspend fun detectCountryOrDefault(): Country {
-        val countryCodeByDetekt = countryCodeRepository.detectCountryCodeBySimCard()
+        val detectedCountryCode = countryCodeRepository.detectCountryCodeBySimCard()
             ?: countryCodeRepository.detectCountryCodeByNetwork()
             ?: countryCodeRepository.detectCountryCodeByLocale()
 
-        return countryCodeByDetekt?.extractCountry() ?: defaultCountry()
+        return detectedCountryCode?.extractCountry() ?: defaultCountry()
     }
 
     private fun CountryCode.extractCountry(): Country = Country(countryName, flagEmoji)
