@@ -13,6 +13,12 @@
         Now you need to go through document and selfie verification.
         This is a one-time procedure to ensure safety of your account.
     </string>
+    <string name="striga_sms_input_title">To start verification confirm your phone number %1$s</string>
+    <string name="striga_sms_input_toolbar_title">Step 3 of 3</string>
+    <string name="striga_exit_sms_input_warning_dialog_title">Do you want to stop registration?</string>
+    <string name="striga_exit_sms_input_warning_dialog_message">You can confirm the phone number and finish the registration later</string>
+    <string name="striga_exit_sms_input_warning_dialog_btn_positive">Yes, leave the page</string>
+    <string name="striga_exit_sms_input_warning_dialog_btn_negative">No, continue</string>
     <string name="striga_enter_personal_data_info">Enter your personal data to open an account. Please, use your real credentials.</string>
     <string name="striga_contacts">Contacts</string>
     <string name="striga_email_hint">prefilled@gmail.com</string>

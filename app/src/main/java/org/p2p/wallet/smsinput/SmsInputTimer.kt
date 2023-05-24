@@ -1,5 +1,6 @@
-package org.p2p.wallet.auth.ui.smsinput
+package org.p2p.wallet.smsinput
 
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
@@ -10,15 +11,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.p2p.wallet.common.di.AppScope
-import kotlin.time.Duration.Companion.seconds
 
 class SmsInputTimer(
     private val appScope: AppScope
 ) {
-
     private var smsTimerStartSeconds = listOf(30, 40, 60, 90, 120)
 
     var smsResendCount = 0
+        private set
 
     private var timerJob: Job? = null
     private val sharedTimer = MutableSharedFlow<Int>(
