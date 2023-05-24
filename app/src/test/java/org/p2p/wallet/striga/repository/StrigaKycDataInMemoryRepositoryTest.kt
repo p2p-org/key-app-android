@@ -11,7 +11,7 @@ import org.p2p.wallet.utils.getTestRawResource
 
 class StrigaKycDataInMemoryRepositoryTest {
 
-    private val repository: StrigaKycDataLocalRepository = StrigaKycDataInMemoryRepository(
+    private val repository: StrigaPresetDataLocalRepository = StrigaPresetDataInMemoryRepository(
         resources = mockk {
             every { openRawResource(R.raw.striga_occupation_values) }
                 .returns(getTestRawResource("striga_occupation_values.json"))

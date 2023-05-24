@@ -12,10 +12,10 @@ import org.p2p.wallet.striga.repository.model.StrigaSourceOfFunds
 private const val JSON_KEY_OCCUPATION_NAME = "occupation"
 private const val JSON_KEY_OCCUPATION_EMOJI = "emoji"
 
-class StrigaKycDataInMemoryRepository(
+class StrigaPresetDataInMemoryRepository(
     private val resources: Resources,
     private val gson: Gson
-) : StrigaKycDataLocalRepository {
+) : StrigaPresetDataLocalRepository {
 
     private val occupationValuesFile: InputStream
         get() = resources.openRawResource(R.raw.striga_occupation_values)
@@ -27,14 +27,14 @@ class StrigaKycDataInMemoryRepository(
     private var cachedSourceOfFunds: List<StrigaSourceOfFunds> = emptyList()
 
     override fun getOccupationValuesList(): List<StrigaOccupation> {
-        return cachedOccupation.ifEmpty(::parseOccupationValuesFile)
+        return cachedOccupation.ifEmpty(::parseOccupationFile)
     }
 
     override fun getSourceOfFundsList(): List<StrigaSourceOfFunds> {
-        return cachedSourceOfFunds.ifEmpty(::parseSourceOfFundsValuesFile)
+        return cachedSourceOfFunds.ifEmpty(::parseSourceOfFundsFile)
     }
 
-    private fun parseOccupationValuesFile(): List<StrigaOccupation> {
+    private fun parseOccupationFile(): List<StrigaOccupation> {
         return runCatching { gson.fromJson(occupationValuesFile.reader(), JsonArray::class.java) }
             .onFailure { Timber.i(it) }
             .getOrDefault(JsonArray())
@@ -49,7 +49,7 @@ class StrigaKycDataInMemoryRepository(
             .also { cachedOccupation = it }
     }
 
-    private fun parseSourceOfFundsValuesFile(): List<StrigaSourceOfFunds> {
+    private fun parseSourceOfFundsFile(): List<StrigaSourceOfFunds> {
         return runCatching { gson.fromJson(sourceOfFundsFile.reader(), JsonArray::class.java) }
             .onFailure { Timber.i(it) }
             .getOrDefault(JsonArray())
