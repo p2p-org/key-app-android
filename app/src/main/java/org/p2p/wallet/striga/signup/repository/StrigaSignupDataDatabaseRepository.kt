@@ -4,7 +4,6 @@ import android.content.res.Resources
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.signup.dao.StrigaSignupDataDao
 import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
@@ -33,7 +32,7 @@ class StrigaSignupDataDatabaseRepository(
         StrigaDataLayerError.from(
             error = error,
             default = StrigaDataLayerError.DatabaseError(error)
-        ).toFailureResult()
+        )
     }
 
     override suspend fun createUserSignupData(): StrigaDataLayerResult<Unit> = try {
@@ -46,7 +45,7 @@ class StrigaSignupDataDatabaseRepository(
         StrigaDataLayerError.from(
             error = error,
             default = StrigaDataLayerError.DatabaseError(error)
-        ).toFailureResult()
+        )
     }
 
     private suspend fun prefillDataForUser() {
@@ -68,7 +67,7 @@ class StrigaSignupDataDatabaseRepository(
         StrigaDataLayerError.from(
             error = error,
             default = StrigaDataLayerError.DatabaseError(error)
-        ).toFailureResult()
+        )
     }
 
     private fun success(): StrigaDataLayerResult.Success<Unit> =

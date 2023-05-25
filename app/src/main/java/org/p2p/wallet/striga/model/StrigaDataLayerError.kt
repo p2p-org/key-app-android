@@ -26,12 +26,13 @@ sealed class StrigaDataLayerError(override val message: String) : Throwable() {
     ) : StrigaDataLayerError(cause.message.orEmpty())
 
     companion object {
-        fun from(error: Throwable, default: StrigaDataLayerError): StrigaDataLayerError {
+        fun <T> from(error: Throwable, default: StrigaDataLayerError): StrigaDataLayerResult<T> {
             return when (error) {
                 is HttpException -> fromHttpException(error) ?: default
                 is StrigaDataLayerError -> error
                 else -> default
             }
+                .toFailureResult()
         }
 
         private fun fromHttpException(error: HttpException): StrigaDataLayerError? {
