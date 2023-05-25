@@ -58,6 +58,8 @@ captures/
 .idea/dictionaries
 .idea/libraries
 !.idea/codeStyles/Project.xml
+!.idea/file.template.settings.xml
+!.idea/fileTemplates
 
 # Keystore files
 #*.jks
