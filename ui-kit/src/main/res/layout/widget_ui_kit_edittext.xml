@@ -56,12 +56,22 @@
             android:imeOptions="actionDone"
             android:inputType="phone"
             android:saveEnabled="true"
-            android:textColorHint="@color/text_night_30"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            android:textColorHint="@color/text_night_30"
             android:textCursorDrawable="@drawable/ic_text_cursor"
             android:textIsSelectable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageViewArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_chevron_right"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

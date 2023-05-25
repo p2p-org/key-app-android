@@ -58,6 +58,11 @@ class UiKitEditText @JvmOverloads constructor(
             binding.editTextField.setText(text)
         }
 
+        val isDropdown = styleAttrs.getBoolean(R.styleable.UiKitTextField_isDropdown,false)
+        if (isDropdown) {
+            binding.editTextField.isFocusable = false
+            binding.imageViewArrow.isVisible = true
+        }
         binding.inputViewContainer.background = bgNormal
         styleAttrs.recycle()
     }
