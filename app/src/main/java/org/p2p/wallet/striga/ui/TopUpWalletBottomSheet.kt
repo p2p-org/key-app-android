@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.ui
 
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
@@ -8,7 +9,6 @@ import org.koin.android.ext.android.inject
 import kotlinx.coroutines.launch
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.core.token.Token
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -28,16 +28,13 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-
-private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
 class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
 
     companion object {
-        fun show(token: Token.Active? = null, fm: FragmentManager) {
+        fun show(fm: FragmentManager) {
             val tag = TopUpWalletBottomSheet::javaClass.name
             if (fm.findFragmentByTag(tag) != null) return
             TopUpWalletBottomSheet().show(fm, tag)
@@ -46,7 +43,6 @@ class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
 
     private val binding: DialogTopupWalletBinding by viewBinding()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
-    private val token: Token.Active? by args(EXTRA_TOKEN)
     private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
     private val userInteractor: UserInteractor by inject()
 
@@ -74,11 +70,11 @@ class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
             )
             bankCardView.setOnClickAction { _, _ ->
                 lifecycleScope.launch {
-                    val tokenForBuy = token ?: userInteractor.getTokensForBuy().firstOrNull() ?: return@launch
+                    val tokenForBuy = userInteractor.getTokensForBuy().firstOrNull() ?: return@launch
                     if (newBuyFeatureToggle.isFeatureEnabled) {
-                        replaceFragment(NewBuyFragment.create(tokenForBuy))
+                        dismissAndNavigate(NewBuyFragment.create(tokenForBuy))
                     } else {
-                        replaceFragment(BuySolanaFragment.create(tokenForBuy))
+                        dismissAndNavigate(BuySolanaFragment.create(tokenForBuy))
                     }
                 }
             }
@@ -91,7 +87,7 @@ class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
                 )
             )
             cryptoView.setOnClickAction { _, _ ->
-                replaceFragment(receiveFragmentFactory.receiveFragment())
+                dismissAndNavigate(receiveFragmentFactory.receiveFragment())
             }
         }
     }
@@ -132,13 +128,22 @@ class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
                 )
             )
         )
+        val background = DrawableCellModel(
+            drawable = shapeDrawable(shapeRounded16dp()),
+            tint = R.color.bg_snow
+        )
 
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
             rightSideCellModel = rightSideCellModel,
-            background = DrawableCellModel(drawable = shapeDrawable(shapeRounded16dp()), tint = R.color.bg_snow),
+            background = background,
             accessibility = ViewAccessibilityCellModel(isClickable = true),
         )
+    }
+
+    private fun dismissAndNavigate(fragment: Fragment) {
+        replaceFragment(fragment)
+        dismiss()
     }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
