@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.repository.StrigaPresetDataLocalRepository
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.back
@@ -51,8 +52,10 @@ class StrigaOnboardingPresenterTest {
     private fun createPresenter(): StrigaOnboardingContract.Presenter {
         return StrigaOnboardingPresenter(
             dispatchers = dispatchers,
-            countryRepository = countryRepository,
-            strigaPresetDataLocalRepository = strigaPresetDataLocalRepository
+            interactor = StrigaOnboardingInteractor(
+                countryRepository = countryRepository,
+                strigaPresetDataLocalRepository = strigaPresetDataLocalRepository
+            )
         )
     }
 
@@ -70,14 +73,14 @@ class StrigaOnboardingPresenterTest {
         advanceUntilIdle()
 
         val countryStates = mutableListQueueOf<Country>()
-        val buttonStates = mutableListQueueOf<StrigaOnboardingContract.View.ButtonState>()
+        val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
         verify(exactly = 1) { view.setCurrentCountry(capture(countryStates)) }
-        verify(exactly = 1) { view.setButtonState(capture(buttonStates)) }
+        verify(exactly = 1) { view.setAvailabilityState(capture(availabilityStates)) }
         verify(exactly = 0) { view.openCountrySelection() }
         verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(UnsupportedCountry, countryStates.back())
-        assertEquals(StrigaOnboardingContract.View.ButtonState.ChangeCountry, buttonStates.back())
+        assertEquals(StrigaOnboardingContract.View.AvailabilityState.Unavailable, availabilityStates.back())
 
         presenter.detach()
     }
@@ -96,14 +99,14 @@ class StrigaOnboardingPresenterTest {
         advanceUntilIdle()
 
         val countryStates = mutableListQueueOf<Country>()
-        val buttonStates = mutableListQueueOf<StrigaOnboardingContract.View.ButtonState>()
+        val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
         verify(exactly = 1) { view.setCurrentCountry(capture(countryStates)) }
-        verify(exactly = 1) { view.setButtonState(capture(buttonStates)) }
+        verify(exactly = 1) { view.setAvailabilityState(capture(availabilityStates)) }
         verify(exactly = 0) { view.openCountrySelection() }
         verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(SupportedCountry, countryStates.back())
-        assertEquals(StrigaOnboardingContract.View.ButtonState.Continue, buttonStates.back())
+        assertEquals(StrigaOnboardingContract.View.AvailabilityState.Available, availabilityStates.back())
 
         presenter.detach()
     }
@@ -125,16 +128,16 @@ class StrigaOnboardingPresenterTest {
         advanceUntilIdle()
 
         val countryStates = mutableListQueueOf<Country>()
-        val buttonStates = mutableListQueueOf<StrigaOnboardingContract.View.ButtonState>()
+        val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
         verify(exactly = 2) { view.setCurrentCountry(capture(countryStates)) }
-        verify(exactly = 2) { view.setButtonState(capture(buttonStates)) }
+        verify(exactly = 2) { view.setAvailabilityState(capture(availabilityStates)) }
         verify(exactly = 0) { view.openCountrySelection() }
         verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(UnsupportedCountry, countryStates.front())
         assertEquals(SupportedCountry, countryStates.back())
-        assertEquals(StrigaOnboardingContract.View.ButtonState.ChangeCountry, buttonStates.front())
-        assertEquals(StrigaOnboardingContract.View.ButtonState.Continue, buttonStates.back())
+        assertEquals(StrigaOnboardingContract.View.AvailabilityState.Unavailable, availabilityStates.front())
+        assertEquals(StrigaOnboardingContract.View.AvailabilityState.Available, availabilityStates.back())
 
         presenter.detach()
     }
@@ -156,14 +159,14 @@ class StrigaOnboardingPresenterTest {
         advanceUntilIdle()
 
         val countryStates = mutableListQueueOf<Country>()
-        val buttonStates = mutableListQueueOf<StrigaOnboardingContract.View.ButtonState>()
+        val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
         verify(exactly = 2) { view.setCurrentCountry(capture(countryStates)) }
-        verify(exactly = 2) { view.setButtonState(capture(buttonStates)) }
+        verify(exactly = 2) { view.setAvailabilityState(capture(availabilityStates)) }
         verify(exactly = 0) { view.openCountrySelection() }
         verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(UnsupportedCountry, countryStates.back())
-        assertEquals(StrigaOnboardingContract.View.ButtonState.ChangeCountry, buttonStates.back())
+        assertEquals(StrigaOnboardingContract.View.AvailabilityState.Unavailable, availabilityStates.back())
 
         presenter.detach()
     }
@@ -202,6 +205,24 @@ class StrigaOnboardingPresenterTest {
         advanceUntilIdle()
 
         verify(exactly = 1) { view.navigateNext() }
+
+        presenter.detach()
+    }
+
+    @Test
+    fun `GIVEN initial state WHEN clicked help text THEN check navigate to help`() = runTest {
+        coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
+        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
+            arg<Country>(0) == SupportedCountry
+        }
+        val view: StrigaOnboardingContract.View = mockk(relaxed = true)
+
+        val presenter = createPresenter()
+        presenter.attach(view)
+        presenter.onClickHelp()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { view.openHelp() }
 
         presenter.detach()
     }

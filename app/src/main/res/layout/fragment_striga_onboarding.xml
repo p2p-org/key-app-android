@@ -4,66 +4,79 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:background="@drawable/bg_rounded_transparent_8"
-    android:backgroundTint="@color/smoke"
-    tools:background="@color/smoke">
+    android:layout_height="match_parent"
+    android:background="@color/smoke">
 
-    <View
-        android:id="@+id/viewPointer"
-        android:layout_width="32dp"
-        android:layout_height="4dp"
-        android:layout_marginTop="6dp"
-        android:background="@drawable/shape_bottomsheet_pointer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/viewInner"
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="@color/icons_night"
+        app:titleMargin="16dp"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:scaleType="center"
+        app:layout_constraintBottom_toTopOf="@id/containerInner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintVertical_bias="1"
+        tools:alpha="1"
+        tools:src="@drawable/ic_hand_phone" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerInner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:paddingHorizontal="16dp"
-        android:paddingTop="16dp"
         app:layout_constraintBottom_toTopOf="@id/buttonContinue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/viewPointer">
+        app:layout_constraintTop_toBottomOf="@id/image">
 
-        <ImageView
-            android:id="@+id/image"
+        <TextView
+            android:id="@+id/textViewTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:minHeight="200dp"
-            android:src="@drawable/ic_hand_phone"
+            android:text="@string/striga_onboarding_title_available"
+            android:textAlignment="center"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/textViewHelp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/string_onboarding_title"
+            android:layout_marginTop="24dp"
             android:textAlignment="center"
-            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image" />
+            app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+            tools:text="Check the list of countries here" />
 
         <org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
             android:id="@+id/blockChangeCountry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:background="@drawable/bg_rounded_solid_snow_12"
             android:foreground="@drawable/ripple_button_large"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            app:layout_constraintTop_toBottomOf="@id/textViewHelp" />
 
         <TextView
             android:id="@+id/textViewPoweredBy"
@@ -82,10 +95,9 @@
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonContinue"
         style="@style/UiKit.Components.Button.Large"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/ui_kit_button_large_height"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="@color/bg_night"
         android:text="@string/common_continue"
@@ -94,14 +106,15 @@
         app:iconGravity="textEnd"
         app:iconTint="@color/lime"
         app:layout_constraintBottom_toTopOf="@id/spaceForButton"
-        app:layout_constraintTop_toBottomOf="@id/viewInner" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Space
         android:id="@+id/spaceForButton"
         android:layout_width="0dp"
         android:layout_height="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonContinue" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

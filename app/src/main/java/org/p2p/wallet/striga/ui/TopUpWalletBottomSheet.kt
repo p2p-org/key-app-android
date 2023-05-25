@@ -27,6 +27,7 @@ import org.p2p.wallet.databinding.DialogTopupWalletBinding
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
+import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -58,7 +59,7 @@ class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
                 )
             )
             bankTransferView.setOnClickAction { _, _ ->
-                // TODO PWN-8457
+                dismissAndNavigate(StrigaOnboardingFragment.create())
             }
             bankCardView.bind(
                 model = getFinanceBlock(

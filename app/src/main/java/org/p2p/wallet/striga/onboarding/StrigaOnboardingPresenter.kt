@@ -2,33 +2,32 @@ package org.p2p.wallet.striga.onboarding
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.striga.repository.StrigaPresetDataLocalRepository
+import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 
 class StrigaOnboardingPresenter(
     dispatchers: CoroutineDispatchers,
-    private val countryRepository: CountryRepository,
-    private val strigaPresetDataLocalRepository: StrigaPresetDataLocalRepository
+    private val interactor: StrigaOnboardingInteractor,
 ) : BasePresenter<StrigaOnboardingContract.View>(dispatchers.ui), StrigaOnboardingContract.Presenter {
 
     override fun attach(view: StrigaOnboardingContract.View) {
         super.attach(view)
 
         launch {
-            onCountrySelected(countryRepository.detectCountryOrDefault())
+            onCountrySelected(interactor.getDefaultCountry())
         }
     }
 
     override fun onCountrySelected(country: Country) {
         view?.setCurrentCountry(country)
         if (isCountrySupported(country)) {
-            view?.setButtonState(StrigaOnboardingContract.View.ButtonState.Continue)
+            view?.setAvailabilityState(StrigaOnboardingContract.View.AvailabilityState.Available)
 
             // todo: save country
+            // interactor.saveUserCountry(country)
         } else {
-            view?.setButtonState(StrigaOnboardingContract.View.ButtonState.ChangeCountry)
+            view?.setAvailabilityState(StrigaOnboardingContract.View.AvailabilityState.Unavailable)
         }
     }
 
@@ -41,7 +40,11 @@ class StrigaOnboardingPresenter(
         view?.openCountrySelection()
     }
 
+    override fun onClickHelp() {
+        view?.openHelp()
+    }
+
     private fun isCountrySupported(country: Country): Boolean {
-        return strigaPresetDataLocalRepository.checkIsCountrySupported(country)
+        return interactor.checkIsCountrySupported(country)
     }
 }

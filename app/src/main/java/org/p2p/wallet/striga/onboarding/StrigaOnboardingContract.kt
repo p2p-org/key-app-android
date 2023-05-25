@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.onboarding
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.repository.Country
@@ -9,17 +10,33 @@ import org.p2p.wallet.common.mvp.MvpView
 interface StrigaOnboardingContract {
 
     interface View : MvpView {
-        enum class ButtonState(
-            @StringRes val textRes: Int,
-            val showArrowRight: Boolean
+        enum class AvailabilityState(
+            @DrawableRes val imageRes: Int,
+            @StringRes val titleTextRes: Int,
+            @StringRes val buttonTextRes: Int,
+            val helpIsVisible: Boolean,
+            val showButtonArrow: Boolean
         ) {
-            Continue(R.string.common_continue, true),
-            ChangeCountry(R.string.striga_onboarding_button_change_country, false);
+            Available(
+                imageRes = R.drawable.ic_hand_phone,
+                titleTextRes = R.string.striga_onboarding_title_available,
+                buttonTextRes = R.string.common_continue,
+                helpIsVisible = false,
+                showButtonArrow = true
+            ),
+            Unavailable(
+                imageRes = R.drawable.ic_euro_flag,
+                titleTextRes = R.string.striga_onboarding_title_unavailable,
+                buttonTextRes = R.string.striga_onboarding_button_change_country,
+                helpIsVisible = true,
+                showButtonArrow = false
+            );
         }
 
         fun setCurrentCountry(country: Country)
-        fun setButtonState(state: ButtonState)
+        fun setAvailabilityState(state: AvailabilityState)
         fun openCountrySelection()
+        fun openHelp()
         fun navigateNext()
     }
 
@@ -27,5 +44,6 @@ interface StrigaOnboardingContract {
         fun onCountrySelected(country: Country)
         fun onClickContinue()
         fun onClickChangeCountry()
+        fun onClickHelp()
     }
 }
