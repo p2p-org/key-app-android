@@ -85,7 +85,9 @@ class RootActivity :
     }
 
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LokaliseService.wrap(newBase))
+        super.attachBaseContext(newBase)
+        //Temporary disable this service
+        // super.attachBaseContext(LokaliseService.wrap(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

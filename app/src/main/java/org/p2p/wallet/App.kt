@@ -52,7 +52,8 @@ class App : Application(), Configuration.Provider {
 
         appCreatedAction.invoke()
         appsFlyerService.install(this, BuildConfig.appsFlyerKey)
-        LokaliseService.setup(this, BuildConfig.lokaliseKey, BuildConfig.lokaliseAppId)
+        //Temporary disable this service
+        //LokaliseService.setup(this, BuildConfig.lokaliseKey, BuildConfig.lokaliseAppId)
         setupWorkManager()
     }
 
