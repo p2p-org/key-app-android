@@ -44,6 +44,7 @@ import org.p2p.wallet.sdk.di.AppSdkModule
 import org.p2p.wallet.sell.SellModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.solend.SolendModule
+import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
@@ -109,7 +110,8 @@ object AppModule {
                 ReceiveModule.create(),
                 BridgeSendModule.create(),
                 ClaimModule.create(),
-                BridgeModule.create()
+                BridgeModule.create(),
+                StrigaModule.create()
             ) + EthereumKitService.getEthereumKitModules()
         )
     }
