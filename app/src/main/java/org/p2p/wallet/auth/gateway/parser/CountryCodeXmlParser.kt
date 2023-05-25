@@ -1,28 +1,26 @@
 package org.p2p.wallet.auth.gateway.parser
 
+import androidx.browser.trusted.sharing.ShareTarget.FileFormField.KEY_NAME
 import android.content.res.Resources
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import io.michaelrocks.libphonenumber.android.Phonenumber
-import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.utils.emptyString
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import timber.log.Timber
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.utils.emptyString
 
-class CountryCodeHelper(
+private const val KEY_COUNTRY = "country"
+private const val KEY_NAME_CODE = "name_code"
+private const val KEY_PHONE_CODE = "phone_code"
+private const val KEY_NAME = "name"
+private const val KEY_FLAG_EMOJI = "flag_emoji"
+
+class CountryCodeXmlParser(
     private val resources: Resources,
     private val phoneNumberUtil: PhoneNumberUtil
 ) {
-
-    private var countryCodeMask = mutableMapOf<String, String>()
-
-    private val KEY_COUNTRY = "country"
-    private val KEY_NAME_CODE = "name_code"
-    private val KEY_PHONE_CODE = "phone_code"
-    private val KEY_NAME = "name"
-    private val KEY_FLAG_EMOJI = "flag_emoji"
-
     fun parserCountryCodesFromXmlFile(): List<CountryCode> = try {
         val resultCountries = mutableListOf<CountryCode>()
         val xmlParserFactory = XmlPullParserFactory.newInstance()
@@ -45,7 +43,7 @@ class CountryCodeHelper(
             }
             event = xmlParser.next()
         }
-        resultCountries.sortedBy { it.name }
+        resultCountries.sortedBy { it.countryName }
     } catch (error: Throwable) {
         Timber.e(error, "Error while reading from XML file")
         emptyList()
@@ -61,7 +59,7 @@ class CountryCodeHelper(
             internationalFormat.replace("+$phoneCode", emptyString())
         } catch (e: Throwable) {
             Timber.i(e, "Get mask for country code failed")
-            countryCodeMask[countryCode].orEmpty()
+            emptyString()
         }
     }
 

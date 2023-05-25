@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="topup_your_account">Top up your account</string>
+    <string name="bank_transfer_title">Bank transfer</string>
+    <string name="bank_transfer_subtitle">Up to 3 days · 0% fees</string>
+    <string name="bank_card_title">Bank card</string>
+    <string name="bank_card_subtitle">Instant · 4,5% fees</string>
+    <string name="crypto_title">Crypto</string>
+    <string name="crypto_subtitle">Up to 1 hour · 0% fees</string>
+
+    <string name="striga_signup_finish_title">Thank you</string>
+    <string name="striga_signup_finish_subtitle">
+        Now you need to go through document and selfie verification.
+        This is a one-time procedure to ensure safety of your account.
+    </string>
+    <string name="striga_sms_input_title">To start verification confirm your phone number %1$s</string>
+    <string name="striga_sms_input_toolbar_title">Step 3 of 3</string>
+    <string name="striga_exit_sms_input_warning_dialog_title">Do you want to stop registration?</string>
+    <string name="striga_exit_sms_input_warning_dialog_message">You can confirm the phone number and finish the registration later</string>
+    <string name="striga_exit_sms_input_warning_dialog_btn_positive">Yes, leave the page</string>
+    <string name="striga_exit_sms_input_warning_dialog_btn_negative">No, continue</string>
+    <string name="striga_enter_personal_data_info">Enter your personal data to open an account. Please, use your real credentials.</string>
+    <string name="striga_contacts">Contacts</string>
+    <string name="striga_email_hint">prefilled@gmail.com</string>
+    <string name="striga_email">Email</string>
+    <string name="striga_phone_number">Phone number</string>
+    <string name="striga_phone_number_hint">+*user number w3*</string>
+    <string name="striga_credentials">Credentials</string>
+    <string name="striga_first_name">First name</string>
+    <string name="striga_surname">Surname</string>
+    <string name="striga_enter_hint">Enter</string>
+    <string name="striga_date_of_birth">Date of Birth</string>
+    <string name="striga_date_of_birth_hint">DD.MM.YYYY</string>
+    <string name="striga_country_of_birth">Country of birth</string>
+    <string name="striga_country_of_birth_hint">Select from list</string>
+
+
+</resources>
