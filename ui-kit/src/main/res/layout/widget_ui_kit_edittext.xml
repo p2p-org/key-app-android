@@ -21,7 +21,7 @@
         tools:text="Title" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/inputViewContainer"
+        android:id="@+id/containerInputView"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="2dp"
@@ -31,7 +31,7 @@
 
 
         <TextView
-            android:id="@+id/autoSizeHelperTextView"
+            android:id="@+id/textViewAutoSizeHelper"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:autoSizeMaxTextSize="28sp"

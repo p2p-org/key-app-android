@@ -58,7 +58,7 @@ class UiKitEditText @JvmOverloads constructor(
             binding.editTextField.setText(text)
         }
 
-        binding.inputViewContainer.background = bgNormal
+        binding.containerInputView.background = bgNormal
         styleAttrs.recycle()
     }
 

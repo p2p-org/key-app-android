@@ -8,13 +8,13 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaPersonalInfoBinding
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class StrigaPersonalInfoFragment :
+class StrigaSignUpFirstStepFragment :
     BaseMvpFragment<StrigaPersonalInfoContract.View, StrigaPersonalInfoContract.Presenter>(
         R.layout.fragment_striga_personal_info
     ) {
 
     companion object {
-        fun create() = StrigaPersonalInfoFragment()
+        fun create() = StrigaSignUpFirstStepFragment()
     }
 
     override val presenter: StrigaPersonalInfoContract.Presenter by inject()
