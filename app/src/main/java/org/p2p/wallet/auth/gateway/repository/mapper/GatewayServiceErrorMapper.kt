@@ -1,8 +1,9 @@
 package org.p2p.wallet.auth.gateway.repository.mapper
 
+import timber.log.Timber
+import org.p2p.core.rpc.RpcResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceErrorResponse
 import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
-import timber.log.Timber
 
 class GatewayServiceErrorMapper {
     fun fromNetwork(error: GatewayServiceErrorResponse): PushServiceError =
@@ -43,6 +44,49 @@ class GatewayServiceErrorMapper {
             )
             else -> {
                 val unknownCodeError = PushServiceError.UnknownFailure(error.errorCode, error.errorMessage)
+                Timber.tag("GatewayServiceMapper").e(unknownCodeError)
+                unknownCodeError
+            }
+        }
+            .also { Timber.tag("GatewayServiceMapper").i(error.toString()) }
+
+    fun fromNetwork(error: RpcResponse.Error): PushServiceError =
+        when (error.code) {
+            -32050 -> PushServiceError.TemporaryFailure(
+                error.code, error.message
+            )
+            -32051 -> PushServiceError.PhoneNumberAlreadyConfirmed(
+                error.code, error.message
+            )
+            -32052, -32058, -32700, -32600, -32601, -32602, -32603 -> PushServiceError.CriticalServiceFailure(
+                error.code, error.message
+            )
+            -32053 -> PushServiceError.TooManyRequests(
+                error.code, error.message
+            )
+            -32054 -> PushServiceError.SmsDeliverFailed(
+                error.code, error.message
+            )
+            -32055 -> PushServiceError.CallDeliverFailed(
+                error.code, error.message
+            )
+            -32056 -> PushServiceError.SolanaPublicKeyAlreadyExists(
+                error.code, error.message
+            )
+            -32057 -> PushServiceError.UserAlreadyExists(
+                error.code, error.message
+            )
+            -32059 -> PushServiceError.TooManyOtpRequests(
+                error.code, error.message
+            )
+            -32060 -> PushServiceError.PhoneNumberNotExists(
+                error.code, error.message
+            )
+            -32061 -> PushServiceError.IncorrectOtpCode(
+                error.code, error.message
+            )
+            else -> {
+                val unknownCodeError = PushServiceError.UnknownFailure(error.code, error.message)
                 Timber.tag("GatewayServiceMapper").e(unknownCodeError)
                 unknownCodeError
             }

@@ -23,6 +23,8 @@ import org.p2p.wallet.utils.toJsonObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 
@@ -118,17 +120,17 @@ class GatewayServiceCreateWalletMapper(
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
-        val timestamp = System.currentTimeMillis()
+        val epochUnixTimeSeconds = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS).inWholeSeconds
         val encryptedMetadata: GatewayOnboardingMetadataCiphered = onboardingMetadataCipher.encryptMetadata(
             mnemonicPhrase = userSeedPhrase,
             onboardingMetadata = GatewayOnboardingMetadata(
                 ethPublic = etheriumAddress.lowercase(),
-                metaTimestamp = timestamp,
+                metaTimestamp = epochUnixTimeSeconds,
                 deviceShareDeviceName = Build.MANUFACTURER + ' ' + Build.MODEL,
                 customSharePhoneNumberE164 = phoneNumber.e164Formatted(),
-                phoneNumberTimestamp = timestamp,
+                phoneNumberTimestamp = epochUnixTimeSeconds,
                 socialShareOwnerEmail = socialShareOwnerId,
-                emailTimestamp = timestamp,
+                emailTimestamp = epochUnixTimeSeconds,
             )
         )
 

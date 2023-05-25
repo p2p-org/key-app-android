@@ -16,6 +16,7 @@ private const val KEY_TORUS_BASE_VERIFIER = "KEY_TORUS_BASE_VERIFIER"
 private const val KEY_TORUS_BASE_SUB_VERIFIER = "KEY_TORUS_BASE_SUB_VERIFIER"
 private const val KEY_MOONPAY_SERVER_SIDE_BASE_URL = "KEY_MOONPAY_SERVER_SIDE_BASE_URL"
 private const val KEY_BRIDGES_SERVICE_BASE_URL = "KEY_BRIDGES_SERVICE_BASE_URL"
+private const val KEY_GATEWAY_BASE_URL = "KEY_GATEWAY_BASE_URL"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
@@ -82,6 +83,19 @@ class NetworkServicesUrlProvider(
 
     fun saveBridgesServiceEnvironment(newUrl: String) {
         sharedPreferences.edit { putString(KEY_BRIDGES_SERVICE_BASE_URL, newUrl) }
+    }
+
+    fun loadGatewayServiceEnvironment(): GatewayServiceEnvironment {
+        val url = sharedPreferences.getString(
+            KEY_GATEWAY_BASE_URL,
+            context.getString(R.string.web3AuthServiceBaseUrl)
+        ).orEmpty()
+
+        return GatewayServiceEnvironment(url)
+    }
+
+    fun saveGatewayServiceEnvironment(newUrl: String) {
+        sharedPreferences.edit { putString(KEY_GATEWAY_BASE_URL, newUrl) }
     }
 
     fun loadTorusEnvironment(): TorusEnvironment {
