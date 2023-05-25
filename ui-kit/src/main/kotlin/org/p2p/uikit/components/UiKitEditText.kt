@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.databinding.WidgetUiKitEdittextBinding
+import org.p2p.uikit.utils.SimpleTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 
 private const val CORNER_RADIUS = 20f
@@ -21,6 +22,10 @@ class UiKitEditText @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs) {
 
     private val binding = inflateViewBinding<WidgetUiKitEdittextBinding>()
+
+    private var editTextWatcher: SimpleTextWatcher? = null
+
+    private var viewTag: Any? = null
 
     private val bgRed = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
@@ -63,7 +68,14 @@ class UiKitEditText @JvmOverloads constructor(
     }
 
     fun setText(text: String) {
+        binding.root.tag = null
         binding.editTextField.setText(text)
+        binding.root.tag = viewTag
+    }
+
+    fun setViewTag(tag: Any?) {
+        binding.root.tag = tag
+        viewTag = tag
     }
 
     fun setHint(hint: String) {
@@ -82,8 +94,17 @@ class UiKitEditText @JvmOverloads constructor(
     val length: Int
         get() = binding.editTextField.length()
 
-    fun addOnTextChangedListener(block: (String) -> Unit) {
-        binding.editTextField.doAfterTextChanged { block(it.toString()) }
+    fun addOnTextChangedListener(block: (Editable) -> Unit) {
+        val tag = viewTag ?: return
+        editTextWatcher = object : SimpleTextWatcher(tag) {
+
+            override fun afterTextChanged(tag: Any, text: Editable) {
+                if (viewTag == tag) {
+                    block(text)
+                }
+            }
+        }
+        binding.editTextField.addTextChangedListener(editTextWatcher)
     }
 
     fun focusAndShowKeyboard() {
