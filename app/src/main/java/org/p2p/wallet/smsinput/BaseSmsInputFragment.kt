@@ -1,46 +1,43 @@
-package org.p2p.wallet.auth.ui.smsinput
+package org.p2p.wallet.smsinput
 
+import androidx.activity.addCallback
+import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
-import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.GatewayHandledState
-import org.p2p.wallet.auth.model.PhoneNumber
-import org.p2p.wallet.auth.model.RestoreFailureState
-import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
-import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
-import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
-import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenFragment
-import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
+import org.p2p.wallet.databinding.FragmentSmsInputBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import timber.log.Timber
 
-class NewSmsInputFragment :
-    BaseMvpFragment<NewSmsInputContract.View, Presenter>(R.layout.fragment_new_sms_input),
-    NewSmsInputContract.View {
+abstract class BaseSmsInputFragment :
+    BaseMvpFragment<SmsInputContract.View, SmsInputContract.Presenter>(R.layout.fragment_sms_input),
+    SmsInputContract.View {
 
     companion object {
-        fun create(): NewSmsInputFragment = NewSmsInputFragment()
+        const val ARG_NEXT_DESTINATION_CLASS = "ARG_NEXT_DESTINATION_CLASS"
+        const val ARG_NEXT_DESTINATION_ARGS = "ARG_NEXT_DESTINATION_ARGS"
     }
 
-    override val presenter: Presenter by inject()
-    private val binding: FragmentNewSmsInputBinding by viewBinding()
+    protected val binding: FragmentSmsInputBinding by viewBinding()
+    override val presenter: SmsInputContract.Presenter by inject()
+
+    private val nextDestinationClass: Class<Fragment> by args(ARG_NEXT_DESTINATION_CLASS)
+    private val nextDestinationArgs: Bundle? by args(ARG_NEXT_DESTINATION_ARGS)
+
+    protected open fun onBackPressed() = Unit
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            uiKitToolbar.setNavigationOnClickListener { popBackStack() }
+            uiKitToolbar.setNavigationOnClickListener { onBackPressed() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
                     view.hideKeyboard()
@@ -65,16 +62,15 @@ class NewSmsInputFragment :
                 presenter.checkSmsValue(smsInputComponent.inputText)
             }
             binding.smsInputComponent.focusAndShowKeyboard()
-        }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            popBackStack()
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                onBackPressed()
+            }
         }
     }
 
-    override fun initView(userPhoneNumber: PhoneNumber) {
-        binding.checkNumberTitleText.text =
-            getString(R.string.onboarding_sms_input_phone_number_title, userPhoneNumber.formattedValue)
+    override fun navigateNext() {
+        popAndReplaceFragment(createNextDestination(), inclusive = true)
     }
 
     override fun renderSmsFormatValid() {
@@ -92,21 +88,21 @@ class NewSmsInputFragment :
         binding.smsInputComponent.setErrorState(getString(R.string.onboarding_sms_input_wrong_sms))
     }
 
-    override fun renderSmsTimerState(timerState: Presenter.SmsInputTimerState) {
+    override fun renderSmsTimerState(timerState: SmsInputContract.Presenter.SmsInputTimerState) {
         when (timerState) {
-            Presenter.SmsInputTimerState.ResendSmsReady -> {
+            SmsInputContract.Presenter.SmsInputTimerState.ResendSmsReady -> {
                 binding.resendText.text = getString(R.string.onboarding_sms_input_resend_sms)
                 binding.resendText.isClickable = true
                 binding.resendText.setTextColor(binding.getColor(R.color.text_sky))
             }
-            is Presenter.SmsInputTimerState.ResendSmsNotReady -> {
+            is SmsInputContract.Presenter.SmsInputTimerState.ResendSmsNotReady -> {
                 binding.resendText.text = getString(
                     R.string.onboarding_sms_input_before_resend_sms, timerState.secondsBeforeResend
                 )
                 binding.resendText.isClickable = false
                 binding.resendText.setTextColor(binding.getColor(R.color.text_mountain))
             }
-            is Presenter.SmsInputTimerState.SmsValidationBlocked -> {
+            is SmsInputContract.Presenter.SmsInputTimerState.SmsValidationBlocked -> {
                 binding.smsInputComponent.setErrorState(
                     getString(R.string.onboarding_sms_input_request_overflow, timerState.secondsBeforeUnlock)
                 )
@@ -122,21 +118,9 @@ class NewSmsInputFragment :
         binding.continueButton.setLoading(isLoading)
     }
 
-    override fun navigateToPinCreate() {
-        popAndReplaceFragment(NewCreatePinFragment.create(), inclusive = true)
-    }
-
-    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long) {
-        replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(error, timerLeftTime)
-        )
-    }
-
-    override fun navigateToGatewayErrorScreen(handledState: GatewayHandledState) {
-        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(handledState))
-    }
-
-    override fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) {
-        popAndReplaceFragment(RestoreErrorScreenFragment.create(handledState))
+    private fun createNextDestination(): Fragment {
+        return nextDestinationClass.newInstance().apply {
+            arguments = nextDestinationArgs
+        }
     }
 }
