@@ -24,7 +24,7 @@ class GatewayServiceOnboardingMetadataCipherTest {
             .split(" ")
 
     private val givenGatewayMetadata: GatewayOnboardingMetadata = GatewayOnboardingMetadata(
-        metaTimestamp = System.currentTimeMillis(),
+        metaTimestampSec = System.currentTimeMillis(),
         deviceShareDeviceName = "device name",
         customSharePhoneNumberE164 = "+7111111111",
         socialShareOwnerEmail = "example@email.com"
@@ -96,10 +96,10 @@ class GatewayServiceOnboardingMetadataCipherTest {
             prop(GatewayOnboardingMetadata::socialShareOwnerEmail).isEqualTo(oldEmail)
 
             // new data backs up to defaults
-            prop(GatewayOnboardingMetadata::authProviderTimestamp).isZero()
+            prop(GatewayOnboardingMetadata::authProviderTimestampSec).isZero()
             prop(GatewayOnboardingMetadata::strigaMetadata).isNull()
-            prop(GatewayOnboardingMetadata::emailTimestamp).isZero()
-            prop(GatewayOnboardingMetadata::phoneNumberTimestamp).isZero()
+            prop(GatewayOnboardingMetadata::emailTimestampSec).isZero()
+            prop(GatewayOnboardingMetadata::phoneNumberTimestampSec).isZero()
             prop(GatewayOnboardingMetadata::ethPublic).isNull()
         }
     }

@@ -53,40 +53,42 @@ class GatewayServiceErrorMapper {
     fun fromNetwork(error: RpcResponse.Error): PushServiceError =
         when (error.code) {
             -32050 -> PushServiceError.TemporaryFailure(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32051 -> PushServiceError.PhoneNumberAlreadyConfirmed(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32052, -32058, -32700, -32600, -32601, -32602, -32603 -> PushServiceError.CriticalServiceFailure(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32053 -> PushServiceError.TooManyRequests(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32054 -> PushServiceError.SmsDeliverFailed(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32055 -> PushServiceError.CallDeliverFailed(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32056 -> PushServiceError.SolanaPublicKeyAlreadyExists(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32057 -> PushServiceError.UserAlreadyExists(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32059 -> PushServiceError.TooManyOtpRequests(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32060 -> PushServiceError.PhoneNumberNotExists(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             -32061 -> PushServiceError.IncorrectOtpCode(
-                error.code, error.message
+                code = error.code, message = error.message
             )
             else -> {
-                val unknownCodeError = PushServiceError.UnknownFailure(error.code, error.message)
+                val unknownCodeError = PushServiceError.UnknownFailure(
+                    code = error.code, message = error.message
+                )
                 Timber.tag("GatewayServiceMapper").e(unknownCodeError)
                 unknownCodeError
             }

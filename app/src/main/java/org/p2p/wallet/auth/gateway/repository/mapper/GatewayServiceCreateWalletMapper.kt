@@ -125,12 +125,12 @@ class GatewayServiceCreateWalletMapper(
             mnemonicPhrase = userSeedPhrase,
             onboardingMetadata = GatewayOnboardingMetadata(
                 ethPublic = etheriumAddress.lowercase(),
-                metaTimestamp = epochUnixTimeSeconds,
+                metaTimestampSec = epochUnixTimeSeconds,
                 deviceShareDeviceName = Build.MANUFACTURER + ' ' + Build.MODEL,
                 customSharePhoneNumberE164 = phoneNumber.e164Formatted(),
-                phoneNumberTimestamp = epochUnixTimeSeconds,
+                phoneNumberTimestampSec = epochUnixTimeSeconds,
                 socialShareOwnerEmail = socialShareOwnerId,
-                emailTimestamp = epochUnixTimeSeconds,
+                emailTimestampSec = epochUnixTimeSeconds,
             )
         )
 
