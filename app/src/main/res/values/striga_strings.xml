@@ -46,6 +46,7 @@
     <string name="striga_personal_data_confirm_info">After clicking the “Сontinue”, you confirm that you are not a Politically Exposed Person</string>
     <string name="striga_select_from_list_hint">Select from list</string>
     <string name="striga_recommended_hint">Recommended</string>
+    <string name="striga_address_line_hint">Your street and flat number</string>
 
 
 </resources>

@@ -1,38 +1,56 @@
-package org.p2p.wallet.striga.ui.personaldata
+package org.p2p.wallet.striga.ui.firststep
 
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentStrigaPersonalInfoBinding
+import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.model.StrigaSignupDataType
+import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepFragment
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class StrigaSignUpFirstStepFragment :
-    BaseMvpFragment<StrigaPersonalInfoContract.View, StrigaPersonalInfoContract.Presenter>(
-        R.layout.fragment_striga_personal_info
+    BaseMvpFragment<StrigaSignUpFirstStepContract.View, StrigaSignUpFirstStepContract.Presenter>(
+        R.layout.fragment_striga_sign_up_first_step
     ),
-    StrigaPersonalInfoContract.View {
+    StrigaSignUpFirstStepContract.View {
 
     companion object {
         fun create() = StrigaSignUpFirstStepFragment()
     }
 
-    override val presenter: StrigaPersonalInfoContract.Presenter by inject()
-    private val binding: FragmentStrigaPersonalInfoBinding by viewBinding()
+    override val presenter: StrigaSignUpFirstStepContract.Presenter by inject()
+    private val binding: FragmentStrigaSignUpFirstStepBinding by viewBinding()
 
     private val editTextFieldsMap: Map<StrigaSignupDataType, UiKitEditText> by lazy { createEditTextsMap() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            uiKitToolbar.setNavigationOnClickListener { popBackStack() }
+            uiKitToolbar.setOnMenuItemClickListener {
+                if (it.itemId == R.id.helpItem) {
+                    view.hideKeyboard()
+                    IntercomService.showMessenger()
+                    return@setOnMenuItemClickListener true
+                }
+                false
+            }
+
             StrigaSignupDataType.values().forEach { dataType ->
                 val view = editTextFieldsMap[dataType] ?: return@forEach
                 view.addOnTextChangedListener { editable ->
                     presenter.onTextChanged(newValue = editable.toString(), type = dataType)
                 }
+            }
+            buttonNext.setOnClickListener {
+                replaceFragment(StrigaSignUpSecondStepFragment.create())
             }
         }
     }

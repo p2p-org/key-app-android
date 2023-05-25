@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -37,7 +36,7 @@
             android:paddingBottom="48dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/view_info"
+                android:id="@+id/viewInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
@@ -47,7 +46,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/image_view_alert"
+                    android:id="@+id/imageViewAlert"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@drawable/bg_circle"
@@ -58,7 +57,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/text_view_title"
+                    android:id="@+id/textViewTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -66,8 +65,8 @@
                     android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
                     android:textColor="@color/text_night"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/image_view_alert"
-                    app:layout_constraintTop_toTopOf="@id/image_view_alert" />
+                    app:layout_constraintStart_toEndOf="@id/imageViewAlert"
+                    app:layout_constraintTop_toTopOf="@id/imageViewAlert" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -79,10 +78,10 @@
                 android:layout_marginTop="36dp"
                 android:text="@string/striga_contacts"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
-                app:layout_constraintTop_toBottomOf="@id/image_view_alert" />
+                app:layout_constraintTop_toBottomOf="@id/imageViewAlert" />
 
             <org.p2p.uikit.components.UiKitEditText
-                android:id="@+id/edit_text_email"
+                android:id="@+id/editTextEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -92,7 +91,7 @@
                 app:labelText="@string/striga_email" />
 
             <org.p2p.uikit.components.UiKitEditText
-                android:id="@+id/edit_text_phone_number"
+                android:id="@+id/editTextPhoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -108,11 +107,11 @@
                 android:layout_marginTop="56dp"
                 android:text="@string/striga_credentials"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
-                app:layout_constraintTop_toBottomOf="@id/image_view_alert" />
+                app:layout_constraintTop_toBottomOf="@id/imageViewAlert" />
 
 
             <org.p2p.uikit.components.UiKitEditText
-                android:id="@+id/edit_text_first_name"
+                android:id="@+id/editTextFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -122,7 +121,7 @@
                 app:labelText="@string/striga_first_name" />
 
             <org.p2p.uikit.components.UiKitEditText
-                android:id="@+id/edit_text_surname"
+                android:id="@+id/editTextSurname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -138,11 +137,11 @@
                 android:layout_marginTop="56dp"
                 android:text="@string/striga_date_of_birth"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
-                app:layout_constraintTop_toBottomOf="@id/image_view_alert" />
+                app:layout_constraintTop_toBottomOf="@id/imageViewAlert" />
 
 
             <org.p2p.uikit.components.UiKitEditText
-                android:id="@+id/edit_text_birthday"
+                android:id="@+id/editTextBirthday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -152,17 +151,18 @@
                 app:labelText="@string/striga_date_of_birth" />
 
             <org.p2p.uikit.components.UiKitEditText
-                android:id="@+id/edit_text_country"
+                android:id="@+id/editTextCountry"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_country_of_birth"
+                app:isDropdown="true"
                 app:labelText="@string/striga_country_of_birth_hint" />
 
             <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/button_next"
+                android:id="@+id/buttonNext"
                 style="@style/UiKit.Components.Button.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
