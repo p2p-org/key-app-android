@@ -20,7 +20,7 @@ import org.p2p.wallet.utils.emptyString
  */
 data class GatewayOnboardingMetadata(
     @SerializedName("eth_public")
-    val ethPublic: String = emptyString(),
+    val ethPublic: String? = emptyString(),
     @SerializedName("meta_timestamp")
     val metaTimestamp: Long,
     @SerializedName("device_name")

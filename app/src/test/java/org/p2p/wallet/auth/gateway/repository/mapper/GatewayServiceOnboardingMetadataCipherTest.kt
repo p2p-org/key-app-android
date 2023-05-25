@@ -64,4 +64,25 @@ class GatewayServiceOnboardingMetadataCipherTest {
         // then
         assertThat(actualGatewayMetadata).isEqualTo(givenGatewayMetadata)
     }
+
+    @Test
+    fun `metadata migration test`() {
+        // given
+        val testDevice = "testDevice"
+        val testPhone = "944378501"
+        val testEmail = "test@gmail.com"
+        val oldMetadataJson = "  {\n" +
+            "    device_name: '$testDevice',\n" +
+            "    phone_number: '$testPhone',\n" +
+            "    email: '$testEmail',\n" +
+            "    auth_provider: 'Google'\n" +
+            "  }"
+        val gson = Gson()
+        val newMetadataStructure = gson.fromJson(oldMetadataJson, GatewayOnboardingMetadata::class.java)
+        // then
+        assertThat(newMetadataStructure.deviceShareDeviceName).isEqualTo(testDevice)
+        assertThat(newMetadataStructure.customSharePhoneNumberE164).isEqualTo(testPhone)
+        assertThat(newMetadataStructure.socialShareOwnerEmail).isEqualTo(testEmail)
+        assertThat(newMetadataStructure.ethPublic).isEqualTo(null)
+    }
 }
