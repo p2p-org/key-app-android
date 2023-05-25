@@ -28,7 +28,7 @@ data class GatewayOnboardingMetadata(
     val socialShareOwnerEmail: String,
     // v2
     @SerializedName("eth_public")
-    val ethPublic: String? = emptyString(),
+    val ethPublic: String? = null,
     @SerializedName("meta_timestamp")
     val metaTimestampSec: Long,
     @SerializedName("phone_number_timestamp")

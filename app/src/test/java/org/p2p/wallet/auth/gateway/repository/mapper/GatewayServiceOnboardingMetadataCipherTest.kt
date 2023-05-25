@@ -9,6 +9,7 @@ import assertk.assertions.isZero
 import assertk.assertions.matchesPredicate
 import assertk.assertions.prop
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305
 import org.json.JSONObject
 import org.junit.Test
@@ -76,15 +77,13 @@ class GatewayServiceOnboardingMetadataCipherTest {
         val oldMetadataDevice = "testDevice"
         val oldPhoneNumber = "944378501"
         val oldEmail = "test@gmail.com"
-        val oldMetadataJson = JSONObject(
-            mapOf(
-                "device_name" to oldMetadataDevice,
-                "phone_number" to oldPhoneNumber,
-                "email" to oldEmail,
-                "auth_provider" to "Google"
-            )
-        ).toString()
         val gson = Gson()
+        val oldMetadataJson = gson.toJson(mapOf(
+            "device_name" to oldMetadataDevice,
+            "phone_number" to oldPhoneNumber,
+            "email" to oldEmail,
+            "auth_provider" to "Google"
+        )).toString()
         val newMetadataStructure = gson.fromJson(oldMetadataJson, GatewayOnboardingMetadata::class.java)
 
         // then
