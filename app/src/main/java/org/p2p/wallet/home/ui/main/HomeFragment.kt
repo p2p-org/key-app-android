@@ -51,7 +51,6 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.striga.ui.personaldata.StrigaSignUpFirstStepFragment
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
@@ -215,7 +214,6 @@ class HomeFragment :
                 }
             }
         }
-        replaceFragment(StrigaSignUpFirstStepFragment.create())
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {
