@@ -6,10 +6,10 @@ import org.p2p.wallet.striga.model.StrigaSignupDataType
 
 interface StrigaSignUpSecondStepContract {
     interface View : MvpView {
-        fun updateText(newValue: String, type: StrigaSignupDataType)
+        fun updateSignupField(newValue: String, type: StrigaSignupDataType)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onTextChanged(newValue: String, type: StrigaSignupDataType)
+        fun onFieldChanged(newValue: String, type: StrigaSignupDataType)
     }
 }

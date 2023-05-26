@@ -7,5 +7,5 @@ class StrigaSignUpFirstStepPresenter :
     BasePresenter<StrigaSignUpFirstStepContract.View>(),
     StrigaSignUpFirstStepContract.Presenter {
 
-    override fun onTextChanged(newValue: String, tag: StrigaSignupDataType) = Unit
+    override fun onFieldChanged(newValue: String, tag: StrigaSignupDataType) = Unit
 }

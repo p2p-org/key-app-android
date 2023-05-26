@@ -13,11 +13,11 @@
         android:id="@+id/textViewLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
         android:layout_marginBottom="4dp"
-        android:paddingHorizontal="8dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
-        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Title" />
 
@@ -55,7 +55,7 @@
             android:layout_marginStart="4dp"
             android:background="@null"
             android:imeOptions="actionDone"
-            android:inputType="phone"
+            android:inputType="text"
             android:saveEnabled="true"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
             android:textColorHint="@color/text_night_30"

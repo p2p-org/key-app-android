@@ -2,7 +2,6 @@ package org.p2p.uikit.components
 
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
@@ -10,7 +9,7 @@ import android.util.AttributeSet
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.databinding.WidgetUiKitEdittextBinding
-import org.p2p.uikit.utils.SimpleTextWatcher
+import org.p2p.uikit.utils.SimpleTagTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 
 private const val CORNER_RADIUS = 20f
@@ -23,7 +22,7 @@ class UiKitEditText @JvmOverloads constructor(
 
     private val binding = inflateViewBinding<WidgetUiKitEdittextBinding>()
 
-    private var editTextWatcher: SimpleTextWatcher? = null
+    private var editTextWatcher: SimpleTagTextWatcher? = null
 
     private var viewTag: Any? = null
 
@@ -101,8 +100,7 @@ class UiKitEditText @JvmOverloads constructor(
 
     fun addOnTextChangedListener(block: (Editable) -> Unit) {
         val tag = viewTag ?: return
-        editTextWatcher = object : SimpleTextWatcher(tag) {
-
+        editTextWatcher = object : SimpleTagTextWatcher(tag) {
             override fun afterTextChanged(tag: Any, text: Editable) {
                 if (viewTag == tag) {
                     block(text)

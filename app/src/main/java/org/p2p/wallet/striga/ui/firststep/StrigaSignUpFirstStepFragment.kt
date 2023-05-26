@@ -43,10 +43,10 @@ class StrigaSignUpFirstStepFragment :
                 false
             }
 
-            StrigaSignupDataType.values().forEach { dataType ->
+            StrigaSignupDataType.cachedValues.forEach { dataType ->
                 val view = editTextFieldsMap[dataType] ?: return@forEach
                 view.addOnTextChangedListener { editable ->
-                    presenter.onTextChanged(newValue = editable.toString(), type = dataType)
+                    presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
                 }
             }
             buttonNext.setOnClickListener {
@@ -55,14 +55,14 @@ class StrigaSignUpFirstStepFragment :
         }
     }
 
-    override fun updateText(newValue: String, type: StrigaSignupDataType) {
+    override fun updateSignupField(newValue: String, type: StrigaSignupDataType) {
         val view = editTextFieldsMap[type]
         view?.setText(newValue)
     }
 
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
         return with(binding) {
-            mutableMapOf<StrigaSignupDataType, UiKitEditText>().apply {
+            buildMap {
                 put(StrigaSignupDataType.EMAIL, editTextEmail)
                 editTextEmail.setViewTag(StrigaSignupDataType.EMAIL)
 
@@ -72,8 +72,8 @@ class StrigaSignUpFirstStepFragment :
                 put(StrigaSignupDataType.FIRST_NAME, editTextFirstName)
                 editTextFirstName.setViewTag(StrigaSignupDataType.FIRST_NAME)
 
-                put(StrigaSignupDataType.LAST_NAME, editTextSurname)
-                editTextSurname.setViewTag(StrigaSignupDataType.LAST_NAME)
+                put(StrigaSignupDataType.LAST_NAME, editTextLastname)
+                editTextLastname.setViewTag(StrigaSignupDataType.LAST_NAME)
 
                 put(StrigaSignupDataType.DATE_OF_BIRTH, editTextBirthday)
                 editTextBirthday.setViewTag(StrigaSignupDataType.DATE_OF_BIRTH)

@@ -13,16 +13,18 @@ import org.p2p.wallet.striga.model.StrigaSignupDataType
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-typealias IV = StrigaSignUpSecondStepContract.View
-typealias IP = StrigaSignUpSecondStepContract.Presenter
+typealias IView = StrigaSignUpSecondStepContract.View
+typealias IPresenter = StrigaSignUpSecondStepContract.Presenter
 
-class StrigaSignUpSecondStepFragment : BaseMvpFragment<IV, IP>(R.layout.fragment_striga_sign_up_second_step), IV {
+class StrigaSignUpSecondStepFragment :
+    BaseMvpFragment<IView, IPresenter>(R.layout.fragment_striga_sign_up_second_step),
+    IView {
 
     companion object {
         fun create() = StrigaSignUpSecondStepFragment()
     }
 
-    override val presenter: IP by inject()
+    override val presenter: IPresenter by inject()
     private val binding: FragmentStrigaSignUpSecondStepBinding by viewBinding()
     private val editTextFieldsMap: Map<StrigaSignupDataType, UiKitEditText> by lazy { createEditTextsMap() }
 
@@ -39,23 +41,23 @@ class StrigaSignUpSecondStepFragment : BaseMvpFragment<IV, IP>(R.layout.fragment
                 false
             }
 
-            StrigaSignupDataType.values().forEach { dataType ->
+            StrigaSignupDataType.cachedValues.forEach { dataType ->
                 val view = editTextFieldsMap[dataType] ?: return@forEach
                 view.addOnTextChangedListener { editable ->
-                    presenter.onTextChanged(newValue = editable.toString(), type = dataType)
+                    presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
                 }
             }
         }
     }
 
-    override fun updateText(newValue: String, type: StrigaSignupDataType) {
+    override fun updateSignupField(newValue: String, type: StrigaSignupDataType) {
         val view = editTextFieldsMap[type]
         view?.setText(newValue)
     }
 
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
         return with(binding) {
-            mutableMapOf<StrigaSignupDataType, UiKitEditText>().apply {
+            buildMap {
                 put(StrigaSignupDataType.OCCUPATION, editTextOccupation)
                 editTextOccupation.setViewTag(StrigaSignupDataType.OCCUPATION)
 

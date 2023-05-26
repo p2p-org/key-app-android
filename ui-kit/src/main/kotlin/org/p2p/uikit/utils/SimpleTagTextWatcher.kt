@@ -3,7 +3,7 @@ package org.p2p.uikit.utils
 import android.text.Editable
 import android.text.TextWatcher
 
-abstract class SimpleTextWatcher(val tag: Any) : TextWatcher {
+abstract class SimpleTagTextWatcher(val tag: Any) : TextWatcher {
 
     override fun afterTextChanged(text: Editable) {
         afterTextChanged(tag, text)
