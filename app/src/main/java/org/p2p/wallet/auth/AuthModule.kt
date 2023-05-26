@@ -11,7 +11,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
-import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
+import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
@@ -28,6 +28,8 @@ import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
+import org.p2p.wallet.auth.repository.CountryInMemoryRepository
+import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
@@ -44,7 +46,6 @@ import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingContract
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingPresenter
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootContract
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootPresenter
-import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterPresenter
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerContract
@@ -64,9 +65,9 @@ import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundPresenter
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenContract
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
-import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract
-import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
-import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
+import org.p2p.wallet.smsinput.SmsInputContract
+import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputPresenter
+import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule
@@ -161,15 +162,15 @@ object AuthModule {
         factoryOf(::PhoneNumberEnterPresenter) bind PhoneNumberEnterContract.Presenter::class
         factoryOf(::CountryCodePickerPresenter) bind CountryCodePickerContract.Presenter::class
         singleOf(::CountryCodeInMemoryRepository) bind CountryCodeLocalRepository::class
+        factoryOf(::CountryInMemoryRepository) bind CountryRepository::class
         single { PhoneNumberUtil.createInstance(androidContext()) }
-        singleOf(::CountryCodeHelper)
-        factoryOf(::CountryCodeInteractor)
+        factoryOf(::CountryCodeXmlParser)
 
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
         factoryOf(::RestoreErrorScreenPresenter) bind RestoreErrorScreenContract.Presenter::class
 
         singleOf(::SmsInputTimer)
-        factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
+        factoryOf(::OnboardingSmsInputPresenter) bind SmsInputContract.Presenter::class
 
         factoryOf(::RestoreUserResultHandler)
 

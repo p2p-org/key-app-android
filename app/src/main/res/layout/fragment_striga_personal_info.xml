@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="48dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/view_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_rounded_solid_snow_16"
+            android:backgroundTint="@color/light_sea"
+            android:padding="16dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/image_view_alert"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="@color/bg_sea"
+                android:padding="12dp"
+                android:src="@drawable/ic_striga_info"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_view_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/striga_enter_personal_data_info"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+                android:textColor="@color/text_night"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/image_view_alert"
+                app:layout_constraintTop_toTopOf="@id/image_view_alert" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="36dp"
+            android:text="@string/striga_contacts"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
+            app:layout_constraintTop_toBottomOf="@id/image_view_alert" />
+
+        <org.p2p.uikit.components.UiKitEditText
+            android:id="@+id/edit_text_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            app:hintText="@string/striga_email_hint"
+            app:labelText="@string/striga_email" />
+
+        <org.p2p.uikit.components.UiKitEditText
+            android:id="@+id/edit_text_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="24dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            app:hintText="@string/striga_phone_number_hint"
+            app:labelText="@string/striga_phone_number" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="56dp"
+            android:text="@string/striga_credentials"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
+            app:layout_constraintTop_toBottomOf="@id/image_view_alert" />
+
+
+        <org.p2p.uikit.components.UiKitEditText
+            android:id="@+id/edit_text_first_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            app:hintText="@string/striga_enter_hint"
+            app:labelText="@string/striga_first_name" />
+
+        <org.p2p.uikit.components.UiKitEditText
+            android:id="@+id/edit_text_surname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="24dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            app:hintText="@string/striga_enter_hint"
+            app:labelText="@string/striga_surname" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="56dp"
+            android:text="@string/striga_date_of_birth"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
+            app:layout_constraintTop_toBottomOf="@id/image_view_alert" />
+
+
+        <org.p2p.uikit.components.UiKitEditText
+            android:id="@+id/edit_text_birthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            app:hintText="@string/striga_date_of_birth_hint"
+            app:labelText="@string/striga_date_of_birth" />
+
+        <org.p2p.uikit.components.UiKitEditText
+            android:id="@+id/edit_text_country"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="24dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            app:hintText="@string/striga_country_of_birth"
+            app:labelText="@string/striga_country_of_birth_hint" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/button_next"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="48dp"
+            android:text="@string/auth_next"
+            app:icon="@drawable/ic_arrow_right"
+            app:iconGravity="textEnd"
+            app:iconTint="@color/icons_snow" />
+
+    </LinearLayout>
+
+</ScrollView>
