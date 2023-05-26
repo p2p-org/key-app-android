@@ -1,10 +1,10 @@
-package org.p2p.wallet.striga.repository.dao
+package org.p2p.wallet.striga.signup.dao
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
-import org.p2p.wallet.striga.repository.dao.StrigaSignupDataEntity.Companion.COLUMN_OWNER
-import org.p2p.wallet.striga.repository.dao.StrigaSignupDataEntity.Companion.COLUMN_TYPE
+import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity.Companion.COLUMN_OWNER
+import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity.Companion.COLUMN_TYPE
 import org.p2p.wallet.utils.Base58String
 
 @Entity(

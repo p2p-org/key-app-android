@@ -6,6 +6,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.p2p.core.network.ConnectionManager
 import org.p2p.ethereumkit.EthereumKitService
+import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
 import org.p2p.wallet.bridge.claim.ClaimModule
@@ -27,7 +28,6 @@ import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.NetworkModule
-import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
 import org.p2p.wallet.moonpay.MoonpayModule
