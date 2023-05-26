@@ -1,8 +1,6 @@
 package org.p2p.wallet.auth.interactor
 
 import timber.log.Timber
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import kotlinx.coroutines.CancellationException
 import org.p2p.solanaj.core.Account
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
