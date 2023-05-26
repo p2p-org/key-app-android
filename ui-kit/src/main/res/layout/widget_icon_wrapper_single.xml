@@ -9,15 +9,30 @@
     tools:layout_width="48dp"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/imageViewIcon"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:duplicateParentState="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:src="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/emojiViewIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:autoSizeTextType="uniform"
+            android:gravity="center"
+            android:visibility="gone"
+            tools:text="🇪🇪" />
+    </FrameLayout>
+
 
 </merge>
