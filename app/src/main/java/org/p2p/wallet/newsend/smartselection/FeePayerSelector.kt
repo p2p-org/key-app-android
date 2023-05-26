@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isLessThan
-import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.FeePayerState
 import org.p2p.wallet.newsend.model.SendSolanaFee
 
