@@ -1,6 +1,7 @@
-package org.p2p.wallet.striga.repository
+package org.p2p.wallet.striga.signup.repository
 
-import org.p2p.wallet.striga.model.StrigaSignupData
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
+import org.p2p.wallet.striga.model.StrigaDataLayerResult
 
 interface StrigaSignupDataLocalRepository {
     suspend fun getUserSignupData(): StrigaDataLayerResult<List<StrigaSignupData>>

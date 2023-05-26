@@ -1,10 +1,10 @@
-package org.p2p.wallet.striga.repository.mapper
+package org.p2p.wallet.striga.signup.repository.mapper
 
 import android.content.res.Resources
 import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaSignupData
-import org.p2p.wallet.striga.model.StrigaSignupDataType
-import org.p2p.wallet.striga.repository.dao.StrigaSignupDataEntity
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
 import org.p2p.wallet.utils.Base58String
 
 class StrigaSignupDataMapper(val resources: Resources) {
