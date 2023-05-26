@@ -141,7 +141,6 @@ class MetadataInteractor(
         } else if (serverMetadata.metaTimestampSec > deviceMetadata.metaTimestampSec) {
             serverMetadata
         } else {
-            val epochUnixTimeSeconds = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS).inWholeSeconds
             val updatedDeviceNamePair = getNewerValue(
                 deviceMetadata.deviceNameTimestampSec,
                 serverMetadata.deviceNameTimestampSec,
