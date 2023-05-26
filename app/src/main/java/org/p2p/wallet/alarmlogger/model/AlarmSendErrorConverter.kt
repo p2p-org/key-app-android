@@ -59,7 +59,7 @@ class AlarmSendErrorConverter(
             fees = fees,
             relayAccountState = relayAccountState,
             userPubkey = userPublicKey,
-            recipientPubkey = recipientAddress.addressState.address.toBase58Instance(),
+            recipientPubkey = recipientAddress.address.toBase58Instance(),
             recipientName = (recipientAddress as? SearchResult.UsernameFound)?.username.orEmpty(),
             simulationError = error.getSimulationError(),
             feeRelayerError = error.getFeeRelayerError(),
