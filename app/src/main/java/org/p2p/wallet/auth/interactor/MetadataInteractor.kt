@@ -121,7 +121,7 @@ class MetadataInteractor(
             GatewayOnboardingMetadata::class
         )?.let { deviceMetadata ->
             val updatedMetadata = getUpdatedMergedMetadata(deviceMetadata, serverMetadata)
-            if (updatedMetadata == serverMetadata) {
+            if (updatedMetadata != serverMetadata) {
                 tryToUploadMetadata(updatedMetadata)
             }
             updatedMetadata
