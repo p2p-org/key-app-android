@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.gateway.repository.model
 
 import com.google.gson.annotations.SerializedName
-import org.p2p.wallet.utils.emptyString
 
 /**
  * Our own structure with custom fields that is sent while creating wallet.
