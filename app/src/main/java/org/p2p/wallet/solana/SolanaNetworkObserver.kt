@@ -54,7 +54,7 @@ class SolanaNetworkObserver(
                     val samples = rpcSolanaRepository.getRecentPerformanceSamples(SAMPLE_COUNT)
                     handleSamples(samples)
                 } catch (e: CancellationException) {
-                    Timber.w("Fetching recent performance samples cancelled")
+                    Timber.i("Fetching recent performance samples cancelled")
                 } catch (e: UnknownHostException) {
                     Timber.i(e, "Error loading recent samples with UnknownHostException")
                 } catch (e: SocketTimeoutException) {
@@ -127,7 +127,7 @@ class SolanaNetworkObserver(
     * Checking if user already saw the error message and we should show the message again or not
     * according to the frequency value from RemoteConfig
     * */
-    private suspend fun showError() {
+    private fun showError() {
         when (errorFrequencyFeatureToggle.frequency) {
             NetworkStatusFrequency.ONCE -> {
                 updateState(Offline)

@@ -2,13 +2,19 @@ package org.p2p.wallet.svl.ui.send
 
 import android.content.res.Resources
 import timber.log.Timber
+import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
+import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -26,6 +32,8 @@ import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.unsafeLazy
+
+private const val ACCEPTABLE_RATE_DIFF = 0.02
 
 class SendViaLinkPresenter(
     private val userInteractor: UserInteractor,
@@ -61,8 +69,16 @@ class SendViaLinkPresenter(
     override fun attach(view: SendViaLinkContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
-
+        subscribeToSelectedTokenUpdates()
         initialize(view)
+    }
+
+    private fun subscribeToSelectedTokenUpdates() {
+        userInteractor.getUserTokensFlow()
+            .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
+            .filterNotNull()
+            .onEach { token = it }
+            .launchIn(this)
     }
 
     override fun setInitialData(selectedToken: Token.Active?) {
@@ -99,6 +115,7 @@ class SendViaLinkPresenter(
         launch {
             view.showToken(token)
             calculationMode.updateToken(token)
+            checkTokenRatesAndSetSwitchAmountState(token)
 
             val userTokens = userInteractor.getNonZeroUserTokens()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
@@ -125,6 +142,8 @@ class SendViaLinkPresenter(
 
             val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
             token = initialToken
+
+            checkTokenRatesAndSetSwitchAmountState(initialToken)
 
             val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
             if (solToken == null) {
@@ -158,8 +177,26 @@ class SendViaLinkPresenter(
     override fun updateToken(newToken: Token.Active) {
         svlAnalytics.logTokenChanged(newToken.tokenSymbol)
         token = newToken
+        checkTokenRatesAndSetSwitchAmountState(newToken)
         showMaxButtonIfNeeded()
         updateButton(requireToken())
+    }
+
+    private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
+        val isStableCoin = token.isUSDC || token.isUSDT
+        if (token.rate == null || isStableCoin && isStableCoinRateDiffAcceptable(token)) {
+            if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                switchCurrencyMode()
+            }
+            view?.disableSwitchAmounts()
+        } else {
+            view?.enableSwitchAmounts()
+        }
+    }
+
+    private fun isStableCoinRateDiffAcceptable(token: Token.Active): Boolean {
+        val delta = token.rate.orZero() - BigDecimal.ONE
+        return delta.abs() < BigDecimal(ACCEPTABLE_RATE_DIFF)
     }
 
     override fun switchCurrencyMode() {
@@ -219,7 +256,12 @@ class SendViaLinkPresenter(
         logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.orZero().toPlainString())
 
         svlAnalytics.logCreateLinkClicked(token.tokenSymbol, currentAmount.toPlainString(), recipient)
-        view?.navigateToLinkGeneration(recipient, token, lamports)
+        view?.navigateToLinkGeneration(
+            account = recipient,
+            token = token,
+            lamports = lamports,
+            currencyModeSymbol = calculationMode.getCurrencyMode().getCurrencyModeSymbol()
+        )
     }
 
     private fun showMaxButtonIfNeeded() {
@@ -243,6 +285,7 @@ class SendViaLinkPresenter(
                 view?.setSliderText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
+
             is NewSendButtonState.State.Enabled -> {
                 view?.setSliderText(resources.getString(R.string.send_via_link_action_text))
                 view?.setBottomButtonText(null)

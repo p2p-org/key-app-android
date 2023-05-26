@@ -23,6 +23,7 @@ private const val EXTRA_TEMPORARY_ACCOUNT = "EXTRA_TEMPORARY_ACCOUNT"
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_LAMPORTS = "EXTRA_LAMPORTS"
 private const val EXTRA_SIMULATION = "EXTRA_SIMULATION"
+private const val EXTRA_CURRENCY_MODE = "EXTRA_CURRENCY_MODE"
 
 class SendLinkGenerationFragment :
     BaseMvpFragment<SendLinkGenerationContract.View, SendLinkGenerationContract.Presenter>(
@@ -35,13 +36,15 @@ class SendLinkGenerationFragment :
             recipient: TemporaryAccount,
             token: Token.Active,
             lamports: BigInteger,
-            isSimulation: Boolean
+            isSimulation: Boolean,
+            currencyModeSymbol: String
         ): Fragment = SendLinkGenerationFragment()
             .withArgs(
                 EXTRA_TEMPORARY_ACCOUNT to recipient,
                 EXTRA_TOKEN to token,
                 EXTRA_LAMPORTS to lamports,
-                EXTRA_SIMULATION to isSimulation
+                EXTRA_SIMULATION to isSimulation,
+                EXTRA_CURRENCY_MODE to currencyModeSymbol
             )
     }
 
@@ -54,11 +57,12 @@ class SendLinkGenerationFragment :
     private val token: Token.Active by args(EXTRA_TOKEN)
     private val lamports: BigInteger by args(EXTRA_LAMPORTS)
     private val isSimulation: Boolean by args(EXTRA_SIMULATION)
+    private val currencyModeSymbol: String by args(EXTRA_CURRENCY_MODE)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         svlAnalytics.logLinkGenerationOpened()
-        presenter.generateLink(recipient, token, lamports, isSimulation)
+        presenter.generateLink(recipient, token, lamports, isSimulation, currencyModeSymbol)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             // do nothing

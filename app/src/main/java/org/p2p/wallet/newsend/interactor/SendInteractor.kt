@@ -2,6 +2,7 @@ package org.p2p.wallet.newsend.interactor
 
 import timber.log.Timber
 import java.math.BigInteger
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
@@ -30,13 +31,15 @@ import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.newsend.model.SendFatalError
+import org.p2p.wallet.newsend.model.SendTransactionFailed
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
 
-private const val SEND_TAG = "SEND"
+private const val TAG = "SendInteractor"
 
 class SendInteractor(
     private val addressInteractor: TransactionAddressInteractor,
@@ -70,7 +73,7 @@ class SendInteractor(
         if (newToken.publicKey == feePayerToken.publicKey) return
 
         feePayerToken = newToken
-        Timber.tag(SEND_TAG).i("Fee payer token switched: ${newToken.mintAddress}")
+        Timber.tag(TAG).i("Fee payer token switched: ${newToken.mintAddress}")
     }
 
     fun getFeePayerToken(): Token.Active = feePayerToken
@@ -97,7 +100,7 @@ class SendInteractor(
 
             // feePayer's signature
             if (!feePayerToken.isSOL) {
-                Timber.tag(SEND_TAG).i("Fee payer is not sol, adding $lamportsPerSignature for fee")
+                Timber.tag(TAG).i("Fee payer is not sol, adding $lamportsPerSignature for fee")
                 transactionFee += lamportsPerSignature
             }
 
@@ -108,7 +111,7 @@ class SendInteractor(
                     useCache = useCache
                 ).shouldCreateAccount
 
-            Timber.tag(SEND_TAG).i("Should create account = $shouldCreateAccount")
+            Timber.tag(TAG).i("Should create account = $shouldCreateAccount")
 
             val expectedFee = FeeAmount(
                 transaction = transactionFee,
@@ -118,7 +121,7 @@ class SendInteractor(
             val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
 
             if (fees.total.isZero()) {
-                Timber.tag(SEND_TAG).i("Total fees are zero!")
+                Timber.tag(TAG).i("Total fees are zero!")
                 return FeeCalculationState.NoFees
             }
 
@@ -130,16 +133,20 @@ class SendInteractor(
 
             return when (poolsStateFee) {
                 is FeePoolsState.Calculated -> {
-                    Timber.tag(SEND_TAG).i("FeePoolsState is calculated")
+                    Timber.tag(TAG).i("FeePoolsState is calculated")
                     FeeCalculationState.Success(FeeRelayerFee(fees, poolsStateFee.feeInSpl, expectedFee))
                 }
+
                 is FeePoolsState.Failed -> {
-                    Timber.tag(SEND_TAG).i("FeePoolsState is failed")
+                    Timber.tag(TAG).i("FeePoolsState is failed")
                     FeeCalculationState.PoolsNotFound(FeeRelayerFee(fees, poolsStateFee.feeInSOL, expectedFee))
                 }
             }
+        } catch (e: CancellationException) {
+            Timber.tag(TAG).i("Fee calculation cancelled")
+            return FeeCalculationState.Cancelled
         } catch (e: Throwable) {
-            Timber.tag(SEND_TAG).i(e, "Failed to calculateFeesForFeeRelayer")
+            Timber.tag(TAG).i(e, "Failed to calculateFeesForFeeRelayer")
             return FeeCalculationState.Error(e)
         }
     }
@@ -165,29 +172,29 @@ class SendInteractor(
             .filterNotNull()
             .toMap()
 
-        Timber.tag(SEND_TAG).i(
+        Timber.tag(TAG).i(
             "Filtering user tokens for alternative fee payers: ${userTokens.map(Token.Active::mintAddress)}"
         )
         userTokens.filter { token ->
             if (token.tokenSymbol == tokenToExclude) {
-                Timber.tag(SEND_TAG).i("Excluding ${token.mintAddress} ${token.tokenSymbol}")
+                Timber.tag(TAG).i("Excluding ${token.mintAddress} ${token.tokenSymbol}")
                 return@filter false
             }
 
             val totalInSol = transactionFeeInSOL + accountCreationFeeInSOL
             if (token.isSOL) {
-                Timber.tag(SEND_TAG).i("Checking SOL as fee payer = ${token.totalInLamports >= totalInSol}")
+                Timber.tag(TAG).i("Checking SOL as fee payer = ${token.totalInLamports >= totalInSol}")
                 return@filter token.totalInLamports >= totalInSol
             }
 
             // assuming that all other tokens are SPL
             val feesInSpl = fees[token.tokenSymbol] ?: return@filter run {
-                Timber.tag(SEND_TAG).i("Fee in SPL not found for ${token.tokenSymbol} in ${fees.keys}")
+                Timber.tag(TAG).i("Fee in SPL not found for ${token.tokenSymbol} in ${fees.keys}")
                 false
             }
             token.totalInLamports >= feesInSpl.total
         }.also {
-            Timber.tag(SEND_TAG).i("Found alternative feepayer tokens: ${it.map(Token.Active::mintAddress)}")
+            Timber.tag(TAG).i("Found alternative feepayer tokens: ${it.map(Token.Active::mintAddress)}")
         }
     }
 
@@ -226,7 +233,7 @@ class SendInteractor(
         token: Token.Active,
         lamports: BigInteger
     ): String = withContext(dispatchers.io) {
-        Timber.tag(SEND_TAG).i("Start sendTransaction")
+        Timber.tag(TAG).i("Start sendTransaction")
 
         val preparedTransaction = prepareForSending(
             token = token,
@@ -235,18 +242,18 @@ class SendInteractor(
         )
 
         val transactionPublicKey = preparedTransaction.transaction.signature?.publicKey?.toBase58()
-        Timber.tag(SEND_TAG).i("Send transaction prepared: $transactionPublicKey")
+        Timber.tag(TAG).i("Send transaction prepared: $transactionPublicKey")
 
         try {
             if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
-                Timber.tag(SEND_TAG).i("Using native swap")
+                Timber.tag(TAG).i("Using native swap")
                 // send normally, paid by SOL
                 transactionInteractor.serializeAndSend(
                     transaction = preparedTransaction.transaction,
                     isSimulation = false
                 )
             } else {
-                Timber.tag(SEND_TAG).i("Using FeeRelayer for send")
+                Timber.tag(TAG).i("Using FeeRelayer for send")
                 // use fee relayer
                 val statistics = FeeRelayerStatistics(
                     operationType = OperationType.TRANSFER,
@@ -260,7 +267,7 @@ class SendInteractor(
                 )
             }
         } catch (error: Throwable) {
-            Timber.tag(SEND_TAG).i(error, "Failed sending transaction")
+            Timber.tag(TAG).i(error, "Failed sending transaction")
             throw SendTransactionFailed(transactionPublicKey.orEmpty(), error)
         }
     }
@@ -279,7 +286,7 @@ class SendInteractor(
         transactionFeeInSOL: BigInteger,
         accountCreationFeeInSOL: BigInteger
     ): Pair<String, FeeAmount>? = try {
-        Timber.tag(SEND_TAG).i("getFeesInPayingTokenNullable for ${token.mintAddress}")
+        Timber.tag(TAG).i("getFeesInPayingTokenNullable for ${token.mintAddress}")
         val feeInSpl = getFeesInPayingToken(
             feePayerToken = token,
             transactionFeeInSOL = transactionFeeInSOL,
@@ -287,14 +294,14 @@ class SendInteractor(
         )
 
         if (feeInSpl is FeePoolsState.Calculated) {
-            Timber.tag(SEND_TAG).i("Fees found for ${token.mintAddress}")
+            Timber.tag(TAG).i("Fees found for ${token.mintAddress}")
             token.tokenSymbol to feeInSpl.feeInSpl
         } else {
-            Timber.tag(SEND_TAG).i("Fees are null found for ${token.mintAddress}")
+            Timber.tag(TAG).i("Fees are null found for ${token.mintAddress}")
             null
         }
     } catch (e: IllegalStateException) {
-        Timber.tag(SEND_TAG).i(e, "No fees found for token ${token.mintAddress}")
+        Timber.tag(TAG).i(e, "No fees found for token ${token.mintAddress}")
         // ignoring tokens without fees
         null
     }
@@ -304,7 +311,7 @@ class SendInteractor(
         transactionFeeInSOL: BigInteger,
         accountCreationFeeInSOL: BigInteger
     ): FeePoolsState {
-        Timber.tag(SEND_TAG).i("Fetching fees in paying token: ${feePayerToken.mintAddress}")
+        Timber.tag(TAG).i("Fetching fees in paying token: ${feePayerToken.mintAddress}")
         if (feePayerToken.isSOL) {
             val fee = FeeAmount(
                 transaction = transactionFeeInSOL,
@@ -340,7 +347,7 @@ class SendInteractor(
             feePayer to true
         }
 
-        Timber.tag(SEND_TAG).i("feePayer = $feePayer; useFeeRelayer=$useFeeRelayer")
+        Timber.tag(TAG).i("feePayer = $feePayer; useFeeRelayer=$useFeeRelayer")
 
         return if (token.isSOL) {
             prepareNativeSol(
@@ -373,7 +380,7 @@ class SendInteractor(
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null
     ): PreparedTransaction {
-        Timber.tag(SEND_TAG).i("preparing native sol")
+        Timber.tag(TAG).i("preparing native sol")
 
         val account = Account(tokenKeyProvider.keyPair)
 
@@ -407,7 +414,7 @@ class SendInteractor(
         lamportsPerSignature: BigInteger? = null,
         minBalanceForRentExemption: BigInteger? = null
     ): Pair<PreparedTransaction, String> {
-        Timber.tag(SEND_TAG).i("preparing spl token: $mintAddress")
+        Timber.tag(TAG).i("preparing spl token: $mintAddress")
 
         val account = Account(tokenKeyProvider.keyPair)
 
@@ -429,7 +436,7 @@ class SendInteractor(
         var accountsCreationFee: BigInteger = BigInteger.ZERO
         // create associated token address
         if (splDestinationAddress.shouldCreateAccount) {
-            Timber.tag(SEND_TAG).i("Associated token account creation needed, adding create instruction")
+            Timber.tag(TAG).i("Associated token account creation needed, adding create instruction")
 
             val owner = destinationAddress.toPublicKey()
 
@@ -472,10 +479,10 @@ class SendInteractor(
 
         var realDestination = destinationAddress
         if (!splDestinationAddress.shouldCreateAccount) {
-            Timber.tag(SEND_TAG).i("No need to create account for spl destination address")
+            Timber.tag(TAG).i("No need to create account for spl destination address")
             realDestination = splDestinationAddress.destinationAddress.toBase58()
         }
-        Timber.tag(SEND_TAG).i("realDestination = $realDestination")
+        Timber.tag(TAG).i("realDestination = $realDestination")
 
         val preparedTransaction = transactionInteractor.prepareTransaction(
             instructions = instructions,

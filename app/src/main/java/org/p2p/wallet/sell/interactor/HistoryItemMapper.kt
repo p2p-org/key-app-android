@@ -6,44 +6,56 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.bridge.BridgeHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
 
+private const val USDT_ETH_TOKEN_SYMBOL = "USDTet"
+private const val USDC_ETH_TOKEN_SYMBOL = "USDCet"
+
 class HistoryItemMapper(
     private val resources: Resources,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val userLocalRepository: UserLocalRepository
 ) {
 
     private val historyItemFlow = MutableStateFlow<List<HistoryItem>?>(null)
-    val rpcHistoryItems = mutableListOf<HistoryItem>()
-    val sellHistoryItems = mutableListOf<HistoryItem>()
 
     fun getHistoryAdapterItemFlow(): MutableStateFlow<List<HistoryItem>?> {
         return historyItemFlow
     }
 
     suspend fun toAdapterItem(
-        tokenMintAddress: Base58String? = null,
+        tokenMintAddress: Base58String?,
         transactions: List<HistoryTransaction>,
         userSendLinksCount: Int
     ) {
+        val rpcHistoryItems = mutableListOf<HistoryItem>()
+        val sellHistoryItems = mutableListOf<HistoryItem>()
+        val bridgeHistoryItems = mutableListOf<HistoryItem>()
+        val filterBundleIds = transactions.filterIsInstance<BridgeHistoryTransaction>()
+            .filter { it.isProcessing() }
+            .map { it.getHistoryTransactionId() }
         withContext(dispatchers.io) {
-
             transactions.forEachIndexed { _, item ->
                 when (item) {
                     is RpcHistoryTransaction -> {
-                        parse(item, rpcHistoryItems)
+                        if (item.isNotProcessing(filterBundleIds)) {
+                            parse(item, rpcHistoryItems)
+                        }
                     }
                     is SellTransaction -> {
                         // Sell transactions with cancel reason, should not appear in history
@@ -51,38 +63,58 @@ class HistoryItemMapper(
                             parse(item, sellHistoryItems)
                         }
                     }
+                    is BridgeHistoryTransaction -> {
+                        parse(item, bridgeHistoryItems)
+                    }
                 }
             }
 
-            val swapBannerItem: HistoryItem.SwapBannerItem? = when (tokenMintAddress?.base58Value) {
-                Constants.USDC_MINT -> {
-                    HistoryItem.SwapBannerItem(
-                        sourceTokenMintAddress = Constants.USDC_MINT,
-                        sourceTokenSymbol = Constants.USDC_SYMBOL,
-                        destinationTokenMintAddress = Constants.USDT_MINT,
-                        destinationTokenSymbol = Constants.USDT_SYMBOL
-                    )
-                }
-                Constants.USDT_MINT -> {
-                    HistoryItem.SwapBannerItem(
-                        sourceTokenMintAddress = Constants.USDT_MINT,
-                        sourceTokenSymbol = Constants.USDT_SYMBOL,
-                        destinationTokenMintAddress = Constants.USDC_MINT,
-                        destinationTokenSymbol = Constants.USDC_SYMBOL
-                    )
-                }
-                else -> {
-                    null
-                }
-            }
+            val swapBannerItem: HistoryItem.SwapBannerItem? = tokenMintAddress?.let(::createSwapBanner)
+            val userSendLinksItem: HistoryItem.UserSendLinksItem? = createUserSendLinksItem(userSendLinksCount)
 
-            val userSendLinksItem: HistoryItem.UserSendLinksItem? =
-                HistoryItem.UserSendLinksItem(userSendLinksCount).takeIf { userSendLinksCount > 0 }
             val historyItems = listOfNotNull(swapBannerItem, userSendLinksItem)
                 .plus(sellHistoryItems)
+                .plus(bridgeHistoryItems)
                 .plus(rpcHistoryItems)
             historyItemFlow.emit(historyItems)
         }
+    }
+
+    private fun RpcHistoryTransaction.isNotProcessing(filterBundleIds: List<String>): Boolean {
+        return when (this) {
+            is RpcHistoryTransaction.WormholeReceive -> claimKey !in filterBundleIds
+            is RpcHistoryTransaction.WormholeSend -> message !in filterBundleIds
+            else -> true
+        }
+    }
+
+    private fun createSwapBanner(tokenMintAddress: Base58String): HistoryItem.SwapBannerItem? {
+        return when (tokenMintAddress.base58Value) {
+            Constants.USDC_MINT -> {
+                HistoryItem.SwapBannerItem(
+                    sourceTokenMintAddress = Constants.USDC_MINT,
+                    sourceTokenSymbol = Constants.USDC_SYMBOL,
+                    destinationTokenMintAddress = ERC20Tokens.USDC.mintAddress,
+                    destinationTokenSymbol = USDC_ETH_TOKEN_SYMBOL
+                )
+            }
+            Constants.USDT_MINT -> {
+                HistoryItem.SwapBannerItem(
+                    sourceTokenMintAddress = Constants.USDT_MINT,
+                    sourceTokenSymbol = Constants.USDT_SYMBOL,
+                    destinationTokenMintAddress = ERC20Tokens.USDT.mintAddress,
+                    destinationTokenSymbol = USDT_ETH_TOKEN_SYMBOL
+                )
+            }
+            else -> {
+                null
+            }
+        }
+    }
+
+    private fun createUserSendLinksItem(userSendLinksCount: Int): HistoryItem.UserSendLinksItem? {
+        return HistoryItem.UserSendLinksItem(userSendLinksCount)
+            .takeIf { userSendLinksCount > 0 }
     }
 
     fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
@@ -157,6 +189,25 @@ class HistoryItemMapper(
                 startTitle = resources.getString(R.string.transaction_history_closed)
                 startSubtitle =
                     resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+            }
+            is RpcHistoryTransaction.WormholeSend -> with(transaction) {
+                tokenIconUrl = iconUrl
+                iconRes = R.drawable.ic_transaction_send
+                startTitle = resources.getString(getTitle())
+                startSubtitle = resources.getString(getSubtitle())
+                endTopValue = getUsdAmount()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
+            }
+
+            is RpcHistoryTransaction.WormholeReceive -> with(transaction) {
+                tokenIconUrl = iconUrl
+                iconRes = R.drawable.ic_transaction_send
+                startTitle = resources.getString(getTitle())
+                startSubtitle = resources.getString(getSubtitle())
+                endTopValue = getUsdAmount()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.Unknown -> {
                 iconRes = R.drawable.ic_transaction_unknown
@@ -269,6 +320,34 @@ class HistoryItemMapper(
                 date = transaction.updatedAt.toZonedDateTime()
             )
         )
+    }
+
+    fun parse(item: BridgeHistoryTransaction, cache: MutableList<HistoryItem>) {
+        if (item is BridgeHistoryTransaction.Send) {
+            val sendTokenSymbol = item.sendDetails.amount.symbol
+            val tokenIconUrl = userLocalRepository.getTokensData()
+                .firstOrNull { it.symbol == sendTokenSymbol }
+                ?.iconUrl
+
+            val item = HistoryItem.BridgeSendItem(
+                id = item.id,
+                sendDetails = item.sendDetails,
+                tokenIconUrl = tokenIconUrl
+            )
+            cache.add(item)
+        } else if (item is BridgeHistoryTransaction.Claim) {
+            val claimTokenSymbol = item.bundle.resultAmount.symbol
+            val tokenIconUrl = userLocalRepository.getTokensData()
+                .firstOrNull { it.symbol == claimTokenSymbol }
+                ?.iconUrl
+
+            val item = HistoryItem.BridgeClaimItem(
+                bundleId = item.bundleId,
+                bundle = item.bundle,
+                tokenIconUrl = tokenIconUrl
+            )
+            cache.add(item)
+        }
     }
 
     fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {

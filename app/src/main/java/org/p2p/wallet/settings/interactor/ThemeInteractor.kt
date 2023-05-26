@@ -1,8 +1,7 @@
 package org.p2p.wallet.settings.interactor
 
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.edit
+import android.content.SharedPreferences
 
 private const val THEME_KEY = "THEME_KEY"
 
@@ -13,11 +12,6 @@ class ThemeInteractor(
 
     fun applyCurrentNightMode() {
         AppCompatDelegate.setDefaultNightMode(getNightMode())
-    }
-
-    fun setTheme(theme: Theme) {
-        sharedPreferences.edit(commit = true) { putInt(THEME_KEY, theme.nightMode) }
-        applyCurrentNightMode()
     }
 
     @AppCompatDelegate.NightMode

@@ -57,7 +57,7 @@
     <string name="camera_permission_not_granted">Camera permission denied</string>
 
     <!-- Error messages -->
-    <string name="error_title">Error occurred</string>
+    <string name="error_title">Failed to get data</string>
     <string name="error_general_title">Unknown error</string>
     <string name="error_general_message">❌ Something went wrong. Please, try again</string>
     <string name="error_general_message_refresh">Something went wrong</string>
@@ -99,16 +99,11 @@
     <string name="auth_agree_terms_and_privacy">By continuing, you agree wallet\'s Terms of Use and Privacy Policy</string>
     <string name="auth_terms_of_use">Terms of Use</string>
     <string name="auth_privacy_policy">Privacy Policy</string>
-    <string name="auth_your_security_key">Your security key</string>
-    <string name="auth_recover_info">To recover your wallet enter your security key\'s 12 or 24 words separated by single spaces in the correct order.</string>
-    <string name="auth_seed_phrase_limit">Secret phrase can\'t contain more than 12 words</string>
-    <string name="auth_security_key_hint">Write down or duplicate these words in the correct order and keep them in a safe place. Copy them manually</string>
     <string name="auth_copy_to_clipboard">Copy to clipboard</string>
     <string name="auth_confirm_words_save">I have saved these words in a safe place.</string>
     <string name="auth_next">Next</string>
     <string name="auth_have_wallet">I already have a wallet</string>
     <string name="auth_restore_manually">Restore manually</string>
-    <string name="auth_restore">Restore</string>
     <string name="auth_reset_and_try_again">Reset and try again</string>
     <string name="auth_create_new_wallet">Create a new wallet</string>
     <string name="auth_create_new_wallet_message">The following words are the security key that you must keep in a safe place, written in the correct sequence.\n\nIf lost, no one can restore it.\nKeep it private, even from us</string>
@@ -353,8 +348,10 @@
     <string name="receive_num_2">2</string>
     <string name="receive_ethereum_step_1">Send %s to your Ethereum address</string>
     <string name="receive_ethereum_step_2">We bridge it to Solana with Wormhole</string>
-    <string name="receive_ethereum_banner_text">We refund bridging\ncosts for any transactions over $50</string>
+    <string name="receive_ethereum_banner_text">We refund bridging costs for any transactions over $50</string>
+    <string name="receive_ethereum_banner_text_format">We refund bridging costs for any transactions over %s</string>
     <string name="receive_only_need_sign_transaction">You only need to sign a transaction with Key App</string>
+    <string name="receive_min_receive_amount">$5 is the minimum amount to receive from the ETH Network </string>
 
 
     <!-- send -->
@@ -501,116 +498,11 @@
     <string name="qr_try_again">Invalid QR, please try again</string>
     <string name="qr_invalid">Invalid QR</string>
 
-    <!-- settings -->
-    <string name="settings_title">Settings</string>
-    <string name="settings_profile">Profile</string>
-    <string name="settings_hide_zero_balances">Hide zero balances</string>
-    <string name="settings_security">Security</string>
-    <string name="settings_network">Network</string>
-    <string name="settings_fee_relayer">Fee Relayer Environment</string>
-    <string name="settings_name_service">Name Service Environment</string>
-    <string name="settings_torus">Torus Environment</string>
-    <string name="settings_notification_service">Notification Service Environment</string>
-    <string name="settings_stub_public_key">Public key stubbing 🗡️</string>
-    <string name="settings_moonpay_sandbox">Moonpay sandbox</string>
-    <string name="settings_theme">Theme</string>
-    <string name="settings_language">Language</string>
-    <string name="settings_security_face_id">FaceID</string>
-    <string name="settings_security_fingerprint">Fingerprint</string>
-    <string name="settings_security_primary_biometric">Will be as a primary secure check</string>
-    <string name="settings_security_pin_code">PIN</string>
-    <string name="settings_security_pin_code_check">Default secure check</string>
-    <string name="settings_security_change_enter_pin">Set up a new PIN</string>
-    <string name="settings_security_change_confirm_pin">Confirm your wallet PIN</string>
-    <string name="settings_security_change_pin_success">PIN changed!</string>
-    <string name="settings_security_change_pin_info">Physical space is often conceived in three linear dimensions, although modern physicists usually consider it, with time</string>
-    <string name="settings_security_go_back">Go back to profile</string>
-    <string name="settings_security_pin_codes_matching">PINs do not match</string>
-    <string name="settings_theme_light">Light</string>
-    <string name="settings_theme_dark">Dark</string>
-    <string name="settings_theme_system">System</string>
-    <string name="settings_app_version">App version</string>
-    <string name="settings_username">Username</string>
-    <string name="settings_address_book">Address book</string>
-    <string name="settings_address_book_subtitle">Add, edit and delete addresses</string>
-    <string name="settings_history">History</string>
-    <string name="settings_history_subtitle">View your transaction history</string>
-    <string name="settings_security_and_network"><![CDATA[Security & Network]]></string>
-    <string name="settings_backup">Backup</string>
-    <string name="settings_backup_subtitle">Backed up manually</string>
-    <string name="settings_wallet_pin">Wallet PIN</string>
-    <string name="settings_wallet_pin_subtitle">Changing or resetting your PIN</string>
-    <string name="settings_app_security">App security</string>
-    <string name="settings_app_security_subtitle">Every transaction requires biometrics</string>
-    <string name="settings_pay_fees_with">Pay fees with</string>
-    <string name="settings_appearance">Appearance</string>
-    <string name="settings_appearance_subtitle">System defaults determine the theme</string>
-    <string name="settings_staying_up_in_date">Staying up to date</string>
-    <string name="settings_staying_up_in_date_subtitle">You\'re receiving notifications</string>
-    <string name="settings_default_currency">Default currency</string>
-    <string name="settings_default_currency_subtitle">Showing balances in US Dollar</string>
-    <string name="settings_zero_balances">Zero balances</string>
-    <string name="settings_zero_balances_hidden">Tokens with zero balances are hidden</string>
-    <string name="settings_zero_balances_shown">Tokens with zero balances are shown</string>
-    <string name="settings_logout">Log out now</string>
-    <string name="settings_forgot_your_pin">Forgot your PIN? Reset it</string>
-    <string name="settings_reset_it">Reset it</string>
-    <string name="settings_a_new_wallet_pin_is_set">A new wallet PIN is set!</string>
-    <string name="settings_confirmations">Confirmations</string>
-    <string name="settings_use_confirmations">Use confirmations</string>
-    <string name="settings_auth_transactions">Authenticate transactions</string>
-    <string name="settings_biometrics">Biometrics</string>
-    <string name="settings_registered">Registered</string>
-    <string name="settings_unregistered">Unregistered</string>
-    <string name="settings_resetting_your_PIN">Resetting your PIN</string>
-    <string name="settings_choose_a_network">Choose a network</string>
-    <string name="settings_tokens_with_zero_balances">Tokens with zero balances</string>
-    <string name="settings_tokens_with_zero_balances_are_shown">Tokens with zero balances are shown</string>
-    <string name="settings_tokens_hidden">Hidden</string>
-    <string name="settings_tokens_shown">Shown</string>
-    <string name="settings_logout_title">Do you want to log out?</string>
-    <string name="settings_logout_message">You will need your social account or phone number to log in</string>
-    <string name="settings_what_is_a_security_key">What is a security key?</string>
-    <string name="settings_slippage_hint">Custom slippage tolerance (%)</string>
-    <string name="settings_slippage_max_error">Max price slippage is 50%</string>
-    <string name="settings_slippage_min_error">Min slippage is 0.1%</string>
-    <string name="settings_slippage_info">&#8226; A slippage is a difference between the expected price and the actual price at which a trade is executed\n\n
-&#8226; Slippage can occur at any time, but it is most prevalent during periods of higher volatility\n\n
-&#8226; Transactions that exceed 20% slippage tolerance may be frontrun\n\n
-&#8226; Slippage tolerance cannot exceed 50%</string>
-
-    <!-- Debug Settings -->
-    <string name="debug_settings_notifications_title">Notifications</string>
-    <string name="debug_settings_deeplinks_title">Deeplinks</string>
-    <string name="debug_settings_logs_title">Logs</string>
-    <string name="debug_settings_feature_toggles_title">Feature Toggles</string>
-    <string name="debug_settings_logs_subtitle">Tap to show Logs</string>
-    <string name="debug_settings_device_info">Device Info</string>
-    <string name="debug_settings_ci_info">CI Info</string>
-    <string name="debug_settings_app_info">App Info</string>
-
-    <!-- Debug Settings -> Notifications -->
-    <string name="debug_notifications_title">Debug Notifications</string>
-    <string name="debug_notifications_item_default">Notification Default</string>
-    <string name="debug_notifications_item_receive">Notification Receive</string>
-
-    <!-- Debug Settings -> Feature Toggles -->
-    <string name="feature_toggles_title">@string/debug_settings_feature_toggles_title</string>
-
     <!-- fixme: rename these resources by existing prefixes -->
-    <string name="seed_info_the_definition">The definition</string>
-    <string name="seed_info_description">You can compare a cryptocurrency wallet to\na password manager for crypto, and a\nsecurity key to a master password.\n\nA security key is a series of 12 or 24 words\ngenerated by the wallet that give you access\nto its associated crypto.</string>
-    <string name="seed_info_description_secondary">If you create a new wallet account, you will receive your security key that you must write down somewhere safe. This is the only way to recover your wallet.\n\nIf you still have access to your old wallet, sometimes you can recover your security key from it.\n\nUsing Custodian wallet, you still have the option to regain access to your data by asking a third party.</string>
-    <string name="seed_info_info">• If lost, no one can restore it\n• Keep it private, even from us</string>
-    <string name="seed_info_where_i_can_find">Where I can find one?</string>
     <string name="receive_token_list_not_found">If there is a token named \"%s\", we don\'t recommend sending it to your Solana address since it will most likely be lost forever.</string>
     <string name="search_menu">Search</string>
     <string name="search_for_a_token">Search for a token</string>
-    <string name="recovery_kit_seed_phrase_details_title">Make sure you understand the aspects</string>
-    <string name="recovery_kit_details_seed_phrase">Details seed phrase</string>
-    <string name="recovery_kit_seed_phrase_must_never_share">Your seed phrase must never be shared</string>
-    <string name="recovery_kit_logout_title"> Do you want to see your seed phrase?</string>
-    <string name="recovery_kit_logout_message">You have to log out and log in again.</string>
+
     <string name="send_no_token_title">Sending tokens has\nnever been EASIER</string>
     <string name="send_buy_crypto">Buy crypto</string>
 </resources>

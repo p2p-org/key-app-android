@@ -14,5 +14,6 @@ data class SolanaTransferStatusesRpcRequest(
         put("user_wallet", userWallet)
     }
 ) {
+    @Transient
     override val typeOfResult: Type = object : TypeToken<List<BridgeTransactionStatusResponse>>() {}.type
 }

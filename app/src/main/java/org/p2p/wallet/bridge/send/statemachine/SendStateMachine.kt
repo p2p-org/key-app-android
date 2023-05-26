@@ -48,7 +48,7 @@ class SendStateMachine(
 
         val staticState = state.lastStaticState
         val actionHandler = handlers.firstOrNull { it.canHandle(action, staticState) } ?: return
-        actionHandleJob = actionHandler.handle(staticState, action)
+        actionHandleJob = actionHandler.handle(state.value, action)
             .flowOn(dispatchers.io)
             .catch { catchException(it, this) }
             .onEach { newState ->
@@ -87,12 +87,12 @@ class SendStateMachine(
 
     private fun startFeeTimerIfNeed(newState: SendState) {
         val needStart = when (newState) {
-            SendState.Static.Empty,
-            is SendState.Exception -> false
+            SendState.Static.Empty -> false
             is SendState.Loading.Fee -> {
                 refreshFeeTimer?.cancel()
                 false
             }
+            is SendState.Exception,
             is SendState.Static.ReadyToSend,
             is SendState.Static.TokenNotZero,
             is SendState.Static.TokenZero -> true
@@ -104,7 +104,13 @@ class SendStateMachine(
         refreshFeeTimer?.cancel()
         refreshFeeTimer = launch {
             delay(delay)
-            newAction(SendFeatureAction.RefreshFee)
+            val lastState = state.value
+            val lastAmount = if (lastState is SendState.Exception.Feature) {
+                lastState.featureException.amount
+            } else {
+                lastState.lastStaticState.inputAmount
+            }
+            newAction(SendFeatureAction.RefreshFee(lastAmount))
         }
     }
 

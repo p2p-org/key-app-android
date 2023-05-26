@@ -1,8 +1,10 @@
 package org.p2p.wallet.updates
 
+import androidx.core.net.toUri
+import com.google.gson.JsonObject
 import timber.log.Timber
 import java.util.concurrent.Executors
-import kotlin.properties.Delegates
+import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,51 +16,58 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import org.p2p.core.network.ConnectionManager
+import org.p2p.solanaj.model.types.RpcMapRequest
+import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.solanaj.ws.SocketClientCreateResult
 import org.p2p.solanaj.ws.SocketStateListener
-import org.p2p.solanaj.ws.SubscriptionWebSocketClient
+import org.p2p.solanaj.ws.SubscriptionEventListener
+import org.p2p.solanaj.ws.SubscriptionSocketClient
+import org.p2p.solanaj.ws.SubscriptionSocketClientFactory
+import org.p2p.solanaj.ws.impl.SocketClientException
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SocketSubscriptionsFeatureToggle
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 
 private const val DELAY_MS = 5000L
 
 private const val TAG = "SocketUpdatesManager"
 
-class SocketUpdatesManager private constructor(
+class SocketUpdatesManager(
     appScope: AppScope,
-    environmentManager: NetworkEnvironmentManager,
-    private val connectionStateProvider: NetworkConnectionStateProvider,
-    private val updateHandlers: List<UpdateHandler>,
-    private val initDispatcher: CoroutineDispatcher
-) : CoroutineScope by (appScope + initDispatcher), SocketStateListener, UpdatesManager {
+    private val environmentManager: NetworkEnvironmentManager,
+    private val connectionStateProvider: ConnectionManager,
+    private val updateHandlers: List<SubscriptionUpdateHandler>,
+    private val socketEnabledFeatureToggle: SocketSubscriptionsFeatureToggle,
+    private val initDispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+) : CoroutineScope by (appScope + initDispatcher), SocketStateListener, SubscriptionUpdatesManager {
 
-    constructor(
-        appScope: AppScope,
-        environmentManager: NetworkEnvironmentManager,
-        connectionStateProvider: NetworkConnectionStateProvider,
-        updateHandlers: List<UpdateHandler>
-    ) : this(
-        appScope = appScope,
-        environmentManager = environmentManager,
-        connectionStateProvider = connectionStateProvider,
-        updateHandlers = updateHandlers,
-        initDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    )
-
-    private val endpoint = environmentManager.loadCurrentEnvironment().endpoint
-    private var client: SubscriptionWebSocketClient? = null
+    private val networkEnvironment: NetworkEnvironment
+        get() = environmentManager.loadCurrentEnvironment()
+    private var client: SubscriptionSocketClient? = null
     private var connectionJob: Job? = null
 
-    private val observers = mutableListOf<UpdatesStateObserver>()
+    private val observers = mutableListOf<SubscriptionUpdatesStateObserver>()
 
-    private var state: UpdatesState by Delegates.observable(UpdatesState.DISCONNECTED) { _, oldValue, newValue ->
+    private var state: SocketState by observable(SocketState.DISCONNECTED) { _, oldValue, newValue ->
         if (oldValue != newValue) observers.lastOrNull()?.onUpdatesStateChanged(newValue)
     }
+
+    private val socketFactory = SubscriptionSocketClientFactory()
 
     private var isStarted = false
 
     override fun start() {
-        if (isStarted) return
+        if (isStarted || !socketEnabledFeatureToggle.isFeatureEnabled) {
+            Timber.tag(TAG).i(
+                "Unable to start socket manager: isStarted=$isStarted flag=${socketEnabledFeatureToggle.value}"
+            )
+            return
+        }
 
+        Timber.tag(TAG).i("Starting update manager")
         launch { startActual() }
     }
 
@@ -71,37 +80,59 @@ class SocketUpdatesManager private constructor(
         start()
     }
 
-    override fun addUpdatesStateObserver(observer: UpdatesStateObserver) {
+    override fun isStarted(): Boolean = isStarted
+
+    override fun addUpdatesStateObserver(observer: SubscriptionUpdatesStateObserver) {
         launch {
             observer.onUpdatesStateChanged(state)
             observers.add(observer)
         }
     }
 
-    override fun removeUpdatesStateObserver(observer: UpdatesStateObserver) {
+    override fun removeUpdatesStateObserver(observer: SubscriptionUpdatesStateObserver) {
         launch { observers.remove(observer) }
     }
 
-    override fun subscribeToTransaction(signature: String) {
-        client?.signatureSubscribe(signature) { data ->
+    override fun addSubscription(request: RpcRequest, updateType: SocketSubscriptionUpdateType) {
+        Timber.tag(TAG).d("add subscription for request, client = $client")
+        val listener = createEventListener(updateType)
+        client?.addSubscription(request, listener)
+    }
+
+    override fun addSubscription(request: RpcMapRequest, updateType: SocketSubscriptionUpdateType) {
+        Timber.tag(TAG).d("add subscription for request, client = $client")
+        val listener = createEventListener(updateType)
+        client?.addSubscription(request, listener)
+    }
+
+    private fun createEventListener(updateType: SocketSubscriptionUpdateType): SubscriptionEventListener =
+        SubscriptionEventListener { data: JsonObject ->
             launch(Dispatchers.Default) {
-                Timber.tag(TAG).d("Event received, data = $data")
+                Timber.tag(TAG).d("New socket event triggered($updateType): $data")
+
                 updateHandlers.forEach {
-                    it.onUpdate(UpdateType.SIGNATURE_RECEIVED, signature)
+                    it.onUpdate(updateType, data)
                 }
             }
         }
+
+    override fun removeSubscription(request: RpcRequest) {
+        client?.removeSubscription(request)
     }
 
-    override fun unsubscribeFromTransaction(signature: String) = Unit
+    override fun removeSubscription(request: RpcMapRequest) {
+        client?.removeSubscription(request)
+    }
 
-    override fun onWebSocketPong() = Unit
+    override fun onWebSocketPong() {
+        Timber.tag(TAG).d("Server pong")
+    }
 
     override fun onConnected() {
-        Timber.tag(TAG).w("Socket client is successfully connected")
+        Timber.tag(TAG).i("Socket client is successfully connected")
         connectionJob?.cancel()
         connectionJob = launch {
-            state = UpdatesState.CONNECTED
+            state = SocketState.CONNECTED
             while (true) {
                 client?.ping()
                 delay(DELAY_MS)
@@ -110,84 +141,115 @@ class SocketUpdatesManager private constructor(
     }
 
     override fun onFailed(exception: Exception) {
-        if (state == UpdatesState.CONNECTING) {
-            launch { state = UpdatesState.CONNECTING_FAILED }
+        Timber.tag(TAG).d("Event updates connection is failed: $exception")
+        if (state == SocketState.CONNECTING) {
+            launch { state = SocketState.CONNECTING_FAILED }
         } else {
             restartInternal()
         }
     }
 
     override fun onClosed(code: Int, message: String) {
-        Timber.tag(TAG).d("Event updates connection is closed: $message")
+        Timber.tag(TAG).i("Event updates connection is closed: $message")
     }
 
     private suspend fun startActual() {
         isStarted = true
 
         when (state) {
-            UpdatesState.DISCONNECTED,
-            UpdatesState.INITIALIZATION_FAILED,
-            UpdatesState.CONNECTING_FAILED ->
+            SocketState.DISCONNECTED,
+            SocketState.INITIALIZATION_FAILED,
+            SocketState.CONNECTING_FAILED ->
                 connectSocketClient()
-            UpdatesState.INITIALIZING ->
-                Timber.tag(TAG).d("Trying to start update manager while it is initializing")
-            UpdatesState.CONNECTING ->
-                Timber.tag(TAG).d("Trying to start update manager while it is connecting")
-            UpdatesState.CONNECTED ->
-                Timber.tag(TAG).d("Trying to start update manager while it is connected")
+            SocketState.INITIALIZING ->
+                Timber.tag(TAG).i("Trying to start update manager while it is initializing")
+            SocketState.CONNECTING ->
+                Timber.tag(TAG).i("Trying to start update manager while it is connecting")
+            SocketState.CONNECTED ->
+                Timber.tag(TAG).i("Trying to start update manager while it is connected")
         }
     }
 
     private fun stopActual() {
         if (!isStarted) {
-            Timber.tag(TAG).w("Trying to stop update manager while it is already stopped")
+            Timber.tag(TAG).i("Trying to stop update manager while it is already stopped")
         } else {
             isStarted = false
-            Timber.tag(TAG).d("Stopping update manager")
+            Timber.tag(TAG).i("Stopping update manager")
             disconnectSocketClient()
         }
     }
 
     private suspend fun connectSocketClient() {
-        if (state == UpdatesState.CONNECTED) {
-            Timber.tag(TAG).d("Trying to connect update manager while it is already connected")
+        if (state == SocketState.CONNECTED) {
+            Timber.tag(TAG).i("Trying to connect update manager while it is already connected")
             return
         }
 
-        state = UpdatesState.INITIALIZING
-        Timber.tag(TAG).d("Connecting: Waiting for network")
+        state = SocketState.INITIALIZING
+        Timber.tag(TAG).i("Connecting: Waiting for network")
 
         try {
-            withTimeout(DELAY_MS) { connectionStateProvider.awaitNetwork() }
-            Timber.tag(TAG).d("Connecting: Network OK, initializing update handlers")
+            withTimeout(DELAY_MS) { connectionStateProvider.connectionStatus.value }
+            Timber.tag(TAG).i("Connecting: Network OK, initializing update handlers")
             updateHandlers.forEach { it.initialize() }
         } catch (e: Throwable) {
-            state = UpdatesState.INITIALIZATION_FAILED
+            Timber.tag(TAG).i(SocketClientException(e), "Awaiting network failed")
+            state = SocketState.INITIALIZATION_FAILED
             return
         }
 
-        state = UpdatesState.CONNECTING
-        Timber.tag(TAG).d("Connecting: Update handlers are initialized, connecting to event stream")
+        state = SocketState.CONNECTING
+        Timber.tag(TAG).i("Connecting: Update handlers are initialized, connecting to event stream")
 
-        state = UpdatesState.CONNECTED
         try {
-            client = SubscriptionWebSocketClient.getInstance(endpoint, this)
+            val validatedEndpoint = createValidatedEndpoint()
+            when (val result = socketFactory.create(validatedEndpoint, this)) {
+                is SocketClientCreateResult.Created -> {
+                    client = result.instance
+                    if (client?.isSocketOpen == false) {
+                        client?.connect()
+                        Timber.tag(TAG).i("Connection created for : $client")
+                    }
+                    state = SocketState.CONNECTED
+                }
+                is SocketClientCreateResult.Reused -> {
+                    client = result.instance
+                    client?.reconnect()
+                    Timber.tag(TAG).i("Connection reused for : $client")
+                    state = SocketState.CONNECTED
+                }
+                is SocketClientCreateResult.Failed -> throw result
+            }
         } catch (e: Throwable) {
-            state = UpdatesState.CONNECTING_FAILED
+            Timber.tag(TAG).e(SocketClientException(e), "Connecting failed")
+            state = SocketState.CONNECTING_FAILED
+        }
+    }
+
+    private fun createValidatedEndpoint(): String {
+        val endpoint = networkEnvironment.endpoint
+        return if (networkEnvironment == NetworkEnvironment.RPC_POOL) {
+            endpoint.toUri()
+                .buildUpon()
+                .appendEncodedPath(BuildConfig.rpcPoolApiKey)
+                .toString()
+        } else {
+            endpoint
         }
     }
 
     private fun disconnectSocketClient() {
         client?.close()
-        state = UpdatesState.DISCONNECTED
-        Timber.tag(TAG).d("Disconnected from socket client")
+        state = SocketState.DISCONNECTED
+        Timber.tag(TAG).i("Disconnected from socket client")
     }
 
     private fun restartInternal() {
         if (!isStarted) {
-            Timber.tag(TAG).d("Stopped")
+            Timber.tag(TAG).i("Stopped")
         } else {
-            Timber.tag(TAG).d("Reconnecting")
+            Timber.tag(TAG).i("Reconnecting")
             launch {
                 delay(DELAY_MS)
                 client?.reconnect()

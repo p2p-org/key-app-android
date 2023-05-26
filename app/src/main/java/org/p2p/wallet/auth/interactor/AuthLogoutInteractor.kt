@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.interactor
 
 import androidx.core.content.edit
+import androidx.work.WorkManager
 import android.content.Context
 import android.content.SharedPreferences
 import timber.log.Timber
@@ -20,7 +21,7 @@ import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
-import org.p2p.wallet.updates.UpdatesManager
+import org.p2p.wallet.updates.SubscriptionUpdatesManager
 
 class AuthLogoutInteractor(
     private val context: Context,
@@ -32,7 +33,7 @@ class AuthLogoutInteractor(
     private val sendModeProvider: SendModeProvider,
     private val mainLocalRepository: HomeLocalRepository,
     private val recipientsLocalRepository: RecipientsLocalRepository,
-    private val updatesManager: UpdatesManager,
+    private val updatesManager: SubscriptionUpdatesManager,
     private val transactionManager: RenTransactionManager,
     private val transactionDetailsLocalRepository: TransactionDetailsLocalRepository,
     private val pushNotificationsInteractor: PushNotificationsInteractor,
@@ -64,6 +65,7 @@ class AuthLogoutInteractor(
             pushNotificationsInteractor.deleteDeviceToken(publicKey)
         }.invokeOnCompletion {
             appScope.cancel()
+            WorkManager.getInstance(context).cancelAllWork()
         }
     }
 }

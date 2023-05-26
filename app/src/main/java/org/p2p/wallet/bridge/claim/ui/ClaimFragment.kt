@@ -1,13 +1,17 @@
 package org.p2p.wallet.bridge.claim.ui
 
 import androidx.core.view.isVisible
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
 import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.math.BigDecimal
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
+import org.p2p.core.utils.asUsd
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.setTextColorRes
@@ -54,6 +58,10 @@ class ClaimFragment :
 
     private var listener: RootListener? = null
 
+    private val willGetAnimation = ChangeBounds().apply {
+        duration = 200
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as? RootListener
@@ -65,6 +73,14 @@ class ClaimFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             layoutFeeContainer.setOnClickListener { presenter.onFeeClicked() }
             buttonBottom.setOnClickListener { presenter.onSendButtonClicked() }
+        }
+    }
+
+    override fun setWillGetVisibility(isVisible: Boolean) {
+        val wasVisible = binding.groupWillGet.isVisible
+        if (wasVisible != isVisible) {
+            TransitionManager.beginDelayedTransition(binding.layoutFeeContainer, willGetAnimation)
+            binding.groupWillGet.isVisible = isVisible
         }
     }
 
@@ -93,12 +109,23 @@ class ClaimFragment :
         binding.textViewFeeValue.bind(fee)
     }
 
+    override fun showWillGet(willGet: TextViewCellModel) {
+        binding.textViewWillGetValue.bind(willGet)
+    }
+
     override fun showClaimFeeInfo(claimDetails: ClaimDetails) {
         ClaimInfoBottomSheet.show(childFragmentManager, claimDetails)
     }
 
     override fun showClaimButtonValue(tokenAmountToClaim: String) {
         binding.buttonBottom.text = getString(R.string.bridge_claim_bottom_button_format, tokenAmountToClaim)
+    }
+
+    override fun setMinAmountForFreeFee(minAmountForFreeFee: BigDecimal) {
+        binding.textViewBanner.text = getString(
+            R.string.receive_ethereum_banner_text_format,
+            minAmountForFreeFee.asUsd()
+        )
     }
 
     override fun showProgressDialog(bundleId: String, data: NewShowProgress) {

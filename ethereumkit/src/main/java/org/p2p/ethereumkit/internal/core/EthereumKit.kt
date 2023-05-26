@@ -17,6 +17,9 @@ import java.security.Security
 import java.util.Objects
 import java.util.Optional
 import java.util.logging.Logger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.rpc.IRpcSyncer
 import org.p2p.core.rpc.JsonRpc
@@ -398,7 +401,10 @@ class EthereumKit(
             walletId: String
         ): EthereumKit {
 
-            val connectionManager = ConnectionManager(application)
+            val connectionManager = ConnectionManager(
+                context = application,
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+            )
 
             val syncer: IRpcSyncer = when (rpcSource) {
                 is RpcSource.WebSocket -> {

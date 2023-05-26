@@ -15,6 +15,7 @@
     <string name="swap_main_fee_inform">Key App doesn\’t make any profit from swap 💚</string>
     <string name="swap_main_confirm_button">Swap %s → %s</string>
     <string name="swap_main_alert">The price is higher due to the large amount of cash lost for the pair of tokens. Split your transaction for few small swaps.</string>
+    <string name="swap_main_high_fee_alert">The fee is more than the defined slippage %s due to one-time account creation fee by Solana blockchain</string>
     <string name="swap_main_slippage_changed">🤖 We changed slippage to %s</string>
     <string name="swap_main_slippage_changed_details_button">OPEN DETAILS</string>
     <string name="swap_main_enter_amount">Enter amount</string>
@@ -48,7 +49,8 @@
 
     <string name="swap_settings_slippage_custom">Custom</string>
     <string name="swap_settings_slippage_title">SLIPPAGE</string>
-    <string name="swap_settings_slippage_hint">%</string>
+    <string name="swap_settings_slippage_hint_symbol">%</string>
+    <string name="swap_settings_slippage_hint">Custom slippage tolerance (%)</string>
     <string name="swap_settings_custom_slippage_hint">The slippage could be 0.01–50%</string>
     <string name="swap_settings_custom_slippage_confirm">Done</string>
 

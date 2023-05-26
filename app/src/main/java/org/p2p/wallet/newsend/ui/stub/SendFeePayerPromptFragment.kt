@@ -1,13 +1,13 @@
 package org.p2p.wallet.newsend.ui.stub
 
 import androidx.core.view.WindowInsetsCompat
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
@@ -15,8 +15,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendNoAccountBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
-import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.newsend.interactor.SendInteractor
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -112,7 +112,7 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
             val currentFeePayerToken = sendInteractor.getFeePayerToken()
             replaceFragment(
                 target = NewSelectTokenFragment.create(
-                    tokens = alternativeFeePayerTokens,
+                    tokensToSelectFrom = alternativeFeePayerTokens,
                     selectedToken = currentFeePayerToken,
                     requestKey = requestKey,
                     resultKey = resultKey,

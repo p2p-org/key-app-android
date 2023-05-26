@@ -15,6 +15,7 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.SwapFailure
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.retryOnException
 
 private const val TAG = "JupiterSwapRoutesRemoteRepository"
 
@@ -23,7 +24,8 @@ class JupiterSwapRoutesRemoteRepository(
     private val dispatchers: CoroutineDispatchers,
     private val mapper: JupiterSwapRoutesMapper,
     private val localRepository: JupiterSwapRoutesLocalRepository,
-    private val swapStorage: JupiterSwapStorageContract
+    private val swapStorage: JupiterSwapStorageContract,
+    private val routeValidator: JupiterSwapRouteValidator
 ) : JupiterSwapRoutesRepository {
 
     override suspend fun loadAndCacheAllSwapRoutes() {
@@ -65,16 +67,23 @@ class JupiterSwapRoutesRemoteRepository(
     override suspend fun getSwapRoutesForSwapPair(
         jupiterSwapPair: JupiterSwapPair,
         userPublicKey: Base58String
-    ): List<JupiterSwapRoute> = with(dispatchers.io) {
+    ): List<JupiterSwapRoute> = withContext(dispatchers.io) {
         try {
-            val response = api.getSwapRoutes(
-                inputMint = jupiterSwapPair.inputMint.base58Value,
-                outputMint = jupiterSwapPair.outputMint.base58Value,
-                amountInLamports = jupiterSwapPair.amountInLamports,
-                userPublicKey = userPublicKey.base58Value,
-                slippageBps = jupiterSwapPair.slippageBasePoints
-            )
+            // SocketTimeoutException can occur even when there's no real problem with the network
+            // It may happen if a socket becomes stale/dangling due unstable/changed network or by server side
+            // Also sometimes InterruptedIOException happens instead of timeout error, a can of worms
+            // there's an ancient issue about the same thing https://github.com/square/okhttp/issues/1037
+            val response = retryOnException {
+                api.getSwapRoutes(
+                    inputMint = jupiterSwapPair.inputMint.base58Value,
+                    outputMint = jupiterSwapPair.outputMint.base58Value,
+                    amountInLamports = jupiterSwapPair.amountInLamports,
+                    userPublicKey = userPublicKey.base58Value,
+                    slippageBps = jupiterSwapPair.slippageBasePoints
+                )
+            }
             mapper.fromNetwork(response)
+                .let { routeValidator.validateRoutes(it) }
         } catch (e: HttpException) {
             val isTooSmallAmountError = try {
                 val json = JSONObject(e.response()?.errorBody()?.string() ?: emptyString())

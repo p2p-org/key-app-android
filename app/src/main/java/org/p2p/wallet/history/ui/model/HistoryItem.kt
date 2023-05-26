@@ -3,7 +3,14 @@ package org.p2p.wallet.history.ui.model
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import org.threeten.bp.ZonedDateTime
+import org.p2p.core.utils.asUsdTransaction
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.scaleShortOrFirstNotZero
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.recycler.RoundedItem
+import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.utils.emptyString
 
@@ -65,5 +72,57 @@ sealed interface HistoryItem {
     ) : HistoryItem {
         override val date: ZonedDateTime = ZonedDateTime.now()
         override val transactionId: String = emptyString()
+    }
+
+    data class BridgeSendItem(
+        val id: String,
+        val sendDetails: BridgeSendTransactionDetails,
+        val tokenIconUrl: String?
+    ) : HistoryItem, RoundedItem {
+        override val date: ZonedDateTime = ZonedDateTime.now()
+        override val transactionId: String = id
+
+        fun getFormattedFiatValue(): String {
+            return sendDetails.amount.amountInUsd.toBigDecimalOrZero()
+                .scaleShortOrFirstNotZero()
+                .asUsdTransaction("+")
+        }
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String {
+            val totalAmount = sendDetails.amount.amountInToken
+            val tokenSymbol = sendDetails.amount.symbol
+
+            return if (scaleMedium) {
+                "${totalAmount.scaleMedium().formatToken()} $tokenSymbol"
+            } else {
+                "${totalAmount.formatToken()} $tokenSymbol"
+            }
+        }
+    }
+
+    data class BridgeClaimItem(
+        val bundleId: String,
+        val bundle: BridgeBundle,
+        val tokenIconUrl: String?
+    ) : HistoryItem, RoundedItem {
+        override val date: ZonedDateTime = ZonedDateTime.now()
+        override val transactionId: String = bundleId
+
+        fun getFormattedFiatValue(): String {
+            return bundle.resultAmount.amountInUsd.toBigDecimalOrZero()
+                .scaleShortOrFirstNotZero()
+                .asUsdTransaction("+")
+        }
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String {
+            val totalAmount = bundle.resultAmount.amountInToken
+            val tokenSymbol = bundle.resultAmount.symbol
+
+            return if (scaleMedium) {
+                "${totalAmount.scaleMedium().formatToken()} $tokenSymbol"
+            } else {
+                "${totalAmount.formatToken()} $tokenSymbol"
+            }
+        }
     }
 }

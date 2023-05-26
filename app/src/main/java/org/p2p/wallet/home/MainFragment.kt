@@ -20,6 +20,7 @@ import org.p2p.core.network.ConnectionManager
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
+import org.p2p.core.utils.launchRestartable
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
@@ -43,7 +44,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.sell.interactor.SellInteractor
-import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
@@ -117,9 +118,18 @@ class MainFragment :
             onCreateActions = arrayListOf()
         }
 
-        connectionManager.connectionStatus.onEach { isConnected ->
-            if (!isConnected) showInternetError(true)
-        }.launchIn(lifecycleScope)
+        parentFragmentManager.commit {
+            if (!refreshErrorFragment.isAdded) {
+                add(R.id.rootContainer, refreshErrorFragment)
+            }
+            hide(refreshErrorFragment)
+        }
+
+        lifecycle.launchRestartable {
+            connectionManager.connectionStatus.onEach { isConnected ->
+                if (!isConnected) showInternetError(showError = true)
+            }.launchIn(this)
+        }
 
         // todo: this is just a fake solution, we need to hide error when user clicks on refresh button
         refreshErrorInteractor.getRefreshEventFlow()
@@ -148,13 +158,11 @@ class MainFragment :
     private fun showInternetError(showError: Boolean) {
         parentFragmentManager.commit {
             if (showError) {
-                if (!refreshErrorFragment.isAdded) {
-                    add(R.id.rootContainer, refreshErrorFragment)
-                }
                 show(refreshErrorFragment)
+                hide(this@MainFragment)
             } else {
-                hide(refreshErrorFragment)
                 show(this@MainFragment)
+                hide(refreshErrorFragment)
             }
         }
     }
@@ -210,7 +218,7 @@ class MainFragment :
             when (fragment) {
                 is HomeFragment -> tabCachedFragments.put(R.id.homeItem, fragment)
                 is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
-                is NewSettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
+                is SettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
                 is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
                 is JupiterSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
             }
@@ -270,7 +278,7 @@ class MainFragment :
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
-                ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
+                ScreenTab.SETTINGS_SCREEN -> SettingsFragment.create()
                 ScreenTab.SWAP_SCREEN -> JupiterSwapFragment.create(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
                 else -> error("Can't create fragment for $clickedTab")
             }

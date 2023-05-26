@@ -9,6 +9,7 @@ import java.math.BigInteger
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -21,6 +22,7 @@ import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationFragment
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -84,7 +86,7 @@ class SendViaLinkFragment :
         when {
             // will be more!
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
-                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
+                val token = result.getParcelableCompat<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
                 presenter.updateToken(token)
             }
         }
@@ -98,10 +100,19 @@ class SendViaLinkFragment :
     override fun navigateToLinkGeneration(
         account: TemporaryAccount,
         token: Token.Active,
-        lamports: BigInteger
+        lamports: BigInteger,
+        currencyModeSymbol: String
     ) {
         val isSimulationEnabled = binding.switchDebug.isChecked
-        replaceFragment(SendLinkGenerationFragment.create(account, token, lamports, isSimulationEnabled))
+        replaceFragment(
+            SendLinkGenerationFragment.create(
+                recipient = account,
+                token = token,
+                lamports = lamports,
+                isSimulation = isSimulationEnabled,
+                currencyModeSymbol = currencyModeSymbol
+            )
+        )
     }
 
     override fun updateInputValue(textValue: String, forced: Boolean) {
@@ -141,6 +152,10 @@ class SendViaLinkFragment :
         binding.widgetSendDetails.disableFiat()
     }
 
+    override fun enableSwitchAmounts() {
+        binding.widgetSendDetails.enableFiat()
+    }
+
     override fun disableInputs() {
         binding.widgetSendDetails.disableInputs()
     }
@@ -169,6 +184,18 @@ class SendViaLinkFragment :
         binding.widgetSendDetails.setFeeLabel(text)
     }
 
+    override fun showBottomFeeValue(fee: TextViewCellModel) {
+        binding.widgetSendDetails.showBottomFeeValue(fee)
+    }
+
+    override fun setFeeColor(@ColorRes colorRes: Int) {
+        binding.widgetSendDetails.setBottomFeeColor(colorRes)
+    }
+
+    override fun setTotalValue(text: String) {
+        binding.widgetSendDetails.setTotalValue(text)
+    }
+
     override fun setSwitchLabel(symbol: String) {
         binding.widgetSendDetails.setSwitchLabel(getString(R.string.send_switch_to_token, symbol))
     }
@@ -188,7 +215,7 @@ class SendViaLinkFragment :
     override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
         addFragment(
             target = NewSelectTokenFragment.create(
-                tokens = tokens,
+                tokensToSelectFrom = tokens,
                 selectedToken = selectedToken,
                 requestKey = KEY_REQUEST_SEND,
                 resultKey = KEY_RESULT_TOKEN_TO_SEND

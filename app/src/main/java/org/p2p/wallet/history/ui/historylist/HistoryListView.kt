@@ -140,6 +140,14 @@ class HistoryListView @JvmOverloads constructor(
         clickListener?.onTransactionClicked(transactionId)
     }
 
+    override fun onBridgeClaimClicked(transactionId: String) {
+        clickListener?.onBridgeClaimClicked(transactionId)
+    }
+
+    override fun onBridgeSendClicked(transactionId: String) {
+        clickListener?.onBridgeSendClicked(transactionId)
+    }
+
     override fun onSellTransactionClicked(transactionId: String) {
         clickListener?.onSellTransactionClicked(transactionId)
     }

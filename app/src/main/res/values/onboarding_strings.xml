@@ -144,7 +144,7 @@
 
     <!-- Reserve username -->
     <string name="reserve_username_title">Pick Your Username</string>
-    <string name="reserve_username_subtitle">This is an easy way to send and receive cryptocurrencies in\u00A0Key App</string>
+    <string name="reserve_username_subtitle">This is an easy way to send and receive cryptocurrencies in Key App</string>
     <string name="reserve_username_input_username_not_available">😓 name is not available</string>
     <string name="reserve_username_input_username_hint_message">from 6 till 15 characters 👌</string>
     <string name="reserve_username_input_username_available">name is available 👌</string>

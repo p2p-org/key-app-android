@@ -1,23 +1,29 @@
 package org.p2p.wallet.rpc.repository.balance
 
+import java.math.BigInteger
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.model.types.ConfirmationStatus
+import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenSupply
 import org.p2p.wallet.rpc.api.RpcBalanceApi
-import java.math.BigInteger
 
 class RpcBalanceRemoteRepository(private val rpcApi: RpcBalanceApi) : RpcBalanceRepository {
 
+    private val defaultRequestConfig = RequestConfiguration(
+        commitment = ConfirmationStatus.CONFIRMED.value
+    )
+
     override suspend fun getBalance(account: PublicKey): Long {
-        val params = listOf(account.toBase58())
+        val params = listOf(account.toBase58(), defaultRequestConfig)
         val rpcRequest = RpcRequest("getBalance", params)
         return rpcApi.getBalance(rpcRequest).result.value
     }
 
     override suspend fun getBalances(accounts: List<String>): List<Pair<String, BigInteger>> {
         val requestsBatch = accounts.map {
-            val params = listOf(it)
+            val params = listOf(it, defaultRequestConfig)
             RpcRequest("getBalance", params)
         }
 
@@ -30,7 +36,7 @@ class RpcBalanceRemoteRepository(private val rpcApi: RpcBalanceApi) : RpcBalance
 
     override suspend fun getTokenAccountBalances(accounts: List<String>): List<Pair<String, TokenAccountBalance>> {
         val requestsBatch = accounts.map {
-            val params = listOf(it)
+            val params = listOf(it, defaultRequestConfig)
             RpcRequest("getTokenAccountBalance", params)
         }
 
@@ -47,7 +53,7 @@ class RpcBalanceRemoteRepository(private val rpcApi: RpcBalanceApi) : RpcBalance
     }
 
     override suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance {
-        val params = listOf(account.toString())
+        val params = listOf(account.toString(), defaultRequestConfig)
         val rpcRequest = RpcRequest("getTokenAccountBalance", params)
         return rpcApi.getTokenAccountBalance(rpcRequest).result
     }

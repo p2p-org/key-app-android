@@ -15,7 +15,7 @@ object ContractMethodHelper {
     fun unsignedBigIntergerToByteArray(bigInteger: BigInteger): ByteArray {
         val integerBytes = bigInteger.toByteArray()
         val unsignedIntegerBytes: ByteArray
-        if (integerBytes.size > 0 && integerBytes[0] == 0.toByte()) {
+        if (integerBytes.isNotEmpty() && integerBytes[0] == 0.toByte()) {
             unsignedIntegerBytes = ByteArray(integerBytes.size - 1)
             for (i in unsignedIntegerBytes.indices) {
                 unsignedIntegerBytes[i] = integerBytes[i + 1]

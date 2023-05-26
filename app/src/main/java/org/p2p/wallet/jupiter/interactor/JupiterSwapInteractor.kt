@@ -2,17 +2,24 @@ package org.p2p.wallet.jupiter.interactor
 
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
+import org.p2p.core.utils.isLessThan
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.wallet.infrastructure.network.data.InstructionErrorType
-import org.p2p.wallet.infrastructure.network.data.RpcError
 import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.TransactionInstructionError
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.jupiter.interactor.model.SwapPriceImpactType
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.statemanager.SwapState
+import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
+import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.toBase58Instance
 
 private const val LOW_SLIPPAGE_ERROR_CODE = 6001
@@ -42,6 +49,7 @@ class JupiterSwapInteractor(
             // if pass our own recent blockhash, there is an error
             recentBlockhash = null
         )
+
         val firstTransactionSignature = rpcSolanaRepository.sendTransaction(
             serializedTransaction = signedSwapTransaction.transaction.base58Value,
             encoding = Encoding.BASE58
@@ -52,8 +60,8 @@ class JupiterSwapInteractor(
         Timber.tag(TAG).i(error, "Failed swapping transaction")
         val domainErrorType = error.domainErrorType
         if (domainErrorType != null &&
-            domainErrorType is RpcError.InstructionError &&
-            domainErrorType.instructionErrorType is InstructionErrorType.Custom &&
+            domainErrorType is RpcTransactionError.InstructionError &&
+            domainErrorType.instructionErrorType is TransactionInstructionError.Custom &&
             domainErrorType.instructionErrorType.programErrorId == LOW_SLIPPAGE_ERROR_CODE.toLong()
         ) {
             JupiterSwapTokensResult.Failure(LowSlippageRpcError(error))
@@ -95,18 +103,90 @@ class JupiterSwapInteractor(
         return (tokenA as? SwapTokenModel.UserToken)?.details?.total
     }
 
-    fun getPriceImpact(state: SwapState?): BigDecimal? {
-        return when (state) {
-            null,
+    /**
+     * Returns price impact for current swap state and active route
+     */
+    fun getPriceImpact(state: SwapState?): SwapPriceImpactType {
+        state ?: return SwapPriceImpactType.None
+        val activeRoute: JupiterSwapRoute = state.getActiveRoute() ?: return SwapPriceImpactType.None
+        val currentSlippage: Slippage = state.getCurrentSlippage() ?: return SwapPriceImpactType.None
+
+        val priceImpactByFee = checkForHighFees(
+            keyAppFeeLamports = activeRoute.keyAppFeeInLamports,
+            outAmountLamports = activeRoute.outAmountInLamports,
+            slippage = currentSlippage
+        )
+
+        val priceImpactPercent: BigDecimal = activeRoute.priceImpactPct
+        val threePercent = BigDecimal.valueOf(0.03)
+        val onePercent = BigDecimal.valueOf(0.01)
+
+        val priceImpact = when {
+            priceImpactPercent.isLessThan(onePercent) -> {
+                SwapPriceImpactType.None
+            }
+            priceImpactPercent.isLessThan(threePercent) -> {
+                SwapPriceImpactType.HighPriceImpact(priceImpactPercent, SwapPriceImpactType.HighPriceImpactType.YELLOW)
+            }
+            else -> {
+                SwapPriceImpactType.HighPriceImpact(priceImpactPercent, SwapPriceImpactType.HighPriceImpactType.RED)
+            }
+        }
+
+        // price impact by fee has lower priority
+        return if (priceImpact != SwapPriceImpactType.None) priceImpact else priceImpactByFee
+    }
+
+    private fun SwapState.getActiveRoute(): JupiterSwapRoute? {
+        return when (this) {
             SwapState.InitialLoading,
             is SwapState.LoadingRoutes,
             is SwapState.TokenANotZero,
             is SwapState.TokenAZero -> null
-            is SwapState.SwapException -> getPriceImpact(state.previousFeatureState)
 
-            is SwapState.LoadingTransaction -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
-            is SwapState.RoutesLoaded -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
-            is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRoute)?.priceImpactPct
+            is SwapState.SwapException -> previousFeatureState.getActiveRoute()
+
+            is SwapState.LoadingTransaction -> routes.getOrNull(activeRoute)
+            is SwapState.RoutesLoaded -> routes.getOrNull(activeRoute)
+            is SwapState.SwapLoaded -> routes.getOrNull(activeRoute)
+        }
+    }
+
+    private fun SwapState.getCurrentSlippage(): Slippage? {
+        return when (this) {
+            SwapState.InitialLoading -> SwapStateManager.DEFAULT_SLIPPAGE
+            is SwapState.LoadingRoutes -> slippage
+            is SwapState.LoadingTransaction -> slippage
+            is SwapState.SwapLoaded -> slippage
+            is SwapState.TokenAZero -> slippage
+            is SwapState.TokenANotZero -> slippage
+            is SwapState.RoutesLoaded -> slippage
+            is SwapState.SwapException -> null
+        }
+    }
+
+    /**
+     * Check if price impact is high due to high fees and exceeds given slippage
+     *
+     * Since we getting BigInteger values, we need to convert them to BigDecimal to be able to get fraction.
+     * Example: dividing 2039280 / 955187 returns 2 instead of 2.13
+     *
+     * @param keyAppFeeLamports key app fee in lamports
+     * @param outAmountLamports out amount in lamports
+     * @return [SwapPriceImpactType.HighFees] if price impact is more than given slippage,
+     * [SwapPriceImpactType.None] otherwise
+     */
+    private fun checkForHighFees(
+        keyAppFeeLamports: BigInteger,
+        outAmountLamports: BigInteger,
+        slippage: Slippage
+    ): SwapPriceImpactType {
+        val keyAppFee = keyAppFeeLamports.toBigDecimal()
+        val outAmount = outAmountLamports.toBigDecimal()
+        return if (keyAppFee.divideSafe(outAmount + keyAppFee) > slippage.doubleValue.toBigDecimal()) {
+            SwapPriceImpactType.HighFees(slippage)
+        } else {
+            SwapPriceImpactType.None
         }
     }
 }

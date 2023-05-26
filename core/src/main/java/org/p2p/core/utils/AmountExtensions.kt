@@ -22,6 +22,10 @@ fun String?.toBigDecimalOrZero(): BigDecimal {
     return removedZeros?.toBigDecimalOrNull() ?: BigDecimal.ZERO
 }
 
+fun String?.toBigIntegerOrZero(): BigInteger {
+    return this?.toBigIntegerOrNull() ?: BigInteger.ZERO
+}
+
 fun Int.toPowerValue(): BigDecimal =
     BigDecimal(POWER_VALUE.pow(this))
 
@@ -80,7 +84,7 @@ fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECI
  * @param decimals - number of decimals to show
  * @return formatted string
  */
-private fun BigDecimal.formatWithDecimals(decimals: Int): String = this.stripTrailingZeros().run {
+fun BigDecimal.formatWithDecimals(decimals: Int): String = this.stripTrailingZeros().run {
     if (isZero()) this.setScale(0).toString() else DecimalFormatter.format(this, decimals)
 }
 
@@ -107,7 +111,7 @@ fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$ 0.01" else "$ ${for
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
     isZero() -> "$0"
     lessThenMinValue() -> "(<$0.01)"
-    withBraces -> "~($${formatFiat()})"
+    withBraces -> "(~$${formatFiat()})"
     else -> "~$${formatFiat()}"
 }
 

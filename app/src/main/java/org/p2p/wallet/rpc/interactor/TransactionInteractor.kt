@@ -1,20 +1,21 @@
 package org.p2p.wallet.rpc.interactor
 
+import timber.log.Timber
+import java.math.BigInteger
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.solanaj.model.types.ConfirmationStatus
+import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
-import java.math.BigInteger
-import org.p2p.solanaj.utils.crypto.Base64String
 
 class TransactionInteractor(
     private val rpcBlockhashRepository: RpcBlockhashRepository,
@@ -62,11 +63,18 @@ class TransactionInteractor(
         }
     }
 
-    suspend fun sendTransaction(signedTransaction: Base64String, isSimulation: Boolean): String {
+    suspend fun sendTransaction(
+        signedTransaction: Base64String,
+        isSimulation: Boolean,
+        preflightCommitment: ConfirmationStatus = ConfirmationStatus.FINALIZED
+    ): String {
         return if (isSimulation) {
             rpcTransactionRepository.simulateTransaction(signedTransaction.base64Value)
         } else {
-            rpcTransactionRepository.sendTransaction(signedTransaction.base64Value)
+            rpcTransactionRepository.sendTransaction(
+                signedTransaction.base64Value,
+                preflightCommitment
+            )
         }
     }
 

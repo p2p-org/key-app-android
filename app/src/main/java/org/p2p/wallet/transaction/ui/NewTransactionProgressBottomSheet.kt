@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
-import java.text.SimpleDateFormat
+import org.threeten.bp.format.DateTimeFormatter
 import java.util.Locale
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.SpanUtils
@@ -70,8 +70,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private val data: NewShowProgress by args(EXTRA_DATA)
     private val transactionId: String by args(EXTRA_TRANSACTION_ID)
 
-    private val dateFormat by unsafeLazy { SimpleDateFormat(DATE_FORMAT, Locale.US) }
-    private val timeFormat by unsafeLazy { SimpleDateFormat(TIME_FORMAT, Locale.US) }
+    private val dateFormat by unsafeLazy { DateTimeFormatter.ofPattern(DATE_FORMAT, Locale.US) }
+    private val timeFormat by unsafeLazy { DateTimeFormatter.ofPattern(TIME_FORMAT, Locale.US) }
 
     private lateinit var progressStateFormat: String
 
@@ -99,6 +99,9 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
             } else {
                 textViewAmountUsd.text = data.amountTokens
                 textViewAmountTokens.isVisible = false
+            }
+            data.amountColor?.let { amountColorRes ->
+                textViewAmountUsd.setTextColorRes(amountColorRes)
             }
             if (data.recipient == null) {
                 textViewSendToTitle.isVisible = false
@@ -148,6 +151,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                     is TransactionState.SendSuccess -> handleSendSuccess(state)
                     is TransactionState.SwapSuccess -> handleSwapSuccess(state)
                     is TransactionState.ClaimSuccess -> handleClaimSuccess(state)
+                    is TransactionState.ClaimProgress -> handleClaimProgress(state)
+                    is TransactionState.BridgeSendSuccess -> handleSendSuccess(state)
                     is TransactionState.Error -> handleError(state)
                 }
             }
@@ -166,8 +171,23 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
         setSuccessState(message, signature)
     }
 
+    private fun handleSendSuccess(state: TransactionState.BridgeSendSuccess) {
+        val message = getString(R.string.send_successfully_format, state.sendDetails.amount.symbol)
+        val signature = state.transactionId
+        setSuccessState(message, signature)
+    }
+
+    private fun handleClaimProgress(state: TransactionState.ClaimProgress) {
+        val message = getString(R.string.bridge_claim_description_progress)
+        with(binding) {
+            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_submitted))
+            progressStateTransaction.setDescriptionText(message)
+            buttonDone.setText(R.string.common_done)
+        }
+    }
+
     private fun handleClaimSuccess(state: TransactionState.ClaimSuccess) {
-        val message = getString(R.string.bridge_claim_success_state)
+        val message = getString(R.string.bridge_claiming_button_text)
         val signature = state.bundleId
         setSuccessState(message, signature)
     }

@@ -21,8 +21,8 @@ import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
 import org.p2p.wallet.newsend.ui.search.NewSearchPresenter
-import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
+import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 import org.p2p.wallet.svl.model.ReceiveViaLinkMapper
 import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationContract
 import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationPresenter
@@ -48,7 +48,13 @@ object SendModule : InjectionModule {
                 ethAddressEnabledFeatureToggle = get()
             )
         }
-        factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class
+        factory { (selectedTokenMintAddress: String?, selectableTokens: List<Token.Active>?) ->
+            NewSelectTokenPresenter(
+                userTokensRepository = get(),
+                selectedTokenMintAddress = selectedTokenMintAddress,
+                selectableTokens = selectableTokens
+            )
+        } bind NewSelectTokenContract.Presenter::class
         factory {
             NewSendPresenter(
                 recipientAddress = get(),
@@ -61,6 +67,7 @@ object SendModule : InjectionModule {
                 newSendAnalytics = get(),
                 appScope = get(),
                 sendModeProvider = get(),
+                alertErrorsLogger = get(),
                 historyInteractor = get()
             )
         } bind NewSendContract.Presenter::class
@@ -72,6 +79,7 @@ object SendModule : InjectionModule {
         factoryOf(::ReceiveViaLinkInteractor)
         factoryOf(::ReceiveViaLinkMapper)
     }
+
     private fun Module.initDataLayer() {
         factoryOf(::RecipientsDatabaseRepository) bind RecipientsLocalRepository::class
         factoryOf(::FeeRelayerViaLinkInteractor)

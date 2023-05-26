@@ -226,7 +226,7 @@ class SellTransactionDetailsPresenter(
     override fun onSendClicked() {
         launch {
             val solToken = userInteractor.getUserSolToken() ?: return@launch
-            val transaction = (currentTransaction as? SellTransactionViewDetails) ?: return@launch
+            val transaction = currentTransaction ?: return@launch
             view?.navigateToSendScreen(
                 tokenToSend = solToken,
                 sendAmount = transaction.formattedSolAmount.toBigDecimal(),

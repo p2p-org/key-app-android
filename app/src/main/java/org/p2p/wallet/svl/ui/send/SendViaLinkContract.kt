@@ -1,11 +1,11 @@
 package org.p2p.wallet.svl.ui.send
 
+import java.math.BigInteger
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import java.math.BigInteger
 import org.p2p.wallet.newsend.model.TemporaryAccount
 
 interface SendViaLinkContract {
@@ -22,7 +22,13 @@ interface SendViaLinkContract {
         fun disableSwitchAmounts()
         fun disableInputs()
 
-        fun navigateToLinkGeneration(account: TemporaryAccount, token: Token.Active, lamports: BigInteger)
+        fun navigateToLinkGeneration(
+            account: TemporaryAccount,
+            token: Token.Active,
+            lamports: BigInteger,
+            currencyModeSymbol: String
+        )
+        fun enableSwitchAmounts()
     }
 
     interface Presenter : MvpPresenter<View> {

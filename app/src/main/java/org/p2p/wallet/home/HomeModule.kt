@@ -2,6 +2,7 @@ package org.p2p.wallet.home
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -32,6 +33,8 @@ import org.p2p.wallet.receive.renbtc.ReceiveRenBtcContract
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcPresenter
 import org.p2p.wallet.receive.token.ReceiveTokenContract
 import org.p2p.wallet.receive.token.ReceiveTokenPresenter
+import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
+import org.p2p.wallet.updates.subscribe.SplTokenProgramSubscriber
 
 object HomeModule : InjectionModule {
 
@@ -69,11 +72,15 @@ object HomeModule : InjectionModule {
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
-        factoryOf(::UserTokensPolling)
+        singleOf(::UserTokensPolling)
         /* Cached data exists, therefore creating singleton */
         // todo: do something with this dependenices!
         // todo: to eliminate all this hell, we could just migrate to hilt
         factory<HomeContract.Presenter> {
+            val subscribers = listOf(
+                new(::SplTokenProgramSubscriber),
+                new(::SolanaAccountUpdateSubscriber)
+            )
             HomePresenter(
                 analytics = get(),
                 claimAnalytics = get(),
@@ -96,7 +103,12 @@ object HomeModule : InjectionModule {
                 ethereumInteractor = get(),
                 seedPhraseProvider = get(),
                 deeplinksManager = get(),
-                connectionManager = get()
+                connectionManager = get(),
+                transactionManager = get(),
+                updateSubscribers = subscribers,
+                claimUiMapper = get(),
+                bridgeFeatureToggle = get(),
+                context = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

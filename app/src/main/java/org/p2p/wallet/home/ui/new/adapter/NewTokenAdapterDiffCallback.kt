@@ -14,7 +14,9 @@ class NewTokenAdapterDiffCallback(
         val new = newList[newItemPosition]
         return when {
             old is SelectTokenItem.SelectableToken && new is SelectTokenItem.SelectableToken -> {
-                old.token.publicKey == new.token.publicKey
+                old.token.publicKey == new.token.publicKey &&
+                    old.state == new.state &&
+                    old.token.total == new.token.total
             }
             old is SelectTokenItem.CategoryTitle && new is SelectTokenItem.CategoryTitle ->
                 old.titleRes == new.titleRes
@@ -27,7 +29,9 @@ class NewTokenAdapterDiffCallback(
         val new = newList[newItemPosition]
         return when {
             old is SelectTokenItem.SelectableToken && new is SelectTokenItem.SelectableToken -> {
-                old.token.publicKey == new.token.publicKey && old.state == new.state
+                old.token.publicKey == new.token.publicKey &&
+                    old.state == new.state &&
+                    old.token.total == new.token.total
             }
             old is SelectTokenItem.CategoryTitle && new is SelectTokenItem.CategoryTitle ->
                 old.titleRes == new.titleRes

@@ -1,6 +1,10 @@
 package org.p2p.wallet.bridge.api.mapper
 
+import org.threeten.bp.ZonedDateTime
+import kotlin.time.Duration.Companion.seconds
+import org.p2p.core.utils.Constants
 import org.p2p.core.utils.orZero
+import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.bridge.api.response.BridgeAmountResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleFeesResponse
@@ -16,6 +20,9 @@ import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionStatus
+import org.p2p.wallet.common.date.toZonedDateTime
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.bridge.BridgeHistoryTransaction
 
 class BridgeMapper {
 
@@ -31,13 +38,16 @@ class BridgeMapper {
             signatures = response.signatures.orEmpty(),
             fees = fromNetwork(response.fees),
             status = response.status,
-            compensationDeclineReason = response.compensationDeclineReason.orEmpty()
+            claimKey = response.claimKey,
+            compensationDeclineReason = response.compensationDeclineReason.orEmpty(),
+            dateCreated = response.dateCreatedSec.seconds.inWholeMilliseconds.toZonedDateTime()
         )
     }
 
     fun fromNetwork(response: BridgeBundleFeesResponse?): BridgeBundleFees {
         return BridgeBundleFees(
-            gasEth = fromNetwork(response?.gasFee),
+            gasFee = fromNetwork(response?.gasFee),
+            gasFeeInToken = fromNetwork(response?.gasFeeInToken),
             arbiterFee = fromNetwork(response?.arbiterFee),
             createAccount = fromNetwork(response?.createAccountFee)
         )
@@ -58,10 +68,14 @@ class BridgeMapper {
     fun fromNetwork(response: BridgeSendFeesResponse): BridgeSendFees {
         return BridgeSendFees(
             networkFee = fromNetwork(response.networkFee),
+            networkFeeInToken = fromNetwork(response.networkFeeInToken),
             messageAccountRent = fromNetwork(response.messageAccountRent),
+            messageAccountRentInToken = fromNetwork(response.messageAccountRentInToken),
             bridgeFee = fromNetwork(response.bridgeFee),
+            bridgeFeeInToken = fromNetwork(response.bridgeFeeInToken),
             arbiterFee = fromNetwork(response.arbiterFee),
-            resultAmount = fromNetwork(response.resultAmount),
+            totalAmount = fromNetwork(response.totalAmount),
+            recipientGetsAmount = fromNetwork(response.recipientGetsAmount),
         )
     }
 
@@ -75,7 +89,15 @@ class BridgeMapper {
     }
 
     fun fromNetwork(response: BridgeTransactionStatusResponse): BridgeSendTransactionDetails {
-        return BridgeSendTransactionDetails()
+        return BridgeSendTransactionDetails(
+            id = response.id,
+            userWallet = response.userWallet,
+            recipient = response.recipient,
+            amount = fromNetwork(response.amount),
+            fees = fromNetwork(response.fees),
+            status = fromNetwork(response.status),
+            dateCreated = response.dateCreatedSec.seconds.inWholeMilliseconds.toZonedDateTime()
+        )
     }
 
     fun fromNetwork(response: BridgeSendTransactionResponse): BridgeSendTransaction {
@@ -83,5 +105,29 @@ class BridgeMapper {
             transaction = response.transaction.toBase64Instance(),
             message = response.message
         )
+    }
+
+    fun toHistoryItem(claimBundle: BridgeBundle, mintAddress: String): HistoryTransaction? {
+        val foundTokenSymbol =
+            ERC20Tokens.values().firstOrNull { it.replaceTokenSymbol == claimBundle.resultAmount.symbol }
+        if (foundTokenSymbol?.mintAddress == mintAddress || mintAddress == Constants.WRAPPED_SOL_MINT) {
+            return BridgeHistoryTransaction.Claim(
+                bundleId = claimBundle.bundleId,
+                date = ZonedDateTime.now(),
+                bundle = claimBundle
+            )
+        }
+        return null
+    }
+
+    fun toHistoryItem(sendDetails: BridgeSendTransactionDetails, mintAddress: String): HistoryTransaction? {
+        if (sendDetails.recipient.raw == mintAddress || mintAddress == Constants.WRAPPED_SOL_MINT) {
+            return BridgeHistoryTransaction.Send(
+                id = sendDetails.id,
+                date = ZonedDateTime.now(),
+                sendDetails = sendDetails
+            )
+        }
+        return null
     }
 }

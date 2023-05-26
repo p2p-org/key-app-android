@@ -9,6 +9,11 @@ private const val DECIMAL_FORMAT = "###,###."
 
 object DecimalFormatter {
 
+    /**
+     * Format number with given decimals
+     * Note: don't remove JvmStatic as it's used in tests
+     */
+    @JvmStatic
     fun format(value: Number, decimals: Int): String {
         val format = DECIMAL_FORMAT + "#".repeat(decimals)
 

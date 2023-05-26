@@ -191,14 +191,21 @@ class HistoryTransactionDetailsBottomSheetFragment :
                 )
             }
         }
-        // hide only if transaction if not pending
-        textViewFeeTitle.isGone = !isReceivePending
-        textViewFeeValue.isGone = !isReceivePending
     }
 
-    override fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?) = with(binding) {
+    override fun showReceiverAddress(
+        receiverAddress: Base58String,
+        receiverUsername: String?,
+        toEth: Boolean
+    ) = with(binding) {
         textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled_16, 0)
-        textViewSendReceiveTitle.text = getString(R.string.transaction_details_send_to)
+        textViewSendReceiveTitle.text = getString(
+            if (toEth) {
+                R.string.bridge_details_send
+            } else {
+                R.string.transaction_details_send_to
+            }
+        )
         if (receiverUsername != null) {
             textViewSendReceiveValue.text = usernameFormatter.format(receiverUsername)
             textViewSendReceiveValue.setOnClickListener {
@@ -238,6 +245,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     override fun showFee(fees: List<RpcFee>?) = with(binding) {
+        textViewFeeTitle.isVisible = true
         textViewFeeValue.isVisible = true
         textViewFeeValue.text = fees.formatFees(lessThenMinString)
     }

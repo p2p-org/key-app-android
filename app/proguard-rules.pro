@@ -35,10 +35,12 @@
 -keep class org.p2p.wallet.utils.NavigationExtensionsKt
 
 # Saving class name to detect the problem source in Crashlytics
--keepnames class  * extends org.p2p.wallet.common.mvp.BaseFragment
--keepnames class  * extends org.p2p.wallet.common.mvp.BaseMvpActivity
--keepnames class  * extends org.p2p.wallet.common.mvp.BaseMvpBottomSheet
--keepnames class  * extends com.google.android.material.bottomsheet.BottomSheetDialogFragment
+-keepnames class * extends org.p2p.wallet.common.mvp.BaseFragment
+-keepnames class * extends org.p2p.wallet.common.mvp.BaseMvpActivity
+-keepnames class * extends org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
+-keepnames class * extends org.p2p.wallet.common.mvp.BaseMvpBottomSheet
+-keepnames class * extends com.google.android.material.bottomsheet.BottomSheetDialogFragment
+-keepnames class * extends org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 -keepnames class androidx.biometric.BiometricFragment
 -keepnames class androidx.biometric.FingerprintDialogFragment
 
@@ -67,7 +69,7 @@
 -keep class com.geetest.sdk.**{*;}
 
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
--keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
+-keep public class * extends java.lang.Throwable  # Optional: Keep custom exceptions.
 
 # Our own classes
 -keep public class org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
@@ -78,6 +80,11 @@
 -keep public class * implements org.p2p.wallet.auth.model.RestoreUserResult
 -keep public class * implements org.p2p.wallet.jupiter.statemanager.SwapStateAction
 -keep public class * extends org.p2p.wallet.moonpay.model.MoonpayBuyResult
+-keep public class * implements org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
+-keep public class * implements org.p2p.wallet.infrastructure.network.data.transactionerrors.TransactionInstructionError
+-keep public class * implements org.p2p.wallet.newsend.model.FeeRelayerStateError
+-keep public class * implements org.p2p.wallet.feerelayer.model.FeeCalculationState
+-keep public class * implements org.p2p.wallet.bridge.model.BridgeResult
 
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }

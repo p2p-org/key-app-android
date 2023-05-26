@@ -2,11 +2,11 @@ package org.p2p.solanaj.model.types
 
 import com.google.gson.annotations.SerializedName
 
-enum class ConfirmationStatus {
+enum class ConfirmationStatus(val value: String) {
     @SerializedName("finalized")
-    FINALIZED,
+    FINALIZED("finalized"),
     @SerializedName("confirmed")
-    CONFIRMED,
+    CONFIRMED("confirmed"),
     @SerializedName("processed")
-    PROCESSED;
+    PROCESSED("processed");
 }

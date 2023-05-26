@@ -1,42 +1,23 @@
 package org.p2p.wallet.rpc.interactor
 
+import timber.log.Timber
+import kotlinx.coroutines.CancellationException
+import org.p2p.core.token.TokenData
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.wallet.R
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.model.AddressValidation
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
-import org.p2p.core.token.TokenData
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
 
 private const val ADDRESS_TAG = "Address"
 
 class TransactionAddressInteractor(
     private val userAccountRepository: UserAccountRepository,
-    private val userLocalRepository: UserLocalRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val userLocalRepository: UserLocalRepository
 ) {
-
-    suspend fun validateAddress(destinationAddress: PublicKey, mintAddress: String): AddressValidation {
-        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
-
-        if (destinationAddress.equals(userPublicKey)) {
-            return AddressValidation.Error(R.string.main_send_to_yourself_error)
-        }
-
-        try {
-            findSplTokenAddressData(destinationAddress, mintAddress)
-        } catch (e: IllegalStateException) {
-            return AddressValidation.WrongWallet
-        }
-
-        return AddressValidation.Valid
-    }
 
     suspend fun findSplTokenAddressData(
         destinationAddress: PublicKey,
@@ -44,10 +25,12 @@ class TransactionAddressInteractor(
         useCache: Boolean = true
     ): TransactionAddressData {
         val associatedAddress = try {
-            Timber.tag(ADDRESS_TAG).d("Searching for SPL token address")
+            Timber.tag(ADDRESS_TAG).i("Searching for SPL token address")
             findSplTokenAddress(destinationAddress, mintAddress, useCache)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: IllegalStateException) {
-            Timber.tag(ADDRESS_TAG).d("Searching address failed, address is wrong")
+            Timber.tag(ADDRESS_TAG).i("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")
         }
 

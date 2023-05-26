@@ -5,6 +5,7 @@ import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
+import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 
 class RefreshFeeActionHandler(
     private val transactionLoader: SendBridgeTransactionLoader,
@@ -14,7 +15,15 @@ class RefreshFeeActionHandler(
         newEvent is SendFeatureAction.RefreshFee
 
     override fun handle(
-        lastStaticState: SendState.Static,
+        currentState: SendState,
         newAction: SendFeatureAction
-    ): Flow<SendState> = transactionLoader.prepareTransaction(lastStaticState)
+    ): Flow<SendState> {
+        val lastStaticState = currentState.lastStaticState
+        val lastStateAmount = if (currentState is SendState.Exception.Feature) {
+            currentState.featureException.amount
+        } else {
+            null
+        }
+        return transactionLoader.prepareTransaction(lastStaticState, lastStateAmount)
+    }
 }

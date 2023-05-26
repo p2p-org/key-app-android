@@ -1,5 +1,6 @@
 package org.p2p.wallet.bridge.claim.ui
 
+import java.math.BigDecimal
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.common.mvp.MvpPresenter
@@ -14,8 +15,11 @@ interface ClaimContract {
         fun setTokenAmount(tokenAmount: String)
         fun setFiatAmount(fiatAmount: String)
         fun showFee(fee: TextViewCellModel)
+        fun showWillGet(willGet: TextViewCellModel)
+        fun setWillGetVisibility(isVisible: Boolean)
         fun showClaimFeeInfo(claimDetails: ClaimDetails)
         fun showClaimButtonValue(tokenAmountToClaim: String)
+        fun setMinAmountForFreeFee(minAmountForFreeFee: BigDecimal)
         fun setClaimButtonState(isButtonEnabled: Boolean)
         fun setButtonText(buttonText: TextViewCellModel)
         fun setBannerVisibility(isBannerVisible: Boolean)

@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.receive.list.TokenListData
@@ -27,11 +28,17 @@ class UserInMemoryRepository(
         return allTokensFlow.value.isNotEmpty()
     }
 
+    override fun arePricesLoaded(): Boolean {
+        return pricesFlow.value.isNotEmpty()
+    }
+
     override fun setTokenPrices(prices: List<TokenPrice>) {
         pricesFlow.value = prices
     }
 
     override fun getTokenPrices(): Flow<List<TokenPrice>> = pricesFlow
+
+    override fun getCachedTokenPrices(): List<TokenPrice> = pricesFlow.value
 
     override fun getPriceByTokenId(tokenId: String?): TokenPrice? {
         return pricesFlow.value.firstOrNull { it.tokenId == tokenId }
@@ -40,6 +47,8 @@ class UserInMemoryRepository(
     override fun setTokenData(data: List<TokenData>) {
         allTokensFlow.value = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
+
+    override fun getTokensData(): List<TokenData> = allTokensFlow.value
 
     override fun fetchTokens(searchText: String, count: Int, refresh: Boolean) {
         if (refresh) {
@@ -79,9 +88,10 @@ class UserInMemoryRepository(
     }
 
     private fun setSearchResult(key: String) {
+        val filteredResult = searchTextByTokens[key].orEmpty().filter { it.symbol != Constants.WSOL_SYMBOL }
         val searchResult = TokenListData(
             searchText = key,
-            result = searchTextByTokens[key].orEmpty()
+            result = filteredResult
         )
         tokensSearchResultFlow.value = searchResult
     }

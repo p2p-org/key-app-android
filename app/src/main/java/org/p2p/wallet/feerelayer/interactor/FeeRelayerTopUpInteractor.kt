@@ -70,12 +70,12 @@ class FeeRelayerTopUpInteractor(
 
         // STEP 4: send transaction
         val signatures = topUpTransaction.transaction.allSignatures
-        if (signatures.size < 1 || signatures[0].signature.isNullOrEmpty()) {
+        if (signatures.isEmpty() || signatures[0].signature.isNullOrEmpty()) {
             throw IllegalStateException("Invalid signature")
         }
 
         // the second signature is the owner's signature
-        val ownerSignature = signatures[0].signature!!
+        val ownerSignature = signatures[0].signature
 
         val topUpSignatures = SwapTransactionSignatures(
             userAuthoritySignature = ownerSignature,

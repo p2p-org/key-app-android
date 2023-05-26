@@ -75,8 +75,8 @@ class AnimatedSearchView @JvmOverloads constructor(
         animator?.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animator: Animator) {}
             override fun onAnimationEnd(animator: Animator) {
-                relativeLayoutSearchContainer!!.visibility = INVISIBLE
-                editTextSearch!!.setText("")
+                relativeLayoutSearchContainer.visibility = INVISIBLE
+                editTextSearch.setText("")
                 animator.removeAllListeners()
                 if (stateListener != null) stateListener!!.onClosed()
             }

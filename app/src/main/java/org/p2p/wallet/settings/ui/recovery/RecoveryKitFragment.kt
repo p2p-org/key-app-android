@@ -14,7 +14,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRecoveryKitBinding
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.settings.ui.recovery.unlock_seed_phrase.SeedPhraseUnlockFragment
+import org.p2p.wallet.settings.ui.recovery.unlockseedphrase.SeedPhraseUnlockFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog

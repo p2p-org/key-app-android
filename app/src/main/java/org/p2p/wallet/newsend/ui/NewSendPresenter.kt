@@ -7,16 +7,24 @@ import java.math.BigDecimal
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
+import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
+import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
@@ -33,14 +41,16 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.newsend.interactor.SendFatalError
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
+import org.p2p.wallet.newsend.model.FeeRelayerStateError
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SendFatalError
 import org.p2p.wallet.newsend.model.SendSolanaFee
+import org.p2p.wallet.newsend.model.getFee
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
@@ -54,6 +64,8 @@ import org.p2p.wallet.utils.toPublicKey
 
 private const val ACCEPTABLE_RATE_DIFF = 0.02
 
+private const val TAG = "NewSendPresenter"
+
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
@@ -63,6 +75,7 @@ class NewSendPresenter(
     private val transactionManager: TransactionManager,
     private val connectionStateProvider: NetworkConnectionStateProvider,
     private val newSendAnalytics: NewSendAnalytics,
+    private val alertErrorsLogger: AlarmErrorsLogger,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
     private val historyInteractor: HistoryInteractor
@@ -90,6 +103,15 @@ class NewSendPresenter(
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
         initialize(view)
+        subscribeToSelectedTokenUpdates()
+    }
+
+    private fun subscribeToSelectedTokenUpdates() {
+        userInteractor.getUserTokensFlow()
+            .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
+            .filterNotNull()
+            .onEach { token = it }
+            .launchIn(this)
     }
 
     override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) {
@@ -126,6 +148,7 @@ class NewSendPresenter(
         launch {
             view.showToken(token)
             calculationMode.updateToken(token)
+            checkTokenRatesAndSetSwitchAmountState(token)
 
             val userTokens = userInteractor.getNonZeroUserTokens()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
@@ -141,7 +164,7 @@ class NewSendPresenter(
             // We should find SOL anyway because SOL is needed for Selection Mechanism
             val userNonZeroTokens = userInteractor.getNonZeroUserTokens()
             if (userNonZeroTokens.isEmpty()) {
-                Timber.e(SendFatalError("User non-zero tokens can't be empty!"))
+                Timber.tag(TAG).e(SendFatalError("User non-zero tokens can't be empty!"))
                 // we cannot proceed if user tokens are not loaded
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
                 return@launch
@@ -159,7 +182,7 @@ class NewSendPresenter(
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                Timber.e(SendFatalError("Couldn't find user's SOL account!"))
+                Timber.tag(TAG).e(SendFatalError("Couldn't find user's SOL account!"))
                 return@launch
             }
 
@@ -216,8 +239,20 @@ class NewSendPresenter(
             }
 
             is FeeRelayerState.Failure -> {
-                Timber.e(newState, "FeeRelayerState has error")
-                if (newState.isFeeCalculationError()) view.showFeeViewVisible(isVisible = false)
+                if (newState.isFeeCalculationError()) {
+                    view.showFeeViewVisible(isVisible = false)
+
+                    newState.errorStateError as FeeRelayerStateError.FeesCalculationError
+                    val exception = newState.errorStateError.cause
+                    if (exception is CancellationException) {
+                        Timber.tag(TAG).i(newState)
+                    } else {
+                        logSendError(token, Throwable("Fee calculation error", exception))
+                        Timber.tag(TAG).e(newState, "FeeRelayerState has calculation error")
+                    }
+                } else {
+                    Timber.tag(TAG).e(newState, "FeeRelayerState has error")
+                }
                 updateButton(requireToken(), newState)
             }
 
@@ -246,11 +281,7 @@ class NewSendPresenter(
 
     override fun onTokenClicked() {
         newSendAnalytics.logTokenSelectionClicked()
-        launch {
-            val tokens = userInteractor.getUserTokens()
-            val result = tokens.filterNot(Token.Active::isZero)
-            view?.showTokenSelection(tokens = result, selectedToken = token)
-        }
+        view?.showTokenSelection(selectedToken = token)
     }
 
     override fun updateToken(newToken: Token.Active) {
@@ -330,17 +361,17 @@ class NewSendPresenter(
                 strategy = NO_ACTION
             )
         } catch (e: Throwable) {
-            Timber.e(SendFatalError(cause = e), "Error updating fee payer token")
+            Timber.tag(TAG).e(SendFatalError(cause = e), "Error updating fee payer token")
         }
     }
 
     override fun onMaxButtonClicked() {
         val token = token ?: kotlin.run {
-            Timber.e(SendFatalError("Token can't be null"))
+            Timber.tag(TAG).e(SendFatalError("Token can't be null"))
             return
         }
         val totalAvailable = calculationMode.getMaxAvailableAmount() ?: kotlin.run {
-            Timber.e(SendFatalError("totalAvailable is unavailable"))
+            Timber.tag(TAG).e(SendFatalError("totalAvailable is unavailable"))
             return
         }
         view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
@@ -412,7 +443,7 @@ class NewSendPresenter(
         )
 
         appScope.launch {
-            val transactionDate = Date()
+            val transactionDate = ZonedDateTime.now()
             try {
                 val progressDetails = NewShowProgress(
                     date = transactionDate,
@@ -425,7 +456,7 @@ class NewSendPresenter(
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
-                userInteractor.addRecipient(recipientAddress, transactionDate)
+                userInteractor.addRecipient(recipientAddress, Date(transactionDate.dateMilli()))
                 val transaction = buildTransaction(result, token)
                 val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
@@ -435,9 +466,10 @@ class NewSendPresenter(
                     mintAddress = token.mintAddress.toBase58Instance()
                 )
             } catch (e: Throwable) {
-                Timber.e(e, "Failed sending transaction!")
+                Timber.tag(TAG).e(e, "Failed sending transaction!")
                 val message = e.getErrorMessage { res -> resources.getString(res) }
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
+                logSendError(token, e)
             }
         }
     }
@@ -544,5 +576,29 @@ class NewSendPresenter(
             isFeeFree = solanaFee?.isTransactionFree ?: false,
             mode = calculationMode.getCurrencyMode()
         )
+    }
+
+    private fun logSendError(
+        token: Token.Active?,
+        error: Throwable
+    ) {
+        if (token == null) return
+
+        launch {
+            val fee = feeRelayerManager.getState().getFee()
+            val accountCreationFee = fee?.accountCreationFeeDecimals?.toPlainString()
+            val transactionFee = fee?.transactionDecimals?.toPlainString()
+            alertErrorsLogger.triggerSendAlarm(
+                token = token,
+                currencyMode = calculationMode.getCurrencyMode(),
+                amount = calculationMode.getCurrentAmount().toPlainString(),
+                feePayerToken = sendInteractor.getFeePayerToken(),
+                accountCreationFee = accountCreationFee,
+                transactionFee = transactionFee,
+                relayAccount = sendInteractor.getUserRelayAccount(),
+                recipientAddress = recipientAddress,
+                error = error
+            )
+        }
     }
 }

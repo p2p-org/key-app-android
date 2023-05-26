@@ -109,6 +109,7 @@
                 app:layout_constraintTop_toBottomOf="@id/containerAddress">
 
                 <TextView
+                    android:id="@+id/textViewBanner"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:gravity="start|center_vertical"
@@ -120,8 +121,8 @@
 
                 <ImageView
                     android:id="@+id/imageViewMoney"
-                    android:layout_width="100dp"
-                    android:layout_height="88dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:src="@drawable/placeholder_receive_banner"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -165,6 +166,20 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/textViewFirstDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/receive_min_receive_amount"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+                    android:textColor="@color/text_mountain"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/textViewFirstNumValue"
+                    app:layout_constraintTop_toBottomOf="@id/textViewFirstNumValue" />
+
+                <TextView
                     android:id="@+id/textViewSecondNum"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
@@ -175,7 +190,7 @@
                     android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
                     android:textColor="@color/text_silver"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textViewFirstNum" />
+                    app:layout_constraintTop_toBottomOf="@id/textViewFirstDescription" />
 
                 <TextView
                     android:id="@+id/textViewSecondDescription"
@@ -192,7 +207,7 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="16dp"
                     android:gravity="center_vertical"
                     android:text="@string/receive_only_need_sign_transaction"

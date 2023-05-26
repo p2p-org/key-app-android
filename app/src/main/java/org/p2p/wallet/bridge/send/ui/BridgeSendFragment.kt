@@ -11,6 +11,7 @@ import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.ui.dialog.BridgeSendFeeBottomSheet
@@ -28,6 +29,7 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -88,6 +90,7 @@ class BridgeSendFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setupToolbar()
         binding.widgetSendDetails.apply {
+            switchToBottomFee()
             tokenClickListener = presenter::onTokenClicked
             amountListener = presenter::updateInputAmount
             maxButtonClickListener = presenter::onMaxButtonClicked
@@ -96,9 +99,14 @@ class BridgeSendFragment :
             if (inputAmount == null) {
                 focusAndShowKeyboard()
             }
+            setFeeLabel(getString(R.string.bridge_send_fees))
+            setTotalLabel(getString(R.string.bridge_send_total))
         }
         binding.sliderSend.onSlideCompleteListener = { presenter.checkInternetConnection() }
         binding.sliderSend.onSlideCollapseCompleted = { presenter.send() }
+
+        binding.textViewMessage.isVisible = true
+        binding.textViewMessage.setText(R.string.bridge_send_subtitle)
 
         binding.textViewDebug.isVisible = BuildConfig.DEBUG
 
@@ -112,7 +120,7 @@ class BridgeSendFragment :
         when {
             // will be more!
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
-                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
+                val token = result.getParcelableCompat<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
                 presenter.updateToken(token)
             }
         }
@@ -195,6 +203,18 @@ class BridgeSendFragment :
         binding.widgetSendDetails.setFeeLabel(text)
     }
 
+    override fun showBottomFeeValue(fee: TextViewCellModel) {
+        binding.widgetSendDetails.showBottomFeeValue(fee)
+    }
+
+    override fun setFeeColor(@ColorRes colorRes: Int) {
+        binding.widgetSendDetails.setBottomFeeColor(colorRes)
+    }
+
+    override fun setTotalValue(text: String) {
+        binding.widgetSendDetails.setTotalValue(text)
+    }
+
     override fun setSwitchLabel(symbol: String) {
         binding.widgetSendDetails.setSwitchLabel(getString(R.string.send_switch_to_token, symbol))
     }
@@ -211,10 +231,10 @@ class BridgeSendFragment :
         binding.textViewDebug.text = text
     }
 
-    override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
+    override fun showTokenSelection(supportedTokens: List<Token.Active>, selectedToken: Token.Active?) {
         addFragment(
             target = NewSelectTokenFragment.create(
-                tokens = tokens,
+                tokensToSelectFrom = supportedTokens,
                 selectedToken = selectedToken,
                 requestKey = KEY_REQUEST_SEND,
                 resultKey = KEY_RESULT_TOKEN_TO_SEND

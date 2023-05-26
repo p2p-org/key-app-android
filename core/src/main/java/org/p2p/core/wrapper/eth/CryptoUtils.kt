@@ -28,11 +28,11 @@ object CryptoUtils {
     val HALF_CURVE_ORDER: BigInteger
     private val CURVE_SPEC: ECParameterSpec
 
-    private val HASH_256_ALGORITHM_NAME: String = "ETH-KECCAK-256"
+    private const val HASH_256_ALGORITHM_NAME: String = "ETH-KECCAK-256"
 
     const val SECRET_SIZE = 32
     private const val KEY_SIZE = 128
-    private val ECIES_PREFIX_SIZE = 65 + KEY_SIZE / 8 + 32 // 256 bit EC public key, IV, 256 bit MAC
+    private const val ECIES_PREFIX_SIZE = 65 + KEY_SIZE / 8 + 32 // 256 bit EC public key, IV, 256 bit MAC
 
     init {
         val params = SECNamedCurves.getByName("secp256k1")

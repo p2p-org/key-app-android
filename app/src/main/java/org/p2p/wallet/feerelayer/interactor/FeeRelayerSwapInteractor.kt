@@ -1,5 +1,7 @@
 package org.p2p.wallet.feerelayer.interactor
 
+import java.math.BigInteger
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
@@ -23,10 +25,9 @@ import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
-import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
-import java.math.BigInteger
 
+@Deprecated("Old swap")
 class FeeRelayerSwapInteractor(
     private val rpcRepository: RpcBlockhashRepository,
     private val feeRelayerInstructionsInteractor: FeeRelayerInstructionsInteractor,

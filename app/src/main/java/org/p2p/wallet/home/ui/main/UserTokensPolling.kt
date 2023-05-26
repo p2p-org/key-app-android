@@ -1,40 +1,36 @@
 package org.p2p.wallet.home.ui.main
 
 import timber.log.Timber
+import java.net.UnknownHostException
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
 
 private val POLLING_ETH_DELAY = 30.toDuration(DurationUnit.SECONDS)
-private val TAG = "UserTokensPolling"
+private const val TAG = "UserTokensPolling"
 
 class UserTokensPolling(
     private val appFeatureFlags: InAppFeatureFlags,
     private val userInteractor: UserInteractor,
-    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val ethereumInteractor: EthereumInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val appScope: AppScope
@@ -68,11 +64,13 @@ class UserTokensPolling(
         launch {
             try {
                 isRefreshingFlow.emit(true)
-                fetchEthereumTokens()
-                fetchSolTokens()
+                val userTokens = fetchSolTokens()
+                userInteractor.loadUserRatesIfEmpty(userTokens)
                 startPolling()
             } catch (e: CancellationException) {
                 Timber.i("Cancelled tokens remote update")
+            } catch (e: UnknownHostException) {
+                Timber.i(e, "Failed polling tokens: no internet connection")
             } catch (e: Throwable) {
                 Timber.e(e, "Failed polling tokens")
             } finally {
@@ -88,13 +86,12 @@ class UserTokensPolling(
                 try {
                     while (isActive) {
                         delay(POLLING_ETH_DELAY.inWholeMilliseconds)
-                        joinAll(
-                            async { fetchSolTokens() },
-                            async { fetchEthereumTokens() }
-                        )
+                        fetchSolTokens()
                     }
                 } catch (e: CancellationException) {
                     Timber.i("Cancelled tokens remote update")
+                } catch (e: UnknownHostException) {
+                    Timber.i(e, "Failed polling tokens: no internet connection")
                 } catch (e: Throwable) {
                     Timber.e(e, "Failed polling tokens")
                 }
@@ -107,19 +104,8 @@ class UserTokensPolling(
     private suspend fun fetchSolTokens(): List<Token.Active> =
         userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
 
-    private suspend fun fetchEthereumTokens() {
-        if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            val ethBundles = ethereumInteractor.getListOfEthereumBundleStatuses()
-            ethereumInteractor.loadWalletTokens(ethBundles)
-        }
-    }
-
     private fun getEthereumTokensFlow(): Flow<List<Token.Eth>> {
-        return if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
-            ethereumInteractor.getTokensFlow()
-        } else {
-            flowOf(emptyList())
-        }
+        return ethereumInteractor.getTokensFlow()
     }
 }
 

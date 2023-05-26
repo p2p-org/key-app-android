@@ -73,6 +73,7 @@ class HistoryListViewPresenter(
                     transactions = newHistoryTransactions,
                     userSendLinksCount = getUserSendLinksCount(historyType),
                 )
+                view?.showPagingState(PagingState.Idle)
             } catch (e: Throwable) {
                 Timber.e("Error on loading next history page: $e")
                 view?.showPagingState(PagingState.Error(e))
@@ -149,6 +150,12 @@ class HistoryListViewPresenter(
                         destinationSymbol = historyItem.destinationTokenSymbol,
                         openedFrom = historyItem.openedFrom
                     )
+                }
+                is HistoryItem.BridgeSendItem -> {
+                    view?.onBridgeSendClicked(historyItem.transactionId)
+                }
+                is HistoryItem.BridgeClaimItem -> {
+                    view?.onBridgeClaimClicked(historyItem.transactionId)
                 }
                 else -> {
                     val errorMessage = "Unsupported Transaction click! $historyItem"

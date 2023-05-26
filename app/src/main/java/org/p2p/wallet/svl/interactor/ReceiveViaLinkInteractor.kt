@@ -8,6 +8,7 @@ import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isMoreThan
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.model.types.ConfirmationStatus
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
@@ -18,7 +19,7 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.user.repository.prices.TokenId
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
 class ReceiveViaLinkError(
@@ -104,7 +105,7 @@ class ReceiveViaLinkInteractor(
 
         return kotlin.runCatching {
             tokenPricesRemoteRepository.getTokenPriceById(
-                tokenId = TokenId(coingeckoId),
+                tokenId = TokenCoinGeckoId(coingeckoId),
                 targetCurrency = USD_READABLE_SYMBOL
             )
         }
@@ -126,7 +127,8 @@ class ReceiveViaLinkInteractor(
             lamports = token.totalInLamports,
             memo = BuildConfig.svlMemoClaim,
             isSimulation = false,
-            shouldCloseAccount = true
+            shouldCloseAccount = true,
+            preflightCommitment = ConfirmationStatus.CONFIRMED
         )
     }
 }

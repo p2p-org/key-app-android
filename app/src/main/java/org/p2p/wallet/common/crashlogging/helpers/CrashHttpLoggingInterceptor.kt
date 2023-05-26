@@ -22,7 +22,7 @@ class CrashHttpLoggingInterceptor : Interceptor {
         val response = try {
             chain.proceed(request)
         } catch (socketTimeout: SocketTimeoutException) {
-            Timber.i("Failed with socket timeout: ${request.url}")
+            Timber.i("Failed with socket timeout: ${request.url}; $rpcMethodName")
             throw socketTimeout
         }
 

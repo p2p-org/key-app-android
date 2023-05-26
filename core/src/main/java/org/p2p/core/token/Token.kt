@@ -112,6 +112,7 @@ sealed class Token constructor(
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         var isClaiming: Boolean = false,
+        var latestActiveBundleId: String? = null,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -259,3 +260,11 @@ sealed class Token constructor(
 fun List<Token.Active>.findSolOrThrow(): Token.Active = first { it.isSOL }
 
 fun List<Token.Active>.findSolOrNull(): Token.Active? = firstOrNull { it.isSOL }
+
+fun List<Token.Active>.findByMintAddress(mintAddress: String): Token.Active? =
+    firstOrNull { it.mintAddress == mintAddress }
+
+@JvmName("findByNullableMintAddress")
+fun List<Token.Active>.findByMintAddress(mintAddress: String?): Token.Active? =
+    mintAddress?.let(::findByMintAddress)
+

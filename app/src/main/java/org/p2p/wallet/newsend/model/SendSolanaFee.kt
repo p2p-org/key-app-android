@@ -1,6 +1,7 @@
 package org.p2p.wallet.newsend.model
 
 import android.os.Parcelable
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
@@ -21,6 +22,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.newsend.model.FeePayerState.ReduceInputAmount
 import org.p2p.wallet.newsend.model.FeePayerState.SwitchToSol
+import org.p2p.wallet.newsend.model.FeePayerState.SwitchToSpl
 
 /**
  * This class contains information about fees for transaction or for a new account creation
@@ -95,14 +97,14 @@ data class SendSolanaFee constructor(
             .scaleLong()
 
     @IgnoredOnParcel
-    private val feePayerTotalLamports: BigInteger
-        get() = feePayerToken.total.toLamports(feePayerToken.decimals)
-
-    @IgnoredOnParcel
-    private val transactionDecimals: BigDecimal =
+    val transactionDecimals: BigDecimal =
         (if (feePayerToken.isSOL) feeRelayerFee.transactionFeeInSol else feeRelayerFee.transactionFeeInSpl)
             .fromLamports(feePayerToken.decimals)
             .scaleLong()
+
+    @IgnoredOnParcel
+    private val feePayerTotalLamports: BigInteger
+        get() = feePayerToken.total.toLamports(feePayerToken.decimals)
 
     @IgnoredOnParcel
     val totalFeeDecimals: BigDecimal
@@ -161,18 +163,41 @@ data class SendSolanaFee constructor(
         val shouldTryReduceAmount = isAllowedToCorrectAmount && !isSourceSol && !isEnoughSolBalance
         val hasAlternativeFeePayerTokens = alternativeFeePayerTokens.isNotEmpty()
         val isValidToSwitchOnSource = supportedFeePayerTokens?.contains(sourceToken) ?: true
+        // if there is enough SPL token balance to cover amount and fee
+        val shouldSwitchToSpl =
+            !isSourceSol &&
+                sourceTokenTotal.isMoreThan(totalNeeded) &&
+                isValidToSwitchOnSource
+
+        Timber.i(
+            buildString {
+                appendLine("isSourceSol = $isSourceSol")
+                appendLine("isAllowedToCorrectAmount = $isAllowedToCorrectAmount")
+                appendLine("totalNeeded = $totalNeeded")
+                appendLine("isEnoughSolBalance = $isEnoughSolBalance")
+                appendLine("shouldTryReduceAmount = $shouldTryReduceAmount")
+                appendLine("hasAlternativeFeePayerTokens = $hasAlternativeFeePayerTokens")
+                appendLine("alternativeFeePayerTokens = ${alternativeFeePayerTokens.map(Token.Active::tokenSymbol)}")
+                appendLine("isValidToSwitchOnSource = $isValidToSwitchOnSource")
+                appendLine("shouldSwitchToSpl = $shouldSwitchToSpl")
+            }
+        )
         return when {
-            // if there is enough SPL token balance to cover amount and fee
-            !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) &&
-                isValidToSwitchOnSource -> FeePayerState.SwitchToSpl(sourceToken)
-            hasAlternativeFeePayerTokens -> FeePayerState.SwitchToSpl(alternativeFeePayerTokens.first())
+            shouldSwitchToSpl -> {
+                SwitchToSpl(sourceToken)
+            }
+            hasAlternativeFeePayerTokens -> {
+                SwitchToSpl(alternativeFeePayerTokens.first())
+            }
             // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount
             shouldTryReduceAmount && sourceTokenTotal.isLessThan(totalNeeded) -> {
                 val diff = totalNeeded - sourceTokenTotal
                 val desiredAmount = if (diff.isLessThan(inputAmount)) inputAmount - diff else null
                 if (desiredAmount != null) ReduceInputAmount(desiredAmount) else SwitchToSol
             }
-            else -> SwitchToSol
+            else -> {
+                SwitchToSol
+            }
         }
     }
 }

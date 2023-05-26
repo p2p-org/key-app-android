@@ -4,6 +4,7 @@ import androidx.annotation.CallSuper
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,10 +15,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import org.p2p.core.network.ConnectionManager
 
-abstract class BasePresenter<V : MvpView> : MvpPresenter<V>, CoroutineScope {
+abstract class BasePresenter<V : MvpView>(
+    mainDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate
+) : MvpPresenter<V>, CoroutineScope {
 
     override val coroutineContext: CoroutineContext =
-        SupervisorJob() + Dispatchers.Main.immediate + CoroutineExceptionHandler(::handleCoroutineException)
+        SupervisorJob() + mainDispatcher + CoroutineExceptionHandler(::handleCoroutineException)
 
     protected var view: V? = null
         private set
@@ -47,20 +50,26 @@ abstract class BasePresenter<V : MvpView> : MvpPresenter<V>, CoroutineScope {
         }
     }
 
+    /**
+     * Launch a coroutine that is aware of the internet connection status.
+     * If there is no internet connection, the coroutine will be canceled.
+     * @return The actual coroutine job, or null if the job was canceled/not launched.
+     */
     protected fun launchInternetAware(
         connectionManager: ConnectionManager,
         block: suspend CoroutineScope.() -> Unit
-    ): Job {
+    ): Job? {
         var job: Job? = null
 
         return launch {
             connectionManager.connectionStatus.collect { hasConnection ->
-                if (hasConnection) {
-                    job = launch { block() }
+                job = if (hasConnection) {
+                    launch { block() }
                 } else {
                     job?.cancel()
+                    null
                 }
             }
-        }
+        }.let { job }
     }
 }

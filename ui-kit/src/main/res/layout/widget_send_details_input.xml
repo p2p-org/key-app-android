@@ -228,7 +228,6 @@
             android:id="@+id/textViewAmountTypeSwitchLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="12dp"
             android:gravity="center"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
@@ -243,7 +242,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="6dp"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="20dp"
             android:ellipsize="middle"
@@ -279,5 +277,108 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutBottomFeeInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/textViewBottomValue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/containerAmount">
+
+        <TextView
+            android:id="@+id/textViewBottomFee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|end"
+            android:maxLines="1"
+            android:paddingVertical="8dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_mountain"
+            tools:text="FEES" />
+
+        <ProgressBar
+            android:id="@+id/progressBarBottomFees"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center"
+            android:layout_margin="12dp"
+            android:indeterminateTint="@color/elements_sky" />
+
+        <ImageView
+            android:id="@+id/imageViewBottomFeesInfo"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:padding="8dp"
+            android:src="@drawable/ic_warning_solid"
+            android:visibility="gone"
+            app:tint="@color/icons_mountain" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewBottomTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="center_vertical|end"
+        android:maxLines="1"
+        android:paddingBottom="8dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@id/textViewBottomValue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutBottomFeeInfo"
+        tools:text="TOTAL AMOUNT" />
+
+    <TextView
+        android:id="@+id/textViewBottomFeeValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical|end"
+        android:maxLines="1"
+        android:paddingVertical="8dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintBottom_toBottomOf="@id/layoutBottomFeeInfo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/layoutBottomFeeInfo"
+        tools:text="≈$ 49.23" />
+
+    <TextView
+        android:id="@+id/textViewBottomTotalValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical|end"
+        android:maxLines="1"
+        android:paddingBottom="8dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@id/textViewBottomValue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutBottomFeeInfo"
+        tools:text="100 USDC" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupTopFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="layoutFeeInfo, textViewSendLabel" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupBottomFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="layoutBottomFeeInfo, textViewBottomFeeValue, textViewBottomTotal, textViewBottomTotalValue"
+        tools:visibility="visible" />
 
 </merge>

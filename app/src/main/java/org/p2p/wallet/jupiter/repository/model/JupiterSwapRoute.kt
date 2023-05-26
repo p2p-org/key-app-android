@@ -4,6 +4,9 @@ import androidx.annotation.IntRange
 import java.math.BigDecimal
 import java.math.BigInteger
 
+/**
+ * @param keyAppFeeInLamports fee in lamports of out token
+ */
 data class JupiterSwapRoute(
     val inAmountInLamports: BigInteger,
     val outAmountInLamports: BigInteger,
@@ -15,7 +18,7 @@ data class JupiterSwapRoute(
     val otherAmountThreshold: String,
     val swapMode: JupiterSwapMode,
     val fees: JupiterSwapFees,
-    val keyAppFee: String,
+    val keyAppFeeInLamports: BigInteger,
     val keyAppRefundableFee: String,
     val keyAppHash: String
 )

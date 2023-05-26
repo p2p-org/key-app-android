@@ -22,6 +22,7 @@ import org.p2p.wallet.history.repository.remote.HistoryRemoteRepository
 import org.p2p.wallet.history.repository.remote.HistoryRepository
 import org.p2p.wallet.history.repository.remote.MoonpayHistoryRemoteRepository
 import org.p2p.wallet.history.repository.remote.RpcHistoryRepository
+import org.p2p.wallet.history.repository.remote.BridgeHistoryRepository
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsContract
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsPresenter
@@ -75,9 +76,14 @@ object HistoryModule : InjectionModule {
         single<HistoryRemoteRepository> {
             val remotes = listOf(
                 new(::RpcHistoryRepository),
-                new(::MoonpayHistoryRemoteRepository)
+                new(::MoonpayHistoryRemoteRepository),
+                new(::BridgeHistoryRepository)
             )
-            HistoryRepository(repositories = remotes, dispatchers = get(), pendingTransactionsLocalRepository = get())
+            HistoryRepository(
+                repositories = remotes,
+                dispatchers = get(),
+                pendingTransactionsLocalRepository = get()
+            )
         }
 
         factoryOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class

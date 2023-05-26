@@ -6,13 +6,13 @@ import android.graphics.Bitmap
 import timber.log.Timber
 import java.io.File
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
+import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
 import org.p2p.wallet.utils.Base58String
@@ -45,7 +45,7 @@ class UsernameInteractor(
 
     suspend fun tryRestoreUsername(owner: Base58String) {
         try {
-            val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
+            val usernameDetails = findUsernameByAddress(owner)
             sharedPreferences.edit {
                 if (usernameDetails != null) {
                     putString(KEY_USERNAME, usernameDetails.username.value)
@@ -55,14 +55,23 @@ class UsernameInteractor(
                     remove(KEY_USERNAME)
                 }
             }
-            crashLogger.setCustomKey("username", usernameDetails?.username?.fullUsername.orEmpty())
+            usernameDetails?.username?.fullUsername?.let {
+                crashLogger.setCustomKey("username", it)
+            }
         } catch (error: Throwable) {
             Timber.e(error, "Failed to restore username for ${owner.base58Value}")
         }
     }
 
+    /**
+     * Priority in search is given to .key usernames, return them at first
+     */
     suspend fun findUsernameByAddress(address: Base58String): UsernameDetails? {
-        return usernameRepository.findUsernameDetailsByAddress(address).firstOrNull()
+        if (address.base58Value.isBlank()) return null
+        return usernameRepository.findUsernameDetailsByAddress(address)
+            .run {
+                firstOrNull { it.username.domainPrefix == usernameDomainFeatureToggle.value } ?: firstOrNull()
+            }
     }
 
     fun isUsernameExist(): Boolean = sharedPreferences.contains(KEY_USERNAME)
@@ -94,7 +103,6 @@ class UsernameInteractor(
         return isUsernameItemCanBeShown || isRegisterUsernameItemCanBeShown
     }
 
-    fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? = fileLocalRepository.saveQr(
-        name, bitmap, forSharing
-    )
+    fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? =
+        fileLocalRepository.saveQr(name, bitmap, forSharing)
 }
