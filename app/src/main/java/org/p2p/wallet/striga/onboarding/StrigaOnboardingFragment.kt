@@ -111,12 +111,14 @@ class StrigaOnboardingFragment :
                 presenter.onClickHelp()
             }
 
-        binding.textViewHelp.movementMethod = LinkMovementMethod()
-        binding.textViewHelp.bind(
-            TextViewCellModel.Raw(
-                TextContainer.Raw(helpTextSpannable),
+        with(binding.textViewHelp) {
+            movementMethod = LinkMovementMethod()
+            bind(
+                TextViewCellModel.Raw(
+                    TextContainer.Raw(helpTextSpannable),
+                )
             )
-        )
+        }
     }
 
     private fun mapCountryView(countryName: String, countryFlag: String) {
@@ -164,11 +166,11 @@ class StrigaOnboardingFragment :
         with(binding) {
             image.bind(getImageModel(state))
             textViewTitle.bind(getTitleModel(state))
-            textViewHelp.isVisible = state.helpIsVisible
+            textViewHelp.isVisible = state.isHelpVisible
 
             buttonContinue.apply {
                 setText(state.buttonTextRes)
-                icon = if (state.showButtonArrow) {
+                icon = if (state.isButtonArrowVisible) {
                     binding.getDrawable(R.drawable.ic_arrow_right)
                 } else {
                     null

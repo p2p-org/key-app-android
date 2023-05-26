@@ -14,22 +14,22 @@ interface StrigaOnboardingContract {
             @DrawableRes val imageRes: Int,
             @StringRes val titleTextRes: Int,
             @StringRes val buttonTextRes: Int,
-            val helpIsVisible: Boolean,
-            val showButtonArrow: Boolean
+            val isHelpVisible: Boolean,
+            val isButtonArrowVisible: Boolean
         ) {
             Available(
                 imageRes = R.drawable.ic_hand_phone,
                 titleTextRes = R.string.striga_onboarding_title_available,
                 buttonTextRes = R.string.common_continue,
-                helpIsVisible = false,
-                showButtonArrow = true
+                isHelpVisible = false,
+                isButtonArrowVisible = true
             ),
             Unavailable(
                 imageRes = R.drawable.ic_euro_flag,
                 titleTextRes = R.string.striga_onboarding_title_unavailable,
                 buttonTextRes = R.string.striga_onboarding_button_change_country,
-                helpIsVisible = true,
-                showButtonArrow = false
+                isHelpVisible = true,
+                isButtonArrowVisible = false
             );
         }
 
