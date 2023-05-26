@@ -143,4 +143,18 @@
     </style>
     <!--endregion-->
 
+    <!--region TextAppearance.Bold-->
+    <style name="UiKit.TextAppearance.Bold" parent="UiKit.TextAppearance">
+        <item name="fontFamily">@font/inter_bold</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_night</item>
+    </style>
+
+    <style name="UiKit.TextAppearance.Bold.Title2" parent="UiKit.TextAppearance.Bold">
+        <item name="android:textSize">22sp</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/text_night</item>
+    </style>
+    <!--endregion-->
+
 </resources>
