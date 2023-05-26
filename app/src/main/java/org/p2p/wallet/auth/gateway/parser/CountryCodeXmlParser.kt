@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.gateway.parser
 
-import androidx.browser.trusted.sharing.ShareTarget.FileFormField.KEY_NAME
 import android.content.res.Resources
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import io.michaelrocks.libphonenumber.android.Phonenumber
@@ -30,9 +29,9 @@ class CountryCodeXmlParser(
 
         var event = xmlParser.eventType
         while (event != XmlPullParser.END_DOCUMENT) {
-            val name = xmlParser.name
+            val tagName = xmlParser.name
             when {
-                event == XmlPullParser.END_TAG && name.equals(KEY_COUNTRY) -> {
+                event == XmlPullParser.END_TAG && tagName.equals(KEY_COUNTRY) -> {
                     val nameCode = xmlParser.getAttributeValue(null, KEY_NAME_CODE).uppercase()
                     val phoneCode = xmlParser.getAttributeValue(null, KEY_PHONE_CODE)
                     val name = xmlParser.getAttributeValue(null, KEY_NAME)

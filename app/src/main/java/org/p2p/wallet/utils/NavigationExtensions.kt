@@ -5,6 +5,7 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentResultListener
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -129,6 +130,27 @@ fun Fragment.replaceFragment(
     fragmentManager: FragmentManager = requireActivity().supportFragmentManager
 ) = whenStateAtLeast(Lifecycle.State.STARTED) {
     requireActivity().hideKeyboard()
+    fragmentManager.commit(allowStateLoss = true) {
+        setCustomAnimations(enter, exit, popEnter, popExit)
+        replace(containerId, target, target.javaClass.name)
+        if (addToBackStack) addToBackStack(target.javaClass.name)
+    }
+}
+
+fun Fragment.replaceFragmentForResult(
+    target: Fragment,
+    requestKey: String,
+    onResult: FragmentResultListener,
+    @IdRes containerId: Int = R.id.rootContainer,
+    addToBackStack: Boolean = true,
+    @AnimRes enter: Int = R.anim.nav_enter,
+    @AnimRes exit: Int = R.anim.nav_exit,
+    @AnimRes popEnter: Int = R.anim.nav_pop_enter,
+    @AnimRes popExit: Int = R.anim.nav_pop_exit,
+    fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+) = whenStateAtLeast(Lifecycle.State.STARTED) {
+    requireActivity().hideKeyboard()
+    fragmentManager.setFragmentResultListener(requestKey, this, onResult)
     fragmentManager.commit(allowStateLoss = true) {
         setCustomAnimations(enter, exit, popEnter, popExit)
         replace(containerId, target, target.javaClass.name)
