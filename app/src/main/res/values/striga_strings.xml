@@ -13,6 +13,14 @@
         Now you need to go through document and selfie verification.
         This is a one-time procedure to ensure safety of your account.
     </string>
+    <string name="striga_onboarding_button_change_country">Change Country</string>
+    <string name="striga_powered_by">Powered by Striga</string>
+    <string name="striga_powered_by_url">https://striga.com</string>
+    <string name="striga_onboarding_country_subtitle">Your country</string>
+    <string name="striga_onboarding_title_available">Open IBAN account for international transfers with zero fees</string>
+    <string name="striga_onboarding_title_unavailable">This service is available only for European Economic Area countries</string>
+    <string name="striga_onboarding_help_common_text">Check the list of countries %1$s</string>
+    <string name="striga_onboarding_help_highlight_text">here</string>
     <string name="striga_sms_input_title">To start verification confirm your phone number %1$s</string>
     <string name="striga_sms_input_toolbar_title">Step 3 of 3</string>
     <string name="striga_exit_sms_input_warning_dialog_title">Do you want to stop registration?</string>

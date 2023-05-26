@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.repository.dao
+package org.p2p.wallet.striga.signup.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

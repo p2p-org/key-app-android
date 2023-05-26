@@ -1,6 +1,4 @@
-package org.p2p.wallet.striga.repository
-
-import org.p2p.wallet.striga.model.StrigaDataLayerError
+package org.p2p.wallet.striga.model
 
 sealed interface StrigaDataLayerResult<out T> {
     data class Success<T>(val value: T) : StrigaDataLayerResult<T>
@@ -12,3 +10,9 @@ sealed interface StrigaDataLayerResult<out T> {
         is Failure -> throw error
     }
 }
+
+fun <T, E : StrigaDataLayerError> E.toFailureResult(): StrigaDataLayerResult.Failure<T> =
+    StrigaDataLayerResult.Failure(this)
+
+fun <T> T.toSuccessResult(): StrigaDataLayerResult.Success<T> =
+    StrigaDataLayerResult.Success(this)
