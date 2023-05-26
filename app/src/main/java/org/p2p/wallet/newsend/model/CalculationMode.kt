@@ -1,7 +1,13 @@
 package org.p2p.wallet.newsend.model
 
+import org.p2p.wallet.newsend.model.CalculationState.CalculationCompleted
+import org.p2p.wallet.newsend.model.CalculationState.InputFractionUpdate
+import org.p2p.wallet.newsend.model.CalculationState.LabelsUpdate
+import org.p2p.wallet.newsend.model.CalculationState.Idle
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
@@ -19,17 +25,12 @@ import org.p2p.core.utils.toUsd
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.utils.divideSafe
 
-private const val TAG = "CalculationMode"
-
 class CalculationMode(
     private val sendModeProvider: SendModeProvider,
     private val lessThenMinString: String
 ) {
 
-    var onCalculationCompleted: ((aroundValue: String) -> Unit)? = null
-    var onInputFractionUpdated: ((Int) -> Unit)? = null
-    var onLabelsUpdated: ((switchSymbol: String, mainSymbol: String) -> Unit)? = null
-
+    private val calculationState: MutableStateFlow<CalculationState> = MutableStateFlow(Idle)
     private var currencyMode: CurrencyMode = sendModeProvider.sendMode
         set(value) {
             sendModeProvider.sendMode = value
@@ -51,6 +52,8 @@ class CalculationMode(
 
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
+
+    fun getCalculationStateFlow(): Flow<CalculationState> = calculationState
 
     fun updateToken(newToken: Token.Active) {
         if (::token.isInitialized && newToken.mintAddress == this.token.mintAddress) {
@@ -147,7 +150,7 @@ class CalculationMode(
             is CurrencyMode.Fiat -> token.tokenSymbol to mode.fiatAbbreviation
         }
 
-        onLabelsUpdated?.invoke(switchSymbol, mainSymbol)
+        updateState(LabelsUpdate(switchSymbol, mainSymbol))
 
         recalculate(inputAmount)
     }
@@ -185,11 +188,11 @@ class CalculationMode(
     }
 
     private fun handleFractionUpdate(mode: CurrencyMode) {
-        onInputFractionUpdated?.invoke(mode.fractionLength)
+        updateState(InputFractionUpdate(currencyMode.fractionLength))
     }
 
     private fun handleCalculationUpdate(value: String, symbol: String) {
-        onCalculationCompleted?.invoke("$value $symbol")
+        updateState(CalculationCompleted("$value $symbol"))
     }
 
     /**
@@ -229,7 +232,7 @@ class CalculationMode(
         handleFractionUpdate(newMode)
 
         // update labels
-        onLabelsUpdated?.invoke(switchSymbol, mainSymbol)
+        updateState(LabelsUpdate(switchSymbol, mainSymbol))
 
         // update around value
         when (newMode) {
@@ -244,5 +247,9 @@ class CalculationMode(
 
         currencyMode = newMode
         return inputAmount
+    }
+
+    private fun updateState(newState: CalculationState) {
+        calculationState.value = newState
     }
 }

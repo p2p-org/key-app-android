@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isLessThan
+import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.FeePayerState
 import org.p2p.wallet.newsend.model.SendSolanaFee
 
@@ -13,7 +14,7 @@ class FeePayerSelector(
     private val sourceSplValidator: SourceSplTokenValidator,
     private val solValidator: SolTokenValidator,
     private val splValidator: SplTokenValidator,
-    private val amountValidator: AmountReducerValidator,
+    private val amountValidator: AmountReducerValidator
 ) {
 
     private val feePayerState: MutableStateFlow<FeePayerState> = MutableStateFlow(FeePayerState.SwitchToSol)
@@ -24,7 +25,6 @@ class FeePayerSelector(
         sourceToken: Token.Active,
         fee: SendSolanaFee,
         inputAmount: BigInteger,
-        alternativeFeePayerTokens: HashMap<String, List<Token.Active>>,
         isCorrectableAmount: Boolean
     ) {
         val feeRelayerFee = fee.feeRelayerFee
@@ -43,7 +43,7 @@ class FeePayerSelector(
                 updateState(FeePayerState.SwitchToSol)
             }
 
-            splValidator.isSplAvailable(alternativeFeePayerTokens, sourceToken, feeRelayerFee, feePayerToken) -> {
+            splValidator.isSplAvailable(sourceToken, feeRelayerFee, feePayerToken) -> {
                 updateState(FeePayerState.SwitchToSpl(feePayerToken))
             }
 

@@ -15,14 +15,13 @@ sealed interface FeeRelayerState {
         val feeLimitInfo: TransactionFeeLimits
     ) : FeeRelayerState
 
-    data class Failure(
-        val previousState: FeeRelayerState,
-        val errorStateError: FeeRelayerStateError
-    ) : FeeRelayerState, Throwable() {
-        fun isFeeCalculationError(): Boolean {
-            return errorStateError is FeeRelayerStateError.FeesCalculationError
-        }
-    }
+    data class Loading(val loadingState: FeeLoadingState) : FeeRelayerState
+
+    object Cancelled : FeeRelayerState
+
+    data class FeeError(val cause: Throwable) : FeeRelayerState
+
+    object InsufficientFundsError : FeeRelayerState
 
     fun isValidState(): Boolean = this is UpdateFee || this is ReduceAmount || this is Idle
 }
@@ -31,7 +30,6 @@ fun FeeRelayerState.getFee(): SendSolanaFee? {
     return when (this) {
         is FeeRelayerState.UpdateFee -> solanaFee
         is FeeRelayerState.ReduceAmount -> fee
-        is FeeRelayerState.Failure -> if (previousState !is FeeRelayerState.Failure) previousState.getFee() else null
         else -> null
     }
 }

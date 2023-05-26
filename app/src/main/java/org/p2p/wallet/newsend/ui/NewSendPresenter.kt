@@ -7,12 +7,13 @@ import java.math.BigDecimal
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates.observable
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
@@ -29,7 +30,7 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
-import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.MANUAL
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -42,14 +43,15 @@ import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.CalculationState
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
-import org.p2p.wallet.newsend.model.FeeRelayerStateError
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendFatalError
 import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.newsend.model.getFee
+import org.p2p.wallet.newsend.smartselection.FeeDebugInfoBuilder
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
@@ -72,12 +74,13 @@ class NewSendPresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
     private val connectionStateProvider: NetworkConnectionStateProvider,
+    private val feeDebugInfoBuilder: FeeDebugInfoBuilder,
     private val newSendAnalytics: NewSendAnalytics,
     private val alertErrorsLogger: AlarmErrorsLogger,
     private val appScope: AppScope,
-    sendModeProvider: SendModeProvider,
     private val historyInteractor: HistoryInteractor,
-    private val feeRelayerManager: SendFeeRelayerManager
+    private val feeRelayerManager: SendFeeRelayerManager,
+    sendModeProvider: SendModeProvider
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private var token: Token.Active? by observable(null) { _, _, newToken ->
@@ -100,8 +103,11 @@ class NewSendPresenter(
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSendScreenOpened()
+        observeState()
+        observeCalculationState()
+        observeTokenUpdates()
+
         initialize(view)
-        subscribeToSelectedTokenUpdates()
     }
 
     override fun detach() {
@@ -109,7 +115,69 @@ class NewSendPresenter(
         super.detach()
     }
 
-    private fun subscribeToSelectedTokenUpdates() {
+    private fun observeState() {
+        launch {
+            feeRelayerManager.getStateFlow()
+                .stateIn(this)
+                .collectLatest { newState -> handleState(newState) }
+        }
+    }
+
+    private fun observeCalculationState() {
+        launch {
+            calculationMode.getCalculationStateFlow()
+                .stateIn(this)
+                .collectLatest { newState -> handleCalculationState(newState) }
+        }
+    }
+
+    private fun handleCalculationState(newState: CalculationState) {
+        when (newState) {
+            is CalculationState.Idle -> Unit
+            is CalculationState.CalculationCompleted -> view?.showAroundValue(newState.aroundValue)
+            is CalculationState.InputFractionUpdate -> view?.updateInputFraction(newState.fraction)
+            is CalculationState.LabelsUpdate -> {
+                view?.setSwitchLabel(newState.switchSymbol)
+                view?.setMainAmountLabel(newState.mainSymbol)
+            }
+        }
+    }
+
+    private fun handleState(newState: FeeRelayerState) {
+        when (newState) {
+            is FeeRelayerState.UpdateFee -> {
+                handleUpdateFee(newState)
+            }
+            is FeeRelayerState.ReduceAmount -> {
+                val inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
+                view?.updateInputValue(inputAmount, forced = true)
+                view?.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
+            }
+            is FeeRelayerState.Cancelled -> {
+                Timber.tag(TAG).i("Fee calculation cancelled")
+            }
+            is FeeRelayerState.FeeError -> {
+                view?.showFeeViewVisible(isVisible = false)
+                Timber.tag(TAG).e(newState.cause, "FeeRelayerState has calculation error")
+                logSendError(token, Throwable("Fee calculation error", newState.cause))
+                updateButton(requireToken(), newState)
+            }
+            is FeeRelayerState.InsufficientFundsError -> {
+                Timber.tag(TAG).e("FeeRelayerState has error")
+                updateButton(requireToken(), newState)
+            }
+            is FeeRelayerState.Loading -> {
+                when (val loadingState = newState.loadingState) {
+                    is FeeLoadingState.Instant -> view?.showFeeViewLoading(isLoading = loadingState.isLoading)
+                    is FeeLoadingState.Delayed -> view?.showDelayedFeeViewLoading(isLoading = loadingState.isLoading)
+                }
+            }
+
+            is FeeRelayerState.Idle -> Unit
+        }
+    }
+
+    private fun observeTokenUpdates() {
         userInteractor.getUserTokensFlow()
             .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
             .filterNotNull()
@@ -123,22 +191,6 @@ class NewSendPresenter(
     }
 
     private fun initialize(view: NewSendContract.View) {
-        calculationMode.onCalculationCompleted = view::showAroundValue
-        calculationMode.onInputFractionUpdated = view::updateInputFraction
-        calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
-            view.setSwitchLabel(switchSymbol)
-            view.setMainAmountLabel(mainSymbol)
-        }
-
-        feeRelayerManager.onStateUpdated = { newState ->
-            handleFeeRelayerStateUpdate(newState, view)
-        }
-        feeRelayerManager.onFeeLoading = { loadingState ->
-            when (loadingState) {
-                is FeeLoadingState.Instant -> view.showFeeViewLoading(isLoading = loadingState.isLoading)
-                is FeeLoadingState.Delayed -> view.showDelayedFeeViewLoading(isLoading = loadingState.isLoading)
-            }
-        }
 
         if (token != null) {
             restoreSelectedToken(view, requireToken())
@@ -157,8 +209,7 @@ class NewSendPresenter(
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
-            val currentState = feeRelayerManager.getState()
-            handleFeeRelayerStateUpdate(currentState, view)
+            // updating state
         }
     }
 
@@ -208,10 +259,7 @@ class NewSendPresenter(
         }
     }
 
-    private fun handleUpdateFee(
-        feeRelayerState: FeeRelayerState.UpdateFee,
-        view: NewSendContract.View
-    ) {
+    private fun handleUpdateFee(feeRelayerState: FeeRelayerState.UpdateFee) {
         val sourceToken = requireToken()
         val total = feeRelayerManager.buildTotalFee(
             sourceToken = sourceToken,
@@ -219,48 +267,11 @@ class NewSendPresenter(
         )
 
         val feesLabel = total.getFeesInToken(calculationMode.isCurrentInputEmpty()).format(resources)
-        view.setFeeLabel(feesLabel)
+        view?.setFeeLabel(feesLabel)
         updateButton(sourceToken, feeRelayerState)
 
         // FIXME: only for debug needs, remove after release
         if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
-    }
-
-    private fun handleFeeRelayerStateUpdate(
-        newState: FeeRelayerState,
-        view: NewSendContract.View
-    ) {
-        when (newState) {
-            is FeeRelayerState.UpdateFee -> {
-                handleUpdateFee(newState, view)
-            }
-
-            is FeeRelayerState.ReduceAmount -> {
-                val inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
-                view.updateInputValue(inputAmount, forced = true)
-                view.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
-            }
-
-            is FeeRelayerState.Failure -> {
-                if (newState.isFeeCalculationError()) {
-                    view.showFeeViewVisible(isVisible = false)
-
-                    newState.errorStateError as FeeRelayerStateError.FeesCalculationError
-                    val exception = newState.errorStateError.cause
-                    if (exception is CancellationException) {
-                        Timber.tag(TAG).i(newState)
-                    } else {
-                        logSendError(token, Throwable("Fee calculation error", exception))
-                        Timber.tag(TAG).e(newState, "FeeRelayerState has calculation error")
-                    }
-                } else {
-                    Timber.tag(TAG).e(newState, "FeeRelayerState has error")
-                }
-                updateButton(requireToken(), newState)
-            }
-
-            is FeeRelayerState.Idle -> Unit
-        }
     }
 
     private suspend fun initializeFeeRelayer(
@@ -361,7 +372,7 @@ class NewSendPresenter(
             executeSmartSelection(
                 token = requireToken(),
                 feePayerToken = feePayerToken,
-                strategy = NO_ACTION
+                strategy = MANUAL
             )
         } catch (e: Throwable) {
             Timber.tag(TAG).e(SendFatalError(cause = e), "Error updating fee payer token")
@@ -415,7 +426,7 @@ class NewSendPresenter(
     }
 
     override fun checkInternetConnection() {
-        if (!isInternetConnectionEnabled()) {
+        if (!connectionStateProvider.hasConnection()) {
             view?.showUiKitSnackBar(
                 message = resources.getString(R.string.error_no_internet_message),
                 actionButtonResId = R.string.common_hide
@@ -506,7 +517,7 @@ class NewSendPresenter(
                 feePayerToken = feePayerToken,
                 tokenAmount = calculationMode.getCurrentAmount(),
                 useCache = useCache,
-                strategy = strategy
+                newStrategy = strategy
             )
         }
     }
@@ -559,13 +570,10 @@ class NewSendPresenter(
 
     private fun buildDebugInfo(solanaFee: SendSolanaFee?) {
         launch {
-            val debugInfo = feeRelayerManager.buildDebugInfo(solanaFee)
+            val debugInfo = feeDebugInfoBuilder.buildDebugInfo(solanaFee)
             view?.showDebugInfo(debugInfo)
         }
     }
-
-    private fun isInternetConnectionEnabled(): Boolean =
-        connectionStateProvider.hasConnection()
 
     private fun requireToken(): Token.Active =
         token ?: throw SendFatalError("Token can't be null")

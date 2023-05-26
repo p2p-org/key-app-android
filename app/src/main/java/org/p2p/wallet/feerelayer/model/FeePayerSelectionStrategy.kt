@@ -8,5 +8,5 @@ package org.p2p.wallet.feerelayer.model
 enum class FeePayerSelectionStrategy {
     CORRECT_AMOUNT,
     SELECT_FEE_PAYER,
-    NO_ACTION;
+    MANUAL;
 }

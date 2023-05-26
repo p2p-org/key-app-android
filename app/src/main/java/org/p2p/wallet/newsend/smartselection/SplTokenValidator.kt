@@ -2,15 +2,17 @@ package org.p2p.wallet.newsend.smartselection
 
 import org.p2p.core.token.Token
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
+import org.p2p.wallet.newsend.interactor.SendInteractor
 
 /**
  * SPL tokens as a fee payer is a third priority in paying fees after SOL token.
  * This should work only in case, if the source token is not the same SPL as a Fee Payer
  * */
-class SplTokenValidator {
+class SplTokenValidator(
+    private val sendInteractor: SendInteractor
+) {
 
     fun isSplAvailable(
-        alternativeFeePayerTokens: HashMap<String, List<Token.Active>>,
         sourceToken: Token.Active,
         fee: FeeRelayerFee,
         feePayerToken: Token.Active
@@ -18,7 +20,7 @@ class SplTokenValidator {
 
         // checking if we have other tokens except the source token to cover fees
         // we are assuming that [alternativeFeePayerTokens] doesn't contain the source token
-        if (alternativeFeePayerTokens.isNotEmpty()) return false
+//        if (alternativeFeePayerTokens.isNotEmpty()) return false
 
         // we can't pay fee if source token is SOL
         if (sourceToken.isSOL) return false
@@ -33,4 +35,13 @@ class SplTokenValidator {
         val tokenTotal = feePayerToken.totalInLamports
         return tokenTotal >= requiredAmount
     }
+
+//    private fun findFeePayer() {
+//        sendInteractor.findAlternativeFeePayerTokens(
+//            userTokens = userInteractor.getNonZeroUserTokens(),
+//            feePayerToExclude = newFeePayer,
+//            transactionFeeInSOL = feeRelayerFee.transactionFeeInSol,
+//            accountCreationFeeInSOL = feeRelayerFee.accountCreationFeeInSol
+//        )
+//    }
 }

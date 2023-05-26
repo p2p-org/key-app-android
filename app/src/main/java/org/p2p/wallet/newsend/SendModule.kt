@@ -7,6 +7,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerCalculationInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
@@ -74,7 +75,8 @@ object SendModule : InjectionModule {
                 sendModeProvider = get(),
                 historyInteractor = get(),
                 feeRelayerManager = get(),
-                alertErrorsLogger = get()
+                alertErrorsLogger = get(),
+                feeDebugInfoBuilder = get()
             )
         } bind NewSendContract.Presenter::class
         factoryOf(::NewSendDetailsPresenter) bind NewSendDetailsContract.Presenter::class
@@ -92,6 +94,8 @@ object SendModule : InjectionModule {
         factoryOf(::SolTokenValidator)
         factoryOf(::SplTokenValidator)
         factoryOf(::AmountReducerValidator)
+
+        factoryOf(::FeeRelayerCalculationInteractor)
     }
 
     private fun Module.initDataLayer() {
