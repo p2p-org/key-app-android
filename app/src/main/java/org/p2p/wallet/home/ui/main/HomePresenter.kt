@@ -149,7 +149,6 @@ class HomePresenter(
             loadSolTokensJob?.join()
             loadSolTokensJob = null
 
-            loadEthTokens()
             attachToPollingTokens()
         }
 
@@ -236,6 +235,7 @@ class HomePresenter(
                         // join and set null to be able to relaunch this job after next reconnections
                         loadSolTokensJob?.join()
                         loadSolTokensJob = null
+                        attachToPollingTokens()
                     }
                 } else {
                     if (updatesManager.isStarted()) {
