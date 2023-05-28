@@ -31,7 +31,7 @@ class StrigaSignupDataDatabaseRepository(
     } catch (error: Throwable) {
         StrigaDataLayerError.from(
             error = error,
-            default = StrigaDataLayerError.DatabaseError(error)
+            default = StrigaDataLayerError.InternalError(error)
         )
     }
 
@@ -44,7 +44,7 @@ class StrigaSignupDataDatabaseRepository(
     } catch (error: Throwable) {
         StrigaDataLayerError.from(
             error = error,
-            default = StrigaDataLayerError.DatabaseError(error)
+            default = StrigaDataLayerError.InternalError(error)
         )
     }
 
@@ -66,7 +66,7 @@ class StrigaSignupDataDatabaseRepository(
     } catch (error: Throwable) {
         StrigaDataLayerError.from(
             error = error,
-            default = StrigaDataLayerError.DatabaseError(error)
+            default = StrigaDataLayerError.InternalError(error)
         )
     }
 
