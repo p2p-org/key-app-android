@@ -24,6 +24,8 @@ object DateTimeUtils {
     private const val PATTERN_DAY_OF_WEEK_FULL = "EEEE"
     private const val PATTERN_DATE_AND_TIME = "dd.MM HH:mm"
     private const val PATTERN_DATEPICKER_DATE = "EE, dd MMM"
+
+    const val PATTERN_DD_MM_YYYY = "dd.MM.yyyy"
     const val PATTERN_HH_MM_SS_SS = "HH:mm:ss:SSSS"
 
     private const val SECOND = 1000

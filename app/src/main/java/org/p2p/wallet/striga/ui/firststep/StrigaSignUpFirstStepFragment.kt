@@ -9,7 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.striga.model.StrigaSignupDataType
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
