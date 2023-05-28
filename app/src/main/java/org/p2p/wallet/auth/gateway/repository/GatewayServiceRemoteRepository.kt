@@ -1,35 +1,54 @@
 package org.p2p.wallet.auth.gateway.repository
 
+import com.google.gson.Gson
 import com.google.gson.JsonObject
+import timber.log.Timber
+import java.net.URI
+import kotlin.time.DurationUnit
+import kotlinx.coroutines.withContext
+import org.p2p.core.rpc.JsonRpc
+import org.p2p.core.rpc.RpcApi
 import org.p2p.wallet.auth.gateway.api.GatewayServiceApi
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
+import org.p2p.wallet.auth.gateway.api.response.UpdateMetadataResponse
+import org.p2p.wallet.auth.gateway.repository.mapper.GatewayResult
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceCreateWalletMapper
+import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceErrorMapper
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceGetOnboardingMetadataMapper
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceRestoreWalletMapper
+import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceUpdateMetadataMapper
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.gateway.repository.model.RestoreWalletPublicKeyError
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.FlowDurationTimer
-import timber.log.Timber
-import kotlin.time.DurationUnit
-import kotlinx.coroutines.withContext
+
+private const val TAG = "GatewayServiceRemoteRepository"
 
 class GatewayServiceRemoteRepository(
     private val api: GatewayServiceApi,
+    private val rpcApi: RpcApi,
+    private val gson: Gson,
+    urlProvider: NetworkServicesUrlProvider,
     private val createWalletMapper: GatewayServiceCreateWalletMapper,
     private val restoreWalletMapper: GatewayServiceRestoreWalletMapper,
     private val getOnboardingMetadataMapper: GatewayServiceGetOnboardingMetadataMapper,
+    private val updateMetadataMapper: GatewayServiceUpdateMetadataMapper,
+    private val errorMapper: GatewayServiceErrorMapper,
     private val secureStorageContract: SecureStorageContract,
     private val dispatchers: CoroutineDispatchers,
-    private val appScope: AppScope
+    private val appScope: AppScope,
 ) : GatewayServiceRepository {
+
+    private val gatewayUrl = URI(urlProvider.loadGatewayServiceEnvironment().baseUrl)
 
     private val resetTemporaryPublicKeyTimer =
         FlowDurationTimer(startValue = 10, DurationUnit.MINUTES)
@@ -150,5 +169,35 @@ class GatewayServiceRemoteRepository(
             metadataCipheredFromService = metadataFromService
         )
         secureStorageContract.saveObject(SecureStorageContract.Key.KEY_ONBOARDING_METADATA, decryptedMetadata)
+    }
+
+    override suspend fun updateMetadata(
+        ethereumAddress: String,
+        solanaPublicKey: Base58String,
+        solanaPrivateKey: Base58String,
+        userSeedPhrase: List<String>,
+        metadata: GatewayOnboardingMetadata
+    ): UpdateMetadataResponse = withContext(dispatchers.io) {
+        val request = updateMetadataMapper.toNetwork(
+            ethereumAddress = ethereumAddress,
+            userPublicKey = solanaPublicKey,
+            userPrivateKey = solanaPrivateKey,
+            userSeedPhrase = userSeedPhrase,
+            metadata = metadata,
+        )
+        launch(request).data
+    }
+
+    private suspend fun <P, T> launch(request: JsonRpc<P, T>): GatewayResult.Success<T> {
+        try {
+            val requestGson = gson.toJson(request)
+            val response = rpcApi.launch(gatewayUrl, jsonRpc = requestGson)
+            val result = request.parseResponse(response, gson)
+            return GatewayResult.Success(result)
+        } catch (e: JsonRpc.ResponseError.RpcError) {
+            Timber.tag(TAG).i(e, "failed request for ${request.method}")
+            Timber.tag(TAG).i("Error body message ${e.error.message}")
+            throw errorMapper.fromNetwork(e.error)
+        }
     }
 }

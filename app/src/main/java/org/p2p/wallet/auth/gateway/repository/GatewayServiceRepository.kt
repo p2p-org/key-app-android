@@ -5,6 +5,8 @@ import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
+import org.p2p.wallet.auth.gateway.api.response.UpdateMetadataResponse
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
@@ -49,4 +51,12 @@ interface GatewayServiceRepository {
         userSeedPhrase: List<String>,
         etheriumAddress: String
     )
+
+    suspend fun updateMetadata(
+        ethereumAddress: String,
+        solanaPublicKey: Base58String,
+        solanaPrivateKey: Base58String,
+        userSeedPhrase: List<String>,
+        metadata: GatewayOnboardingMetadata
+    ): UpdateMetadataResponse
 }
