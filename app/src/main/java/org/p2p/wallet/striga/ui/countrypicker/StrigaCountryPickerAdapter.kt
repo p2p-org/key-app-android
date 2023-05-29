@@ -3,7 +3,7 @@ package org.p2p.wallet.striga.ui.countrypicker
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemCountryCodeBinding
+import org.p2p.wallet.databinding.ItemStrigaCountryBinding
 import org.p2p.wallet.databinding.ItemStrigaCountryPickerHeaderBinding
 import org.p2p.wallet.striga.model.StrigaCountryPickerItem
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -15,7 +15,7 @@ class StrigaCountryPickerAdapter(private val onItemClickListener: (StrigaCountry
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         when (viewType) {
-            R.layout.fragment_striga_country_picker -> {
+            R.layout.item_country_code -> {
                 CountryViewHolder(
                     binding = parent.inflateViewBinding(attachToRoot = false),
                     onItemClickListener = onItemClickListener
@@ -58,7 +58,7 @@ class StrigaCountryPickerAdapter(private val onItemClickListener: (StrigaCountry
     }
 
     inner class CountryViewHolder(
-        private val binding: ItemCountryCodeBinding,
+        private val binding: ItemStrigaCountryBinding,
         private val onItemClickListener: (StrigaCountryPickerItem.CountryItem) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 

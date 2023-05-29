@@ -6,7 +6,7 @@
     android:id="@+id/bottomSheetView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_snow"
+    android:background="@color/bg_smoke"
     android:orientation="vertical">
 
     <FrameLayout
@@ -16,7 +16,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bg_snow"
+            android:background="@color/bg_smoke"
             app:elevation="0dp">
 
             <org.p2p.uikit.organisms.UiKitToolbar
@@ -44,21 +44,34 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewCountryCodes"
+            android:id="@+id/recyclerViewCountries"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_country_code" />
 
-        <TextView
-            android:id="@+id/textViewError"
+        <LinearLayout
+            android:id="@+id/containerErrorView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="12dp"
-            android:text="@string/onboarding_search_no_country"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-            android:visibility="gone" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="36dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_not_found"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                android:text="@string/onboarding_search_no_country"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2" />
+        </LinearLayout>
     </FrameLayout>
 </LinearLayout>

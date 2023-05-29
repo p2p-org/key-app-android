@@ -1,18 +1,25 @@
 package org.p2p.wallet.striga.ui.countrypicker
 
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.widget.AnimatedSearchView
+import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaCountryPickerBinding
-import org.p2p.wallet.striga.model.StrigaCountryPickerItem
+import org.p2p.wallet.striga.ui.countrypicker.delegates.strigaCountryDelegate
+import org.p2p.wallet.striga.ui.countrypicker.delegates.strigaHeaderDelegate
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -27,7 +34,7 @@ class StrigaCountryPickerFragment : BaseMvpFragment<IView, IPresenter>(R.layout.
 
     companion object {
         fun create(
-            selectedCountry: CountryCode?,
+            selectedCountry: Country?,
             requestKey: String,
             resultKey: String
         ) = StrigaCountryPickerFragment().withArgs(
@@ -41,8 +48,11 @@ class StrigaCountryPickerFragment : BaseMvpFragment<IView, IPresenter>(R.layout.
         parametersOf(selectedCountry)
     }
     private val binding: FragmentStrigaCountryPickerBinding by viewBinding()
-    private val adapter: StrigaCountryPickerAdapter = StrigaCountryPickerAdapter(::onCountrySelected)
-    private val selectedCountry: CountryCode? by args(EXTRA_SELECTED_COUNTRY)
+    private val adapter = CommonAnyCellAdapter(
+        strigaCountryDelegate(onItemClickListener = ::onCountrySelected),
+        strigaHeaderDelegate()
+    )
+    private val selectedCountry: Country? by args(EXTRA_SELECTED_COUNTRY)
     private val requestKey: String by args(EXTRA_KEY)
     private val resultKey: String by args(EXTRA_RESULT)
 
@@ -53,15 +63,32 @@ class StrigaCountryPickerFragment : BaseMvpFragment<IView, IPresenter>(R.layout.
                 setFragmentResult(requestKey, bundleOf())
                 popBackStack()
             }
+            binding.searchView.setBgColor(getColor(R.color.bg_smoke))
+            binding.recyclerViewCountries.adapter = adapter
+            initSearch()
         }
     }
 
-    override fun showCountries(items: List<StrigaCountryPickerItem>) {
-        adapter.setItems(items)
+    override fun showCountries(items: List<AnyCellItem>) {
+        adapter.items = items
+        binding.containerErrorView.isVisible = items.isEmpty()
     }
 
-    private fun onCountrySelected(selectedItem: StrigaCountryPickerItem.CountryItem) {
+    private fun onCountrySelected(selectedItem: Country) {
         setFragmentResult(requestKey, bundleOf(resultKey to selectedItem))
         popBackStack()
+    }
+
+    private fun FragmentStrigaCountryPickerBinding.initSearch() = with(searchView) {
+        doAfterTextChanged { searchText ->
+            presenter.search(searchText?.toString() ?: emptyString())
+        }
+
+        setStateListener(object : AnimatedSearchView.SearchStateListener {
+            override fun onClosed() {
+                presenter.search(emptyString())
+            }
+        })
+        searchView.openSearch()
     }
 }

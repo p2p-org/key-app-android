@@ -67,6 +67,7 @@ class UiKitEditText @JvmOverloads constructor(
         if (isDropdown) {
             binding.editTextField.isFocusable = false
             binding.imageViewArrow.isVisible = true
+            binding.editTextField.isClickable = true
         }
         styleAttrs.recycle()
     }
@@ -112,5 +113,9 @@ class UiKitEditText @JvmOverloads constructor(
 
     fun focusAndShowKeyboard() {
         binding.editTextField.focusAndShowKeyboard()
+    }
+
+    fun setOnClickListener(block: () -> Unit) {
+        binding.editTextField.setOnClickListener { block() }
     }
 }
