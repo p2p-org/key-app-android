@@ -44,6 +44,20 @@
     <string name="striga_select_your_country">Select your country</string>
     <string name="striga_chosen_country">Chosen country</string>
     <string name="striga_all_countries">Chosen country</string>
+    <string name="striga_step_first_toolbar_title">Step 1 of 3</string>
+    <string name="striga_step_second_toolbar_title">Step 2 of 3</string>
+    <string name="striga_source_of_funds">Source of Funds</string>
+    <string name="striga_occupation_industry">Occupation industry</string>
+    <string name="striga_current_address">Current address</string>
+    <string name="striga_country">Country</string>
+    <string name="striga_city">City</string>
+    <string name="striga_address_line">Address line</string>
+    <string name="striga_postal_code">Postal code</string>
+    <string name="striga_state_or_region">State or region</string>
+    <string name="striga_personal_data_confirm_info">After clicking the “Сontinue”, you confirm that you are not a Politically Exposed Person</string>
+    <string name="striga_select_from_list_hint">Select from list</string>
+    <string name="striga_recommended_hint">Recommended</string>
+    <string name="striga_address_line_hint">Your street and flat number</string>
 
 
 </resources>
