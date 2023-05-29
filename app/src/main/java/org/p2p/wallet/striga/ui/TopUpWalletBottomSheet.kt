@@ -27,9 +27,9 @@ import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class TopUpWalletBottomSheet : BaseMvpBottomSheet<TopUpWalletContract.View, TopUpWalletContract.Presenter>(
-    layoutRes = R.layout.dialog_topup_wallet
-), TopUpWalletContract.View {
+class TopUpWalletBottomSheet :
+    BaseMvpBottomSheet<TopUpWalletContract.View, TopUpWalletContract.Presenter>(R.layout.dialog_topup_wallet),
+    TopUpWalletContract.View {
 
     companion object {
         fun show(fm: FragmentManager) {
