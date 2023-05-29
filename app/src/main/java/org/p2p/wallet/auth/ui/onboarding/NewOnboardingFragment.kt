@@ -133,8 +133,6 @@ class NewOnboardingFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
-
-        replaceFragment(StrigaSignUpFirstStepFragment.create())
     }
 
     override fun applyWindowInsets(rootView: View) {
