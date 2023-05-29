@@ -73,7 +73,7 @@ class StrigaOnboardingFragment :
             StrigaOnboardingContract.View.AvailabilityState.Unavailable -> handleUnavailableState(state)
         }
 
-        binding.image.animate()
+        binding.imageViewImage.animate()
             .alpha(1f)
             .setDuration(150L)
             .start()
@@ -164,7 +164,7 @@ class StrigaOnboardingFragment :
 
     private fun handleViewState(state: StrigaOnboardingContract.View.AvailabilityState) {
         with(binding) {
-            image.bind(getImageModel(state))
+            imageViewImage.bind(getImageModel(state))
             textViewTitle.bind(getTitleModel(state))
             textViewHelp.isVisible = state.isHelpVisible
 

@@ -20,16 +20,17 @@
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
     <ImageView
-        android:id="@+id/image"
+        android:id="@+id/imageViewImage"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:alpha="0"
-        android:scaleType="center"
         app:layout_constraintBottom_toTopOf="@id/containerInner"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="224dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintVertical_bias="1"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:alpha="1"
         tools:src="@drawable/ic_hand_phone" />
 
@@ -37,12 +38,13 @@
         android:id="@+id/containerInner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:paddingHorizontal="16dp"
         app:layout_constraintBottom_toTopOf="@id/buttonContinue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image">
+        app:layout_constraintTop_toBottomOf="@id/imageViewImage">
 
         <TextView
             android:id="@+id/textViewTitle"
@@ -50,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="@string/striga_onboarding_title_available"
             android:textAlignment="center"
-            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
