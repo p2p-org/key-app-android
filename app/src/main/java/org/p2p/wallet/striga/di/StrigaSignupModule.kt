@@ -21,6 +21,10 @@ import org.p2p.wallet.striga.repository.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataDatabaseRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
+import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepContract
+import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepPresenter
+import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepContract
+import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepPresenter
 import org.p2p.wallet.striga.user.api.StrigaApi
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
@@ -32,6 +36,9 @@ object StrigaSignupModule : InjectionModule {
 
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
+
+        factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
+        factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
     }
 
     private fun Module.initDataLayer() {

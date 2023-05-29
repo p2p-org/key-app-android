@@ -16,7 +16,5 @@ object StrigaModule : InjectionModule {
         includes(
             StrigaSignupModule.create()
         )
-        factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
-        factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
     }
 }
