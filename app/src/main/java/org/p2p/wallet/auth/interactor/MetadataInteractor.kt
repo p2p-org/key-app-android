@@ -17,9 +17,13 @@ class MetadataInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val seedPhraseProvider: SeedPhraseProvider,
     private val secureStorageContract: SecureStorageContract,
+    private val gatewayMetadataMerger: GatewayMetadataMerger,
 ) {
 
-    var currentMetadata: GatewayOnboardingMetadata? = null
+    var currentMetadata: GatewayOnboardingMetadata? = secureStorageContract.getObject(
+        SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
+        GatewayOnboardingMetadata::class
+    )
 
     suspend fun tryLoadAndSaveMetadata() {
         val web3SignUpDetails = signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails
@@ -79,10 +83,10 @@ class MetadataInteractor(
                 userAccount = userAccount,
                 mnemonicPhraseWords = userSeedPhrase.seedPhrase,
                 ethereumPublicKey = web3SignUpDetails.ethereumPublicKey,
-                metadata = metadata
+                newMetadata = metadata
             )
         } else {
-            Timber.i("User doesn't have any Web3Auth sign up data, skipping metadata fetch")
+            Timber.i("User doesn't have any Web3Auth sign up data, skipping upload metadata")
         }
     }
 
@@ -90,7 +94,7 @@ class MetadataInteractor(
         userAccount: Account?,
         mnemonicPhraseWords: List<String>,
         ethereumPublicKey: String,
-        metadata: GatewayOnboardingMetadata
+        newMetadata: GatewayOnboardingMetadata
     ) {
         try {
             if (userAccount == null) {
@@ -104,7 +108,7 @@ class MetadataInteractor(
                 solanaPrivateKey = userAccount.keypair.toBase58Instance(),
                 userSeedPhrase = mnemonicPhraseWords,
                 ethereumAddress = ethereumPublicKey,
-                metadata = metadata
+                metadata = newMetadata
             )
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
@@ -116,11 +120,8 @@ class MetadataInteractor(
     }
 
     private suspend fun compareMetadataAndUpdate(serverMetadata: GatewayOnboardingMetadata) {
-        val finalMetadata = secureStorageContract.getObject(
-            SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
-            GatewayOnboardingMetadata::class
-        )?.let { deviceMetadata ->
-            val updatedMetadata = getUpdatedMergedMetadata(deviceMetadata, serverMetadata)
+        val finalMetadata = currentMetadata?.let { deviceMetadata ->
+            val updatedMetadata = gatewayMetadataMerger.merge(deviceMetadata, serverMetadata)
             if (updatedMetadata != serverMetadata) {
                 tryToUploadMetadata(updatedMetadata)
             }
@@ -128,70 +129,5 @@ class MetadataInteractor(
         } ?: serverMetadata
         currentMetadata = finalMetadata
         secureStorageContract.saveObject(SecureStorageContract.Key.KEY_ONBOARDING_METADATA, finalMetadata)
-    }
-
-    private fun getUpdatedMergedMetadata(
-        serverMetadata: GatewayOnboardingMetadata,
-        deviceMetadata: GatewayOnboardingMetadata
-    ): GatewayOnboardingMetadata {
-        return if (serverMetadata.metaTimestampSec < deviceMetadata.metaTimestampSec) {
-            deviceMetadata
-        } else if (serverMetadata.metaTimestampSec > deviceMetadata.metaTimestampSec) {
-            serverMetadata
-        } else {
-            val updatedDeviceNamePair = getNewerValue(
-                deviceMetadata.deviceNameTimestampSec,
-                serverMetadata.deviceNameTimestampSec,
-                deviceMetadata.deviceShareDeviceName,
-                serverMetadata.deviceShareDeviceName
-            )
-            val updatedPhoneNumberPair = getNewerValue(
-                deviceMetadata.phoneNumberTimestampSec,
-                serverMetadata.phoneNumberTimestampSec,
-                deviceMetadata.customSharePhoneNumberE164,
-                serverMetadata.customSharePhoneNumberE164
-            )
-            val updatedEmailPair = getNewerValue(
-                deviceMetadata.emailTimestampSec,
-                serverMetadata.emailTimestampSec,
-                deviceMetadata.socialShareOwnerEmail,
-                serverMetadata.socialShareOwnerEmail
-            )
-            val updatedStrigaMetadata =
-                if (deviceMetadata.strigaMetadata != null && serverMetadata.strigaMetadata != null) {
-                    getNewerValue(
-                        deviceMetadata.strigaMetadata.userIdTimestamp,
-                        serverMetadata.strigaMetadata.userIdTimestamp,
-                        deviceMetadata.strigaMetadata,
-                        serverMetadata.strigaMetadata
-                    ).first
-                } else {
-                    deviceMetadata.strigaMetadata ?: serverMetadata.strigaMetadata
-                }
-
-            deviceMetadata.copy(
-                ethPublic = deviceMetadata.ethPublic ?: serverMetadata.ethPublic,
-                deviceShareDeviceName = updatedDeviceNamePair.first,
-                deviceNameTimestampSec = updatedDeviceNamePair.second,
-                customSharePhoneNumberE164 = updatedPhoneNumberPair.first,
-                phoneNumberTimestampSec = updatedPhoneNumberPair.second,
-                socialShareOwnerEmail = updatedEmailPair.first,
-                emailTimestampSec = updatedEmailPair.second,
-                strigaMetadata = updatedStrigaMetadata
-            )
-        }
-    }
-
-    private fun <T> getNewerValue(
-        firstMetaValueTimestamp: Long,
-        secondMetaValueTimestamp: Long,
-        firstValue: T,
-        secondValue: T,
-    ): Pair<T, Long> {
-        return if (secondMetaValueTimestamp > firstMetaValueTimestamp) {
-            secondValue to secondMetaValueTimestamp
-        } else {
-            firstValue to firstMetaValueTimestamp
-        }
     }
 }
