@@ -16,6 +16,7 @@ import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.FileInteractor
+import org.p2p.wallet.auth.interactor.GatewayMetadataMerger
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
@@ -190,6 +191,7 @@ object AuthModule {
         factoryOf(::CustomShareRestoreInteractor)
         factoryOf(::TorusKeyInteractor)
         factoryOf(::UserRestoreInteractor)
+        factoryOf(::GatewayMetadataMerger)
         factoryOf(::MetadataInteractor)
         singleOf(::RestoreStateMachine)
     }

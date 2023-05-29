@@ -20,10 +20,12 @@ class MetadataInteractor(
     private val gatewayMetadataMerger: GatewayMetadataMerger,
 ) {
 
-    var currentMetadata: GatewayOnboardingMetadata? = secureStorageContract.getObject(
-        SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
-        GatewayOnboardingMetadata::class
-    )
+    var currentMetadata: GatewayOnboardingMetadata? = getMetadataFromStorage()
+        get() = getMetadataFromStorage()
+        private set(value) {
+            field = value
+            saveMetadataToStorage(value)
+        }
 
     suspend fun tryLoadAndSaveMetadata() {
         val web3SignUpDetails = signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails
@@ -40,10 +42,20 @@ class MetadataInteractor(
         }
     }
 
+    private fun saveMetadataToStorage(metadata: GatewayOnboardingMetadata?) {
+        secureStorageContract.saveObject(SecureStorageContract.Key.KEY_ONBOARDING_METADATA, metadata)
+    }
+
+    private fun getMetadataFromStorage(): GatewayOnboardingMetadata? {
+        return secureStorageContract.getObject(
+            SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
+            GatewayOnboardingMetadata::class
+        )
+    }
+
     suspend fun updateMetadata(metadata: GatewayOnboardingMetadata) {
         currentMetadata = metadata
         tryToUploadMetadata(metadata)
-        secureStorageContract.saveObject(SecureStorageContract.Key.KEY_ONBOARDING_METADATA, metadata)
     }
 
     private suspend fun tryLoadAndSaveMetadataWithAccount(
@@ -128,6 +140,5 @@ class MetadataInteractor(
             updatedMetadata
         } ?: serverMetadata
         currentMetadata = finalMetadata
-        secureStorageContract.saveObject(SecureStorageContract.Key.KEY_ONBOARDING_METADATA, finalMetadata)
     }
 }
