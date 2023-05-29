@@ -38,9 +38,9 @@ class JupiterSwapRouteValidator(
     suspend fun validateRoutes(
         routes: List<JupiterSwapRoute>,
     ): List<JupiterSwapRoute> = withContext(dispatchers.io) {
-//        if (!swapRoutesValidationEnabled.isFeatureEnabled) {
-//            return@withContext routes
-//        }
+        if (!swapRoutesValidationEnabled.isFeatureEnabled) {
+            return@withContext routes
+        }
 
         Timber.tag(TAG).d("Validating routes: ${routes.size}")
         val validatingRoutesJobs = routes.mapIndexed { index, route ->
