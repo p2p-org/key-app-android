@@ -2,10 +2,17 @@ package org.p2p.wallet.common.feature_toggles.remote_config
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
-import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.net.UnknownHostException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.utils.retryOnException
 
 private const val NO_VALUE = ""
 
@@ -32,20 +39,33 @@ class AppFirebaseRemoteConfig(
                     .addOnFailureListener { Timber.e("Remote config for debug is not set", it) }
             }
 
-            // maybe add loading screen in the start for remoteConfig to finish the job?
+            kotlin.runCatching {
+                retryOnException(
+                    exceptionTypes = setOf(RemoteConfigError::class),
+                    block = ::fetchFeatureToggles
+                )
+            }
+                .getOrDefault(emptyMap())
+                .also(onConfigLoaded)
+        }
+    }
+
+    private suspend fun fetchFeatureToggles(): Map<String, String> {
+        return suspendCancellableCoroutine { continuation ->
             remoteConfig.fetchAndActivate()
                 .addOnSuccessListener {
                     isFetchFailed = false
+
                     Timber.d("Remote config fetched and activated")
                     Timber.i("Remote config fetched toggles: ${allFeatureTogglesRaw()}")
-
-                    onConfigLoaded.invoke(allFeatureTogglesRaw())
+                    continuation.resume(allFeatureTogglesRaw())
                 }
                 .addOnFailureListener { error ->
                     isFetchFailed = true
-                    Timber.e(RemoteConfigError("Remote config is not fetched and activated", error))
 
-                    onConfigLoaded.invoke(emptyMap())
+                    val ownError = RemoteConfigError("Remote config is not fetched and activated", error)
+                    if (error.cause !is UnknownHostException) Timber.e(ownError) else Timber.i(ownError)
+                    continuation.resumeWithException(ownError)
                 }
         }
     }

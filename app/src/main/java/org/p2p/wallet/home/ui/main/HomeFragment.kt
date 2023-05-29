@@ -265,7 +265,7 @@ class HomeFragment :
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
             HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
-            HomeAction.BUY -> presenter.onBuyClicked()
+            HomeAction.TOP_UP -> TopUpWalletBottomSheet.show(parentFragmentManager)
             HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             HomeAction.SWAP -> showSwap(SwapOpenedFrom.ACTION_PANEL)
             HomeAction.SEND -> presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)

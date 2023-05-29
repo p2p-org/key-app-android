@@ -38,9 +38,9 @@ class JupiterSwapRouteValidator(
     suspend fun validateRoutes(
         routes: List<JupiterSwapRoute>,
     ): List<JupiterSwapRoute> = withContext(dispatchers.io) {
-        if (!swapRoutesValidationEnabled.isFeatureEnabled) {
-            return@withContext routes
-        }
+//        if (!swapRoutesValidationEnabled.isFeatureEnabled) {
+//            return@withContext routes
+//        }
 
         Timber.tag(TAG).d("Validating routes: ${routes.size}")
         val validatingRoutesJobs = routes.mapIndexed { index, route ->
@@ -53,7 +53,7 @@ class JupiterSwapRouteValidator(
             .map(SwapRouteValidation::route)
             .toList()
             .also {
-                Timber.tag(TAG).d("Validating routes finished, total valid routes = ${it.size}")
+                Timber.tag(TAG).i("Validating routes finished, total valid routes = ${it.size}")
             }
     }
 
@@ -61,7 +61,7 @@ class JupiterSwapRouteValidator(
         route: JupiterSwapRoute,
         ordinal: Int
     ): SwapRouteValidation {
-        Timber.tag(TAG).d("Validating routes started for: $ordinal")
+        Timber.tag(TAG).i("Validating routes started for: $ordinal")
         val isRouteValid = checkThatRouteValid(route)
         return SwapRouteValidation(
             route = route,
