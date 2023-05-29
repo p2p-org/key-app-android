@@ -28,7 +28,11 @@ data class AlarmErrorsSwapRequest(
     @SerializedName("timestamp")
     val timestamp: String = SimpleDateFormat("dd.MM HH:mm:ss", Locale.getDefault()).format(Date()),
     @SerializedName("blockchain_error")
-    val blockchainError: String
+    val blockchainError: String,
+    @SerializedName("diff_routes_time")
+    val diffRoutesTime: String,
+    @SerializedName("diff_tx_time")
+    val diffTxTime: String,
 ) {
     data class TokenARequest(
         @SerializedName("name")
@@ -36,7 +40,9 @@ data class AlarmErrorsSwapRequest(
         @SerializedName("mint")
         val mint: Base58String,
         @SerializedName("send_amount")
-        val amount: String
+        val amount: String,
+        @SerializedName("balance")
+        val balance: String,
     )
 
     data class TokenBRequest(
@@ -45,6 +51,8 @@ data class AlarmErrorsSwapRequest(
         @SerializedName("mint")
         val mint: Base58String,
         @SerializedName("expected_amount")
-        val amount: String
+        val amount: String,
+        @SerializedName("balance")
+        val balance: String,
     )
 }

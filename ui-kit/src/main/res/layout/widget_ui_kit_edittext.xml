@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="78dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <TextView
         android:id="@+id/textViewLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginHorizontal="8dp"
         android:layout_marginBottom="4dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
-        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Title" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/inputViewContainer"
+        android:id="@+id/containerInputView"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp">
-
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/textViewLabel">
 
         <TextView
-            android:id="@+id/autoSizeHelperTextView"
+            android:id="@+id/textViewAutoSizeHelper"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:autoSizeMaxTextSize="28sp"
@@ -54,12 +55,22 @@
             android:layout_marginStart="4dp"
             android:background="@null"
             android:imeOptions="actionDone"
-            android:inputType="phone"
+            android:inputType="text"
             android:saveEnabled="true"
-            android:textColorHint="@color/text_night_30"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            android:textColorHint="@color/text_night_30"
             android:textCursorDrawable="@drawable/ic_text_cursor"
             android:textIsSelectable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageViewArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_chevron_right"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -76,8 +87,7 @@
         android:textColor="@color/text_mountain"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/editTextField"
-        app:layout_constraintTop_toBottomOf="@id/editTextField"
-        tools:text="PlaceholderText" />
+        app:layout_constraintTop_toBottomOf="@id/editTextField" />
 
     <TextView
         android:id="@+id/textViewError"
@@ -89,4 +99,4 @@
         android:textColor="@color/text_rose"
         android:visibility="gone"
         tools:text="Sorry, we don’t know a such country " />
-</LinearLayout>
+</merge>
