@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="@string/striga_onboarding_title_available"
             android:textAlignment="center"
-            android:textAppearance="@style/UiKit.TextAppearance.Bold.Title2"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
