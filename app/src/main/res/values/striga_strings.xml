@@ -41,6 +41,9 @@
     <string name="striga_date_of_birth_hint">DD.MM.YYYY</string>
     <string name="striga_country_of_birth">Country of birth</string>
     <string name="striga_country_of_birth_hint">Select from list</string>
+    <string name="striga_select_your_country">Select your country</string>
+    <string name="striga_chosen_country">Chosen country</string>
+    <string name="striga_all_countries">Chosen country</string>
 
 
 </resources>

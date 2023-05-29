@@ -21,8 +21,11 @@ import org.p2p.wallet.striga.repository.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataDatabaseRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
+import org.p2p.wallet.striga.ui.countrypicker.StrigaCountryPickerContract
 import org.p2p.wallet.striga.ui.personaldata.StrigaPersonalInfoContract
 import org.p2p.wallet.striga.ui.personaldata.StrigaPersonalInfoPresenter
+import org.p2p.wallet.striga.ui.countrypicker.StrigaCountryPickerPresenter
+import org.p2p.wallet.striga.ui.countrypicker.StrigaCountryPickerContract.Presenter
 import org.p2p.wallet.striga.user.api.StrigaApi
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
@@ -35,6 +38,7 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
         factoryOf(::StrigaPersonalInfoPresenter) bind StrigaPersonalInfoContract.Presenter::class
+        factoryOf(::StrigaCountryPickerPresenter) bind StrigaCountryPickerContract.Presenter::class
     }
 
     private fun Module.initDataLayer() {
