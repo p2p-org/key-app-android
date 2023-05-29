@@ -43,7 +43,9 @@ class SendFeeRelayerManager(
     var onFeeLoading: ((FeeLoadingState) -> Unit)? = null
 
     private var currentState: FeeRelayerState by observable(FeeRelayerState.Idle) { _, oldState, newState ->
-        Timber.tag(TAG).i("Switching send fee relayer state to $oldState to $newState")
+        Timber.tag(TAG).i(
+            "Switching send fee relayer state to ${oldState.javaClass.simpleName} to ${newState.javaClass.simpleName}"
+        )
         onStateUpdated?.invoke(newState)
     }
 
@@ -101,7 +103,7 @@ class SendFeeRelayerManager(
             receiveUsd = currentAmount.toUsd(sourceToken),
             sourceSymbol = sourceToken.tokenSymbol,
             sendFee = (currentState as? UpdateFee)?.solanaFee,
-            recipientAddress = recipientAddress.addressState.address,
+            recipientAddress = recipientAddress.address,
             feeLimit = feeLimitInfo
         )
     }
@@ -145,10 +147,10 @@ class SendFeeRelayerManager(
                         feeRelayerFee = feeState.feeInSol
                     )
                     currentState = UpdateFee(solanaFee = solanaFee, feeLimitInfo = feeLimitInfo)
-                    sendInteractor.setFeePayerToken(solToken)
+                    sendInteractor.switchFeePayerToSol(solToken)
                 }
                 is FeeCalculationState.Success -> {
-                    sendInteractor.setFeePayerToken(sourceToken)
+                    sendInteractor.setFeePayerToken(feePayer)
                     val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
                     showFeeDetails(
                         sourceToken = sourceToken,
@@ -226,11 +228,10 @@ class SendFeeRelayerManager(
         result: SearchResult,
         useCache: Boolean = true
     ): FeeCalculationState {
-        val recipient = result.addressState.address
         return sendInteractor.calculateFeesForFeeRelayer(
             feePayerToken = feePayerToken,
             token = sourceToken,
-            recipient = recipient,
+            recipient = result.address,
             useCache = useCache
         )
     }
@@ -307,12 +308,21 @@ class SendFeeRelayerManager(
          * */
         when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
             is FeePayerState.SwitchToSpl -> {
+                Timber.tag(TAG).i(
+                    "Switching to SPL ${fee.feePayerToken.tokenSymbol} -> ${state.tokenToSwitch.tokenSymbol}"
+                )
                 sendInteractor.setFeePayerToken(state.tokenToSwitch)
             }
             is FeePayerState.SwitchToSol -> {
-                sendInteractor.switchFeePayerToSol(this.solToken)
+                Timber.tag(TAG).i(
+                    "Switching to SOL ${fee.feePayerToken.tokenSymbol} -> ${solToken.tokenSymbol}"
+                )
+                sendInteractor.switchFeePayerToSol(solToken)
             }
             is FeePayerState.ReduceInputAmount -> {
+                Timber.tag(TAG).i(
+                    "Reducing amount $inputAmount for ${state.maxAllowedAmount}"
+                )
                 sendInteractor.setFeePayerToken(sourceToken)
                 currentState = ReduceAmount(fee, state.maxAllowedAmount)
             }

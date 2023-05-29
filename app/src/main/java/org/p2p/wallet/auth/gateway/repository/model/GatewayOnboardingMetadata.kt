@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.gateway.repository.model
 
 import com.google.gson.annotations.SerializedName
-import org.p2p.wallet.utils.emptyString
 
 /**
  * Our own structure with custom fields that is sent while creating wallet.
@@ -19,22 +18,24 @@ import org.p2p.wallet.utils.emptyString
  * !!
  */
 data class GatewayOnboardingMetadata(
-    @SerializedName("eth_public")
-    val ethPublic: String = emptyString(),
-    @SerializedName("meta_timestamp")
-    val metaTimestamp: Long,
+    // v1
     @SerializedName("device_name")
     val deviceShareDeviceName: String,
     @SerializedName("phone_number")
     val customSharePhoneNumberE164: String,
-    @SerializedName("phone_number_timestamp")
-    val phoneNumberTimestamp: Long = 0,
     @SerializedName("email")
     val socialShareOwnerEmail: String,
+    // v2
+    @SerializedName("eth_public")
+    val ethPublic: String? = null,
+    @SerializedName("meta_timestamp")
+    val metaTimestampSec: Long,
+    @SerializedName("phone_number_timestamp")
+    val phoneNumberTimestampSec: Long = 0,
     @SerializedName("email_timestamp")
-    val emailTimestamp: Long = 0,
+    val emailTimestampSec: Long = 0,
     @SerializedName("auth_provider_timestamp")
-    val authProviderTimestamp: Long = 0,
+    val authProviderTimestampSec: Long = 0,
     @SerializedName("striga")
     val strigaMetadata: StrigaMetadata? = null,
 ) {

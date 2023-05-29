@@ -36,7 +36,6 @@ object StrigaSignupModule : InjectionModule {
 
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
-
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
         factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
     }

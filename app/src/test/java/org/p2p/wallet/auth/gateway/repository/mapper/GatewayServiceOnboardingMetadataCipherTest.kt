@@ -3,7 +3,11 @@ package org.p2p.wallet.auth.gateway.repository.mapper
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
+import assertk.assertions.isZero
 import assertk.assertions.matchesPredicate
+import assertk.assertions.prop
 import com.google.gson.Gson
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305
 import org.junit.Test
@@ -19,7 +23,7 @@ class GatewayServiceOnboardingMetadataCipherTest {
             .split(" ")
 
     private val givenGatewayMetadata: GatewayOnboardingMetadata = GatewayOnboardingMetadata(
-        metaTimestamp = System.currentTimeMillis(),
+        metaTimestampSec = System.currentTimeMillis(),
         deviceShareDeviceName = "device name",
         customSharePhoneNumberE164 = "+7111111111",
         socialShareOwnerEmail = "example@email.com"
@@ -63,5 +67,39 @@ class GatewayServiceOnboardingMetadataCipherTest {
         )
         // then
         assertThat(actualGatewayMetadata).isEqualTo(givenGatewayMetadata)
+    }
+
+    @Test
+    fun `given old version metadata when getting it then return default fields`() {
+        // given
+        val oldMetadataDevice = "testDevice"
+        val oldPhoneNumber = "944378501"
+        val oldEmail = "test@gmail.com"
+        val gson = Gson()
+        val oldMetadataJson = gson.toJson(
+            mapOf(
+                "device_name" to oldMetadataDevice,
+                "phone_number" to oldPhoneNumber,
+                "email" to oldEmail,
+                "auth_provider" to "Google"
+            )
+        ).toString()
+        val newMetadataStructure = gson.fromJson(oldMetadataJson, GatewayOnboardingMetadata::class.java)
+
+        // then
+        assertThat(newMetadataStructure).all {
+            isNotNull()
+            // old data stays the same
+            prop(GatewayOnboardingMetadata::deviceShareDeviceName).isEqualTo(oldMetadataDevice)
+            prop(GatewayOnboardingMetadata::customSharePhoneNumberE164).isEqualTo(oldPhoneNumber)
+            prop(GatewayOnboardingMetadata::socialShareOwnerEmail).isEqualTo(oldEmail)
+
+            // new data backs up to defaults
+            prop(GatewayOnboardingMetadata::authProviderTimestampSec).isZero()
+            prop(GatewayOnboardingMetadata::strigaMetadata).isNull()
+            prop(GatewayOnboardingMetadata::emailTimestampSec).isZero()
+            prop(GatewayOnboardingMetadata::phoneNumberTimestampSec).isZero()
+            prop(GatewayOnboardingMetadata::ethPublic).isNull()
+        }
     }
 }
