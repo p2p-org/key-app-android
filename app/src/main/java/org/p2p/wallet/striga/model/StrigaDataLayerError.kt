@@ -1,58 +1,36 @@
 package org.p2p.wallet.striga.model
 
 import retrofit2.HttpException
-import java.net.HttpURLConnection
+import org.p2p.wallet.utils.errorBodyOrNull
 
 sealed class StrigaDataLayerError(override val message: String) : Throwable() {
-    class DatabaseError(
-        override val cause: Throwable,
-    ) : StrigaDataLayerError("Error while working with database: ${cause.message}")
-
-    class MappingFailed(
-        message: String
-    ) : StrigaDataLayerError(message)
-
     class ApiServiceUnavailable(
-        override val cause: HttpException
-    ) : StrigaDataLayerError("Striga API unavailable, code: ${cause.code()}")
+        override val cause: HttpException,
+        body: String = cause.errorBodyOrNull().orEmpty()
+    ) : StrigaDataLayerError("Striga API unavailable, code: ${cause.code()} body: $body")
 
     class ApiServiceError(
-        override val cause: HttpException,
-        val errorBody: String
-    ) : StrigaDataLayerError("Striga API returned error, code: ${cause.code()} body: $errorBody")
+        val response: StrigaApiErrorResponse
+    ) : StrigaDataLayerError("Striga API returned error: code=${response.errorCode?.code} details=${response.details}")
 
     class InternalError(
-        override val cause: Throwable
-    ) : StrigaDataLayerError(cause.message.orEmpty())
+        override val cause: Throwable? = null,
+        message: String? = cause?.message,
+    ) : StrigaDataLayerError(message.orEmpty())
 
     companion object {
-        fun <T> from(error: Throwable, default: StrigaDataLayerError): StrigaDataLayerResult<T> {
+        private val httpExceptionParser = StrigaDataLayerHttpErrorParser()
+
+        fun <T> from(
+            error: Throwable,
+            default: StrigaDataLayerError
+        ): StrigaDataLayerResult<T> {
             return when (error) {
-                is HttpException -> fromHttpException(error) ?: default
+                is HttpException -> httpExceptionParser.parse(error) ?: default
                 is StrigaDataLayerError -> error
                 else -> default
             }
                 .toFailureResult()
-        }
-
-        private fun fromHttpException(error: HttpException): StrigaDataLayerError? {
-            return when {
-                error.code() == HttpURLConnection.HTTP_UNAVAILABLE -> {
-                    ApiServiceUnavailable(error)
-                }
-                error.code() == HttpURLConnection.HTTP_SERVER_ERROR -> {
-                    ApiServiceError(
-                        cause = error,
-                        errorBody = error.response()
-                            ?.errorBody()
-                            ?.string()
-                            .orEmpty()
-                    )
-                }
-                else -> {
-                    null
-                }
-            }
         }
     }
 }
