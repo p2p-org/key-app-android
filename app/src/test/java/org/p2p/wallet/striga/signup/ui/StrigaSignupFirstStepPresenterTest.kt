@@ -54,9 +54,9 @@ class StrigaSignupFirstStepPresenterTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-
         interactor = spyk(
             StrigaSignupInteractor(
+                dispatchers = dispatchers,
                 validator = signupDataValidator,
                 countryRepository = countryRepository,
                 signupDataRepository = signupDataRepository,
@@ -110,8 +110,6 @@ class StrigaSignupFirstStepPresenterTest {
         )
         coEvery { interactor.getSignupData() } returns initialSignupData
         coEvery { interactor.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
-        coEvery { interactor.updateSignupData(any()) } returns Unit
-        coEvery { signupDataRepository.updateSignupData(any()) } returns StrigaDataLayerResult.Success<Unit>(Unit)
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -133,8 +131,6 @@ class StrigaSignupFirstStepPresenterTest {
         )
         coEvery { interactor.getSignupData() } returns initialSignupData
         coEvery { interactor.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
-        coEvery { interactor.updateSignupData(any()) } returns Unit
-        coEvery { signupDataRepository.updateSignupData(any()) } returns StrigaDataLayerResult.Success<Unit>(Unit)
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -158,8 +154,6 @@ class StrigaSignupFirstStepPresenterTest {
         )
         coEvery { interactor.getSignupData() } returns initialSignupData
         coEvery { interactor.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
-        coEvery { interactor.updateSignupData(any()) } returns Unit
-        coEvery { signupDataRepository.updateSignupData(any()) } returns StrigaDataLayerResult.Success<Unit>(Unit)
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()

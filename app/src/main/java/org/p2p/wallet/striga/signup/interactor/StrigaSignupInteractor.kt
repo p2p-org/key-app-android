@@ -95,7 +95,7 @@ class StrigaSignupInteractor(
                 Timber.w(data.error, "Failed to get signup data")
                 emptyList()
             }
-        }.onEach { signupDataCache[it.type] = it }
+        }
     }
 
     private fun validateStep(types: Set<StrigaSignupDataType>): ValidationResult {

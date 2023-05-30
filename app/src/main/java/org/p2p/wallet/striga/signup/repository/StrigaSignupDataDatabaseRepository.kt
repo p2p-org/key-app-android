@@ -35,10 +35,6 @@ class StrigaSignupDataDatabaseRepository(
         )
     }
 
-    override fun getSignupDataTypesForStep(step: StrigaSignupDataLocalRepository.SignupStep): List<StrigaSignupData> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun createUserSignupData(): StrigaDataLayerResult<Unit> = try {
         val isUserHasNoSavedData: Boolean = dao.countSignupDataForUser(tokenKeyProvider.publicKey) == 0
         if (isUserHasNoSavedData) {

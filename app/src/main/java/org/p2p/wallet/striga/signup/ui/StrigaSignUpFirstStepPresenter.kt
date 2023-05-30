@@ -19,14 +19,8 @@ class StrigaSignUpFirstStepPresenter(
     override fun attach(view: StrigaSignUpFirstStepContract.View) {
         super.attach(view)
         launch {
-            val data = interactor.getSignupData()
-            data.forEach {
-                view.updateSignupField(it.value ?: "", it.type)
-            }
-
-            val country = Country(name = "Turkey", flagEmoji = "", code = "TR") // interactor.getSelectedCountry()
-            val maskForFormatter = "+" + interactor.findPhoneMaskByCountry(country)
-            view.setPhoneMask(maskForFormatter)
+            loadData()
+            setupPhoneMask()
         }
     }
 
@@ -52,5 +46,19 @@ class StrigaSignUpFirstStepPresenter(
                 view?.scrollToFirstError(it.type)
             }
         }
+    }
+
+    private suspend fun loadData() {
+        val data = interactor.getSignupData()
+        data.forEach {
+            interactor.notifyDataChanged(it.type, it.value ?: "")
+            view?.updateSignupField(it.value ?: "", it.type)
+        }
+    }
+
+    private suspend fun setupPhoneMask() {
+        val country = Country(name = "Turkey", flagEmoji = "", code = "TR") // interactor.getSelectedCountry()
+        val maskForFormatter = "+" + interactor.findPhoneMaskByCountry(country)
+        view?.setPhoneMask(maskForFormatter)
     }
 }

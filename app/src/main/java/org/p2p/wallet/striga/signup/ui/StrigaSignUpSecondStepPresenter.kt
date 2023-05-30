@@ -17,10 +17,7 @@ class StrigaSignUpSecondStepPresenter(
     override fun attach(view: StrigaSignUpSecondStepContract.View) {
         super.attach(view)
         launch {
-            val data = interactor.getSignupData()
-            data.forEach {
-                view.updateSignupField(it.value ?: "", it.type)
-            }
+            loadData()
         }
     }
 
@@ -44,6 +41,14 @@ class StrigaSignUpSecondStepPresenter(
             states.firstOrNull { !it.isValid }?.let {
                 view?.scrollToFirstError(it.type)
             }
+        }
+    }
+
+    private suspend fun loadData() {
+        val data = interactor.getSignupData()
+        data.forEach {
+            interactor.notifyDataChanged(it.type, it.value ?: "")
+            view?.updateSignupField(it.value ?: "", it.type)
         }
     }
 }
