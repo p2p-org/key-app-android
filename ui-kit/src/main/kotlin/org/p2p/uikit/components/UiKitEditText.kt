@@ -49,6 +49,21 @@ class UiKitEditText @JvmOverloads constructor(
         setStroke(STROKE_WIDTH.toDp(), context.getColor(R.color.bg_rain))
     }
 
+    val input: HintEditText
+        get() = binding.editTextField
+
+    val text: Editable?
+        get() = binding.editTextField.text
+
+    val stringText: String?
+        get() = text?.toString()
+
+    val hint: CharSequence
+        get() = binding.editTextField.hint
+
+    val length: Int
+        get() = binding.editTextField.length()
+
     init {
         val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitEditText, 0, 0)
         val labelText = styleAttrs.getString(R.styleable.UiKitEditText_labelText).orEmpty()
@@ -109,21 +124,6 @@ class UiKitEditText @JvmOverloads constructor(
     fun setDigits(digits: String) {
         binding.editTextField.keyListener = DigitsKeyListener.getInstance(digits)
     }
-
-    val input: HintEditText
-        get() = binding.editTextField
-
-    val text: Editable?
-        get() = binding.editTextField.text
-
-    val stringText: String?
-        get() = text?.toString()
-
-    val hint: CharSequence
-        get() = binding.editTextField.hint
-
-    val length: Int
-        get() = binding.editTextField.length()
 
     fun addOnTextChangedListener(block: (Editable) -> Unit) {
         val tag = viewTag ?: return
