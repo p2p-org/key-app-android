@@ -21,10 +21,12 @@ import org.p2p.wallet.striga.repository.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataDatabaseRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
-import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepContract
-import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepPresenter
-import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepContract
-import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepPresenter
+import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
+import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepPresenter
+import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
+import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
+import org.p2p.wallet.striga.signup.ui.StrigaSignUpSecondStepPresenter
 import org.p2p.wallet.striga.user.api.StrigaApi
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
@@ -34,10 +36,14 @@ object StrigaSignupModule : InjectionModule {
     override fun create() = module {
         initDataLayer()
 
+
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
         factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
+
+        factoryOf(::StrigaSignupDataValidator)
+        factoryOf(::StrigaSignupInteractor)
     }
 
     private fun Module.initDataLayer() {

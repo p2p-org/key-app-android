@@ -1,20 +1,27 @@
-package org.p2p.wallet.striga.ui.secondstep
+package org.p2p.wallet.striga.signup.ui
 
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.common.TextContainer
+import org.p2p.core.common.bind
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpSecondStepBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
+import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.toDp
+import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-typealias IView = StrigaSignUpSecondStepContract.View
-typealias IPresenter = StrigaSignUpSecondStepContract.Presenter
+private typealias IView = StrigaSignUpSecondStepContract.View
+private typealias IPresenter = StrigaSignUpSecondStepContract.Presenter
 
 class StrigaSignUpSecondStepFragment :
     BaseMvpFragment<IView, IPresenter>(R.layout.fragment_striga_sign_up_second_step),
@@ -42,10 +49,14 @@ class StrigaSignUpSecondStepFragment :
             }
 
             StrigaSignupDataType.cachedValues.forEach { dataType ->
-                val view = editTextFieldsMap[dataType] ?: return@forEach
-                view.addOnTextChangedListener { editable ->
+                val inputView = editTextFieldsMap[dataType] ?: return@forEach
+                inputView.addOnTextChangedListener { editable ->
                     presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
                 }
+            }
+
+            buttonNext.setOnClickListener {
+                presenter.onSubmit()
             }
         }
     }
@@ -53,6 +64,41 @@ class StrigaSignUpSecondStepFragment :
     override fun updateSignupField(newValue: String, type: StrigaSignupDataType) {
         val view = editTextFieldsMap[type]
         view?.setText(newValue)
+    }
+
+    override fun navigateNext() {
+
+    }
+
+    override fun setErrors(errors: List<StrigaSignupFieldState>) {
+        errors.forEach {
+            editTextFieldsMap[it.type]?.bindError(it.errorMessage)
+        }
+    }
+
+    override fun clearErrors() {
+        editTextFieldsMap.values.forEach { it.bindError(null) }
+    }
+
+    override fun setButtonIsEnabled(isEnabled: Boolean) {
+        with(binding.buttonNext) {
+            this.isEnabled = isEnabled
+            icon = if (isEnabled) {
+                bind(TextContainer(R.string.auth_next))
+                binding.getDrawable(R.drawable.ic_arrow_right)
+            } else {
+                bind(TextContainer(R.string.striga_button_error_check_red_fields))
+                null
+            }
+        }
+    }
+
+    override fun scrollToFirstError(type: StrigaSignupDataType) {
+        editTextFieldsMap[type]?.let {
+            binding.containerScroll.post {
+                binding.containerScroll.scrollTo(0, it.top - 32.toDp())
+            }
+        }
     }
 
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {

@@ -22,6 +22,7 @@
         app:titleTextColor="@color/text_night" />
 
     <ScrollView
+        android:id="@+id/containerScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/bg_smoke"
@@ -64,10 +65,10 @@
                     android:text="@string/striga_enter_personal_data_info"
                     android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
                     android:textColor="@color/text_night"
+                    app:layout_constraintBottom_toBottomOf="@id/imageViewAlert"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/imageViewAlert"
-                    app:layout_constraintTop_toTopOf="@id/imageViewAlert"
-                    app:layout_constraintBottom_toBottomOf="@id/imageViewAlert"/>
+                    app:layout_constraintTop_toTopOf="@id/imageViewAlert" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -87,6 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="12dp"
+                android:inputType="textEmailAddress"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_email_hint"
                 app:labelText="@string/striga_email" />
@@ -97,6 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
+                android:inputType="phone"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_phone_number_hint"
                 app:labelText="@string/striga_phone_number" />
@@ -117,6 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="12dp"
+                android:inputType="textPersonName"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_enter_hint"
                 app:labelText="@string/striga_first_name" />
@@ -127,6 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
+                android:inputType="textPersonName"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_enter_hint"
                 app:labelText="@string/striga_surname" />
@@ -147,6 +152,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="12dp"
+                android:digits="0123456789."
+                android:inputType="number"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_date_of_birth_hint"
                 app:labelText="@string/striga_date_of_birth" />

@@ -93,7 +93,7 @@
     </declare-styleable>
 
 
-    <declare-styleable name="UiKitTextField">
+    <declare-styleable name="UiKitEditText">
         <attr name="editable" />
         <attr name="labelText" />
         <attr name="hintText" />

@@ -22,6 +22,7 @@
         app:titleTextColor="@color/text_night" />
 
     <ScrollView
+        android:id="@+id/containerScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/bg_smoke"
@@ -140,6 +141,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
+                android:inputType="textPostalAddress"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_address_line_hint"
                 app:labelText="@string/striga_address_line" />
@@ -150,6 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
+                android:inputType="text"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_recommended_hint"
                 app:labelText="@string/striga_postal_code" />
@@ -160,6 +163,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
+                android:inputType="text"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_recommended_hint"
                 app:labelText="@string/striga_state_or_region" />

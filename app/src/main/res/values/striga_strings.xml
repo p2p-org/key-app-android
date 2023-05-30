@@ -55,6 +55,12 @@
     <string name="striga_select_from_list_hint">Select from list</string>
     <string name="striga_recommended_hint">Recommended</string>
     <string name="striga_address_line_hint">Your street and flat number</string>
-
+    <string name="striga_validation_error_empty">Could not be empty</string>
+    <string name="striga_validation_error_too_short">Too short</string>
+    <string name="striga_validation_error_phone_number">Incorrect number</string>
+    <string name="striga_validation_error_wrong_birthday_common">Date format is incorrect</string>
+    <string name="striga_validation_error_wrong_birthday_older_than">Could not be earlier %d</string>
+    <string name="striga_validation_error_wrong_birthday_younger_than">Could not be later %d</string>
+    <string name="striga_button_error_check_red_fields">Check red fields</string>
 
 </resources>
