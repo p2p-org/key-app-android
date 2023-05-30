@@ -2,7 +2,9 @@ package org.p2p.wallet.striga.onboarding.interactor
 
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
-import org.p2p.wallet.striga.repository.StrigaPresetDataLocalRepository
+import org.p2p.wallet.striga.signup.model.StrigaOccupation
+import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
+import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 
 class StrigaOnboardingInteractor(
     private val countryRepository: CountryRepository,
@@ -18,4 +20,8 @@ class StrigaOnboardingInteractor(
     }
 
     suspend fun getAllCountries(): List<Country> = countryRepository.getAllCountries()
+
+    fun getOccupationValuesList(): List<StrigaOccupation> = strigaPresetDataLocalRepository.getOccupationValuesList()
+
+    fun getSourceOfFundsList(): List<StrigaSourceOfFunds> = strigaPresetDataLocalRepository.getSourceOfFundsList()
 }
