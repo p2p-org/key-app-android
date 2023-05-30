@@ -76,7 +76,7 @@ class SimpleMaskFormatter(
         // offset for source string to match mask
         var offset = 0
 
-        // any characters in mask that are not a {@link #maskChar} with theirs indexes in mask
+        // any characters in mask that are not a {@link #maskChar} with theirs indices in mask
         val placeholders = HashMap<Int, Char>(mask.length)
         for (m in mask.indices) {
             if (mask[m] != maskChar) placeholders[m] = mask[m]
