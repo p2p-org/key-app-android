@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.ui.countrypicker
 
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.View
@@ -37,7 +38,7 @@ class StrigaCountryPickerFragment : BaseMvpFragment<IView, IPresenter>(R.layout.
             selectedCountry: Country?,
             requestKey: String,
             resultKey: String
-        ) = StrigaCountryPickerFragment().withArgs(
+        ): Fragment = StrigaCountryPickerFragment().withArgs(
             EXTRA_SELECTED_COUNTRY to selectedCountry,
             EXTRA_KEY to requestKey,
             EXTRA_RESULT to resultKey
@@ -89,6 +90,7 @@ class StrigaCountryPickerFragment : BaseMvpFragment<IView, IPresenter>(R.layout.
                 presenter.search(emptyString())
             }
         })
+        setTitle(R.string.striga_country)
         searchView.openSearch()
     }
 }

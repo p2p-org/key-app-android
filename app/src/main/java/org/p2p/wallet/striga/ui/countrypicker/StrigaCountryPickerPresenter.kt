@@ -18,7 +18,7 @@ class StrigaCountryPickerPresenter(
 
     private var searchText: String = emptyString()
     private val searchTextMap = hashMapOf<String, List<Country>>()
-    private var allCountryCodeItems: List<Country> = listOf()
+    private var allCountryItems: List<Country> = listOf()
 
     override fun search(text: String) {
         searchText = text
@@ -28,8 +28,8 @@ class StrigaCountryPickerPresenter(
     override fun attach(view: StrigaCountryPickerContract.View) {
         super.attach(view)
         launch {
-            allCountryCodeItems = strigaOnboardingInteractor.getAllCountries()
-            val mappedItems = mapToCellItem(allCountryCodeItems)
+            allCountryItems = strigaOnboardingInteractor.getAllCountries()
+            val mappedItems = mapToCellItem(allCountryItems)
             view.showCountries(buildCellList(mappedItems))
         }
     }
@@ -42,10 +42,9 @@ class StrigaCountryPickerPresenter(
                     view?.showCountries(buildCellList(cachedItems))
                 }
                 else -> {
-                    val searchResult = allCountryCodeItems
-                        .filter {
-                            it.name.contains(countryName, ignoreCase = true)
-                        }
+                    val searchResult = allCountryItems.filter {
+                        it.name.contains(countryName, ignoreCase = true)
+                    }
                     searchTextMap[countryName] = searchResult
                     val newCacheItems = mapToCellItem(searchTextMap[countryName].orEmpty())
                     view?.showCountries(buildCellList(newCacheItems))
@@ -60,10 +59,10 @@ class StrigaCountryPickerPresenter(
 
     private fun buildCellList(items: List<AnyCellItem>): List<AnyCellItem> = buildList {
         if (selectedCountry != null) {
-            add(StrigaCountryHeaderCellModel(R.string.striga_chosen_country))
-            add(StrigaCountryCellModel(selectedCountry))
+            this += StrigaCountryHeaderCellModel(R.string.striga_chosen_country)
+            this += StrigaCountryCellModel(selectedCountry)
         }
-        add(StrigaCountryHeaderCellModel(R.string.striga_all_countries))
-        addAll(items)
+        this += StrigaCountryHeaderCellModel(R.string.striga_all_countries)
+        this += items
     }
 }

@@ -39,10 +39,10 @@ object StrigaSignupModule : InjectionModule {
 
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
-        factory { (county: Country?) ->
+        factory { (country: Country?) ->
             StrigaCountryPickerPresenter(
                 strigaOnboardingInteractor = get(),
-                selectedCountry = county
+                selectedCountry = country
             )
         } bind StrigaCountryPickerContract.Presenter::class
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class

@@ -72,7 +72,6 @@ class CountryCodePickerFragment :
                 presenter.search(emptyString())
             }
         })
-        setTitle(R.string.striga_country)
         openSearch()
     }
 

@@ -68,7 +68,6 @@ class StrigaSignUpFirstStepFragment :
 
     override fun updateSignupField(newValue: String, type: StrigaSignupDataType) {
         val view = editTextFieldsMap[type]
-        Timber.tag("______").d("value = $newValue, type = $type, view = $view")
         view?.setText(newValue)
     }
 
