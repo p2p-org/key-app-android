@@ -53,7 +53,6 @@ object GatewayServiceModule : InjectionModule {
                 getOnboardingMetadataMapper = get(),
                 updateMetadataMapper = get(),
                 errorMapper = get(),
-                secureStorageContract = get(),
                 dispatchers = get(),
                 appScope = get()
             )

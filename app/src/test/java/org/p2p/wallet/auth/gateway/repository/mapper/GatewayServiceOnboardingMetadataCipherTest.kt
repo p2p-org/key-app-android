@@ -96,6 +96,7 @@ class GatewayServiceOnboardingMetadataCipherTest {
 
             // new data backs up to defaults
             prop(GatewayOnboardingMetadata::authProviderTimestampSec).isZero()
+            prop(GatewayOnboardingMetadata::deviceNameTimestampSec).isZero()
             prop(GatewayOnboardingMetadata::strigaMetadata).isNull()
             prop(GatewayOnboardingMetadata::emailTimestampSec).isZero()
             prop(GatewayOnboardingMetadata::phoneNumberTimestampSec).isZero()

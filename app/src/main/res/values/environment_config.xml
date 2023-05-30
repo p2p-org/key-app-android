@@ -11,7 +11,7 @@
     <string name="feeRelayerBaseUrl">https://fee-relayer.key.app/</string>
     <string name="feeRelayerTestBaseUrl">https://fee-relayer.keyapp.org/</string>
 
-    <string name="torusBaseUrl">http://beardict.net:5051</string>
+    <string name="torusBaseUrl">https://torus.beardict.net</string>
 
     <string name="torusNetwork">testnet</string>
     <string name="torusLogLevel">debug</string>

@@ -30,6 +30,8 @@ data class GatewayOnboardingMetadata(
     val ethPublic: String? = null,
     @SerializedName("meta_timestamp")
     val metaTimestampSec: Long,
+    @SerializedName("device_name_timestamp")
+    val deviceNameTimestampSec: Long = 0,
     @SerializedName("phone_number_timestamp")
     val phoneNumberTimestampSec: Long = 0,
     @SerializedName("email_timestamp")

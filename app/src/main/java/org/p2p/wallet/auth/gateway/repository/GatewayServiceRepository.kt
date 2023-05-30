@@ -45,12 +45,12 @@ interface GatewayServiceRepository {
         otpConfirmationCode: String
     ): ConfirmRestoreWalletResponse
 
-    suspend fun loadAndSaveOnboardingMetadata(
+    suspend fun loadOnboardingMetadata(
         solanaPublicKey: Base58String,
         solanaPrivateKey: Base58String,
         userSeedPhrase: List<String>,
         etheriumAddress: String
-    )
+    ): GatewayOnboardingMetadata
 
     suspend fun updateMetadata(
         ethereumAddress: String,

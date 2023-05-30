@@ -13,11 +13,11 @@ object RecipientConverter {
         usernameFormatter: UsernameFormatter
     ): SearchResult {
         return if (entity.username.isNullOrEmpty()) SearchResult.AddressFound(
-            addressState = AddressState(entity.address),
+            address = entity.address,
             date = Date(entity.dateTimestamp),
             networkType = NetworkType.valueOf(entity.networkTypeName)
         ) else SearchResult.UsernameFound(
-            addressState = AddressState(entity.address),
+            address = entity.address,
             username = entity.username,
             formattedUsername = usernameFormatter.format(entity.username),
             date = Date(entity.dateTimestamp)
@@ -25,7 +25,7 @@ object RecipientConverter {
     }
 
     fun toDatabase(searchResult: SearchResult, newDate: Date): RecipientEntity {
-        val address = searchResult.addressState.address
+        val address = searchResult.address
         val nickname: String?
         val dateTimestamp: Long
         val networkType: NetworkType
