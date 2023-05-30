@@ -381,7 +381,7 @@ class HomePresenter(
 
             if (newBuyFeatureToggle.isFeatureEnabled) {
                 // this cannot be empty
-                view?.showNewBuyScreen(tokensForBuy.first())
+                view?.navigateToBuyScreen(tokensForBuy.first())
             } else {
                 view?.showTokensForBuy(tokensForBuy)
             }
@@ -408,11 +408,7 @@ class HomePresenter(
                 userInteractor.getSingleTokenForBuy() ?: return@launch
             }
 
-            if (newBuyFeatureToggle.isFeatureEnabled) {
-                view?.showNewBuyScreen(tokenToBuy)
-            } else {
-                view?.showOldBuyScreen(tokenToBuy)
-            }
+            view?.navigateToBuyScreen(tokenToBuy)
         }
     }
 
