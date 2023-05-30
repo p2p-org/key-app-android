@@ -4,7 +4,6 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import io.mockk.spyk
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -26,7 +25,7 @@ import org.p2p.wallet.utils.mutableListQueueOf
 import org.p2p.wallet.utils.plantTimberToStdout
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class StrigaSignupFirstStepPresenterTest {
+class StrigaSignupFirstAndSecondStepPresenterTest {
 
     @MockK(relaxed = true)
     lateinit var countryRepository: CountryRepository
@@ -41,10 +40,10 @@ class StrigaSignupFirstStepPresenterTest {
     private val dispatchers: CoroutineDispatchers = UnconfinedTestDispatchers()
 
     init {
-        plantTimberToStdout("StrigaSignupFirstStepPresenterTest")
+        plantTimberToStdout("StrigaSignupFirstAndSecondStepPresenterTest")
     }
 
-    private fun createPresenter(): StrigaSignUpFirstStepPresenter {
+    private fun createPresenterSecondStep(): StrigaSignUpFirstStepPresenter {
         return StrigaSignUpFirstStepPresenter(
             dispatchers = dispatchers,
             interactor = interactor,
@@ -54,13 +53,11 @@ class StrigaSignupFirstStepPresenterTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        interactor = spyk(
-            StrigaSignupInteractor(
-                dispatchers = dispatchers,
-                validator = signupDataValidator,
-                countryRepository = countryRepository,
-                signupDataRepository = signupDataRepository,
-            )
+        interactor = StrigaSignupInteractor(
+            dispatchers = dispatchers,
+            validator = signupDataValidator,
+            countryRepository = countryRepository,
+            signupDataRepository = signupDataRepository,
         )
     }
 
@@ -69,11 +66,11 @@ class StrigaSignupFirstStepPresenterTest {
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
         )
-        coEvery { interactor.getSignupData() } returns initialSignupData
-        coEvery { interactor.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
-        val presenter = createPresenter()
+        val presenter = createPresenterSecondStep()
         presenter.attach(view)
         advanceUntilIdle()
 
@@ -108,11 +105,11 @@ class StrigaSignupFirstStepPresenterTest {
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
         )
-        coEvery { interactor.getSignupData() } returns initialSignupData
-        coEvery { interactor.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
-        val presenter = createPresenter()
+        val presenter = createPresenterSecondStep()
         presenter.attach(view)
 
         presenter.onFieldChanged("123", StrigaSignupDataType.PHONE_NUMBER)
@@ -129,11 +126,11 @@ class StrigaSignupFirstStepPresenterTest {
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
         )
-        coEvery { interactor.getSignupData() } returns initialSignupData
-        coEvery { interactor.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
-        val presenter = createPresenter()
+        val presenter = createPresenterSecondStep()
         presenter.attach(view)
 
         presenter.onFieldChanged("123", StrigaSignupDataType.PHONE_NUMBER)
@@ -152,11 +149,11 @@ class StrigaSignupFirstStepPresenterTest {
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
         )
-        coEvery { interactor.getSignupData() } returns initialSignupData
-        coEvery { interactor.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns "## ### ### ## ##"
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
-        val presenter = createPresenter()
+        val presenter = createPresenterSecondStep()
         presenter.attach(view)
 
         presenter.onFieldChanged("+90 555 666 77 88", StrigaSignupDataType.PHONE_NUMBER)
