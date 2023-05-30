@@ -9,10 +9,16 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.utils.Base58String
 
 data class AlarmErrorsBridgeClaimRequest(
-    @SerializedName("token_to_claim")
-    val tokenToClaim: TokenToClaim?,
     @SerializedName("user_pubkey")
     val userPubkey: Base58String,
+    @SerializedName("simulation_error")
+    val simulationError: String,
+    @SerializedName("fee_relayer_error")
+    val feeRelayerError: String,
+    @SerializedName("blockchain_error")
+    val blockchainError: String,
+    @SerializedName("token_to_claim")
+    val tokenToClaim: TokenToClaim?,
     @SerializedName("user_eth_pubkey")
     val userEthPubkey: String,
     @SerializedName("platform")
@@ -21,12 +27,6 @@ data class AlarmErrorsBridgeClaimRequest(
     val appVersion: String = BuildConfig.VERSION_NAME,
     @SerializedName("timestamp")
     val timestamp: String = SimpleDateFormat("dd.MM HH:mm:ss", Locale.getDefault()).format(Date()),
-    @SerializedName("simulation_error")
-    val simulationError: String,
-    @SerializedName("fee_relayer_error")
-    val feeRelayerError: String,
-    @SerializedName("blockchain_error")
-    val blockchainError: String
 ) {
     data class TokenToClaim(
         @SerializedName("name")
