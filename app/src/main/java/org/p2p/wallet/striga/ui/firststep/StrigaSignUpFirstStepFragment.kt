@@ -3,7 +3,6 @@ package org.p2p.wallet.striga.ui.firststep
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
