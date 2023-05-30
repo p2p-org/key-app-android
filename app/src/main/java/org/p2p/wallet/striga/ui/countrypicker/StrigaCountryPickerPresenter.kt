@@ -73,20 +73,20 @@ class StrigaCountryPickerPresenter(
         )
     }
 
-    private fun buildCellList(items: List<AnyCellItem>): List<AnyCellItem> = buildList {
-        if (selectedCountry != null && items.isNotEmpty()) {
+    private fun buildCellList(countryItems: List<AnyCellItem>): List<AnyCellItem> = buildList {
+        if (selectedCountry != null && countryItems.isNotEmpty()) {
             this += buildHeaderCellItem(R.string.striga_chosen_country)
             this += mapToCellItem(selectedCountry)
         }
-        if (items.isNotEmpty()) {
+        if (countryItems.isNotEmpty()) {
             this += buildHeaderCellItem(R.string.striga_all_countries)
-            this += items
+            this += countryItems
         }
     }
 
     private fun buildHeaderCellItem(@StringRes titleRes: Int): AnyCellItem {
         return SectionHeaderCellModel(
-            sectionTitle = TextContainer.Companion.invoke(titleRes),
+            sectionTitle = TextContainer(titleRes),
             isShevronVisible = false,
             textColor = R.color.text_mountain,
             backgroundColor = R.color.bg_smoke,
