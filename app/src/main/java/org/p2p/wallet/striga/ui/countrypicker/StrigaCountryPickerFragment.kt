@@ -62,8 +62,7 @@ class StrigaCountryPickerFragment : BaseMvpFragment<IView, IPresenter>(R.layout.
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener {
-                setFragmentResult(requestKey, bundleOf())
-                popBackStack()
+                onCountrySelected(selectedCountry)
             }
             binding.searchView.setBgColor(getColor(R.color.bg_smoke))
             binding.recyclerViewCountries.adapter = adapter
