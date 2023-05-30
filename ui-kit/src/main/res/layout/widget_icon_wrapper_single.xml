@@ -26,13 +26,10 @@
 
         <TextView
             android:id="@+id/emojiViewIcon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="28dp"
+            android:layout_height="32dp"
             android:autoSizeTextType="uniform"
-            android:gravity="center"
-            android:visibility="gone"
+            android:layout_gravity="center"
             tools:text="🇪🇪" />
     </FrameLayout>
-
-
 </merge>

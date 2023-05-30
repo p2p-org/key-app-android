@@ -31,6 +31,7 @@ import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.root.SystemIconsStyle
+import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popBackStack
@@ -132,6 +133,7 @@ class NewOnboardingFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
+        replaceFragment(StrigaSignUpFirstStepFragment.create())
     }
 
     override fun applyWindowInsets(rootView: View) {

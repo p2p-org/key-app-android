@@ -8,15 +8,16 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.widget.AnimatedSearchView
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.ui.recycler.adapter.DividerItemDecorator
 import org.p2p.wallet.databinding.FragmentStrigaCountryPickerBinding
-import org.p2p.wallet.striga.ui.countrypicker.delegates.strigaCountryDelegate
-import org.p2p.wallet.striga.ui.countrypicker.delegates.strigaHeaderDelegate
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
@@ -50,8 +51,8 @@ class StrigaCountryPickerFragment : BaseMvpFragment<IView, IPresenter>(R.layout.
     }
     private val binding: FragmentStrigaCountryPickerBinding by viewBinding()
     private val adapter = CommonAnyCellAdapter(
-        strigaCountryDelegate(onItemClickListener = ::onCountrySelected),
-        strigaHeaderDelegate()
+        sectionHeaderCellDelegate(),
+        financeBlockCellDelegate { view, _ -> view.setOnClickAction { _, item -> onCountrySelected(item.payload) } },
     )
     private val selectedCountry: Country? by args(EXTRA_SELECTED_COUNTRY)
     private val requestKey: String by args(EXTRA_KEY)
@@ -66,6 +67,12 @@ class StrigaCountryPickerFragment : BaseMvpFragment<IView, IPresenter>(R.layout.
             }
             binding.searchView.setBgColor(getColor(R.color.bg_smoke))
             binding.recyclerViewCountries.adapter = adapter
+            binding.recyclerViewCountries.addItemDecoration(
+                DividerItemDecorator(
+                    context = requireContext(),
+                    dividerDrawableRes = R.drawable.list_divider_smoke
+                )
+            )
             initSearch()
         }
     }
@@ -75,8 +82,9 @@ class StrigaCountryPickerFragment : BaseMvpFragment<IView, IPresenter>(R.layout.
         binding.containerErrorView.isVisible = items.isEmpty()
     }
 
-    private fun onCountrySelected(selectedItem: Country) {
-        setFragmentResult(requestKey, bundleOf(resultKey to selectedItem))
+    private fun onCountrySelected(selectedItem: Any?) {
+        val selectedCountry = selectedItem as? Country
+        setFragmentResult(requestKey, bundleOf(resultKey to selectedCountry))
         popBackStack()
     }
 
