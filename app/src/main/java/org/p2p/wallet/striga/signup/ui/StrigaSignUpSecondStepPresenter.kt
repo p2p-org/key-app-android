@@ -1,21 +1,31 @@
 package org.p2p.wallet.striga.signup.ui
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
-import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
 class StrigaSignUpSecondStepPresenter(
+    dispatchers: CoroutineDispatchers,
     private val interactor: StrigaSignupInteractor,
 ) :
-    BasePresenter<StrigaSignUpSecondStepContract.View>(),
+    BasePresenter<StrigaSignUpSecondStepContract.View>(dispatchers.ui),
     StrigaSignUpSecondStepContract.Presenter {
 
-    private val signupData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
+    override fun attach(view: StrigaSignUpSecondStepContract.View) {
+        super.attach(view)
+        launch {
+            val data = interactor.getSignupData()
+            data.forEach {
+                view.updateSignupField(it.value ?: "", it.type)
+            }
+        }
+    }
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
-        signupData[type] = StrigaSignupData(type, newValue)
+        interactor.notifyDataChanged(type, newValue)
         // enabling button if something changed
         view?.setButtonIsEnabled(true)
     }
@@ -23,9 +33,9 @@ class StrigaSignUpSecondStepPresenter(
     override fun onSubmit() {
         view?.clearErrors()
 
-        val (isValid, states) = interactor.validateSecondStep(signupData)
+        val (isValid, states) = interactor.validateSecondStep()
 
-        if(isValid) {
+        if (isValid) {
             view?.navigateNext()
         } else {
             view?.setErrors(states)
@@ -34,7 +44,6 @@ class StrigaSignUpSecondStepPresenter(
             states.firstOrNull { !it.isValid }?.let {
                 view?.scrollToFirstError(it.type)
             }
-
         }
     }
 }

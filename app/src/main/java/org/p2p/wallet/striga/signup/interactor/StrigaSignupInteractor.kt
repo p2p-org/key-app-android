@@ -1,8 +1,15 @@
 package org.p2p.wallet.striga.signup.interactor
 
 import timber.log.Timber
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
@@ -14,10 +21,22 @@ import org.p2p.wallet.utils.unsafeLazy
 typealias ValidationResult = Pair<Boolean, List<StrigaSignupFieldState>>
 
 class StrigaSignupInteractor(
+    private val dispatchers: CoroutineDispatchers,
     private val validator: StrigaSignupDataValidator,
     private val countryRepository: CountryRepository,
     private val signupDataRepository: StrigaSignupDataLocalRepository
-) {
+) : CoroutineScope by CoroutineScope(dispatchers.io + SupervisorJob()) {
+
+    private val signupDataCache = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
+    private val signupDataFlow = MutableSharedFlow<Pair<StrigaSignupDataType, String>>()
+
+    init {
+        signupDataFlow.debounce(150L)
+            .onEach { (type, newValue) ->
+                updateSignupData(StrigaSignupData(type, newValue))
+            }.launchIn(this)
+    }
+
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
         setOf(
             StrigaSignupDataType.EMAIL,
@@ -41,12 +60,17 @@ class StrigaSignupInteractor(
         )
     }
 
-    fun validateFirstStep(data: Map<StrigaSignupDataType, StrigaSignupData>): ValidationResult {
-        return validateStep(firstStepDataTypes, data)
+    fun notifyDataChanged(type: StrigaSignupDataType, newValue: String) {
+        signupDataFlow.tryEmit(type to newValue)
+        signupDataCache[type] = StrigaSignupData(type, newValue)
     }
 
-    fun validateSecondStep(data: Map<StrigaSignupDataType, StrigaSignupData>): ValidationResult {
-        return validateStep(secondStepDataTypes, data)
+    fun validateFirstStep(): ValidationResult {
+        return validateStep(firstStepDataTypes)
+    }
+
+    fun validateSecondStep(): ValidationResult {
+        return validateStep(secondStepDataTypes)
     }
 
     suspend fun getSelectedCountry(): Country {
@@ -58,7 +82,7 @@ class StrigaSignupInteractor(
         return countryRepository.findPhoneMaskByCountry(country)
     }
 
-    suspend fun updateSignupData(data: StrigaSignupData) {
+    private suspend fun updateSignupData(data: StrigaSignupData) {
         signupDataRepository.updateSignupData(data)
     }
 
@@ -71,15 +95,11 @@ class StrigaSignupInteractor(
                 Timber.w(data.error, "Failed to get signup data")
                 emptyList()
             }
-        }
+        }.onEach { signupDataCache[it.type] = it }
     }
 
-    private fun validateStep(
-        types: Set<StrigaSignupDataType>,
-        data: Map<StrigaSignupDataType, StrigaSignupData>
-    ): ValidationResult {
-        val validationResults = types.map { data[it] ?: StrigaSignupData(it, null) }
-            .map(::validate)
+    private fun validateStep(types: Set<StrigaSignupDataType>): ValidationResult {
+        val validationResults = types.map { signupDataCache[it] ?: StrigaSignupData(it, null) }.map(::validate)
 
         val countValid = validationResults.count { it.isValid }
         val mustBeValid = types.size
