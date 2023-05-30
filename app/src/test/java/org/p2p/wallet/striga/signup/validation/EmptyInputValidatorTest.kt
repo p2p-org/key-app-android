@@ -1,6 +1,5 @@
 package org.p2p.wallet.striga.signup.validation
 
-
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -52,5 +51,3 @@ class EmptyInputValidatorTest {
         assertEquals(R.string.striga_validation_error_empty, errorMessage.textRes)
     }
 }
-
-

@@ -36,7 +36,6 @@ object StrigaSignupModule : InjectionModule {
     override fun create() = module {
         initDataLayer()
 
-
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class

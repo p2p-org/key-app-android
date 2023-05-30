@@ -24,7 +24,7 @@ class StrigaSignUpFirstStepPresenter(
                 view.updateSignupField(it.value ?: "", it.type)
             }
 
-            val country = Country(name = "Turkey", flagEmoji = "", code = "TR") //interactor.getSelectedCountry()
+            val country = Country(name = "Turkey", flagEmoji = "", code = "TR") // interactor.getSelectedCountry()
             val maskForFormatter = "+" + interactor.findPhoneMaskByCountry(country)
             view.setPhoneMask(maskForFormatter)
         }

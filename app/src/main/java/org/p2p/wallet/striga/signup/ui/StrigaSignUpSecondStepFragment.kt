@@ -15,7 +15,6 @@ import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -67,7 +66,6 @@ class StrigaSignUpSecondStepFragment :
     }
 
     override fun navigateNext() {
-
     }
 
     override fun setErrors(errors: List<StrigaSignupFieldState>) {

@@ -1,6 +1,5 @@
 package org.p2p.wallet.common.ui
 
-
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -101,6 +100,4 @@ class SimpleMaskFormatterTest {
         // then
         assertEquals("(123) 456-7890", result)
     }
-
-
 }

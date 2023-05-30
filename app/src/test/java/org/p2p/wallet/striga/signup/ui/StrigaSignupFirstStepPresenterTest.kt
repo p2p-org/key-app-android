@@ -123,7 +123,6 @@ class StrigaSignupFirstStepPresenterTest {
         verify(exactly = 0) { view.setErrors(any()) }
         verify(exactly = 0) { view.setButtonIsEnabled(false) }
 
-
         presenter.detach()
     }
 
@@ -148,7 +147,6 @@ class StrigaSignupFirstStepPresenterTest {
         verify(exactly = 1) { view.setErrors(any()) }
         verify(exactly = 1) { view.setButtonIsEnabled(false) }
         verify(exactly = 1) { view.scrollToFirstError(any()) }
-
 
         presenter.detach()
     }
@@ -176,7 +174,6 @@ class StrigaSignupFirstStepPresenterTest {
         advanceUntilIdle()
 
         verify(exactly = 1) { view.navigateNext() }
-
 
         presenter.detach()
     }

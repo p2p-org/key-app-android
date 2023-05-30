@@ -17,7 +17,7 @@ class BirthdayInputValidator(
         .withResolverStyle(ResolverStyle.SMART)
 
     override fun validate(input: String?): Boolean {
-        if(input == null) return false
+        if (input == null) return false
 
         val parsedDateOfBirth = parseDateOrNull(input)
 
@@ -27,11 +27,17 @@ class BirthdayInputValidator(
                 false
             }
             parsedDateOfBirth.isBefore(LocalDate.ofYearDay(minimumYear, 1)) -> {
-                errorMessage = TextContainer.ResParams(R.string.striga_validation_error_wrong_birthday_older_than, listOf(minimumYear))
+                errorMessage = TextContainer.ResParams(
+                    R.string.striga_validation_error_wrong_birthday_older_than,
+                    listOf(minimumYear)
+                )
                 false
             }
             parsedDateOfBirth.isAfter(LocalDate.ofYearDay(maximumYear, 1)) -> {
-                errorMessage = TextContainer.ResParams(R.string.striga_validation_error_wrong_birthday_younger_than, listOf(maximumYear))
+                errorMessage = TextContainer.ResParams(
+                    R.string.striga_validation_error_wrong_birthday_younger_than,
+                    listOf(maximumYear)
+                )
                 false
             }
             else -> true

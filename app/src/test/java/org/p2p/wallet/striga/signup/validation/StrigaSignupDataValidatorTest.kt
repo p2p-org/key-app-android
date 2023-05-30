@@ -1,19 +1,11 @@
 package org.p2p.wallet.striga.signup.validation
 
-import assertk.all
-import assertk.assertThat
-import assertk.assertions.each
-import assertk.assertions.isNotEmpty
-import assertk.assertions.isTrue
-import assertk.assertions.matchesPredicate
-import assertk.assertions.prop
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
-import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
@@ -77,6 +69,4 @@ class StrigaSignupDataValidatorTest {
         assertFalse(fieldState.isValid)
         assertNotNull(fieldState.errorMessage)
     }
-
-
 }

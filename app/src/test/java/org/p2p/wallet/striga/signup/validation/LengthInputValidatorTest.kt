@@ -79,4 +79,3 @@ class LengthInputValidatorTest {
         assertEquals(TextContainer(R.string.striga_validation_error_too_short), validator.errorMessage)
     }
 }
-
