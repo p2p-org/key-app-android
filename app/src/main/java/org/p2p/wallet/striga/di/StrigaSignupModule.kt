@@ -9,6 +9,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.create
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
@@ -21,6 +22,8 @@ import org.p2p.wallet.striga.repository.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataDatabaseRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
+import org.p2p.wallet.striga.ui.countrypicker.StrigaCountryPickerContract
+import org.p2p.wallet.striga.ui.countrypicker.StrigaCountryPickerPresenter
 import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepPresenter
 import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepContract
@@ -36,6 +39,12 @@ object StrigaSignupModule : InjectionModule {
 
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
+        factory { (country: Country?) ->
+            StrigaCountryPickerPresenter(
+                strigaOnboardingInteractor = get(),
+                selectedCountry = country
+            )
+        } bind StrigaCountryPickerContract.Presenter::class
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
         factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
     }

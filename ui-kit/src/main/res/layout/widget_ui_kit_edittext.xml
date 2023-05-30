@@ -56,7 +56,7 @@
             android:background="@null"
             android:imeOptions="actionDone"
             android:inputType="text"
-            android:saveEnabled="true"
+            android:saveEnabled="false"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
             android:textColorHint="@color/text_night_30"
             android:textCursorDrawable="@drawable/ic_text_cursor"

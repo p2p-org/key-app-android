@@ -16,4 +16,6 @@ class StrigaOnboardingInteractor(
     fun checkIsCountrySupported(country: Country): Boolean {
         return strigaPresetDataLocalRepository.checkIsCountrySupported(country)
     }
+
+    suspend fun getAllCountries(): List<Country> = countryRepository.getAllCountries()
 }
