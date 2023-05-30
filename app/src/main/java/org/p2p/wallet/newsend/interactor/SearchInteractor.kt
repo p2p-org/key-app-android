@@ -8,7 +8,6 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -34,7 +33,7 @@ class SearchInteractor(
                 SearchResult.OwnAddressError(address)
             } else {
                 SearchResult.UsernameFound(
-                    addressState = AddressState(address = address),
+                    address = address,
                     username = usernameDetails.username.fullUsername,
                     formattedUsername = usernameFormatter.format(usernameDetails.username.fullUsername),
                 )
@@ -60,7 +59,7 @@ class SearchInteractor(
 
         val balance = userInteractor.getBalance(wrappedAddress)
         return SearchResult.AddressFound(
-            addressState = AddressState(address),
+            address = address,
             sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
             balance = balance
         )
@@ -75,7 +74,7 @@ class SearchInteractor(
         }
 
         return SearchResult.AddressFound(
-            addressState = AddressState(address),
+            address = address,
             sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
             networkType = NetworkType.ETHEREUM
         )

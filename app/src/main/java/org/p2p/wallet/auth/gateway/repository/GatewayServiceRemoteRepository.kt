@@ -27,7 +27,6 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
-import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.FlowDurationTimer
 
@@ -43,7 +42,6 @@ class GatewayServiceRemoteRepository(
     private val getOnboardingMetadataMapper: GatewayServiceGetOnboardingMetadataMapper,
     private val updateMetadataMapper: GatewayServiceUpdateMetadataMapper,
     private val errorMapper: GatewayServiceErrorMapper,
-    private val secureStorageContract: SecureStorageContract,
     private val dispatchers: CoroutineDispatchers,
     private val appScope: AppScope,
 ) : GatewayServiceRepository {
@@ -149,12 +147,12 @@ class GatewayServiceRemoteRepository(
             .also { resetTemporaryPublicKeyTimer.stopTimer() }
     }
 
-    override suspend fun loadAndSaveOnboardingMetadata(
+    override suspend fun loadOnboardingMetadata(
         solanaPublicKey: Base58String,
         solanaPrivateKey: Base58String,
         userSeedPhrase: List<String>,
         etheriumAddress: String,
-    ) = withContext(dispatchers.io) {
+    ): GatewayOnboardingMetadata = withContext(dispatchers.io) {
         val request = getOnboardingMetadataMapper.toNetwork(
             userPublicKey = solanaPublicKey,
             userPrivateKey = solanaPrivateKey,
@@ -168,7 +166,7 @@ class GatewayServiceRemoteRepository(
             userSeedPhrase = userSeedPhrase,
             metadataCipheredFromService = metadataFromService
         )
-        secureStorageContract.saveObject(SecureStorageContract.Key.KEY_ONBOARDING_METADATA, decryptedMetadata)
+        decryptedMetadata
     }
 
     override suspend fun updateMetadata(

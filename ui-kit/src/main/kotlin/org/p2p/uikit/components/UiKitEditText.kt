@@ -2,7 +2,6 @@ package org.p2p.uikit.components
 
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
@@ -10,6 +9,7 @@ import android.util.AttributeSet
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.databinding.WidgetUiKitEdittextBinding
+import org.p2p.uikit.utils.SimpleTagTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 
 private const val CORNER_RADIUS = 20f
@@ -21,6 +21,10 @@ class UiKitEditText @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs) {
 
     private val binding = inflateViewBinding<WidgetUiKitEdittextBinding>()
+
+    private var editTextWatcher: SimpleTagTextWatcher? = null
+
+    private var viewTag: Any? = null
 
     private val bgRed = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
@@ -58,12 +62,24 @@ class UiKitEditText @JvmOverloads constructor(
             binding.editTextField.setText(text)
         }
 
-        binding.inputViewContainer.background = bgNormal
+        binding.containerInputView.background = bgNormal
+        val isDropdown = styleAttrs.getBoolean(R.styleable.UiKitTextField_isDropdown, false)
+        if (isDropdown) {
+            binding.editTextField.isFocusable = false
+            binding.imageViewArrow.isVisible = true
+        }
         styleAttrs.recycle()
     }
 
     fun setText(text: String) {
+        binding.root.tag = null
         binding.editTextField.setText(text)
+        binding.root.tag = viewTag
+    }
+
+    fun setViewTag(tag: Any?) {
+        binding.root.tag = tag
+        viewTag = tag
     }
 
     fun setHint(hint: String) {
@@ -82,8 +98,16 @@ class UiKitEditText @JvmOverloads constructor(
     val length: Int
         get() = binding.editTextField.length()
 
-    fun addOnTextChangedListener(block: (String) -> Unit) {
-        binding.editTextField.doAfterTextChanged { block(it.toString()) }
+    fun addOnTextChangedListener(block: (Editable) -> Unit) {
+        val tag = viewTag ?: return
+        editTextWatcher = object : SimpleTagTextWatcher(tag) {
+            override fun afterTextChanged(tag: Any, text: Editable) {
+                if (viewTag == tag) {
+                    block(text)
+                }
+            }
+        }
+        binding.editTextField.addTextChangedListener(editTextWatcher)
     }
 
     fun focusAndShowKeyboard() {

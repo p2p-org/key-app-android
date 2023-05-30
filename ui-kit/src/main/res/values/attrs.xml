@@ -105,6 +105,7 @@
         <attr name="android:hint" />
         <attr name="android:drawableEnd" />
         <attr name="android:textAppearance" />
+        <attr name="isDropdown" format="boolean"/>
     </declare-styleable>
 
 
