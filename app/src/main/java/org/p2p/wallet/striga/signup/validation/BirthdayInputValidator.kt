@@ -29,13 +29,13 @@ class BirthdayInputValidator(
 
         return when {
             parsedDateOfBirth == null -> {
-                errorMessage = if(!input.matches(DATE_UNCONSTRAINED_PATTERN)) {
+                errorMessage = if (!input.matches(DATE_UNCONSTRAINED_PATTERN)) {
                     commonError
                 } else {
                     val segments = input.split(".")
-                    if(segments[0].toInt() > 31) {
+                    if (segments[0].toInt() > 31) {
                         TextContainer(R.string.striga_validation_error_wrong_birthday_day)
-                    } else if(segments[1].toInt() > 12) {
+                    } else if (segments[1].toInt() > 12) {
                         TextContainer(R.string.striga_validation_error_wrong_birthday_month)
                     } else {
                         commonError
