@@ -75,7 +75,7 @@ jobs:
       - name: Attach coverage to pull request
         uses: mi-kas/kover-report@v1
         with:
-          paths: ${{ github.workspace }}/app/build/reports/kover/reportDebug.xml
+          path: ${{ github.workspace }}/app/build/reports/kover/reportDebug.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           title: Code coverage report
           update-comment: true
