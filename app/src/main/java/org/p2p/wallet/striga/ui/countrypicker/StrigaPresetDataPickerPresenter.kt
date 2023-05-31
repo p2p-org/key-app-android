@@ -32,6 +32,7 @@ class StrigaPresetDataPickerPresenter(
         super.attach(view)
         loadElements()
         view.updateSearchTitle(strigaElementCellMapper.getSearchTitleResId(selectedItem))
+        setupSearchBar()
     }
 
     private fun searchByName(searchedName: String) {
@@ -95,6 +96,12 @@ class StrigaPresetDataPickerPresenter(
                 }
             }
             view?.showItems(buildCellList(allItems))
+        }
+    }
+
+    private fun setupSearchBar() {
+        if (selectedItem is StrigaPickerItem.CountryItem) {
+            view?.setupSearchBar()
         }
     }
 }

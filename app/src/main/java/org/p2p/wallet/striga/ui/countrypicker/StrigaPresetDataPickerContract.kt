@@ -9,6 +9,7 @@ interface StrigaPresetDataPickerContract {
     interface View : MvpView {
         fun showItems(items: List<AnyCellItem>)
         fun updateSearchTitle(titleResId: Int)
+        fun setupSearchBar()
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -74,7 +74,6 @@ class StrigaPresetDataPickerFragment :
                     dividerDrawableRes = R.drawable.list_divider_smoke
                 )
             )
-            initSearch()
         }
     }
 
@@ -92,6 +91,7 @@ class StrigaPresetDataPickerFragment :
         setStateListener { presenter.search(emptyString()) }
         setTitle(R.string.striga_country)
         openSearch()
+        isVisible = true
     }
 
     override fun showItems(items: List<AnyCellItem>) {
@@ -100,6 +100,11 @@ class StrigaPresetDataPickerFragment :
     }
 
     override fun updateSearchTitle(titleResId: Int) {
+        binding.toolbar.setTitle(titleResId)
         binding.searchView.setTitle(titleResId)
+    }
+
+    override fun setupSearchBar() {
+        initSearch()
     }
 }
