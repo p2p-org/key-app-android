@@ -11,6 +11,7 @@ class StrigaOnboardingPresenter(
     private val interactor: StrigaOnboardingInteractor,
 ) : BasePresenter<StrigaOnboardingContract.View>(dispatchers.ui), StrigaOnboardingContract.Presenter {
 
+    // CHANGE THIS FILE FOR TEST PURPOSES
     override fun attach(view: StrigaOnboardingContract.View) {
         super.attach(view)
 
