@@ -9,6 +9,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.create
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
@@ -38,9 +39,15 @@ object StrigaSignupModule : InjectionModule {
 
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
+        factory { (country: Country?) ->
+            StrigaCountryPickerPresenter(
+                strigaOnboardingInteractor = get(),
+                selectedCountry = country
+            )
+        } bind StrigaCountryPickerContract.Presenter::class
+
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
         factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
-
         factoryOf(::StrigaSignupDataValidator)
         factoryOf(::StrigaSignupInteractor)
     }

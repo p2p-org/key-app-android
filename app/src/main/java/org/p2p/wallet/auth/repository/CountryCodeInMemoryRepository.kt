@@ -14,7 +14,9 @@ class CountryCodeInMemoryRepository(
     private val countryCodeHelper: CountryCodeXmlParser
 ) : CountryCodeLocalRepository {
 
-    private val allCountryCodes = mutableListOf<CountryCode>()
+    private val allCountryCodes: List<CountryCode> by lazy {
+        countryCodeHelper.parserCountryCodesFromXmlFile()
+    }
 
     override suspend fun getCountryCodes(): List<CountryCode> = allCountryCodes
 
@@ -57,14 +59,6 @@ class CountryCodeInMemoryRepository(
         countryCodeHelper.isValidNumberForRegion(phoneNumber, countryCode)
 
     private suspend fun getCountryForIso(nameCode: String): CountryCode? = withContext(dispatchers.io) {
-        if (allCountryCodes.isEmpty()) {
-            readCountriesFromXml()
-        }
         allCountryCodes.firstOrNull { it.nameCode.equals(nameCode, ignoreCase = true) }
-    }
-
-    private suspend fun readCountriesFromXml(): Boolean = withContext(dispatchers.io) {
-        allCountryCodes.clear()
-        allCountryCodes.addAll(countryCodeHelper.parserCountryCodesFromXmlFile())
     }
 }

@@ -165,9 +165,9 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-                app:hintText="@string/striga_country_of_birth"
+                app:hintText="@string/striga_country_of_birth_hint"
                 app:isDropdown="true"
-                app:labelText="@string/striga_country_of_birth_hint" />
+                app:labelText="@string/striga_country_of_birth" />
 
             <org.p2p.uikit.components.UiKitButton
                 android:id="@+id/buttonNext"

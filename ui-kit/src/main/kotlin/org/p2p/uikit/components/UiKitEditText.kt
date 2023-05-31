@@ -91,6 +91,7 @@ class UiKitEditText @JvmOverloads constructor(
         if (isDropdown) {
             binding.editTextField.isFocusable = false
             binding.imageViewArrow.isVisible = true
+            binding.editTextField.isClickable = true
         }
 
         if (styleAttrs.hasValue(R.styleable.UiKitEditText_android_inputType)) {
@@ -189,5 +190,9 @@ class UiKitEditText @JvmOverloads constructor(
                 return arrayOfNulls(size)
             }
         }
+    }
+
+    fun setOnClickListener(block: () -> Unit) {
+        binding.editTextField.setOnClickListener { block() }
     }
 }
