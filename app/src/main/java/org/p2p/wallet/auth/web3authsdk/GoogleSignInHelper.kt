@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.core.content.edit
+import android.app.PendingIntent
 import android.content.Context
 import android.content.IntentSender.SendIntentException
 import android.content.SharedPreferences
@@ -20,6 +21,8 @@ import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 
 private const val USER_CANCELED_DIALOG_CODE = 16
+private const val USER_CANCELED_ADD_ACCOUNT_DIALOG_CODE = 13
+private const val CALLER_NOT_WHITELISTED_CODE = 10
 private const val INTERNAL_ERROR_CODE = 8
 private const val PREFS_KEY_TOKEN_EXPIRE_TIME = "PREFS_KEY_TOKEN_EXPIRE_TIME"
 
@@ -41,21 +44,29 @@ class GoogleSignInHelper(
         getSignInClient(context).apply {
             signOut()
             getSignInIntent(request)
-                .addOnSuccessListener {
-                    try {
-                        googleSignInLauncher.launch(IntentSenderRequest.Builder(it).build())
-                    } catch (e: SendIntentException) {
-                        logWeb3Alarm("Google Client Launch Error: ${e.javaClass.simpleName}, ${e.message}")
-                        Timber.e(e, "Error on SignInIntent")
-                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener {
-                    logWeb3Alarm("Google Client Sign In Error: ${it.message}")
-                    Timber.e(it, "Failure on SignInIntent")
-                    Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
-                }
+                .addOnSuccessListener { handleSuccessResult(it, googleSignInLauncher, context) }
+                .addOnFailureListener { handleFailureResult(it, context) }
         }
+    }
+
+    private fun handleSuccessResult(
+        intent: PendingIntent,
+        signInLauncher: ActivityResultLauncher<IntentSenderRequest>,
+        context: Context
+    ) {
+        try {
+            signInLauncher.launch(IntentSenderRequest.Builder(intent).build())
+        } catch (e: SendIntentException) {
+            logWeb3Alarm("Google Client Launch Error: ${e.javaClass.simpleName}, ${e.message}")
+            Timber.e(e, "Error on SignInIntent")
+            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun handleFailureResult(exception: Exception, context: Context) {
+        logWeb3Alarm("Google Client Sign In Error: ${exception.message}")
+        Timber.e(exception, "Failure on SignInIntent")
+        Toast.makeText(context, exception.toString(), Toast.LENGTH_SHORT).show()
     }
 
     fun parseSignInResult(
@@ -66,12 +77,13 @@ class GoogleSignInHelper(
         return try {
             getSignInClient(context).getSignInCredentialFromIntent(result.data)
         } catch (ex: ApiException) {
-            sharedPreferences.edit {
-                putLong(PREFS_KEY_TOKEN_EXPIRE_TIME, 0)
-            }
+            sharedPreferences.edit { putLong(PREFS_KEY_TOKEN_EXPIRE_TIME, 0) }
             if (shouldErrorBeHandled(ex)) {
-                logWeb3Alarm("Google Client Error: ${ex.statusCode}, ${ex.status.statusMessage}")
-                Timber.e(ex, "Error on getting Credential from result: ${ex.status.statusMessage}")
+                if (shouldErrorBeLogged(ex)) {
+                    logWeb3Alarm("Google Client Error: ${ex.statusCode}, ${ex.status.statusMessage}")
+                    Timber.e(ex, "Error on getting Credential from result: ${ex.status.statusMessage}")
+                }
+
                 if (connectionStateProvider.hasConnection()) {
                     errorHandler.onCommonError()
                 } else {
@@ -85,6 +97,11 @@ class GoogleSignInHelper(
     private fun shouldErrorBeHandled(exception: ApiException): Boolean {
         return exception.statusCode != USER_CANCELED_DIALOG_CODE &&
             exception.statusCode != INTERNAL_ERROR_CODE
+    }
+
+    private fun shouldErrorBeLogged(exception: ApiException): Boolean {
+        return exception.statusCode == USER_CANCELED_ADD_ACCOUNT_DIALOG_CODE ||
+            exception.statusCode == CALLER_NOT_WHITELISTED_CODE
     }
 
     private fun logWeb3Alarm(errorMessage: String) {
