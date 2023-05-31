@@ -1,15 +1,10 @@
 package org.p2p.wallet.striga.signup.interactor
 
 import timber.log.Timber
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
@@ -21,21 +16,14 @@ import org.p2p.wallet.utils.unsafeLazy
 typealias ValidationResult = Pair<Boolean, List<StrigaSignupFieldState>>
 
 class StrigaSignupInteractor(
-    private val dispatchers: CoroutineDispatchers,
+    private val appScope: AppScope,
     private val validator: StrigaSignupDataValidator,
     private val countryRepository: CountryRepository,
     private val signupDataRepository: StrigaSignupDataLocalRepository
-) : CoroutineScope by CoroutineScope(dispatchers.io + SupervisorJob()) {
+) {
 
     private val signupDataCache = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
-    private val signupDataFlow = MutableSharedFlow<Pair<StrigaSignupDataType, String>>()
-
-    init {
-        signupDataFlow.debounce(150L)
-            .onEach { (type, newValue) ->
-                updateSignupData(StrigaSignupData(type, newValue))
-            }.launchIn(this)
-    }
+    private var needsSave = false
 
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
         setOf(
@@ -61,8 +49,8 @@ class StrigaSignupInteractor(
     }
 
     fun notifyDataChanged(type: StrigaSignupDataType, newValue: String) {
-        signupDataFlow.tryEmit(type to newValue)
         signupDataCache[type] = StrigaSignupData(type, newValue)
+        needsSave = true
     }
 
     fun validateFirstStep(): ValidationResult {
@@ -82,19 +70,32 @@ class StrigaSignupInteractor(
         return countryRepository.findPhoneMaskByCountry(country)
     }
 
-    private suspend fun updateSignupData(data: StrigaSignupData) {
-        signupDataRepository.updateSignupData(data)
-    }
-
     suspend fun getSignupData(): List<StrigaSignupData> {
         return when (val data = signupDataRepository.getUserSignupData()) {
             is StrigaDataLayerResult.Success -> {
                 data.value
             }
             is StrigaDataLayerResult.Failure -> {
-                Timber.w(data.error, "Failed to get signup data")
+                Timber.e(data.error, "Striga signup data: failed to get")
                 emptyList()
             }
+        }
+    }
+
+    /**
+     * This method saves data only if it was changed
+     */
+    fun saveChanges() {
+        if (needsSave) {
+            needsSave = false
+
+            // use AppScope to make sure that data will be saved even if view scope has been cancelled
+            appScope.launch {
+                signupDataRepository.updateSignupData(signupDataCache.values)
+            }
+            Timber.d("Striga signup data: saved")
+        } else {
+            Timber.d("Striga signup data: nothing to save")
         }
     }
 

@@ -7,7 +7,7 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
 interface StrigaSignUpSecondStepContract {
     interface View : MvpView {
-        fun updateSignupField(newValue: String, type: StrigaSignupDataType)
+        fun updateSignupField(type: StrigaSignupDataType, newValue: String)
         fun navigateNext()
         fun setErrors(errors: List<StrigaSignupFieldState>)
         fun clearErrors()
@@ -17,6 +17,7 @@ interface StrigaSignUpSecondStepContract {
 
     interface Presenter : MvpPresenter<View> {
         fun onFieldChanged(newValue: String, type: StrigaSignupDataType)
+        fun onStop()
         fun onSubmit()
     }
 }

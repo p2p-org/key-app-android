@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
@@ -20,12 +21,13 @@ import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.mutableListQueueOf
 import org.p2p.wallet.utils.plantTimberToStdout
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class StrigaSignupFirstAndSecondStepPresenterTest {
+class StrigaSignupFirstStepPresenterTest {
 
     @MockK(relaxed = true)
     lateinit var countryRepository: CountryRepository
@@ -38,9 +40,10 @@ class StrigaSignupFirstAndSecondStepPresenterTest {
     private val signupDataValidator = StrigaSignupDataValidator()
 
     private val dispatchers: CoroutineDispatchers = UnconfinedTestDispatchers()
+    private val appScope: AppScope = TestAppScope(dispatchers.ui)
 
     init {
-        plantTimberToStdout("StrigaSignupFirstAndSecondStepPresenterTest")
+        plantTimberToStdout("StrigaSignupFirstStepPresenterTest")
     }
 
     private fun createPresenterSecondStep(): StrigaSignUpFirstStepPresenter {
@@ -54,7 +57,7 @@ class StrigaSignupFirstAndSecondStepPresenterTest {
     fun setUp() {
         MockKAnnotations.init(this)
         interactor = StrigaSignupInteractor(
-            dispatchers = dispatchers,
+            appScope = appScope,
             validator = signupDataValidator,
             countryRepository = countryRepository,
             signupDataRepository = signupDataRepository,
@@ -78,8 +81,8 @@ class StrigaSignupFirstAndSecondStepPresenterTest {
         val updatedFieldTypeStates = mutableListQueueOf<StrigaSignupDataType>()
         verify(exactly = initialSignupData.size) {
             view.updateSignupField(
-                capture(updatedFieldValueStates),
-                capture(updatedFieldTypeStates)
+                capture(updatedFieldTypeStates),
+                capture(updatedFieldValueStates)
             )
         }
         verify(exactly = 1) { view.setPhoneMask(any()) }
@@ -94,6 +97,7 @@ class StrigaSignupFirstAndSecondStepPresenterTest {
 
         assertEquals(initialSignupData, resultSignupData)
 
+        presenter.onStop()
         presenter.detach()
     }
 
@@ -118,6 +122,7 @@ class StrigaSignupFirstAndSecondStepPresenterTest {
         verify(exactly = 0) { view.setErrors(any()) }
         verify(exactly = 0) { view.setButtonIsEnabled(false) }
 
+        presenter.onStop()
         presenter.detach()
     }
 
@@ -141,6 +146,7 @@ class StrigaSignupFirstAndSecondStepPresenterTest {
         verify(exactly = 1) { view.setButtonIsEnabled(false) }
         verify(exactly = 1) { view.scrollToFirstError(any()) }
 
+        presenter.onStop()
         presenter.detach()
     }
 
@@ -166,6 +172,7 @@ class StrigaSignupFirstAndSecondStepPresenterTest {
 
         verify(exactly = 1) { view.navigateNext() }
 
+        presenter.onStop()
         presenter.detach()
     }
 }

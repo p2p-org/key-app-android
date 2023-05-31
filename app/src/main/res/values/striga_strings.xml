@@ -57,6 +57,7 @@
     <string name="striga_address_line_hint">Your street and flat number</string>
     <string name="striga_validation_error_empty">Could not be empty</string>
     <string name="striga_validation_error_too_short">Too short</string>
+    <string name="striga_validation_error_too_long">Too long</string>
     <string name="striga_validation_error_phone_number">Incorrect number</string>
     <string name="striga_validation_error_wrong_birthday_common">Date format is incorrect</string>
     <string name="striga_validation_error_wrong_birthday_older_than">Could not be earlier %d</string>

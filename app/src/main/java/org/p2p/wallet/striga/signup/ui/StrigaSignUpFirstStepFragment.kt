@@ -4,6 +4,7 @@ import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.core.utils.hideKeyboard
@@ -71,12 +72,12 @@ class StrigaSignUpFirstStepFragment :
                     binding.editTextBirthday.input
                 )
             )
-
-            // TODO: remove this
-            editTextFieldsMap[StrigaSignupDataType.EMAIL]?.setText("vasya@pupkin.com")
-            editTextFieldsMap[StrigaSignupDataType.PHONE_NUMBER]?.setText("+90 555 666 77 88")
-            editTextFieldsMap[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.setText("My country")
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.onStop()
     }
 
     override fun setPhoneMask(phoneMask: String?) {
@@ -90,7 +91,7 @@ class StrigaSignUpFirstStepFragment :
         }
     }
 
-    override fun updateSignupField(newValue: String, type: StrigaSignupDataType) {
+    override fun updateSignupField(type: StrigaSignupDataType, newValue: String) {
         val view = editTextFieldsMap[type]
         view?.setText(newValue)
     }
@@ -133,23 +134,30 @@ class StrigaSignUpFirstStepFragment :
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
         return with(binding) {
             buildMap {
-                put(StrigaSignupDataType.EMAIL, editTextEmail)
-                editTextEmail.setViewTag(StrigaSignupDataType.EMAIL)
-
-                put(StrigaSignupDataType.PHONE_NUMBER, editTextPhoneNumber)
-                editTextPhoneNumber.setViewTag(StrigaSignupDataType.PHONE_NUMBER)
-
-                put(StrigaSignupDataType.FIRST_NAME, editTextFirstName)
-                editTextFirstName.setViewTag(StrigaSignupDataType.FIRST_NAME)
-
-                put(StrigaSignupDataType.LAST_NAME, editTextLastname)
-                editTextLastname.setViewTag(StrigaSignupDataType.LAST_NAME)
-
-                put(StrigaSignupDataType.DATE_OF_BIRTH, editTextBirthday)
-                editTextBirthday.setViewTag(StrigaSignupDataType.DATE_OF_BIRTH)
-
-                put(StrigaSignupDataType.COUNTRY_OF_BIRTH, editTextCountry)
-                editTextCountry.setViewTag(StrigaSignupDataType.COUNTRY_OF_BIRTH)
+                StrigaSignupDataType.EMAIL.let {
+                    this[it] = editTextEmail
+                    editTextEmail.setViewTag(it)
+                }
+                StrigaSignupDataType.PHONE_NUMBER.let {
+                    this[it] = editTextPhoneNumber
+                    editTextPhoneNumber.setViewTag(it)
+                }
+                StrigaSignupDataType.FIRST_NAME.let {
+                    this[it] = editTextFirstName
+                    editTextFirstName.setViewTag(it)
+                }
+                StrigaSignupDataType.LAST_NAME.let {
+                    this[it] = editTextLastname
+                    editTextLastname.setViewTag(it)
+                }
+                StrigaSignupDataType.DATE_OF_BIRTH.let {
+                    this[it] = editTextBirthday
+                    editTextBirthday.setViewTag(it)
+                }
+                StrigaSignupDataType.COUNTRY_OF_BIRTH.let {
+                    this[it] = editTextCountry
+                    editTextCountry.setViewTag(it)
+                }
             }
         }
     }

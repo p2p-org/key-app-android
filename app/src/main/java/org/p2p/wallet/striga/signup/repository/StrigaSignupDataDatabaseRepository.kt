@@ -70,6 +70,17 @@ class StrigaSignupDataDatabaseRepository(
         )
     }
 
+    override suspend fun updateSignupData(newData: Collection<StrigaSignupData>): StrigaDataLayerResult<Unit> = try {
+        val entities = newData.map { mapper.toEntity(it, currentUserPublicKey) }
+        dao.updateOrInsertDataWithTransaction(entities)
+        success()
+    } catch (error: Throwable) {
+        StrigaDataLayerError.from(
+            error = error,
+            default = StrigaDataLayerError.DatabaseError(error)
+        )
+    }
+
     private fun success(): StrigaDataLayerResult.Success<Unit> =
         StrigaDataLayerResult.Success(Unit)
 }

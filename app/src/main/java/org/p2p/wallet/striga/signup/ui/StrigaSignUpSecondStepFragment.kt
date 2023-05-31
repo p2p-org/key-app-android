@@ -60,7 +60,12 @@ class StrigaSignUpSecondStepFragment :
         }
     }
 
-    override fun updateSignupField(newValue: String, type: StrigaSignupDataType) {
+    override fun onStop() {
+        super.onStop()
+        presenter.onStop()
+    }
+
+    override fun updateSignupField(type: StrigaSignupDataType, newValue: String) {
         val view = editTextFieldsMap[type]
         view?.setText(newValue)
     }
@@ -102,26 +107,34 @@ class StrigaSignUpSecondStepFragment :
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
         return with(binding) {
             buildMap {
-                put(StrigaSignupDataType.OCCUPATION, editTextOccupation)
-                editTextOccupation.setViewTag(StrigaSignupDataType.OCCUPATION)
-
-                put(StrigaSignupDataType.SOURCE_OF_FUNDS, editTextFunds)
-                editTextFunds.setViewTag(StrigaSignupDataType.SOURCE_OF_FUNDS)
-
-                put(StrigaSignupDataType.COUNTRY, editTextCountry)
-                editTextCountry.setViewTag(StrigaSignupDataType.COUNTRY)
-
-                put(StrigaSignupDataType.CITY, editTextCity)
-                editTextCity.setViewTag(StrigaSignupDataType.CITY)
-
-                put(StrigaSignupDataType.CITY_ADDRESS_LINE, editTextAddressLine)
-                editTextAddressLine.setViewTag(StrigaSignupDataType.CITY_ADDRESS_LINE)
-
-                put(StrigaSignupDataType.CITY_POSTAL_CODE, editTextPostalCode)
-                editTextPostalCode.setViewTag(StrigaSignupDataType.CITY_POSTAL_CODE)
-
-                put(StrigaSignupDataType.CITY_STATE, editTextStateOrRegion)
-                editTextStateOrRegion.setViewTag(StrigaSignupDataType.CITY_STATE)
+                StrigaSignupDataType.OCCUPATION.let {
+                    this[it] = editTextOccupation
+                    editTextOccupation.setViewTag(it)
+                }
+                StrigaSignupDataType.SOURCE_OF_FUNDS.let {
+                    this[it] = editTextFunds
+                    editTextFunds.setViewTag(it)
+                }
+                StrigaSignupDataType.COUNTRY.let {
+                    this[it] = editTextCountry
+                    editTextCountry.setViewTag(it)
+                }
+                StrigaSignupDataType.CITY.let {
+                    this[it] = editTextCity
+                    editTextCity.setViewTag(it)
+                }
+                StrigaSignupDataType.CITY_ADDRESS_LINE.let {
+                    this[it] = editTextAddressLine
+                    editTextAddressLine.setViewTag(it)
+                }
+                StrigaSignupDataType.CITY_POSTAL_CODE.let {
+                    this[it] = editTextPostalCode
+                    editTextPostalCode.setViewTag(it)
+                }
+                StrigaSignupDataType.CITY_STATE.let {
+                    this[it] = editTextStateOrRegion
+                    editTextStateOrRegion.setViewTag(it)
+                }
             }
         }
     }

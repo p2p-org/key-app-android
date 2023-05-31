@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.repository
 
 import android.content.res.Resources
+import timber.log.Timber
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -31,25 +32,23 @@ class CountryInMemoryRepository(
             val inputStream = resources.openRawResource(R.raw.phone_masks)
             BufferedReader(InputStreamReader(inputStream)).use { reader ->
                 val lines = reader.lineSequence().toList()
-                var low = 0
-                var high = lines.count() - 1
-
-                while (low <= high) {
-                    val mid = (low + high) / 2
-                    val line = lines[mid]
+                val soughtLine = lines.binarySearch { line ->
                     val lineCountryCode = line.substring(0, 2)
-
-                    if (lineCountryCode == needleCountry) {
-                        return line.substring(3)
-                    } else if (lineCountryCode < needleCountry) {
-                        low = mid + 1
-                    } else {
-                        high = mid - 1
+                    when {
+                        lineCountryCode == needleCountry -> 0
+                        lineCountryCode < needleCountry -> -1
+                        else -> 1
                     }
                 }
+
+                if (soughtLine < 0) {
+                    return null
+                }
+
+                return lines[soughtLine].substring(3)
             }
         } catch (e: IOException) {
-            e.printStackTrace()
+            Timber.e(e, "Unable to read phone masks")
         }
         return null
     }

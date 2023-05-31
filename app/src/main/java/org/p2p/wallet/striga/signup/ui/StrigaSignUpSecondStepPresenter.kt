@@ -17,7 +17,7 @@ class StrigaSignUpSecondStepPresenter(
     override fun attach(view: StrigaSignUpSecondStepContract.View) {
         super.attach(view)
         launch {
-            loadData()
+            initialLoadSignupData()
         }
     }
 
@@ -25,6 +25,10 @@ class StrigaSignUpSecondStepPresenter(
         interactor.notifyDataChanged(type, newValue)
         // enabling button if something changed
         view?.setButtonIsEnabled(true)
+    }
+
+    override fun onStop() {
+        interactor.saveChanges()
     }
 
     override fun onSubmit() {
@@ -44,11 +48,11 @@ class StrigaSignUpSecondStepPresenter(
         }
     }
 
-    private suspend fun loadData() {
+    private suspend fun initialLoadSignupData() {
         val data = interactor.getSignupData()
         data.forEach {
-            interactor.notifyDataChanged(it.type, it.value ?: "")
-            view?.updateSignupField(it.value ?: "", it.type)
+            interactor.notifyDataChanged(it.type, it.value.orEmpty())
+            view?.updateSignupField(it.type, it.value.orEmpty())
         }
     }
 }

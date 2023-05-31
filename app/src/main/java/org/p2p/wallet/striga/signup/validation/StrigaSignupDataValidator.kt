@@ -8,8 +8,8 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 class StrigaSignupDataValidator {
     private val validators = mutableMapOf(
         StrigaSignupDataType.PHONE_NUMBER to listOf(PhoneNumberInputValidator()),
-        StrigaSignupDataType.FIRST_NAME to listOf(LengthInputValidator(minLength = 1)),
-        StrigaSignupDataType.LAST_NAME to listOf(LengthInputValidator(minLength = 1)),
+        StrigaSignupDataType.FIRST_NAME to listOf(LengthInputValidator(2..40)),
+        StrigaSignupDataType.LAST_NAME to listOf(LengthInputValidator(2..40)),
         StrigaSignupDataType.DATE_OF_BIRTH to listOf(BirthdayInputValidator()),
     )
     private val allFieldsValidator = EmptyInputValidator()
@@ -35,7 +35,10 @@ class StrigaSignupDataValidator {
             }
         }
 
-        return data.toUiField(isValid, firstError)
+        return data.toUiField(
+            isValid = isValid,
+            errorMessage = firstError
+        )
     }
 
     private fun StrigaSignupData.toUiField(
