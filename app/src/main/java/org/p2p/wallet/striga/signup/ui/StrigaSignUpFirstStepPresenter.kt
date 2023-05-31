@@ -18,8 +18,8 @@ class StrigaSignUpFirstStepPresenter(
 
     private var countryOfBirth: Country? = null
 
-    override fun firstAttach(view: StrigaSignUpFirstStepContract.View) {
-        super.firstAttach(view)
+    override fun firstAttach() {
+        super.firstAttach()
         launch {
             initialLoadSignupData()
             setupPhoneMask()

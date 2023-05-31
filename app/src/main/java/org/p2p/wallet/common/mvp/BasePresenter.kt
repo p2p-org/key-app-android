@@ -29,15 +29,15 @@ abstract class BasePresenter<V : MvpView>(
 
     @CallSuper
     override fun attach(view: V) {
+        this.view = view
         if (!isInitialized) {
             isInitialized = true
-            firstAttach(view)
+            firstAttach()
         }
-        this.view = view
     }
 
     @CallSuper
-    override fun firstAttach(view: V) = Unit
+    protected open fun firstAttach() = Unit
 
     @CallSuper
     override fun detach() {
