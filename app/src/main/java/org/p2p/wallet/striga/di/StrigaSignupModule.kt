@@ -23,8 +23,8 @@ import org.p2p.wallet.striga.signup.repository.StrigaSignupDataDatabaseRepositor
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
 import org.p2p.wallet.striga.ui.countrypicker.StrigaItemCellMapper
-import org.p2p.wallet.striga.ui.countrypicker.StrigaItemPickerContact
-import org.p2p.wallet.striga.ui.countrypicker.StrigaItemPickerPresenter
+import org.p2p.wallet.striga.ui.countrypicker.StrigaPresetDataPickerContract
+import org.p2p.wallet.striga.ui.countrypicker.StrigaPresetDataPickerPresenter
 import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepPresenter
 import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepContract
@@ -41,12 +41,12 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
         factory { (selectedItem: StrigaPickerItem) ->
-            StrigaItemPickerPresenter(
+            StrigaPresetDataPickerPresenter(
                 strigaOnboardingInteractor = get(),
                 selectedItem = selectedItem,
                 strigaElementCellMapper = get()
             )
-        } bind StrigaItemPickerContact.Presenter::class
+        } bind StrigaPresetDataPickerContract.Presenter::class
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
         factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
     }

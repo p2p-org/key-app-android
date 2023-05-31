@@ -44,35 +44,15 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewCountries"
+            android:id="@+id/recyclerViewPresetData"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_country_code" />
 
-        <LinearLayout
-            android:id="@+id/containerErrorView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="36dp"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_not_found" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="12dp"
-                android:text="@string/striga_no_country_found"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2" />
-        </LinearLayout>
+        <include
+            android:id="@+id/containerEmptyResult"
+            layout="@layout/layout_striga_preset_data_picker_empty" />
     </FrameLayout>
 </LinearLayout>

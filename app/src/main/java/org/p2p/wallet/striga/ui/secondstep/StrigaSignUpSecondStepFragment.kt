@@ -13,7 +13,7 @@ import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.ui.countrypicker.StrigaItemPickerFragment
+import org.p2p.wallet.striga.ui.countrypicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -74,7 +74,7 @@ class StrigaSignUpSecondStepFragment :
 
     override fun showOccupationPicker(selectedValue: StrigaOccupation?) {
         replaceFragmentForResult(
-            target = StrigaItemPickerFragment.create(
+            target = StrigaPresetDataPickerFragment.create(
                 selectedCountry = StrigaPickerItem.OccupationItem(selectedValue),
                 requestKey = OCCUPATION_REQUEST_KEY,
                 resultKey = OCCUPATION_RESULT_KEY
@@ -86,7 +86,7 @@ class StrigaSignUpSecondStepFragment :
 
     override fun showFundsPicker(selectedValue: StrigaSourceOfFunds?) {
         replaceFragmentForResult(
-            target = StrigaItemPickerFragment.create(
+            target = StrigaPresetDataPickerFragment.create(
                 selectedCountry = StrigaPickerItem.FundsItem(selectedValue),
                 requestKey = FUNDS_REQUEST_KEY,
                 resultKey = FUNDS_RESULT_KEY

@@ -12,12 +12,12 @@ import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.utils.emptyString
 
-class StrigaItemPickerPresenter(
+class StrigaPresetDataPickerPresenter(
     private val strigaOnboardingInteractor: StrigaOnboardingInteractor,
     private val selectedItem: StrigaPickerItem,
     private val strigaElementCellMapper: StrigaItemCellMapper
-) : BasePresenter<StrigaItemPickerContact.View>(),
-    StrigaItemPickerContact.Presenter {
+) : BasePresenter<StrigaPresetDataPickerContract.View>(),
+    StrigaPresetDataPickerContract.Presenter {
 
     private var searchText: String = emptyString()
     private val searchTextMap = hashMapOf<String, List<FinanceBlockCellModel>>()
@@ -28,7 +28,7 @@ class StrigaItemPickerPresenter(
         searchByName(text)
     }
 
-    override fun attach(view: StrigaItemPickerContact.View) {
+    override fun attach(view: StrigaPresetDataPickerContract.View) {
         super.attach(view)
         loadElements()
         view.updateSearchTitle(strigaElementCellMapper.getSearchTitleResId(selectedItem))

@@ -12,7 +12,7 @@ import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.ui.countrypicker.StrigaItemPickerFragment
+import org.p2p.wallet.striga.ui.countrypicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -73,7 +73,7 @@ class StrigaSignUpFirstStepFragment :
 
     override fun showCountryPicker(selectedCountry: Country?) {
         replaceFragmentForResult(
-            target = StrigaItemPickerFragment.create(
+            target = StrigaPresetDataPickerFragment.create(
                 selectedCountry = StrigaPickerItem.CountryItem(selectedCountry),
                 requestKey = REQUEST_KEY,
                 resultKey = RESULT_KEY
