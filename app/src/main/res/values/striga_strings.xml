@@ -64,6 +64,8 @@
     <string name="striga_validation_error_too_long">Too long</string>
     <string name="striga_validation_error_phone_number">Incorrect number</string>
     <string name="striga_validation_error_wrong_birthday_common">Date format is incorrect</string>
+    <string name="striga_validation_error_wrong_birthday_day">Incorrect day</string>
+    <string name="striga_validation_error_wrong_birthday_month">Incorrect month</string>
     <string name="striga_validation_error_wrong_birthday_older_than">Could not be earlier %d</string>
     <string name="striga_validation_error_wrong_birthday_younger_than">Could not be later %d</string>
     <string name="striga_button_error_check_red_fields">Check red fields</string>

@@ -24,15 +24,45 @@ class BirthdayInputValidatorTest {
     }
 
     @Test
-    fun `GIVEN invalid birthday WHEN validate THEN return false`() {
+    fun `GIVEN invalid month WHEN validate THEN check invalid month error`() {
         // Given
         val validator = BirthdayInputValidator()
 
         // When
-        val result = validator.validate("05.30.1995")
+        val result = validator.validate("01.30.1990")
 
         // Then
+        val errorMessage = validator.errorMessage as TextContainer.Res
         assertFalse(result)
+        assertEquals(R.string.striga_validation_error_wrong_birthday_month, errorMessage.textRes)
+    }
+
+    @Test
+    fun `GIVEN invalid day and month WHEN validate THEN check invalid day error`() {
+        // Given
+        val validator = BirthdayInputValidator()
+
+        // When
+        val result = validator.validate("99.99.1990")
+
+        // Then
+        val errorMessage = validator.errorMessage as TextContainer.Res
+        assertFalse(result)
+        assertEquals(R.string.striga_validation_error_wrong_birthday_day, errorMessage.textRes)
+    }
+
+    @Test
+    fun `GIVEN random string WHEN validate THEN check invalid date format`() {
+        // Given
+        val validator = BirthdayInputValidator()
+
+        // When
+        val result = validator.validate("all hell breaks loose")
+
+        // Then
+        val errorMessage = validator.errorMessage as TextContainer.Res
+        assertFalse(result)
+        assertEquals(R.string.striga_validation_error_wrong_birthday_common, errorMessage.textRes)
     }
 
     @Test

@@ -7,11 +7,17 @@ import org.p2p.core.common.TextContainer
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.DateTimeUtils
 
+private val DATE_UNCONSTRAINED_PATTERN = Regex(
+    "^(0[1-9]|1[0-2]|(?:0?[1-9]|1[0-2]).*)\\.(0[1-9]|1[0-2]|(?:0?[1-9]|1[0-2]).*)\\.\\d{4}\$"
+)
+
 class BirthdayInputValidator(
     private val minimumYear: Int = 1920,
     private val maximumYear: Int = 2015,
 ) : InputValidator {
-    override var errorMessage: TextContainer = TextContainer(R.string.striga_validation_error_wrong_birthday_common)
+    private val commonError = TextContainer(R.string.striga_validation_error_wrong_birthday_common)
+
+    override var errorMessage: TextContainer = commonError
 
     private val localDateFormatter = DateTimeFormatter.ofPattern(DateTimeUtils.PATTERN_DD_MM_YYYY)
         .withResolverStyle(ResolverStyle.SMART)
@@ -23,7 +29,19 @@ class BirthdayInputValidator(
 
         return when {
             parsedDateOfBirth == null -> {
-                errorMessage = TextContainer(R.string.striga_validation_error_wrong_birthday_common)
+                errorMessage = if(!input.matches(DATE_UNCONSTRAINED_PATTERN)) {
+                    commonError
+                } else {
+                    val segments = input.split(".")
+                    if(segments[0].toInt() > 31) {
+                        TextContainer(R.string.striga_validation_error_wrong_birthday_day)
+                    } else if(segments[1].toInt() > 12) {
+                        TextContainer(R.string.striga_validation_error_wrong_birthday_month)
+                    } else {
+                        commonError
+                    }
+                }
+
                 false
             }
             parsedDateOfBirth.isBefore(LocalDate.ofYearDay(minimumYear, 1)) -> {
