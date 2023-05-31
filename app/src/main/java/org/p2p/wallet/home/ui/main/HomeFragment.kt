@@ -350,14 +350,12 @@ class HomeFragment :
     override fun onBannerClicked(bannerId: Int) {
         when (bannerId) {
             R.id.home_banner_top_up -> {
-                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
+                TopUpWalletBottomSheet.show(parentFragmentManager)
             }
-
             R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
                 replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
             }
-
             R.string.home_feedback_banner_option -> {
                 browseAnalytics.logBannerFeedbackPressed()
                 IntercomService.showMessenger()
