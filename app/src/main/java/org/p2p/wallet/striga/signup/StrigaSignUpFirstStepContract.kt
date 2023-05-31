@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.signup
 
+import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
@@ -14,9 +15,12 @@ interface StrigaSignUpFirstStepContract {
         fun setButtonIsEnabled(isEnabled: Boolean)
         fun scrollToFirstError(type: StrigaSignupDataType)
         fun setPhoneMask(phoneMask: String?)
+        fun showCountryPicker(selectedCountry: Country?)
     }
     interface Presenter : MvpPresenter<View> {
         fun onFieldChanged(newValue: String, type: StrigaSignupDataType)
+        fun onCountryChanged(newCountry: Country)
+        fun onCountryClicked()
         fun onStop()
         fun onSubmit()
     }

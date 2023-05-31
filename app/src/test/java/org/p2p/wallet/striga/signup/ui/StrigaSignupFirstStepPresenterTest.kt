@@ -11,6 +11,7 @@ import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -174,5 +175,44 @@ class StrigaSignupFirstStepPresenterTest {
 
         presenter.onStop()
         presenter.detach()
+    }
+
+    @Test
+    fun `GIVEN initial state WHEN open country clicked THEN check country picker is opened`() = runTest {
+        val initialSignupData = listOf(
+            StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
+        )
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+
+        val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
+        val presenter = createPresenterSecondStep()
+        presenter.attach(view)
+        presenter.onCountryClicked()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { view.showCountryPicker(any()) }
+    }
+
+    @Test
+    fun `GIVEN selected country WHEN country chosen THEN check view updates country`() = runTest {
+        val initialSignupData = listOf(
+            StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
+        )
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+
+        val chosenCountry = Country("Turkey", "\uD83C\uDDF9\uD83C\uDDF7", "TR")
+
+        val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
+        val presenter = createPresenterSecondStep()
+        presenter.attach(view)
+        presenter.onCountryChanged(chosenCountry)
+        advanceUntilIdle()
+
+        verify(exactly = 1) {
+            view.updateSignupField(
+                StrigaSignupDataType.COUNTRY_OF_BIRTH,
+                "${chosenCountry.flagEmoji} ${chosenCountry.name}"
+            )
+        }
     }
 }

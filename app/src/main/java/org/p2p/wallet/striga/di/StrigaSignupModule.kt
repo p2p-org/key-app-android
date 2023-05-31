@@ -28,6 +28,8 @@ import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpSecondStepPresenter
+import org.p2p.wallet.striga.countrypicker.StrigaCountryPickerContract
+import org.p2p.wallet.striga.countrypicker.StrigaCountryPickerPresenter
 import org.p2p.wallet.striga.user.api.StrigaApi
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository

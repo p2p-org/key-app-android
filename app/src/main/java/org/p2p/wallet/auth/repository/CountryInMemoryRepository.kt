@@ -16,13 +16,18 @@ class CountryInMemoryRepository(
         return countryCodeRepository.getCountryCodes()
             .map { it.extractCountry() }
     }
-
     override suspend fun detectCountryOrDefault(): Country {
         val detectedCountryCode = countryCodeRepository.detectCountryCodeBySimCard()
             ?: countryCodeRepository.detectCountryCodeByNetwork()
             ?: countryCodeRepository.detectCountryCodeByLocale()
 
         return detectedCountryCode?.extractCountry() ?: defaultCountry()
+    }
+
+    override suspend fun findCountryByNameCode(countyCode: String): Country? {
+        return countryCodeRepository.findCountryCodeByPhoneCode(countyCode)?.let {
+            return it.extractCountry()
+        }
     }
 
     override suspend fun findPhoneMaskByCountry(country: Country): String? {

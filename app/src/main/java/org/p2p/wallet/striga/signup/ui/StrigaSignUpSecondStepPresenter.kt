@@ -14,8 +14,8 @@ class StrigaSignUpSecondStepPresenter(
     BasePresenter<StrigaSignUpSecondStepContract.View>(dispatchers.ui),
     StrigaSignUpSecondStepContract.Presenter {
 
-    override fun attach(view: StrigaSignUpSecondStepContract.View) {
-        super.attach(view)
+    override fun firstAttach(view: StrigaSignUpSecondStepContract.View) {
+        super.firstAttach(view)
         launch {
             initialLoadSignupData()
         }

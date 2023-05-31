@@ -10,6 +10,11 @@ enum class StrigaSignupDataType(@StringRes val tag: Int) {
     FIRST_NAME(R.string.tag_striga_first_name),
     LAST_NAME(R.string.tag_striga_last_name),
     DATE_OF_BIRTH(R.string.tag_striga_date_of_birth),
+
+    /**
+     * Should contain country code in ISO 3166-1 alpha-3 format
+     * Example: US, AZ, TR etc.
+     */
     COUNTRY_OF_BIRTH(R.string.tag_striga_country_of_birth),
     OCCUPATION(R.string.tag_striga_occupation),
     SOURCE_OF_FUNDS(R.string.tag_striga_source_of_funds),

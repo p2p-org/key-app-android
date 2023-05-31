@@ -16,8 +16,10 @@ class StrigaSignUpFirstStepPresenter(
     BasePresenter<StrigaSignUpFirstStepContract.View>(dispatchers.ui),
     StrigaSignUpFirstStepContract.Presenter {
 
-    override fun attach(view: StrigaSignUpFirstStepContract.View) {
-        super.attach(view)
+    private var countryOfBirth: Country? = null
+
+    override fun firstAttach(view: StrigaSignUpFirstStepContract.View) {
+        super.firstAttach(view)
         launch {
             initialLoadSignupData()
             setupPhoneMask()
@@ -28,6 +30,18 @@ class StrigaSignUpFirstStepPresenter(
         interactor.notifyDataChanged(type, newValue)
         // enabling button if something changed
         view?.setButtonIsEnabled(true)
+    }
+
+    override fun onCountryChanged(newCountry: Country) {
+        countryOfBirth = newCountry
+        view?.updateSignupField(
+            newValue = "${newCountry.flagEmoji} ${newCountry.name}",
+            type = StrigaSignupDataType.COUNTRY_OF_BIRTH
+        )
+    }
+
+    override fun onCountryClicked() {
+        view?.showCountryPicker(selectedCountry = countryOfBirth)
     }
 
     override fun onStop() {
@@ -53,11 +67,18 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     private suspend fun initialLoadSignupData() {
-        val data = interactor.getSignupData()
-        data.forEach {
+        val data = interactor.getSignupData().associateBy { it.type }
+        data.values.forEach {
             interactor.notifyDataChanged(it.type, it.value.orEmpty())
             view?.updateSignupField(it.type, it.value.orEmpty())
         }
+
+        // db stores COUNTRY_OF_BIRTH as country name code ISO 3166-1 alpha-3,
+        // so we need to find country by code and convert to country name
+        val savedCountry = interactor.findCountryByNameCode(
+            data[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.value.orEmpty()
+        )
+        savedCountry?.let { onCountryChanged(savedCountry) }
     }
 
     private suspend fun setupPhoneMask() {

@@ -70,6 +70,11 @@ class StrigaSignupInteractor(
         return countryRepository.findPhoneMaskByCountry(country)
     }
 
+    suspend fun findCountryByNameCode(countryNameCode: String?): Country? {
+        if (countryNameCode.isNullOrBlank()) return null
+        return countryRepository.findCountryByNameCode(countryNameCode)
+    }
+
     suspend fun getSignupData(): List<StrigaSignupData> {
         return when (val data = signupDataRepository.getUserSignupData()) {
             is StrigaDataLayerResult.Success -> {

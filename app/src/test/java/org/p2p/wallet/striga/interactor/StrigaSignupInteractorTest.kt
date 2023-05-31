@@ -61,7 +61,7 @@ class StrigaSignupInteractorTest {
     @Test
     fun `GIVEN error WHEN getSignupData THEN check returned signup data list is empty`() = runTest {
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Failure(
-            StrigaDataLayerError.DatabaseError(IllegalStateException("Known exception"))
+            StrigaDataLayerError.InternalError(IllegalStateException("Known exception"))
         )
 
         val interactor = createInteractor()

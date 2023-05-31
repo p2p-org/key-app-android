@@ -8,5 +8,6 @@ interface CountryCodeLocalRepository {
     suspend fun detectCountryCodeByNetwork(): CountryCode?
     suspend fun detectCountryCodeBySimCard(): CountryCode?
     fun findCountryCodeByPhoneCode(phoneCode: String): CountryCode?
+    fun findCountryCodeByNameCode(nameCode: String): CountryCode?
     fun isValidNumberForRegion(phoneNumber: String, countryCode: String): Boolean
 }
