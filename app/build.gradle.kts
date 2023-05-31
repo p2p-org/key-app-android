@@ -31,6 +31,8 @@ koverReport {
                     "*BottomSheet\$*",
                     "*View",
                     "*View\$*",
+                    "*Interceptor",
+                    "*Interceptor\$*",
                     "*.databinding.*",
                     "*.BuildConfig",
 
