@@ -3,37 +3,44 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("org.p2p.wallet.android.application")
-    id("org.p2p.wallet.android.coverage")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("io.sentry.android.gradle") version "3.2.0"
+    id("org.jetbrains.kotlinx.kover") version "0.7.0"
 }
 
-keyappCoverage {
-    enableForConfiguration += "debug"
-    reportXml = true
-    reportHtml = true
-    excludes += listOf(
-        "org/p2p/wallet/databinding/*",
-        "com/bumptech/glide/*",
-        "**/*Module.*",
-        "**/*Fragment.*",
-        "**/*Fragment$*.*",
-        "**/*BottomSheet.*",
-        "**/*BottomSheet$*.*",
-        "**/*Activity.*",
-        "**/*Activity$*.*",
-        "**/*View.*",
-        "**/*View$*.*",
-        "**/UiKit*.*",
-        "**/UiKit*$*.*",
-    )
-    configureJacoco {
-        reportsDirectory.set(file("${buildDir}/reports/jacoco"))
+koverReport {
+    androidReports("debug") {
+        filters {
+            excludes {
+                packages(
+                    "com.bumptech.glide*",
+                )
+                classes(
+                    "*Module",
+                    "*Module\$*",
+                    "*Fragment",
+                    "*Fragment\$*",
+                    "*Activity",
+                    "*Activity\$*",
+                    "*Service",
+                    "*Service\$*",
+                    "*BottomSheet",
+                    "*BottomSheet\$*",
+                    "*View",
+                    "*View\$*",
+                    "*Interceptor",
+                    "*Interceptor\$*",
+                    "*.databinding.*",
+                    "*.BuildConfig",
+
+                    // excludes debug classes
+                    "*.DebugUtil"
+                )
+            }
+        }
     }
 }
-
-
 
 android {
     applicationVariants.all {

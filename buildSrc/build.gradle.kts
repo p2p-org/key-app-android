@@ -23,15 +23,6 @@ tasks.withType<KotlinCompile>().configureEach {
     }
 }
 
-gradlePlugin {
-    plugins {
-        create("keyappCoverage") {
-            id = "${group}.coverage"
-            implementationClass = "${group}.plugins.KeyAppCoverage"
-        }
-    }
-}
-
 dependencies {
     implementation(gradleApi())
     implementation("com.android.tools.build:gradle:7.3.0")
