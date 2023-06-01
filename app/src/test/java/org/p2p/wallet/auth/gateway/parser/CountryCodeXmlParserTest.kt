@@ -62,8 +62,7 @@ class CountryCodeXmlParserTest {
     }
 
     private fun readCountriesXmlFile(): InputStream {
-        val cwd = Paths.get("").toAbsolutePath().toString()
-        val ccpEnglishFile = File(cwd, "src/main/res/raw/ccp_english.xml")
+        val ccpEnglishFile = File(currentWorkingDir, "src/main/res/raw/ccp_english.xml")
         assertTrue(ccpEnglishFile.exists())
 
         return ccpEnglishFile.inputStream()
