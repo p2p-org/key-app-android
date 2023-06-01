@@ -62,7 +62,7 @@ class StrigaSignUpFirstStepFragment :
                 false
             }
 
-            StrigaSignupDataType.cachedValues.forEach { dataType ->
+            StrigaSignupDataType.values().forEach { dataType ->
                 val inputView = editTextFieldsMap[dataType] ?: return@forEach
                 inputView.addOnTextChangedListener { editable ->
                     presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
@@ -85,7 +85,7 @@ class StrigaSignUpFirstStepFragment :
 
     override fun onStop() {
         super.onStop()
-        presenter.onStop()
+        presenter.saveChanges()
     }
 
     override fun setPhoneMask(phoneMask: String?) {

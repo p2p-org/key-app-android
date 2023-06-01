@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -20,11 +19,6 @@ interface StrigaSignupDataDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateOrInsertData(data: StrigaSignupDataEntity)
-
-    @Transaction
-    suspend fun updateOrInsertDataWithTransaction(dataList: List<StrigaSignupDataEntity>) {
-        dataList.forEach { updateOrInsertData(it) }
-    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateOrInsertData(data: List<StrigaSignupDataEntity>)

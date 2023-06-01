@@ -44,7 +44,7 @@ class StrigaSignUpFirstStepPresenter(
         view?.showCountryPicker(selectedCountry = countryOfBirth)
     }
 
-    override fun onStop() {
+    override fun saveChanges() {
         interactor.saveChanges()
     }
 

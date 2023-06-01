@@ -25,11 +25,9 @@ enum class StrigaSignupDataType(@StringRes val tag: Int) {
     CITY_STATE(R.string.tag_striga_city_state);
 
     companion object {
-        val cachedValues: Array<StrigaSignupDataType> = values()
-
         fun fromTag(
             tagValue: String,
             resources: Resources
-        ): StrigaSignupDataType? = cachedValues.firstOrNull { resources.getString(it.tag) == tagValue }
+        ): StrigaSignupDataType? = values().firstOrNull { resources.getString(it.tag) == tagValue }
     }
 }

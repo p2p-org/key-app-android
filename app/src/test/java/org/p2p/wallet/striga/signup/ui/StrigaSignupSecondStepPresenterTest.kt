@@ -94,7 +94,7 @@ class StrigaSignupSecondStepPresenterTest {
 
         Assert.assertEquals(initialSignupData, resultSignupData)
 
-        presenter.onStop()
+        presenter.saveChanges()
         presenter.detach()
     }
 
@@ -119,7 +119,7 @@ class StrigaSignupSecondStepPresenterTest {
         verify(exactly = 0) { view.setErrors(any()) }
         verify(exactly = 0) { view.setButtonIsEnabled(false) }
 
-        presenter.onStop()
+        presenter.saveChanges()
         presenter.detach()
     }
 
@@ -143,7 +143,7 @@ class StrigaSignupSecondStepPresenterTest {
         verify(exactly = 1) { view.setButtonIsEnabled(false) }
         verify(exactly = 1) { view.scrollToFirstError(any()) }
 
-        presenter.onStop()
+        presenter.saveChanges()
         presenter.detach()
     }
 
@@ -170,7 +170,7 @@ class StrigaSignupSecondStepPresenterTest {
 
         verify(exactly = 1) { view.navigateNext() }
 
-        presenter.onStop()
+        presenter.saveChanges()
         presenter.detach()
     }
 }

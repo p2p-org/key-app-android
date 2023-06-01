@@ -27,7 +27,7 @@ class StrigaSignUpSecondStepPresenter(
         view?.setButtonIsEnabled(true)
     }
 
-    override fun onStop() {
+    override fun saveChanges() {
         interactor.saveChanges()
     }
 

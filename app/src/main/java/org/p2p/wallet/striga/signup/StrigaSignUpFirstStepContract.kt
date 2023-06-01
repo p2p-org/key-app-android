@@ -21,7 +21,7 @@ interface StrigaSignUpFirstStepContract {
         fun onFieldChanged(newValue: String, type: StrigaSignupDataType)
         fun onCountryChanged(newCountry: Country)
         fun onCountryClicked()
-        fun onStop()
+        fun saveChanges()
         fun onSubmit()
     }
 }

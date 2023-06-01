@@ -17,7 +17,7 @@ interface StrigaSignUpSecondStepContract {
 
     interface Presenter : MvpPresenter<View> {
         fun onFieldChanged(newValue: String, type: StrigaSignupDataType)
-        fun onStop()
+        fun saveChanges()
         fun onSubmit()
     }
 }

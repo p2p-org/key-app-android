@@ -49,7 +49,7 @@ class StrigaSignupDataDatabaseRepository(
     }
 
     private suspend fun prefillDataForUser() {
-        StrigaSignupDataType.cachedValues.map {
+        StrigaSignupDataType.values().map {
             StrigaSignupDataEntity(
                 type = resources.getString(it.tag),
                 value = null,
@@ -72,7 +72,7 @@ class StrigaSignupDataDatabaseRepository(
 
     override suspend fun updateSignupData(newData: Collection<StrigaSignupData>): StrigaDataLayerResult<Unit> = try {
         val entities = newData.map { mapper.toEntity(it, currentUserPublicKey) }
-        dao.updateOrInsertDataWithTransaction(entities)
+        dao.updateOrInsertData(entities)
         success()
     } catch (error: Throwable) {
         StrigaDataLayerError.from(
