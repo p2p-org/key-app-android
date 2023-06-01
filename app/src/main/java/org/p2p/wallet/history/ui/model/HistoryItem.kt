@@ -3,10 +3,10 @@ package org.p2p.wallet.history.ui.model
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import org.threeten.bp.ZonedDateTime
-import org.p2p.core.utils.asNegativeUsdTransaction
-import org.p2p.core.utils.asPositiveUsdTransaction
+import org.p2p.core.utils.asUsdTransaction
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.scaleShortOrFirstNotZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.recycler.RoundedItem
 import org.p2p.wallet.bridge.model.BridgeBundle
@@ -83,8 +83,9 @@ sealed interface HistoryItem {
         override val transactionId: String = id
 
         fun getFormattedFiatValue(): String {
-            val totalFiatAmount = sendDetails.amount.amountInUsd.toBigDecimalOrZero()
-            return totalFiatAmount.asNegativeUsdTransaction()
+            return sendDetails.amount.amountInUsd.toBigDecimalOrZero()
+                .scaleShortOrFirstNotZero()
+                .asUsdTransaction("+")
         }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String {
@@ -109,7 +110,8 @@ sealed interface HistoryItem {
 
         fun getFormattedFiatValue(): String {
             return bundle.resultAmount.amountInUsd.toBigDecimalOrZero()
-                .asPositiveUsdTransaction()
+                .scaleShortOrFirstNotZero()
+                .asUsdTransaction("+")
         }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String {

@@ -31,5 +31,3 @@ fun <T : Any> JsonReader.nextArray(arrayScope: (JsonReader) -> T): T {
     endArray()
     return result
 }
-
-

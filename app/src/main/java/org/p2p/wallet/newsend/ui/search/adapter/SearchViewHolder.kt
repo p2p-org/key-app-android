@@ -1,25 +1,25 @@
 package org.p2p.wallet.newsend.ui.search.adapter
 
+import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import android.view.ViewGroup
 import com.bumptech.glide.Glide
-import timber.log.Timber
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.databinding.ItemSearchBinding
-import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.context
-import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
+import timber.log.Timber
+import org.p2p.wallet.newsend.model.NetworkType
+import org.p2p.wallet.utils.viewbinding.getString
 
 class SearchViewHolder(
     parent: ViewGroup,
@@ -54,7 +54,7 @@ class SearchViewHolder(
                 imageResource = R.drawable.ic_search_wallet
                 frameWalletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
                 textViewTop.text = item.username
-                textViewBottom.withTextOrGone(item.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT))
+                textViewBottom.withTextOrGone(item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT))
             }
 
             walletImageView.setImageResource(imageResource)
@@ -80,7 +80,7 @@ class SearchViewHolder(
                 description = null
                 R.drawable.ic_search_wallet
             }
-            textViewTop.text = item.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
+            textViewTop.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
             textViewBottom.text = description
             textViewBottom.isVisible = item.networkType == NetworkType.SOLANA

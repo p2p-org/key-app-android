@@ -346,17 +346,19 @@ class HomePresenter(
         val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
         val isSellAvailable = sellInteractor.isSellAvailable()
 
-        val buttons = mutableListOf(ActionButton.TOP_UP_BUTTON)
-        if (isSellAvailable) {
-            buttons += ActionButton.SELL_BUTTON
-        }
-
-        buttons += ActionButton.SEND_BUTTON
+        val buttons = mutableListOf(
+            ActionButton.BUY_BUTTON,
+            ActionButton.RECEIVE_BUTTON,
+            ActionButton.SEND_BUTTON
+        )
 
         if (!isSellFeatureToggleEnabled) {
             buttons += ActionButton.SWAP_BUTTON
         }
 
+        if (isSellAvailable) {
+            buttons += ActionButton.SELL_BUTTON
+        }
         buttonsStateFlow.emit(buttons)
     }
 

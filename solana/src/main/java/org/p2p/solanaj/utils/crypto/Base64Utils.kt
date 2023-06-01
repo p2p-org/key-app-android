@@ -29,6 +29,4 @@ data class Base64String(val base64Value: String) {
     constructor(bytes: ByteArray) : this(bytes.copyOf().encodeToBase64())
 
     fun decodeToBytes(): ByteArray = base64Value.decodeFromBase64()
-
-    override fun toString(): String = base64Value
 }

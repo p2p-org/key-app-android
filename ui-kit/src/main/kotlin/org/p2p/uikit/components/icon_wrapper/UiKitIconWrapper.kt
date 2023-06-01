@@ -5,8 +5,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
-import org.p2p.core.common.TextContainer
-import org.p2p.core.common.bind
 import org.p2p.uikit.databinding.WidgetIconWrapperSingleBinding
 import org.p2p.uikit.databinding.WidgetIconWrapperTwoBinding
 import org.p2p.uikit.utils.image.bind
@@ -24,7 +22,6 @@ class UiKitIconWrapper @JvmOverloads constructor(
     private val viewPool = ComponentViewPool<IconWrapperCellModel>(this) {
         when (this) {
             IconWrapperCellModel.SingleIcon::class -> inflateViewBinding<WidgetIconWrapperSingleBinding>()
-            IconWrapperCellModel.SingleEmoji::class -> inflateViewBinding<WidgetIconWrapperSingleBinding>()
             IconWrapperCellModel.TwoIcon::class -> inflateViewBinding<WidgetIconWrapperTwoBinding>()
             else -> error("No type for viewPool: $this")
         }
@@ -46,20 +43,11 @@ class UiKitIconWrapper @JvmOverloads constructor(
         when (model) {
             is IconWrapperCellModel.SingleIcon -> (pair.first as WidgetIconWrapperSingleBinding).bind(model)
             is IconWrapperCellModel.TwoIcon -> (pair.first as WidgetIconWrapperTwoBinding).bind(model)
-            is IconWrapperCellModel.SingleEmoji -> (pair.first as WidgetIconWrapperSingleBinding).bind(model)
         }
         this.currentModel = model
     }
 
-    private fun WidgetIconWrapperSingleBinding.bind(model: IconWrapperCellModel.SingleEmoji) {
-        this.emojiViewIcon.isVisible = true
-        this.imageViewIcon.isVisible = false
-        this.emojiViewIcon.bind(TextContainer(model.emoji))
-    }
-
     private fun WidgetIconWrapperSingleBinding.bind(model: IconWrapperCellModel.SingleIcon) {
-        this.emojiViewIcon.isVisible = false
-        this.imageViewIcon.isVisible = true
         this.imageViewIcon.bind(model.icon)
     }
 

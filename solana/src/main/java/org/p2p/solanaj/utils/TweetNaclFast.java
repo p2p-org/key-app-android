@@ -6,9 +6,8 @@ package org.p2p.solanaj.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
+import java.lang.System;
 import java.util.concurrent.atomic.AtomicLong;
-
-import androidx.annotation.NonNull;
 
 /*
  * @description
@@ -17,12 +16,6 @@ import androidx.annotation.NonNull;
 public final class TweetNaclFast {
 
     private final static String TAG = "TweetNaclFast";
-
-    public static class SignFailed extends Exception {
-        SignFailed(Exception cause) {
-            super("TweetNaclFast signature failed", cause);
-        }
-    }
 
     /*
      * @description
@@ -702,11 +695,10 @@ public final class TweetNaclFast {
             this.mySecretKey = mySecretKey;
         }
 
-        /**
-         * Signs the message using the secret key and returns a SIGNED MESSAGE.
-         * @param message message to sign
-         * @return [signature + original message]
-         */
+        /*
+         * @description
+         *   Signs the message using the secret key and returns a signed message.
+         * */
         public byte [] sign(byte [] message) {
             if (message==null) return null;
 
@@ -764,22 +756,16 @@ public final class TweetNaclFast {
             return msg;
         }
 
-        /**
-         * Signs the message using the secret key and returns a SIGNATURE.
-         * @param message message to sign
-         * @return signature with size of only 64 bytes, even if the message length more then that
-         */
-        @NonNull
-        public byte [] detached(byte [] message) throws SignFailed {
-            try {
-                byte[] signedMsg = this.sign(message);
-                byte[] sig = new byte[signatureLength];
-                for (int i = 0; i < sig.length; i++)
-                    sig[i] = signedMsg[i];
-                return sig;
-            } catch (Exception signError) {
-                throw new SignFailed(signError);
-            }
+        /*
+         * @description
+         *   Signs the message using the secret key and returns a signature.
+         * */
+        public byte [] detached(byte [] message) {
+            byte[] signedMsg = this.sign(message);
+            byte[] sig = new byte[signatureLength];
+            for (int i = 0; i < sig.length; i++)
+                sig[i] = signedMsg[i];
+            return sig;
         }
 
         /*
@@ -787,7 +773,7 @@ public final class TweetNaclFast {
          *   Verifies the signature for the message and
          *   returns true if verification succeeded or false if it failed.
          * */
-        public boolean detached_verify(byte [] message, @NonNull byte [] signature) {
+        public boolean detached_verify(byte [] message, byte [] signature) {
             if (signature.length != signatureLength)
                 return false;
             if (theirPublicKey.length != publicKeyLength)
@@ -810,10 +796,7 @@ public final class TweetNaclFast {
             private byte [] publicKey;
             private byte [] secretKey;
 
-            /**
-             * Creates publicKey and secretKey fields field with zeros
-             */
-            KeyPair() {
+            public KeyPair() {
                 publicKey = new byte[publicKeyLength];
                 secretKey = new byte[secretKeyLength];
             }
@@ -827,9 +810,10 @@ public final class TweetNaclFast {
             }
         }
 
-        /**
-         * @return randomly generated keypair
-         */
+        /*
+         * @description
+         *   Signs the message using the secret key and returns a signed message.
+         * */
         public static KeyPair keyPair() {
             KeyPair kp = new KeyPair();
 

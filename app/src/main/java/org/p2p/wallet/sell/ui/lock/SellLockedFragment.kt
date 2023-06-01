@@ -24,6 +24,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellLockBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
+import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.newsend.ui.SendOpenedFrom
@@ -169,7 +170,7 @@ class SellLockedFragment :
         sendAmount: BigDecimal,
         receiverAddress: String
     ) {
-        val recipient = SearchResult.AddressFound(receiverAddress)
+        val recipient = SearchResult.AddressFound(AddressState(receiverAddress))
         replaceFragment(
             NewSendFragment.create(
                 recipient = recipient,

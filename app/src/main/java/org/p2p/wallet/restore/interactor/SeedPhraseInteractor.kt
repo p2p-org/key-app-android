@@ -99,6 +99,9 @@ class SeedPhraseInteractor(
         adminAnalytics.logPasswordCreated()
     }
 
+    @Deprecated("Old onboarding flow, delete someday")
+    suspend fun generateSecretKeys(): List<String> = authRepository.generatePhrase()
+
     fun verifySeedPhrase(secretKeys: List<SeedPhraseWord>): SeedPhraseVerifyResult {
         val validWords = English.INSTANCE.words
         val seedWords = secretKeys.map { it.text }

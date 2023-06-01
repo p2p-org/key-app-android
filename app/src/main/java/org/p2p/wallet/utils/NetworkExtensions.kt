@@ -3,11 +3,9 @@ package org.p2p.wallet.utils
 import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
-import retrofit2.HttpException
-import timber.log.Timber
-import java.net.UnknownHostException
 import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.data.ServerException
+import java.net.UnknownHostException
 
 fun Throwable?.getErrorMessage(resourceDelegate: (res: Int) -> String): String =
     when (this) {
@@ -25,13 +23,3 @@ fun Request.bodyAsString(): String = kotlin.runCatching {
     .getOrDefault("")
 
 fun Response.bodyAsString(): String = peekBody(Long.MAX_VALUE).string()
-
-fun retrofit2.Response<*>.errorBodyOrNull(): String? {
-    return kotlin.runCatching { errorBody()?.string() }
-        .onFailure { Timber.i(it) }
-        .getOrNull()
-}
-
-fun HttpException.errorBodyOrNull(): String? {
-    return response()?.errorBodyOrNull()
-}

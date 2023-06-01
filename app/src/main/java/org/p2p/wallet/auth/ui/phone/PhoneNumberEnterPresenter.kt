@@ -1,8 +1,5 @@
 package org.p2p.wallet.auth.ui.phone
 
-import timber.log.Timber
-import kotlin.time.Duration.Companion.minutes
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
@@ -14,15 +11,17 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
-import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
 import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
+import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.launch
 
 private const val MAX_PHONE_NUMBER_TRIES = 5
 private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
 
 class PhoneNumberEnterPresenter(
-    private val countryCodeRepository: CountryCodeLocalRepository,
+    private val countryCodeInteractor: CountryCodeInteractor,
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
@@ -49,9 +48,9 @@ class PhoneNumberEnterPresenter(
     private suspend fun loadDefaultCountryCode() {
         try {
             val countryCode: CountryCode? =
-                countryCodeRepository.detectCountryCodeBySimCard()
-                    ?: countryCodeRepository.detectCountryCodeByNetwork()
-                    ?: countryCodeRepository.detectCountryCodeByLocale()
+                countryCodeInteractor.detectCountryCodeBySimCard()
+                    ?: countryCodeInteractor.detectCountryCodeByNetwork()
+                    ?: countryCodeInteractor.detectCountryCodeByLocale()
 
             selectedCountryCode = countryCode
 
@@ -64,14 +63,14 @@ class PhoneNumberEnterPresenter(
 
     override fun onCountryCodeChanged(newCountryCode: String) {
         launch {
-            selectedCountryCode = countryCodeRepository.findCountryCodeByPhoneCode(newCountryCode)
+            selectedCountryCode = countryCodeInteractor.findCountryForPhoneCode(newCountryCode)
             view?.update(selectedCountryCode)
         }
     }
 
     override fun onPhoneChanged(phoneNumber: String) {
         selectedCountryCode?.let {
-            val isValidNumber = countryCodeRepository.isValidNumberForRegion(it.phoneCode, phoneNumber)
+            val isValidNumber = countryCodeInteractor.isValidNumberForRegion(it.phoneCode, phoneNumber)
             val newButtonState = if (isValidNumber) {
                 PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE
             } else {
