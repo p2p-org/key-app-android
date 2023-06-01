@@ -32,6 +32,12 @@ class CountryInMemoryRepository(
         }
     }
 
+    override suspend fun findCountryByIsoAlpha2(countyCode: String): Country? {
+        return countryCodeRepository.findCountryCodeByIsoAlpha2(countyCode)?.let {
+            return it.extractCountry()
+        }
+    }
+
     override suspend fun findPhoneMaskByCountry(country: Country): PhoneMask? {
         return try {
             val needleCountry = country.codeAlpha2.uppercase()

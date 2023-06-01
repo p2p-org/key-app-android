@@ -25,6 +25,7 @@ class StrigaSignupInteractor(
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
         setOf(
             StrigaSignupDataType.EMAIL,
+            StrigaSignupDataType.PHONE_CODE,
             StrigaSignupDataType.PHONE_NUMBER,
             StrigaSignupDataType.FIRST_NAME,
             StrigaSignupDataType.LAST_NAME,
@@ -45,11 +46,11 @@ class StrigaSignupInteractor(
         )
     }
 
-    fun validateFirstStep(data: Map<StrigaSignupDataType,StrigaSignupData>): ValidationResult {
+    fun validateFirstStep(data: Map<StrigaSignupDataType, StrigaSignupData>): ValidationResult {
         return validateStep(data, firstStepDataTypes)
     }
 
-    fun validateSecondStep(data: Map<StrigaSignupDataType,StrigaSignupData>): ValidationResult {
+    fun validateSecondStep(data: Map<StrigaSignupDataType, StrigaSignupData>): ValidationResult {
         return validateStep(data, secondStepDataTypes)
     }
 
@@ -62,15 +63,23 @@ class StrigaSignupInteractor(
         return countryRepository.findPhoneMaskByCountry(country)
     }
 
+    suspend fun findCountryByIsoAlpha2(codeAlpha2: String?): Country? {
+        if (codeAlpha2.isNullOrBlank()) return null
+        return countryRepository.findCountryByIsoAlpha2(codeAlpha2)
+    }
+
     suspend fun findCountryByIsoAlpha3(codeAlpha3: String?): Country? {
         if (codeAlpha3.isNullOrBlank()) return null
         return countryRepository.findCountryByIsoAlpha3(codeAlpha3)
     }
 
-    suspend fun getSignupData(): List<StrigaSignupData> {
+    suspend fun getSignupDataFirstStep(): List<StrigaSignupData> = getSignupData(firstStepDataTypes)
+    suspend fun getSignupDataSecondStep(): List<StrigaSignupData> = getSignupData(secondStepDataTypes)
+
+    private suspend fun getSignupData(fields: Set<StrigaSignupDataType>): List<StrigaSignupData> {
         return when (val data = signupDataRepository.getUserSignupData()) {
             is StrigaDataLayerResult.Success -> {
-                data.value
+                data.value.filter { it.type in fields }
             }
             is StrigaDataLayerResult.Failure -> {
                 Timber.e(data.error, "Striga signup data: failed to get")
@@ -90,7 +99,10 @@ class StrigaSignupInteractor(
         Timber.d("Striga signup data: saved")
     }
 
-    private fun validateStep(data: Map<StrigaSignupDataType,StrigaSignupData>, types: Set<StrigaSignupDataType>): ValidationResult {
+    private fun validateStep(
+        data: Map<StrigaSignupDataType, StrigaSignupData>,
+        types: Set<StrigaSignupDataType>
+    ): ValidationResult {
         val validationResults = types.map { data[it] ?: StrigaSignupData(it, null) }.map(::validate)
 
         val countValid = validationResults.count { it.isValid }

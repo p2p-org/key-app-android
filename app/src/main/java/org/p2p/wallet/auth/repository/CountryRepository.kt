@@ -7,9 +7,14 @@ interface CountryRepository {
     suspend fun detectCountryOrDefault(): Country
 
     /**
-     * Find [Country] by ISO 3166-1 alpha-3 code (US, DE, RU, etc.)
+     * Find [Country] by ISO 3166-1 alpha-3 code (USA, DEU, RUS, etc.)
      */
     suspend fun findCountryByIsoAlpha3(countyCode: String): Country?
+
+    /**
+     * Find [Country] by ISO 3166-1 alpha-2 code (US, DE, RU, etc.)
+     */
+    suspend fun findCountryByIsoAlpha2(countyCode: String): Country?
 
     /**
      * Returns phone mask for given country code or null

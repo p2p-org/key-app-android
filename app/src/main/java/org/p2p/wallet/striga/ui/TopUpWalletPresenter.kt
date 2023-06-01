@@ -15,7 +15,7 @@ class TopUpWalletPresenter(
     TopUpWalletContract.Presenter {
 
     private val isUserAuthByWeb3: Boolean
-        get() = true
+        get() = seedPhraseProvider.getUserSeedPhrase().provider == SeedPhraseSource.WEB_AUTH
 
     override fun attach(view: TopUpWalletContract.View) {
         super.attach(view)

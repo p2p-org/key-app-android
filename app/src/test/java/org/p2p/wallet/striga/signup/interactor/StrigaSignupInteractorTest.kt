@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package org.p2p.wallet.striga.interactor
+package org.p2p.wallet.striga.signup.interactor
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -10,15 +10,16 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
@@ -29,10 +30,15 @@ import org.p2p.wallet.utils.UnconfinedTestDispatchers
 private val SupportedCountry = Country(
     name = "United Kingdom",
     flagEmoji = "🇬🇧",
-    code = "gb"
+    codeAlpha2 = "gb",
+    codeAlpha3 = "gbr"
 )
 
-private const val DefaultPhoneMask = "UA:380 ## ### ## ##"
+private val DefaultPhoneMask = PhoneMask(
+    countryCodeAlpha2 = "ua",
+    phoneCode = "+380",
+    mask = "380 ## ### ## ##"
+)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrigaSignupInteractorTest {
@@ -50,12 +56,21 @@ class StrigaSignupInteractorTest {
 
     private val savedSignupDataStorage = mutableListOf<StrigaSignupData>()
 
+    private var firstStepData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
+    private var secondStepData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
 
         coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
         coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
+    }
+
+    @BeforeEach
+    fun beforeEach() {
+        firstStepData.clear()
+        secondStepData.clear()
     }
 
     @Test
@@ -65,23 +80,10 @@ class StrigaSignupInteractorTest {
         )
 
         val interactor = createInteractor()
-        val result = interactor.getSignupData()
-        assertEquals(0, result.size)
-    }
-
-    @Test
-    fun `GIVEN signup data WHEN notify data changed THEN data is not updated without saveChanges`() = runTest {
-        // GIVEN
-        initSignupDataRepository(emptyList())
-        val interactor = createInteractor()
-
-        // WHEN
-        interactor.notifyDataChanged(StrigaSignupDataType.PHONE_NUMBER, "1234567890")
-
-        // THEN
-        val result = interactor.getSignupData()
-        assertEquals(0, result.size)
-        assertEquals(0, savedSignupDataStorage.size)
+        val resultFirst = interactor.getSignupDataFirstStep()
+        val resultSecond = interactor.getSignupDataSecondStep()
+        assertEquals(0, resultFirst.size)
+        assertEquals(0, resultSecond.size)
     }
 
     @Test
@@ -89,15 +91,19 @@ class StrigaSignupInteractorTest {
         // GIVEN
         initSignupDataRepository(emptyList())
         val interactor = createInteractor()
+        val data = mutableMapOf(
+            StrigaSignupDataType.PHONE_NUMBER to StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "1234567890"),
+            StrigaSignupDataType.COUNTRY to StrigaSignupData(StrigaSignupDataType.COUNTRY, "TR")
+        )
 
         // WHEN
-        interactor.notifyDataChanged(StrigaSignupDataType.PHONE_NUMBER, "1234567890")
-        interactor.saveChanges()
-        interactor.saveChanges()
+        interactor.saveChanges(data.values)
 
         // THEN
-        val result = interactor.getSignupData()
-        assertEquals(1, result.size)
+        val resultFirst = interactor.getSignupDataFirstStep()
+        val resultSecond = interactor.getSignupDataFirstStep()
+        assertEquals(1, resultFirst.size)
+        assertEquals(1, resultSecond.size)
     }
 
     @Test
@@ -107,14 +113,14 @@ class StrigaSignupInteractorTest {
         val interactor = createInteractor()
 
         // WHEN
-        interactor.notifyDataChanged(StrigaSignupDataType.EMAIL, "1234567890")
-        interactor.notifyDataChanged(StrigaSignupDataType.PHONE_NUMBER, "hello world")
-        interactor.notifyDataChanged(StrigaSignupDataType.FIRST_NAME, "1234567890")
-        interactor.notifyDataChanged(StrigaSignupDataType.LAST_NAME, "1234567890")
-        interactor.notifyDataChanged(StrigaSignupDataType.DATE_OF_BIRTH, "1234567890")
-        interactor.notifyDataChanged(StrigaSignupDataType.COUNTRY_OF_BIRTH, "1234567890")
-        val (isValid, _) = interactor.validateFirstStep()
-        val (isValidSecond, _) = interactor.validateSecondStep()
+        setData(StrigaSignupDataType.EMAIL, "1234567890")
+        setData(StrigaSignupDataType.PHONE_NUMBER, "hello world")
+        setData(StrigaSignupDataType.FIRST_NAME, "1234567890")
+        setData(StrigaSignupDataType.LAST_NAME, "1234567890")
+        setData(StrigaSignupDataType.DATE_OF_BIRTH, "1234567890")
+        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "1234567890")
+        val (isValid, _) = interactor.validateFirstStep(firstStepData)
+        val (isValidSecond, _) = interactor.validateSecondStep(firstStepData)
 
         // THEN
         assertFalse(isValid)
@@ -128,18 +134,30 @@ class StrigaSignupInteractorTest {
         val interactor = createInteractor()
 
         // WHEN
-        interactor.notifyDataChanged(StrigaSignupDataType.EMAIL, "aaa@bbb.ccc")
-        interactor.notifyDataChanged(StrigaSignupDataType.PHONE_NUMBER, "+1234567890")
-        interactor.notifyDataChanged(StrigaSignupDataType.FIRST_NAME, "Vasya")
-        interactor.notifyDataChanged(StrigaSignupDataType.LAST_NAME, "Pupkin")
-        interactor.notifyDataChanged(StrigaSignupDataType.DATE_OF_BIRTH, "10.10.2010")
-        interactor.notifyDataChanged(StrigaSignupDataType.COUNTRY_OF_BIRTH, "Somewhere")
-        val (isValid, _) = interactor.validateFirstStep()
-        val (isValidSecond, _) = interactor.validateSecondStep()
+        setData(StrigaSignupDataType.EMAIL, "aaa@bbb.ccc")
+        setData(StrigaSignupDataType.PHONE_CODE, "+1")
+        setData(StrigaSignupDataType.PHONE_NUMBER, "+1234567890")
+        setData(StrigaSignupDataType.FIRST_NAME, "Vasya")
+        setData(StrigaSignupDataType.LAST_NAME, "Pupkin")
+        setData(StrigaSignupDataType.DATE_OF_BIRTH, "10.10.2010")
+        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "Somewhere")
+        val (isValid, statesFirst) = interactor.validateFirstStep(firstStepData)
+        val (isValidSecond, statesSecond) = interactor.validateSecondStep(secondStepData)
+
+        val stepFirstError = if (!isValid) {
+            statesFirst.first { !it.isValid }.type
+        } else {
+            null
+        }
+        val stepSecondError = if (!isValid) {
+            statesSecond.first { !it.isValid }.type
+        } else {
+            null
+        }
 
         // THEN
-        assertTrue(isValid)
-        assertFalse(isValidSecond)
+        assertTrue("First step is invalid: message id: $stepFirstError", isValid)
+        assertFalse("First step is invalid: message id: $stepSecondError", isValidSecond)
     }
 
     @Test
@@ -149,15 +167,15 @@ class StrigaSignupInteractorTest {
         val interactor = createInteractor()
 
         // WHEN
-        interactor.notifyDataChanged(StrigaSignupDataType.OCCUPATION, "")
-        interactor.notifyDataChanged(StrigaSignupDataType.SOURCE_OF_FUNDS, " world")
-        interactor.notifyDataChanged(StrigaSignupDataType.COUNTRY, "")
-        interactor.notifyDataChanged(StrigaSignupDataType.CITY, "")
-        interactor.notifyDataChanged(StrigaSignupDataType.CITY_ADDRESS_LINE, "")
-        interactor.notifyDataChanged(StrigaSignupDataType.CITY_POSTAL_CODE, "")
-        interactor.notifyDataChanged(StrigaSignupDataType.CITY_STATE, "")
-        val (isValid, _) = interactor.validateSecondStep()
-        val (isValidFirst, _) = interactor.validateFirstStep()
+        setData(StrigaSignupDataType.OCCUPATION, "")
+        setData(StrigaSignupDataType.SOURCE_OF_FUNDS, " world")
+        setData(StrigaSignupDataType.COUNTRY, "")
+        setData(StrigaSignupDataType.CITY, "")
+        setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "")
+        setData(StrigaSignupDataType.CITY_POSTAL_CODE, "")
+        setData(StrigaSignupDataType.CITY_STATE, "")
+        val (isValid, _) = interactor.validateSecondStep(firstStepData)
+        val (isValidFirst, _) = interactor.validateFirstStep(firstStepData)
 
         // THEN
         assertFalse(isValid)
@@ -171,15 +189,15 @@ class StrigaSignupInteractorTest {
         val interactor = createInteractor()
 
         // WHEN
-        interactor.notifyDataChanged(StrigaSignupDataType.OCCUPATION, "a")
-        interactor.notifyDataChanged(StrigaSignupDataType.SOURCE_OF_FUNDS, "a")
-        interactor.notifyDataChanged(StrigaSignupDataType.COUNTRY, "a")
-        interactor.notifyDataChanged(StrigaSignupDataType.CITY, "a")
-        interactor.notifyDataChanged(StrigaSignupDataType.CITY_ADDRESS_LINE, "a")
-        interactor.notifyDataChanged(StrigaSignupDataType.CITY_POSTAL_CODE, "a")
-        interactor.notifyDataChanged(StrigaSignupDataType.CITY_STATE, "a")
-        val (isValid, _) = interactor.validateSecondStep()
-        val (isValidFirst, _) = interactor.validateFirstStep()
+        setData(StrigaSignupDataType.OCCUPATION, "a")
+        setData(StrigaSignupDataType.SOURCE_OF_FUNDS, "a")
+        setData(StrigaSignupDataType.COUNTRY, "a")
+        setData(StrigaSignupDataType.CITY, "a")
+        setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "a")
+        setData(StrigaSignupDataType.CITY_POSTAL_CODE, "a")
+        setData(StrigaSignupDataType.CITY_STATE, "a")
+        val (isValid, _) = interactor.validateSecondStep(firstStepData)
+        val (isValidFirst, _) = interactor.validateFirstStep(firstStepData)
 
         // THEN
         assertTrue(isValid)
@@ -228,5 +246,9 @@ class StrigaSignupInteractorTest {
         coEvery { signupDataRepository.getUserSignupData() } answers {
             StrigaDataLayerResult.Success(savedSignupDataStorage)
         }
+    }
+
+    private fun setData(type: StrigaSignupDataType, newValue: String) {
+        firstStepData[type] = StrigaSignupData(type, newValue)
     }
 }

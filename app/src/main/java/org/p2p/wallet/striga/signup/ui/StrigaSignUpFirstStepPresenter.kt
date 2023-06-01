@@ -47,7 +47,6 @@ class StrigaSignUpFirstStepPresenter(
             type = StrigaSignupDataType.COUNTRY_OF_BIRTH,
             value = newCountry.codeAlpha3
         )
-        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, newCountry.codeAlpha3)
     }
 
     override fun onCountryClicked() {
@@ -73,12 +72,12 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun saveChanges() {
-        onBeforeSave()
+        mapDataForStorage()
         interactor.saveChanges(signupData.values)
     }
 
     private suspend fun initialLoadSignupData() {
-        val data = interactor.getSignupData().associateBy { it.type }
+        val data = interactor.getSignupDataFirstStep().associateBy { it.type }
 
         // fill pre-saved values as-is
         data.values.forEach {
@@ -88,26 +87,26 @@ class StrigaSignUpFirstStepPresenter(
 
         // db stores COUNTRY_OF_BIRTH as country name code ISO 3166-1 alpha-3,
         // so we need to find country by code and convert to country name
-        val savedCountry = interactor.findCountryByIsoAlpha3(
+        countryOfBirth = interactor.findCountryByIsoAlpha3(
             data[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.value.orEmpty()
         )
-        savedCountry?.let { onCountryChanged(savedCountry) }
+        countryOfBirth?.let { onCountryChanged(it) }
     }
 
-    private fun onBeforeSave() {
-        val phoneNumber = getFullPhoneNumber()
-        if(phoneNumber != null) {
-            phoneMask?.let {
-                setData(
-                    StrigaSignupDataType.PHONE_CODE,
-                    it.phoneCodeWithSign
-                )
-                setData(
-                    StrigaSignupDataType.PHONE_NUMBER,
-                    removeCodeFromPhoneNumber(it.phoneCodeWithSign, phoneNumber)
-                )
-            }
+    private fun mapDataForStorage() {
+        val fullPhoneNumber = getFullPhoneNumber()
+        if (fullPhoneNumber != null && phoneMask != null) {
+            val phoneCodeWithSign = phoneMask?.phoneCodeWithSign ?: throw IllegalStateException("Phone mask is null")
+            setData(
+                StrigaSignupDataType.PHONE_CODE,
+                phoneCodeWithSign
+            )
+            setData(
+                StrigaSignupDataType.PHONE_NUMBER,
+                removeCodeFromPhoneNumber(phoneCodeWithSign, fullPhoneNumber)
+            )
         }
+        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, countryOfBirth?.codeAlpha3.orEmpty())
     }
 
     private suspend fun setupPhoneMask() {

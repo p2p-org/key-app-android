@@ -8,6 +8,7 @@ import org.p2p.core.common.bind
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpSecondStepBinding
 import org.p2p.wallet.intercom.IntercomService
@@ -38,14 +39,18 @@ class StrigaSignUpSecondStepFragment :
 
         const val OCCUPATION_REQUEST_KEY = "OCCUPATION_REQUEST_KEY"
         const val OCCUPATION_RESULT_KEY = "OCCUPATION_RESULT_KEY"
+
+        const val COUNTRY_REQUEST_KEY = "COUNTRY_REQUEST_KEY"
+        const val COUNTRY_RESULT_KEY = "COUNTRY_RESULT_KEY"
         fun create() = StrigaSignUpSecondStepFragment()
     }
 
     override val presenter: IPresenter by inject()
     private val binding: FragmentStrigaSignUpSecondStepBinding by viewBinding()
-    private val editTextFieldsMap: Map<StrigaSignupDataType, UiKitEditText> by lazy { createEditTextsMap() }
+    private lateinit var editTextFieldsMap: Map<StrigaSignupDataType, UiKitEditText>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        editTextFieldsMap = createEditTextsMap()
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
@@ -70,6 +75,9 @@ class StrigaSignUpSecondStepFragment :
             }
             editTextFunds.setOnClickListener {
                 presenter.onSourceOfFundsClicked()
+            }
+            editTextCountry.setOnClickListener {
+                presenter.onCountryClicked()
             }
 
             buttonNext.setOnClickListener {
@@ -146,6 +154,18 @@ class StrigaSignUpSecondStepFragment :
         )
     }
 
+    override fun showCountryPicker(selectedValue: Country?) {
+        replaceFragmentForResult(
+            target = StrigaPresetDataPickerFragment.create(
+                selectedCountry = StrigaPickerItem.CountryItem(selectedValue),
+                requestKey = COUNTRY_REQUEST_KEY,
+                resultKey = COUNTRY_RESULT_KEY
+            ),
+            requestKey = COUNTRY_REQUEST_KEY,
+            onResult = ::onFragmentResult
+        )
+    }
+
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
         return with(binding) {
             buildMap {
@@ -190,6 +210,10 @@ class StrigaSignUpSecondStepFragment :
             FUNDS_REQUEST_KEY -> {
                 val selectedItem = bundle.getParcelableCompat(FUNDS_RESULT_KEY) as? StrigaPickerItem.FundsItem
                 presenter.onSourceOfFundsChanged(selectedItem?.selectedItem ?: return)
+            }
+            COUNTRY_REQUEST_KEY -> {
+                val selectedItem = bundle.getParcelableCompat(COUNTRY_RESULT_KEY) as? StrigaPickerItem.CountryItem
+                presenter.onCountryChanged(selectedItem?.selectedItem ?: return)
             }
             else -> throw IllegalStateException("Result for $requestKey is unhandled: ")
         }
