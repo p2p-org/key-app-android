@@ -18,7 +18,12 @@ class CountryInMemoryRepository(
         return detectedCountryCode?.extractCountry() ?: defaultCountry()
     }
 
-    private fun CountryCode.extractCountry(): Country = Country(countryName, flagEmoji, nameCode)
+    private fun CountryCode.extractCountry(): Country = Country(
+        name = countryName,
+        flagEmoji = flagEmoji,
+        codeAlpha2 = nameCodeAlpha2,
+        codeAlpha3 = nameCodeAlpha3,
+    )
 
     private suspend fun defaultCountry(): Country = getAllCountries().first()
 }

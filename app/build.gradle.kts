@@ -209,4 +209,9 @@ dependencies {
 
     // timezone for unit testing
     testImplementation("org.threeten:threetenbp:1.6.8")
+
+    // XmlPullParser goes with android.jar and doesn't work in unit tests
+    testImplementation("xmlpull:xmlpull:1.1.3.4a@jar")
+    // KXmlParser needs for XmlPullParserFactory
+    testImplementation("net.sf.kxml:kxml2:2.3.0")
 }

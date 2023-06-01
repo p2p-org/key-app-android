@@ -24,13 +24,15 @@ import org.p2p.wallet.utils.mutableListQueueOf
 private val UnsupportedCountry = Country(
     name = "Turkey",
     flagEmoji = "🇹🇷",
-    code = "tr"
+    codeAlpha2 = "tr",
+    codeAlpha3 = "tur"
 )
 
 private val SupportedCountry = Country(
     name = "United Kingdom",
     flagEmoji = "🇬🇧",
-    code = "gb"
+    codeAlpha2 = "gb",
+    codeAlpha3 = "gbr"
 )
 
 @ExperimentalCoroutinesApi
