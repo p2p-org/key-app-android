@@ -23,7 +23,7 @@ class CountryCodeInMemoryRepository(
     override suspend fun detectCountryCodeByLocale(): CountryCode? = withContext(dispatchers.io) {
         try {
             val localeCountryIsoAlpha2 = context.resources.configuration.locale.country
-            getCountryForIsoAlpha2(localeCountryIsoAlpha2)
+            findCountryCodeByIsoAlpha2(localeCountryIsoAlpha2)
         } catch (error: Throwable) {
             Timber.i(error, "Detecting country code by locale failed")
             null
@@ -34,7 +34,7 @@ class CountryCodeInMemoryRepository(
         try {
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
             val networkCountryIso = telephonyManager.networkCountryIso
-            getCountryForIsoAlpha2(networkCountryIso)
+            findCountryCodeByIsoAlpha2(networkCountryIso)
         } catch (error: Throwable) {
             Timber.i(error, "Detecting country code by network failed")
             null
@@ -45,7 +45,7 @@ class CountryCodeInMemoryRepository(
         try {
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
             val simCountryISOAlpha2 = telephonyManager.simCountryIso
-            getCountryForIsoAlpha2(simCountryISOAlpha2)
+            findCountryCodeByIsoAlpha2(simCountryISOAlpha2)
         } catch (error: Throwable) {
             Timber.i(error, "Detecting country code by sim card failed")
             null
@@ -63,8 +63,4 @@ class CountryCodeInMemoryRepository(
 
     override fun isValidNumberForRegion(phoneNumber: String, countryCode: String): Boolean =
         countryCodeHelper.isValidNumberForRegion(phoneNumber, countryCode)
-
-    private suspend fun getCountryForIsoAlpha2(nameCode: String): CountryCode? = withContext(dispatchers.io) {
-        allCountryCodes.firstOrNull { it.nameCodeAlpha2.equals(nameCode, ignoreCase = true) }
-    }
 }

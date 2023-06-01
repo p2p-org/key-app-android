@@ -48,7 +48,7 @@ class CountryInMemoryRepository(
                 val soughtLine = lines.binarySearch { line ->
                     val lineCountryCode = line.substring(0, 2)
                     when {
-                        lineCountryCode == needleCountry -> 0
+                        lineCountryCode.equals(needleCountry, ignoreCase = true) -> 0
                         lineCountryCode < needleCountry -> -1
                         else -> 1
                     }
