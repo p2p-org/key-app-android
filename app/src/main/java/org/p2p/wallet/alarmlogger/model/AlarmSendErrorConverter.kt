@@ -20,6 +20,7 @@ import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.data.SimulationException
 import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SendTransactionFailed
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
@@ -59,7 +60,7 @@ class AlarmSendErrorConverter(
             fees = fees,
             relayAccountState = relayAccountState,
             userPubkey = userPublicKey,
-            recipientPubkey = recipientAddress.addressState.address.toBase58Instance(),
+            recipientPubkey = recipientAddress.address.toBase58Instance(),
             recipientName = (recipientAddress as? SearchResult.UsernameFound)?.username.orEmpty(),
             simulationError = error.getSimulationError(),
             feeRelayerError = error.getFeeRelayerError(),
@@ -263,5 +264,6 @@ private fun Throwable.getBlockchainError(): String = when (this) {
     is BridgeResult.Error -> "Bridge error: ${this.javaClass.simpleName}"
     is FeeRelayerException -> emptyString()
     is SimulationException -> emptyString()
+    is SendTransactionFailed -> cause.getBlockchainError()
     else -> "Unknown error: ${message ?: localizedMessage}"
 }

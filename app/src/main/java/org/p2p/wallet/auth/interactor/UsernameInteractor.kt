@@ -19,6 +19,7 @@ import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 
 const val KEY_USERNAME = "KEY_USERNAME"
+const val KEY_USERNAME_DOMAIN = "KEY_USERNAME_DOMAIN"
 
 class UsernameInteractor(
     private val usernameRepository: UsernameRepository,
@@ -49,10 +50,16 @@ class UsernameInteractor(
             sharedPreferences.edit {
                 if (usernameDetails != null) {
                     putString(KEY_USERNAME, usernameDetails.username.value)
+
+                    // save only if domain is not default
+                    if (usernameDetails.username.domainPrefix != usernameDomainFeatureToggle.value) {
+                        putString(KEY_USERNAME_DOMAIN, usernameDetails.username.domainPrefix)
+                    }
                     Timber.i("Username restored for ${owner.base58Value}")
                 } else {
                     // removing legacy usernames .p2p.sol
                     remove(KEY_USERNAME)
+                    remove(KEY_USERNAME_DOMAIN)
                 }
             }
             usernameDetails?.username?.fullUsername?.let {
@@ -78,10 +85,11 @@ class UsernameInteractor(
 
     fun getUsername(): Username? {
         val username = sharedPreferences.getString(KEY_USERNAME, null)
+        val domain = sharedPreferences.getString(KEY_USERNAME_DOMAIN, usernameDomainFeatureToggle.value)!!
         return username?.let {
             Username(
                 value = it,
-                domainPrefix = usernameDomainFeatureToggle.value
+                domainPrefix = domain
             )
         }
     }

@@ -2,6 +2,10 @@
 <resources>
 
     <!-- Atoms -->
+    <attr name="editable" format="boolean" />
+    <attr name="labelText" format="string" />
+    <attr name="hintText" format="string" />
+
 
     <declare-styleable name="UiKitStartAmountView">
         <attr name="icon" />
@@ -9,7 +13,7 @@
         <attr name="subtitleColor" format="color" />
         <attr name="subtitle" format="string" />
         <attr name="subSubtitle" format="string" />
-        <attr name="android:textAppearance"/>
+        <attr name="android:textAppearance" />
     </declare-styleable>
 
     <declare-styleable name="UiKitEndAmountView">
@@ -41,7 +45,7 @@
     <attr name="sliderText" format="string" />
 
     <declare-styleable name="UiKitSliderButton">
-        <attr name="android:textColor"/>
+        <attr name="android:textColor" />
         <attr name="sliderIcon" />
         <attr name="sliderText" />
     </declare-styleable>
@@ -74,10 +78,10 @@
     </declare-styleable>
 
     <declare-styleable name="UiKitAmountEditText">
-        <attr name="editable" format="boolean" />
-        <attr name="labelText" format="string" />
-        <attr name="hintText" format="string" />
-        <attr name="hintTextColor" format="color"/>
+        <attr name="editable" />
+        <attr name="labelText" />
+        <attr name="hintText" />
+        <attr name="hintTextColor" format="color" />
         <attr name="android:inputType" />
         <attr name="android:maxLength" />
         <attr name="android:imeOptions" />
@@ -85,7 +89,23 @@
         <attr name="android:text" />
         <attr name="android:drawableEnd" />
         <attr name="android:textAppearance" />
-        <attr name="android:layout_height"/>
+        <attr name="android:layout_height" />
+    </declare-styleable>
+
+
+    <declare-styleable name="UiKitTextField">
+        <attr name="editable" />
+        <attr name="labelText" />
+        <attr name="hintText" />
+        <attr name="android:inputType" />
+        <attr name="android:maxLength" />
+        <attr name="android:imeOptions" />
+        <attr name="android:digits" />
+        <attr name="android:text" />
+        <attr name="android:hint" />
+        <attr name="android:drawableEnd" />
+        <attr name="android:textAppearance" />
+        <attr name="isDropdown" format="boolean"/>
     </declare-styleable>
 
 

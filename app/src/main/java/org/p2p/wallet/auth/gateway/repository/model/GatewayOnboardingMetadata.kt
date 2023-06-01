@@ -18,13 +18,36 @@ import com.google.gson.annotations.SerializedName
  * !!
  */
 data class GatewayOnboardingMetadata(
+    // v1
     @SerializedName("device_name")
     val deviceShareDeviceName: String,
     @SerializedName("phone_number")
     val customSharePhoneNumberE164: String,
     @SerializedName("email")
     val socialShareOwnerEmail: String,
+    // v2
+    @SerializedName("eth_public")
+    val ethPublic: String? = null,
+    @SerializedName("meta_timestamp")
+    val metaTimestampSec: Long,
+    @SerializedName("device_name_timestamp")
+    val deviceNameTimestampSec: Long = 0,
+    @SerializedName("phone_number_timestamp")
+    val phoneNumberTimestampSec: Long = 0,
+    @SerializedName("email_timestamp")
+    val emailTimestampSec: Long = 0,
+    @SerializedName("auth_provider_timestamp")
+    val authProviderTimestampSec: Long = 0,
+    @SerializedName("striga")
+    val strigaMetadata: StrigaMetadata? = null,
 ) {
     @SerializedName("auth_provider")
     val authProvider: String = "Google" // always google for Android
+
+    data class StrigaMetadata(
+        @SerializedName("user_id")
+        val userId: String,
+        @SerializedName("user_id_timestamp")
+        val userIdTimestamp: Long
+    )
 }

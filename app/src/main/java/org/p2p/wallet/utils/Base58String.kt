@@ -1,13 +1,18 @@
 package org.p2p.wallet.utils
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.utils.crypto.decodeFromBase58
 import org.p2p.solanaj.utils.crypto.encodeToBase58
 
-data class Base58String(val base58Value: String) {
+@Parcelize
+data class Base58String(val base58Value: String) : Parcelable {
     constructor(bytes: ByteArray) : this(base58Value = bytes.copyOf().encodeToBase58())
 
     fun decodeToBytes(): ByteArray = base58Value.decodeFromBase58()
+
+    override fun toString(): String = base58Value
 }
 
 fun String.toBase58Instance(): Base58String = Base58String(this)
