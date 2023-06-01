@@ -14,7 +14,7 @@ interface EthereumRepository {
     suspend fun getBalance(): BigInteger
     suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>)
     fun getWalletTokensFlow(): Flow<List<Token.Eth>>
-    suspend fun getAddress(): EthAddress
+    fun getAddress(): EthAddress
     fun getPrivateKey(): BigInteger
     fun signTransaction(transaction: HexString): Signature
     fun signTransactionLegacy(transaction: HexString): Signature
