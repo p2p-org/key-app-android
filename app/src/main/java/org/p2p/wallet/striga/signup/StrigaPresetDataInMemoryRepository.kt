@@ -54,7 +54,7 @@ class StrigaPresetDataInMemoryRepository(
     }
 
     override fun checkIsCountrySupported(country: Country): Boolean {
-        return country.code.lowercase() in supportedStrigaCountries
+        return country.codeAlpha2.lowercase() in supportedStrigaCountries
     }
 
     private fun parseOccupationFile(): List<StrigaOccupation> {

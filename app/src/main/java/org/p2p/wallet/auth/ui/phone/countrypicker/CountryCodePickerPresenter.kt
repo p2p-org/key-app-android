@@ -59,7 +59,7 @@ class CountryCodePickerPresenter(
     override fun load(preselectedCountryCode: CountryCode?) {
         launch {
             allCountryCodeItems = countryCodeRepository.getCountryCodes()
-                .map { CountryCodeItem(it, isSelected = it.nameCode == preselectedCountryCode?.nameCode) }
+                .map { CountryCodeItem(it, isSelected = it.nameCodeAlpha2 == preselectedCountryCode?.nameCodeAlpha2) }
                 .sortedBy { !it.isSelected }
             selectedCountryCode = preselectedCountryCode
             searchTextMap[DEFAULT_KEY] = allCountryCodeItems
