@@ -8,9 +8,11 @@ import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
+import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key.Companion.withCustomKey
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.Companion.withCustomKey
 import org.p2p.wallet.utils.toBase58Instance
 
 class MetadataInteractor(
@@ -62,7 +64,7 @@ class MetadataInteractor(
         // TODO PWN-8771 - implement database for metadata
         val ethAddress = getEthereumPublicKey().orEmpty()
         secureStorageContract.saveObject(
-            SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withPostfix(ethAddress),
+            SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
             metadata
         )
     }
@@ -71,7 +73,7 @@ class MetadataInteractor(
         // TODO PWN-8771 - implement database for metadata
         val ethAddress = getEthereumPublicKey().orEmpty()
         return secureStorageContract.getObject(
-            SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withPostfix(ethAddress),
+            SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
             GatewayOnboardingMetadata::class
         )
     }

@@ -16,7 +16,7 @@ interface AccountStorageContract {
                 "${prefsKey}_$customValue"
             } ?: prefsKey
 
-        val customValue
+        private val customValue
             get() = customKey
 
         companion object {

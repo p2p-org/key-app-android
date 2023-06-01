@@ -6,7 +6,10 @@ import kotlin.reflect.KClass
 
 interface SecureStorageContract {
 
-    enum class Key(private val initialPrefsValue: String) {
+    enum class Key(
+        private val prefsKey: String,
+        private var customKey: String? = null
+    ) {
         KEY_PIN_CODE_HASH("KEY_PIN_CODE_HASH"),
         KEY_PIN_CODE_BIOMETRIC_HASH("KEY_PIN_CODE_BIOMETRIC_HASH"),
         KEY_PUBLIC_KEY("KEY_PUBLIC_KEY"),
@@ -19,12 +22,19 @@ interface SecureStorageContract {
         KEY_SEED_PHRASE_PROVIDER("KEY_SEED_PHRASE_PROVIDER"),
         KEY_IS_SELL_WARNING_SHOWED("KEY_IS_SELL_WARNING_SHOWED");
 
-        var prefsValue: String = initialPrefsValue
-            private set
+        val prefsValue
+            get() = customValue?.let {
+                "${prefsKey}_$customValue"
+            } ?: prefsKey
 
-        fun withPostfix(prefsPostfix: String): Key {
-            prefsValue = "${initialPrefsValue}_$prefsPostfix"
-            return this
+        private val customValue
+            get() = customKey
+
+        companion object {
+            fun Key.withCustomKey(custom: String): Key {
+                customKey = custom
+                return this
+            }
         }
     }
 
