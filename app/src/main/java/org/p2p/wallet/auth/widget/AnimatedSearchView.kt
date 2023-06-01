@@ -1,6 +1,10 @@
 package org.p2p.wallet.auth.widget
 
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import android.animation.Animator
 import android.content.Context
 import android.text.Editable
@@ -8,13 +12,10 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.ViewAnimationUtils
 import android.widget.RelativeLayout
-import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.core.utils.showKeyboard
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.databinding.WidgetSearchViewBinding
-import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class AnimatedSearchView @JvmOverloads constructor(
@@ -104,9 +105,9 @@ class AnimatedSearchView @JvmOverloads constructor(
         binding.editTextSearch.removeTextChangedListener(textWatcher)
     }
 
-    fun setBgColor(colorRes: Int) {
-        binding.relativeLayoutContainer.setBackgroundColor(colorRes)
-        binding.relativeLayoutSearchContainer.setBackgroundColor(colorRes)
+    fun setBgColor(@ColorRes colorRes: Int) {
+        binding.relativeLayoutContainer.setBackgroundColor(getColor(colorRes))
+        binding.relativeLayoutSearchContainer.setBackgroundColor(getColor(colorRes))
     }
 
     fun setTitle(@StringRes titleResId: Int) {
@@ -120,7 +121,7 @@ class AnimatedSearchView @JvmOverloads constructor(
 
     fun isBackPressEnabled(): Boolean = binding.relativeLayoutSearchContainer.isVisible
 
-    interface SearchStateListener {
+    fun interface SearchStateListener {
         fun onClosed()
     }
 }

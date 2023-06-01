@@ -59,6 +59,9 @@
     <string name="striga_recommended_hint">Recommended</string>
     <string name="striga_address_line_hint">Your street and flat number</string>
     <string name="striga_no_country_found">Sorry, we don\'t know that country </string>
+    <string name="striga_chosen">Chosen</string>
+    <string name="striga_all_industries">All industries</string>
+    <string name="striga_all_sources">All sources</string>
 
 
 
