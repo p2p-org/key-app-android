@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
 import org.p2p.wallet.databinding.ItemCountryCodeBinding
@@ -36,7 +36,7 @@ class CountryCodePickerAdapter(private val onItemClickListener: (CountryCode) ->
         fun onBind(item: CountryCodeItem) = with(binding) {
             val country = item.country
             emojiTextView.text = country.flagEmoji
-            textViewCountryName.text = country.name
+            textViewCountryName.text = country.countryName
             textViewCountryCode.text = "+${country.phoneCode}"
             itemView.setOnClickListener {
                 onItemClickListener.invoke(item.country)

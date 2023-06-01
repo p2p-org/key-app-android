@@ -142,5 +142,4 @@
         <item name="android:textColor">@color/text_night</item>
     </style>
     <!--endregion-->
-
 </resources>

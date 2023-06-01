@@ -52,11 +52,6 @@ class CountryCodePickerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener {
-                setFragmentResult(requestKey, bundleOf())
-                close()
-            }
-
             recyclerViewCountryCodes.adapter = adapter
             initSearch()
         }
@@ -77,13 +72,12 @@ class CountryCodePickerFragment :
                 presenter.search(emptyString())
             }
         })
-        searchView.openSearch()
+        openSearch()
     }
 
     override fun showCountries(items: List<CountryCodeItem>) {
         adapter.setItems(items)
         binding.recyclerViewCountryCodes.isVisible = items.isNotEmpty()
-        binding.textViewError.isVisible = items.isEmpty()
     }
 
     private fun onCountryCodeClicked(code: CountryCode) {

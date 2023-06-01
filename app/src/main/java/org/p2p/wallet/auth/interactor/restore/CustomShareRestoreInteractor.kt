@@ -9,7 +9,7 @@ import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreWalletFailure
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
-import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
+import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.fromJsonReified
 import timber.log.Timber

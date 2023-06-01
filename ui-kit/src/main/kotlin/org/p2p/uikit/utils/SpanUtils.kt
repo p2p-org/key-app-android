@@ -6,12 +6,47 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.TextPaint
+import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.view.View
 import org.p2p.core.utils.emptyString
 import org.p2p.uikit.R
 
 object SpanUtils {
+
+    fun highlightLinkNoUnderline(
+        text: String,
+        highlighted: String,
+        @ColorInt color: Int,
+        onClick: (View) -> Unit
+    ): SpannableString {
+        val spannable = SpannableString(text)
+        val startIndex = text.indexOf(highlighted)
+        val endIndex = startIndex + highlighted.length
+
+        if (startIndex == -1) return spannable
+
+        spannable.setSpan(
+            object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    onClick(widget)
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.color = color
+                    ds.isUnderlineText = false
+                }
+            },
+            startIndex,
+            endIndex,
+            Spanned.SPAN_INCLUSIVE_INCLUSIVE
+        )
+
+        return spannable
+    }
 
     fun highlightText(commonText: String, highlightedText: String, @ColorInt color: Int): SpannableString {
         if (commonText.isEmpty()) return SpannableString(emptyString())

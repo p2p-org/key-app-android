@@ -3,9 +3,7 @@ package org.p2p.wallet.jupiter.ui.routes
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
@@ -30,7 +28,7 @@ import org.p2p.wallet.utils.withArgs
 
 private const val ARG_STATE_MANAGE_KEY = "ARG_STATE_MANAGE_KEY"
 
-class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
+class SwapSelectRoutesBottomSheet : BaseBottomSheet(R.layout.dialog_swap_select_routes) {
 
     companion object {
         fun show(
@@ -60,10 +58,6 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
     )
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.dialog_swap_select_routes, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

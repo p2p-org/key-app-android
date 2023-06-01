@@ -6,6 +6,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.p2p.core.network.ConnectionManager
 import org.p2p.ethereumkit.EthereumKitService
+import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
 import org.p2p.wallet.bridge.claim.ClaimModule
@@ -27,7 +28,6 @@ import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.NetworkModule
-import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
 import org.p2p.wallet.moonpay.MoonpayModule
@@ -44,6 +44,7 @@ import org.p2p.wallet.sdk.di.AppSdkModule
 import org.p2p.wallet.sell.SellModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.solend.SolendModule
+import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
@@ -75,41 +76,42 @@ object AppModule {
         includes(
             listOf(
                 // core modules
+                AlarmErrorsModule.create(),
+                AnalyticsModule.create(),
+                AppSdkModule.create(),
+                FeeRelayerModule.create(),
+                FeatureTogglesModule.create(),
+                InfrastructureModule.create(),
+                MoonpayModule.create(),
                 NetworkModule.create(),
                 RpcModule.create(),
-                FeeRelayerModule.create(),
-                InfrastructureModule.create(),
                 TransactionModule.create(),
-                AnalyticsModule.create(),
-                FeatureTogglesModule.create(),
-                AppSdkModule.create(),
-                MoonpayModule.create(),
-                AlarmErrorsModule.create(),
 
                 // feature screens
                 AuthModule.create(),
-                RootModule.create(),
-                PushNotificationsModule.create(),
-                RestoreModule.create(),
-                UserModule.create(),
-                CoinGeckoTokenPricesModule.create(),
-                HomeModule.create(),
-                BuyModule.create(),
-                RenBtcModule.create(),
-                ScanQrModule.create(),
-                HistoryModule.create(),
-                SettingsModule.create(),
-                DebugSettingsModule.create(),
-                SwapModule.create(),
-                SendModule.create(),
-                TransactionManagerModule.create(),
-                SolendModule.create(),
-                SellModule.create(),
-                JupiterModule.create(),
-                ReceiveModule.create(),
+                BridgeModule.create(),
                 BridgeSendModule.create(),
+                BuyModule.create(),
                 ClaimModule.create(),
-                BridgeModule.create()
+                CoinGeckoTokenPricesModule.create(),
+                DebugSettingsModule.create(),
+                HistoryModule.create(),
+                HomeModule.create(),
+                JupiterModule.create(),
+                PushNotificationsModule.create(),
+                ReceiveModule.create(),
+                RenBtcModule.create(),
+                RestoreModule.create(),
+                RootModule.create(),
+                ScanQrModule.create(),
+                SendModule.create(),
+                SellModule.create(),
+                SettingsModule.create(),
+                SolendModule.create(),
+                StrigaModule.create(),
+                SwapModule.create(),
+                TransactionManagerModule.create(),
+                UserModule.create()
             ) + EthereumKitService.getEthereumKitModules()
         )
     }

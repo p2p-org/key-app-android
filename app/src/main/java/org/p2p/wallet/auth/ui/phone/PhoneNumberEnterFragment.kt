@@ -15,11 +15,12 @@ import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
-import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -116,7 +117,12 @@ class PhoneNumberEnterFragment :
     }
 
     override fun navigateToSmsInput() {
-        replaceFragment(NewSmsInputFragment.create())
+        replaceFragment(
+            SmsInputFactory.create(
+                type = SmsInputFactory.Type.Onboarding,
+                destinationFragment = NewCreatePinFragment::class.java
+            )
+        )
     }
 
     override fun navigateToAccountBlocked(cooldownTtl: Long) {
