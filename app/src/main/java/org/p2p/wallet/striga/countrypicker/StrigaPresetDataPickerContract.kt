@@ -4,10 +4,12 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
-interface StrigaCountryPickerContract {
+interface StrigaPresetDataPickerContract {
 
     interface View : MvpView {
-        fun showCountries(items: List<AnyCellItem>)
+        fun showItems(items: List<AnyCellItem>)
+        fun updateSearchTitle(titleResId: Int)
+        fun setupSearchBar()
     }
 
     interface Presenter : MvpPresenter<View> {

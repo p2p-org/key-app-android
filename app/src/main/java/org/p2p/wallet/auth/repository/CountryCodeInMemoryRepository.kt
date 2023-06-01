@@ -22,8 +22,8 @@ class CountryCodeInMemoryRepository(
 
     override suspend fun detectCountryCodeByLocale(): CountryCode? = withContext(dispatchers.io) {
         try {
-            val localeCountryIso = context.resources.configuration.locale.country
-            getCountryForIso(localeCountryIso)
+            val localeCountryIsoAlpha2 = context.resources.configuration.locale.country
+            getCountryForIsoAlpha2(localeCountryIsoAlpha2)
         } catch (error: Throwable) {
             Timber.i(error, "Detecting country code by locale failed")
             null
@@ -34,7 +34,7 @@ class CountryCodeInMemoryRepository(
         try {
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
             val networkCountryIso = telephonyManager.networkCountryIso
-            getCountryForIso(networkCountryIso)
+            getCountryForIsoAlpha2(networkCountryIso)
         } catch (error: Throwable) {
             Timber.i(error, "Detecting country code by network failed")
             null
@@ -44,8 +44,8 @@ class CountryCodeInMemoryRepository(
     override suspend fun detectCountryCodeBySimCard(): CountryCode? = withContext(dispatchers.io) {
         try {
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
-            val simCountryISO = telephonyManager.simCountryIso
-            getCountryForIso(simCountryISO)
+            val simCountryISOAlpha2 = telephonyManager.simCountryIso
+            getCountryForIsoAlpha2(simCountryISOAlpha2)
         } catch (error: Throwable) {
             Timber.i(error, "Detecting country code by sim card failed")
             null
@@ -55,13 +55,16 @@ class CountryCodeInMemoryRepository(
     override fun findCountryCodeByPhoneCode(phoneCode: String): CountryCode? =
         allCountryCodes.firstOrNull { it.phoneCode == phoneCode }
 
-    override fun findCountryCodeByNameCode(nameCode: String): CountryCode? =
-        allCountryCodes.firstOrNull { it.nameCode.equals(nameCode, ignoreCase = true) }
+    override fun findCountryCodeByIsoAlpha2(nameCode: String): CountryCode? =
+        allCountryCodes.firstOrNull { it.nameCodeAlpha2.equals(nameCode, ignoreCase = true) }
+
+    override fun findCountryCodeByIsoAlpha3(nameCode: String): CountryCode? =
+        allCountryCodes.firstOrNull { it.nameCodeAlpha3.equals(nameCode, ignoreCase = true) }
 
     override fun isValidNumberForRegion(phoneNumber: String, countryCode: String): Boolean =
         countryCodeHelper.isValidNumberForRegion(phoneNumber, countryCode)
 
-    private suspend fun getCountryForIso(nameCode: String): CountryCode? = withContext(dispatchers.io) {
-        allCountryCodes.firstOrNull { it.nameCode.equals(nameCode, ignoreCase = true) }
+    private suspend fun getCountryForIsoAlpha2(nameCode: String): CountryCode? = withContext(dispatchers.io) {
+        allCountryCodes.firstOrNull { it.nameCodeAlpha2.equals(nameCode, ignoreCase = true) }
     }
 }

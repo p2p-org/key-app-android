@@ -24,7 +24,9 @@ import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOnboardingBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.getString
@@ -61,6 +63,7 @@ class StrigaOnboardingFragment :
 
     override fun navigateNext() {
         // TODO: navigate to next screen
+        replaceFragment(StrigaSignUpFirstStepFragment.create())
     }
 
     override fun setCurrentCountry(country: Country) {

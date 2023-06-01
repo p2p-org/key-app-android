@@ -7,7 +7,8 @@ import kotlinx.parcelize.Parcelize
 data class Country(
     val name: String,
     val flagEmoji: String,
-    val code: String,
+    val codeAlpha2: String,
+    val codeAlpha3: String,
 ) : Parcelable {
     val nameLowercase: String
         get() = name.lowercase()

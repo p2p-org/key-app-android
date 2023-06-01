@@ -12,6 +12,7 @@ import org.p2p.wallet.utils.emptyString
 
 private const val KEY_COUNTRY = "country"
 private const val KEY_NAME_CODE = "name_code"
+private const val KEY_NAME_CODE_ALPHA3 = "name_code_alpha3"
 private const val KEY_PHONE_CODE = "phone_code"
 private const val KEY_NAME = "name"
 private const val KEY_FLAG_EMOJI = "flag_emoji"
@@ -31,13 +32,23 @@ class CountryCodeXmlParser(
         while (event != XmlPullParser.END_DOCUMENT) {
             val tagName = xmlParser.name
             when {
-                event == XmlPullParser.END_TAG && tagName.equals(KEY_COUNTRY) -> {
-                    val nameCode = xmlParser.getAttributeValue(null, KEY_NAME_CODE).uppercase()
+                event == XmlPullParser.START_TAG && tagName.equals(KEY_COUNTRY) -> {
+                    val countryCodeAlpha2 = xmlParser.getAttributeValue(null, KEY_NAME_CODE).uppercase()
+                    val countryCodeAlpha3 = xmlParser.getAttributeValue(null, KEY_NAME_CODE_ALPHA3).uppercase()
                     val phoneCode = xmlParser.getAttributeValue(null, KEY_PHONE_CODE)
                     val name = xmlParser.getAttributeValue(null, KEY_NAME)
                     val flagEmoji = xmlParser.getAttributeValue(null, KEY_FLAG_EMOJI)
-                    val mask = getMaskForCountryCode(nameCode, phoneCode)
-                    resultCountries.add(CountryCode(nameCode, phoneCode, name, flagEmoji, mask))
+                    val mask = getMaskForCountryCode(countryCodeAlpha2, phoneCode)
+                    resultCountries.add(
+                        CountryCode(
+                            nameCodeAlpha2 = countryCodeAlpha2,
+                            nameCodeAlpha3 = countryCodeAlpha3,
+                            phoneCode = phoneCode,
+                            countryName = name,
+                            flagEmoji = flagEmoji,
+                            mask = mask
+                        )
+                    )
                 }
             }
             event = xmlParser.next()

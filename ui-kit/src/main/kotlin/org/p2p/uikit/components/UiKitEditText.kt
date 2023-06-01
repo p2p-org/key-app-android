@@ -1,6 +1,5 @@
 package org.p2p.uikit.components
 
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.getIntOrThrow
 import androidx.core.view.isVisible
@@ -11,7 +10,6 @@ import android.os.Parcelable
 import android.text.Editable
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
-import android.widget.EditText
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.uikit.R
@@ -85,6 +83,7 @@ class UiKitEditText @JvmOverloads constructor(
         if (!text.isNullOrEmpty()) {
             binding.editTextField.setText(text)
         }
+        binding.editTextField.isEnabled = styleAttrs.getBoolean(R.styleable.UiKitEditText_android_enabled, true)
 
         binding.containerInputView.background = bgNormal
         val isDropdown = styleAttrs.getBoolean(R.styleable.UiKitEditText_isDropdown, false)

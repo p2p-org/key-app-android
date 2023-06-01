@@ -1,8 +1,8 @@
-package org.p2p.wallet.striga.repository
+package org.p2p.wallet.striga.signup
 
 import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.striga.repository.model.StrigaOccupation
-import org.p2p.wallet.striga.repository.model.StrigaSourceOfFunds
+import org.p2p.wallet.striga.signup.model.StrigaOccupation
+import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 
 interface StrigaPresetDataLocalRepository {
     fun getOccupationValuesList(): List<StrigaOccupation>

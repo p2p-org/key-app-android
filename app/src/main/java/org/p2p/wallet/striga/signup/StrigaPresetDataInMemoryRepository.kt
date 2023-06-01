@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.repository
+package org.p2p.wallet.striga.signup
 
 import android.content.res.Resources
 import com.google.gson.Gson
@@ -7,8 +7,8 @@ import timber.log.Timber
 import java.io.InputStream
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.striga.repository.model.StrigaOccupation
-import org.p2p.wallet.striga.repository.model.StrigaSourceOfFunds
+import org.p2p.wallet.striga.signup.model.StrigaOccupation
+import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.utils.unsafeLazy
 
 private const val JSON_KEY_OCCUPATION_NAME = "occupation"
@@ -53,7 +53,7 @@ class StrigaPresetDataInMemoryRepository(
     }
 
     override fun checkIsCountrySupported(country: Country): Boolean {
-        return country.code.lowercase() in supportedStrigaCountries
+        return country.codeAlpha2.lowercase() in supportedStrigaCountries
     }
 
     private fun parseOccupationFile(): List<StrigaOccupation> {

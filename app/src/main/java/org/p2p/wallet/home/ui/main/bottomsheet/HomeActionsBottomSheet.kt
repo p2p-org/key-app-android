@@ -68,7 +68,7 @@ class HomeActionsBottomSheet :
                 }
             }
             viewActionBuy.apply {
-                setResultClickListener(HomeAction.BUY)
+                setResultClickListener(HomeAction.TOP_UP)
                 imageViewAction.setImageResource(R.drawable.action_buy_icon)
                 textViewActionTitle.setText(R.string.home_actions_buy_title)
                 textViewActionSubtitle.setText(R.string.home_actions_buy_subtitle)
@@ -117,5 +117,5 @@ class HomeActionsBottomSheet :
 }
 
 enum class HomeAction {
-    BUY, RECEIVE, SWAP, SEND, SELL
+    TOP_UP, RECEIVE, SWAP, SEND, SELL
 }

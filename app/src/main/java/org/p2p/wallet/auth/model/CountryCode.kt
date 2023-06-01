@@ -5,7 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CountryCode(
-    val nameCode: String,
+    val nameCodeAlpha2: String,
+    val nameCodeAlpha3: String,
     val phoneCode: String,
     val countryName: String,
     val flagEmoji: String,

@@ -17,7 +17,8 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.countrypicker.StrigaCountryPickerFragment
+import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerFragment
+import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -101,8 +102,8 @@ class StrigaSignUpFirstStepFragment :
 
     override fun showCountryPicker(selectedCountry: Country?) {
         replaceFragmentForResult(
-            target = StrigaCountryPickerFragment.create(
-                selectedCountry = selectedCountry,
+            target = StrigaPresetDataPickerFragment.create(
+                selectedCountry = StrigaPickerItem.CountryItem(selectedCountry),
                 requestKey = REQUEST_KEY,
                 resultKey = RESULT_KEY
             ),
@@ -188,7 +189,7 @@ class StrigaSignUpFirstStepFragment :
 
     private fun onFragmentResult(requestKey: String, bundle: Bundle) {
         if (requestKey != REQUEST_KEY) return
-        val selectedCountry = bundle.getParcelableCompat(RESULT_KEY) as? Country
-        presenter.onCountryChanged(selectedCountry ?: return)
+        val selectedCountry = bundle.getParcelableCompat<StrigaPickerItem.CountryItem>(RESULT_KEY)
+        presenter.onCountryChanged(selectedCountry?.selectedItem ?: return)
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tag_striga_email">email</string>
+    <string name="tag_striga_phone_code">phone_code</string>
     <string name="tag_striga_phone_number">phone_number</string>
     <string name="tag_striga_first_name">first_name</string>
     <string name="tag_striga_last_name">last_name</string>

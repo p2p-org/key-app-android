@@ -11,10 +11,16 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpSecondStepBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
+import org.p2p.wallet.striga.signup.model.StrigaOccupation
+import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
+import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -27,6 +33,11 @@ class StrigaSignUpSecondStepFragment :
     IView {
 
     companion object {
+        const val FUNDS_REQUEST_KEY = "FUNDS_REQUEST_KEY"
+        const val FUNDS_RESULT_KEY = "FUNDS_RESULT_KEY"
+
+        const val OCCUPATION_REQUEST_KEY = "OCCUPATION_REQUEST_KEY"
+        const val OCCUPATION_RESULT_KEY = "OCCUPATION_RESULT_KEY"
         fun create() = StrigaSignUpSecondStepFragment()
     }
 
@@ -52,6 +63,13 @@ class StrigaSignUpSecondStepFragment :
                 inputView.addOnTextChangedListener { editable ->
                     presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
                 }
+            }
+
+            editTextOccupation.setOnClickListener {
+                presenter.onOccupationClicked()
+            }
+            editTextFunds.setOnClickListener {
+                presenter.onSourceOfFundsClicked()
             }
 
             buttonNext.setOnClickListener {
@@ -104,6 +122,30 @@ class StrigaSignUpSecondStepFragment :
         }
     }
 
+    override fun showOccupationPicker(selectedValue: StrigaOccupation?) {
+        replaceFragmentForResult(
+            target = StrigaPresetDataPickerFragment.create(
+                selectedCountry = StrigaPickerItem.OccupationItem(selectedValue),
+                requestKey = OCCUPATION_REQUEST_KEY,
+                resultKey = OCCUPATION_RESULT_KEY
+            ),
+            requestKey = OCCUPATION_REQUEST_KEY,
+            onResult = ::onFragmentResult
+        )
+    }
+
+    override fun showFundsPicker(selectedValue: StrigaSourceOfFunds?) {
+        replaceFragmentForResult(
+            target = StrigaPresetDataPickerFragment.create(
+                selectedCountry = StrigaPickerItem.FundsItem(selectedValue),
+                requestKey = FUNDS_REQUEST_KEY,
+                resultKey = FUNDS_RESULT_KEY
+            ),
+            requestKey = FUNDS_REQUEST_KEY,
+            onResult = ::onFragmentResult
+        )
+    }
+
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
         return with(binding) {
             buildMap {
@@ -136,6 +178,20 @@ class StrigaSignUpSecondStepFragment :
                     editTextStateOrRegion.setViewTag(it)
                 }
             }
+        }
+    }
+
+    private fun onFragmentResult(requestKey: String, bundle: Bundle) {
+        when (requestKey) {
+            OCCUPATION_REQUEST_KEY -> {
+                val value = bundle.getParcelableCompat(OCCUPATION_RESULT_KEY) as? StrigaPickerItem.OccupationItem
+                presenter.onOccupationChanged(value?.selectedItem ?: return)
+            }
+            FUNDS_REQUEST_KEY -> {
+                val selectedItem = bundle.getParcelableCompat(FUNDS_RESULT_KEY) as? StrigaPickerItem.FundsItem
+                presenter.onSourceOfFundsChanged(selectedItem?.selectedItem ?: return)
+            }
+            else -> throw IllegalStateException("Result for $requestKey is unhandled: ")
         }
     }
 }

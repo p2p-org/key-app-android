@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.signup.interactor
 
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.common.di.AppScope
@@ -21,10 +22,6 @@ class StrigaSignupInteractor(
     private val countryRepository: CountryRepository,
     private val signupDataRepository: StrigaSignupDataLocalRepository
 ) {
-
-    private val signupDataCache = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
-    private var needsSave = false
-
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
         setOf(
             StrigaSignupDataType.EMAIL,
@@ -48,17 +45,12 @@ class StrigaSignupInteractor(
         )
     }
 
-    fun notifyDataChanged(type: StrigaSignupDataType, newValue: String) {
-        signupDataCache[type] = StrigaSignupData(type, newValue)
-        needsSave = true
+    fun validateFirstStep(data: Map<StrigaSignupDataType,StrigaSignupData>): ValidationResult {
+        return validateStep(data, firstStepDataTypes)
     }
 
-    fun validateFirstStep(): ValidationResult {
-        return validateStep(firstStepDataTypes)
-    }
-
-    fun validateSecondStep(): ValidationResult {
-        return validateStep(secondStepDataTypes)
+    fun validateSecondStep(data: Map<StrigaSignupDataType,StrigaSignupData>): ValidationResult {
+        return validateStep(data, secondStepDataTypes)
     }
 
     suspend fun getSelectedCountry(): Country {
@@ -66,13 +58,13 @@ class StrigaSignupInteractor(
         return countryRepository.detectCountryOrDefault()
     }
 
-    suspend fun findPhoneMaskByCountry(country: Country): String? {
+    suspend fun findPhoneMaskByCountry(country: Country): PhoneMask? {
         return countryRepository.findPhoneMaskByCountry(country)
     }
 
-    suspend fun findCountryByNameCode(countryNameCode: String?): Country? {
-        if (countryNameCode.isNullOrBlank()) return null
-        return countryRepository.findCountryByNameCode(countryNameCode)
+    suspend fun findCountryByIsoAlpha3(codeAlpha3: String?): Country? {
+        if (codeAlpha3.isNullOrBlank()) return null
+        return countryRepository.findCountryByIsoAlpha3(codeAlpha3)
     }
 
     suspend fun getSignupData(): List<StrigaSignupData> {
@@ -90,22 +82,16 @@ class StrigaSignupInteractor(
     /**
      * This method saves data only if it was changed
      */
-    fun saveChanges() {
-        if (needsSave) {
-            needsSave = false
-
-            // use AppScope to make sure that data will be saved even if view scope has been cancelled
-            appScope.launch {
-                signupDataRepository.updateSignupData(signupDataCache.values)
-            }
-            Timber.d("Striga signup data: saved")
-        } else {
-            Timber.d("Striga signup data: nothing to save")
+    fun saveChanges(data: Collection<StrigaSignupData>) {
+        // use AppScope to make sure that data will be saved even if view scope has been cancelled
+        appScope.launch {
+            signupDataRepository.updateSignupData(data)
         }
+        Timber.d("Striga signup data: saved")
     }
 
-    private fun validateStep(types: Set<StrigaSignupDataType>): ValidationResult {
-        val validationResults = types.map { signupDataCache[it] ?: StrigaSignupData(it, null) }.map(::validate)
+    private fun validateStep(data: Map<StrigaSignupDataType,StrigaSignupData>, types: Set<StrigaSignupDataType>): ValidationResult {
+        val validationResults = types.map { data[it] ?: StrigaSignupData(it, null) }.map(::validate)
 
         val countValid = validationResults.count { it.isValid }
         val mustBeValid = types.size

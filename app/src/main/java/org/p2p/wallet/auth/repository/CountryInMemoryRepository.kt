@@ -7,6 +7,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.model.PhoneMask
 
 class CountryInMemoryRepository(
     private val countryCodeRepository: CountryCodeLocalRepository,
@@ -16,6 +17,7 @@ class CountryInMemoryRepository(
         return countryCodeRepository.getCountryCodes()
             .map { it.extractCountry() }
     }
+
     override suspend fun detectCountryOrDefault(): Country {
         val detectedCountryCode = countryCodeRepository.detectCountryCodeBySimCard()
             ?: countryCodeRepository.detectCountryCodeByNetwork()
@@ -24,15 +26,15 @@ class CountryInMemoryRepository(
         return detectedCountryCode?.extractCountry() ?: defaultCountry()
     }
 
-    override suspend fun findCountryByNameCode(countyCode: String): Country? {
-        return countryCodeRepository.findCountryCodeByPhoneCode(countyCode)?.let {
+    override suspend fun findCountryByIsoAlpha3(countyCode: String): Country? {
+        return countryCodeRepository.findCountryCodeByIsoAlpha3(countyCode)?.let {
             return it.extractCountry()
         }
     }
 
-    override suspend fun findPhoneMaskByCountry(country: Country): String? {
-        try {
-            val needleCountry = country.code.uppercase()
+    override suspend fun findPhoneMaskByCountry(country: Country): PhoneMask? {
+        return try {
+            val needleCountry = country.codeAlpha2.uppercase()
             // phone_masks.txt is a sorted list
             val inputStream = resources.openRawResource(R.raw.phone_masks)
             BufferedReader(InputStreamReader(inputStream)).use { reader ->
@@ -47,18 +49,42 @@ class CountryInMemoryRepository(
                 }
 
                 if (soughtLine < 0) {
-                    return null
+                    null
+                } else {
+                    parsePhoneMask(lines[soughtLine])
                 }
-
-                return lines[soughtLine].substring(3)
             }
         } catch (e: IOException) {
             Timber.e(e, "Unable to read phone masks")
+            null
         }
-        return null
     }
 
-    private fun CountryCode.extractCountry(): Country = Country(countryName, flagEmoji, nameCode)
+    private fun CountryCode.extractCountry(): Country = Country(
+        name = countryName,
+        flagEmoji = flagEmoji,
+        codeAlpha2 = nameCodeAlpha2,
+        codeAlpha3 = nameCodeAlpha3,
+    )
 
     private suspend fun defaultCountry(): Country = getAllCountries().first()
+
+    private fun parsePhoneMask(mask: String): PhoneMask {
+        // format: AR:54 ### ### ####
+        val countryCode = mask.substringBefore(":")
+        val phoneMask = mask.substringAfter(":").trim()
+        val phoneCode = mask.substringBetween(":", " ")
+
+        return PhoneMask(
+            countryCodeAlpha2 = countryCode,
+            phoneCode = phoneCode,
+            mask = phoneMask,
+        )
+    }
+
+    private fun String.substringBetween(start: String, end: String): String {
+        val startIndex = indexOf(start) + start.length
+        val endIndex = indexOf(end)
+        return substring(startIndex, endIndex)
+    }
 }

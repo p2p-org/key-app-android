@@ -101,6 +101,7 @@
         <attr name="android:maxLength" />
         <attr name="android:imeOptions" />
         <attr name="android:digits" />
+        <attr name="android:enabled" />
         <attr name="android:text" />
         <attr name="android:hint" />
         <attr name="android:drawableEnd" />

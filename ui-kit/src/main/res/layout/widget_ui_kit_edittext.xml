@@ -102,6 +102,6 @@
         app:layout_constraintEnd_toEndOf="@id/textViewLabel"
         app:layout_constraintStart_toStartOf="@id/textViewLabel"
         app:layout_constraintTop_toBottomOf="@id/containerInputView"
-        tools:text="Sorry, we don't know such country"
+        tools:text="Sorry, we don't know such a country"
         tools:visibility="visible" />
 </merge>

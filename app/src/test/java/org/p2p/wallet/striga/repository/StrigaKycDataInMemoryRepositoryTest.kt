@@ -7,6 +7,8 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
 import org.p2p.wallet.R
+import org.p2p.wallet.striga.signup.StrigaPresetDataInMemoryRepository
+import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 import org.p2p.wallet.utils.getTestRawResource
 
 class StrigaKycDataInMemoryRepositoryTest {
