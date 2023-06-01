@@ -11,6 +11,11 @@ class StrigaSignupDataValidator {
         StrigaSignupDataType.FIRST_NAME to listOf(LengthInputValidator(2..40)),
         StrigaSignupDataType.LAST_NAME to listOf(LengthInputValidator(2..40)),
         StrigaSignupDataType.DATE_OF_BIRTH to listOf(BirthdayInputValidator()),
+
+        StrigaSignupDataType.CITY to listOf(LengthInputValidator(1..40)),
+        StrigaSignupDataType.CITY_ADDRESS_LINE to listOf(LengthInputValidator(1..80)),
+        StrigaSignupDataType.CITY_POSTAL_CODE to listOf(LengthInputValidator(1..20)),
+        StrigaSignupDataType.CITY_STATE to listOf(LengthInputValidator(1..20)),
     )
     private val allFieldsValidator = EmptyInputValidator()
 
