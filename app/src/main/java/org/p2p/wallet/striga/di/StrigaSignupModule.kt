@@ -9,7 +9,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.create
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
@@ -18,12 +17,14 @@ import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingPresenter
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.repository.StrigaPresetDataInMemoryRepository
-import org.p2p.wallet.striga.repository.StrigaPresetDataLocalRepository
+import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
+import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataDatabaseRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
-import org.p2p.wallet.striga.ui.countrypicker.StrigaCountryPickerContract
-import org.p2p.wallet.striga.ui.countrypicker.StrigaCountryPickerPresenter
+import org.p2p.wallet.striga.ui.countrypicker.StrigaItemCellMapper
+import org.p2p.wallet.striga.ui.countrypicker.StrigaPresetDataPickerContract
+import org.p2p.wallet.striga.ui.countrypicker.StrigaPresetDataPickerPresenter
 import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepPresenter
 import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepContract
@@ -39,12 +40,13 @@ object StrigaSignupModule : InjectionModule {
 
         factoryOf(::StrigaOnboardingInteractor)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
-        factory { (country: Country?) ->
-            StrigaCountryPickerPresenter(
+        factory { (selectedItem: StrigaPickerItem) ->
+            StrigaPresetDataPickerPresenter(
                 strigaOnboardingInteractor = get(),
-                selectedCountry = country
+                selectedItem = selectedItem,
+                strigaElementCellMapper = get()
             )
-        } bind StrigaCountryPickerContract.Presenter::class
+        } bind StrigaPresetDataPickerContract.Presenter::class
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
         factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
     }
@@ -67,5 +69,6 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaSignupDataMapper)
 
         factoryOf(::StrigaUserIdProvider)
+        factoryOf(::StrigaItemCellMapper)
     }
 }

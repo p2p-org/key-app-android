@@ -1,14 +1,12 @@
 package org.p2p.wallet.striga.ui
 
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.lifecycleScope
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
-import kotlinx.coroutines.launch
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
+import org.p2p.core.token.Token
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -21,18 +19,17 @@ import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
-import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
+import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTopupWalletBinding
-import org.p2p.wallet.moonpay.ui.BuySolanaFragment
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
+class TopUpWalletBottomSheet :
+    BaseMvpBottomSheet<TopUpWalletContract.View, TopUpWalletContract.Presenter>(R.layout.dialog_topup_wallet),
+    TopUpWalletContract.View {
 
     companion object {
         fun show(fm: FragmentManager) {
@@ -44,52 +41,59 @@ class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
 
     private val binding: DialogTopupWalletBinding by viewBinding()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
-    private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
-    private val userInteractor: UserInteractor by inject()
+    private val buyFragmentFactory: BuyFragmentFactory by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        with(binding) {
-            bankTransferView.bind(
-                model = getFinanceBlock(
-                    titleResId = R.string.bank_transfer_title,
-                    subtitleRes = R.string.bank_transfer_subtitle,
-                    iconResId = R.drawable.ic_bank_transfer,
-                    backgroundTintId = R.color.light_grass
-                )
+    override val presenter: TopUpWalletContract.Presenter by inject()
+
+    override fun showStrigaBankTransferView() {
+        binding.bankTransferView.isVisible = true
+        binding.bankTransferView.bind(
+            model = getFinanceBlock(
+                titleResId = R.string.bank_transfer_title,
+                subtitleRes = R.string.bank_transfer_subtitle,
+                iconResId = R.drawable.ic_bank_transfer,
+                backgroundTintId = R.color.light_grass
             )
-            bankTransferView.setOnClickAction { _, _ ->
-                dismissAndNavigate(StrigaOnboardingFragment.create())
-            }
-            bankCardView.bind(
-                model = getFinanceBlock(
-                    titleResId = R.string.bank_card_title,
-                    subtitleRes = R.string.bank_card_subtitle,
-                    iconResId = R.drawable.ic_bank_card,
-                    backgroundTintId = R.color.light_sea
-                )
+        )
+        binding.bankTransferView.setOnClickAction { _, _ ->
+            dismissAndNavigate(StrigaOnboardingFragment.create())
+        }
+    }
+
+    override fun hideStrigaBankTransferView() {
+        binding.bankTransferView.isVisible = false
+    }
+
+    override fun showBankCardView(tokenToBuy: Token) {
+        binding.bankCardView.isVisible = true
+        binding.bankCardView.bind(
+            model = getFinanceBlock(
+                titleResId = R.string.bank_card_title,
+                subtitleRes = R.string.bank_card_subtitle,
+                iconResId = R.drawable.ic_bank_card,
+                backgroundTintId = R.color.light_sea
             )
-            bankCardView.setOnClickAction { _, _ ->
-                lifecycleScope.launch {
-                    val tokenForBuy = userInteractor.getTokensForBuy().firstOrNull() ?: return@launch
-                    if (newBuyFeatureToggle.isFeatureEnabled) {
-                        dismissAndNavigate(NewBuyFragment.create(tokenForBuy))
-                    } else {
-                        dismissAndNavigate(BuySolanaFragment.create(tokenForBuy))
-                    }
-                }
-            }
-            cryptoView.bind(
-                model = getFinanceBlock(
-                    titleResId = R.string.crypto_title,
-                    subtitleRes = R.string.crypto_subtitle,
-                    iconResId = R.drawable.ic_crypto,
-                    backgroundTintId = R.color.light_sun
-                )
+        )
+        binding.bankCardView.setOnClickAction { _, _ ->
+            dismissAndNavigate(buyFragmentFactory.buyFragment(tokenToBuy))
+        }
+    }
+
+    override fun hideBankCardView() {
+        binding.bankCardView.isVisible = false
+    }
+
+    override fun showCryptoReceiveView() {
+        binding.cryptoView.bind(
+            model = getFinanceBlock(
+                titleResId = R.string.crypto_title,
+                subtitleRes = R.string.crypto_subtitle,
+                iconResId = R.drawable.ic_crypto,
+                backgroundTintId = R.color.light_sun
             )
-            cryptoView.setOnClickAction { _, _ ->
-                dismissAndNavigate(receiveFragmentFactory.receiveFragment())
-            }
+        )
+        binding.cryptoView.setOnClickAction { _, _ ->
+            dismissAndNavigate(receiveFragmentFactory.receiveFragment())
         }
     }
 
@@ -103,9 +107,7 @@ class TopUpWalletBottomSheet : BaseBottomSheet(R.layout.dialog_topup_wallet) {
             icon = IconWrapperCellModel.SingleIcon(
                 icon = ImageViewCellModel(
                     icon = DrawableContainer(iconResId),
-                    background = DrawableCellModel(
-                        tint = backgroundTintId
-                    ),
+                    background = DrawableCellModel(tint = backgroundTintId),
                     clippingShape = shapeCircle()
                 )
             ),

@@ -15,7 +15,7 @@ import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
-import org.p2p.wallet.striga.repository.StrigaPresetDataLocalRepository
+import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.back
 import org.p2p.wallet.utils.front

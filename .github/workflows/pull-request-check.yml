@@ -71,14 +71,15 @@ jobs:
           svl-memo-claim: ${{ secrets.SVL_MEMO_CLAIM }}
           salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest testDebugUnitTestCoverage
+        run: ./gradlew testDebugUnitTest koverXmlReportDebug
       - name: Attach coverage to pull request
-        uses: madrapps/jacoco-report@v1.3
+        uses: mi-kas/kover-report@v1
         with:
-          paths: ${{ github.workspace }}/app/build/reports/jacoco/testDebugUnitTestCoverage/testDebugUnitTestCoverage.xml
+          path: ${{ github.workspace }}/app/build/reports/kover/reportDebug.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           title: Code coverage report
           update-comment: true
+          coverage-counter-type: LINE
       - name: Print coverage information
         run: |
           echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"

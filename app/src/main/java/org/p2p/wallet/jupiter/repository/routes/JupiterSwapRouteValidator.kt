@@ -53,7 +53,7 @@ class JupiterSwapRouteValidator(
             .map(SwapRouteValidation::route)
             .toList()
             .also {
-                Timber.tag(TAG).d("Validating routes finished, total valid routes = ${it.size}")
+                Timber.tag(TAG).i("Validating routes finished, total valid routes = ${it.size}")
             }
     }
 
@@ -61,7 +61,7 @@ class JupiterSwapRouteValidator(
         route: JupiterSwapRoute,
         ordinal: Int
     ): SwapRouteValidation {
-        Timber.tag(TAG).d("Validating routes started for: $ordinal")
+        Timber.tag(TAG).i("Validating routes started for: $ordinal")
         val isRouteValid = checkThatRouteValid(route)
         return SwapRouteValidation(
             route = route,

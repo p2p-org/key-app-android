@@ -7,8 +7,9 @@ import timber.log.Timber
 import java.io.InputStream
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.striga.repository.model.StrigaOccupation
-import org.p2p.wallet.striga.repository.model.StrigaSourceOfFunds
+import org.p2p.wallet.striga.signup.model.StrigaOccupation
+import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
+import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 import org.p2p.wallet.utils.unsafeLazy
 
 private const val JSON_KEY_OCCUPATION_NAME = "occupation"
