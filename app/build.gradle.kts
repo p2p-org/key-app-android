@@ -25,8 +25,6 @@ koverReport {
                     "*Activity\$*",
                     "*Service",
                     "*Service\$*",
-                    "*Worker",
-                    "*Worker\$*",
                     "*BottomSheet",
                     "*BottomSheet\$*",
                     "*View",
