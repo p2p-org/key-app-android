@@ -13,7 +13,7 @@ import org.p2p.wallet.striga.user.model.StrigaUserKycInfo
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 
 class StrigaUserRepositoryMapper {
-    @Throws(StrigaDataLayerError.MappingFailed::class)
+    @Throws(StrigaDataLayerError.InternalError::class)
     fun fromNetwork(response: StrigaUserDetailsResponse): StrigaUserDetails {
         return try {
             StrigaUserDetails(
@@ -24,7 +24,7 @@ class StrigaUserRepositoryMapper {
                 kycDetails = response.toKycDetails()
             )
         } catch (mappingFailed: Throwable) {
-            throw StrigaDataLayerError.MappingFailed(mappingFailed.message.orEmpty())
+            throw StrigaDataLayerError.InternalError(mappingFailed, "StrigaUserDetails mapping failed")
         }
     }
 

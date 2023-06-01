@@ -6,13 +6,17 @@ import org.koin.android.ext.android.inject
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.ui.countrypicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.ui.secondstep.StrigaSignUpSecondStepFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class StrigaSignUpFirstStepFragment :
@@ -22,15 +26,18 @@ class StrigaSignUpFirstStepFragment :
     StrigaSignUpFirstStepContract.View {
 
     companion object {
+        const val REQUEST_KEY = "REQUEST_KEY"
+        const val RESULT_KEY = "RESULT_KEY"
         fun create() = StrigaSignUpFirstStepFragment()
     }
 
     override val presenter: StrigaSignUpFirstStepContract.Presenter by inject()
     private val binding: FragmentStrigaSignUpFirstStepBinding by viewBinding()
 
-    private val editTextFieldsMap: Map<StrigaSignupDataType, UiKitEditText> by lazy { createEditTextsMap() }
+    private lateinit var editTextFieldsMap: Map<StrigaSignupDataType, UiKitEditText>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        editTextFieldsMap = createEditTextsMap()
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
@@ -49,6 +56,10 @@ class StrigaSignUpFirstStepFragment :
                     presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
                 }
             }
+
+            editTextCountry.setOnClickListener {
+                presenter.onCountryClicked()
+            }
             buttonNext.setOnClickListener {
                 replaceFragment(StrigaSignUpSecondStepFragment.create())
             }
@@ -58,6 +69,18 @@ class StrigaSignUpFirstStepFragment :
     override fun updateSignupField(newValue: String, type: StrigaSignupDataType) {
         val view = editTextFieldsMap[type]
         view?.setText(newValue)
+    }
+
+    override fun showCountryPicker(selectedCountry: Country?) {
+        replaceFragmentForResult(
+            target = StrigaPresetDataPickerFragment.create(
+                selectedCountry = StrigaPickerItem.CountryItem(selectedCountry),
+                requestKey = REQUEST_KEY,
+                resultKey = RESULT_KEY
+            ),
+            requestKey = REQUEST_KEY,
+            onResult = ::onFragmentResult
+        )
     }
 
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
@@ -82,5 +105,11 @@ class StrigaSignUpFirstStepFragment :
                 editTextCountry.setViewTag(StrigaSignupDataType.COUNTRY)
             }
         }
+    }
+
+    private fun onFragmentResult(requestKey: String, bundle: Bundle) {
+        if (requestKey != REQUEST_KEY) return
+        val selectedItem = bundle.getParcelable(RESULT_KEY) as? StrigaPickerItem.CountryItem
+        presenter.onCountryChanged(selectedItem?.selectedItem ?: return)
     }
 }

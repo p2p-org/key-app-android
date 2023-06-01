@@ -9,12 +9,18 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.utils.Base58String
 
 data class AlarmErrorsSendBridgeRequest(
+    @SerializedName("user_pubkey")
+    val userPubkey: Base58String,
+    @SerializedName("simulation_error")
+    val simulationError: String,
+    @SerializedName("fee_relayer_error")
+    val feeRelayerError: String,
+    @SerializedName("blockchain_error")
+    val blockchainError: String,
     @SerializedName("token_to_send")
     val tokenToSend: TokenToSend?,
     @SerializedName("arbiter_fee_amount")
     val arbiterFeeAmount: String,
-    @SerializedName("user_pubkey")
-    val userPubkey: Base58String,
     @SerializedName("recipient_eth_pubkey")
     val recipientEthPubkey: String,
     @SerializedName("platform")
@@ -23,12 +29,6 @@ data class AlarmErrorsSendBridgeRequest(
     val appVersion: String = BuildConfig.VERSION_NAME,
     @SerializedName("timestamp")
     val timestamp: String = SimpleDateFormat("dd.MM HH:mm:ss", Locale.getDefault()).format(Date()),
-    @SerializedName("simulation_error")
-    val simulationError: String,
-    @SerializedName("fee_relayer_error")
-    val feeRelayerError: String,
-    @SerializedName("blockchain_error")
-    val blockchainError: String
 ) {
     data class TokenToSend(
         @SerializedName("name")

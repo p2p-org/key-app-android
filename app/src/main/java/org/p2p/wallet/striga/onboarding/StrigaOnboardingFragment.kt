@@ -24,7 +24,9 @@ import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOnboardingBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.getString
@@ -61,6 +63,7 @@ class StrigaOnboardingFragment :
 
     override fun navigateNext() {
         // TODO: navigate to next screen
+        replaceFragment(StrigaSignUpFirstStepFragment.create())
     }
 
     override fun setCurrentCountry(country: Country) {
@@ -73,7 +76,7 @@ class StrigaOnboardingFragment :
             StrigaOnboardingContract.View.AvailabilityState.Unavailable -> handleUnavailableState(state)
         }
 
-        binding.image.animate()
+        binding.imageViewImage.animate()
             .alpha(1f)
             .setDuration(150L)
             .start()
@@ -164,7 +167,7 @@ class StrigaOnboardingFragment :
 
     private fun handleViewState(state: StrigaOnboardingContract.View.AvailabilityState) {
         with(binding) {
-            image.bind(getImageModel(state))
+            imageViewImage.bind(getImageModel(state))
             textViewTitle.bind(getTitleModel(state))
             textViewHelp.isVisible = state.isHelpVisible
 

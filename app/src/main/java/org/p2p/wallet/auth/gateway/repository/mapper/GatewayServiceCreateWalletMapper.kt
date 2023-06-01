@@ -127,6 +127,7 @@ class GatewayServiceCreateWalletMapper(
                 ethPublic = etheriumAddress.lowercase(),
                 metaTimestampSec = epochUnixTimeSeconds,
                 deviceShareDeviceName = Build.MANUFACTURER + ' ' + Build.MODEL,
+                deviceNameTimestampSec = epochUnixTimeSeconds,
                 customSharePhoneNumberE164 = phoneNumber.e164Formatted(),
                 phoneNumberTimestampSec = epochUnixTimeSeconds,
                 socialShareOwnerEmail = socialShareOwnerId,
