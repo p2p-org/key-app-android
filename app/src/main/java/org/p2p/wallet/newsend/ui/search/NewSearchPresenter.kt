@@ -153,7 +153,7 @@ class NewSearchPresenter(
             val finalResult: SearchResult
             val preselectedToken: Token.Active?
             if (result is SearchResult.AddressFound && result.networkType == NetworkType.SOLANA) {
-                val balance = userInteractor.getBalance(result.address.toPublicKey())
+                val balance = userInteractor.getBalance(result.addressState.address.toPublicKey())
                 finalResult = result.copyWithBalance(balance)
                 preselectedToken = result.sourceToken ?: initialToken
             } else {

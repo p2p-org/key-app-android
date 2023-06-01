@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/uiKitToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_onboarding_help"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="@color/icons_night"
+        app:title="Step 2 of 3"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night" />
+
+    <TextView
+        android:id="@+id/titleText"
+        style="@style/UiKit.TextAppearance.SemiBold.Title1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/onboarding_sms_input_title"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/uiKitToolbar" />
+
+    <TextView
+        android:id="@+id/checkNumberTitleText"
+        style="@style/UiKit.TextAppearance.Regular.Text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/onboarding_sms_input_phone_number_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleText" />
+
+    <org.p2p.uikit.components.UiKitFourDigitsLargeInput
+        android:id="@+id/smsInputComponent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkNumberTitleText" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/continueButton"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/selector_night_to_rain_tint"
+        android:enabled="false"
+        android:padding="18dp"
+        android:text="@string/common_continue"
+        android:textColor="@color/selector_lime_to_mountain_text"
+        app:iconGravity="textEnd"
+        app:iconTint="@color/icons_lime"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/resendText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/onboarding_sms_input_resend_sms"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+        android:textColor="@color/text_sky"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/smsInputComponent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

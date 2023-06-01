@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogBaseDoneBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
 /**
@@ -19,7 +18,7 @@ import org.p2p.wallet.utils.withTextOrGone
  * or X at top to close (if needed) to cover cases where you do not need logic and Presenter
  * you need to show some Info content or select something and return as a result with [setFragmentResult]
  **/
-abstract class BaseDoneBottomSheet : BaseBottomSheet(R.layout.dialog_base_done) {
+abstract class BaseDoneBottomSheet : BaseBottomSheet() {
 
     companion object {
         const val ARG_TITLE = "ARG_TITLE"
@@ -31,10 +30,11 @@ abstract class BaseDoneBottomSheet : BaseBottomSheet(R.layout.dialog_base_done) 
     protected val resultKey: String by args(ARG_RESULT_KEY)
     protected val requestKey: String by args(ARG_REQUEST_KEY)
 
-    val baseDialogBinding: DialogBaseDoneBinding by viewBinding()
+    lateinit var baseDialogBinding: DialogBaseDoneBinding
 
     @CallSuper
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        baseDialogBinding = DialogBaseDoneBinding.inflate(inflater, container, false)
         val innerView = onCreateInnerView(inflater, container, savedInstanceState)
         baseDialogBinding.viewInner.addView(innerView)
         return baseDialogBinding.root

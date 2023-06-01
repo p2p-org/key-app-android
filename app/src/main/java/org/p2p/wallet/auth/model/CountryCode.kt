@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class CountryCode(
     val nameCode: String,
     val phoneCode: String,
-    val countryName: String,
+    val name: String,
     val flagEmoji: String,
     var mask: String = ""
 ) : Parcelable {

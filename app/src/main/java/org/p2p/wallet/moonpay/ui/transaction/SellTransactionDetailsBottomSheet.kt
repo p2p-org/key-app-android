@@ -16,6 +16,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSendTransactionDetailsBinding
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
+import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.newsend.ui.SendOpenedFrom
@@ -136,7 +137,7 @@ class SellTransactionDetailsBottomSheet :
         sendAmount: BigDecimal,
         receiverAddress: String
     ) {
-        val recipient = SearchResult.AddressFound(receiverAddress)
+        val recipient = SearchResult.AddressFound(AddressState(receiverAddress))
         replaceFragment(
             NewSendFragment.create(
                 recipient = recipient,

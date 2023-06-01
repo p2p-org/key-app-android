@@ -23,7 +23,6 @@ class SwapStateRoutesRefresher(
     private val swapTransactionRepository: JupiterSwapTransactionRepository,
     private val minSolBalanceValidator: MinimumSolAmountValidator,
     private val swapValidator: SwapValidator,
-    private val swapProfiler: SwapProfiler,
 ) {
     suspend fun refreshRoutes(
         state: MutableStateFlow<SwapState>,
@@ -56,10 +55,7 @@ class SwapStateRoutesRefresher(
             )
         } catch (e: SwapFailure.TooSmallInputAmount) {
             throw SwapFeatureException.SmallTokenAAmount(amountTokenA)
-        } finally {
-            swapProfiler.setRoutesFetchedTime()
         }
-
         Timber.i("Jupiter routes fetched: ${updatedRoutes.size}")
 
         val activeRoute = updatedRoutes.getOrNull(activeRouteIndex)
@@ -98,8 +94,6 @@ class SwapStateRoutesRefresher(
             route = activeRoute,
             userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
         )
-        swapProfiler.setTxCreatedTime()
-
         Timber.i("Fresh swap transaction fetched")
 
         state.value = SwapState.SwapLoaded(

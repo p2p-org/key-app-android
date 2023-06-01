@@ -12,21 +12,9 @@ plugins {
 keyappCoverage {
     enableForConfiguration += "debug"
     reportXml = true
-    reportHtml = true
     excludes += listOf(
         "org/p2p/wallet/databinding/*",
-        "com/bumptech/glide/*",
-        "**/*Module.*",
-        "**/*Fragment.*",
-        "**/*Fragment$*.*",
-        "**/*BottomSheet.*",
-        "**/*BottomSheet$*.*",
-        "**/*Activity.*",
-        "**/*Activity$*.*",
-        "**/*View.*",
-        "**/*View$*.*",
-        "**/UiKit*.*",
-        "**/UiKit*$*.*",
+        "com/bumptech/glide/*"
     )
     configureJacoco {
         reportsDirectory.set(file("${buildDir}/reports/jacoco"))

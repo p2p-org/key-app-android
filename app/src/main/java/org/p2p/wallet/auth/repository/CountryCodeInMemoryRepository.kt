@@ -2,21 +2,19 @@ package org.p2p.wallet.auth.repository
 
 import android.content.Context
 import android.telephony.TelephonyManager
-import timber.log.Timber
 import kotlinx.coroutines.withContext
-import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
+import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import timber.log.Timber
 
 class CountryCodeInMemoryRepository(
     private val dispatchers: CoroutineDispatchers,
     private val context: Context,
-    private val countryCodeHelper: CountryCodeXmlParser
+    private val countryCodeHelper: CountryCodeHelper
 ) : CountryCodeLocalRepository {
 
-    private val allCountryCodes: List<CountryCode> by lazy {
-        countryCodeHelper.parserCountryCodesFromXmlFile()
-    }
+    private val allCountryCodes = mutableListOf<CountryCode>()
 
     override suspend fun getCountryCodes(): List<CountryCode> = allCountryCodes
 
@@ -59,6 +57,14 @@ class CountryCodeInMemoryRepository(
         countryCodeHelper.isValidNumberForRegion(phoneNumber, countryCode)
 
     private suspend fun getCountryForIso(nameCode: String): CountryCode? = withContext(dispatchers.io) {
+        if (allCountryCodes.isEmpty()) {
+            readCountriesFromXml()
+        }
         allCountryCodes.firstOrNull { it.nameCode.equals(nameCode, ignoreCase = true) }
+    }
+
+    private suspend fun readCountriesFromXml(): Boolean = withContext(dispatchers.io) {
+        allCountryCodes.clear()
+        allCountryCodes.addAll(countryCodeHelper.parserCountryCodesFromXmlFile())
     }
 }

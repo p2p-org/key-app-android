@@ -21,7 +21,6 @@ import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.utils.toJsonObject
 
 private const val TAG = "RpcInterceptor"
 
@@ -148,7 +147,6 @@ class RpcInterceptor(
             errorCode = serverError.error.code ?: ErrorCode.SERVER_ERROR,
             fullMessage = fullMessage,
             errorMessage = errorMessage,
-            jsonErrorBody = gson.toJsonObject(fullMessage),
             domainErrorType = domainErrorType
         )
     } catch (e: Throwable) {

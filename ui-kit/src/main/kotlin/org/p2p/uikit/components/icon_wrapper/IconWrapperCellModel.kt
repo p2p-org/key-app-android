@@ -8,10 +8,6 @@ sealed interface IconWrapperCellModel {
         val icon: ImageViewCellModel,
     ) : IconWrapperCellModel
 
-    data class SingleEmoji(
-        val emoji: String,
-    ) : IconWrapperCellModel
-
     // todo
     /*data class SingleWithBadge(
         val icon: ImageViewUiModel,

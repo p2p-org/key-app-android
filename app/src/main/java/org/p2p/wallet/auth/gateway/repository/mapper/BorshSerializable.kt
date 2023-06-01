@@ -12,19 +12,6 @@ private const val DEFAULT_BORSH_CAPACITY = 4096
  * see implementations for examples
  *
  * https://github.com/near/borshj/issues/3
- *
- * u8 - byte
- * [u8] - ByteArray
- * u16 - short
- * u32 - int
- * u64 - long
- * u128 - BigInteger
- * f32 - float
- * f64     double
- * str - String
- * map - Map<*,*>
- * set - Set<*>
- * struct - Object / class
  */
 interface BorshSerializable {
     fun getBorshBuffer(): BorshBuffer = BorshBuffer.allocate(DEFAULT_BORSH_CAPACITY)

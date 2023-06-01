@@ -51,7 +51,6 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
@@ -200,8 +199,8 @@ class HomeFragment :
         homeRecyclerView.doOnDetach {
             homeRecyclerView.layoutManager = null
         }
-        swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
-        viewActionButtons.onButtonClicked = ::onActionButtonClicked
+        swipeRefreshLayout.setOnRefreshListener { presenter.refreshTokens() }
+        viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
 
         // hidden. temporary. PWN-4381
         viewBuyTokenBanner.root.isVisible = false
@@ -228,20 +227,24 @@ class HomeFragment :
 
     private fun onActionButtonClicked(clickedButton: ActionButton) {
         when (clickedButton) {
+            ActionButton.BUY_BUTTON -> {
+                presenter.onBuyClicked()
+            }
+
+            ActionButton.RECEIVE_BUTTON -> {
+                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
+            }
+
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
             }
+
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())
             }
+
             ActionButton.SWAP_BUTTON -> {
                 showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
-            }
-            ActionButton.TOP_UP_BUTTON -> {
-                TopUpWalletBottomSheet.show(fm = parentFragmentManager)
-            }
-            else -> {
-                // unsupported on this screen
             }
         }
     }
