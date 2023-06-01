@@ -17,6 +17,8 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaPresenter
 object BuyModule : InjectionModule {
 
     override fun create() = module {
+        factoryOf(::BuyFragmentFactory)
+
         initDomainLayer()
         initPresentationLayer()
     }
