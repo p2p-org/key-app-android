@@ -74,8 +74,8 @@ class StrigaUserRepositoryTest {
         assertTrue(result is StrigaDataLayerResult.Failure)
         assertTrue(result.error is StrigaDataLayerError.ApiServiceError)
         assertEquals(
-            (result.error as StrigaDataLayerError.ApiServiceError).response.errorCode,
-            StrigaApiErrorCode.USER_DOES_NOT_EXIST
+            StrigaApiErrorCode.USER_DOES_NOT_EXIST,
+            (result.error as StrigaDataLayerError.ApiServiceError).response.errorCode
         )
     }
 
@@ -128,9 +128,9 @@ class StrigaUserRepositoryTest {
         assertNull(error)
         assertTrue(result is StrigaDataLayerResult.Success<StrigaUserInitialDetails>)
         val userDetails = result.value
-        assertEquals(userDetails.userId, expectedUserId)
-        assertEquals(userDetails.email, expectedUserEmail)
-        assertEquals(userDetails.kycStatus.status, expectedKycStatus)
+        assertEquals(expectedUserId, userDetails.userId)
+        assertEquals(expectedUserEmail, userDetails.email)
+        assertEquals(expectedKycStatus, userDetails.kycStatus.status)
 
         // Check request
         with(createdData.captured) {
