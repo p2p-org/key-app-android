@@ -24,7 +24,7 @@ import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOnboardingBinding
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.striga.ui.firststep.StrigaSignUpFirstStepFragment
+import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.getColor

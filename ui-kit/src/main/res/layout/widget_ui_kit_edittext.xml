@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="78dp"
+    android:layout_height="wrap_content"
+    android:minHeight="78dp"
     android:orientation="vertical"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
@@ -91,12 +92,16 @@
 
     <TextView
         android:id="@+id/textViewError"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="4dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_rose"
         android:visibility="gone"
-        tools:text="Sorry, we don’t know a such country " />
+        app:layout_constraintEnd_toEndOf="@id/textViewLabel"
+        app:layout_constraintStart_toStartOf="@id/textViewLabel"
+        app:layout_constraintTop_toBottomOf="@id/containerInputView"
+        tools:text="Sorry, we don't know such a country"
+        tools:visibility="visible" />
 </merge>

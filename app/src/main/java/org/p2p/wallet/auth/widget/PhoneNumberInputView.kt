@@ -46,22 +46,22 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     }
 
     init {
-        val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitTextField, 0, 0)
-        val labelText = styleAttrs.getString(R.styleable.UiKitTextField_labelText).orEmpty()
+        val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitEditText, 0, 0)
+        val labelText = styleAttrs.getString(R.styleable.UiKitEditText_labelText).orEmpty()
         if (labelText.isNotEmpty()) {
             binding.textViewLabel.text = labelText
             binding.textViewLabel.isVisible = true
         }
-        val hintText = styleAttrs.getString(R.styleable.UiKitTextField_hintText).orEmpty()
+        val hintText = styleAttrs.getString(R.styleable.UiKitEditText_hintText).orEmpty()
         if (hintText.isNotEmpty()) {
             binding.textViewHint.text = hintText
             binding.textViewHint.isVisible = true
         }
-        val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitTextField_android_textAppearance, -1)
+        val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitEditText_android_textAppearance, -1)
         if (textAppearance != -1) {
             binding.editTextPhoneNumber.setTextAppearance(textAppearance)
         }
-        val text = styleAttrs.getText(R.styleable.UiKitTextField_android_text)
+        val text = styleAttrs.getText(R.styleable.UiKitEditText_android_text)
         if (!text.isNullOrEmpty()) {
             binding.editTextPhoneNumber.setText(text)
         }

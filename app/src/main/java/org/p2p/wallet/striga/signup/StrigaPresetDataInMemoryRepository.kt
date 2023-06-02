@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.repository
+package org.p2p.wallet.striga.signup
 
 import android.content.res.Resources
 import com.google.gson.Gson
@@ -9,7 +9,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
-import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 import org.p2p.wallet.utils.unsafeLazy
 
 private const val JSON_KEY_OCCUPATION_NAME = "occupation"
