@@ -6,6 +6,8 @@ import org.p2p.wallet.R
 
 enum class StrigaSignupDataType(@StringRes val tag: Int) {
     EMAIL(R.string.tag_striga_email),
+    // used internally
+    PHONE_CODE(R.string.tag_striga_phone_code),
     PHONE_NUMBER(R.string.tag_striga_phone_number),
     FIRST_NAME(R.string.tag_striga_first_name),
     LAST_NAME(R.string.tag_striga_last_name),
@@ -26,11 +28,9 @@ enum class StrigaSignupDataType(@StringRes val tag: Int) {
     CITY_STATE(R.string.tag_striga_city_state);
 
     companion object {
-        val cachedValues: Array<StrigaSignupDataType> = values()
-
         fun fromTag(
             tagValue: String,
             resources: Resources
-        ): StrigaSignupDataType? = cachedValues.firstOrNull { resources.getString(it.tag) == tagValue }
+        ): StrigaSignupDataType? = values().firstOrNull { resources.getString(it.tag) == tagValue }
     }
 }

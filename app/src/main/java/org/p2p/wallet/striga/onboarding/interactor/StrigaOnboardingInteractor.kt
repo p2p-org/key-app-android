@@ -24,4 +24,12 @@ class StrigaOnboardingInteractor(
     fun getOccupationValuesList(): List<StrigaOccupation> = strigaPresetDataLocalRepository.getOccupationValuesList()
 
     fun getSourceOfFundsList(): List<StrigaSourceOfFunds> = strigaPresetDataLocalRepository.getSourceOfFundsList()
+
+    fun getOccupationByName(name: String): StrigaOccupation {
+        return strigaPresetDataLocalRepository.getOccupationValuesList().first { it.occupationName == name }
+    }
+
+    fun getSourcesOfFundsByName(name: String): StrigaSourceOfFunds {
+        return strigaPresetDataLocalRepository.getSourceOfFundsList().first { it.sourceName == name }
+    }
 }

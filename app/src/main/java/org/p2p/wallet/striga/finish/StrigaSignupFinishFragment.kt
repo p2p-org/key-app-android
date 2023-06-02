@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.ui.finish
+package org.p2p.wallet.striga.finish
 
 import androidx.activity.addCallback
 import android.os.Bundle

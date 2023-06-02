@@ -9,15 +9,15 @@ import org.p2p.ethereumkit.external.core.DefaultDispatchers
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TestCoroutineDispatcher : DefaultDispatchers(), CoroutineDispatchers {
+class TestCoroutineDispatchers(private val dispatcher: CoroutineDispatcher = StandardTestDispatcher()) : DefaultDispatchers(), CoroutineDispatchers {
     override val computation: CoroutineDispatcher
-        get() = StandardTestDispatcher()
+        get() = dispatcher
     override val io: CoroutineDispatcher
-        get() = StandardTestDispatcher()
+        get() = dispatcher
     override val ui: CoroutineDispatcher
-        get() = StandardTestDispatcher()
+        get() = dispatcher
 
     init {
-        Dispatchers.setMain(ui)
+        Dispatchers.setMain(dispatcher)
     }
 }

@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.ui.countrypicker
+package org.p2p.wallet.striga.countrypicker
 
 import androidx.annotation.StringRes
 import org.p2p.core.common.TextContainer
