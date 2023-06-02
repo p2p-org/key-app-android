@@ -13,6 +13,19 @@ interface StrigaApi {
     @POST("v1/user/{userId}")
     suspend fun getUserDetails(@Path("userId") userId: String): StrigaUserDetailsResponse
 
+    /**
+     * 30044 - mobile already in use
+     * 30031 - invalid verification code
+     * 30003 - exceeded verification attempts
+     * 30005 - user doesn't exist, critical error
+     */
     @POST("v1/user/verify-mobile")
     suspend fun verifyMobileNumber(@Body body: StrigaVerifyMobileNumberRequest)
+
+    /**
+     * 31009 - mobile already in use
+     * 31008 - exceed resend sms attempts
+     */
+    @POST("v1/user/resend-sms")
+    suspend fun resendSms(@Body body: StrigaResendSmsRequest)
 }

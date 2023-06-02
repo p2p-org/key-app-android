@@ -13,8 +13,8 @@ data class StrigaApiErrorResponse(
     @SerializedName("errorDetails")
     val details: String?,
 ) {
-    val errorCode: StrigaApiErrorCode
-        get() = internalErrorCode ?: StrigaApiErrorCode.UNKNOWN
+    @Transient
+    val errorCode: StrigaApiErrorCode = internalErrorCode ?: StrigaApiErrorCode.UNKNOWN
 }
 
 /**
