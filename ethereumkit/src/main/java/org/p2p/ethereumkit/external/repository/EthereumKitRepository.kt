@@ -136,7 +136,7 @@ internal class EthereumKitRepository(
         )
     }
 
-    override suspend fun getAddress(): EthAddress {
+    override fun getAddress(): EthAddress {
         return tokenKeyProvider?.publicKey ?: throwInitError()
     }
 

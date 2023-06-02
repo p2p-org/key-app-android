@@ -6,9 +6,13 @@ import org.p2p.solanaj.core.Account
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.bridge.interactor.EthereumInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
+import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key.Companion.withCustomKey
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.Companion.withCustomKey
 import org.p2p.wallet.utils.toBase58Instance
 
 class MetadataInteractor(
@@ -18,6 +22,8 @@ class MetadataInteractor(
     private val seedPhraseProvider: SeedPhraseProvider,
     private val secureStorageContract: SecureStorageContract,
     private val gatewayMetadataMerger: GatewayMetadataMerger,
+    private val ethereumInteractor: EthereumInteractor,
+    private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
 ) {
 
     var currentMetadata: GatewayOnboardingMetadata? = getMetadataFromStorage()
@@ -28,27 +34,49 @@ class MetadataInteractor(
         }
 
     suspend fun tryLoadAndSaveMetadata() {
-        val web3SignUpDetails = signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails
-        if (web3SignUpDetails != null) {
+        val ethereumPublicKey = getEthereumPublicKey()
+        if (ethereumPublicKey != null) {
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
             tryLoadAndSaveMetadataWithAccount(
                 userAccount = userAccount,
                 mnemonicPhraseWords = userSeedPhrase.seedPhrase,
-                ethereumPublicKey = web3SignUpDetails.ethereumPublicKey
+                ethereumPublicKey = ethereumPublicKey
             )
         } else {
             Timber.i("User doesn't have any Web3Auth sign up data, skipping metadata fetch")
         }
     }
 
+    private fun getEthereumPublicKey(): String? {
+        return signUpDetailsStorage.getLastSignUpUserDetails()
+            ?.signUpDetails
+            ?.ethereumPublicKey
+            ?: tryToGetEthAddress()
+    }
+
+    private fun tryToGetEthAddress(): String? {
+        return if (bridgeFeatureToggle.isFeatureEnabled) {
+            ethereumInteractor.getEthAddress().hex
+        } else {
+            null
+        }
+    }
+
     private fun saveMetadataToStorage(metadata: GatewayOnboardingMetadata?) {
-        secureStorageContract.saveObject(SecureStorageContract.Key.KEY_ONBOARDING_METADATA, metadata)
+        // TODO PWN-8771 - implement database for metadata
+        val ethAddress = getEthereumPublicKey().orEmpty()
+        secureStorageContract.saveObject(
+            SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
+            metadata
+        )
     }
 
     private fun getMetadataFromStorage(): GatewayOnboardingMetadata? {
+        // TODO PWN-8771 - implement database for metadata
+        val ethAddress = getEthereumPublicKey().orEmpty()
         return secureStorageContract.getObject(
-            SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
+            SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
             GatewayOnboardingMetadata::class
         )
     }
@@ -87,14 +115,14 @@ class MetadataInteractor(
     }
 
     private suspend fun tryToUploadMetadata(metadata: GatewayOnboardingMetadata) {
-        val web3SignUpDetails = signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails
-        if (web3SignUpDetails != null) {
+        val ethereumPublicKey = getEthereumPublicKey()
+        if (ethereumPublicKey != null) {
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
             tryToUploadMetadata(
                 userAccount = userAccount,
                 mnemonicPhraseWords = userSeedPhrase.seedPhrase,
-                ethereumPublicKey = web3SignUpDetails.ethereumPublicKey,
+                ethereumPublicKey = ethereumPublicKey,
                 newMetadata = metadata
             )
         } else {
