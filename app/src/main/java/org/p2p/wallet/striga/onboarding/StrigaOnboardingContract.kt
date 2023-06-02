@@ -42,5 +42,6 @@ interface StrigaOnboardingContract {
     interface Presenter : MvpPresenter<View> {
         fun onClickContinue()
         fun onClickHelp()
+        fun onCurrentCountryChanged(selectedCountry: Country)
     }
 }

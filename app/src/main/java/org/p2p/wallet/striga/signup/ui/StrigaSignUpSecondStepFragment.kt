@@ -13,11 +13,13 @@ import org.p2p.wallet.databinding.FragmentStrigaSignUpSecondStepBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -30,6 +32,11 @@ class StrigaSignUpSecondStepFragment :
     IView {
 
     companion object {
+        private const val FUNDS_REQUEST_KEY = "FUNDS_REQUEST_KEY"
+        private const val OCCUPATION_REQUEST_KEY = "OCCUPATION_REQUEST_KEY"
+        private const val COUNTRY_REQUEST_KEY = "COUNTRY_REQUEST_KEY"
+        private const val SELECTED_ITEM_RESULT_KEY = "SELECTED_ITEM_RESULT_KEY"
+
         fun create() = StrigaSignUpSecondStepFragment()
     }
 
@@ -119,15 +126,63 @@ class StrigaSignUpSecondStepFragment :
     }
 
     private fun showOccupationPicker() {
-        replaceFragment(StrigaPresetDataPickerFragment.create(StrigaPresetDataToPick.OCCUPATION))
+        replaceFragmentForResult(
+            target = StrigaPresetDataPickerFragment.create(
+                requestKey = OCCUPATION_REQUEST_KEY,
+                resultKey = SELECTED_ITEM_RESULT_KEY,
+                dataToPick = StrigaPresetDataToPick.OCCUPATION
+            ),
+            requestKey = OCCUPATION_REQUEST_KEY,
+            onResult = ::onFragmentResult
+        )
     }
 
     private fun showFundsPicker() {
-        replaceFragment(StrigaPresetDataPickerFragment.create(StrigaPresetDataToPick.SOURCE_OF_FUNDS))
+        replaceFragmentForResult(
+            target = StrigaPresetDataPickerFragment.create(
+                requestKey = COUNTRY_REQUEST_KEY,
+                resultKey = SELECTED_ITEM_RESULT_KEY,
+                dataToPick = StrigaPresetDataToPick.SOURCE_OF_FUNDS
+            ),
+            requestKey = FUNDS_REQUEST_KEY,
+            onResult = ::onFragmentResult
+        )
     }
 
     private fun showCurrentCountryPicker() {
-        replaceFragment(StrigaPresetDataPickerFragment.create(StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY))
+        replaceFragmentForResult(
+            target = StrigaPresetDataPickerFragment.create(
+                requestKey = COUNTRY_REQUEST_KEY,
+                resultKey = SELECTED_ITEM_RESULT_KEY,
+                dataToPick = StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY
+            ),
+            requestKey = COUNTRY_REQUEST_KEY,
+            onResult = ::onFragmentResult
+        )
+    }
+
+    private fun onFragmentResult(requestKey: String, bundle: Bundle) {
+        when (requestKey) {
+            OCCUPATION_REQUEST_KEY -> {
+                val selectedItem =
+                    bundle.getParcelableCompat<StrigaPresetDataItem.StrigaOccupationItem>(SELECTED_ITEM_RESULT_KEY)
+                        ?: return
+                presenter.onPresetDataChanged(selectedItem)
+            }
+            FUNDS_REQUEST_KEY -> {
+                val selectedItem =
+                    bundle.getParcelableCompat<StrigaPresetDataItem.StrigaSourceOfFundsItem>(SELECTED_ITEM_RESULT_KEY)
+                        ?: return
+                presenter.onPresetDataChanged(selectedItem)
+            }
+            COUNTRY_REQUEST_KEY -> {
+                val selectedItem =
+                    bundle.getParcelableCompat<StrigaPresetDataItem.StrigaCountryItem>(SELECTED_ITEM_RESULT_KEY)
+                        ?: return
+                presenter.onPresetDataChanged(selectedItem)
+            }
+            else -> throw IllegalStateException("Result for $requestKey is unhandled: ")
+        }
     }
 
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {

@@ -1,8 +1,10 @@
 package org.p2p.wallet.striga.presetpicker
 
 import androidx.annotation.StringRes
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -15,6 +17,7 @@ import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.adapter.DividerItemDecorator
 import org.p2p.wallet.databinding.FragmentStrigaPresetDataPickerBinding
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
@@ -31,9 +34,19 @@ class StrigaPresetDataPickerFragment :
     ContractView {
 
     companion object {
-        fun create(dataToPick: StrigaPresetDataToPick): Fragment =
-            StrigaPresetDataPickerFragment()
-                .withArgs(EXTRA_DATA_TO_PICK to dataToPick,)
+        private const val EXTRA_REQUEST_KEY = "REQUEST_KEY"
+        private const val EXTRA_RESULT_KEY = "RESULT_KEY"
+
+        fun create(
+            requestKey: String,
+            resultKey: String,
+            dataToPick: StrigaPresetDataToPick
+        ): Fragment = StrigaPresetDataPickerFragment()
+            .withArgs(
+                EXTRA_REQUEST_KEY to requestKey,
+                EXTRA_RESULT_KEY to resultKey,
+                EXTRA_DATA_TO_PICK to dataToPick
+            )
     }
 
     override val presenter: ContractPresenter by inject { parametersOf(dataToPick) }
@@ -44,6 +57,8 @@ class StrigaPresetDataPickerFragment :
         financeBlockCellDelegate(onItemClicked = { presenter.onPresetDataSelected(it.typedPayload()) }),
     )
 
+    private val requestKey: String by args(EXTRA_REQUEST_KEY)
+    private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val dataToPick: StrigaPresetDataToPick by args(EXTRA_DATA_TO_PICK)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,7 +108,8 @@ class StrigaPresetDataPickerFragment :
         StrigaPresetDataToPick.OCCUPATION -> R.string.striga_preset_data_hint_occupation
     }
 
-    override fun close() {
+    override fun closeWithResult(selectedItem: StrigaPresetDataItem) {
+        setFragmentResult(requestKey, bundleOf(resultKey to selectedItem))
         popBackStack()
     }
 }

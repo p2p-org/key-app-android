@@ -26,9 +26,12 @@ import org.p2p.wallet.databinding.FragmentStrigaOnboardingBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.getString
@@ -88,8 +91,17 @@ class StrigaOnboardingFragment :
     }
 
     private fun openCountrySelection() {
-        replaceFragment(
-            StrigaPresetDataPickerFragment.create(StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY)
+        replaceFragmentForResult(
+            StrigaPresetDataPickerFragment.create(
+                requestKey = "request_key",
+                resultKey = "country",
+                dataToPick = StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY
+            ),
+            requestKey = "request_key",
+            onResult = { requestKey, result ->
+                result.getParcelableCompat<StrigaPresetDataItem.StrigaCountryItem>("country")
+                    ?.also { presenter.onCurrentCountryChanged(it.details) }
+            }
         )
     }
 

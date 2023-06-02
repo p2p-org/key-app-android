@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.ui.countrypicker
+package org.p2p.wallet.striga.presetpicker
 
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 

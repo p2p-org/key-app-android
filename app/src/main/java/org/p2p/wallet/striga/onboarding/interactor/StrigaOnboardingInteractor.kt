@@ -6,6 +6,7 @@ import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
 class StrigaOnboardingInteractor(
@@ -19,6 +20,12 @@ class StrigaOnboardingInteractor(
             ?.value
             ?.let { countryRepository.findCountryByIsoAlpha2(it) }
             ?: countryRepository.detectCountryOrDefault()
+    }
+
+    suspend fun saveCurrentCountry(country: Country) {
+        signupDataRepository.updateSignupData(
+            StrigaSignupData(StrigaSignupDataType.COUNTRY, country.codeAlpha2)
+        )
     }
 
     fun checkIsCountrySupported(country: Country): Boolean {

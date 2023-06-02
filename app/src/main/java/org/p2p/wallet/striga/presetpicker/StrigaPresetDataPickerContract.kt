@@ -9,7 +9,7 @@ interface StrigaPresetDataPickerContract {
 
     interface View : MvpView {
         fun showItems(items: List<AnyCellItem>)
-        fun close()
+        fun closeWithResult(selectedItem: StrigaPresetDataItem)
     }
 
     interface Presenter : MvpPresenter<View> {

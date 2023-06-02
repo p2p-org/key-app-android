@@ -15,11 +15,14 @@ import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -96,7 +99,18 @@ class StrigaSignUpFirstStepFragment :
     }
 
     private fun showCountryOfBirthPicker() {
-        replaceFragment(StrigaPresetDataPickerFragment.create(dataToPick = StrigaPresetDataToPick.COUNTRY_OF_BIRTH))
+        replaceFragmentForResult(
+            StrigaPresetDataPickerFragment.create(
+                requestKey = "request_key",
+                resultKey = "country",
+                dataToPick = StrigaPresetDataToPick.COUNTRY_OF_BIRTH
+            ),
+            requestKey = "request_key",
+            onResult = { requestKey, result ->
+                result.getParcelableCompat<StrigaPresetDataItem.StrigaCountryItem>("country")
+                    ?.also { presenter.onCountryOfBirthChanged(it.details) }
+            }
+        )
     }
 
     override fun updateSignupField(type: StrigaSignupDataType, newValue: String) {

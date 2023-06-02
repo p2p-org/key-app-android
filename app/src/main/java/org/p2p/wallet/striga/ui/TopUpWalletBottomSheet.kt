@@ -23,8 +23,6 @@ import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTopupWalletBinding
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.receive.ReceiveFragmentFactory
-import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
-import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -77,7 +75,7 @@ class TopUpWalletBottomSheet :
             )
         )
         binding.bankCardView.setOnClickAction { _, _ ->
-            dismissAndNavigate(StrigaPresetDataPickerFragment.create(StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY))
+            dismissAndNavigate(buyFragmentFactory.buyFragment(tokenToBuy))
         }
     }
 

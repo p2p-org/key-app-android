@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.signup
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
@@ -19,5 +20,6 @@ interface StrigaSignUpSecondStepContract {
         fun onFieldChanged(newValue: String, type: StrigaSignupDataType)
         fun onSubmit()
         fun saveChanges()
+        fun onPresetDataChanged(selectedItem: StrigaPresetDataItem)
     }
 }

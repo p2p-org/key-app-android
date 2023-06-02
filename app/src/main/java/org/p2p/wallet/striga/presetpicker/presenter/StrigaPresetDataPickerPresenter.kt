@@ -1,15 +1,14 @@
 package org.p2p.wallet.striga.presetpicker.presenter
 
-import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerContract
+import org.p2p.wallet.striga.presetpicker.StrigaPresetDataSearcher
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataInteractor
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
-import org.p2p.wallet.striga.ui.countrypicker.StrigaPresetDataSearcher
 
 class StrigaPresetDataPickerPresenter(
     private val presetDataToPick: StrigaPresetDataToPick,
@@ -54,12 +53,6 @@ class StrigaPresetDataPickerPresenter(
     }
 
     override fun onPresetDataSelected(item: StrigaPresetDataItem) {
-        launch {
-            strigaPresetDataInteractor.saveSelectedPresetData(presetDataToPick, item)
-                .onSuccess {
-                    Timber.i("$presetDataToPick saved")
-                    view?.close()
-                }
-        }
+        view?.closeWithResult(item)
     }
 }

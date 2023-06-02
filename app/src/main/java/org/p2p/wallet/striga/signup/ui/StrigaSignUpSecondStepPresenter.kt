@@ -4,8 +4,9 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
+import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
@@ -23,20 +24,29 @@ class StrigaSignUpSecondStepPresenter(
 
     private val cachedSignupData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
 
-    override fun attach(view: StrigaSignUpSecondStepContract.View) {
-        super.attach(view)
+    override fun firstAttach() {
+        super.firstAttach()
         launch {
             initialLoadSignupData()
         }
     }
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
-        cachedSignupData[type] = StrigaSignupData(type = type, value = newValue)
+        setCachedData(type, newValue)
         // enabling button if something changed
         view?.setButtonIsEnabled(true)
     }
 
+    override fun onPresetDataChanged(selectedItem: StrigaPresetDataItem) {
+        when (selectedItem) {
+            is StrigaPresetDataItem.StrigaCountryItem -> onCountryChanged(selectedItem.details)
+            is StrigaPresetDataItem.StrigaOccupationItem -> onOccupationChanged(selectedItem.details)
+            is StrigaPresetDataItem.StrigaSourceOfFundsItem -> onSourceOfFundsChanged(selectedItem.details)
+        }
+    }
+
     private fun onSourceOfFundsChanged(newValue: StrigaSourceOfFunds) {
+        setCachedData(StrigaSignupDataType.SOURCE_OF_FUNDS, newValue.sourceName)
         view?.updateSignupField(
             newValue = strigaItemCellMapper.toUiTitle(newValue.sourceName),
             type = StrigaSignupDataType.SOURCE_OF_FUNDS
@@ -44,6 +54,7 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     private fun onOccupationChanged(newValue: StrigaOccupation) {
+        setCachedData(StrigaSignupDataType.OCCUPATION, newValue.occupationName)
         view?.updateSignupField(
             newValue = strigaItemCellMapper.toUiTitle(newValue.occupationName),
             type = StrigaSignupDataType.OCCUPATION
@@ -51,6 +62,7 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     private fun onCountryChanged(newValue: Country) {
+        setCachedData(StrigaSignupDataType.COUNTRY, newValue.codeAlpha2)
         view?.updateSignupField(
             newValue = "${newValue.flagEmoji} ${newValue.name}",
             type = StrigaSignupDataType.COUNTRY
@@ -80,12 +92,9 @@ class StrigaSignUpSecondStepPresenter(
 
     private suspend fun initialLoadSignupData() {
         val data = interactor.getSignupDataSecondStep()
-        data.forEach { savedSignupData ->
-            cachedSignupData[savedSignupData.type] = StrigaSignupData(
-                type = savedSignupData.type,
-                value = savedSignupData.value.orEmpty()
-            )
-            view?.updateSignupField(savedSignupData.type, savedSignupData.value.orEmpty())
+        data.forEach { (type, value) ->
+            setCachedData(type, value.orEmpty())
+            view?.updateSignupField(type, value.orEmpty())
         }
 
         cachedSignupData[StrigaSignupDataType.OCCUPATION]?.value?.let {
@@ -100,5 +109,9 @@ class StrigaSignUpSecondStepPresenter(
             interactor.findCountryByIsoAlpha2(it)
                 ?.also(::onCountryChanged)
         }
+    }
+
+    private fun setCachedData(type: StrigaSignupDataType, value: String) {
+        cachedSignupData[type] = StrigaSignupData(type, value)
     }
 }
