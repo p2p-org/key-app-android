@@ -18,6 +18,7 @@ import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialKycDetails
 import org.p2p.wallet.striga.user.model.StrigaUserKycInfo
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
+import org.p2p.wallet.utils.emptyString
 
 class StrigaUserRepositoryMapper {
     @Throws(StrigaDataLayerError.InternalError::class)
@@ -68,7 +69,7 @@ class StrigaUserRepositoryMapper {
             ),
             address = StrigaCreateUserRequest.AddressRequest(
                 addressLine1 = map.getOrThrow(StrigaSignupDataType.CITY_ADDRESS_LINE),
-                addressLine2 = "",
+                addressLine2 = emptyString(),
                 city = map.getOrThrow(StrigaSignupDataType.CITY),
                 state = map.getOrThrow(StrigaSignupDataType.CITY_STATE),
                 country = map.getOrThrow(StrigaSignupDataType.COUNTRY),
