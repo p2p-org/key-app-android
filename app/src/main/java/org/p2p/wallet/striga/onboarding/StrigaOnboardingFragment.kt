@@ -173,7 +173,7 @@ class StrigaOnboardingFragment :
     private fun handleUnavailableState(state: StrigaOnboardingContract.View.AvailabilityState) {
         handleViewState(state)
         binding.buttonContinue.setOnClickListener {
-            presenter.onClickChangeCountry()
+            openCountrySelection()
         }
     }
 
