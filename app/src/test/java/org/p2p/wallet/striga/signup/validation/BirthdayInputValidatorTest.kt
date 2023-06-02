@@ -94,4 +94,28 @@ class BirthdayInputValidatorTest {
         assertEquals(R.string.striga_validation_error_wrong_birthday_younger_than, errorMessage.textRes)
         assertEquals(2015, errorMessage.args[0])
     }
+
+    @Test
+    fun `GIVEN birthday that is a maximum year WHEN validate THEN return true`() {
+        // Given
+        val validator = BirthdayInputValidator(1920, 2015)
+
+        // When
+        val result = validator.validate("01.01.2015")
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `GIVEN birthday that is a minimum year WHEN validate THEN return true`() {
+        // Given
+        val validator = BirthdayInputValidator(1920, 2015)
+
+        // When
+        val result = validator.validate("01.01.1920")
+
+        // Then
+        assertTrue(result)
+    }
 }

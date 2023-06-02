@@ -68,7 +68,7 @@ class StrigaSignupSecondStepPresenterTest {
         plantTimberToStdout("StrigaSignupSecondStepPresenterTest")
     }
 
-    private fun createPresenterSecondStep(): StrigaSignUpSecondStepPresenter {
+    private fun createPresenter(): StrigaSignUpSecondStepPresenter {
         return StrigaSignUpSecondStepPresenter(
             dispatchers = dispatchers,
             interactor = interactor,
@@ -97,7 +97,7 @@ class StrigaSignupSecondStepPresenterTest {
         coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
+        val presenter = createPresenter()
         presenter.attach(view)
         presenter.onCountryClicked()
         advanceUntilIdle()
@@ -114,7 +114,7 @@ class StrigaSignupSecondStepPresenterTest {
         coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
+        val presenter = createPresenter()
         presenter.attach(view)
         presenter.onOccupationClicked()
         advanceUntilIdle()
@@ -131,7 +131,7 @@ class StrigaSignupSecondStepPresenterTest {
         coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
+        val presenter = createPresenter()
         presenter.attach(view)
         presenter.onSourceOfFundsClicked()
         advanceUntilIdle()
@@ -148,7 +148,7 @@ class StrigaSignupSecondStepPresenterTest {
         coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
+        val presenter = createPresenter()
         presenter.attach(view)
         advanceUntilIdle()
 
@@ -201,7 +201,7 @@ class StrigaSignupSecondStepPresenterTest {
         coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
+        val presenter = createPresenter()
         presenter.attach(view)
 
         presenter.onFieldChanged("123", StrigaSignupDataType.PHONE_NUMBER)
@@ -223,7 +223,7 @@ class StrigaSignupSecondStepPresenterTest {
         coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
+        val presenter = createPresenter()
         presenter.attach(view)
 
         presenter.onFieldChanged("123", StrigaSignupDataType.PHONE_NUMBER)
@@ -246,7 +246,7 @@ class StrigaSignupSecondStepPresenterTest {
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
+        val presenter = createPresenter()
         presenter.attach(view)
 
         presenter.onFieldChanged("any occupation", StrigaSignupDataType.OCCUPATION)
@@ -276,7 +276,7 @@ class StrigaSignupSecondStepPresenterTest {
         coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
+        val presenter = createPresenter()
         presenter.attach(view)
         presenter.onSourceOfFundsClicked()
         advanceUntilIdle()
@@ -298,7 +298,7 @@ class StrigaSignupSecondStepPresenterTest {
         coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
+        val presenter = createPresenter()
         presenter.attach(view)
         presenter.onSourceOfFundsClicked()
         advanceUntilIdle()
@@ -307,5 +307,26 @@ class StrigaSignupSecondStepPresenterTest {
             view.updateSignupField(StrigaSignupDataType.OCCUPATION, occupation.occupationName)
             view.updateSignupField(StrigaSignupDataType.OCCUPATION, "Loafer")
         }
+    }
+
+    @Test
+    fun `GIVEN invalid user input WHEN user inputs new data THEN check errors are cleared`() = runTest {
+        val initialSignupData = listOf(
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, SupportedCountry.codeAlpha3)
+        )
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+        coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
+        coEvery { countryRepository.findCountryByIsoAlpha3(SupportedCountry.codeAlpha3) } returns SupportedCountry
+
+        val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
+        val presenter = createPresenter()
+        presenter.attach(view)
+        presenter.onSubmit()
+        presenter.onFieldChanged("123", StrigaSignupDataType.CITY)
+        advanceUntilIdle()
+
+        verify { view.setErrors(any()) }
+        verify { view.setButtonIsEnabled(any()) }
+        verify { view.clearError(StrigaSignupDataType.CITY) }
     }
 }
