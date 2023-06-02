@@ -83,10 +83,10 @@ class StrigaUserRepositoryTest {
     fun `GIVEN correct data and successful response WHEN createUser THEN check error is not presented`() = runTest {
         val data = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.LAST_NAME, "aaa"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "bbb"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "ccc"),
+            StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "ddd"),
+            StrigaSignupData(StrigaSignupDataType.LAST_NAME, "eee"),
             StrigaSignupData(StrigaSignupDataType.DATE_OF_BIRTH, "05.05.2005"),
             StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "TUR"),
             StrigaSignupData(StrigaSignupDataType.OCCUPATION, "Loafer"),
