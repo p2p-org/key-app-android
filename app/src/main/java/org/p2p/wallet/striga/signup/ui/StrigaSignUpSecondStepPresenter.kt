@@ -1,6 +1,10 @@
 package org.p2p.wallet.striga.signup.ui
 
+import timber.log.Timber
+import kotlin.jvm.Throws
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -10,14 +14,20 @@ import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.countrypicker.StrigaItemCellMapper
+import org.p2p.wallet.striga.model.StrigaDataLayerError
+import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.utils.DateTimeUtils
 
 class StrigaSignUpSecondStepPresenter(
     dispatchers: CoroutineDispatchers,
     private val interactor: StrigaSignupInteractor,
     private val onboardingInteractor: StrigaOnboardingInteractor,
-    private val strigaItemCellMapper: StrigaItemCellMapper
+    private val userInteractor: StrigaUserInteractor,
+    private val metadataInteractor: MetadataInteractor,
+    private val strigaItemCellMapper: StrigaItemCellMapper,
 ) :
     BasePresenter<StrigaSignUpSecondStepContract.View>(dispatchers.ui),
     StrigaSignUpSecondStepContract.Presenter {
@@ -82,7 +92,18 @@ class StrigaSignUpSecondStepPresenter(
         val (isValid, states) = interactor.validateSecondStep(signupData)
 
         if (isValid) {
-            view?.navigateNext()
+            view?.setProgressIsVisible(true)
+            launch {
+                try {
+                    createUserAndSaveMetadata()
+                    sendSmsVerificationCode()
+                    view?.navigateNext()
+                } catch (e: Throwable) {
+                    Timber.e(e, "Unable to create striga user")
+                    view?.setProgressIsVisible(false)
+                    view?.showErrorMessage(e)
+                }
+            }
         } else {
             view?.setErrors(states)
             // disable button is there are errors
@@ -128,5 +149,41 @@ class StrigaSignUpSecondStepPresenter(
 
     private fun setData(type: StrigaSignupDataType, newValue: String) {
         signupData[type] = StrigaSignupData(type = type, value = newValue)
+    }
+
+    @Throws(IllegalStateException::class, StrigaDataLayerError::class)
+    private suspend fun createUserAndSaveMetadata() {
+        when (val result = userInteractor.createUser(signupData.values.toList())) {
+            is StrigaDataLayerResult.Success -> {
+                val metadata = metadataInteractor.currentMetadata
+                    ?: throw IllegalStateException("Metadata is not fetched")
+
+                val strigaMetadata = if (metadata.strigaMetadata == null) {
+                    GatewayOnboardingMetadata.StrigaMetadata(
+                        userId = result.value.userId,
+                        userIdTimestamp = DateTimeUtils.getCurrentTimestampInSeconds()
+                    )
+                } else {
+                    metadata.strigaMetadata.copy(
+                        userId = result.value.userId,
+                        userIdTimestamp = DateTimeUtils.getCurrentTimestampInSeconds()
+                    )
+                }
+
+                metadataInteractor.updateMetadata(metadata.copy(strigaMetadata = strigaMetadata))
+            }
+            is StrigaDataLayerResult.Failure -> {
+                throw result.error
+            }
+        }
+    }
+
+    private suspend fun sendSmsVerificationCode() {
+        when (val result = userInteractor.resendSmsForVerifyPhoneNumber()) {
+            is StrigaDataLayerResult.Failure -> {
+                throw result.error
+            }
+            else -> Unit
+        }
     }
 }

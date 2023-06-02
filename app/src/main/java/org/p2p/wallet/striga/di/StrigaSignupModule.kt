@@ -32,6 +32,7 @@ import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepPresenter
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpSecondStepPresenter
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.api.StrigaApi
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepositoryMapper
@@ -53,11 +54,12 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
         factoryOf(::StrigaSignupDataValidator)
         factoryOf(::StrigaSignupInteractor)
+        factoryOf(::StrigaUserInteractor)
     }
 
     private fun Module.initDataLayer() {
         single<StrigaApi> {
-            val url = androidContext().getString(R.string.strigaProxyServiceProdBaseUrl)
+            val url = androidContext().getString(R.string.strigaProxyServiceBaseUrl)
             getRetrofit(
                 baseUrl = url,
                 tag = "StrigaProxyApi",

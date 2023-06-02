@@ -15,10 +15,12 @@ interface StrigaSignUpSecondStepContract {
         fun setErrors(errors: List<StrigaSignupFieldState>)
         fun clearErrors()
         fun setButtonIsEnabled(isEnabled: Boolean)
+        fun setProgressIsVisible(visible: Boolean)
         fun scrollToFirstError(type: StrigaSignupDataType)
         fun showOccupationPicker(selectedValue: StrigaOccupation?)
         fun showFundsPicker(selectedValue: StrigaSourceOfFunds?)
         fun showCountryPicker(selectedValue: Country?)
+        fun showErrorMessage(e: Throwable)
     }
 
     interface Presenter : MvpPresenter<View> {

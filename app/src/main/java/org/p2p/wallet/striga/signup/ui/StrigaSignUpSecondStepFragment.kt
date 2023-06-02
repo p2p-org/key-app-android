@@ -122,6 +122,13 @@ class StrigaSignUpSecondStepFragment :
         }
     }
 
+    override fun setProgressIsVisible(visible: Boolean) {
+        with(binding.buttonNext) {
+            isClickable = !visible
+            setLoading(visible)
+        }
+    }
+
     override fun scrollToFirstError(type: StrigaSignupDataType) {
         editTextFieldsMap[type]?.let {
             binding.containerScroll.post {
@@ -164,6 +171,11 @@ class StrigaSignUpSecondStepFragment :
             requestKey = COUNTRY_REQUEST_KEY,
             onResult = ::onFragmentResult
         )
+    }
+
+    override fun showErrorMessage(e: Throwable) {
+        // todo
+        showUiKitSnackBar(e.message ?: getString(R.string.common_error))
     }
 
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
