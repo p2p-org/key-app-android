@@ -9,20 +9,17 @@ import org.p2p.core.common.bind
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
+import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerFragment
-import org.p2p.wallet.striga.signup.model.StrigaPickerItem
-import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -34,8 +31,6 @@ class StrigaSignUpFirstStepFragment :
     StrigaSignUpFirstStepContract.View {
 
     companion object {
-        const val REQUEST_KEY = "REQUEST_KEY"
-        const val RESULT_KEY = "RESULT_KEY"
         fun create() = StrigaSignUpFirstStepFragment()
     }
 
@@ -70,7 +65,7 @@ class StrigaSignUpFirstStepFragment :
                 }
             }
             editTextCountry.setOnClickListener {
-                presenter.onCountryClicked()
+                showCountryOfBirthPicker()
             }
             buttonNext.setOnClickListener {
                 presenter.onSubmit()
@@ -100,16 +95,8 @@ class StrigaSignUpFirstStepFragment :
         }
     }
 
-    override fun showCountryPicker(selectedCountry: Country?) {
-        replaceFragmentForResult(
-            target = StrigaPresetDataPickerFragment.create(
-                selectedCountry = StrigaPickerItem.CountryItem(selectedCountry),
-                requestKey = REQUEST_KEY,
-                resultKey = RESULT_KEY
-            ),
-            requestKey = REQUEST_KEY,
-            onResult = ::onFragmentResult
-        )
+    private fun showCountryOfBirthPicker() {
+        replaceFragment(StrigaPresetDataPickerFragment.create(dataToPick = StrigaPresetDataToPick.COUNTRY_OF_BIRTH))
     }
 
     override fun updateSignupField(type: StrigaSignupDataType, newValue: String) {
@@ -185,11 +172,5 @@ class StrigaSignUpFirstStepFragment :
 
     private fun onBackPressed() {
         popBackStack()
-    }
-
-    private fun onFragmentResult(requestKey: String, bundle: Bundle) {
-        if (requestKey != REQUEST_KEY) return
-        val selectedCountry = bundle.getParcelableCompat<StrigaPickerItem.CountryItem>(RESULT_KEY)
-        presenter.onCountryChanged(selectedCountry?.selectedItem ?: return)
     }
 }

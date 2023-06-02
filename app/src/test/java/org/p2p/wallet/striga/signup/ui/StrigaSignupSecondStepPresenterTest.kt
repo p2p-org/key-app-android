@@ -16,7 +16,7 @@ import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.striga.countrypicker.StrigaItemCellMapper
+import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
@@ -86,57 +86,6 @@ class StrigaSignupSecondStepPresenterTest {
             countryRepository = countryRepository,
             signupDataRepository = signupDataRepository,
         )
-    }
-
-    @Test
-    fun `GIVEN initial state WHEN clicked choose country THEN check country picker is opened`() = runTest {
-        val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, SupportedCountry.codeAlpha2)
-        )
-        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
-
-        val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
-        presenter.attach(view)
-        presenter.onCountryClicked()
-        advanceUntilIdle()
-
-        verify(exactly = 1) { view.showCountryPicker(any()) }
-    }
-
-    @Test
-    fun `GIVEN initial state WHEN clicked choose occupation THEN check occupation picker is opened`() = runTest {
-        val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, SupportedCountry.codeAlpha2)
-        )
-        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
-
-        val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
-        presenter.attach(view)
-        presenter.onOccupationClicked()
-        advanceUntilIdle()
-
-        verify(exactly = 1) { view.showOccupationPicker(any()) }
-    }
-
-    @Test
-    fun `GIVEN initial state WHEN clicked choose source of funds THEN check sources of funds picker is opened`() = runTest {
-        val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, SupportedCountry.codeAlpha2)
-        )
-        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
-
-        val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
-        val presenter = createPresenterSecondStep()
-        presenter.attach(view)
-        presenter.onSourceOfFundsClicked()
-        advanceUntilIdle()
-
-        verify(exactly = 1) { view.showFundsPicker(any()) }
     }
 
     @Test
@@ -278,12 +227,10 @@ class StrigaSignupSecondStepPresenterTest {
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenterSecondStep()
         presenter.attach(view)
-        presenter.onSourceOfFundsClicked()
         advanceUntilIdle()
 
         verify {
             view.updateSignupField(StrigaSignupDataType.SOURCE_OF_FUNDS, sourceOfFunds.sourceName)
-            view.updateSignupField(StrigaSignupDataType.SOURCE_OF_FUNDS, "Personal savings")
         }
     }
 
@@ -300,12 +247,10 @@ class StrigaSignupSecondStepPresenterTest {
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenterSecondStep()
         presenter.attach(view)
-        presenter.onSourceOfFundsClicked()
         advanceUntilIdle()
 
         verify {
             view.updateSignupField(StrigaSignupDataType.OCCUPATION, occupation.occupationName)
-            view.updateSignupField(StrigaSignupDataType.OCCUPATION, "Loafer")
         }
     }
 }

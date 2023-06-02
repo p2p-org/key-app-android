@@ -1,9 +1,8 @@
-package org.p2p.wallet.striga.countrypicker
+package org.p2p.wallet.striga.presetpicker
 
-import androidx.core.os.bundleOf
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -16,7 +15,6 @@ import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.adapter.DividerItemDecorator
 import org.p2p.wallet.databinding.FragmentStrigaPresetDataPickerBinding
-import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
@@ -26,47 +24,34 @@ import org.p2p.wallet.utils.withArgs
 typealias ContractView = StrigaPresetDataPickerContract.View
 typealias ContractPresenter = StrigaPresetDataPickerContract.Presenter
 
-private const val EXTRA_KEY = "EXTRA_KEY"
-private const val EXTRA_RESULT = "EXTRA_RESULT"
-private const val EXTRA_SELECTED_COUNTRY = "EXTRA_SELECTED_COUNTRY"
+private const val EXTRA_DATA_TO_PICK = "EXTRA_DATA_TO_PICK"
 
 class StrigaPresetDataPickerFragment :
     BaseMvpFragment<ContractView, ContractPresenter>(R.layout.fragment_striga_preset_data_picker),
     ContractView {
 
     companion object {
-        fun create(
-            selectedCountry: StrigaPickerItem,
-            requestKey: String,
-            resultKey: String
-        ): Fragment = StrigaPresetDataPickerFragment().withArgs(
-            EXTRA_SELECTED_COUNTRY to selectedCountry,
-            EXTRA_KEY to requestKey,
-            EXTRA_RESULT to resultKey
-        )
+        fun create(dataToPick: StrigaPresetDataToPick): Fragment =
+            StrigaPresetDataPickerFragment()
+                .withArgs(EXTRA_DATA_TO_PICK to dataToPick,)
     }
 
-    override val presenter: ContractPresenter by inject {
-        parametersOf(selectedItem)
-    }
+    override val presenter: ContractPresenter by inject { parametersOf(dataToPick) }
     private val binding: FragmentStrigaPresetDataPickerBinding by viewBinding()
 
     private val adapter = CommonAnyCellAdapter(
         sectionHeaderCellDelegate(),
-        financeBlockCellDelegate { view, _ -> view.setOnClickAction { _, item -> onCountrySelected(item.payload) } },
+        financeBlockCellDelegate(onItemClicked = { presenter.onPresetDataSelected(it.typedPayload()) }),
     )
 
-    private val selectedItem: StrigaPickerItem by args(EXTRA_SELECTED_COUNTRY)
-    private val requestKey: String by args(EXTRA_KEY)
-    private val resultKey: String by args(EXTRA_RESULT)
+    private val dataToPick: StrigaPresetDataToPick by args(EXTRA_DATA_TO_PICK)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener {
-                onCountrySelected(selectedItem)
-            }
-            binding.searchView.setBgColor(R.color.bg_smoke)
+            toolbar.setTitle(getToolbarTitle(dataToPick))
+            toolbar.setNavigationOnClickListener { popBackStack() }
+
             binding.recyclerViewPresetData.adapter = adapter
             binding.recyclerViewPresetData.addItemDecoration(
                 DividerItemDecorator(
@@ -75,22 +60,15 @@ class StrigaPresetDataPickerFragment :
                 )
             )
         }
-    }
-
-    private fun onCountrySelected(selectedItem: Any?) {
-        val selectedCountry = selectedItem as? StrigaPickerItem
-        setFragmentResult(requestKey, bundleOf(resultKey to selectedCountry))
-        popBackStack()
+        initSearch()
     }
 
     private fun initSearch() = with(binding.searchView) {
-        doAfterTextChanged { searchText ->
-            presenter.search(searchText?.toString().orEmpty())
-        }
-
+        doAfterTextChanged { searchText -> presenter.search(searchText?.toString().orEmpty()) }
         setStateListener { presenter.search(emptyString()) }
-        setTitle(R.string.striga_country)
-        openSearch()
+        setHint(getSearchHint(dataToPick))
+        setBgColor(R.color.bg_smoke)
+
         isVisible = true
     }
 
@@ -99,12 +77,23 @@ class StrigaPresetDataPickerFragment :
         binding.containerEmptyResult.root.isVisible = items.isEmpty()
     }
 
-    override fun updateSearchTitle(titleResId: Int) {
-        binding.toolbar.setTitle(titleResId)
-        binding.searchView.setTitle(titleResId)
+    @StringRes
+    private fun getToolbarTitle(dataToPick: StrigaPresetDataToPick): Int = when (dataToPick) {
+        StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY -> R.string.striga_select_your_country
+        StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> R.string.striga_select_your_country
+        StrigaPresetDataToPick.SOURCE_OF_FUNDS -> R.string.striga_select_your_source
+        StrigaPresetDataToPick.OCCUPATION -> R.string.striga_select_your_occupation
     }
 
-    override fun setupSearchBar() {
-        initSearch()
+    @StringRes
+    private fun getSearchHint(dataToPick: StrigaPresetDataToPick): Int = when (dataToPick) {
+        StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY -> R.string.striga_preset_data_hint_country
+        StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> R.string.striga_preset_data_hint_country
+        StrigaPresetDataToPick.SOURCE_OF_FUNDS -> R.string.striga_preset_data_hint_source
+        StrigaPresetDataToPick.OCCUPATION -> R.string.striga_preset_data_hint_occupation
+    }
+
+    override fun close() {
+        popBackStack()
     }
 }

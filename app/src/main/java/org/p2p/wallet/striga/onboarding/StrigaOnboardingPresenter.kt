@@ -15,11 +15,11 @@ class StrigaOnboardingPresenter(
         super.attach(view)
 
         launch {
-            onCountrySelected(interactor.getDefaultCountry())
+            onCountrySelected(interactor.getChosenCountry())
         }
     }
 
-    override fun onCountrySelected(country: Country) {
+    private fun onCountrySelected(country: Country) {
         view?.setCurrentCountry(country)
         if (isCountrySupported(country)) {
             view?.setAvailabilityState(StrigaOnboardingContract.View.AvailabilityState.Available)
@@ -34,10 +34,6 @@ class StrigaOnboardingPresenter(
     override fun onClickContinue() {
         // todo: find where we should navigate next
         view?.navigateNext()
-    }
-
-    override fun onClickChangeCountry() {
-        view?.openCountrySelection()
     }
 
     override fun onClickHelp() {

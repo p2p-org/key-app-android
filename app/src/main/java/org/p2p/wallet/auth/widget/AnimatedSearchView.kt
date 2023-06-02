@@ -16,6 +16,7 @@ import org.p2p.core.utils.hideKeyboard
 import org.p2p.core.utils.showKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.databinding.WidgetSearchViewBinding
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class AnimatedSearchView @JvmOverloads constructor(
@@ -51,14 +52,14 @@ class AnimatedSearchView @JvmOverloads constructor(
                 .toFloat()
         )
         animator?.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animator: Animator) {}
+            override fun onAnimationStart(animator: Animator) = Unit
             override fun onAnimationEnd(animator: Animator) {
                 editTextSearch.requestFocus()
                 editTextSearch.showKeyboard()
             }
 
-            override fun onAnimationCancel(animator: Animator) {}
-            override fun onAnimationRepeat(animator: Animator) {}
+            override fun onAnimationCancel(animator: Animator) = Unit
+            override fun onAnimationRepeat(animator: Animator) = Unit
         })
         animator?.duration = 200
         animator?.start()
@@ -76,7 +77,7 @@ class AnimatedSearchView @JvmOverloads constructor(
         animator?.duration = 200
         animator?.start()
         animator?.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animator: Animator) {}
+            override fun onAnimationStart(animator: Animator) = Unit
             override fun onAnimationEnd(animator: Animator) {
                 relativeLayoutSearchContainer.visibility = INVISIBLE
                 editTextSearch.setText("")
@@ -84,8 +85,8 @@ class AnimatedSearchView @JvmOverloads constructor(
                 if (stateListener != null) stateListener!!.onClosed()
             }
 
-            override fun onAnimationCancel(animator: Animator) {}
-            override fun onAnimationRepeat(animator: Animator) {}
+            override fun onAnimationCancel(animator: Animator) = Unit
+            override fun onAnimationRepeat(animator: Animator) = Unit
         })
     }
 
@@ -110,8 +111,8 @@ class AnimatedSearchView @JvmOverloads constructor(
         binding.relativeLayoutSearchContainer.setBackgroundColor(getColor(colorRes))
     }
 
-    fun setTitle(@StringRes titleResId: Int) {
-        binding.editTextSearch.hint = binding.root.context.getString(titleResId)
+    fun setHint(@StringRes titleResId: Int) {
+        binding.editTextSearch.hint = binding.getString(titleResId)
     }
 
     override fun onDetachedFromWindow() {
