@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.user.api
 
 import com.google.gson.annotations.SerializedName
-// +905348558836
+
 /**
  * @param placeOfBirth ISO31661 Alpha3 - 3 symbols code
  */
