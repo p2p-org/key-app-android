@@ -49,7 +49,10 @@ class MetadataInteractor(
     }
 
     private fun getEthereumPublicKey(): String? {
-        return signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey ?: tryToGetEthAddress()
+        return signUpDetailsStorage.getLastSignUpUserDetails()
+            ?.signUpDetails
+            ?.ethereumPublicKey
+            ?: tryToGetEthAddress()
     }
 
     private fun tryToGetEthAddress(): String? {
