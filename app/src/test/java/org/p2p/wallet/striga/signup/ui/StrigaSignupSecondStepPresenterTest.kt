@@ -16,9 +16,10 @@ import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
+import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
@@ -227,10 +228,12 @@ class StrigaSignupSecondStepPresenterTest {
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenterSecondStep()
         presenter.attach(view)
+        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaSourceOfFundsItem(sourceOfFunds))
         advanceUntilIdle()
 
         verify {
             view.updateSignupField(StrigaSignupDataType.SOURCE_OF_FUNDS, sourceOfFunds.sourceName)
+            view.updateSignupField(StrigaSignupDataType.SOURCE_OF_FUNDS, "Personal savings")
         }
     }
 
@@ -247,10 +250,12 @@ class StrigaSignupSecondStepPresenterTest {
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenterSecondStep()
         presenter.attach(view)
+        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaOccupationItem(occupation))
         advanceUntilIdle()
 
         verify {
             view.updateSignupField(StrigaSignupDataType.OCCUPATION, occupation.occupationName)
+            view.updateSignupField(StrigaSignupDataType.OCCUPATION, "Loafer")
         }
     }
 }

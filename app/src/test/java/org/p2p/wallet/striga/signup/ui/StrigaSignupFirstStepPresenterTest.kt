@@ -194,30 +194,23 @@ class StrigaSignupFirstStepPresenterTest {
 
     @Test
     fun `GIVEN selected country WHEN country chosen THEN check view updates country`() = runTest {
-        val chosenCountry = Country("Turkey", "\uD83C\uDDF9\uD83C\uDDF7", "TR", "TUR")
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { interactor.findCountryByIsoAlpha3(chosenCountry.codeAlpha3) } returns chosenCountry
+
+        val chosenCountry = Country("Turkey", "\uD83C\uDDF9\uD83C\uDDF7", "TR", "TUR")
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
         presenter.attach(view)
-        advanceUntilIdle()
-        // change country
-        val updatedWithCountrySignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, chosenCountry.codeAlpha3),
-        )
-        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(updatedWithCountrySignupData)
-        presenter.attach(view)
+        presenter.onCountryOfBirthChanged(chosenCountry)
         advanceUntilIdle()
 
         verify(exactly = 1) {
             view.updateSignupField(
-                type = StrigaSignupDataType.COUNTRY_OF_BIRTH,
-                newValue = "${chosenCountry.flagEmoji} ${chosenCountry.name}"
+                StrigaSignupDataType.COUNTRY_OF_BIRTH,
+                "${chosenCountry.flagEmoji} ${chosenCountry.name}"
             )
         }
     }

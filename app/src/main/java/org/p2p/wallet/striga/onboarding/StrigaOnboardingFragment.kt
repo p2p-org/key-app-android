@@ -70,7 +70,6 @@ class StrigaOnboardingFragment :
     }
 
     override fun navigateNext() {
-        // TODO: navigate to next screen
         replaceFragment(StrigaSignUpFirstStepFragment.create())
     }
 

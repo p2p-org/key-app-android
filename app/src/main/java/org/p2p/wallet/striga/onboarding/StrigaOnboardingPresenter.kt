@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract.View.AvailabilityState
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 
 class StrigaOnboardingPresenter(
@@ -24,15 +25,14 @@ class StrigaOnboardingPresenter(
 
             view?.setCurrentCountry(selectedCountry)
             if (isCountrySupported(selectedCountry)) {
-                view?.setAvailabilityState(StrigaOnboardingContract.View.AvailabilityState.Available)
+                view?.setAvailabilityState(AvailabilityState.Available)
             } else {
-                view?.setAvailabilityState(StrigaOnboardingContract.View.AvailabilityState.Unavailable)
+                view?.setAvailabilityState(AvailabilityState.Unavailable)
             }
         }
     }
 
     override fun onClickContinue() {
-        // todo: find where we should navigate next
         view?.navigateNext()
     }
 
