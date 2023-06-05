@@ -96,7 +96,7 @@ class StrigaSignUpSecondStepPresenter(
             launch {
                 try {
                     createUserAndSaveMetadata()
-                    sendSmsVerificationCode()
+                    userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
                     view?.navigateNext()
                 } catch (e: Throwable) {
                     Timber.e(e, "Unable to create striga user")
@@ -156,7 +156,7 @@ class StrigaSignUpSecondStepPresenter(
         when (val result = userInteractor.createUser(signupData.values.toList())) {
             is StrigaDataLayerResult.Success -> {
                 val metadata = metadataInteractor.currentMetadata
-                    ?: throw IllegalStateException("Metadata is not fetched")
+                    ?: error("Metadata is not fetched")
 
                 val strigaMetadata = if (metadata.strigaMetadata == null) {
                     GatewayOnboardingMetadata.StrigaMetadata(
@@ -175,15 +175,6 @@ class StrigaSignUpSecondStepPresenter(
             is StrigaDataLayerResult.Failure -> {
                 throw result.error
             }
-        }
-    }
-
-    private suspend fun sendSmsVerificationCode() {
-        when (val result = userInteractor.resendSmsForVerifyPhoneNumber()) {
-            is StrigaDataLayerResult.Failure -> {
-                throw result.error
-            }
-            else -> Unit
         }
     }
 }
