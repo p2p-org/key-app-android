@@ -9,7 +9,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHomeActionsBinding
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.send.analytics.NewSendAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics

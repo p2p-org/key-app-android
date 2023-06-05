@@ -1,7 +1,7 @@
 package org.p2p.wallet.svl.ui.send
 
 import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.send.model.TemporaryAccount
 
 private const val CLAIM_START_SCREEN_OPEN = "Claim_Start_Screen_Open"
 private const val CLAIM_CLICK_HIDE = "Claim_Click_Hide"

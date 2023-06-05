@@ -10,8 +10,9 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.isZero
 import org.p2p.solanaj.core.FeeAmount
-import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
+import org.p2p.wallet.feerelayer.model.FeeInSol
 import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -29,6 +30,71 @@ class FeeRelayerCalculationInteractor(
     private val dispatchers: CoroutineDispatchers
 ) {
 
+    suspend fun calculateFeesInSol(
+        feePayerToken: Token.Active,
+        token: Token.Active,
+        recipient: String,
+        useCache: Boolean
+    ): FeeInSol {
+        val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
+        val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
+
+        var transactionFee = BigInteger.ZERO
+
+        // owner's signature
+        transactionFee += lamportsPerSignature
+
+        // feePayer's signature
+        if (!feePayerToken.isSOL) {
+            Timber.tag(TAG).i("Fee payer is not sol, adding $lamportsPerSignature for fee")
+            transactionFee += lamportsPerSignature
+        }
+
+        val shouldCreateAccount = !token.isSOL && addressInteractor.findSplTokenAddressData(
+            mintAddress = token.mintAddress,
+            destinationAddress = recipient.toPublicKey(),
+            useCache = useCache
+        ).shouldCreateAccount
+
+        Timber.tag(TAG).i("Should create account = $shouldCreateAccount")
+
+        val expectedFee = FeeAmount(
+            transaction = transactionFee,
+            accountBalances = if (shouldCreateAccount) minRentExemption else BigInteger.ZERO
+        )
+
+        val calculatedFee = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
+
+        return FeeInSol(expectedFee = expectedFee, calculatedFee = calculatedFee)
+    }
+
+    suspend fun calculateFeesInSpl(
+        feeInSol: FeeInSol,
+        feePayerToken: Token.Active
+    ): FeeCalculationState {
+        val poolsStateFee = getFeesInPayingToken(
+            feePayerToken = feePayerToken,
+            transactionFeeInSOL = feeInSol.transactionFee,
+            accountCreationFeeInSOL = feeInSol.accountCreationFee
+        )
+
+        val expectedFee = feeInSol.expectedFee
+        val feeInSolAmount = feeInSol.calculatedFee
+        return when (poolsStateFee) {
+            is FeePoolsState.Calculated -> {
+                Timber.tag(TAG).i("FeePoolsState is calculated")
+                val fee = FeeRelayerFee(feeInSolAmount, poolsStateFee.feeInSpl, expectedFee)
+                FeeCalculationState.Success(fee)
+            }
+
+            is FeePoolsState.Failed -> {
+                Timber.tag(TAG).i("FeePoolsState is failed")
+                val fee = FeeRelayerFee(feeInSolAmount, poolsStateFee.feeInSOL, expectedFee)
+                FeeCalculationState.PoolsNotFound(fee)
+            }
+        }
+    }
+
     // Fees calculator
     suspend fun calculateFeesForFeeRelayer(
         feePayerToken: Token.Active,
@@ -38,8 +104,7 @@ class FeeRelayerCalculationInteractor(
     ): FeeCalculationState {
         try {
             val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
-            val minRentExemption: BigInteger =
-                amountRepository.getMinBalanceForRentExemption(TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH)
+            val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 
             var transactionFee = BigInteger.ZERO
 

@@ -5,7 +5,7 @@ import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.send.analytics.NewSendAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.swap.analytics.SwapAnalytics

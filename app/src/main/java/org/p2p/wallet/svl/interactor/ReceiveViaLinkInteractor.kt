@@ -12,8 +12,8 @@ import org.p2p.solanaj.model.types.ConfirmationStatus
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
-import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.send.model.SEND_LINK_FORMAT
+import org.p2p.wallet.send.model.TemporaryAccount
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator

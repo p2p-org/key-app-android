@@ -30,7 +30,7 @@ import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.newsend.ui.NewSendFragment
+import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
@@ -137,7 +137,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is HistoryFragment -> ScreenNames.Main.MAIN_HISTORY
         is ReceiveSolanaFragment -> ScreenNames.Receive.SOLANA
         is ReceiveNetworkTypeFragment -> ScreenNames.Receive.NETWORK
-        is NewSendFragment -> ScreenNames.Send.MAIN
+        is SendFragment -> ScreenNames.Send.MAIN
         else -> emptyString()
     }
 

@@ -25,7 +25,7 @@ import org.p2p.wallet.bridge.send.ui.BridgeSendContract
 import org.p2p.wallet.bridge.send.ui.BridgeSendPresenter
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.send.model.SearchResult
 
 object BridgeSendModule : InjectionModule {
     override fun create() = module {

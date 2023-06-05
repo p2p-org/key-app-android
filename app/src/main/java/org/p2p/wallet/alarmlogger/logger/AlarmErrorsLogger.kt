@@ -15,7 +15,7 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.statemanager.SwapState
-import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.retryRequest
 import org.p2p.wallet.utils.toBase58Instance

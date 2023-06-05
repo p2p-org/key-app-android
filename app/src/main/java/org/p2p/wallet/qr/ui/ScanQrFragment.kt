@@ -25,7 +25,7 @@ import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.PermissionsDialog
 import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.send.analytics.NewSendAnalytics
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.args

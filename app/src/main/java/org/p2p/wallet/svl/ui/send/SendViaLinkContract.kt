@@ -6,7 +6,7 @@ import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import java.math.BigInteger
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.send.model.TemporaryAccount
 
 interface SendViaLinkContract {
     interface View : MvpView, UiKitSendDetailsWidgetContract {

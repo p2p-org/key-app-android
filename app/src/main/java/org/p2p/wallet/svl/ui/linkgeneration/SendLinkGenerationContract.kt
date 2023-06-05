@@ -4,8 +4,8 @@ import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.newsend.model.LinkGenerationState
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.send.model.LinkGenerationState
+import org.p2p.wallet.send.model.TemporaryAccount
 
 interface SendLinkGenerationContract {
     interface View : MvpView {

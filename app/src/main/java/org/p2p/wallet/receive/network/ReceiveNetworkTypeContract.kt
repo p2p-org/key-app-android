@@ -3,7 +3,7 @@ package org.p2p.wallet.receive.network
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.core.token.Token
-import org.p2p.wallet.newsend.model.NetworkType
+import org.p2p.wallet.send.model.NetworkType
 import java.math.BigDecimal
 
 interface ReceiveNetworkTypeContract {

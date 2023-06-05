@@ -18,7 +18,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.newsend.model.NetworkType
+import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor

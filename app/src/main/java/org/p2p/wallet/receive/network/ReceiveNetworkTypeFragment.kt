@@ -20,7 +20,7 @@ import org.p2p.wallet.renbtc.ui.info.RenBtcBuyBottomSheet
 import org.p2p.wallet.renbtc.ui.info.RenBtcCreateByFeeRelayBottomSheet
 import org.p2p.wallet.renbtc.ui.info.RenBtcInfoBottomSheet
 import org.p2p.wallet.renbtc.ui.info.RenBtcTopupBottomSheet
-import org.p2p.wallet.newsend.model.NetworkType
+import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack

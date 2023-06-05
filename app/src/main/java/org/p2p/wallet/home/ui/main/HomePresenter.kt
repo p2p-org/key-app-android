@@ -56,7 +56,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
+import org.p2p.wallet.send.model.SearchOpenedFromScreen
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver

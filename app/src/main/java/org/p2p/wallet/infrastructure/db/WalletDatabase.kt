@@ -20,8 +20,8 @@ import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_VERSION
 import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinkEntity
 import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinksDao
-import org.p2p.wallet.newsend.db.RecipientEntity
-import org.p2p.wallet.newsend.db.RecipientsDao
+import org.p2p.wallet.send.db.RecipientEntity
+import org.p2p.wallet.send.db.RecipientsDao
 import org.p2p.wallet.renbtc.db.SessionDao
 import org.p2p.wallet.renbtc.db.SessionEntity
 
