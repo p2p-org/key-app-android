@@ -46,6 +46,8 @@ class StrigaSignUpSecondStepPresenter(
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
         setData(type, newValue)
+
+        view?.clearError(type)
         // enabling button if something changed
         view?.setButtonIsEnabled(true)
     }

@@ -69,7 +69,7 @@ class StrigaUserRepositoryTest {
         } catch (e: Throwable) {
             error = e
         }
-        assertNotNull(result)
+        assertNotNull(result, error?.message)
         assertNull(error)
         assertTrue(result is StrigaDataLayerResult.Failure)
         assertTrue(result.error is StrigaDataLayerError.ApiServiceError)

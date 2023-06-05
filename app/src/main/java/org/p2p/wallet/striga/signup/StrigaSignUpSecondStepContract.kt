@@ -14,6 +14,7 @@ interface StrigaSignUpSecondStepContract {
         fun navigateNext()
         fun setErrors(errors: List<StrigaSignupFieldState>)
         fun clearErrors()
+        fun clearError(type: StrigaSignupDataType)
         fun setButtonIsEnabled(isEnabled: Boolean)
         fun setProgressIsVisible(visible: Boolean)
         fun scrollToFirstError(type: StrigaSignupDataType)

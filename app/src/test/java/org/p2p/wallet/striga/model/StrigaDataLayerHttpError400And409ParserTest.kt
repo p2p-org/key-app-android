@@ -25,7 +25,7 @@ class StrigaDataLayerHttpError400And409ParserTest {
             code = HttpURLConnection.HTTP_BAD_REQUEST,
             errorBody = gson.toJson(
                 mapOf(
-                    "httpStatus" to httpCode,
+                    "status" to httpCode,
                     "errorCode" to strigaCode,
                     "errorDetails" to null
                 )
