@@ -12,7 +12,9 @@ import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpSecondStepBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerFragment
+import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaPickerItem
@@ -20,6 +22,7 @@ import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.utils.getParcelableCompat
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.toDp
@@ -97,6 +100,14 @@ class StrigaSignUpSecondStepFragment :
     }
 
     override fun navigateNext() {
+        val smsFragment = SmsInputFactory.create(
+            type = SmsInputFactory.Type.Striga,
+            destinationFragment = StrigaSignupFinishFragment::class.java
+        )
+        popAndReplaceFragment(
+            target = smsFragment,
+            popTo = StrigaSignUpFirstStepFragment::class
+        )
     }
 
     override fun setErrors(errors: List<StrigaSignupFieldState>) {

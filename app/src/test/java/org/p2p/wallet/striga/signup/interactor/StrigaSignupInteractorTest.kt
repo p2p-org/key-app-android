@@ -6,6 +6,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -26,7 +27,9 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
@@ -70,6 +73,9 @@ class StrigaSignupInteractorTest {
     @MockK
     lateinit var metadataInteractor: MetadataInteractor
 
+    @MockK(relaxed = true)
+    lateinit var inAppFeatureFlags: InAppFeatureFlags
+
     private val signupDataValidator = StrigaSignupDataValidator()
 
     private val dispatchers: CoroutineDispatchers = UnconfinedTestDispatchers()
@@ -83,6 +89,15 @@ class StrigaSignupInteractorTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+
+        val simulateWeb3Flag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        val simulateUserCreateFlag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateWeb3Flag
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateUserCreateFlag
 
         coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
         coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
@@ -358,6 +373,7 @@ class StrigaSignupInteractorTest {
     private fun createInteractor(): StrigaSignupInteractor {
         return StrigaSignupInteractor(
             appScope = appScope,
+            inAppFeatureFlags = inAppFeatureFlags,
             validator = signupDataValidator,
             countryRepository = countryRepository,
             signupDataRepository = signupDataRepository,

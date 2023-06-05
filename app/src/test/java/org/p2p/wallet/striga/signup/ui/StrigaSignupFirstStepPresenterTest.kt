@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.signup.ui
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
@@ -15,7 +16,9 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
@@ -58,6 +61,9 @@ class StrigaSignupFirstStepPresenterTest {
     @MockK
     lateinit var metadataInteractor: MetadataInteractor
 
+    @MockK(relaxed = true)
+    lateinit var inAppFeatureFlags: InAppFeatureFlags
+
     lateinit var interactor: StrigaSignupInteractor
 
     private val signupDataValidator = StrigaSignupDataValidator()
@@ -79,8 +85,19 @@ class StrigaSignupFirstStepPresenterTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+
+        val simulateWeb3Flag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        val simulateUserCreateFlag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateWeb3Flag
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateUserCreateFlag
+
         interactor = StrigaSignupInteractor(
             appScope = appScope,
+            appFeatureFlags = inAppFeatureFlags,
             validator = signupDataValidator,
             countryRepository = countryRepository,
             signupDataRepository = signupDataRepository,

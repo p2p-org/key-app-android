@@ -1,15 +1,16 @@
 package org.p2p.wallet.striga.signup.interactor
 
 import timber.log.Timber
-import kotlin.jvm.Throws
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
@@ -25,6 +26,7 @@ typealias ValidationResult = Pair<Boolean, List<StrigaSignupFieldState>>
 
 class StrigaSignupInteractor(
     private val appScope: AppScope,
+    private val inAppFeatureFlags: InAppFeatureFlags,
     private val validator: StrigaSignupDataValidator,
     private val countryRepository: CountryRepository,
     private val signupDataRepository: StrigaSignupDataLocalRepository,
@@ -141,6 +143,10 @@ class StrigaSignupInteractor(
 
     @Throws(IllegalStateException::class, StrigaDataLayerError::class)
     suspend fun createUser() {
+        if (inAppFeatureFlags.strigaSimulateUserCreateFlag.featureValue) {
+            delay(1000)
+            return
+        }
         // firstly, check if metadata is available
         metadataInteractor.currentMetadata
             ?: error("Metadata is not fetched")
