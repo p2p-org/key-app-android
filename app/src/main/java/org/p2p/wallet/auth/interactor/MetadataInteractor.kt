@@ -26,7 +26,7 @@ class MetadataInteractor(
     private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
 ) {
 
-    var currentMetadata: GatewayOnboardingMetadata? = getMetadataFromStorage()
+    var currentMetadata: GatewayOnboardingMetadata? = null
         get() = getMetadataFromStorage()
         private set(value) {
             field = value
