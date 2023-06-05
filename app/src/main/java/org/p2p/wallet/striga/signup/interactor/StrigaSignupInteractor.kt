@@ -1,7 +1,11 @@
 package org.p2p.wallet.striga.signup.interactor
 
 import timber.log.Timber
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
@@ -20,6 +24,7 @@ class StrigaSignupInteractor(
     private val appScope: AppScope,
     private val validator: StrigaSignupDataValidator,
     private val countryRepository: CountryRepository,
+    private val metadataInteractor: MetadataInteractor,
     private val signupDataRepository: StrigaSignupDataLocalRepository
 ) {
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
@@ -117,5 +122,16 @@ class StrigaSignupInteractor(
 
     private fun validate(data: StrigaSignupData): StrigaSignupFieldState {
         return validator.validate(data)
+    }
+
+    private suspend fun updateUserOnboardingMetadata(userId: String) {
+        val currentMetadata = metadataInteractor.currentMetadata ?: return
+        val newMetadata = currentMetadata.copy(
+            strigaMetadata = GatewayOnboardingMetadata.StrigaMetadata(
+                userId = userId,
+                userIdTimestamp = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS).inWholeSeconds
+            )
+        )
+        metadataInteractor.updateMetadata(newMetadata)
     }
 }

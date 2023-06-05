@@ -47,8 +47,6 @@ class StrigaSignUpSecondStepPresenter(
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
         setData(type, newValue)
-
-        view?.clearError(type)
         // enabling button if something changed
         view?.setButtonIsEnabled(true)
     }
@@ -99,7 +97,7 @@ class StrigaSignUpSecondStepPresenter(
             launch {
                 try {
                     createUserAndSaveMetadata()
-                    sendSmsVerificationCode()
+                    userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
                     view?.navigateNext()
                 } catch (e: Throwable) {
                     Timber.e(e, "Unable to create striga user")
@@ -180,9 +178,5 @@ class StrigaSignUpSecondStepPresenter(
                 throw result.error
             }
         }
-    }
-
-    private suspend fun sendSmsVerificationCode() {
-        userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
     }
 }
