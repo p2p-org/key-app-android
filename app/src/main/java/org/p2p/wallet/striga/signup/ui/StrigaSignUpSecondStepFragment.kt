@@ -177,11 +177,6 @@ class StrigaSignUpSecondStepFragment :
         )
     }
 
-    override fun showErrorMessage(e: Throwable) {
-        // todo
-        showUiKitSnackBar(e.message ?: getString(R.string.common_error))
-    }
-
     private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
         return with(binding) {
             buildMap {

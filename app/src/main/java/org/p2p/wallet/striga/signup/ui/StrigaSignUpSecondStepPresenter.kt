@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.signup.ui
 import timber.log.Timber
 import kotlin.jvm.Throws
 import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.repository.Country
@@ -103,7 +104,7 @@ class StrigaSignUpSecondStepPresenter(
                 } catch (e: Throwable) {
                     Timber.e(e, "Unable to create striga user")
                     view?.setProgressIsVisible(false)
-                    view?.showErrorMessage(e)
+                    view?.showUiKitSnackBar(e.message, R.string.error_general_message)
                 }
             }
         } else {
@@ -155,11 +156,12 @@ class StrigaSignUpSecondStepPresenter(
 
     @Throws(IllegalStateException::class, StrigaDataLayerError::class)
     private suspend fun createUserAndSaveMetadata() {
-        when (val result = userInteractor.createUser(signupData.values.toList())) {
-            is StrigaDataLayerResult.Success -> {
-                val metadata = metadataInteractor.currentMetadata
-                    ?: throw IllegalStateException("Metadata is not fetched")
+        // firstly, get metadata and only then create user
+        val metadata = metadataInteractor.currentMetadata
+            ?: error("Metadata is not fetched")
 
+        when (val result = userInteractor.createUser(interactor.getSignupData())) {
+            is StrigaDataLayerResult.Success -> {
                 val strigaMetadata = if (metadata.strigaMetadata == null) {
                     GatewayOnboardingMetadata.StrigaMetadata(
                         userId = result.value.userId,
@@ -181,11 +183,6 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     private suspend fun sendSmsVerificationCode() {
-        when (val result = userInteractor.resendSmsForVerifyPhoneNumber()) {
-            is StrigaDataLayerResult.Failure -> {
-                throw result.error
-            }
-            else -> Unit
-        }
+        userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
     }
 }

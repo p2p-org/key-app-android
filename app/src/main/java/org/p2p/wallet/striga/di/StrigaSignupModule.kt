@@ -11,6 +11,7 @@ import retrofit2.create
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
+import org.p2p.wallet.infrastructure.network.interceptor.StrigaHeaderSignatureGenerator
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
 import org.p2p.wallet.striga.StrigaUserIdProvider
 import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerContract
@@ -66,6 +67,8 @@ object StrigaSignupModule : InjectionModule {
                 interceptor = new(::StrigaProxyApiInterceptor)
             ).create()
         }
+
+        factoryOf(::StrigaHeaderSignatureGenerator)
 
         factoryOf(::StrigaUserRepositoryMapper)
         factoryOf(::StrigaUserRemoteRepository) bind StrigaUserRepository::class

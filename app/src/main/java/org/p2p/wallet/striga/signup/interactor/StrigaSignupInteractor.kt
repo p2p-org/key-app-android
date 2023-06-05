@@ -76,10 +76,14 @@ class StrigaSignupInteractor(
     suspend fun getSignupDataFirstStep(): List<StrigaSignupData> = getSignupData(firstStepDataTypes)
     suspend fun getSignupDataSecondStep(): List<StrigaSignupData> = getSignupData(secondStepDataTypes)
 
-    private suspend fun getSignupData(fields: Set<StrigaSignupDataType>): List<StrigaSignupData> {
+    suspend fun getSignupData(fields: Set<StrigaSignupDataType> = emptySet()): List<StrigaSignupData> {
         return when (val data = signupDataRepository.getUserSignupData()) {
             is StrigaDataLayerResult.Success -> {
-                data.value.filter { it.type in fields }
+                if (fields.isEmpty()) {
+                    data.value
+                } else {
+                    data.value.filter { it.type in fields }
+                }
             }
             is StrigaDataLayerResult.Failure -> {
                 Timber.e(data.error, "Striga signup data: failed to get")

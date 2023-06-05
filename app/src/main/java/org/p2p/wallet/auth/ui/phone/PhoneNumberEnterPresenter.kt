@@ -71,7 +71,10 @@ class PhoneNumberEnterPresenter(
 
     override fun onPhoneChanged(phoneNumber: String) {
         selectedCountryCode?.let {
-            val isValidNumber = countryCodeRepository.isValidNumberForRegion(it.phoneCode, phoneNumber)
+            val isValidNumber = countryCodeRepository.isValidNumberForRegion(
+                countryCode = it.phoneCode,
+                phoneNumber = phoneNumber
+            )
             val newButtonState = if (isValidNumber) {
                 PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE
             } else {
