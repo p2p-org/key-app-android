@@ -9,7 +9,11 @@ import org.p2p.core.common.bind
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
+import org.p2p.wallet.auth.widget.PhoneNumberInputView
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
@@ -19,11 +23,12 @@ import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.signup.model.StrigaPickerItem
-import org.p2p.wallet.utils.getParcelableCompat
-import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.replaceFragmentForResult
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toDp
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.getParcelableCompat
+import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -42,7 +47,7 @@ class StrigaSignUpFirstStepFragment :
     override val presenter: StrigaSignUpFirstStepContract.Presenter by inject()
     private val binding: FragmentStrigaSignUpFirstStepBinding by viewBinding()
 
-    private lateinit var editTextFieldsMap: Map<StrigaSignupDataType, UiKitEditText>
+    private lateinit var editTextFieldsMap: Map<StrigaSignupDataType, View>
 
     private var birthdayMaskFormatter = SimpleMaskFormatter("##.##.####")
 
@@ -65,8 +70,10 @@ class StrigaSignUpFirstStepFragment :
 
             StrigaSignupDataType.values().forEach { dataType ->
                 val inputView = editTextFieldsMap[dataType] ?: return@forEach
-                inputView.addOnTextChangedListener { editable ->
-                    presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
+                if (inputView is UiKitEditText) {
+                    inputView.addOnTextChangedListener { editable ->
+                        presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
+                    }
                 }
             }
             editTextCountry.setOnClickListener {
@@ -89,17 +96,6 @@ class StrigaSignUpFirstStepFragment :
         presenter.saveChanges()
     }
 
-    override fun setPhoneMask(phoneMask: String?) {
-        if (phoneMask != null) {
-            val formatter = SimpleMaskFormatter(phoneMask)
-            binding.editTextPhoneNumber.input.addTextChangedListener(
-                formatter.textWatcher(
-                    binding.editTextPhoneNumber.input
-                )
-            )
-        }
-    }
-
     override fun showCountryPicker(selectedCountry: Country?) {
         replaceFragmentForResult(
             target = StrigaPresetDataPickerFragment.create(
@@ -112,9 +108,17 @@ class StrigaSignUpFirstStepFragment :
         )
     }
 
+    override fun showDefaultCountryCode(defaultCountryCode: CountryCode?) {
+        binding.editTextPhoneNumber.setupViewState(
+            countryCode = defaultCountryCode,
+            onPhoneChanged = ::onPhoneChanged,
+            onCountryClickListener = ::onCountryClickListener
+        )
+    }
+
     override fun updateSignupField(type: StrigaSignupDataType, newValue: String) {
         val view = editTextFieldsMap[type]
-        view?.setText(newValue)
+        setText(view = view ?: return, newValue = newValue)
     }
 
     override fun navigateNext() {
@@ -123,12 +127,15 @@ class StrigaSignUpFirstStepFragment :
 
     override fun setErrors(errors: List<StrigaSignupFieldState>) {
         errors.forEach {
-            editTextFieldsMap[it.type]?.bindError(it.errorMessage)
+            bindError(
+                view = editTextFieldsMap[it.type] ?: return,
+                error = it.errorMessage
+            )
         }
     }
 
     override fun clearError(type: StrigaSignupDataType) {
-        editTextFieldsMap[type]?.bindError(null)
+        bindError(view = editTextFieldsMap[type] ?: return, error = null)
     }
 
     override fun scrollToFirstError(type: StrigaSignupDataType) {
@@ -140,7 +147,7 @@ class StrigaSignUpFirstStepFragment :
     }
 
     override fun clearErrors() {
-        editTextFieldsMap.values.forEach { it.bindError(null) }
+        editTextFieldsMap.values.forEach { bindError(view = it, error = null) }
     }
 
     override fun setButtonIsEnabled(isEnabled: Boolean) {
@@ -156,7 +163,7 @@ class StrigaSignUpFirstStepFragment :
         }
     }
 
-    private fun createEditTextsMap(): Map<StrigaSignupDataType, UiKitEditText> {
+    private fun createEditTextsMap(): Map<StrigaSignupDataType, View> {
         return with(binding) {
             buildMap {
                 StrigaSignupDataType.EMAIL.let {
@@ -195,5 +202,47 @@ class StrigaSignUpFirstStepFragment :
         if (requestKey != REQUEST_KEY) return
         val selectedCountry = bundle.getParcelableCompat<StrigaPickerItem.CountryItem>(RESULT_KEY)
         presenter.onCountryChanged(selectedCountry?.selectedItem ?: return)
+    }
+
+    private fun onPhoneChanged(phone: String) {
+        presenter.onFieldChanged(newValue = phone, type = StrigaSignupDataType.PHONE_NUMBER)
+    }
+
+    private fun onCountryClickListener() {
+        presenter.onCountryCodeInputClicked()
+    }
+
+    override fun update(countryCode: CountryCode?) {
+        binding.editTextPhoneNumber.updateViewState(countryCode)
+    }
+
+    override fun onNewCountryDetected(countryCode: CountryCode) {
+        binding.editTextPhoneNumber.onFoundNewCountry(countryCode)
+    }
+
+    override fun showCountryCodePicker(selectedCountryCode: CountryCode?) {
+        addFragment(
+            CountryCodePickerFragment.create(
+                selectedCountryCode,
+                PhoneNumberEnterFragment.REQUEST_KEY,
+                PhoneNumberEnterFragment.RESULT_KEY
+            )
+        )
+    }
+
+    private fun bindError(view: View, error: TextContainer?) {
+        if (view is UiKitEditText) {
+            view.bindError(error)
+        } else if (view is PhoneNumberInputView) {
+            view.showError(error)
+        }
+    }
+
+    private fun setText(view: View, newValue: String) {
+        if (view is UiKitEditText) {
+            view.setText(newValue)
+        } else if (view is PhoneNumberInputView) {
+            view.setText(newValue)
+        }
     }
 }

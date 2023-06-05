@@ -8,6 +8,8 @@ import android.text.Editable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.TextView
+import org.p2p.core.common.TextContainer
+import org.p2p.core.common.bind
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
@@ -30,6 +32,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     protected val binding = inflateViewBinding<WidgetPhoneInputViewBinding>()
 
     private lateinit var phoneTextWatcher: PhoneNumberTextWatcher
+    private var viewTag: Any? = null
 
     private val bgRed = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
@@ -64,6 +67,11 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         val text = styleAttrs.getText(R.styleable.UiKitEditText_android_text)
         if (!text.isNullOrEmpty()) {
             binding.editTextPhoneNumber.setText(text)
+        }
+        val backgroundTint = styleAttrs.getResourceId(R.styleable.UiKitEditText_android_backgroundTint, -1)
+        if (backgroundTint != -1) {
+            bgNormal.setColor(context.getColor(backgroundTint))
+            bgNormal.setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
         }
         binding.inputViewContainer.background = bgNormal
         styleAttrs.recycle()
@@ -159,13 +167,19 @@ open class PhoneNumberInputView @JvmOverloads constructor(
             setSelection(length())
             focusAndShowKeyboard()
         }
-        showError(null)
+        showError(text = null)
     }
 
     fun showError(text: String?) = with(binding) {
         textViewError.text = text
         textViewError.isVisible = !text.isNullOrEmpty()
         inputViewContainer.background = if (!text.isNullOrEmpty()) bgRed else bgNormal
+    }
+
+    fun showError(textContainer: TextContainer?) = with(binding) {
+        textContainer?.let { textViewError.bind(it) }
+        textViewError.isVisible = text != null
+        inputViewContainer.background = if (text != null) bgRed else bgNormal
     }
 
     fun onFoundNewCountry(countryCode: CountryCode) {
@@ -178,5 +192,10 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun focusAndShowKeyboard() {
         binding.editTextPhoneNumber.focusAndShowKeyboard()
+    }
+
+    fun setViewTag(tag: Any?) {
+        binding.root.tag = tag
+        viewTag = tag
     }
 }
