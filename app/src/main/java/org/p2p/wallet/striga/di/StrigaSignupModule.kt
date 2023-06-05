@@ -12,22 +12,25 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
+import org.p2p.wallet.smsinput.SmsInputContract
+import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
+import org.p2p.wallet.smsinput.striga.StrigaSmsInputPresenter
 import org.p2p.wallet.striga.StrigaUserIdProvider
+import org.p2p.wallet.striga.countrypicker.StrigaItemCellMapper
 import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerContract
+import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerPresenter
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingPresenter
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.signup.StrigaPresetDataInMemoryRepository
 import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
+import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
+import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
+import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataDatabaseRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
-import org.p2p.wallet.striga.countrypicker.StrigaItemCellMapper
-import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerPresenter
-import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
-import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
-import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepPresenter
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpSecondStepPresenter
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
@@ -53,6 +56,8 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaSignUpSecondStepPresenter) bind StrigaSignUpSecondStepContract.Presenter::class
         factoryOf(::StrigaSignupDataValidator)
         factoryOf(::StrigaSignupInteractor)
+        factoryOf(::StrigaSmsInputInteractor)
+        factoryOf(::StrigaSmsInputPresenter) bind SmsInputContract.Presenter::class
     }
 
     private fun Module.initDataLayer() {

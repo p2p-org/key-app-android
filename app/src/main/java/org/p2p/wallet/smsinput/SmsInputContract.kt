@@ -19,6 +19,7 @@ interface SmsInputContract {
         fun renderButtonLoading(isLoading: Boolean)
 
         fun navigateNext()
+        // not needed in other fragments, need to remove and create good reusable abstraction
         fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long)
         fun navigateToGatewayErrorScreen(handledState: GatewayHandledState)
         fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError)

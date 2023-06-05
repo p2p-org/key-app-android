@@ -7,14 +7,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreFailureState
-import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
-import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
-import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenFragment
+import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
-import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.popBackStackTo
 
 class StrigaSmsInputFragment : BaseSmsInputFragment() {
 
@@ -33,19 +29,9 @@ class StrigaSmsInputFragment : BaseSmsInputFragment() {
             getString(R.string.striga_sms_input_title, userPhoneNumber.formattedValue)
     }
 
-    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long) {
-        replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(error, timerLeftTime)
-        )
-    }
-
-    override fun navigateToGatewayErrorScreen(handledState: GatewayHandledState) {
-        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(handledState))
-    }
-
-    override fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) {
-        popAndReplaceFragment(RestoreErrorScreenFragment.create(handledState))
-    }
+    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long) = Unit
+    override fun navigateToGatewayErrorScreen(handledState: GatewayHandledState) = Unit
+    override fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) = Unit
 
     private fun showExitDialog() {
         MaterialAlertDialogBuilder(requireContext())
@@ -56,7 +42,9 @@ class StrigaSmsInputFragment : BaseSmsInputFragment() {
             .setNegativeButton(R.string.striga_exit_sms_input_warning_dialog_btn_negative) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton(R.string.striga_exit_sms_input_warning_dialog_btn_positive) { _, _ -> popBackStack() }
+            .setPositiveButton(R.string.striga_exit_sms_input_warning_dialog_btn_positive) { _, _ ->
+                popBackStackTo(MainFragment::class)
+            }
             .show()
     }
 }
