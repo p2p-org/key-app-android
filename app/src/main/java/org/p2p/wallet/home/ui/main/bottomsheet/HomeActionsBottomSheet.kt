@@ -73,12 +73,7 @@ class HomeActionsBottomSheet :
                 textViewActionTitle.setText(R.string.home_actions_buy_title)
                 textViewActionSubtitle.setText(R.string.home_actions_buy_subtitle)
             }
-            viewActionReceive.apply {
-                setResultClickListener(HomeAction.RECEIVE)
-                imageViewAction.setImageResource(R.drawable.action_receive_icon)
-                textViewActionTitle.setText(R.string.home_actions_receive_title)
-                textViewActionSubtitle.setText(R.string.home_actions_receive_subtitle)
-            }
+
             viewActionSwap.apply {
                 setResultClickListener(HomeAction.SWAP)
                 imageViewAction.setImageResource(R.drawable.action_swap_icon)
