@@ -37,14 +37,14 @@ class UiKitEditText @JvmOverloads constructor(
         shape = GradientDrawable.RECTANGLE
         cornerRadius = CORNER_RADIUS
         setColor(context.getColor(R.color.bg_snow))
-        setStroke(STROKE_WIDTH.toDp(), context.getColor(R.color.bg_rose))
+        setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rose))
     }
 
     private val bgNormal = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
         cornerRadius = CORNER_RADIUS
         setColor(context.getColor(R.color.snow))
-        setStroke(STROKE_WIDTH.toDp(), context.getColor(R.color.bg_rain))
+        setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
     }
 
     val input: HintEditText

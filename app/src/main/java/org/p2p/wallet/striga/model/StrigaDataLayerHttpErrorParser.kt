@@ -13,7 +13,7 @@ class StrigaDataLayerHttpErrorParser {
 
     fun parse(httpException: HttpException): StrigaDataLayerError? =
         when (httpException.code()) {
-            HttpURLConnection.HTTP_UNAVAILABLE, HttpURLConnection.HTTP_SERVER_ERROR -> {
+            HttpURLConnection.HTTP_UNAVAILABLE, HttpURLConnection.HTTP_INTERNAL_ERROR -> {
                 StrigaDataLayerError.ApiServiceUnavailable(httpException)
             }
             HttpURLConnection.HTTP_CONFLICT, HttpURLConnection.HTTP_BAD_REQUEST -> {
