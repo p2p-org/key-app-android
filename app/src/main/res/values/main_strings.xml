@@ -14,7 +14,7 @@
     <string name="home_actions_sell_title">Cash out</string>
     <string name="home_actions_sell_subtitle">crypto to fiat via bank transfer</string>
 
-    <string name="home_actions_buy_title">Top up</string>
+    <string name="home_actions_buy_title">Add money</string>
     <string name="home_actions_buy_subtitle">bank card, bank transfer or crypto</string>
 
     <string name="home_actions_receive_title">Receive</string>
