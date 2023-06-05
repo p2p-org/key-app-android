@@ -44,14 +44,14 @@ class BirthdayInputValidator(
 
                 false
             }
-            parsedDateOfBirth.isBefore(LocalDate.ofYearDay(minimumYear, 1)) -> {
+            parsedDateOfBirth.year < minimumYear -> {
                 errorMessage = TextContainer.ResParams(
                     R.string.striga_validation_error_wrong_birthday_older_than,
                     listOf(minimumYear)
                 )
                 false
             }
-            parsedDateOfBirth.isAfter(LocalDate.ofYearDay(maximumYear, 1)) -> {
+            parsedDateOfBirth.year > maximumYear -> {
                 errorMessage = TextContainer.ResParams(
                     R.string.striga_validation_error_wrong_birthday_younger_than,
                     listOf(maximumYear)

@@ -256,4 +256,26 @@ class StrigaSignupFirstStepPresenterTest {
             )
         }
     }
+
+    @Test
+    fun `GIVEN invalid user input WHEN user inputs new data THEN check errors are cleared`() = runTest {
+        val initialSignupData = listOf(
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, SupportedCountry.codeAlpha3)
+        )
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+        coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
+        coEvery { countryRepository.findCountryByIsoAlpha3(SupportedCountry.codeAlpha3) } returns SupportedCountry
+
+        val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
+        val presenter = createPresenter()
+        presenter.attach(view)
+        presenter.onFieldChanged("123", StrigaSignupDataType.PHONE_NUMBER)
+        presenter.onSubmit()
+        presenter.onFieldChanged("123", StrigaSignupDataType.PHONE_NUMBER)
+        advanceUntilIdle()
+
+        verify { view.setErrors(any()) }
+        verify { view.setButtonIsEnabled(any()) }
+        verify { view.clearError(StrigaSignupDataType.PHONE_NUMBER) }
+    }
 }
