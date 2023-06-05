@@ -11,6 +11,7 @@ import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
@@ -23,6 +24,7 @@ import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.mutableListQueueOf
@@ -50,6 +52,12 @@ class StrigaSignupFirstStepPresenterTest {
     @MockK(relaxed = true)
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
 
+    @MockK
+    lateinit var userInteractor: StrigaUserInteractor
+
+    @MockK
+    lateinit var metadataInteractor: MetadataInteractor
+
     lateinit var interactor: StrigaSignupInteractor
 
     private val signupDataValidator = StrigaSignupDataValidator()
@@ -76,6 +84,8 @@ class StrigaSignupFirstStepPresenterTest {
             validator = signupDataValidator,
             countryRepository = countryRepository,
             signupDataRepository = signupDataRepository,
+            userInteractor = userInteractor,
+            metadataInteractor = metadataInteractor
         )
     }
 

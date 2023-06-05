@@ -1,11 +1,8 @@
 package org.p2p.wallet.striga.signup.ui
 
 import timber.log.Timber
-import kotlin.jvm.Throws
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
-import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -15,19 +12,15 @@ import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.countrypicker.StrigaItemCellMapper
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
-import org.p2p.wallet.utils.DateTimeUtils
 
 class StrigaSignUpSecondStepPresenter(
     dispatchers: CoroutineDispatchers,
     private val interactor: StrigaSignupInteractor,
     private val onboardingInteractor: StrigaOnboardingInteractor,
     private val userInteractor: StrigaUserInteractor,
-    private val metadataInteractor: MetadataInteractor,
     private val strigaItemCellMapper: StrigaItemCellMapper,
 ) :
     BasePresenter<StrigaSignUpSecondStepContract.View>(dispatchers.ui),
@@ -47,6 +40,7 @@ class StrigaSignUpSecondStepPresenter(
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
         setData(type, newValue)
+        view?.clearError(type)
         // enabling button if something changed
         view?.setButtonIsEnabled(true)
     }
@@ -96,7 +90,7 @@ class StrigaSignUpSecondStepPresenter(
             view?.setProgressIsVisible(true)
             launch {
                 try {
-                    createUserAndSaveMetadata()
+                    interactor.createUser()
                     userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
                     view?.navigateNext()
                 } catch (e: Throwable) {
@@ -150,33 +144,5 @@ class StrigaSignUpSecondStepPresenter(
 
     private fun setData(type: StrigaSignupDataType, newValue: String) {
         signupData[type] = StrigaSignupData(type = type, value = newValue)
-    }
-
-    @Throws(IllegalStateException::class, StrigaDataLayerError::class)
-    private suspend fun createUserAndSaveMetadata() {
-        // firstly, get metadata and only then create user
-        val metadata = metadataInteractor.currentMetadata
-            ?: error("Metadata is not fetched")
-
-        when (val result = userInteractor.createUser(interactor.getSignupData())) {
-            is StrigaDataLayerResult.Success -> {
-                val strigaMetadata = if (metadata.strigaMetadata == null) {
-                    GatewayOnboardingMetadata.StrigaMetadata(
-                        userId = result.value.userId,
-                        userIdTimestamp = DateTimeUtils.getCurrentTimestampInSeconds()
-                    )
-                } else {
-                    metadata.strigaMetadata.copy(
-                        userId = result.value.userId,
-                        userIdTimestamp = DateTimeUtils.getCurrentTimestampInSeconds()
-                    )
-                }
-
-                metadataInteractor.updateMetadata(metadata.copy(strigaMetadata = strigaMetadata))
-            }
-            is StrigaDataLayerResult.Failure -> {
-                throw result.error
-            }
-        }
     }
 }

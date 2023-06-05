@@ -4,6 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -11,6 +12,8 @@ import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
@@ -27,6 +30,7 @@ import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.mutableListQueueOf
@@ -56,6 +60,12 @@ class StrigaSignupSecondStepPresenterTest {
     @MockK
     lateinit var onboardingInteractor: StrigaOnboardingInteractor
 
+    @MockK(relaxed = true)
+    lateinit var userInteractor: StrigaUserInteractor
+
+    @MockK(relaxed = true)
+    lateinit var metadataInteractor: MetadataInteractor
+
     lateinit var interactor: StrigaSignupInteractor
 
     private val signupDataValidator = StrigaSignupDataValidator()
@@ -73,6 +83,7 @@ class StrigaSignupSecondStepPresenterTest {
             dispatchers = dispatchers,
             interactor = interactor,
             onboardingInteractor = onboardingInteractor,
+            userInteractor = userInteractor,
             strigaItemCellMapper = strigaItemCellMapper,
         )
     }
@@ -80,11 +91,15 @@ class StrigaSignupSecondStepPresenterTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        interactor = StrigaSignupInteractor(
-            appScope = appScope,
-            validator = signupDataValidator,
-            countryRepository = countryRepository,
-            signupDataRepository = signupDataRepository,
+        interactor = spyk(
+            StrigaSignupInteractor(
+                appScope = appScope,
+                validator = signupDataValidator,
+                countryRepository = countryRepository,
+                signupDataRepository = signupDataRepository,
+                userInteractor = userInteractor,
+                metadataInteractor = metadataInteractor,
+            )
         )
     }
 
@@ -259,7 +274,40 @@ class StrigaSignupSecondStepPresenterTest {
         presenter.onSubmit()
         advanceUntilIdle()
 
+        verify(exactly = 1) { view.setProgressIsVisible(true) }
         verify(exactly = 1) { view.navigateNext() }
+
+        presenter.saveChanges()
+        presenter.detach()
+    }
+
+    @Test
+    fun `GIVEN error while creating user WHEN user clicks next THEN check snackback error`() = runTest {
+        val initialSignupData = listOf(
+            StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
+        )
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+
+        val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
+        val presenter = createPresenter()
+        presenter.attach(view)
+
+        coEvery { interactor.createUser() } throws Exception("error")
+
+        presenter.onFieldChanged("any occupation", StrigaSignupDataType.OCCUPATION)
+        presenter.onFieldChanged("any source", StrigaSignupDataType.SOURCE_OF_FUNDS)
+        presenter.onFieldChanged("any country", StrigaSignupDataType.COUNTRY)
+        presenter.onFieldChanged("any city", StrigaSignupDataType.CITY)
+        presenter.onFieldChanged("any address", StrigaSignupDataType.CITY_ADDRESS_LINE)
+        presenter.onFieldChanged("any zip-code", StrigaSignupDataType.CITY_POSTAL_CODE)
+        presenter.onFieldChanged("any state", StrigaSignupDataType.CITY_STATE)
+        presenter.onSubmit()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { view.setProgressIsVisible(true) }
+        verify(exactly = 1) { view.showUiKitSnackBar("error", R.string.error_general_message) }
+        verify(exactly = 1) { view.setProgressIsVisible(false) }
+        verify(exactly = 0) { view.navigateNext() }
 
         presenter.saveChanges()
         presenter.detach()

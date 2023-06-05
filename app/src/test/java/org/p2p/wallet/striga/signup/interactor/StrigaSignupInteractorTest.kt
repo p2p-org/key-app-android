@@ -4,15 +4,25 @@ package org.p2p.wallet.striga.signup.interactor
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
+import retrofit2.HttpException
+import retrofit2.Response
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryRepository
@@ -20,10 +30,15 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
+import org.p2p.wallet.striga.user.model.StrigaUserInitialKycDetails
+import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 
@@ -48,6 +63,12 @@ class StrigaSignupInteractorTest {
 
     @MockK
     lateinit var countryRepository: CountryRepository
+
+    @MockK
+    lateinit var userInteractor: StrigaUserInteractor
+
+    @MockK
+    lateinit var metadataInteractor: MetadataInteractor
 
     private val signupDataValidator = StrigaSignupDataValidator()
 
@@ -218,12 +239,130 @@ class StrigaSignupInteractorTest {
         assertEquals(selectedCountry, SupportedCountry)
     }
 
+    @Test
+    fun `GIVEN signup data WHEN getUserSignupData with empty set THEN check all fields are present`() = runTest {
+        initSignupDataRepository(emptyList())
+        setData(StrigaSignupDataType.OCCUPATION, "a")
+        setData(StrigaSignupDataType.SOURCE_OF_FUNDS, "a")
+        setData(StrigaSignupDataType.COUNTRY, "a")
+        setData(StrigaSignupDataType.CITY, "a")
+        setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "a")
+        setData(StrigaSignupDataType.CITY_POSTAL_CODE, "a")
+        setData(StrigaSignupDataType.CITY_STATE, "a")
+
+        val interactor = createInteractor()
+        interactor.saveChanges(firstStepData.values)
+        interactor.saveChanges(secondStepData.values)
+
+        val result = interactor.getSignupData(emptySet())
+        assertEquals(savedSignupDataStorage.size, result.size)
+        assertEquals(savedSignupDataStorage, result)
+    }
+
+    @Test
+    fun `GIVEN signup data WHEN getUserSignupData with one selected field THEN check this field is present`() = runTest {
+        initSignupDataRepository(emptyList())
+        setData(StrigaSignupDataType.OCCUPATION, "a")
+        setData(StrigaSignupDataType.SOURCE_OF_FUNDS, "b")
+        setData(StrigaSignupDataType.COUNTRY, "c")
+        setData(StrigaSignupDataType.CITY, "d")
+        setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "e")
+        setData(StrigaSignupDataType.CITY_POSTAL_CODE, "f")
+        setData(StrigaSignupDataType.CITY_STATE, "g")
+
+        val interactor = createInteractor()
+        interactor.saveChanges(firstStepData.values)
+        interactor.saveChanges(secondStepData.values)
+
+        val result = interactor.getSignupData(setOf(StrigaSignupDataType.OCCUPATION))
+        assertEquals(1, result.size)
+        assertEquals("a", result[0].value)
+    }
+
+    @Test
+    fun `GIVEN unavailable metadata WHEN createUser THEN check exception`() = runTest {
+        every { metadataInteractor.currentMetadata } returns null
+
+        val interactor = createInteractor()
+        assertThrows<IllegalStateException> {
+            interactor.createUser()
+        }
+    }
+
+    @Test
+    fun `GIVEN striga api 500 error WHEN createUser THEN check exception`() = runTest {
+        initSignupDataRepository(emptyList())
+        every { metadataInteractor.currentMetadata } returns GatewayOnboardingMetadata(
+            deviceShareDeviceName = "",
+            customSharePhoneNumberE164 = "",
+            socialShareOwnerEmail = "",
+            ethPublic = null,
+            metaTimestampSec = 0L,
+            deviceNameTimestampSec = 0L,
+            phoneNumberTimestampSec = 0L,
+            emailTimestampSec = 0L,
+            authProviderTimestampSec = 0L,
+            strigaMetadata = null
+        )
+
+        val responseBody = """
+            {
+                "status": 500,
+                "errorCode": 0
+            }
+        """.trimIndent().toResponseBody("application/json".toMediaTypeOrNull())
+        coEvery { userInteractor.createUser(any()) } returns StrigaDataLayerError.ApiServiceUnavailable(
+            HttpException(Response.error<Any>(500, responseBody))
+        ).toFailureResult()
+
+        val interactor = createInteractor()
+        assertThrows<StrigaDataLayerError.ApiServiceUnavailable> {
+            interactor.createUser()
+        }
+    }
+
+    @Test
+    fun `GIVEN signup WHEN createUser THEN check data is saved to metadata`() = runTest {
+        initSignupDataRepository(emptyList())
+        every { metadataInteractor.currentMetadata } returns GatewayOnboardingMetadata(
+            deviceShareDeviceName = "",
+            customSharePhoneNumberE164 = "",
+            socialShareOwnerEmail = "",
+            ethPublic = null,
+            metaTimestampSec = 0L,
+            deviceNameTimestampSec = 0L,
+            phoneNumberTimestampSec = 0L,
+            emailTimestampSec = 0L,
+            authProviderTimestampSec = 0L,
+            strigaMetadata = null
+        )
+
+        coEvery { userInteractor.createUser(any()) } returns StrigaDataLayerResult.Success(
+            StrigaUserInitialDetails(
+                userId = "userId",
+                email = "email",
+                kycStatus = StrigaUserInitialKycDetails(
+                    status = StrigaUserVerificationStatus.NOT_STARTED
+                )
+            )
+        )
+        val updatedMetadataSlot = slot<GatewayOnboardingMetadata>()
+        coEvery { metadataInteractor.updateMetadata(capture(updatedMetadataSlot)) } returns Unit
+
+        val interactor = createInteractor()
+        assertDoesNotThrow { interactor.createUser() }
+        val updatedMetadata = updatedMetadataSlot.captured
+        assertEquals("userId", updatedMetadata.strigaMetadata?.userId)
+    }
+
     private fun createInteractor(): StrigaSignupInteractor {
         return StrigaSignupInteractor(
             appScope = appScope,
             validator = signupDataValidator,
             countryRepository = countryRepository,
             signupDataRepository = signupDataRepository,
+            userInteractor = userInteractor,
+            metadataInteractor = metadataInteractor
         )
     }
 
