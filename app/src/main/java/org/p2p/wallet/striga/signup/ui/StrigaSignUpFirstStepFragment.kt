@@ -128,6 +128,10 @@ class StrigaSignUpFirstStepFragment :
         }
     }
 
+    override fun clearError(type: StrigaSignupDataType) {
+        editTextFieldsMap[type]?.bindError(null)
+    }
+
     override fun scrollToFirstError(type: StrigaSignupDataType) {
         editTextFieldsMap[type]?.let {
             binding.containerScroll.post {

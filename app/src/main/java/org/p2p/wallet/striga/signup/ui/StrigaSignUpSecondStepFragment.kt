@@ -104,6 +104,10 @@ class StrigaSignUpSecondStepFragment :
         editTextFieldsMap.values.forEach { it.bindError(null) }
     }
 
+    override fun clearError(type: StrigaSignupDataType) {
+        editTextFieldsMap[type]?.bindError(null)
+    }
+
     override fun setButtonIsEnabled(isEnabled: Boolean) {
         with(binding.buttonNext) {
             this.isEnabled = isEnabled

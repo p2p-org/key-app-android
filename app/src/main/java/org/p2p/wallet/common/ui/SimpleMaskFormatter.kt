@@ -83,7 +83,7 @@ class SimpleMaskFormatter(
         }
 
         // cleanup input string from spaces
-        val inputLocal = input.filter { it != ' ' }
+        val inputLocal = input.filter { it !in placeholders.values }
         // whether the input has a placeholder characters, we don't want to add them twice to the result
         val fixCollisions = input.none { placeholders.values.contains(it) }
 
