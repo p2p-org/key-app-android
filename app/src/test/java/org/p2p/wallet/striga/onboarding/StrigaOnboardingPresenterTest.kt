@@ -1,5 +1,7 @@
 package org.p2p.wallet.striga.onboarding
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
@@ -44,6 +46,9 @@ class StrigaOnboardingPresenterTest {
     @MockK
     lateinit var strigaPresetDataLocalRepository: StrigaPresetDataLocalRepository
 
+    @MockK
+    lateinit var interactor: StrigaOnboardingInteractor
+
     private val dispatchers: CoroutineDispatchers = UnconfinedTestDispatchers()
 
     @Before
@@ -54,19 +59,15 @@ class StrigaOnboardingPresenterTest {
     private fun createPresenter(): StrigaOnboardingContract.Presenter {
         return StrigaOnboardingPresenter(
             dispatchers = dispatchers,
-            interactor = StrigaOnboardingInteractor(
-                countryRepository = countryRepository,
-                strigaPresetDataLocalRepository = strigaPresetDataLocalRepository
-            )
+            interactor = interactor
         )
     }
 
     @Test
     fun `GIVEN unsupported country WHEN presenter initialized THEN check button state is ChangeCountry`() = runTest {
-        coEvery { countryRepository.detectCountryOrDefault() } returns UnsupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
-            arg<Country>(0) == SupportedCountry
-        }
+        coEvery { interactor.getChosenCountry() } returns UnsupportedCountry
+        coEvery { interactor.checkIsCountrySupported(any()) } answers { arg<Country>(0) == SupportedCountry }
+        coEvery { interactor.saveCurrentCountry(any()) }.returns(Unit)
 
         val view: StrigaOnboardingContract.View = mockk(relaxed = true)
 
@@ -78,21 +79,19 @@ class StrigaOnboardingPresenterTest {
         val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
         verify(exactly = 1) { view.setCurrentCountry(capture(countryStates)) }
         verify(exactly = 1) { view.setAvailabilityState(capture(availabilityStates)) }
-        verify(exactly = 0) { view.openCountrySelection() }
         verify(exactly = 0) { view.navigateNext() }
 
-        assertEquals(UnsupportedCountry, countryStates.back())
-        assertEquals(StrigaOnboardingContract.View.AvailabilityState.Unavailable, availabilityStates.back())
+        assertThat(UnsupportedCountry).isEqualTo(countryStates.back())
+        assertThat(StrigaOnboardingContract.View.AvailabilityState.Unavailable).isEqualTo(availabilityStates.back())
 
         presenter.detach()
     }
 
     @Test
     fun `GIVEN supported country WHEN presenter initialized THEN check button state is Continue`() = runTest {
-        coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
-            arg<Country>(0) == SupportedCountry
-        }
+        coEvery { interactor.getChosenCountry() } returns SupportedCountry
+        coEvery { interactor.checkIsCountrySupported(any()) } answers { arg<Country>(0) == SupportedCountry }
+        coEvery { interactor.saveCurrentCountry(any()) }.returns(Unit)
 
         val view: StrigaOnboardingContract.View = mockk(relaxed = true)
 
@@ -104,7 +103,6 @@ class StrigaOnboardingPresenterTest {
         val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
         verify(exactly = 1) { view.setCurrentCountry(capture(countryStates)) }
         verify(exactly = 1) { view.setAvailabilityState(capture(availabilityStates)) }
-        verify(exactly = 0) { view.openCountrySelection() }
         verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(SupportedCountry, countryStates.back())
@@ -115,25 +113,23 @@ class StrigaOnboardingPresenterTest {
 
     @Test
     fun `GIVEN unsupported country and changed to supported WHEN presenter initialized THEN check button state is Continue`() = runTest {
-        coEvery { countryRepository.detectCountryOrDefault() } returns UnsupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
-            arg<Country>(0) == SupportedCountry
-        }
+        coEvery { interactor.getChosenCountry() } returns UnsupportedCountry
+        coEvery { interactor.checkIsCountrySupported(any()) } answers { arg<Country>(0) == SupportedCountry }
+        coEvery { interactor.saveCurrentCountry(any()) }.returns(Unit)
 
         val view: StrigaOnboardingContract.View = mockk(relaxed = true)
 
         val presenter = createPresenter()
         presenter.attach(view)
+        advanceUntilIdle()
 
         // changing country
-        presenter.onCountrySelected(SupportedCountry)
-        advanceUntilIdle()
+        presenter.onCurrentCountryChanged(SupportedCountry)
 
         val countryStates = mutableListQueueOf<Country>()
         val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
         verify(exactly = 2) { view.setCurrentCountry(capture(countryStates)) }
         verify(exactly = 2) { view.setAvailabilityState(capture(availabilityStates)) }
-        verify(exactly = 0) { view.openCountrySelection() }
         verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(UnsupportedCountry, countryStates.front())
@@ -146,48 +142,27 @@ class StrigaOnboardingPresenterTest {
 
     @Test
     fun `GIVEN initial state WHEN selected unsupported country THEN check button state is ChangeCountry`() = runTest {
-        coEvery { countryRepository.detectCountryOrDefault() } returns UnsupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
-            arg<Country>(0) == SupportedCountry
-        }
+        coEvery { interactor.getChosenCountry() } returns UnsupportedCountry
+        coEvery { interactor.checkIsCountrySupported(any()) } answers { arg<Country>(0) == SupportedCountry }
+        coEvery { interactor.saveCurrentCountry(any()) }.returns(Unit)
 
         val view: StrigaOnboardingContract.View = mockk(relaxed = true)
 
         val presenter = createPresenter()
         presenter.attach(view)
+        advanceUntilIdle()
 
         // changing country
-        presenter.onCountrySelected(UnsupportedCountry)
-        advanceUntilIdle()
+        presenter.onCurrentCountryChanged(UnsupportedCountry)
 
         val countryStates = mutableListQueueOf<Country>()
         val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
         verify(exactly = 2) { view.setCurrentCountry(capture(countryStates)) }
         verify(exactly = 2) { view.setAvailabilityState(capture(availabilityStates)) }
-        verify(exactly = 0) { view.openCountrySelection() }
         verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(UnsupportedCountry, countryStates.back())
         assertEquals(StrigaOnboardingContract.View.AvailabilityState.Unavailable, availabilityStates.back())
-
-        presenter.detach()
-    }
-
-    @Test
-    fun `GIVEN initial state WHEN clicked country THEN check country selection is opened`() = runTest {
-        coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
-        coEvery { strigaPresetDataLocalRepository.checkIsCountrySupported(any()) } answers {
-            arg<Country>(0) == SupportedCountry
-        }
-
-        val view: StrigaOnboardingContract.View = mockk(relaxed = true)
-
-        val presenter = createPresenter()
-        presenter.attach(view)
-        presenter.onClickChangeCountry()
-        advanceUntilIdle()
-
-        verify(exactly = 1) { view.openCountrySelection() }
 
         presenter.detach()
     }
