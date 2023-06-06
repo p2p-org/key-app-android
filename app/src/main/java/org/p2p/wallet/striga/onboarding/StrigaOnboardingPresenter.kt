@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract.View.AvailabilityState
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 
 class StrigaOnboardingPresenter(
@@ -11,33 +12,28 @@ class StrigaOnboardingPresenter(
     private val interactor: StrigaOnboardingInteractor,
 ) : BasePresenter<StrigaOnboardingContract.View>(dispatchers.ui), StrigaOnboardingContract.Presenter {
 
-    override fun attach(view: StrigaOnboardingContract.View) {
-        super.attach(view)
-
+    override fun firstAttach() {
+        super.firstAttach()
         launch {
-            onCountrySelected(interactor.getDefaultCountry())
+            onCurrentCountryChanged(interactor.getChosenCountry())
         }
     }
 
-    override fun onCountrySelected(country: Country) {
-        view?.setCurrentCountry(country)
-        if (isCountrySupported(country)) {
-            view?.setAvailabilityState(StrigaOnboardingContract.View.AvailabilityState.Available)
+    override fun onCurrentCountryChanged(selectedCountry: Country) {
+        launch {
+            interactor.saveCurrentCountry(selectedCountry)
 
-            // todo: save country
-            // interactor.saveUserCountry(country)
-        } else {
-            view?.setAvailabilityState(StrigaOnboardingContract.View.AvailabilityState.Unavailable)
+            view?.setCurrentCountry(selectedCountry)
+            if (isCountrySupported(selectedCountry)) {
+                view?.setAvailabilityState(AvailabilityState.Available)
+            } else {
+                view?.setAvailabilityState(AvailabilityState.Unavailable)
+            }
         }
     }
 
     override fun onClickContinue() {
-        // todo: find where we should navigate next
         view?.navigateNext()
-    }
-
-    override fun onClickChangeCountry() {
-        view?.openCountrySelection()
     }
 
     override fun onClickHelp() {

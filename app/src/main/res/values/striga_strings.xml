@@ -42,6 +42,8 @@
     <string name="striga_country_of_birth">Country of birth</string>
     <string name="striga_country_of_birth_hint">Select from list</string>
     <string name="striga_select_your_country">Select your country</string>
+    <string name="striga_select_your_occupation">Select your industry</string>
+    <string name="striga_select_your_source">Select your source</string>
     <string name="striga_chosen_country">Chosen country</string>
     <string name="striga_all_countries">All countries</string>
     <string name="striga_step_first_toolbar_title">Step 1 of 3</string>
@@ -54,7 +56,9 @@
     <string name="striga_address_line">Address line</string>
     <string name="striga_postal_code">Postal code</string>
     <string name="striga_state_or_region">State or region</string>
-    <string name="striga_personal_data_confirm_info">After clicking the “Сontinue”, you confirm that you are not a Politically Exposed Person</string>
+    <string name="striga_personal_data_confirm_info">
+        After clicking the \"Continue\", you confirm that you are not a Politically Exposed Person
+    </string>
     <string name="striga_select_from_list_hint">Select from list</string>
     <string name="striga_full_city_name_hint">Enter full city name</string>
     <string name="striga_postal_code_hint">Your postal code</string>
@@ -74,6 +78,11 @@
     <string name="striga_validation_error_wrong_birthday_older_than">Could not be earlier %d</string>
     <string name="striga_validation_error_wrong_birthday_younger_than">Could not be later %d</string>
     <string name="striga_button_error_check_red_fields">Check red fields</string>
+
+    <string name="striga_preset_data_hint_country">country</string>
+    <string name="striga_preset_data_hint_occupation">industry</string>
+    <string name="striga_preset_data_hint_source">source of funds</string>
+
     <string name="striga_button_open_wallet_screen">Open Wallet screen</string>
     <string name="striga_button_write_to_support">Write to support</string>
     <string name="string_sms_error_number_already_used_title">Seems like this number is already used</string>

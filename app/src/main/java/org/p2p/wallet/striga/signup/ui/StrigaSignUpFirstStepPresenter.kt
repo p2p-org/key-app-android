@@ -14,13 +14,11 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 class StrigaSignUpFirstStepPresenter(
     dispatchers: CoroutineDispatchers,
     private val interactor: StrigaSignupInteractor
-) :
-    BasePresenter<StrigaSignUpFirstStepContract.View>(dispatchers.ui),
+) : BasePresenter<StrigaSignUpFirstStepContract.View>(dispatchers.ui),
     StrigaSignUpFirstStepContract.Presenter {
 
     private val signupData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
     private var phoneMask: PhoneMask? = null
-    private var countryOfBirth: Country? = null
 
     override fun firstAttach() {
         super.firstAttach()
@@ -31,27 +29,19 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
-        setData(type, newValue)
+        setCachedData(type, newValue)
 
         view?.clearError(type)
         // enabling button if something changed
-        view?.setButtonIsEnabled(true)
+        view?.setButtonIsEnabled(isEnabled = true)
     }
 
-    override fun onCountryChanged(newCountry: Country) {
-        countryOfBirth = newCountry
+    override fun onCountryOfBirthChanged(selectedCountry: Country) {
+        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH, selectedCountry.codeAlpha3)
         view?.updateSignupField(
-            newValue = "${newCountry.flagEmoji} ${newCountry.name}",
+            newValue = "${selectedCountry.flagEmoji} ${selectedCountry.name}",
             type = StrigaSignupDataType.COUNTRY_OF_BIRTH
         )
-        signupData[StrigaSignupDataType.COUNTRY_OF_BIRTH] = StrigaSignupData(
-            type = StrigaSignupDataType.COUNTRY_OF_BIRTH,
-            value = newCountry.codeAlpha3
-        )
-    }
-
-    override fun onCountryClicked() {
-        view?.showCountryPicker(selectedCountry = countryOfBirth)
     }
 
     override fun onSubmit() {
@@ -82,32 +72,34 @@ class StrigaSignUpFirstStepPresenter(
 
         // fill pre-saved values as-is
         data.values.forEach {
-            setData(it.type, it.value.orEmpty())
+            setCachedData(it.type, it.value.orEmpty())
             view?.updateSignupField(it.type, it.value.orEmpty())
         }
 
+        getAndUpdateCountryField(data)
+    }
+
+    private suspend fun getAndUpdateCountryField(signupData: Map<StrigaSignupDataType, StrigaSignupData>) {
         // db stores COUNTRY_OF_BIRTH as country name code ISO 3166-1 alpha-3,
         // so we need to find country by code and convert to country name
-        countryOfBirth = interactor.findCountryByIsoAlpha3(
-            data[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.value.orEmpty()
-        )
-        countryOfBirth?.let { onCountryChanged(it) }
+        val selectedCountryValue = signupData[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.value.orEmpty()
+        interactor.findCountryByIsoAlpha3(selectedCountryValue)
+            ?.also { onCountryOfBirthChanged(it) }
     }
 
     private fun mapDataForStorage() {
         val fullPhoneNumber = getFullPhoneNumber()
         if (fullPhoneNumber != null && phoneMask != null) {
             val phoneCodeWithSign = phoneMask?.phoneCodeWithSign ?: throw IllegalStateException("Phone mask is null")
-            setData(
-                StrigaSignupDataType.PHONE_CODE,
-                phoneCodeWithSign
+            setCachedData(
+                type = StrigaSignupDataType.PHONE_CODE,
+                newValue = phoneCodeWithSign
             )
-            setData(
-                StrigaSignupDataType.PHONE_NUMBER,
-                removeCodeFromPhoneNumber(phoneCodeWithSign, fullPhoneNumber)
+            setCachedData(
+                type = StrigaSignupDataType.PHONE_NUMBER,
+                newValue = removeCodeFromPhoneNumber(phoneCodeWithSign, fullPhoneNumber)
             )
         }
-        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, countryOfBirth?.codeAlpha3.orEmpty())
     }
 
     private suspend fun setupPhoneMask() {
@@ -127,7 +119,9 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     private fun removeCodeFromPhoneNumber(phoneCode: String, phoneNumber: String): String {
-        return phoneNumber.replace(phoneCode, "").replace(" ", "")
+        return phoneNumber
+            .replace(phoneCode, "")
+            .replace(" ", "")
     }
 
     private fun getFullPhoneNumber(): String? {
@@ -140,7 +134,7 @@ class StrigaSignUpFirstStepPresenter(
             signupData[StrigaSignupDataType.PHONE_NUMBER]?.value.orEmpty()
     }
 
-    private fun setData(type: StrigaSignupDataType, newValue: String) {
+    private fun setCachedData(type: StrigaSignupDataType, newValue: String) {
         signupData[type] = StrigaSignupData(type = type, value = newValue)
     }
 }

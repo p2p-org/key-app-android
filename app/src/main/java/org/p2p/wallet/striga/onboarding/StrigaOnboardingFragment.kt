@@ -24,9 +24,14 @@ import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOnboardingBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
+import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.getString
@@ -39,6 +44,9 @@ class StrigaOnboardingFragment :
     StrigaOnboardingContract.View {
 
     companion object {
+        private const val REQUEST_KEY_PICKER = "request_key"
+        private const val RESULT_KEY_PICKER = "result_picker"
+
         fun create(): StrigaOnboardingFragment = StrigaOnboardingFragment()
     }
 
@@ -53,7 +61,10 @@ class StrigaOnboardingFragment :
         bindHelpText()
 
         binding.buttonContinue.setOnClickListener {
-            presenter.onClickChangeCountry()
+            openCountrySelection()
+        }
+        binding.blockChangeCountry.setOnClickListener {
+            openCountrySelection()
         }
         binding.textViewPoweredBy.setOnClickListener {
             Intent(Intent.ACTION_VIEW, getString(R.string.striga_powered_by_url).toUri())
@@ -62,7 +73,6 @@ class StrigaOnboardingFragment :
     }
 
     override fun navigateNext() {
-        // TODO: navigate to next screen
         replaceFragment(StrigaSignUpFirstStepFragment.create())
     }
 
@@ -82,13 +92,19 @@ class StrigaOnboardingFragment :
             .start()
     }
 
-    override fun openCountrySelection() {
-        /* TODO: select country
-            replaceFragmentForResult(Fragment(), "select_country", onResult = { requestKey, bundle ->
-                val country = bundle.getParcelableCompat<Country>("country")
-                presenter.onCountrySelected(country)
-            })
-        */
+    private fun openCountrySelection() {
+        replaceFragmentForResult(
+            target = StrigaPresetDataPickerFragment.create(
+                requestKey = REQUEST_KEY_PICKER,
+                resultKey = RESULT_KEY_PICKER,
+                dataToPick = StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY
+            ),
+            requestKey = REQUEST_KEY_PICKER,
+            onResult = { _, result ->
+                result.getParcelableCompat<StrigaPresetDataItem.StrigaCountryItem>(RESULT_KEY_PICKER)
+                    ?.also { presenter.onCurrentCountryChanged(it.details) }
+            }
+        )
     }
 
     override fun openHelp() {
@@ -145,7 +161,6 @@ class StrigaOnboardingFragment :
                             iconTint = R.color.mountain
                         )
                     )
-
                 )
             )
         )
@@ -161,7 +176,7 @@ class StrigaOnboardingFragment :
     private fun handleUnavailableState(state: StrigaOnboardingContract.View.AvailabilityState) {
         handleViewState(state)
         binding.buttonContinue.setOnClickListener {
-            presenter.onClickChangeCountry()
+            openCountrySelection()
         }
     }
 
