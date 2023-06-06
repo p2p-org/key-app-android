@@ -195,7 +195,7 @@ class BridgeSendFragment :
         binding.widgetSendDetails.showDelayedFeeViewLoading(isLoading)
     }
 
-    override fun showFeeViewVisible(isVisible: Boolean) {
+    override fun showFeeVisible(isVisible: Boolean) {
         binding.widgetSendDetails.showFeeVisible(isVisible = isVisible)
     }
 

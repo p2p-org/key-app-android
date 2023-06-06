@@ -15,7 +15,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.svl.model.TemporaryAccount
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
@@ -172,7 +172,7 @@ class SendViaLinkFragment :
         binding.widgetSendDetails.showDelayedFeeViewLoading(isLoading)
     }
 
-    override fun showFeeViewVisible(isVisible: Boolean) {
+    override fun showFeeVisible(isVisible: Boolean) {
         binding.widgetSendDetails.showFeeVisible(isVisible = isVisible)
     }
 

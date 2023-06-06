@@ -6,12 +6,15 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import org.p2p.wallet.svl.model.TemporaryAccount
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 
 private const val EMPTY_BALANCE = 0L
 
-sealed class SearchResult(open val addressState: AddressState) : Parcelable {
+sealed class SearchResult(
+    open val addressState: AddressState
+) : Parcelable {
 
     val formattedAddress: String
         get() = addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)

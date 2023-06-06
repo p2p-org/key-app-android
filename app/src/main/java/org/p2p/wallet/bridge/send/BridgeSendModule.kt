@@ -10,15 +10,15 @@ import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.repository.EthereumSendRemoteRepository
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
-import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
-import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendActionHandler
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.AmountChangeActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.InitFeatureActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.NewTokenActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.RefreshFeeActionHandler
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
-import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
+import org.p2p.wallet.bridge.send.statemachine.model.BridgeSendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 import org.p2p.wallet.bridge.send.ui.BridgeSendContract
@@ -50,7 +50,7 @@ object BridgeSendModule : InjectionModule {
         factory { (recipientAddress: SearchResult, initialToken: Token.Active?, inputAmount: BigDecimal?) ->
             val initialBridgeToken = initialToken?.let { SendToken.Bridge(it) }
             val recipient = EthAddress(recipientAddress.addressState.address)
-            val initialData = SendInitialData.Bridge(
+            val initialData = BridgeSendInitialData.Bridge(
                 initialToken = initialBridgeToken,
                 initialAmount = inputAmount,
                 recipient = recipient
@@ -65,7 +65,7 @@ object BridgeSendModule : InjectionModule {
                 repository = get(),
                 tokenKeyProvider = get(),
             )
-            val handlers = mutableSetOf<SendActionHandler>().apply {
+            val handlers = mutableSetOf<BridgeSendActionHandler>().apply {
                 add(
                     InitFeatureActionHandler(
                         transactionLoader = feeLoader,
@@ -92,7 +92,7 @@ object BridgeSendModule : InjectionModule {
                 )
             }
 
-            val stateMachine = SendStateMachine(
+            val stateMachine = BridgeSendStateMachine(
                 handlers = handlers,
                 dispatchers = get()
             )

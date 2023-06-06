@@ -50,11 +50,11 @@ class NewSendAnalytics(
         analytics.logEvent(event = NEW_SEND_TOKEN_SELECTION_CLICK)
     }
 
-    fun logSwitchCurrencyModeClicked(mode: CurrencyMode) {
+    fun logSwitchCurrencyModeClicked(isCryptoMode: Boolean) {
         analytics.logEvent(
             event = NEW_SEND_SWITCH_CURRENCY_MODE_CLICK,
             params = mapOf(
-                "Crypto" to (mode is CurrencyMode.Token)
+                "Crypto" to isCryptoMode
             )
         )
     }

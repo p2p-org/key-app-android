@@ -5,7 +5,7 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.newsend.model.LinkGenerationState
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.svl.model.TemporaryAccount
 
 interface SendLinkGenerationContract {
     interface View : MvpView {

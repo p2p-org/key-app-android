@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.p2p.core.utils.isZero
 import org.p2p.wallet.bridge.send.model.getFeeList
-import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
-import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
-import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendActionHandler
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendAction
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.fee
@@ -21,38 +21,38 @@ class AmountChangeActionHandler(
     private val mapper: SendBridgeStaticStateMapper,
     private val validator: SendBridgeValidator,
     private val transactionLoader: SendBridgeTransactionLoader,
-) : SendActionHandler {
+) : BridgeSendActionHandler {
 
-    override fun canHandle(newEvent: SendFeatureAction, staticState: SendState.Static): Boolean =
-        newEvent is SendFeatureAction.AmountChange ||
-            newEvent is SendFeatureAction.MaxAmount ||
-            newEvent is SendFeatureAction.ZeroAmount
+    override fun canHandle(newEvent: BridgeSendAction, staticState: BridgeSendState.Static): Boolean =
+        newEvent is BridgeSendAction.AmountChange ||
+            newEvent is BridgeSendAction.MaxAmount ||
+            newEvent is BridgeSendAction.ZeroAmount
 
     override fun handle(
-        currentState: SendState,
-        newAction: SendFeatureAction
-    ): Flow<SendState> = flow {
+        currentState: BridgeSendState,
+        newAction: BridgeSendAction
+    ): Flow<BridgeSendState> = flow {
         val lastStaticState = currentState.lastStaticState
         val token = lastStaticState.bridgeToken ?: return@flow
         val feeTotalAmount = getFeeTotalInToken(lastStaticState)
         val newAmount = when (newAction) {
-            is SendFeatureAction.AmountChange -> newAction.amount
-            SendFeatureAction.MaxAmount -> token.tokenAmount - feeTotalAmount
-            SendFeatureAction.ZeroAmount -> BigDecimal.ZERO
-            is SendFeatureAction.NewToken,
-            is SendFeatureAction.RefreshFee,
-            SendFeatureAction.InitFeature -> return@flow
+            is BridgeSendAction.AmountChange -> newAction.amount
+            BridgeSendAction.MaxAmount -> token.tokenAmount - feeTotalAmount
+            BridgeSendAction.ZeroAmount -> BigDecimal.ZERO
+            is BridgeSendAction.NewToken,
+            is BridgeSendAction.RefreshFee,
+            BridgeSendAction.InitFeature -> return@flow
         }
 
         val newState = if (newAmount.isZero()) {
-            SendState.Static.TokenZero(token, lastStaticState.fee)
+            BridgeSendState.Static.TokenZero(token, lastStaticState.fee)
         } else {
             validator.validateInputAmount(token, newAmount = newAmount, newAmountWithFee = newAmount + feeTotalAmount)
             mapper.updateInputAmount(lastStaticState, newAmount)
         }
         emit(newState)
-        if (newState is SendState.Static.TokenNotZero) {
-            emit(SendState.Loading.Fee(newState))
+        if (newState is BridgeSendState.Static.TokenNotZero) {
+            emit(BridgeSendState.Loading.Fee(newState))
             delay(500)
         }
         transactionLoader.prepareTransaction(newState).collect {
@@ -60,7 +60,7 @@ class AmountChangeActionHandler(
         }
     }
 
-    private fun getFeeTotalInToken(lastStaticState: SendState.Static): BigDecimal {
+    private fun getFeeTotalInToken(lastStaticState: BridgeSendState.Static): BigDecimal {
         return lastStaticState.bridgeFee?.fee.getFeeList().sumOf { it.amountInToken }
     }
 }

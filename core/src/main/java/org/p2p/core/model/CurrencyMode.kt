@@ -20,8 +20,10 @@ sealed interface CurrencyMode {
         object Gbp : Fiat("£", Constants.GBP_SYMBOL)
     }
 
-    fun getCurrencyModeSymbol(): String = when (this) {
+    fun getSymbol(): String = when (this) {
         is Token -> symbol
         is Fiat -> fiatAbbreviation
     }
+
+    fun isFiat(): Boolean = this is Fiat
 }

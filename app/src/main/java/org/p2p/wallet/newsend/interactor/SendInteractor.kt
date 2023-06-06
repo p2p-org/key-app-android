@@ -47,13 +47,13 @@ class SendInteractor(
     * If transaction will need to create a new account,
     * then the fee for account creation will be paid via this token
     * */
+    @Deprecated("fee payer token will be cached in presenter")
     private lateinit var feePayerToken: Token.Active
 
     /*
     * Initialize fee payer token
     * */
-    suspend fun initialize(token: Token.Active) {
-        feePayerToken = token
+    suspend fun initialize() {
         feeRelayerInteractor.load()
         orcaInfoInteractor.load()
     }
@@ -75,8 +75,8 @@ class SendInteractor(
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 
-    suspend fun getFreeTransactionsInfo(): TransactionFeeLimits =
-        feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+    suspend fun getFreeTransactionsInfo(useCache: Boolean): TransactionFeeLimits =
+        feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache)
 
     suspend fun sendTransaction(
         destinationAddress: PublicKey,

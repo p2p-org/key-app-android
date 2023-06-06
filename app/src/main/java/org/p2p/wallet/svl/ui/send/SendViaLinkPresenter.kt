@@ -21,12 +21,13 @@ import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
-import org.p2p.wallet.newsend.model.FeeRelayerState
-import org.p2p.wallet.newsend.model.NewSendButtonState
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.newsend.model.SendState
+import org.p2p.wallet.newsend.ui.main.SendButtonStateManager
+import org.p2p.wallet.svl.model.TemporaryAccount
 import org.p2p.wallet.newsend.model.toSearchResult
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
+import org.p2p.wallet.svl.model.SendButtonState
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -177,7 +178,7 @@ class SendViaLinkPresenter(
 
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
-        newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
+        newSendAnalytics.logSwitchCurrencyModeClicked(!newMode.isFiat())
     }
 
     override fun updateInputAmount(amount: String) {
@@ -236,7 +237,7 @@ class SendViaLinkPresenter(
             account = recipient,
             token = token,
             lamports = lamports,
-            currencyModeSymbol = calculationMode.getCurrencyMode().getCurrencyModeSymbol()
+            currencyModeSymbol = calculationMode.getCurrencyMode().getSymbol()
         )
     }
 
@@ -246,23 +247,22 @@ class SendViaLinkPresenter(
     }
 
     private fun updateButton(sourceToken: Token.Active) {
-        val sendButton = NewSendButtonState(
+        val sendButton = SendButtonState(
             sourceToken = sourceToken,
             searchResult = recipient.toSearchResult(),
             calculationMode = calculationMode,
-            feeRelayerState = FeeRelayerState.Idle,
             minRentExemption = minRentExemption,
             resources = resources
         )
 
         when (val state = sendButton.currentState) {
-            is NewSendButtonState.State.Disabled -> {
+            is SendButtonState.State.Disabled -> {
                 view?.setBottomButtonText(state.textContainer)
                 view?.setSliderText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
 
-            is NewSendButtonState.State.Enabled -> {
+            is SendButtonState.State.Enabled -> {
                 view?.setSliderText(resources.getString(R.string.send_via_link_action_text))
                 view?.setBottomButtonText(null)
                 view?.setInputColor(state.totalAmountTextColor)

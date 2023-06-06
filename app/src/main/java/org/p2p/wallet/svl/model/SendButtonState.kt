@@ -1,8 +1,9 @@
-package org.p2p.wallet.newsend.model
+package org.p2p.wallet.svl.model
 
-import android.content.res.Resources
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import android.content.res.Resources
+import java.math.BigInteger
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.SOL_SYMBOL
@@ -12,12 +13,12 @@ import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.R
-import java.math.BigInteger
+import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.SearchResult
 
-class NewSendButtonState(
+class SendButtonState(
     private val sourceToken: Token.Active,
     private val searchResult: SearchResult,
-    private val feeRelayerState: FeeRelayerState,
     private val calculationMode: CalculationMode,
     private val minRentExemption: BigInteger,
     private val resources: Resources
@@ -25,14 +26,11 @@ class NewSendButtonState(
 
     sealed interface State {
         class Disabled(
-            val textContainer: TextContainer,
-            @ColorRes val totalAmountTextColor: Int
+            val textContainer: TextContainer, @ColorRes val totalAmountTextColor: Int
         ) : State
 
         class Enabled(
-            @StringRes val textResId: Int,
-            val value: String,
-            @ColorRes val totalAmountTextColor: Int
+            @StringRes val textResId: Int, val value: String, @ColorRes val totalAmountTextColor: Int
         ) : State
     }
 
@@ -42,21 +40,13 @@ class NewSendButtonState(
             val inputAmount = calculationMode.getCurrentAmountLamports()
 
             val isEnoughBalance = !totalInLamports.isLessThan(inputAmount)
-            val isFeeCalculationValid = feeRelayerState.isValidState()
 
-            val sendFee = (feeRelayerState as? FeeRelayerState.UpdateFee)?.solanaFee
-            val isEnoughToCoverExpenses =
-                sendFee == null || sendFee.isEnoughToCoverExpenses(totalInLamports, inputAmount, minRentExemption)
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
             val isAmountValidForSender = isAmountValidForSender(inputAmount)
             val isMinRequiredBalanceLeft = isMinRequiredBalanceLeft()
 
             return when {
-                !isFeeCalculationValid -> {
-                    val textContainer = TextContainer.Res(R.string.send_cant_calculate_fees_error)
-                    State.Disabled(textContainer, R.color.text_night)
-                }
                 !isAmountNotZero -> {
                     val textContainer = TextContainer.Res(R.string.send_enter_amount)
                     State.Disabled(textContainer, R.color.text_night)
@@ -68,10 +58,6 @@ class NewSendButtonState(
                     val textContainer = TextContainer.Raw(text)
                     State.Disabled(textContainer, R.color.text_rose)
                 }
-                !isEnoughToCoverExpenses -> {
-                    val textContainer = TextContainer.Res(R.string.send_insufficient_funds)
-                    State.Disabled(textContainer, R.color.text_rose)
-                }
                 !isMinRequiredBalanceLeft -> {
                     val textContainer = TextContainer.Res(R.string.error_insufficient_funds)
                     State.Disabled(textContainer, R.color.text_rose)
@@ -80,8 +66,7 @@ class NewSendButtonState(
                     val solAmount = minRentExemption.fromLamports().scaleLong().toPlainString()
                     val format = resources.getString(R.string.send_min_warning_text_format, solAmount, SOL_SYMBOL)
                     State.Disabled(
-                        textContainer = TextContainer.Raw(format),
-                        totalAmountTextColor = R.color.text_rose
+                        textContainer = TextContainer.Raw(format), totalAmountTextColor = R.color.text_rose
                     )
                 }
                 !isAmountValidForSender -> {
@@ -92,8 +77,7 @@ class NewSendButtonState(
                         SOL_SYMBOL
                     )
                     State.Disabled(
-                        textContainer = TextContainer.Raw(format),
-                        totalAmountTextColor = R.color.text_rose
+                        textContainer = TextContainer.Raw(format), totalAmountTextColor = R.color.text_rose
                     )
                 }
                 else -> {

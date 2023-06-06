@@ -14,15 +14,15 @@ class FeeCalculator(
 ) {
 
     suspend fun calculateFee(
+        sourceToken: Token.Active,
         feePayerToken: Token.Active,
-        token: Token.Active,
         recipient: String,
         useCache: Boolean = true
     ): FeeCalculationState {
         try {
             val feeInSol = calculateFeeInSol(
                 feePayerToken = feePayerToken,
-                token = token,
+                sourceToken = sourceToken,
                 recipient = recipient,
                 useCache = useCache
             )
@@ -55,14 +55,14 @@ class FeeCalculator(
     }
 
     private suspend fun calculateFeeInSol(
+        sourceToken: Token.Active,
         feePayerToken: Token.Active,
-        token: Token.Active,
         recipient: String,
         useCache: Boolean = true
     ): FeeInSol {
         return feeRelayerCalculationInteractor.calculateFeesInSol(
             feePayerToken = feePayerToken,
-            token = token,
+            sourceToken = sourceToken,
             recipient = recipient,
             useCache = useCache
         )

@@ -10,6 +10,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerCalculationInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInstructionsInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
@@ -55,6 +56,7 @@ object FeeRelayerModule : InjectionModule {
         factoryOf(::FeeRelayerInteractor)
         factoryOf(::FeeRelayerTopUpInteractor)
         factoryOf(::FeeRelayerInstructionsInteractor)
+        factoryOf(::FeeRelayerCalculationInteractor)
         singleOf(::FeeRelayerSwapInteractor)
     }
 }

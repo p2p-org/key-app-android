@@ -32,7 +32,7 @@ class FeeRelayerCalculationInteractor(
 
     suspend fun calculateFeesInSol(
         feePayerToken: Token.Active,
-        token: Token.Active,
+        sourceToken: Token.Active,
         recipient: String,
         useCache: Boolean
     ): FeeInSol {
@@ -50,8 +50,8 @@ class FeeRelayerCalculationInteractor(
             transactionFee += lamportsPerSignature
         }
 
-        val shouldCreateAccount = !token.isSOL && addressInteractor.findSplTokenAddressData(
-            mintAddress = token.mintAddress,
+        val shouldCreateAccount = !sourceToken.isSOL && addressInteractor.findSplTokenAddressData(
+            mintAddress = sourceToken.mintAddress,
             destinationAddress = recipient.toPublicKey(),
             useCache = useCache
         ).shouldCreateAccount
@@ -160,7 +160,7 @@ class FeeRelayerCalculationInteractor(
             return FeeCalculationState.Cancelled
         } catch (e: Throwable) {
             Timber.tag(TAG).i(e, "Failed to calculateFeesForFeeRelayer")
-            return FeeCalculationState.Error(e)
+            return FeeCalculationState.Failed(e)
         }
     }
 

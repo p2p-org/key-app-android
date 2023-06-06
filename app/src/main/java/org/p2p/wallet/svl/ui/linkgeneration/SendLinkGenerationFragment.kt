@@ -11,7 +11,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendLinkGenerationBinding
 import org.p2p.wallet.newsend.model.LinkGenerationState
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.svl.model.TemporaryAccount
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.ui.linkresult.SendLinkGenerationResultFragment
 import org.p2p.wallet.utils.args

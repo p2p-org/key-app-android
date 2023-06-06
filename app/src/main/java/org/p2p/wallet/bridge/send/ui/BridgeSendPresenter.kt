@@ -26,16 +26,16 @@ import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.getFeeList
-import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
-import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendState
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
 import org.p2p.wallet.bridge.send.statemachine.lastStaticState
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
-import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
+import org.p2p.wallet.bridge.send.statemachine.model.BridgeSendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
@@ -65,13 +65,13 @@ class BridgeSendPresenter(
     private val sendBridgesAnalytics: SendBridgesAnalytics,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
-    private val initialData: SendInitialData.Bridge,
-    private val stateMachine: SendStateMachine,
+    private val initialData: BridgeSendInitialData.Bridge,
+    private val stateMachine: BridgeSendStateMachine,
     private val bridgeSendUiMapper: BridgeSendUiMapper,
     private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {
 
-    private var currentState: SendState = SendState.Static.Empty
+    private var currentState: BridgeSendState = BridgeSendState.Static.Empty
 
     private val calculationMode = CalculationMode(
         sendModeProvider = sendModeProvider,
@@ -90,18 +90,18 @@ class BridgeSendPresenter(
             .launchIn(this)
     }
 
-    private fun handleState(state: SendState) {
+    private fun handleState(state: BridgeSendState) {
         when (state) {
-            is SendState.Exception -> handleErrorState(state)
-            is SendState.Loading -> handleLoadingState(state)
-            is SendState.Static -> handleStaticState(state)
+            is BridgeSendState.Exception -> handleErrorState(state)
+            is BridgeSendState.Loading -> handleLoadingState(state)
+            is BridgeSendState.Static -> handleStaticState(state)
         }
     }
 
-    private fun handleStaticState(state: SendState.Static) {
+    private fun handleStaticState(state: BridgeSendState.Static) {
         when (state) {
-            SendState.Static.Empty -> Unit
-            is SendState.Static.ReadyToSend -> view?.apply {
+            BridgeSendState.Static.Empty -> Unit
+            is BridgeSendState.Static.ReadyToSend -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.amount)
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
@@ -113,7 +113,7 @@ class BridgeSendPresenter(
                 )
             }
 
-            is SendState.Static.TokenNotZero -> view?.apply {
+            is BridgeSendState.Static.TokenNotZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.amount)
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
@@ -124,7 +124,7 @@ class BridgeSendPresenter(
                 )
             }
 
-            is SendState.Static.TokenZero -> view?.apply {
+            is BridgeSendState.Static.TokenZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.inputAmount.orZero())
                 handleUpdateFee(sendFee = state.fee, isInputEmpty = true)
@@ -136,18 +136,18 @@ class BridgeSendPresenter(
             }
         }
         view?.apply {
-            showFeeViewVisible(isVisible = true)
+            showFeeVisible(isVisible = true)
             showFeeViewLoading(isLoading = false)
             setInputColor(R.color.text_night)
         }
     }
 
-    private fun handleLoadingState(state: SendState.Loading) {
+    private fun handleLoadingState(state: BridgeSendState.Loading) {
         handleStaticState(state.lastStaticState)
         view?.apply {
             when (state) {
-                is SendState.Loading.Fee -> {
-                    showFeeViewVisible(isVisible = true)
+                is BridgeSendState.Loading.Fee -> {
+                    showFeeVisible(isVisible = true)
                     showFeeViewLoading(isLoading = true)
                     showBottomFeeValue(bridgeSendUiMapper.getFeeTextSkeleton())
                     updateButtons(
@@ -159,18 +159,18 @@ class BridgeSendPresenter(
         }
     }
 
-    private fun handleErrorState(state: SendState.Exception) {
+    private fun handleErrorState(state: BridgeSendState.Exception) {
         handleStaticState(state.lastStaticState)
         view?.apply {
             when (state) {
-                is SendState.Exception.Feature -> {
+                is BridgeSendState.Exception.Feature -> {
                     showFeeViewLoading(isLoading = false)
                     val bridgeToken = state.lastStaticState.bridgeToken ?: return
                     updateTokenAndInput(bridgeToken, state.featureException.amount)
                     handleUpdateTotal(state.lastStaticState.bridgeFee)
                     when (state.featureException) {
                         is SendFeatureException.FeeLoadingError -> {
-                            showFeeViewVisible(isVisible = false)
+                            showFeeVisible(isVisible = false)
                             showBottomFeeValue(TextViewCellModel.Raw(TextContainer(emptyString())))
                             updateButtons(
                                 errorButton = TextContainer.Res(R.string.send_cant_calculate_fees_error),
@@ -190,7 +190,7 @@ class BridgeSendPresenter(
                     }
                 }
 
-                is SendState.Exception.Other -> if (state.exception.isConnectionError()) {
+                is BridgeSendState.Exception.Other -> if (state.exception.isConnectionError()) {
                     view?.showUiKitSnackBar(
                         message = resources.getString(R.string.error_no_internet_message),
                         actionButtonResId = R.string.common_hide
@@ -330,7 +330,7 @@ class BridgeSendPresenter(
 
     override fun updateToken(newToken: Token.Active) {
         sendBridgesAnalytics.logTokenChanged(newToken.tokenSymbol)
-        stateMachine.newAction(SendFeatureAction.NewToken(SendToken.Bridge(newToken)))
+        stateMachine.newAction(BridgeSendAction.NewToken(SendToken.Bridge(newToken)))
     }
 
     override fun switchCurrencyMode() {
@@ -344,16 +344,16 @@ class BridgeSendPresenter(
         calculationMode.updateInputAmount(amount)
         val currentAmount = calculationMode.getCurrentAmount()
         if (currentAmount.isZero()) {
-            stateMachine.newAction(SendFeatureAction.ZeroAmount)
+            stateMachine.newAction(BridgeSendAction.ZeroAmount)
         } else {
-            stateMachine.newAction(SendFeatureAction.AmountChange(currentAmount))
+            stateMachine.newAction(BridgeSendAction.AmountChange(currentAmount))
         }
     }
 
     override fun onMaxButtonClicked() {
         val feeTotalInToken = getFeeTotalInToken()
         val token = currentState.lastStaticState.bridgeToken?.token ?: return
-        stateMachine.newAction(SendFeatureAction.MaxAmount)
+        stateMachine.newAction(BridgeSendAction.MaxAmount)
         calculationMode.updateTokenAmount(token.total - feeTotalInToken)
         view?.updateInputValue(calculationMode.formatInputAmount, true)
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
@@ -423,7 +423,7 @@ class BridgeSendPresenter(
             fee = fee.toPlainString()
         )
 
-        val sendTransaction = (currentState as? SendState.Static.ReadyToSend)?.sendTransaction ?: return
+        val sendTransaction = (currentState as? BridgeSendState.Static.ReadyToSend)?.sendTransaction ?: return
         val transactionId = sendTransaction.message ?: return
 
         appScope.launch {
@@ -494,7 +494,7 @@ class BridgeSendPresenter(
         val arbiterFeeAmount = lastStaticState.bridgeFee?.fee?.arbiterFee?.amountInToken?.toPlainString()
         alarmErrorsLogger.triggerBridgeSendAlarm(
             token = token,
-            currency = calculationMode.getCurrencyMode().getCurrencyModeSymbol(),
+            currency = calculationMode.getCurrencyMode().getSymbol(),
             sendAmount = calculationMode.getCurrentAmount().toPlainString(),
             arbiterFeeAmount = arbiterFeeAmount.orEmpty(),
             recipientEthPubkey = recipientAddress.addressState.address,

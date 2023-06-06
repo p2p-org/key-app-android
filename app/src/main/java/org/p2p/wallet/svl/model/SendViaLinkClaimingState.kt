@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.newsend.model.TemporaryAccount
 
 sealed interface SendViaLinkClaimingState {
     object InitialLoading : SendViaLinkClaimingState

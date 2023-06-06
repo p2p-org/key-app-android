@@ -3,7 +3,7 @@ package org.p2p.wallet.bridge.send.statemachine.model
 import java.math.BigDecimal
 import org.p2p.core.wrapper.eth.EthAddress
 
-sealed interface SendInitialData {
+sealed interface BridgeSendInitialData {
 
     data class Bridge(
         val initialToken: SendToken.Bridge?,

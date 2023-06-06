@@ -5,107 +5,123 @@ import java.util.concurrent.CancellationException
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
-import org.p2p.core.utils.scaleShort
-import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.FeePayerState
+import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason
 import org.p2p.wallet.newsend.model.smartselection.SmartSelectionState
-import org.p2p.wallet.newsend.smartselection.handler.SimpleInitializationHandler
-import org.p2p.wallet.newsend.smartselection.strategy.FeePayerSelectionStrategy
+import org.p2p.wallet.newsend.smartselection.handler.TriggerHandler
+import org.p2p.wallet.newsend.smartselection.strategy.StrategyExecutor
 
 private const val TAG = "SmartSelectionCoordinator"
 
 class SmartSelectionCoordinator(
-    dispatchers: CoroutineDispatchers,
-    private val feeCalculator: FeeCalculator,
-    private val feePayerSelector: FeePayerSelector,
-    private val calculationMode: CalculationMode
+    private val strategyExecutor: StrategyExecutor,
+    private val triggerHandlers: List<TriggerHandler>,
+    dispatchers: CoroutineDispatchers
 ) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io +
         Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
+    private val feePayerState = MutableStateFlow<FeePayerState>(FeePayerState.Idle)
 
+    private var recentTrigger: SmartSelectionTrigger? = null
 
-//    private val internalState = MutableStateFlow<SmartSelectionState>(SmartSelectionState.Idle)
+    private lateinit var feePayerToken: Token.Active
 
-    fun onNewAction(newAction: UserSendAction) {
-        when (newAction) {
-            is UserSendAction.SimpleInitialization -> newAction.handleAction()
-            is UserSendAction.AmountInitialization -> newAction.handleAction()
-            is UserSendAction.AmountChanged -> TODO()
-            is UserSendAction.SourceTokenChanged -> TODO()
-            is UserSendAction.FeePayerChanged -> TODO()
-            is UserSendAction.MaxInputEntered -> TODO()
-            is UserSendAction.ToggleInputMode -> TODO()
+    private val internalSmartSelectionState = MutableStateFlow<SmartSelectionState>(SmartSelectionState.Cancelled)
+
+    private var triggerJob: Job? = null
+
+    init {
+        launch {
+            internalSmartSelectionState
+                .stateIn(this)
+                .collectLatest { handleSmartSelectionState(it) }
         }
     }
 
-    private fun UserSendAction.SimpleInitialization.handleAction() {
+    fun getFeePayerStateFlow(): StateFlow<FeePayerState> = feePayerState.asStateFlow()
+
+    fun isTransactionFree(): Boolean = feePayerState.value.isTransactionFree()
+
+    fun getFeeData(): Pair<Token.Active, FeeRelayerFee>? {
+        return when (val currentState = feePayerState.value) {
+            is FeePayerState.CalculationSuccess -> currentState.feePayerToken to currentState.fee
+            is FeePayerState.ReduceAmount -> currentState.feePayerToken to currentState.fee
+            else -> null
+        }
+    }
+
+    fun setInitialFeePayer(initialFeePayerToken: Token.Active) {
+        this.feePayerToken = initialFeePayerToken
+    }
+
+    fun onNewTrigger(newTrigger: SmartSelectionTrigger) {
+        if (recentTrigger is SmartSelectionTrigger.FeePayerManuallyChanged) {
+            // just calculate fees with current fee payer token without smart selection
+            return
+        }
+
+        recentTrigger = newTrigger
+
+        triggerJob?.cancel()
+
         launch {
             try {
-                val handler = SimpleInitializationHandler(feePayerSelector, feeCalculator)
-                handler.handleAction(this@handleAction)
+                triggerHandlers.forEach { it.handleTrigger(internalSmartSelectionState, newTrigger, feePayerToken) }
             } catch (e: CancellationException) {
                 Timber.tag(TAG).i("Empty Initialization handler cancelled")
             } catch (e: Throwable) {
                 Timber.tag(TAG).i(e, "Empty Initialization handler failed")
-                updateState(SmartSelectionState.Failed(e))
+                internalSmartSelectionState.value = SmartSelectionState.Failed(e)
             }
-        }
+        }.also { triggerJob = it }
     }
 
-    private fun UserSendAction.AmountInitialization.handleAction() {
-        if (calculationMode.currencyMode is CurrencyMode.Fiat.Usd) {
-            switchCurrencyMode()
-        }
-        val newTextValue = inputAmount.scaleShort().toPlainString()
-        updateInputValue(newTextValue, forced = true)
-        calculationMode.updateInputAmount(newTextValue)
-    }
+    private fun handleSmartSelectionState(state: SmartSelectionState) {
+        when (state) {
+            is SmartSelectionState.ReadyForSmartSelection -> {
+                strategyExecutor.setStrategies(state.strategies)
+                val newFeePayerState = strategyExecutor.execute()
+                if (newFeePayerState is FeePayerState.CalculationSuccess) {
+                    feePayerToken = newFeePayerState.feePayerToken
+                }
 
-    private fun handleSplFee(feeInSpl: FeeCalculationState) {
-        when (feeInSpl) {
-            is FeeCalculationState.Success -> TODO()
-//                launchFeePayerValidation(defaultToken, defaultToken, feeInSpl.fee)
-            is FeeCalculationState.PoolsNotFound -> TODO()
-        }
-    }
-
-    private fun handleAction(newTrigger: UserSendAction) {
-        launch {
-            try {
-                triggerHandlers.forEach { it.handleTrigger(newTrigger) }
-            } catch (e: CancellationException) {
-                Timber.tag(TAG).i("Smart selection cancelled")
-            } catch (e: Throwable) {
-                Timber.tag(TAG).i(e, "Smart selection failed")
-                updateState(SmartSelectionState.Failed(e))
+                feePayerState.value = newFeePayerState
             }
-
+            is SmartSelectionState.SolanaFeeOnly -> {
+                // TODO
+            }
+            is SmartSelectionState.NoFees -> {
+                val noFeesState = FeePayerState.FreeTransaction(
+                    sourceToken = state.sourceToken,
+                    initialAmount = state.initialAmount
+                )
+                feePayerState.value = noFeesState
+            }
+            is SmartSelectionState.Failed -> {
+                val reason = FeePayerFailureReason.CalculationError(state.e)
+                val failureState = FeePayerState.Failure(reason)
+                feePayerState.value = failureState
+            }
+            is SmartSelectionState.Cancelled -> Unit
         }
     }
 
-    private fun handleStrategies(strategies: List<FeePayerSelectionStrategy>) {
-        val strategy = strategies.firstOrNull { it.isPayable() } ?: return
-        strategy.execute()
-    }
-
-    private fun launchFeePayerValidation(
-        sourceToken: Token.Active,
-        feePayerToken: Token.Active,
-        fee: FeeRelayerFee
-    ) {
-        feePayerSelector.executeInitialSelection(sourceToken, feePayerToken, fee)
-    }
-
-    private fun updateState(newState: SmartSelectionState) {
-        internalState.value = newState
+    fun release() {
+        coroutineContext.cancelChildren()
     }
 }

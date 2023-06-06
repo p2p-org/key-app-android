@@ -17,7 +17,7 @@ import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.svl.model.TemporaryAccount
 import org.p2p.wallet.svl.interactor.ReceiveViaLinkError
 import org.p2p.wallet.svl.interactor.ReceiveViaLinkInteractor
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper

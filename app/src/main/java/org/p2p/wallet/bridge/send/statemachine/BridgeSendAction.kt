@@ -3,22 +3,22 @@ package org.p2p.wallet.bridge.send.statemachine
 import java.math.BigDecimal
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
-sealed interface SendFeatureAction {
+sealed interface BridgeSendAction {
 
-    object InitFeature : SendFeatureAction
+    object InitFeature : BridgeSendAction
 
     data class RefreshFee(
         val amount: BigDecimal?
-    ) : SendFeatureAction
+    ) : BridgeSendAction
 
     data class NewToken(
         val token: SendToken
-    ) : SendFeatureAction
+    ) : BridgeSendAction
 
     data class AmountChange(
         val amount: BigDecimal
-    ) : SendFeatureAction
+    ) : BridgeSendAction
 
-    object ZeroAmount : SendFeatureAction
-    object MaxAmount : SendFeatureAction
+    object ZeroAmount : BridgeSendAction
+    object MaxAmount : BridgeSendAction
 }

@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.model
+package org.p2p.wallet.svl.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.IgnoredOnParcel

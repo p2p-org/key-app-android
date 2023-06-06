@@ -44,7 +44,7 @@ class AlarmSendErrorConverter(
             tokenName = token.tokenName,
             mint = token.mintAddress.toBase58Instance(),
             amount = amount,
-            currency = currencyMode.getCurrencyModeSymbol()
+            currency = currencyMode.getSymbol()
         )
 
         val fees = buildSendFee(feePayerToken, accountCreationFee, transactionFee)

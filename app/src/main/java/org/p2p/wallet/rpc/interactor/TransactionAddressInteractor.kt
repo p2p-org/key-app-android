@@ -1,7 +1,6 @@
 package org.p2p.wallet.rpc.interactor
 
 import timber.log.Timber
-import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.TokenData
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.TokenTransaction
@@ -27,8 +26,6 @@ class TransactionAddressInteractor(
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).i("Searching for SPL token address")
             findSplTokenAddress(destinationAddress, mintAddress, useCache)
-        } catch (e: CancellationException) {
-            throw e
         } catch (e: IllegalStateException) {
             Timber.tag(ADDRESS_TAG).i("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")

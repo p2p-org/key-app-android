@@ -273,7 +273,7 @@ interface UiKitSendDetailsWidgetContract {
     fun setTotalValue(text: String)
     fun setTokenContainerEnabled(isEnabled: Boolean)
     fun setInputEnabled(isEnabled: Boolean)
-    fun showFeeViewVisible(isVisible: Boolean)
+    fun showFeeVisible(isVisible: Boolean)
 
     fun restoreSlider()
 }

@@ -1,6 +1,5 @@
 package org.p2p.wallet.newsend.ui.main
 
-import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
@@ -11,13 +10,13 @@ import org.p2p.wallet.transaction.model.NewShowProgress
 
 interface SendContract {
     interface View : MvpView, UiKitSendDetailsWidgetContract {
-        fun updateInputValue(textValue: String, forced: Boolean)
+        fun updateInputValue(textValue: String, forced: Boolean = true)
         fun updateInputFraction(newInputFractionLength: Int)
 
         fun showFreeTransactionsInfo()
         fun showTransactionDetails(sendFeeTotal: SendFeeTotal)
         fun showProgressDialog(internalTransactionId: String, data: NewShowProgress)
-        fun showTokenSelection(selectedToken: Token.Active?)
+        fun showTokenSelection(selectedToken: Token.Active)
         fun showDebugInfo(text: CharSequence)
 
         fun setBottomButtonText(text: TextContainer?)
@@ -28,8 +27,6 @@ interface SendContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?)
-
         fun updateToken(newToken: Token.Active)
         fun updateInputAmount(amount: String)
         fun updateFeePayerToken(feePayerToken: Token.Active)
