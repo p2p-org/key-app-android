@@ -107,6 +107,7 @@
         <attr name="android:drawableEnd" />
         <attr name="android:textAppearance" />
         <attr name="android:backgroundTint"/>
+        <attr name="android:textSize"/>
         <attr name="isDropdown" format="boolean"/>
     </declare-styleable>
 

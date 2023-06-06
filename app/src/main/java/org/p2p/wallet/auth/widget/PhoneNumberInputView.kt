@@ -32,6 +32,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     protected val binding = inflateViewBinding<WidgetPhoneInputViewBinding>()
 
     private lateinit var phoneTextWatcher: PhoneNumberTextWatcher
+    val phoneCodeView: TextView by lazy { binding.editTextCountryCode }
     private var viewTag: Any? = null
 
     private val bgRed = GradientDrawable().apply {
@@ -63,6 +64,8 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitEditText_android_textAppearance, -1)
         if (textAppearance != -1) {
             binding.editTextPhoneNumber.setTextAppearance(textAppearance)
+            binding.editTextCountryCode.setTextAppearance(textAppearance)
+            binding.textViewPlusSign.setTextAppearance(textAppearance)
         }
         val text = styleAttrs.getText(R.styleable.UiKitEditText_android_text)
         if (!text.isNullOrEmpty()) {
@@ -72,6 +75,20 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         if (backgroundTint != -1) {
             bgNormal.setColor(context.getColor(backgroundTint))
             bgNormal.setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
+
+            bgRed.setColor(context.getColor(backgroundTint))
+        }
+        val textSize = styleAttrs.getDimensionPixelSize(R.styleable.UiKitEditText_android_textSize, -1)
+        if (textSize != -1) {
+            val minSize = 12
+            val granularity = binding.autoSizeHelperTextView.autoSizeStepGranularity
+            val unit = 0
+            binding.autoSizeHelperTextView.setAutoSizeTextTypeUniformWithConfiguration(
+                minSize,
+                textSize,
+                granularity,
+                unit
+            )
         }
         binding.inputViewContainer.background = bgNormal
         styleAttrs.recycle()
@@ -179,7 +196,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     fun showError(textContainer: TextContainer?) = with(binding) {
         textContainer?.let { textViewError.bind(it) }
         textViewError.isVisible = text != null
-        inputViewContainer.background = if (text != null) bgRed else bgNormal
+        inputViewContainer.background = if (textContainer != null) bgRed else bgNormal
     }
 
     fun onFoundNewCountry(countryCode: CountryCode) {

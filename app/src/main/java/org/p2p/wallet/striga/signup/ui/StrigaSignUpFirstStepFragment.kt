@@ -1,6 +1,7 @@
 package org.p2p.wallet.striga.signup.ui
 
 import androidx.activity.addCallback
+import androidx.fragment.app.setFragmentResultListener
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -11,7 +12,6 @@ import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
 import org.p2p.wallet.auth.widget.PhoneNumberInputView
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -39,8 +39,10 @@ class StrigaSignUpFirstStepFragment :
     StrigaSignUpFirstStepContract.View {
 
     companion object {
-        const val REQUEST_KEY = "REQUEST_KEY"
-        const val RESULT_KEY = "RESULT_KEY"
+        const val REQUEST_KEY_COUNTRY = "REQUEST_KEY_COUNTRY"
+        const val RESULT_KEY_COUNTRY = "RESULT_KEY_COUNTRY"
+        const val REQUEST_KEY_COUNTRY_CODE = "REQUEST_KEY_COUNTRY_CODE"
+        const val RESULT_KEY_COUNTRY_CODE = "RESULT_CODE_COUNTRY_CODE"
         fun create() = StrigaSignUpFirstStepFragment()
     }
 
@@ -88,6 +90,10 @@ class StrigaSignUpFirstStepFragment :
                     binding.editTextBirthday.input
                 )
             )
+            setFragmentResultListener(
+                REQUEST_KEY_COUNTRY_CODE,
+                ::onFragmentResult
+            )
         }
     }
 
@@ -100,10 +106,10 @@ class StrigaSignUpFirstStepFragment :
         replaceFragmentForResult(
             target = StrigaPresetDataPickerFragment.create(
                 selectedCountry = StrigaPickerItem.CountryItem(selectedCountry),
-                requestKey = REQUEST_KEY,
-                resultKey = RESULT_KEY
+                requestKey = REQUEST_KEY_COUNTRY,
+                resultKey = RESULT_KEY_COUNTRY
             ),
-            requestKey = REQUEST_KEY,
+            requestKey = REQUEST_KEY_COUNTRY,
             onResult = ::onFragmentResult
         )
     }
@@ -174,6 +180,10 @@ class StrigaSignUpFirstStepFragment :
                     this[it] = editTextPhoneNumber
                     editTextPhoneNumber.setViewTag(it)
                 }
+                StrigaSignupDataType.PHONE_CODE.let {
+                    this[it] = editTextPhoneNumber.phoneCodeView
+                    editTextPhoneNumber.phoneCodeView.tag = it
+                }
                 StrigaSignupDataType.FIRST_NAME.let {
                     this[it] = editTextFirstName
                     editTextFirstName.setViewTag(it)
@@ -199,20 +209,25 @@ class StrigaSignUpFirstStepFragment :
     }
 
     private fun onFragmentResult(requestKey: String, bundle: Bundle) {
-        if (requestKey != REQUEST_KEY) return
-        val selectedCountry = bundle.getParcelableCompat<StrigaPickerItem.CountryItem>(RESULT_KEY)
-        presenter.onCountryChanged(selectedCountry?.selectedItem ?: return)
+        if (bundle.containsKey(RESULT_KEY_COUNTRY)) {
+            val selectedCountry = bundle.getParcelableCompat<StrigaPickerItem.CountryItem>(RESULT_KEY_COUNTRY)
+            presenter.onCountryChanged(selectedCountry?.selectedItem ?: return)
+        }
+        if (bundle.containsKey(RESULT_KEY_COUNTRY_CODE)) {
+            val countryCode = bundle.getParcelableCompat<CountryCode>(RESULT_KEY_COUNTRY_CODE)
+            presenter.onCountryCodeChanged(countryCode)
+        }
     }
 
     private fun onPhoneChanged(phone: String) {
-        presenter.onFieldChanged(newValue = phone, type = StrigaSignupDataType.PHONE_NUMBER)
+        presenter.onPhoneNumberChanged(phone)
     }
 
     private fun onCountryClickListener() {
         presenter.onCountryCodeInputClicked()
     }
 
-    override fun update(countryCode: CountryCode?) {
+    override fun showCountryCode(countryCode: CountryCode?) {
         binding.editTextPhoneNumber.updateViewState(countryCode)
     }
 
@@ -222,10 +237,10 @@ class StrigaSignUpFirstStepFragment :
 
     override fun showCountryCodePicker(selectedCountryCode: CountryCode?) {
         addFragment(
-            CountryCodePickerFragment.create(
+            target = CountryCodePickerFragment.create(
                 selectedCountryCode,
-                PhoneNumberEnterFragment.REQUEST_KEY,
-                PhoneNumberEnterFragment.RESULT_KEY
+                REQUEST_KEY_COUNTRY_CODE,
+                RESULT_KEY_COUNTRY_CODE
             )
         )
     }

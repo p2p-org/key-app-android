@@ -4,7 +4,6 @@ import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -22,7 +21,6 @@ class StrigaSignUpFirstStepPresenter(
     StrigaSignUpFirstStepContract.Presenter {
 
     private val signupData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
-    private var phoneMask: PhoneMask? = null
     private var countryOfBirth: Country? = null
     private var selectedCountryCode: CountryCode? = null
 
@@ -82,12 +80,20 @@ class StrigaSignUpFirstStepPresenter(
     override fun onCountryCodeChanged(newCountryCode: String) {
         launch {
             selectedCountryCode = countryCodeRepository.findCountryCodeByPhoneCode(newCountryCode)
-            view?.update(selectedCountryCode)
+            view?.showCountryCode(selectedCountryCode)
         }
     }
 
     override fun onCountryCodeChanged(newCountry: CountryCode?) {
         selectedCountryCode = newCountry
+        setData(StrigaSignupDataType.PHONE_CODE, selectedCountryCode?.phoneCode ?: return)
+        view?.showCountryCode(selectedCountryCode)
+    }
+
+    override fun onPhoneNumberChanged(newPhone: String) {
+        val countryCode = "+${selectedCountryCode?.phoneCode}"
+        val phoneWithoutCountryCode = newPhone.replace(countryCode, "")
+        setData(StrigaSignupDataType.PHONE_NUMBER, phoneWithoutCountryCode)
     }
 
     override fun onCountryCodeInputClicked() {
@@ -113,22 +119,13 @@ class StrigaSignUpFirstStepPresenter(
         countryOfBirth = interactor.findCountryByIsoAlpha3(
             data[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.value.orEmpty()
         )
+        selectedCountryCode = countryCodeRepository.findCountryCodeByPhoneCode(
+            data[StrigaSignupDataType.PHONE_CODE]?.value.orEmpty()
+        )
         countryOfBirth?.let { onCountryChanged(it) }
     }
 
     private fun mapDataForStorage() {
-        val fullPhoneNumber = getFullPhoneNumber()
-        if (fullPhoneNumber != null && phoneMask != null) {
-            val phoneCodeWithSign = phoneMask?.phoneCodeWithSign ?: throw IllegalStateException("Phone mask is null")
-            setData(
-                StrigaSignupDataType.PHONE_CODE,
-                phoneCodeWithSign
-            )
-            setData(
-                StrigaSignupDataType.PHONE_NUMBER,
-                removeCodeFromPhoneNumber(phoneCodeWithSign, fullPhoneNumber)
-            )
-        }
         setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, countryOfBirth?.codeAlpha3.orEmpty())
     }
 
@@ -146,20 +143,6 @@ class StrigaSignUpFirstStepPresenter(
             Timber.e(e, "Loading default country code failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
-    }
-
-    private fun removeCodeFromPhoneNumber(phoneCode: String, phoneNumber: String): String {
-        return phoneNumber.replace(phoneCode, "").replace(" ", "")
-    }
-
-    private fun getFullPhoneNumber(): String? {
-        if (signupData[StrigaSignupDataType.PHONE_NUMBER]?.value.isNullOrBlank()) {
-            return null
-        }
-
-        // phone is split by 2 parts: code and number
-        return signupData[StrigaSignupDataType.PHONE_CODE]?.value.orEmpty() +
-            signupData[StrigaSignupDataType.PHONE_NUMBER]?.value.orEmpty()
     }
 
     private fun setData(type: StrigaSignupDataType, newValue: String) {

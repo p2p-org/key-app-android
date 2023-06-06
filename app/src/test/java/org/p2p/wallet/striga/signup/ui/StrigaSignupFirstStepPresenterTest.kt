@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.auth.model.PhoneMask
 import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -50,6 +51,9 @@ class StrigaSignupFirstStepPresenterTest {
     @MockK(relaxed = true)
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
 
+    @MockK(relaxed = true)
+    lateinit var countryCodeRepository: CountryCodeLocalRepository
+
     lateinit var interactor: StrigaSignupInteractor
 
     private val signupDataValidator = StrigaSignupDataValidator()
@@ -65,6 +69,7 @@ class StrigaSignupFirstStepPresenterTest {
         return StrigaSignUpFirstStepPresenter(
             dispatchers = dispatchers,
             interactor = interactor,
+            countryCodeRepository = countryCodeRepository
         )
     }
 
@@ -100,7 +105,6 @@ class StrigaSignupFirstStepPresenterTest {
                 capture(updatedFieldValueStates)
             )
         }
-        verify(exactly = 1) { view.setPhoneMask(any()) }
         verify(exactly = 0) { view.setErrors(any()) }
         verify(exactly = 0) { view.clearErrors() }
         verify(exactly = 0) { view.setButtonIsEnabled(any()) }

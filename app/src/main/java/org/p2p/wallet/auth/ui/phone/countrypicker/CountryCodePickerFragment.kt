@@ -10,7 +10,6 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
-import org.p2p.wallet.auth.widget.AnimatedSearchView
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCountryPickerBinding
 import org.p2p.wallet.utils.args
@@ -67,11 +66,7 @@ class CountryCodePickerFragment :
             presenter.search(searchText?.toString() ?: emptyString())
         }
 
-        setStateListener(object : AnimatedSearchView.SearchStateListener {
-            override fun onClosed() {
-                presenter.search(emptyString())
-            }
-        })
+        setStateListener { presenter.search(emptyString()) }
         openSearch()
     }
 

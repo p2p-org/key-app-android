@@ -18,7 +18,7 @@ interface StrigaSignUpFirstStepContract {
         fun scrollToFirstError(type: StrigaSignupDataType)
         fun showCountryPicker(selectedCountry: Country?)
         fun showDefaultCountryCode(defaultCountryCode: CountryCode?)
-        fun update(countryCode: CountryCode?)
+        fun showCountryCode(countryCode: CountryCode?)
         fun onNewCountryDetected(countryCode: CountryCode)
         fun showCountryCodePicker(selectedCountryCode: CountryCode?)
     }
@@ -31,6 +31,7 @@ interface StrigaSignUpFirstStepContract {
         fun onSubmit()
         fun onCountryCodeChanged(newCountryCode: String)
         fun onCountryCodeChanged(newCountry: CountryCode?)
+        fun onPhoneNumberChanged(newPhone: String)
         fun onCountryCodeInputClicked()
     }
 }

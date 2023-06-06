@@ -100,10 +100,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
-                android:inputType="number"
                 android:backgroundTint="@color/bg_snow"
-                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
-                app:layout_constraintTop_toBottomOf="@id/textViewSubtitle" />
+                android:inputType="number"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+                android:textSize="22sp"
+                app:labelText="@string/striga_phone_number" />
 
             <TextView
                 android:layout_width="match_parent"
