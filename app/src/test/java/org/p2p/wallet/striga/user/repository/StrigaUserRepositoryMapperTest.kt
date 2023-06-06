@@ -73,7 +73,7 @@ class StrigaUserRepositoryMapperTest {
         }
         assertNotNull(error)
         error as StrigaDataLayerError.InternalError
-        assertEquals("Key COUNTRY_OF_BIRTH not found in map", error.message)
+        assertEquals("Key COUNTRY_OF_BIRTH_ALPHA_3 not found in map", error.message)
     }
 
     @Test

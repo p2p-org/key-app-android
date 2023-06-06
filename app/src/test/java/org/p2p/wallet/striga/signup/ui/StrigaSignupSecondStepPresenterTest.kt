@@ -199,13 +199,13 @@ class StrigaSignupSecondStepPresenterTest {
         val presenter = createPresenter()
         presenter.attach(view)
 
-        presenter.onFieldChanged("any occupation", StrigaSignupDataType.OCCUPATION)
-        presenter.onFieldChanged("any source", StrigaSignupDataType.SOURCE_OF_FUNDS)
-        presenter.onFieldChanged("any country", StrigaSignupDataType.COUNTRY_ALPHA_2)
         presenter.onFieldChanged("any city", StrigaSignupDataType.CITY)
         presenter.onFieldChanged("any address", StrigaSignupDataType.CITY_ADDRESS_LINE)
         presenter.onFieldChanged("any zip-code", StrigaSignupDataType.CITY_POSTAL_CODE)
         presenter.onFieldChanged("any state", StrigaSignupDataType.CITY_STATE)
+        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaOccupationItem(StrigaOccupation("leafer", "some_emoji")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaSourceOfFundsItem(StrigaSourceOfFunds("leafer")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaCountryItem(Country("leafer", "emoji", "fr", "fra")))
         presenter.onSubmit()
         advanceUntilIdle()
 

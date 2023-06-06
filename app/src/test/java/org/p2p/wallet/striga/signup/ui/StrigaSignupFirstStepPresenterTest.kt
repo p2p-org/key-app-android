@@ -182,7 +182,7 @@ class StrigaSignupFirstStepPresenterTest {
         presenter.onFieldChanged("Vasya", StrigaSignupDataType.FIRST_NAME)
         presenter.onFieldChanged("Pupkin", StrigaSignupDataType.LAST_NAME)
         presenter.onFieldChanged("10.10.2010", StrigaSignupDataType.DATE_OF_BIRTH)
-        presenter.onFieldChanged("Uryupinks", StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3)
+        presenter.onCountryOfBirthChanged(Country("France", "emoji", "fr", "fra"))
         presenter.onSubmit()
         advanceUntilIdle()
 

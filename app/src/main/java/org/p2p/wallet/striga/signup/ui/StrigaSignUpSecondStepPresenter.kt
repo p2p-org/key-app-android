@@ -32,7 +32,7 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
-        val isPresetDataChanged = type !in setOf(
+        val isPresetDataChanged = type in setOf(
             StrigaSignupDataType.COUNTRY_ALPHA_2,
             StrigaSignupDataType.OCCUPATION,
             StrigaSignupDataType.SOURCE_OF_FUNDS
