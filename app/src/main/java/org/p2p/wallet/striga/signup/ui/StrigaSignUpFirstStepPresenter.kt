@@ -37,11 +37,11 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onCountryOfBirthChanged(selectedCountry: Country) {
-        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH, selectedCountry.codeAlpha3)
         view?.updateSignupField(
             newValue = "${selectedCountry.flagEmoji} ${selectedCountry.name}",
             type = StrigaSignupDataType.COUNTRY_OF_BIRTH
         )
+        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH, selectedCountry.codeAlpha3)
     }
 
     override fun onSubmit() {

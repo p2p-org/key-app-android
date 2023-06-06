@@ -48,27 +48,27 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     private fun onSourceOfFundsChanged(newValue: StrigaSourceOfFunds) {
-        setCachedData(StrigaSignupDataType.SOURCE_OF_FUNDS, newValue.sourceName)
         view?.updateSignupField(
             newValue = strigaItemCellMapper.toUiTitle(newValue.sourceName),
             type = StrigaSignupDataType.SOURCE_OF_FUNDS
         )
+        setCachedData(StrigaSignupDataType.SOURCE_OF_FUNDS, newValue.sourceName)
     }
 
     private fun onOccupationChanged(newValue: StrigaOccupation) {
-        setCachedData(StrigaSignupDataType.OCCUPATION, newValue.occupationName)
         view?.updateSignupField(
             newValue = strigaItemCellMapper.toUiTitle(newValue.occupationName),
             type = StrigaSignupDataType.OCCUPATION
         )
+        setCachedData(StrigaSignupDataType.OCCUPATION, newValue.occupationName)
     }
 
     private fun onCountryChanged(newValue: Country) {
-        setCachedData(StrigaSignupDataType.COUNTRY, newValue.codeAlpha2)
         view?.updateSignupField(
             newValue = "${newValue.flagEmoji} ${newValue.name}",
             type = StrigaSignupDataType.COUNTRY
         )
+        setCachedData(StrigaSignupDataType.COUNTRY, newValue.codeAlpha2)
     }
 
     override fun onSubmit() {
