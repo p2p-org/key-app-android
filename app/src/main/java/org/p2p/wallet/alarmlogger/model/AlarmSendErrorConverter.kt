@@ -19,7 +19,7 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerException
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.data.SimulationException
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance

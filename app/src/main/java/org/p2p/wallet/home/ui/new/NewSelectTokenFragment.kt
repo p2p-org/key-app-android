@@ -23,7 +23,7 @@ import org.p2p.wallet.databinding.FragmentSelectTokenNewBinding
 import org.p2p.wallet.home.model.SelectTokenItem
 import org.p2p.wallet.home.ui.new.adapter.NewSelectTokenAdapter
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
-import org.p2p.wallet.send.ui.stub.SendNoAccountFragment
+import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo

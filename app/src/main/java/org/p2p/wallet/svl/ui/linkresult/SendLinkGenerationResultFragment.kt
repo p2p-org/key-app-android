@@ -10,7 +10,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendLinkGenerationResultBinding
 import org.p2p.wallet.home.MainFragment
-import org.p2p.wallet.send.model.LinkGenerationState
+import org.p2p.wallet.newsend.model.LinkGenerationState
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard

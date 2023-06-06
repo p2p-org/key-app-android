@@ -43,8 +43,8 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.send.model.CalculationMode
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor

@@ -22,9 +22,9 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsContract
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
-import org.p2p.wallet.send.interactor.SearchInteractor
-import org.p2p.wallet.send.interactor.SendInteractor
-import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.newsend.interactor.SearchInteractor
+import org.p2p.wallet.newsend.interactor.SendInteractor
+import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract

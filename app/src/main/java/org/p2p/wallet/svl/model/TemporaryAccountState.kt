@@ -3,7 +3,7 @@ package org.p2p.wallet.svl.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
-import org.p2p.wallet.send.model.TemporaryAccount
+import org.p2p.wallet.newsend.model.TemporaryAccount
 
 sealed interface TemporaryAccountState : Parcelable {
 

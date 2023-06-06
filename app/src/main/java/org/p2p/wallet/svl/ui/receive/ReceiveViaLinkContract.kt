@@ -5,7 +5,7 @@ import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.send.model.TemporaryAccount
+import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.svl.model.SendViaLinkClaimingState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError

@@ -18,8 +18,8 @@ import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.POPULAR_TOKENS_COINGECKO_IDS
 import org.p2p.wallet.home.ui.main.TOKEN_SYMBOLS_VALID_FOR_BUY
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.repository.RecipientsLocalRepository
+import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository

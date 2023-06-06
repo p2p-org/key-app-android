@@ -1,7 +1,7 @@
 package org.p2p.wallet.svl.analytics
 
 import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.send.model.TemporaryAccount
+import org.p2p.wallet.newsend.model.TemporaryAccount
 
 private const val SEND_CLICK_START_CREATE_LINK = "Send_Click_Start_Create_Link"
 private const val SEND_CLICK_NOTIFICATION_FREE_TRANSACTIONS = "Send_Click_Notification_Free_Transactions"
