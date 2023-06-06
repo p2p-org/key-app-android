@@ -124,10 +124,10 @@ class SendInputCalculator(
 
         val (switchSymbol, mainSymbol) = if (currencyMode.isFiat()) {
             inputAmount = usdAmount.toPlainString()
-            currencyMode.getSymbol() to currentToken.tokenSymbol
+            currencyMode.getTypedSymbol() to currentToken.tokenSymbol
         } else {
             inputAmount = tokenAmount.toPlainString()
-            currentToken.tokenSymbol to currencyMode.getSymbol()
+            currentToken.tokenSymbol to currencyMode.getTypedSymbol()
         }
 
         val newState = CalculationState.CurrencySwitched(

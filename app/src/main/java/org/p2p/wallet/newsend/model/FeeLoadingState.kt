@@ -13,7 +13,7 @@ sealed interface FeeLoadingState {
     data class Delayed(val isLoading: Boolean) : FeeLoadingState
     data class Instant(val isLoading: Boolean) : FeeLoadingState
 
-    fun isLoading(): Boolean = when (this) {
+    fun isFeeLoading(): Boolean = when (this) {
         is Delayed -> isLoading
         is Instant -> isLoading
     }

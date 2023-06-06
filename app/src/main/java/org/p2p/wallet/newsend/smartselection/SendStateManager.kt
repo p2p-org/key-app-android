@@ -35,9 +35,9 @@ import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.newsend.model.SendState
 import org.p2p.wallet.newsend.model.SendState.GeneralError
 import org.p2p.wallet.newsend.model.SendState.Loading
-import org.p2p.wallet.newsend.ui.main.SendInputCalculator
 import org.p2p.wallet.newsend.model.main.WidgetState
 import org.p2p.wallet.newsend.smartselection.initial.SendInitialData
+import org.p2p.wallet.newsend.ui.main.SendInputCalculator
 import org.p2p.wallet.user.interactor.UserInteractor
 
 private const val TAG = "SendFeeRelayerManager"
@@ -83,29 +83,33 @@ class SendStateManager(
 
     // Load or restore the initial send state
     private fun executeInitialLoading() {
-        observeTokenUpdates(sourceToken)
-        validateCurrencySwitch()
-        validateInput()
-
         launch {
             val userTokens = userInteractor.getNonZeroUserTokens()
             validateTokenSelection(userTokens)
 
-            if (currentState.value.isInitialized()) {
+            if (::sourceToken.isInitialized) {
                 restoreScreen()
             } else {
                 initializeScreen(userTokens)
             }
+
+            val trigger = SmartSelectionTrigger.Initialization(
+                initialToken = sourceToken,
+                initialAmount = initialData.inputAmount
+            )
+            smartSelectionCoordinator.setInitialFeePayer(sourceToken)
+            smartSelectionCoordinator.onNewTrigger(trigger)
+
+            observeTokenUpdates(sourceToken)
+            validateCurrencySwitch()
+            validateInput()
         }
     }
 
     private fun restoreScreen() {
-        if (!::sourceToken.isInitialized) {
-            updateState(GeneralError(IllegalStateException("Source token is not initialized")))
-            return
-        }
-
         updateToken(sourceToken)
+
+
     }
 
     private suspend fun initializeScreen(userTokens: List<Token.Active>) {
@@ -124,13 +128,6 @@ class SendStateManager(
         } finally {
             setLoading(isLoading = false)
         }
-
-        val trigger = SmartSelectionTrigger.Initialization(
-            initialToken = sourceToken,
-            initialAmount = initialData.inputAmount
-        )
-        smartSelectionCoordinator.setInitialFeePayer(sourceToken)
-        smartSelectionCoordinator.onNewTrigger(trigger)
     }
 
     private fun handleAmountChanged(event: SendActionEvent.AmountChanged) {

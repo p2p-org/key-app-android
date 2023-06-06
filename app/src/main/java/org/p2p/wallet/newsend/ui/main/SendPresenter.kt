@@ -141,7 +141,9 @@ class SendPresenter(
 
     private fun handleFailure(reason: FeePayerFailureReason) {
         when (reason) {
-            is FeePayerFailureReason.CalculationError -> Unit
+            is FeePayerFailureReason.CalculationError -> {
+                view?.showFeeVisible(isVisible = false)
+            }
             is FeePayerFailureReason.InputExceeded -> Unit
             is FeePayerFailureReason.ExceededFee -> Unit
             is FeePayerFailureReason.LowMinBalanceIgnored -> Unit
@@ -161,7 +163,7 @@ class SendPresenter(
     }
 
     private fun handleLoadingState(loadingState: FeeLoadingState) {
-        if (loadingState.isLoading()) {
+        if (loadingState.isFeeLoading()) {
             view?.showFeeVisible(isVisible = true)
             view?.setFeeLabel(resources.getString(R.string.send_fees))
             view?.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))

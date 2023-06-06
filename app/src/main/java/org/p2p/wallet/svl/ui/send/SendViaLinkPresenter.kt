@@ -21,8 +21,6 @@ import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
-import org.p2p.wallet.newsend.model.SendState
-import org.p2p.wallet.newsend.ui.main.SendButtonStateManager
 import org.p2p.wallet.svl.model.TemporaryAccount
 import org.p2p.wallet.newsend.model.toSearchResult
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
@@ -237,7 +235,7 @@ class SendViaLinkPresenter(
             account = recipient,
             token = token,
             lamports = lamports,
-            currencyModeSymbol = calculationMode.getCurrencyMode().getSymbol()
+            currencyModeSymbol = calculationMode.getCurrencyMode().getTypedSymbol()
         )
     }
 

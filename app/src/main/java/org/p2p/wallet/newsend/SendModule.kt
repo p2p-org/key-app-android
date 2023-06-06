@@ -17,12 +17,11 @@ import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
-import org.p2p.wallet.newsend.ui.main.SendButtonStateManager
 import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.ui.main.SendInputCalculator
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.smartselection.FeeCalculator
+import org.p2p.wallet.newsend.smartselection.FeeDebugInfoBuilder
 import org.p2p.wallet.newsend.smartselection.SendStateManager
 import org.p2p.wallet.newsend.smartselection.SmartSelectionCoordinator
 import org.p2p.wallet.newsend.smartselection.handler.AmountChangedHandler
@@ -30,10 +29,14 @@ import org.p2p.wallet.newsend.smartselection.handler.FeePayerChangedHandler
 import org.p2p.wallet.newsend.smartselection.handler.InitializationHandler
 import org.p2p.wallet.newsend.smartselection.handler.MaxAmountEnteredHandler
 import org.p2p.wallet.newsend.smartselection.handler.SourceTokenChangedHandler
+import org.p2p.wallet.newsend.smartselection.handler.TriggerHandler
 import org.p2p.wallet.newsend.smartselection.initial.SendInitialData
+import org.p2p.wallet.newsend.smartselection.strategy.StrategyExecutor
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsPresenter
+import org.p2p.wallet.newsend.ui.main.SendButtonStateManager
 import org.p2p.wallet.newsend.ui.main.SendContract
+import org.p2p.wallet.newsend.ui.main.SendInputCalculator
 import org.p2p.wallet.newsend.ui.main.SendPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
 import org.p2p.wallet.newsend.ui.search.NewSearchPresenter
@@ -119,11 +122,46 @@ object SendModule : InjectionModule {
             )
         } bind SendContract.Presenter::class
 
-        factoryOf(::AmountChangedHandler)
-        factoryOf(::FeePayerChangedHandler)
+
+        factory { (recipient: SearchResult) ->
+            val triggerHandlers: List<TriggerHandler> = get(parameters = { parametersOf(recipient) })
+            SmartSelectionCoordinator(get(), triggerHandlers, get())
+        }
+        factoryOf(::StrategyExecutor)
+
+        factory { (recipient: SearchResult) ->
+            val feeCalculator = get<FeeCalculator>()
+
+            listOf(
+                InitializationHandler(
+                    recipient = recipient,
+                    feeCalculator = feeCalculator
+                ),
+                AmountChangedHandler(
+                    recipient = recipient,
+                    feeCalculator = feeCalculator
+                ),
+                SourceTokenChangedHandler(
+                    recipient = recipient,
+                    feeCalculator = feeCalculator
+                ),
+                MaxAmountEnteredHandler(
+                    recipient = recipient,
+                    feeCalculator = feeCalculator
+                ),
+                FeePayerChangedHandler(
+                    recipient = recipient,
+                    feeCalculator = feeCalculator
+                )
+            )
+        }
+
         factoryOf(::InitializationHandler)
-        factoryOf(::MaxAmountEnteredHandler)
+        factoryOf(::AmountChangedHandler)
         factoryOf(::SourceTokenChangedHandler)
+        factoryOf(::MaxAmountEnteredHandler)
+        factoryOf(::FeePayerChangedHandler)
+
         factoryOf(::FeeCalculator)
         factory {
             SendInputCalculator(
@@ -133,6 +171,7 @@ object SendModule : InjectionModule {
         }
 
         factoryOf(::SendButtonStateManager)
+        factoryOf(::FeeDebugInfoBuilder)
     }
 
     private fun Scope.getSmartSelectionCoordinator(
