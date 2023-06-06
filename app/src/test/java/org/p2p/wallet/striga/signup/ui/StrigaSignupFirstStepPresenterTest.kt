@@ -97,7 +97,7 @@ class StrigaSignupFirstStepPresenterTest {
 
         interactor = StrigaSignupInteractor(
             appScope = appScope,
-            appFeatureFlags = inAppFeatureFlags,
+            inAppFeatureFlags = inAppFeatureFlags,
             validator = signupDataValidator,
             countryRepository = countryRepository,
             signupDataRepository = signupDataRepository,
