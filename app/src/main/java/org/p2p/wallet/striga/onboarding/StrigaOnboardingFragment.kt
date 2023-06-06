@@ -44,6 +44,9 @@ class StrigaOnboardingFragment :
     StrigaOnboardingContract.View {
 
     companion object {
+        private const val REQUEST_KEY_PICKER = "request_key"
+        private const val RESULT_KEY_PICKER = "result_picker"
+
         fun create(): StrigaOnboardingFragment = StrigaOnboardingFragment()
     }
 
@@ -91,14 +94,14 @@ class StrigaOnboardingFragment :
 
     private fun openCountrySelection() {
         replaceFragmentForResult(
-            StrigaPresetDataPickerFragment.create(
-                requestKey = "request_key",
-                resultKey = "country",
+            target = StrigaPresetDataPickerFragment.create(
+                requestKey = REQUEST_KEY_PICKER,
+                resultKey = RESULT_KEY_PICKER,
                 dataToPick = StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY
             ),
-            requestKey = "request_key",
-            onResult = { requestKey, result ->
-                result.getParcelableCompat<StrigaPresetDataItem.StrigaCountryItem>("country")
+            requestKey = REQUEST_KEY_PICKER,
+            onResult = { _, result ->
+                result.getParcelableCompat<StrigaPresetDataItem.StrigaCountryItem>(RESULT_KEY_PICKER)
                     ?.also { presenter.onCurrentCountryChanged(it.details) }
             }
         )

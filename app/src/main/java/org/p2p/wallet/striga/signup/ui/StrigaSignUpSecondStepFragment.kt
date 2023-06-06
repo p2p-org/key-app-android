@@ -11,6 +11,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpSecondStepBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
@@ -19,6 +20,7 @@ import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.viewbinding.getDrawable
@@ -92,6 +94,8 @@ class StrigaSignUpSecondStepFragment :
     }
 
     override fun navigateNext() {
+        // todo: replace in 8460
+        replaceFragment(StrigaSignupFinishFragment.create())
     }
 
     override fun setErrors(errors: List<StrigaSignupFieldState>) {
