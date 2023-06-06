@@ -15,7 +15,7 @@ class StrigaOnboardingInteractor(
     private val signupDataRepository: StrigaSignupDataLocalRepository
 ) {
     suspend fun getChosenCountry(): Country {
-        return signupDataRepository.getUserSignupDataByType(StrigaSignupDataType.COUNTRY)
+        return signupDataRepository.getUserSignupDataByType(StrigaSignupDataType.COUNTRY_ALPHA_2)
             .successOrNull()
             ?.value
             ?.let { countryRepository.findCountryByIsoAlpha2(it) }
@@ -24,7 +24,7 @@ class StrigaOnboardingInteractor(
 
     suspend fun saveCurrentCountry(country: Country) {
         signupDataRepository.updateSignupData(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, country.codeAlpha2)
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, country.codeAlpha2)
         )
     }
 

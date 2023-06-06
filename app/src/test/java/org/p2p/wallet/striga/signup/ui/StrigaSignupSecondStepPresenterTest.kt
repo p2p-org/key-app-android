@@ -92,7 +92,7 @@ class StrigaSignupSecondStepPresenterTest {
     @Test
     fun `GIVEN initial state WHEN presenter created THEN check presenter loads and sets saved data`() = runTest {
         val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, SupportedCountry.codeAlpha2)
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, SupportedCountry.codeAlpha2)
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
         coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
@@ -122,14 +122,14 @@ class StrigaSignupSecondStepPresenterTest {
         assertEquals(2, resultSignupData.size)
         assertEquals(
             StrigaSignupData(
-                StrigaSignupDataType.COUNTRY,
+                StrigaSignupDataType.COUNTRY_ALPHA_2,
                 SupportedCountry.codeAlpha2
             ),
             resultSignupData[0]
         )
         assertEquals(
             StrigaSignupData(
-                StrigaSignupDataType.COUNTRY,
+                StrigaSignupDataType.COUNTRY_ALPHA_2,
                 "${SupportedCountry.flagEmoji} ${SupportedCountry.name}"
             ),
             resultSignupData[1]
@@ -201,7 +201,7 @@ class StrigaSignupSecondStepPresenterTest {
 
         presenter.onFieldChanged("any occupation", StrigaSignupDataType.OCCUPATION)
         presenter.onFieldChanged("any source", StrigaSignupDataType.SOURCE_OF_FUNDS)
-        presenter.onFieldChanged("any country", StrigaSignupDataType.COUNTRY)
+        presenter.onFieldChanged("any country", StrigaSignupDataType.COUNTRY_ALPHA_2)
         presenter.onFieldChanged("any city", StrigaSignupDataType.CITY)
         presenter.onFieldChanged("any address", StrigaSignupDataType.CITY_ADDRESS_LINE)
         presenter.onFieldChanged("any zip-code", StrigaSignupDataType.CITY_POSTAL_CODE)
@@ -262,7 +262,7 @@ class StrigaSignupSecondStepPresenterTest {
     @Test
     fun `GIVEN invalid user input WHEN user inputs new data THEN check errors are cleared`() = runTest {
         val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, SupportedCountry.codeAlpha3)
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, SupportedCountry.codeAlpha3)
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
         coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry

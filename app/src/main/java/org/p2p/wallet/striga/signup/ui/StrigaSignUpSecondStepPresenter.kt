@@ -32,7 +32,14 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
-        setCachedData(type, newValue)
+        val isPresetDataChanged = type !in setOf(
+            StrigaSignupDataType.COUNTRY_ALPHA_2,
+            StrigaSignupDataType.OCCUPATION,
+            StrigaSignupDataType.SOURCE_OF_FUNDS
+        )
+        if (!isPresetDataChanged) {
+            setCachedData(type, newValue)
+        }
 
         view?.clearError(type)
         // enabling button if something changed
@@ -66,9 +73,9 @@ class StrigaSignUpSecondStepPresenter(
     private fun onCountryChanged(newValue: Country) {
         view?.updateSignupField(
             newValue = "${newValue.flagEmoji} ${newValue.name}",
-            type = StrigaSignupDataType.COUNTRY
+            type = StrigaSignupDataType.COUNTRY_ALPHA_2
         )
-        setCachedData(StrigaSignupDataType.COUNTRY, newValue.codeAlpha2)
+        setCachedData(StrigaSignupDataType.COUNTRY_ALPHA_2, newValue.codeAlpha2)
     }
 
     override fun onSubmit() {
@@ -88,7 +95,24 @@ class StrigaSignUpSecondStepPresenter(
         }
     }
 
+    private fun mapDataForStorage() {
+        cachedSignupData[StrigaSignupDataType.OCCUPATION]?.value?.let {
+            setCachedData(
+                type = StrigaSignupDataType.OCCUPATION,
+                value = it.uppercase()
+            )
+        }
+        cachedSignupData[StrigaSignupDataType.SOURCE_OF_FUNDS]?.value?.let {
+            // convert UI string into STRIGA_FORMAT
+            setCachedData(
+                type = StrigaSignupDataType.OCCUPATION,
+                value = it.split(" ").joinToString(separator = "_", transform = String::uppercase)
+            )
+        }
+    }
+
     override fun saveChanges() {
+        mapDataForStorage()
         interactor.saveChanges(cachedSignupData.values)
     }
 
@@ -107,7 +131,7 @@ class StrigaSignUpSecondStepPresenter(
             onboardingInteractor.getSourcesOfFundsByName(it)
                 ?.also(::onSourceOfFundsChanged)
         }
-        cachedSignupData[StrigaSignupDataType.COUNTRY]?.value?.let {
+        cachedSignupData[StrigaSignupDataType.COUNTRY_ALPHA_2]?.value?.let {
             interactor.findCountryByIsoAlpha2(it)
                 ?.also(::onCountryChanged)
         }

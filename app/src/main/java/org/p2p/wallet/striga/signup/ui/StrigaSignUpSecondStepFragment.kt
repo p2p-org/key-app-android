@@ -204,7 +204,7 @@ class StrigaSignUpSecondStepFragment :
                     this[it] = editTextFunds
                     editTextFunds.setViewTag(it)
                 }
-                StrigaSignupDataType.COUNTRY.let {
+                StrigaSignupDataType.COUNTRY_ALPHA_2.let {
                     this[it] = editTextCountry
                     editTextCountry.setViewTag(it)
                 }

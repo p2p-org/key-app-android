@@ -15,13 +15,13 @@ enum class StrigaSignupDataType(@StringRes val tag: Int) {
     /**
      * Must be ISO 3166-1 alpha-3 code (3 symbols)
      */
-    COUNTRY_OF_BIRTH(R.string.tag_striga_country_of_birth),
+    COUNTRY_OF_BIRTH_ALPHA_3(R.string.tag_striga_country_of_birth),
     OCCUPATION(R.string.tag_striga_occupation),
     SOURCE_OF_FUNDS(R.string.tag_striga_source_of_funds),
     /**
      * Must be ISO 3166-1 alpha-2 code (2 symbols)
      */
-    COUNTRY(R.string.tag_striga_country),
+    COUNTRY_ALPHA_2(R.string.tag_striga_country),
     CITY(R.string.tag_striga_city),
     CITY_ADDRESS_LINE(R.string.tag_striga_city_address_line),
     CITY_POSTAL_CODE(R.string.tag_striga_city_postal_code),

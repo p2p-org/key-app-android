@@ -181,7 +181,7 @@ class StrigaSignUpFirstStepFragment :
                     this[it] = editTextBirthday
                     editTextBirthday.setViewTag(it)
                 }
-                StrigaSignupDataType.COUNTRY_OF_BIRTH.let {
+                StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3.let {
                     this[it] = editTextCountry
                     editTextCountry.setViewTag(it)
                 }

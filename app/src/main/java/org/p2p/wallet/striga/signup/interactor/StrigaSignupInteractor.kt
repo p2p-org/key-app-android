@@ -30,7 +30,7 @@ class StrigaSignupInteractor(
             StrigaSignupDataType.FIRST_NAME,
             StrigaSignupDataType.LAST_NAME,
             StrigaSignupDataType.DATE_OF_BIRTH,
-            StrigaSignupDataType.COUNTRY_OF_BIRTH
+            StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3
         )
     }
 
@@ -38,7 +38,7 @@ class StrigaSignupInteractor(
         setOf(
             StrigaSignupDataType.OCCUPATION,
             StrigaSignupDataType.SOURCE_OF_FUNDS,
-            StrigaSignupDataType.COUNTRY,
+            StrigaSignupDataType.COUNTRY_ALPHA_2,
             StrigaSignupDataType.CITY,
             StrigaSignupDataType.CITY_ADDRESS_LINE,
             StrigaSignupDataType.CITY_POSTAL_CODE,
