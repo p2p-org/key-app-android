@@ -15,9 +15,11 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.mvp.NoOpPresenter
 import org.p2p.wallet.databinding.FragmentStrigaSmsErrorBinding
+import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -74,7 +76,7 @@ class StrigaSmsErrorFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpView>>(
     }
 
     private fun onBackPressed() {
-        popBackStack()
+        popBackStackTo(MainFragment::class)
     }
 
     private fun showHelp() {
