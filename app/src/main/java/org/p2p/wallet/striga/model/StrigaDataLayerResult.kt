@@ -9,6 +9,17 @@ sealed interface StrigaDataLayerResult<out T> {
         is Success -> value
         is Failure -> throw error
     }
+
+    @Throws(StrigaDataLayerError::class)
+    fun successOrNull(): T? = when (this) {
+        is Success -> value
+        is Failure -> null
+    }
+
+    fun onSuccess(action: (T) -> Unit): StrigaDataLayerResult<T> {
+        successOrNull()?.also(action)
+        return this
+    }
 }
 
 fun <T, E : StrigaDataLayerError> E.toFailureResult(): StrigaDataLayerResult.Failure<T> =

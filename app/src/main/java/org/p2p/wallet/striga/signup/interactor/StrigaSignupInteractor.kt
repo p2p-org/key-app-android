@@ -118,7 +118,10 @@ class StrigaSignupInteractor(
         data: Map<StrigaSignupDataType, StrigaSignupData>,
         types: Set<StrigaSignupDataType>
     ): ValidationResult {
-        val validationResults = types.map { data[it] ?: StrigaSignupData(it, null) }.map(::validate)
+        val validationResults = types.map {
+            data[it] ?: StrigaSignupData(type = it, value = null)
+        }
+            .map(::validate)
 
         val countValid = validationResults.count { it.isValid }
         val mustBeValid = types.size
@@ -126,9 +129,7 @@ class StrigaSignupInteractor(
         return (countValid == mustBeValid) to validationResults
     }
 
-    private fun validate(data: StrigaSignupData): StrigaSignupFieldState {
-        return validator.validate(data)
-    }
+    private fun validate(data: StrigaSignupData): StrigaSignupFieldState = validator.validate(data)
 
     private suspend fun updateMetadata(userId: String) {
         val currentMetadata = metadataInteractor.currentMetadata ?: return

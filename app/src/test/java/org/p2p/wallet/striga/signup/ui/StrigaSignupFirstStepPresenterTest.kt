@@ -220,22 +220,6 @@ class StrigaSignupFirstStepPresenterTest {
     }
 
     @Test
-    fun `GIVEN initial state WHEN open country clicked THEN check country picker is opened`() = runTest {
-        val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
-        )
-        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-
-        val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
-        val presenter = createPresenter()
-        presenter.attach(view)
-        presenter.onCountryClicked()
-        advanceUntilIdle()
-
-        verify(exactly = 1) { view.showCountryPicker(any()) }
-    }
-
-    @Test
     fun `GIVEN selected country WHEN country chosen THEN check view updates country`() = runTest {
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
@@ -247,7 +231,7 @@ class StrigaSignupFirstStepPresenterTest {
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
         presenter.attach(view)
-        presenter.onCountryChanged(chosenCountry)
+        presenter.onCountryOfBirthChanged(chosenCountry)
         advanceUntilIdle()
 
         verify(exactly = 1) {

@@ -25,9 +25,9 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:navigationIcon="@drawable/ic_back"
-                app:navigationIconTint="@color/night"
+                app:navigationIconTint="@color/icons_night"
                 app:title="@string/striga_select_your_country"
-                app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+                app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

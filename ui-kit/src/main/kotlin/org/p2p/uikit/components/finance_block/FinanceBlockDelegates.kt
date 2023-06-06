@@ -12,6 +12,7 @@ private typealias OnBindListener = (view: UiKitFinanceBlockView, item: FinanceBl
 fun financeBlockCellDelegate(
     inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
     onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit)? = null,
+    onItemClicked: (item: FinanceBlockCellModel) -> Unit = {}
 ): AdapterDelegate<List<AnyCellItem>> =
     adapterDelegateViewBinding<FinanceBlockCellModel, AnyCellItem, ItemFinanceBlockBinding>(
         viewBinding = { _, parent -> parent.inflateViewBinding(attachToRoot = false) },
@@ -24,6 +25,7 @@ fun financeBlockCellDelegate(
         bind {
             binding.root.bind(item)
             onBindListener?.invoke(binding.root, item)
+            binding.root.setOnClickListener { onItemClicked.invoke(item) }
         }
     }
 

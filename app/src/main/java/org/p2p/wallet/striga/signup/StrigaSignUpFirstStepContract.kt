@@ -16,13 +16,11 @@ interface StrigaSignUpFirstStepContract {
         fun setButtonIsEnabled(isEnabled: Boolean)
         fun scrollToFirstError(type: StrigaSignupDataType)
         fun setPhoneMask(phoneMask: String?)
-        fun showCountryPicker(selectedCountry: Country?)
     }
     interface Presenter : MvpPresenter<View> {
         fun onFieldChanged(newValue: String, type: StrigaSignupDataType)
-        fun onCountryChanged(newCountry: Country)
-        fun onCountryClicked()
         fun saveChanges()
         fun onSubmit()
+        fun onCountryOfBirthChanged(selectedCountry: Country)
     }
 }
