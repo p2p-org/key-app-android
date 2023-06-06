@@ -23,7 +23,6 @@ import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.signup.model.StrigaPickerItem
-import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.popBackStack
@@ -94,6 +93,10 @@ class StrigaSignUpFirstStepFragment :
                 REQUEST_KEY_COUNTRY_CODE,
                 ::onFragmentResult
             )
+            setFragmentResultListener(
+                REQUEST_KEY_COUNTRY,
+                ::onFragmentResult
+            )
         }
     }
 
@@ -103,22 +106,22 @@ class StrigaSignUpFirstStepFragment :
     }
 
     override fun showCountryPicker(selectedCountry: Country?) {
-        replaceFragmentForResult(
-            target = StrigaPresetDataPickerFragment.create(
+        addFragment(
+            StrigaPresetDataPickerFragment.create(
                 selectedCountry = StrigaPickerItem.CountryItem(selectedCountry),
                 requestKey = REQUEST_KEY_COUNTRY,
                 resultKey = RESULT_KEY_COUNTRY
-            ),
-            requestKey = REQUEST_KEY_COUNTRY,
-            onResult = ::onFragmentResult
+            )
         )
     }
 
-    override fun showDefaultCountryCode(defaultCountryCode: CountryCode?) {
+    override fun setupCountryCodePicker(selectedCountryCode: CountryCode?, selectedPhoneNumber: String?) {
         binding.editTextPhoneNumber.setupViewState(
-            countryCode = defaultCountryCode,
+            countryCode = selectedCountryCode,
             onPhoneChanged = ::onPhoneChanged,
-            onCountryClickListener = ::onCountryClickListener
+            savedPhoneNumber = selectedPhoneNumber,
+            onCountryClickListener = ::onCountryClickListener,
+            requestFocus = false
         )
     }
 
@@ -212,8 +215,7 @@ class StrigaSignUpFirstStepFragment :
         if (bundle.containsKey(RESULT_KEY_COUNTRY)) {
             val selectedCountry = bundle.getParcelableCompat<StrigaPickerItem.CountryItem>(RESULT_KEY_COUNTRY)
             presenter.onCountryChanged(selectedCountry?.selectedItem ?: return)
-        }
-        if (bundle.containsKey(RESULT_KEY_COUNTRY_CODE)) {
+        } else if (bundle.containsKey(RESULT_KEY_COUNTRY_CODE)) {
             val countryCode = bundle.getParcelableCompat<CountryCode>(RESULT_KEY_COUNTRY_CODE)
             presenter.onCountryCodeChanged(countryCode)
         }

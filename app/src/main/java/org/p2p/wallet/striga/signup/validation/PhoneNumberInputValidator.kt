@@ -1,18 +1,20 @@
 package org.p2p.wallet.striga.signup.validation
 
-import java.util.regex.Pattern
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.p2p.core.common.TextContainer
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 
-private val PATTERN = Pattern.compile(
-    "^\\+[0-9]{10,15}\$"
-)
-
-class PhoneNumberInputValidator : InputValidator {
+class PhoneNumberInputValidator(
+    val phoneCode: String,
+    val phoneNumber: String
+) : InputValidator, KoinComponent {
 
     override var errorMessage: TextContainer = TextContainer(R.string.striga_validation_error_phone_number)
+    private val countryCodeRepository: CountryCodeLocalRepository by inject()
 
     override fun validate(input: String?): Boolean {
-        return input?.replace(" ", "")?.matches(PATTERN.toRegex()) ?: false
+        return countryCodeRepository.isValidNumberForRegion(phoneNumber, phoneCode)
     }
 }

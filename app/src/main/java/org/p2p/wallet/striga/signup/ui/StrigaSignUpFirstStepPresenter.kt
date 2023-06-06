@@ -12,6 +12,7 @@ import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 
 class StrigaSignUpFirstStepPresenter(
     dispatchers: CoroutineDispatchers,
@@ -28,11 +29,20 @@ class StrigaSignUpFirstStepPresenter(
         super.firstAttach()
         launch {
             initialLoadSignupData()
-
-            selectedCountryCode?.let { countryCode ->
-                view?.showDefaultCountryCode(countryCode)
-            } ?: launch { loadDefaultCountryCode() }
+            initialLoadCountryCode()
         }
+    }
+
+    private suspend fun initialLoadCountryCode() {
+        if (selectedCountryCode != null) {
+            val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+            view?.setupCountryCodePicker(
+                selectedCountryCode = selectedCountryCode,
+                selectedPhoneNumber = selectedPhoneNumber
+            )
+            return
+        }
+        loadDefaultCountryCode()
     }
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
@@ -62,6 +72,10 @@ class StrigaSignUpFirstStepPresenter(
     override fun onSubmit() {
         view?.clearErrors()
 
+        val phoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value ?: return
+        val countryCode = signupData[StrigaSignupDataType.PHONE_CODE]?.value ?: return
+
+        interactor.addValidator(PhoneNumberInputValidator(phoneNumber, countryCode))
         val (isValid, states) = interactor.validateFirstStep(signupData)
 
         if (isValid) {
@@ -94,6 +108,7 @@ class StrigaSignUpFirstStepPresenter(
         val countryCode = "+${selectedCountryCode?.phoneCode}"
         val phoneWithoutCountryCode = newPhone.replace(countryCode, "")
         setData(StrigaSignupDataType.PHONE_NUMBER, phoneWithoutCountryCode)
+        view?.clearError(StrigaSignupDataType.PHONE_NUMBER)
     }
 
     override fun onCountryCodeInputClicked() {
@@ -138,7 +153,12 @@ class StrigaSignUpFirstStepPresenter(
 
             selectedCountryCode = countryCode
 
-            view?.showDefaultCountryCode(countryCode)
+            val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+
+            view?.setupCountryCodePicker(
+                selectedCountryCode = countryCode,
+                selectedPhoneNumber = selectedPhoneNumber
+            )
         } catch (e: Throwable) {
             Timber.e(e, "Loading default country code failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)

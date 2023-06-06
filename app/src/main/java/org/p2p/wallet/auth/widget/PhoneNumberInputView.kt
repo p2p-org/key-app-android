@@ -10,7 +10,6 @@ import android.util.TypedValue
 import android.widget.TextView
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
-import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
@@ -96,6 +95,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun setText(text: String) {
         binding.editTextPhoneNumber.setText(text)
+        binding.editTextPhoneNumber.setSelection(text.length)
     }
 
     fun setHint(hint: String) {
@@ -116,8 +116,10 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun setupViewState(
         countryCode: CountryCode?,
+        savedPhoneNumber: String? = null,
         onPhoneChanged: (String) -> Unit,
-        onCountryClickListener: () -> Unit
+        onCountryClickListener: () -> Unit,
+        requestFocus: Boolean = true
     ) = with(binding) {
         countryCode?.phoneCode.let { editTextCountryCode.text = it }
 
@@ -136,6 +138,12 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         val originalTextSize = editTextPhoneNumber.textSize
         editTextPhoneNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, originalTextSize)
 
+        val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
+        if (requestFocus) {
+            focusView.focusAndShowKeyboard()
+        }
+        editTextPhoneNumber.setSelection(restoredNumber.length)
+
         phoneTextWatcher = PhoneNumberTextWatcher(binding.editTextPhoneNumber) { phoneNumber ->
             resizeInputs(phoneNumber, originalTextSize)
 
@@ -143,15 +151,12 @@ open class PhoneNumberInputView @JvmOverloads constructor(
             val phone = phoneNumber.getFullPhoneNumber()
             onPhoneChanged.invoke(phone)
         }
-
         editTextPhoneNumber.addTextChangedListener(phoneTextWatcher)
 
-        val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
-        focusView.focusAndShowKeyboard()
-
-        editTextPhoneNumber.setSelection(editTextPhoneNumber.text?.length.orZero())
-
-        if (restoredNumber.isNotEmpty()) onPhoneChanged(restoredNumber.getFullPhoneNumber())
+        if (restoredNumber.isNotEmpty()) {
+            editTextPhoneNumber.setText(savedPhoneNumber)
+            onPhoneChanged(restoredNumber.getFullPhoneNumber())
+        }
     }
 
     private fun WidgetPhoneInputViewBinding.resizeInputs(
@@ -179,7 +184,6 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         editTextPhoneNumber.setHintText(hint)
 
         with(editTextPhoneNumber) {
-            addTextChangedListener(phoneTextWatcher)
             setHintText(countryCode.getZeroFilledMask())
             setSelection(length())
             focusAndShowKeyboard()
@@ -195,7 +199,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun showError(textContainer: TextContainer?) = with(binding) {
         textContainer?.let { textViewError.bind(it) }
-        textViewError.isVisible = text != null
+        textViewError.isVisible = textContainer != null
         inputViewContainer.background = if (textContainer != null) bgRed else bgNormal
     }
 

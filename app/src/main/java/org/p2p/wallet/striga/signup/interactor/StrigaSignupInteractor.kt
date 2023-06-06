@@ -11,6 +11,7 @@ import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.signup.validation.InputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.utils.unsafeLazy
 
@@ -48,6 +49,10 @@ class StrigaSignupInteractor(
 
     fun validateFirstStep(data: Map<StrigaSignupDataType, StrigaSignupData>): ValidationResult {
         return validateStep(data, firstStepDataTypes)
+    }
+
+    fun addValidator(inputValidator: InputValidator) {
+        validator.addValidator(inputValidator)
     }
 
     fun validateSecondStep(data: Map<StrigaSignupDataType, StrigaSignupData>): ValidationResult {

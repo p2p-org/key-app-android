@@ -97,7 +97,7 @@
             <org.p2p.wallet.auth.widget.PhoneNumberInputView
                 android:id="@+id/editTextPhoneNumber"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
                 android:backgroundTint="@color/bg_snow"
@@ -110,7 +110,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="56dp"
+                android:layout_marginTop="24dp"
                 android:text="@string/striga_credentials"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
                 app:layout_constraintTop_toBottomOf="@id/imageViewAlert" />
