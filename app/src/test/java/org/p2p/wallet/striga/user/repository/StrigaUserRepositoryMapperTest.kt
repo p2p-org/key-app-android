@@ -50,7 +50,7 @@ class StrigaUserRepositoryMapperTest {
     fun `GIVEN correct signup data without placeOfBirth WHEN toNetwork THEN check is error occurred`() = runTest {
         val data = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "aaa"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "aaa"),
             StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "aaa"),
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "aaa"),
@@ -80,7 +80,7 @@ class StrigaUserRepositoryMapperTest {
     fun `GIVEN correct signup data WHEN toNetwork THEN everything is ok`() = runTest {
         val data = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "aaa"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "aaa"),
             StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "aaa"),
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "aaa"),

@@ -2,8 +2,8 @@ package org.p2p.wallet.striga.signup.ui
 
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
@@ -20,9 +20,8 @@ class StrigaSignUpSecondStepPresenter(
     dispatchers: CoroutineDispatchers,
     private val interactor: StrigaSignupInteractor,
     private val onboardingInteractor: StrigaOnboardingInteractor,
-    private val strigaItemCellMapper: StrigaItemCellMapper,
-) :
-    BasePresenter<StrigaSignUpSecondStepContract.View>(dispatchers.ui),
+    private val strigaItemCellMapper: StrigaItemCellMapper
+) : BasePresenter<StrigaSignUpSecondStepContract.View>(dispatchers.ui),
     StrigaSignUpSecondStepContract.Presenter {
 
     private val cachedSignupData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
@@ -51,9 +50,9 @@ class StrigaSignUpSecondStepPresenter(
 
     override fun onPresetDataChanged(selectedItem: StrigaPresetDataItem) {
         when (selectedItem) {
-            is StrigaPresetDataItem.StrigaCountryItem -> onCountryChanged(selectedItem.details)
-            is StrigaPresetDataItem.StrigaOccupationItem -> onOccupationChanged(selectedItem.details)
-            is StrigaPresetDataItem.StrigaSourceOfFundsItem -> onSourceOfFundsChanged(selectedItem.details)
+            is StrigaPresetDataItem.Country -> onCountryChanged(selectedItem.details)
+            is StrigaPresetDataItem.Occupation -> onOccupationChanged(selectedItem.details)
+            is StrigaPresetDataItem.SourceOfFunds -> onSourceOfFundsChanged(selectedItem.details)
         }
     }
 
@@ -73,12 +72,12 @@ class StrigaSignUpSecondStepPresenter(
         setCachedData(StrigaSignupDataType.OCCUPATION, newValue.occupationName)
     }
 
-    private fun onCountryChanged(newValue: Country) {
+    private fun onCountryChanged(newValue: CountryCode) {
         view?.updateSignupField(
-            newValue = "${newValue.flagEmoji} ${newValue.name}",
+            newValue = "${newValue.flagEmoji} ${newValue.countryName}",
             type = StrigaSignupDataType.COUNTRY_ALPHA_2
         )
-        setCachedData(StrigaSignupDataType.COUNTRY_ALPHA_2, newValue.codeAlpha2)
+        setCachedData(StrigaSignupDataType.COUNTRY_ALPHA_2, newValue.nameCodeAlpha2)
     }
 
     override fun onSubmit() {

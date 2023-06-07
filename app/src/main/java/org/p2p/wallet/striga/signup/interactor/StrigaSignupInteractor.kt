@@ -3,12 +3,11 @@ package org.p2p.wallet.striga.signup.interactor
 import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.PhoneMask
-import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
@@ -16,6 +15,7 @@ import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.signup.validation.InputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.DateTimeUtils
@@ -27,7 +27,7 @@ class StrigaSignupInteractor(
     private val appScope: AppScope,
     private val inAppFeatureFlags: InAppFeatureFlags,
     private val validator: StrigaSignupDataValidator,
-    private val countryRepository: CountryRepository,
+    private val countryRepository: CountryCodeRepository,
     private val signupDataRepository: StrigaSignupDataLocalRepository,
     private val userInteractor: StrigaUserInteractor,
     private val metadataInteractor: MetadataInteractor
@@ -35,7 +35,7 @@ class StrigaSignupInteractor(
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
         setOf(
             StrigaSignupDataType.EMAIL,
-            StrigaSignupDataType.PHONE_CODE,
+            StrigaSignupDataType.PHONE_CODE_WITH_PLUS,
             StrigaSignupDataType.PHONE_NUMBER,
             StrigaSignupDataType.FIRST_NAME,
             StrigaSignupDataType.LAST_NAME,
@@ -60,27 +60,27 @@ class StrigaSignupInteractor(
         return validateStep(data, firstStepDataTypes)
     }
 
+    fun addValidator(inputValidator: InputValidator) {
+        validator.addValidator(inputValidator)
+    }
+
     fun validateSecondStep(data: Map<StrigaSignupDataType, StrigaSignupData>): ValidationResult {
         return validateStep(data, secondStepDataTypes)
     }
 
-    suspend fun getSelectedCountry(): Country {
+    suspend fun getSelectedCountry(): CountryCode {
         // todo: get saved country
         return countryRepository.detectCountryOrDefault()
     }
 
-    suspend fun findPhoneMaskByCountry(country: Country): PhoneMask? {
-        return countryRepository.findPhoneMaskByCountry(country)
-    }
-
-    suspend fun findCountryByIsoAlpha2(codeAlpha2: String?): Country? {
+    suspend fun findCountryByIsoAlpha2(codeAlpha2: String?): CountryCode? {
         if (codeAlpha2.isNullOrBlank()) return null
-        return countryRepository.findCountryByIsoAlpha2(codeAlpha2)
+        return countryRepository.findCountryCodeByIsoAlpha2(codeAlpha2)
     }
 
-    suspend fun findCountryByIsoAlpha3(codeAlpha3: String?): Country? {
+    suspend fun findCountryByIsoAlpha3(codeAlpha3: String?): CountryCode? {
         if (codeAlpha3.isNullOrBlank()) return null
-        return countryRepository.findCountryByIsoAlpha3(codeAlpha3)
+        return countryRepository.findCountryCodeByIsoAlpha3(codeAlpha3)
     }
 
     suspend fun getSignupDataFirstStep(): List<StrigaSignupData> = getSignupData(firstStepDataTypes)

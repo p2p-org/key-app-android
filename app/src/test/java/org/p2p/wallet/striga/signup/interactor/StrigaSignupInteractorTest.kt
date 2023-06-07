@@ -18,6 +18,8 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.PhoneMask
@@ -42,17 +44,13 @@ import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.createHttpException
 
-private val SupportedCountry = Country(
-    name = "United Kingdom",
+private val SupportedCountry = CountryCode(
+    countryName = "United Kingdom",
     flagEmoji = "🇬🇧",
-    codeAlpha2 = "gb",
-    codeAlpha3 = "gbr"
-)
-
-private val DefaultPhoneMask = PhoneMask(
-    countryCodeAlpha2 = "ua",
-    phoneCode = "+380",
-    mask = "380 ## ### ## ##"
+    nameCodeAlpha2 = "gb",
+    nameCodeAlpha3 = "gbr",
+    phoneCode = "123",
+    mask = ""
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -62,7 +60,7 @@ class StrigaSignupInteractorTest {
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
 
     @MockK
-    lateinit var countryRepository: CountryRepository
+    lateinit var countryRepository: CountryCodeRepository
 
     @MockK
     lateinit var userInteractor: StrigaUserInteractor
@@ -168,7 +166,7 @@ class StrigaSignupInteractorTest {
 
         // WHEN
         setData(StrigaSignupDataType.EMAIL, "aaa@bbb.ccc")
-        setData(StrigaSignupDataType.PHONE_CODE, "+1")
+        setData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "+1")
         setData(StrigaSignupDataType.PHONE_NUMBER, "+1234567890")
         setData(StrigaSignupDataType.FIRST_NAME, "Vasya")
         setData(StrigaSignupDataType.LAST_NAME, "Pupkin")
@@ -235,13 +233,6 @@ class StrigaSignupInteractorTest {
         // THEN
         assertTrue(isValid)
         assertFalse(isValidFirst)
-    }
-
-    @Test
-    fun `GIVEN existing phone mask for country WHEN findPhoneMaskByCountry THEN mask is not null`() = runTest {
-        val interactor = createInteractor()
-        val mask = interactor.findPhoneMaskByCountry(SupportedCountry)
-        assertEquals(DefaultPhoneMask, mask)
     }
 
     @Test

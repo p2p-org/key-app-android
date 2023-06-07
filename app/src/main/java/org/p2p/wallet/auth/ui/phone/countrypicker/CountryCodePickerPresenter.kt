@@ -3,7 +3,7 @@ package org.p2p.wallet.auth.ui.phone.countrypicker
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
-import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 
@@ -11,7 +11,7 @@ private const val DEFAULT_KEY = ""
 private const val PLUS_SIGN = '+'
 
 class CountryCodePickerPresenter(
-    private val countryCodeRepository: CountryCodeLocalRepository
+    private val countryCodeRepository: CountryCodeRepository
 ) : BasePresenter<CountryCodePickerContract.View>(),
     CountryCodePickerContract.Presenter {
 

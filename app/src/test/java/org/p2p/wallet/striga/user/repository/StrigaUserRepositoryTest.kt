@@ -31,7 +31,7 @@ class StrigaUserRepositoryTest {
     fun `GIVEN http error 400 WHEN createUser THEN check error is presented`() = runTest {
         val data = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "aaa"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "aaa"),
             StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "aaa"),
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "aaa"),
@@ -79,7 +79,7 @@ class StrigaUserRepositoryTest {
     fun `GIVEN correct data and successful response WHEN createUser THEN check error is not presented`() = runTest {
         val data = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "bbb"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "bbb"),
             StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "ccc"),
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "ddd"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "eee"),
@@ -132,7 +132,7 @@ class StrigaUserRepositoryTest {
         with(createdData.captured) {
             val dataMap = data.associate { it.type to it.value }
             assertEquals(dataMap[StrigaSignupDataType.EMAIL], userEmail)
-            assertEquals(dataMap[StrigaSignupDataType.PHONE_CODE], mobilePhoneDetails.countryCode)
+            assertEquals(dataMap[StrigaSignupDataType.PHONE_CODE_WITH_PLUS], mobilePhoneDetails.countryCode)
             assertEquals(dataMap[StrigaSignupDataType.PHONE_NUMBER], mobilePhoneDetails.number)
             assertEquals(dataMap[StrigaSignupDataType.FIRST_NAME], firstName)
             assertEquals(dataMap[StrigaSignupDataType.LAST_NAME], lastName)

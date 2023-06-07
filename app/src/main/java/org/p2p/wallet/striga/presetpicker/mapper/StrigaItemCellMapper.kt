@@ -9,7 +9,7 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
@@ -40,9 +40,9 @@ class StrigaItemCellMapper {
 
     private fun mapItemToCellItem(item: StrigaPresetDataItem): FinanceBlockCellModel {
         return when (item) {
-            is StrigaPresetDataItem.StrigaCountryItem -> item.details.mapItemToCellItem()
-            is StrigaPresetDataItem.StrigaSourceOfFundsItem -> item.details.mapItemToCellItem()
-            is StrigaPresetDataItem.StrigaOccupationItem -> item.details.mapItemToCellItem()
+            is StrigaPresetDataItem.Country -> item.details.mapItemToCellItem()
+            is StrigaPresetDataItem.SourceOfFunds -> item.details.mapItemToCellItem()
+            is StrigaPresetDataItem.Occupation -> item.details.mapItemToCellItem()
         }
     }
 
@@ -57,7 +57,7 @@ class StrigaItemCellMapper {
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
-            payload = StrigaPresetDataItem.StrigaOccupationItem(this)
+            payload = StrigaPresetDataItem.Occupation(this)
         )
     }
 
@@ -71,14 +71,14 @@ class StrigaItemCellMapper {
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
-            payload = StrigaPresetDataItem.StrigaSourceOfFundsItem(this)
+            payload = StrigaPresetDataItem.SourceOfFunds(this)
         )
     }
 
-    private fun Country.mapItemToCellItem(): FinanceBlockCellModel {
+    private fun CountryCode.mapItemToCellItem(): FinanceBlockCellModel {
         val leftSideCellModel = LeftSideCellModel.IconWithText(
             firstLineText = TextViewCellModel.Raw(
-                text = TextContainer(toUiTitle(name)),
+                text = TextContainer(toUiTitle(countryName)),
                 textAppearance = R.style.UiKit_TextAppearance_Regular_Text3,
                 textColor = R.color.text_night
             ),
@@ -86,7 +86,7 @@ class StrigaItemCellMapper {
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
-            payload = StrigaPresetDataItem.StrigaCountryItem(this)
+            payload = StrigaPresetDataItem.Country(this)
         )
     }
 
@@ -102,15 +102,15 @@ class StrigaItemCellMapper {
 
     @StringRes
     private fun getSelectedItemHeaderTitle(item: StrigaPresetDataItem): Int = when (item) {
-        is StrigaPresetDataItem.StrigaCountryItem -> R.string.striga_chosen_country
-        is StrigaPresetDataItem.StrigaOccupationItem -> R.string.striga_chosen
-        is StrigaPresetDataItem.StrigaSourceOfFundsItem -> R.string.striga_chosen
+        is StrigaPresetDataItem.Country -> R.string.striga_chosen_country
+        is StrigaPresetDataItem.Occupation -> R.string.striga_chosen
+        is StrigaPresetDataItem.SourceOfFunds -> R.string.striga_chosen
     }
 
     @StringRes
     private fun getAllItemHeaderTitle(item: StrigaPresetDataItem): Int = when (item) {
-        is StrigaPresetDataItem.StrigaCountryItem -> R.string.striga_all_countries
-        is StrigaPresetDataItem.StrigaOccupationItem -> R.string.striga_all_industries
-        is StrigaPresetDataItem.StrigaSourceOfFundsItem -> R.string.striga_all_sources
+        is StrigaPresetDataItem.Country -> R.string.striga_all_countries
+        is StrigaPresetDataItem.Occupation -> R.string.striga_all_industries
+        is StrigaPresetDataItem.SourceOfFunds -> R.string.striga_all_sources
     }
 }

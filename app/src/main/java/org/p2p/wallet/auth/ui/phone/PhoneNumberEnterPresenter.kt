@@ -14,7 +14,7 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
-import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
 import org.p2p.wallet.common.mvp.BasePresenter
 
@@ -22,7 +22,7 @@ private const val MAX_PHONE_NUMBER_TRIES = 5
 private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
 
 class PhoneNumberEnterPresenter(
-    private val countryCodeRepository: CountryCodeLocalRepository,
+    private val countryCodeRepository: CountryCodeRepository,
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
