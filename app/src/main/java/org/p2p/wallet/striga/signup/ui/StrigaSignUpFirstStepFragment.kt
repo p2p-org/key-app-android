@@ -16,6 +16,7 @@ import org.p2p.wallet.auth.widget.PhoneNumberInputView
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
+import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
@@ -24,7 +25,7 @@ import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.utils.getParcelableCompat
-import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.addFragment
@@ -199,7 +200,7 @@ class StrigaSignUpFirstStepFragment :
                     this[it] = editTextBirthday
                     editTextBirthday.setViewTag(it)
                 }
-                StrigaSignupDataType.COUNTRY_OF_BIRTH.let {
+                StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3.let {
                     this[it] = editTextCountry
                     editTextCountry.setViewTag(it)
                 }
@@ -208,7 +209,7 @@ class StrigaSignUpFirstStepFragment :
     }
 
     private fun onBackPressed() {
-        popBackStack()
+        popBackStackTo(MainFragment::class)
     }
 
     private fun onFragmentResult(requestKey: String, bundle: Bundle) {

@@ -45,7 +45,9 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
-        setCachedData(type, newValue)
+        if (type != StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3) {
+            setCachedData(type, newValue)
+        }
 
         view?.clearError(type)
         // enabling button if something changed
@@ -53,11 +55,11 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onCountryChanged(newCountry: CountryCode) {
-        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH, newCountry.nameCodeAlpha3)
         view?.updateSignupField(
             newValue = "${newCountry.flagEmoji} ${newCountry.countryName}",
-            type = StrigaSignupDataType.COUNTRY_OF_BIRTH
+            type = StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3
         )
+        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, selectedCountry.codeAlpha3)
     }
 
     override fun onSubmit() {
@@ -126,7 +128,7 @@ class StrigaSignUpFirstStepPresenter(
     private suspend fun getAndUpdateCountryField(signupData: Map<StrigaSignupDataType, StrigaSignupData>) {
         // db stores COUNTRY_OF_BIRTH as country name code ISO 3166-1 alpha-3,
         // so we need to find country by code and convert to country name
-        val selectedCountryValue = signupData[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.value.orEmpty()
+        val selectedCountryValue = signupData[StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3]?.value.orEmpty()
         interactor.findCountryByIsoAlpha3(selectedCountryValue)
             ?.also { onCountryChanged(it) }
 

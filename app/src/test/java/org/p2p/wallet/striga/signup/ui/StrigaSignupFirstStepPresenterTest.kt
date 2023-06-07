@@ -183,7 +183,7 @@ class StrigaSignupFirstStepPresenterTest {
         presenter.onFieldChanged("Vasya", StrigaSignupDataType.FIRST_NAME)
         presenter.onFieldChanged("Pupkin", StrigaSignupDataType.LAST_NAME)
         presenter.onFieldChanged("10.10.2010", StrigaSignupDataType.DATE_OF_BIRTH)
-        presenter.onFieldChanged("Uryupinks", StrigaSignupDataType.COUNTRY_OF_BIRTH)
+        presenter.onCountryChanged(CountryCode("France", "emoji", "fr", "fra"))
         presenter.onSubmit()
         advanceUntilIdle()
 
@@ -210,7 +210,7 @@ class StrigaSignupFirstStepPresenterTest {
 
         verify(exactly = 1) {
             view.updateSignupField(
-                StrigaSignupDataType.COUNTRY_OF_BIRTH,
+                StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3,
                 "${chosenCountry.flagEmoji} ${chosenCountry.countryName}"
             )
         }
@@ -219,7 +219,7 @@ class StrigaSignupFirstStepPresenterTest {
     @Test
     fun `GIVEN initial state with saved data WHEN presenter created THEN check country shows to user`() = runTest {
         val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, SupportedCountry.nameCodeAlpha3)
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, SupportedCountry.nameCodeAlpha3)
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
         coEvery { countryRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
@@ -232,11 +232,11 @@ class StrigaSignupFirstStepPresenterTest {
 
         verify {
             view.updateSignupField(
-                StrigaSignupDataType.COUNTRY_OF_BIRTH,
+                StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3,
                 SupportedCountry.nameCodeAlpha3
             )
             view.updateSignupField(
-                StrigaSignupDataType.COUNTRY_OF_BIRTH,
+                StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3,
                 "${SupportedCountry.flagEmoji} ${SupportedCountry.countryName}"
             )
         }
@@ -245,7 +245,7 @@ class StrigaSignupFirstStepPresenterTest {
     @Test
     fun `GIVEN invalid user input WHEN user inputs new data THEN check errors are cleared`() = runTest {
         val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, SupportedCountry.nameCodeAlpha3)
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, SupportedCountry.nameCodeAlpha3)
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
         coEvery { countryRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry

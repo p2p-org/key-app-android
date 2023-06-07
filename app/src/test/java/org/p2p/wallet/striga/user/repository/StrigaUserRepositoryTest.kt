@@ -39,10 +39,10 @@ class StrigaUserRepositoryTest {
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.DATE_OF_BIRTH, "05.05.2005"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "TUR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, "TUR"),
             StrigaSignupData(StrigaSignupDataType.OCCUPATION, "Loafer"),
             StrigaSignupData(StrigaSignupDataType.SOURCE_OF_FUNDS, "NOTHING"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, "TR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, "TR"),
             StrigaSignupData(StrigaSignupDataType.CITY, "Antalya"),
             StrigaSignupData(StrigaSignupDataType.CITY_ADDRESS_LINE, "Hurma mahalesi, Ataturk prospect 1"),
             StrigaSignupData(StrigaSignupDataType.CITY_POSTAL_CODE, "056987"),
@@ -88,10 +88,10 @@ class StrigaUserRepositoryTest {
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "ddd"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "eee"),
             StrigaSignupData(StrigaSignupDataType.DATE_OF_BIRTH, "05.05.2005"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "TUR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, "TUR"),
             StrigaSignupData(StrigaSignupDataType.OCCUPATION, "Loafer"),
             StrigaSignupData(StrigaSignupDataType.SOURCE_OF_FUNDS, "NOTHING"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, "TR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, "TR"),
             StrigaSignupData(StrigaSignupDataType.CITY, "Antalya"),
             StrigaSignupData(StrigaSignupDataType.CITY_ADDRESS_LINE, "Hurma mahalesi, Ataturk avenue 1"),
             StrigaSignupData(StrigaSignupDataType.CITY_POSTAL_CODE, "056987"),
@@ -144,10 +144,10 @@ class StrigaUserRepositoryTest {
             assertEquals(birthday[0].toInt(), dateOfBirth.day)
             assertEquals(birthday[1].toInt(), dateOfBirth.month)
             assertEquals(birthday[2].toInt(), dateOfBirth.year)
-            assertEquals(dataMap[StrigaSignupDataType.COUNTRY_OF_BIRTH], placeOfBirth)
+            assertEquals(dataMap[StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3], placeOfBirth)
             assertEquals(dataMap[StrigaSignupDataType.OCCUPATION], occupation)
             assertEquals(dataMap[StrigaSignupDataType.SOURCE_OF_FUNDS], sourceOfFunds)
-            assertEquals(dataMap[StrigaSignupDataType.COUNTRY], address.country)
+            assertEquals(dataMap[StrigaSignupDataType.COUNTRY_ALPHA_2], address.country)
             assertEquals(dataMap[StrigaSignupDataType.CITY], address.city)
             assertEquals(dataMap[StrigaSignupDataType.CITY_ADDRESS_LINE], address.addressLine1)
             assertEquals("", address.addressLine2)

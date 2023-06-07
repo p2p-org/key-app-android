@@ -24,7 +24,7 @@ class StrigaOnboardingInteractor(
 
     suspend fun saveCurrentCountry(country: CountryCode) {
         signupDataRepository.updateSignupData(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, country.nameCodeAlpha2)
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, country.nameCodeAlpha2)
         )
     }
 

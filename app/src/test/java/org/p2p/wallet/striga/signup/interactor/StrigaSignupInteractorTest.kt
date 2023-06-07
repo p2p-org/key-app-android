@@ -87,7 +87,7 @@ class StrigaSignupInteractorTest {
         val interactor = createInteractor()
         val data = mutableMapOf(
             StrigaSignupDataType.PHONE_NUMBER to StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "1234567890"),
-            StrigaSignupDataType.COUNTRY to StrigaSignupData(StrigaSignupDataType.COUNTRY, "TR")
+            StrigaSignupDataType.COUNTRY_ALPHA_2 to StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, "TR")
         )
 
         // WHEN
@@ -112,7 +112,7 @@ class StrigaSignupInteractorTest {
         setData(StrigaSignupDataType.FIRST_NAME, "1234567890")
         setData(StrigaSignupDataType.LAST_NAME, "1234567890")
         setData(StrigaSignupDataType.DATE_OF_BIRTH, "1234567890")
-        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "1234567890")
+        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, "1234567890")
         val (isValid, _) = interactor.validateFirstStep(firstStepData)
         val (isValidSecond, _) = interactor.validateSecondStep(firstStepData)
 
@@ -134,7 +134,7 @@ class StrigaSignupInteractorTest {
         setData(StrigaSignupDataType.FIRST_NAME, "Vasya")
         setData(StrigaSignupDataType.LAST_NAME, "Pupkin")
         setData(StrigaSignupDataType.DATE_OF_BIRTH, "10.10.2010")
-        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "Somewhere")
+        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, "Somewhere")
         val (isValid, statesFirst) = interactor.validateFirstStep(firstStepData)
         val (isValidSecond, statesSecond) = interactor.validateSecondStep(secondStepData)
 
@@ -163,7 +163,7 @@ class StrigaSignupInteractorTest {
         // WHEN
         setData(StrigaSignupDataType.OCCUPATION, "")
         setData(StrigaSignupDataType.SOURCE_OF_FUNDS, " world")
-        setData(StrigaSignupDataType.COUNTRY, "")
+        setData(StrigaSignupDataType.COUNTRY_ALPHA_2, "")
         setData(StrigaSignupDataType.CITY, "")
         setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "")
         setData(StrigaSignupDataType.CITY_POSTAL_CODE, "")
@@ -185,7 +185,7 @@ class StrigaSignupInteractorTest {
         // WHEN
         setData(StrigaSignupDataType.OCCUPATION, "a")
         setData(StrigaSignupDataType.SOURCE_OF_FUNDS, "a")
-        setData(StrigaSignupDataType.COUNTRY, "a")
+        setData(StrigaSignupDataType.COUNTRY_ALPHA_2, "a")
         setData(StrigaSignupDataType.CITY, "a")
         setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "a")
         setData(StrigaSignupDataType.CITY_POSTAL_CODE, "a")
