@@ -36,7 +36,7 @@ class StrigaSignUpFirstStepPresenter(
     private suspend fun initialLoadCountryCode() {
         if (selectedCountryCode != null) {
             val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
-            view?.setupCountryCodePicker(
+            view?.setupPhoneCountryCodePicker(
                 selectedCountryCode = selectedCountryCode,
                 selectedPhoneNumber = selectedPhoneNumber
             )
@@ -157,7 +157,7 @@ class StrigaSignUpFirstStepPresenter(
 
             val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
 
-            view?.setupCountryCodePicker(
+            view?.setupPhoneCountryCodePicker(
                 selectedCountryCode = countryCode,
                 selectedPhoneNumber = selectedPhoneNumber
             )

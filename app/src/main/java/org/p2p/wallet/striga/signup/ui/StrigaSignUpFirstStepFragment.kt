@@ -116,7 +116,7 @@ class StrigaSignUpFirstStepFragment :
         )
     }
 
-    override fun setupCountryCodePicker(selectedCountryCode: CountryCode?, selectedPhoneNumber: String?) {
+    override fun setupPhoneCountryCodePicker(selectedCountryCode: CountryCode?, selectedPhoneNumber: String?) {
         binding.editTextPhoneNumber.setupViewState(
             countryCode = selectedCountryCode,
             onPhoneChanged = ::onPhoneChanged,
