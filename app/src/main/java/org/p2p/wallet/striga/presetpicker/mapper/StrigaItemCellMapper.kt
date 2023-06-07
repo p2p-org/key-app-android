@@ -91,7 +91,13 @@ class StrigaItemCellMapper {
     }
 
     fun toUiTitle(value: String): String {
-        return value.replace("_", " ").lowercase().replaceFirstChar { it.uppercaseChar() }
+        return value.replace("_", " ")
+            .lowercase()
+            .replaceFirstChar { it.uppercaseChar() }
+    }
+
+    fun fromUiTitle(value: String): String {
+        return value.split(" ").joinToString(separator = "_", transform = String::uppercase)
     }
 
     @StringRes

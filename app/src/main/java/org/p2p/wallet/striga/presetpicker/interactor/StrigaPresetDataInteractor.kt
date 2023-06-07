@@ -61,8 +61,8 @@ class StrigaPresetDataInteractor(
     }
 
     private fun StrigaPresetDataToPick.toSignupDataType(): StrigaSignupDataType = when (this) {
-        StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY -> StrigaSignupDataType.COUNTRY
-        StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> StrigaSignupDataType.COUNTRY_OF_BIRTH
+        StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY -> StrigaSignupDataType.COUNTRY_ALPHA_2
+        StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3
         StrigaPresetDataToPick.SOURCE_OF_FUNDS -> StrigaSignupDataType.SOURCE_OF_FUNDS
         StrigaPresetDataToPick.OCCUPATION -> StrigaSignupDataType.OCCUPATION
     }
