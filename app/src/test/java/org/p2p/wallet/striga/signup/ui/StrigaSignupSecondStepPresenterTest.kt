@@ -90,7 +90,6 @@ class StrigaSignupSecondStepPresenterTest {
             dispatchers = dispatchers,
             interactor = interactor,
             onboardingInteractor = onboardingInteractor,
-            userInteractor = userInteractor,
             strigaItemCellMapper = strigaItemCellMapper,
         )
     }
@@ -261,9 +260,9 @@ class StrigaSignupSecondStepPresenterTest {
 
         coEvery { interactor.createUser() } throws Exception("error")
 
-        presenter.onFieldChanged("any occupation", StrigaSignupDataType.OCCUPATION)
-        presenter.onFieldChanged("any source", StrigaSignupDataType.SOURCE_OF_FUNDS)
-        presenter.onFieldChanged("any country", StrigaSignupDataType.COUNTRY)
+        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaOccupationItem(StrigaOccupation("loafer", "some_emoji")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaSourceOfFundsItem(StrigaSourceOfFunds("unemployed")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaCountryItem(SupportedCountry))
         presenter.onFieldChanged("any city", StrigaSignupDataType.CITY)
         presenter.onFieldChanged("any address", StrigaSignupDataType.CITY_ADDRESS_LINE)
         presenter.onFieldChanged("any zip-code", StrigaSignupDataType.CITY_POSTAL_CODE)

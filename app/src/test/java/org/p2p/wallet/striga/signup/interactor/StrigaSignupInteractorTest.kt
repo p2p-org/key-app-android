@@ -256,7 +256,7 @@ class StrigaSignupInteractorTest {
         initSignupDataRepository(emptyList())
         setData(StrigaSignupDataType.OCCUPATION, "a")
         setData(StrigaSignupDataType.SOURCE_OF_FUNDS, "a")
-        setData(StrigaSignupDataType.COUNTRY, "a")
+        setData(StrigaSignupDataType.COUNTRY_ALPHA_2, "a")
         setData(StrigaSignupDataType.CITY, "a")
         setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "a")
         setData(StrigaSignupDataType.CITY_POSTAL_CODE, "a")
@@ -276,7 +276,7 @@ class StrigaSignupInteractorTest {
         initSignupDataRepository(emptyList())
         setData(StrigaSignupDataType.OCCUPATION, "a")
         setData(StrigaSignupDataType.SOURCE_OF_FUNDS, "b")
-        setData(StrigaSignupDataType.COUNTRY, "c")
+        setData(StrigaSignupDataType.COUNTRY_ALPHA_2, "c")
         setData(StrigaSignupDataType.CITY, "d")
         setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "e")
         setData(StrigaSignupDataType.CITY_POSTAL_CODE, "f")
@@ -360,6 +360,7 @@ class StrigaSignupInteractorTest {
                 )
             )
         )
+        coEvery { userInteractor.resendSmsForVerifyPhoneNumber() } returns StrigaDataLayerResult.Success(Unit)
         val updatedMetadataSlot = slot<GatewayOnboardingMetadata>()
         coEvery { metadataInteractor.updateMetadata(capture(updatedMetadataSlot)) } returns Unit
 
