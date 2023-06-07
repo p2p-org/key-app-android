@@ -106,7 +106,7 @@ class StrigaSignUpSecondStepPresenter(
             // convert UI string into STRIGA_FORMAT
             setCachedData(
                 type = StrigaSignupDataType.OCCUPATION,
-                value = it.split(" ").joinToString(separator = "_", transform = String::uppercase)
+                value = strigaItemCellMapper.fromUiTitle(it)
             )
         }
     }
