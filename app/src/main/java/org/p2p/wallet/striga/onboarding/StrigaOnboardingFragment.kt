@@ -4,6 +4,7 @@ import androidx.activity.addCallback
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
@@ -15,6 +16,7 @@ import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.utils.SpanUtils
+import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.image.bind
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -24,6 +26,7 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOnboardingBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract.View.AvailabilityState
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
@@ -32,9 +35,7 @@ import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.replaceFragmentForResult
-import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getDrawable
-import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class StrigaOnboardingFragment :
@@ -57,7 +58,7 @@ class StrigaOnboardingFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        handleBackPress()
+        initBackPress()
         bindHelpText()
 
         binding.buttonContinue.setOnClickListener {
@@ -72,6 +73,13 @@ class StrigaOnboardingFragment :
         }
     }
 
+    private fun initBackPress() {
+        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            onBackPressed()
+        }
+    }
+
     override fun navigateNext() {
         replaceFragment(StrigaSignUpFirstStepFragment.create())
     }
@@ -80,10 +88,10 @@ class StrigaOnboardingFragment :
         mapCountryView(country.countryName, country.flagEmoji)
     }
 
-    override fun setAvailabilityState(state: StrigaOnboardingContract.View.AvailabilityState) {
+    override fun setAvailabilityState(state: AvailabilityState) {
         when (state) {
-            StrigaOnboardingContract.View.AvailabilityState.Available -> handleAvailableState(state)
-            StrigaOnboardingContract.View.AvailabilityState.Unavailable -> handleUnavailableState(state)
+            AvailabilityState.Available -> handleAvailableState(state)
+            AvailabilityState.Unavailable -> handleUnavailableState(state)
         }
 
         binding.imageViewImage.animate()
@@ -111,32 +119,24 @@ class StrigaOnboardingFragment :
         IntercomService.showMessenger()
     }
 
-    private fun handleBackPress() {
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            onBackPressed()
-        }
-    }
-
     private fun onBackPressed() {
         popBackStack()
     }
 
     private fun bindHelpText() {
-        val helpHighlightText = binding.getString(R.string.striga_onboarding_help_highlight_text)
-        val helpCommonText = binding.getString(R.string.striga_onboarding_help_common_text, helpHighlightText)
-        val helpTextSpannable =
-            SpanUtils.highlightLinkNoUnderline(helpCommonText, helpHighlightText, binding.getColor(R.color.sky)) {
-                presenter.onClickHelp()
-            }
+        val helpHighlightText = getString(R.string.striga_onboarding_help_highlight_text)
+        val helpCommonText = getString(R.string.striga_onboarding_help_common_text, helpHighlightText)
+        val helpTextSpannable = SpanUtils.highlightLinkNoUnderline(
+            text = helpCommonText,
+            linkToHighlight = helpHighlightText,
+            linkColor = getColor(R.color.sky),
+            onClick = { presenter.onClickHelp() }
+        )
 
         with(binding.textViewHelp) {
+            highlightColor = Color.TRANSPARENT
             movementMethod = LinkMovementMethod()
-            bind(
-                TextViewCellModel.Raw(
-                    TextContainer.Raw(helpTextSpannable),
-                )
-            )
+            bind(TextViewCellModel.Raw(TextContainer.Raw(helpTextSpannable)))
         }
     }
 
@@ -166,21 +166,21 @@ class StrigaOnboardingFragment :
         )
     }
 
-    private fun handleAvailableState(state: StrigaOnboardingContract.View.AvailabilityState) {
+    private fun handleAvailableState(state: AvailabilityState) {
         handleViewState(state)
         binding.buttonContinue.setOnClickListener {
             presenter.onClickContinue()
         }
     }
 
-    private fun handleUnavailableState(state: StrigaOnboardingContract.View.AvailabilityState) {
+    private fun handleUnavailableState(state: AvailabilityState) {
         handleViewState(state)
         binding.buttonContinue.setOnClickListener {
             openCountrySelection()
         }
     }
 
-    private fun handleViewState(state: StrigaOnboardingContract.View.AvailabilityState) {
+    private fun handleViewState(state: AvailabilityState) {
         with(binding) {
             imageViewImage.bind(getImageModel(state))
             textViewTitle.bind(getTitleModel(state))
@@ -189,7 +189,7 @@ class StrigaOnboardingFragment :
             buttonContinue.apply {
                 setText(state.buttonTextRes)
                 icon = if (state.isButtonArrowVisible) {
-                    binding.getDrawable(R.drawable.ic_arrow_right)
+                    getDrawable(R.drawable.ic_arrow_right)
                 } else {
                     null
                 }
@@ -197,11 +197,11 @@ class StrigaOnboardingFragment :
         }
     }
 
-    private fun getImageModel(state: StrigaOnboardingContract.View.AvailabilityState) = ImageViewCellModel(
+    private fun getImageModel(state: AvailabilityState) = ImageViewCellModel(
         DrawableContainer(state.imageRes)
     )
 
-    private fun getTitleModel(state: StrigaOnboardingContract.View.AvailabilityState) = TextViewCellModel.Raw(
+    private fun getTitleModel(state: AvailabilityState) = TextViewCellModel.Raw(
         TextContainer.Res(state.titleTextRes),
     )
 }
