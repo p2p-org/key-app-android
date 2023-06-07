@@ -51,9 +51,8 @@
 
         <org.p2p.uikit.components.HintEditText
             android:id="@+id/editTextField"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="56dp"
-            android:layout_marginStart="4dp"
             android:background="@null"
             android:imeOptions="actionDone"
             android:inputType="text"
@@ -63,8 +62,10 @@
             android:textCursorDrawable="@drawable/ic_text_cursor"
             android:textIsSelectable="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toStartOf="@+id/imageViewArrow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Very long text from some source unknown to god" />
 
         <ImageView
             android:id="@+id/imageViewArrow"
@@ -74,7 +75,8 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@null" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

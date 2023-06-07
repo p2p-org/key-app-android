@@ -162,7 +162,7 @@ class StrigaSignUpSecondStepFragment :
     private fun showFundsPicker() {
         replaceFragmentForResult(
             target = StrigaPresetDataPickerFragment.create(
-                requestKey = COUNTRY_REQUEST_KEY,
+                requestKey = FUNDS_REQUEST_KEY,
                 resultKey = SELECTED_ITEM_RESULT_KEY,
                 dataToPick = StrigaPresetDataToPick.SOURCE_OF_FUNDS
             ),
@@ -218,7 +218,7 @@ class StrigaSignUpSecondStepFragment :
                     this[it] = editTextFunds
                     editTextFunds.setViewTag(it)
                 }
-                StrigaSignupDataType.COUNTRY.let {
+                StrigaSignupDataType.COUNTRY_ALPHA_2.let {
                     this[it] = editTextCountry
                     editTextCountry.setViewTag(it)
                 }
