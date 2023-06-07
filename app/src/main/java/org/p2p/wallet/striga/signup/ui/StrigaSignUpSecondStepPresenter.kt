@@ -21,7 +21,6 @@ class StrigaSignUpSecondStepPresenter(
     dispatchers: CoroutineDispatchers,
     private val interactor: StrigaSignupInteractor,
     private val onboardingInteractor: StrigaOnboardingInteractor,
-    private val userInteractor: StrigaUserInteractor,
     private val strigaItemCellMapper: StrigaItemCellMapper,
 ) :
     BasePresenter<StrigaSignUpSecondStepContract.View>(dispatchers.ui),
