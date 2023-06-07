@@ -173,19 +173,19 @@ class StrigaSignUpSecondStepFragment :
         when (requestKey) {
             OCCUPATION_REQUEST_KEY -> {
                 val selectedItem =
-                    bundle.getParcelableCompat<StrigaPresetDataItem.StrigaOccupationItem>(SELECTED_ITEM_RESULT_KEY)
+                    bundle.getParcelableCompat<StrigaPresetDataItem.Occupation>(SELECTED_ITEM_RESULT_KEY)
                         ?: return
                 presenter.onPresetDataChanged(selectedItem)
             }
             FUNDS_REQUEST_KEY -> {
                 val selectedItem =
-                    bundle.getParcelableCompat<StrigaPresetDataItem.StrigaSourceOfFundsItem>(SELECTED_ITEM_RESULT_KEY)
+                    bundle.getParcelableCompat<StrigaPresetDataItem.SourceOfFunds>(SELECTED_ITEM_RESULT_KEY)
                         ?: return
                 presenter.onPresetDataChanged(selectedItem)
             }
             COUNTRY_REQUEST_KEY -> {
                 val selectedItem =
-                    bundle.getParcelableCompat<StrigaPresetDataItem.StrigaCountryItem>(SELECTED_ITEM_RESULT_KEY)
+                    bundle.getParcelableCompat<StrigaPresetDataItem.Country>(SELECTED_ITEM_RESULT_KEY)
                         ?: return
                 presenter.onPresetDataChanged(selectedItem)
             }

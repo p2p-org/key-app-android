@@ -53,10 +53,10 @@ class StrigaSignUpFirstStepPresenter(
         view?.setButtonIsEnabled(isEnabled = true)
     }
 
-    override fun onCountryOfBirthChanged(selectedCountry: Country) {
-        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH, selectedCountry.codeAlpha3)
+    override fun onCountryChanged(newCountry: Country) {
+        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH, newCountry.codeAlpha3)
         view?.updateSignupField(
-            newValue = "${selectedCountry.flagEmoji} ${selectedCountry.name}",
+            newValue = "${newCountry.flagEmoji} ${newCountry.name}",
             type = StrigaSignupDataType.COUNTRY_OF_BIRTH
         )
     }
@@ -64,10 +64,16 @@ class StrigaSignUpFirstStepPresenter(
     override fun onSubmit() {
         view?.clearErrors()
 
-        val phoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value ?: return
-        val countryCode = signupData[StrigaSignupDataType.PHONE_CODE]?.value ?: return
+        val phoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value.orEmpty()
+        val regionCode = selectedCountryCode?.nameCodeAlpha2.orEmpty()
 
-        interactor.addValidator(PhoneNumberInputValidator(phoneNumber, countryCode))
+        interactor.addValidator(
+            PhoneNumberInputValidator(
+                phoneNumber = phoneNumber,
+                regionCode = regionCode,
+                countryCodeRepository = countryCodeRepository
+            )
+        )
         val (isValid, states) = interactor.validateFirstStep(signupData)
 
         if (isValid) {
@@ -92,14 +98,14 @@ class StrigaSignUpFirstStepPresenter(
 
     override fun onCountryCodeChanged(newCountry: CountryCode?) {
         selectedCountryCode = newCountry
-        setData(StrigaSignupDataType.PHONE_CODE, selectedCountryCode?.phoneCode ?: return)
+        setCachedData(StrigaSignupDataType.PHONE_CODE, selectedCountryCode?.phoneCode ?: return)
         view?.showCountryCode(selectedCountryCode)
     }
 
     override fun onPhoneNumberChanged(newPhone: String) {
         val countryCode = "+${selectedCountryCode?.phoneCode}"
         val phoneWithoutCountryCode = newPhone.replace(countryCode, "")
-        setData(StrigaSignupDataType.PHONE_NUMBER, phoneWithoutCountryCode)
+        setCachedData(StrigaSignupDataType.PHONE_NUMBER, phoneWithoutCountryCode)
         view?.clearError(StrigaSignupDataType.PHONE_NUMBER)
     }
 
@@ -129,13 +135,14 @@ class StrigaSignUpFirstStepPresenter(
         // so we need to find country by code and convert to country name
         val selectedCountryValue = signupData[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.value.orEmpty()
         interactor.findCountryByIsoAlpha3(selectedCountryValue)
-            ?.also { onCountryOfBirthChanged(it) }
+            ?.also { onCountryChanged(it) }
 
-        selectedCountryCode = signupData[StrigaSignupDataType.PHONE_CODE]?.value
+        val selectedCountryCodeValue = signupData[StrigaSignupDataType.PHONE_CODE]?.value ?: return
+        selectedCountryCode = countryCodeRepository.findCountryCodeByPhoneCode(selectedCountryCodeValue)
     }
 
     private fun mapDataForStorage() {
-        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, countryOfBirth?.codeAlpha3.orEmpty())
+        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH, countryOfBirth?.codeAlpha3.orEmpty())
     }
 
     private suspend fun loadDefaultCountryCode() {
@@ -146,6 +153,7 @@ class StrigaSignUpFirstStepPresenter(
                     ?: countryCodeRepository.detectCountryCodeByLocale()
 
             selectedCountryCode = countryCode
+            countryCode?.phoneCode?.let { setCachedData(StrigaSignupDataType.PHONE_CODE, it) }
 
             val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
 
@@ -157,6 +165,10 @@ class StrigaSignUpFirstStepPresenter(
             Timber.e(e, "Loading default country code failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
+    }
+
+    override fun onCountryClicked() {
+        view?.showCountryPicker()
     }
 
     private fun setCachedData(type: StrigaSignupDataType, newValue: String) {

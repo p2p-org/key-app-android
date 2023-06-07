@@ -10,5 +10,6 @@ interface CountryCodeLocalRepository {
     fun findCountryCodeByPhoneCode(phoneCode: String): CountryCode?
     fun findCountryCodeByIsoAlpha2(nameCode: String): CountryCode?
     fun findCountryCodeByIsoAlpha3(nameCode: String): CountryCode?
-    fun isValidNumberForRegion(phoneNumber: String, countryCode: String): Boolean
+    fun isValidNumberForRegion(phoneNumber: String, regionCode: String): Boolean
+
 }

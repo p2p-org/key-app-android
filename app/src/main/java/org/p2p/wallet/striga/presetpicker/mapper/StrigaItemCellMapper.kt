@@ -40,9 +40,9 @@ class StrigaItemCellMapper {
 
     private fun mapItemToCellItem(item: StrigaPresetDataItem): FinanceBlockCellModel {
         return when (item) {
-            is StrigaPresetDataItem.StrigaCountryItem -> item.details.mapItemToCellItem()
-            is StrigaPresetDataItem.StrigaSourceOfFundsItem -> item.details.mapItemToCellItem()
-            is StrigaPresetDataItem.StrigaOccupationItem -> item.details.mapItemToCellItem()
+            is StrigaPresetDataItem.Country -> item.details.mapItemToCellItem()
+            is StrigaPresetDataItem.SourceOfFunds -> item.details.mapItemToCellItem()
+            is StrigaPresetDataItem.Occupation -> item.details.mapItemToCellItem()
         }
     }
 
@@ -57,7 +57,7 @@ class StrigaItemCellMapper {
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
-            payload = StrigaPresetDataItem.StrigaOccupationItem(this)
+            payload = StrigaPresetDataItem.Occupation(this)
         )
     }
 
@@ -71,7 +71,7 @@ class StrigaItemCellMapper {
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
-            payload = StrigaPresetDataItem.StrigaSourceOfFundsItem(this)
+            payload = StrigaPresetDataItem.SourceOfFunds(this)
         )
     }
 
@@ -86,7 +86,7 @@ class StrigaItemCellMapper {
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
-            payload = StrigaPresetDataItem.StrigaCountryItem(this)
+            payload = StrigaPresetDataItem.Country(this)
         )
     }
 
@@ -96,15 +96,15 @@ class StrigaItemCellMapper {
 
     @StringRes
     private fun getSelectedItemHeaderTitle(item: StrigaPresetDataItem): Int = when (item) {
-        is StrigaPresetDataItem.StrigaCountryItem -> R.string.striga_chosen_country
-        is StrigaPresetDataItem.StrigaOccupationItem -> R.string.striga_chosen
-        is StrigaPresetDataItem.StrigaSourceOfFundsItem -> R.string.striga_chosen
+        is StrigaPresetDataItem.Country -> R.string.striga_chosen_country
+        is StrigaPresetDataItem.Occupation -> R.string.striga_chosen
+        is StrigaPresetDataItem.SourceOfFunds -> R.string.striga_chosen
     }
 
     @StringRes
     private fun getAllItemHeaderTitle(item: StrigaPresetDataItem): Int = when (item) {
-        is StrigaPresetDataItem.StrigaCountryItem -> R.string.striga_all_countries
-        is StrigaPresetDataItem.StrigaOccupationItem -> R.string.striga_all_industries
-        is StrigaPresetDataItem.StrigaSourceOfFundsItem -> R.string.striga_all_sources
+        is StrigaPresetDataItem.Country -> R.string.striga_all_countries
+        is StrigaPresetDataItem.Occupation -> R.string.striga_all_industries
+        is StrigaPresetDataItem.SourceOfFunds -> R.string.striga_all_sources
     }
 }

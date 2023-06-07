@@ -41,9 +41,9 @@ class StrigaSignUpSecondStepPresenter(
 
     override fun onPresetDataChanged(selectedItem: StrigaPresetDataItem) {
         when (selectedItem) {
-            is StrigaPresetDataItem.StrigaCountryItem -> onCountryChanged(selectedItem.details)
-            is StrigaPresetDataItem.StrigaOccupationItem -> onOccupationChanged(selectedItem.details)
-            is StrigaPresetDataItem.StrigaSourceOfFundsItem -> onSourceOfFundsChanged(selectedItem.details)
+            is StrigaPresetDataItem.Country -> onCountryChanged(selectedItem.details)
+            is StrigaPresetDataItem.Occupation -> onOccupationChanged(selectedItem.details)
+            is StrigaPresetDataItem.SourceOfFunds -> onSourceOfFundsChanged(selectedItem.details)
         }
     }
 

@@ -28,8 +28,6 @@ import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toDp
-import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -108,10 +106,10 @@ class StrigaSignUpFirstStepFragment :
         presenter.saveChanges()
     }
 
-    override fun showCountryPicker(selectedCountry: Country?) {
+    override fun showCountryPicker() {
         addFragment(
             StrigaPresetDataPickerFragment.create(
-                selectedCountry = StrigaPickerItem.CountryItem(selectedCountry),
+                dataToPick = StrigaPresetDataToPick.COUNTRY_OF_BIRTH,
                 requestKey = REQUEST_KEY_COUNTRY,
                 resultKey = RESULT_KEY_COUNTRY
             )
@@ -216,8 +214,8 @@ class StrigaSignUpFirstStepFragment :
 
     private fun onFragmentResult(requestKey: String, bundle: Bundle) {
         if (bundle.containsKey(RESULT_KEY_COUNTRY)) {
-            val selectedCountry = bundle.getParcelableCompat<StrigaPickerItem.CountryItem>(RESULT_KEY_COUNTRY)
-            presenter.onCountryChanged(selectedCountry?.selectedItem ?: return)
+            val selectedCountry = bundle.getParcelableCompat<StrigaPresetDataItem.Country>(RESULT_KEY_COUNTRY)
+            presenter.onCountryChanged(selectedCountry?.details ?: return)
         } else if (bundle.containsKey(RESULT_KEY_COUNTRY_CODE)) {
             val countryCode = bundle.getParcelableCompat<CountryCode>(RESULT_KEY_COUNTRY_CODE)
             presenter.onCountryCodeChanged(countryCode)

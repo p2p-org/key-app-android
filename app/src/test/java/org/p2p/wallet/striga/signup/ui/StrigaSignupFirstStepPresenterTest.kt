@@ -208,7 +208,7 @@ class StrigaSignupFirstStepPresenterTest {
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
         presenter.attach(view)
-        presenter.onCountryOfBirthChanged(chosenCountry)
+        presenter.onCountryChanged(chosenCountry)
         advanceUntilIdle()
 
         verify(exactly = 1) {

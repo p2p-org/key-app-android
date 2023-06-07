@@ -61,6 +61,6 @@ class CountryCodeInMemoryRepository(
     override fun findCountryCodeByIsoAlpha3(nameCode: String): CountryCode? =
         allCountryCodes.firstOrNull { it.nameCodeAlpha3.equals(nameCode, ignoreCase = true) }
 
-    override fun isValidNumberForRegion(phoneNumber: String, countryCode: String): Boolean =
-        countryCodeHelper.isValidNumberForRegion(phoneNumber, countryCode)
+    override fun isValidNumberForRegion(phoneNumber: String, regionCode: String): Boolean =
+        countryCodeHelper.isValidNumberForRegion(phoneNumber, regionCode)
 }

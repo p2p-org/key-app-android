@@ -15,13 +15,13 @@ class StrigaPresetDataInteractor(
     suspend fun getPresetData(type: StrigaPresetDataToPick): List<StrigaPresetDataItem> {
         return when (type) {
             StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY, StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> {
-                countryRepository.getAllCountries().map(StrigaPresetDataItem::StrigaCountryItem)
+                countryRepository.getAllCountries().map(StrigaPresetDataItem::Country)
             }
             StrigaPresetDataToPick.SOURCE_OF_FUNDS -> {
-                presetDataRepository.getSourceOfFundsList().map(StrigaPresetDataItem::StrigaSourceOfFundsItem)
+                presetDataRepository.getSourceOfFundsList().map(StrigaPresetDataItem::SourceOfFunds)
             }
             StrigaPresetDataToPick.OCCUPATION -> {
-                presetDataRepository.getOccupationValuesList().map(StrigaPresetDataItem::StrigaOccupationItem)
+                presetDataRepository.getOccupationValuesList().map(StrigaPresetDataItem::Occupation)
             }
         }
     }
@@ -39,23 +39,23 @@ class StrigaPresetDataInteractor(
         return when (type) {
             StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY -> {
                 countryRepository.findCountryByIsoAlpha2(value)?.let {
-                    StrigaPresetDataItem.StrigaCountryItem(it)
+                    StrigaPresetDataItem.Country(it)
                 }
             }
             StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> {
                 countryRepository.findCountryByIsoAlpha3(value)?.let {
-                    StrigaPresetDataItem.StrigaCountryItem(it)
+                    StrigaPresetDataItem.Country(it)
                 }
             }
             StrigaPresetDataToPick.SOURCE_OF_FUNDS -> {
                 presetDataRepository.getSourceOfFundsList()
                     .firstOrNull { it.sourceName == value }
-                    ?.let { StrigaPresetDataItem.StrigaSourceOfFundsItem(it) }
+                    ?.let { StrigaPresetDataItem.SourceOfFunds(it) }
             }
             StrigaPresetDataToPick.OCCUPATION -> {
                 presetDataRepository.getOccupationValuesList()
                     .firstOrNull { it.occupationName == value }
-                    ?.let { StrigaPresetDataItem.StrigaOccupationItem(it) }
+                    ?.let { StrigaPresetDataItem.Occupation(it) }
             }
         }
     }

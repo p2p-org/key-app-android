@@ -228,7 +228,7 @@ class StrigaSignupSecondStepPresenterTest {
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenter()
         presenter.attach(view)
-        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaSourceOfFundsItem(sourceOfFunds))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.SourceOfFunds(sourceOfFunds))
         advanceUntilIdle()
 
         verify {
@@ -250,7 +250,7 @@ class StrigaSignupSecondStepPresenterTest {
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenter()
         presenter.attach(view)
-        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaOccupationItem(occupation))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.Occupation(occupation))
         advanceUntilIdle()
 
         verify {

@@ -101,7 +101,7 @@ class StrigaOnboardingFragment :
             ),
             requestKey = REQUEST_KEY_PICKER,
             onResult = { _, result ->
-                result.getParcelableCompat<StrigaPresetDataItem.StrigaCountryItem>(RESULT_KEY_PICKER)
+                result.getParcelableCompat<StrigaPresetDataItem.Country>(RESULT_KEY_PICKER)
                     ?.also { presenter.onCurrentCountryChanged(it.details) }
             }
         )
