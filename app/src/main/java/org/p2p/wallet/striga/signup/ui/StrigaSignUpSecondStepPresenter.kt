@@ -15,7 +15,6 @@ import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 
 class StrigaSignUpSecondStepPresenter(
     dispatchers: CoroutineDispatchers,
