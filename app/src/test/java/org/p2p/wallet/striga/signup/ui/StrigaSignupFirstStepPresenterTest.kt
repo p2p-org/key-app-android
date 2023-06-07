@@ -4,7 +4,11 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.content.res.Resources
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.verify
+import io.mockk.mockk
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -31,7 +35,10 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
-import org.p2p.wallet.utils.*
+import org.p2p.wallet.utils.plantTimberToStdout
+import org.p2p.wallet.utils.TestAppScope
+import org.p2p.wallet.utils.UnconfinedTestDispatchers
+import org.p2p.wallet.utils.mutableListQueueOf
 
 private val SupportedCountry = CountryCode(
     countryName = "United Kingdom",
@@ -177,13 +184,13 @@ class StrigaSignupFirstStepPresenterTest {
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
         presenter.attach(view)
-        interactor.addValidator(PhoneNumberInputValidator("90", "5556667788",countryCodeRepository))
+        interactor.addValidator(PhoneNumberInputValidator("90", "5556667788", countryCodeRepository))
         presenter.onFieldChanged("+90 555 666 77 88", StrigaSignupDataType.PHONE_NUMBER)
         presenter.onFieldChanged("+90", StrigaSignupDataType.PHONE_CODE_WITH_PLUS)
         presenter.onFieldChanged("Vasya", StrigaSignupDataType.FIRST_NAME)
         presenter.onFieldChanged("Pupkin", StrigaSignupDataType.LAST_NAME)
         presenter.onFieldChanged("10.10.2010", StrigaSignupDataType.DATE_OF_BIRTH)
-        presenter.onCountryChanged(CountryCode("France", "emoji", "fr", "fra"))
+        presenter.onCountryChanged(CountryCode("France", "emoji", "fr", "fra", ","))
         presenter.onSubmit()
         advanceUntilIdle()
 

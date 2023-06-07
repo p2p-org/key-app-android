@@ -8,7 +8,6 @@ import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.koin.core.component.getScopeName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -41,8 +40,6 @@ private val SupportedCountry = CountryCode(
     phoneCode = "",
     mask = ""
 )
-
-
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrigaSignupSecondStepPresenterTest {
@@ -201,7 +198,7 @@ class StrigaSignupSecondStepPresenterTest {
         presenter.onFieldChanged("any state", StrigaSignupDataType.CITY_STATE)
         presenter.onPresetDataChanged(StrigaPresetDataItem.Occupation(StrigaOccupation("leafer", "some_emoji")))
         presenter.onPresetDataChanged(StrigaPresetDataItem.SourceOfFunds(StrigaSourceOfFunds("leafer")))
-        presenter.onPresetDataChanged(StrigaPresetDataItem.Country(CountryCode("leafer", "emoji", "fr", "fra","","")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.Country(CountryCode("leafer", "emoji", "fr", "fra", "", "")))
         presenter.onSubmit()
         advanceUntilIdle()
 

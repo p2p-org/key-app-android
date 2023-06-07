@@ -41,8 +41,8 @@ class StrigaSignUpFirstStepFragment :
     companion object {
         const val REQUEST_KEY_COUNTRY = "REQUEST_KEY_COUNTRY"
         const val RESULT_KEY_COUNTRY = "RESULT_KEY_COUNTRY"
-        const val REQUEST_KEY_COUNTRY_CODE = "REQUEST_KEY_COUNTRY_CODE"
-        const val RESULT_KEY_COUNTRY_CODE = "RESULT_CODE_COUNTRY_CODE"
+        const val REQUEST_KEY_PHONE_COUNTRY_CODE = "REQUEST_KEY_COUNTRY_CODE"
+        const val RESULT_KEY_PHONE_COUNTRY_CODE = "RESULT_CODE_COUNTRY_CODE"
         fun create() = StrigaSignUpFirstStepFragment()
     }
 
@@ -91,7 +91,7 @@ class StrigaSignUpFirstStepFragment :
                 )
             )
             setFragmentResultListener(
-                REQUEST_KEY_COUNTRY_CODE,
+                REQUEST_KEY_PHONE_COUNTRY_CODE,
                 ::onFragmentResult
             )
             setFragmentResultListener(
@@ -213,12 +213,15 @@ class StrigaSignUpFirstStepFragment :
     }
 
     private fun onFragmentResult(requestKey: String, bundle: Bundle) {
-        if (bundle.containsKey(RESULT_KEY_COUNTRY)) {
-            val selectedCountry = bundle.getParcelableCompat<StrigaPresetDataItem.Country>(RESULT_KEY_COUNTRY)
-            presenter.onCountryChanged(selectedCountry?.details ?: return)
-        } else if (bundle.containsKey(RESULT_KEY_COUNTRY_CODE)) {
-            val countryCode = bundle.getParcelableCompat<CountryCode>(RESULT_KEY_COUNTRY_CODE)
-            presenter.onPhoneCountryCodeChanged(countryCode)
+        when {
+            bundle.containsKey(RESULT_KEY_COUNTRY) -> {
+                val selectedCountry = bundle.getParcelableCompat<StrigaPresetDataItem.Country>(RESULT_KEY_COUNTRY)
+                presenter.onCountryChanged(selectedCountry?.details ?: return)
+            }
+            bundle.containsKey(RESULT_KEY_PHONE_COUNTRY_CODE) -> {
+                val countryCode = bundle.getParcelableCompat<CountryCode>(RESULT_KEY_PHONE_COUNTRY_CODE) ?: return
+                presenter.onPhoneCountryCodeChanged(countryCode)
+            }
         }
     }
 
@@ -242,8 +245,8 @@ class StrigaSignUpFirstStepFragment :
         addFragment(
             target = CountryCodePickerFragment.create(
                 selectedCountryCode,
-                REQUEST_KEY_COUNTRY_CODE,
-                RESULT_KEY_COUNTRY_CODE
+                REQUEST_KEY_PHONE_COUNTRY_CODE,
+                RESULT_KEY_PHONE_COUNTRY_CODE
             )
         )
     }

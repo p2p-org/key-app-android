@@ -27,7 +27,7 @@ import org.p2p.wallet.utils.plantTimberToStdout
 class PhoneNumberInputValidatorTest {
 
     init {
-        plantTimberToStdout("CountryCodeXmlParserTest")
+        plantTimberToStdout("PhoneNumberInputValidatorTest")
     }
 
     @Before
@@ -119,7 +119,7 @@ class PhoneNumberInputValidatorTest {
         val assetManager: AssetManager = mockk {
             every { open(any()) } answers {
                 val file = File(assetsRoot, arg<String>(0))
-                if (!file.exists()) throw IllegalStateException("File not found: ${file.absolutePath}")
+                if (!file.exists()) error("File not found: ${file.absolutePath}")
                 file.inputStream()
             }
         }

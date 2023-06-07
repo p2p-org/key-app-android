@@ -103,7 +103,6 @@
                 android:backgroundTint="@color/bg_snow"
                 android:inputType="number"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-                android:textSize="22sp"
                 app:labelText="@string/striga_phone_number" />
 
             <TextView

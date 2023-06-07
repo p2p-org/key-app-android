@@ -59,7 +59,7 @@ class StrigaSignUpFirstStepPresenter(
             newValue = "${newCountry.flagEmoji} ${newCountry.countryName}",
             type = StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3
         )
-        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, selectedCountry.codeAlpha3)
+        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, newCountry.nameCodeAlpha3)
     }
 
     override fun onSubmit() {
@@ -90,7 +90,7 @@ class StrigaSignUpFirstStepPresenter(
         }
     }
 
-    override fun onPhoneCountryCodeChanged(newCountry: CountryCode?) {
+    override fun onPhoneCountryCodeChanged(newCountry: CountryCode) {
         selectedCountryCode = newCountry
         val phoneCodeWithPlus = "+${selectedCountryCode?.phoneCode}"
         setCachedData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, phoneCodeWithPlus)
@@ -137,7 +137,7 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     private fun mapDataForStorage() {
-        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH, countryOfBirth?.nameCodeAlpha3.orEmpty())
+        countryOfBirth?.nameCodeAlpha3?.let { setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, it) }
     }
 
     private suspend fun loadDefaultCountryCode() {
