@@ -12,7 +12,6 @@ import org.p2p.wallet.bridge.BridgeModule
 import org.p2p.wallet.bridge.claim.ClaimModule
 import org.p2p.wallet.bridge.send.BridgeSendModule
 import org.p2p.wallet.common.AppRestarter
-import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
@@ -54,7 +53,6 @@ object AppModule {
     fun create(restartAction: () -> Unit) = module {
         singleOf(::AppScope)
         single<Resources> { androidContext().resources }
-        singleOf(::InAppFeatureFlags)
         singleOf(::ServiceScope)
         single { AppRestarter { restartAction.invoke() } }
         single {
