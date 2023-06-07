@@ -10,7 +10,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_gravity="center|end"
-        android:backgroundTint="@color/rain">
+        android:background="@color/bg_rain">
 
         <View
             android:id="@+id/buttonShowSearch"

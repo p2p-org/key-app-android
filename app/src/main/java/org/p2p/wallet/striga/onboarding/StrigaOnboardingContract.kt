@@ -35,15 +35,13 @@ interface StrigaOnboardingContract {
 
         fun setCurrentCountry(country: Country)
         fun setAvailabilityState(state: AvailabilityState)
-        fun openCountrySelection()
         fun openHelp()
         fun navigateNext()
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onCountrySelected(country: Country)
         fun onClickContinue()
-        fun onClickChangeCountry()
         fun onClickHelp()
+        fun onCurrentCountryChanged(selectedCountry: Country)
     }
 }

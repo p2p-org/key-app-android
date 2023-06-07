@@ -46,27 +46,19 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
-        setData(type, newValue)
+        setCachedData(type, newValue)
 
         view?.clearError(type)
         // enabling button if something changed
-        view?.setButtonIsEnabled(true)
+        view?.setButtonIsEnabled(isEnabled = true)
     }
 
-    override fun onCountryChanged(newCountry: Country) {
-        countryOfBirth = newCountry
+    override fun onCountryOfBirthChanged(selectedCountry: Country) {
+        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH, selectedCountry.codeAlpha3)
         view?.updateSignupField(
-            newValue = "${newCountry.flagEmoji} ${newCountry.name}",
+            newValue = "${selectedCountry.flagEmoji} ${selectedCountry.name}",
             type = StrigaSignupDataType.COUNTRY_OF_BIRTH
         )
-        signupData[StrigaSignupDataType.COUNTRY_OF_BIRTH] = StrigaSignupData(
-            type = StrigaSignupDataType.COUNTRY_OF_BIRTH,
-            value = newCountry.codeAlpha3
-        )
-    }
-
-    override fun onCountryClicked() {
-        view?.showCountryPicker(selectedCountry = countryOfBirth)
     }
 
     override fun onSubmit() {
@@ -125,19 +117,21 @@ class StrigaSignUpFirstStepPresenter(
 
         // fill pre-saved values as-is
         data.values.forEach {
-            setData(it.type, it.value.orEmpty())
+            setCachedData(it.type, it.value.orEmpty())
             view?.updateSignupField(it.type, it.value.orEmpty())
         }
 
+        getAndUpdateCountryField(data)
+    }
+
+    private suspend fun getAndUpdateCountryField(signupData: Map<StrigaSignupDataType, StrigaSignupData>) {
         // db stores COUNTRY_OF_BIRTH as country name code ISO 3166-1 alpha-3,
         // so we need to find country by code and convert to country name
-        countryOfBirth = interactor.findCountryByIsoAlpha3(
-            data[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.value.orEmpty()
-        )
-        selectedCountryCode = countryCodeRepository.findCountryCodeByPhoneCode(
-            data[StrigaSignupDataType.PHONE_CODE]?.value.orEmpty()
-        )
-        countryOfBirth?.let { onCountryChanged(it) }
+        val selectedCountryValue = signupData[StrigaSignupDataType.COUNTRY_OF_BIRTH]?.value.orEmpty()
+        interactor.findCountryByIsoAlpha3(selectedCountryValue)
+            ?.also { onCountryOfBirthChanged(it) }
+
+        selectedCountryCode = signupData[StrigaSignupDataType.PHONE_CODE]?.value
     }
 
     private fun mapDataForStorage() {
@@ -165,7 +159,7 @@ class StrigaSignUpFirstStepPresenter(
         }
     }
 
-    private fun setData(type: StrigaSignupDataType, newValue: String) {
+    private fun setCachedData(type: StrigaSignupDataType, newValue: String) {
         signupData[type] = StrigaSignupData(type = type, value = newValue)
     }
 }

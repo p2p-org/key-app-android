@@ -35,6 +35,20 @@ class StrigaSignupDataDatabaseRepository(
         )
     }
 
+    override suspend fun getUserSignupDataByType(
+        type: StrigaSignupDataType
+    ): StrigaDataLayerResult<StrigaSignupData> = try {
+        dao.getSignupDataForUser(currentUserPublicKey.base58Value)
+            .map(mapper::fromEntity)
+            .first { it.type == type }
+            .toSuccessResult()
+    } catch (error: Throwable) {
+        StrigaDataLayerError.from(
+            error = error,
+            default = StrigaDataLayerError.InternalError(error)
+        )
+    }
+
     override suspend fun createUserSignupData(): StrigaDataLayerResult<Unit> = try {
         val isUserHasNoSavedData: Boolean = dao.countSignupDataForUser(tokenKeyProvider.publicKey) == 0
         if (isUserHasNoSavedData) {
