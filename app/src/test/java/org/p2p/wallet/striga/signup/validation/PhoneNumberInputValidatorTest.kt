@@ -1,24 +1,49 @@
 package org.p2p.wallet.striga.signup.validation
 
+import android.content.Context
+import android.content.res.AssetManager
+import android.content.res.Resources
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
+import java.io.File
+import java.io.InputStream
+import java.nio.file.Paths
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.emptyString
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
+import org.p2p.wallet.utils.TestCoroutineDispatchers
+import org.p2p.wallet.utils.plantTimberToStdout
 
 class PhoneNumberInputValidatorTest {
 
-    @MockK(relaxed = true)
+    init {
+        plantTimberToStdout("CountryCodeXmlParserTest")
+    }
+
+    @Before
+    fun setup() {
+        MockKAnnotations.init(this)
+        initCountryCodeLocalRepository()
+    }
+
+    private val currentWorkingDir = Paths.get("").toAbsolutePath().toString()
+    private val assetsRoot = File(currentWorkingDir, "build/intermediates/assets/debug")
+    private val dispatchers = TestCoroutineDispatchers()
     lateinit var countryCodeRepository: CountryCodeLocalRepository
 
     @Test
@@ -93,5 +118,38 @@ class PhoneNumberInputValidatorTest {
         // Then
         assertFalse(result)
         assertEquals(TextContainer(R.string.striga_validation_error_phone_number), validator.errorMessage)
+    }
+
+    private fun initCountryCodeLocalRepository() {
+        val assetManager: AssetManager = mockk {
+            every { open(any()) } answers {
+                val file = File(assetsRoot, arg<String>(0))
+                if (!file.exists()) throw IllegalStateException("File not found: ${file.absolutePath}")
+                file.inputStream()
+            }
+        }
+
+        val context = mockk<Context> {
+            every { assets } returns assetManager
+        }
+        val resources = mockk<Resources> {
+            every { openRawResource(R.raw.ccp_english) } returns readCountriesXmlFile()
+        }
+        val phoneNumberUtil = PhoneNumberUtil.createInstance(context)
+
+        val parser = CountryCodeXmlParser(resources, phoneNumberUtil)
+
+        countryCodeRepository = CountryCodeInMemoryRepository(
+            dispatchers = dispatchers,
+            context = context,
+            countryCodeHelper = parser
+        )
+    }
+
+    private fun readCountriesXmlFile(): InputStream {
+        val ccpEnglishFile = File(currentWorkingDir, "src/main/res/raw/ccp_english.xml")
+        assertTrue(ccpEnglishFile.exists())
+
+        return ccpEnglishFile.inputStream()
     }
 }
