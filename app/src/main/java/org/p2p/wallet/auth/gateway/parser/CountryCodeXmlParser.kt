@@ -73,9 +73,9 @@ class CountryCodeXmlParser(
         }
     }
 
-    fun isValidNumberForRegion(phoneNumber: String, countryCode: String): Boolean {
+    fun isValidNumberForRegion(phoneNumber: String, region: String): Boolean {
         return try {
-            val validatePhoneNumber = phoneNumberUtil.parse(phoneNumber, countryCode.uppercase())
+            val validatePhoneNumber = phoneNumberUtil.parse(phoneNumber, region.uppercase())
             phoneNumberUtil.isValidNumber(validatePhoneNumber)
         } catch (countryNotFound: Throwable) {
             Timber.i(countryNotFound, "Phone number validation failed")

@@ -1,19 +1,30 @@
 package org.p2p.wallet.striga.signup.ui
 
+import android.content.Context
+import android.content.res.AssetManager
+import android.content.res.Resources
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
-import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.mockk
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import java.io.File
+import java.io.InputStream
+import java.nio.file.Paths
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.auth.model.PhoneMask
-import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
@@ -22,34 +33,34 @@ import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.utils.plantTimberToStdout
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.mutableListQueueOf
-import org.p2p.wallet.utils.plantTimberToStdout
 
-private val SupportedCountry = Country(
-    name = "United Kingdom",
+private val SupportedCountry = CountryCode(
+    countryName = "United Kingdom",
     flagEmoji = "🇬🇧",
-    codeAlpha2 = "gb",
-    codeAlpha3 = "gbr"
-)
-
-private val DefaultPhoneMask = PhoneMask(
-    countryCodeAlpha2 = "ua",
-    phoneCode = "+380",
-    mask = "380 ## ### ## ##"
+    nameCodeAlpha2 = "gb",
+    nameCodeAlpha3 = "gbr",
+    phoneCode = "",
+    mask = ""
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrigaSignupFirstStepPresenterTest {
 
+    private val currentWorkingDir = Paths.get("").toAbsolutePath().toString()
+    private val assetsRoot = File(currentWorkingDir, "build/intermediates/assets/debug")
+    private lateinit var countryCodeRepository: CountryCodeRepository
+
     @MockK(relaxed = true)
-    lateinit var countryRepository: CountryRepository
+    lateinit var countryRepository: CountryCodeRepository
 
     @MockK(relaxed = true)
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
-
     lateinit var interactor: StrigaSignupInteractor
 
     private val signupDataValidator = StrigaSignupDataValidator()
@@ -59,12 +70,14 @@ class StrigaSignupFirstStepPresenterTest {
 
     init {
         plantTimberToStdout("StrigaSignupFirstStepPresenterTest")
+        initCountryCodeLocalRepository()
     }
 
     private fun createPresenter(): StrigaSignUpFirstStepPresenter {
         return StrigaSignUpFirstStepPresenter(
             dispatchers = dispatchers,
             interactor = interactor,
+            countryRepository = countryCodeRepository
         )
     }
 
@@ -85,7 +98,6 @@ class StrigaSignupFirstStepPresenterTest {
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -100,7 +112,6 @@ class StrigaSignupFirstStepPresenterTest {
                 capture(updatedFieldValueStates)
             )
         }
-        verify(exactly = 1) { view.setPhoneMask(any()) }
         verify(exactly = 0) { view.setErrors(any()) }
         verify(exactly = 0) { view.clearErrors() }
         verify(exactly = 0) { view.setButtonIsEnabled(any()) }
@@ -125,7 +136,6 @@ class StrigaSignupFirstStepPresenterTest {
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -147,7 +157,6 @@ class StrigaSignupFirstStepPresenterTest {
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -171,18 +180,17 @@ class StrigaSignupFirstStepPresenterTest {
             StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
         presenter.attach(view)
-
+        interactor.addValidator(PhoneNumberInputValidator("90", "5556667788", countryCodeRepository))
         presenter.onFieldChanged("+90 555 666 77 88", StrigaSignupDataType.PHONE_NUMBER)
-        presenter.onFieldChanged("+90", StrigaSignupDataType.PHONE_CODE)
+        presenter.onFieldChanged("+90", StrigaSignupDataType.PHONE_CODE_WITH_PLUS)
         presenter.onFieldChanged("Vasya", StrigaSignupDataType.FIRST_NAME)
         presenter.onFieldChanged("Pupkin", StrigaSignupDataType.LAST_NAME)
         presenter.onFieldChanged("10.10.2010", StrigaSignupDataType.DATE_OF_BIRTH)
-        presenter.onCountryOfBirthChanged(Country("France", "emoji", "fr", "fra"))
+        presenter.onCountryChanged(CountryCode("France", "emoji", "fr", "fra", ","))
         presenter.onSubmit()
         advanceUntilIdle()
 
@@ -199,18 +207,18 @@ class StrigaSignupFirstStepPresenterTest {
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
 
-        val chosenCountry = Country("Turkey", "\uD83C\uDDF9\uD83C\uDDF7", "TR", "TUR")
+        val chosenCountry = CountryCode("Turkey", "\uD83C\uDDF9\uD83C\uDDF7", "TR", "TUR", "", "996")
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
         presenter.attach(view)
-        presenter.onCountryOfBirthChanged(chosenCountry)
+        presenter.onCountryChanged(chosenCountry)
         advanceUntilIdle()
 
         verify(exactly = 1) {
             view.updateSignupField(
                 StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3,
-                "${chosenCountry.flagEmoji} ${chosenCountry.name}"
+                "${chosenCountry.flagEmoji} ${chosenCountry.countryName}"
             )
         }
     }
@@ -218,11 +226,11 @@ class StrigaSignupFirstStepPresenterTest {
     @Test
     fun `GIVEN initial state with saved data WHEN presenter created THEN check country shows to user`() = runTest {
         val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, SupportedCountry.codeAlpha3)
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, SupportedCountry.nameCodeAlpha3)
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
-        coEvery { countryRepository.findCountryByIsoAlpha3(SupportedCountry.codeAlpha3) } returns SupportedCountry
+        coEvery { countryRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
+        coEvery { countryRepository.findCountryCodeByIsoAlpha3(SupportedCountry.nameCodeAlpha3) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -232,11 +240,11 @@ class StrigaSignupFirstStepPresenterTest {
         verify {
             view.updateSignupField(
                 StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3,
-                SupportedCountry.codeAlpha3
+                SupportedCountry.nameCodeAlpha3
             )
             view.updateSignupField(
                 StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3,
-                "${SupportedCountry.flagEmoji} ${SupportedCountry.name}"
+                "${SupportedCountry.flagEmoji} ${SupportedCountry.countryName}"
             )
         }
     }
@@ -244,11 +252,11 @@ class StrigaSignupFirstStepPresenterTest {
     @Test
     fun `GIVEN invalid user input WHEN user inputs new data THEN check errors are cleared`() = runTest {
         val initialSignupData = listOf(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, SupportedCountry.codeAlpha3)
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, SupportedCountry.nameCodeAlpha3)
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findCountryByIsoAlpha2(SupportedCountry.codeAlpha2) } returns SupportedCountry
-        coEvery { countryRepository.findCountryByIsoAlpha3(SupportedCountry.codeAlpha3) } returns SupportedCountry
+        coEvery { countryRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
+        coEvery { countryRepository.findCountryCodeByIsoAlpha3(SupportedCountry.nameCodeAlpha3) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpFirstStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -261,5 +269,38 @@ class StrigaSignupFirstStepPresenterTest {
         verify { view.setErrors(any()) }
         verify { view.setButtonIsEnabled(any()) }
         verify { view.clearError(StrigaSignupDataType.PHONE_NUMBER) }
+    }
+
+    private fun initCountryCodeLocalRepository() {
+        val assetManager: AssetManager = mockk {
+            every { open(any()) } answers {
+                val file = File(assetsRoot, arg<String>(0))
+                if (!file.exists()) throw IllegalStateException("File not found: ${file.absolutePath}")
+                file.inputStream()
+            }
+        }
+
+        val context = mockk<Context> {
+            every { assets } returns assetManager
+        }
+        val resources = mockk<Resources> {
+            every { openRawResource(R.raw.ccp_english) } returns readCountriesXmlFile()
+        }
+        val phoneNumberUtil = PhoneNumberUtil.createInstance(context)
+
+        val parser = CountryCodeXmlParser(resources, phoneNumberUtil)
+
+        countryCodeRepository = CountryCodeInMemoryRepository(
+            dispatchers = dispatchers,
+            context = context,
+            countryCodeHelper = parser
+        )
+    }
+
+    private fun readCountriesXmlFile(): InputStream {
+        val ccpEnglishFile = File(currentWorkingDir, "src/main/res/raw/ccp_english.xml")
+        Assert.assertTrue(ccpEnglishFile.exists())
+
+        return ccpEnglishFile.inputStream()
     }
 }

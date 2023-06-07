@@ -12,7 +12,7 @@ class CountryCodeInMemoryRepository(
     private val dispatchers: CoroutineDispatchers,
     private val context: Context,
     private val countryCodeHelper: CountryCodeXmlParser
-) : CountryCodeLocalRepository {
+) : CountryCodeRepository {
 
     private val allCountryCodes: List<CountryCode> by lazy {
         countryCodeHelper.parserCountryCodesFromXmlFile()
@@ -61,6 +61,13 @@ class CountryCodeInMemoryRepository(
     override fun findCountryCodeByIsoAlpha3(nameCode: String): CountryCode? =
         allCountryCodes.firstOrNull { it.nameCodeAlpha3.equals(nameCode, ignoreCase = true) }
 
-    override fun isValidNumberForRegion(phoneNumber: String, countryCode: String): Boolean =
-        countryCodeHelper.isValidNumberForRegion(phoneNumber, countryCode)
+    override fun isValidNumberForRegion(phoneNumber: String, regionCode: String): Boolean =
+        countryCodeHelper.isValidNumberForRegion(phoneNumber, regionCode)
+
+    override suspend fun detectCountryOrDefault(): CountryCode {
+        return detectCountryCodeBySimCard()
+            ?: detectCountryCodeByNetwork()
+            ?: detectCountryCodeByLocale()
+            ?: allCountryCodes.first()
+    }
 }

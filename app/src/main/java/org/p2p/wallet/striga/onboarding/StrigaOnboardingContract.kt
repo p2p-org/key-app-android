@@ -3,7 +3,7 @@ package org.p2p.wallet.striga.onboarding
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
@@ -33,7 +33,7 @@ interface StrigaOnboardingContract {
             );
         }
 
-        fun setCurrentCountry(country: Country)
+        fun setCurrentCountry(country: CountryCode)
         fun setAvailabilityState(state: AvailabilityState)
         fun openHelp()
         fun navigateNext()
@@ -42,6 +42,6 @@ interface StrigaOnboardingContract {
     interface Presenter : MvpPresenter<View> {
         fun onClickContinue()
         fun onClickHelp()
-        fun onCurrentCountryChanged(selectedCountry: Country)
+        fun onCurrentCountryChanged(selectedCountry: CountryCode)
     }
 }
