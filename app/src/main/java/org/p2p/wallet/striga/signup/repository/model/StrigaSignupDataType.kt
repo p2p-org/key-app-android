@@ -7,7 +7,7 @@ import org.p2p.wallet.R
 enum class StrigaSignupDataType(@StringRes val tag: Int) {
     EMAIL(R.string.tag_striga_email),
     // used internally
-    PHONE_CODE(R.string.tag_striga_phone_code),
+    PHONE_CODE_WITH_PLUS(R.string.tag_striga_phone_code),
     PHONE_NUMBER(R.string.tag_striga_phone_number),
     FIRST_NAME(R.string.tag_striga_first_name),
     LAST_NAME(R.string.tag_striga_last_name),

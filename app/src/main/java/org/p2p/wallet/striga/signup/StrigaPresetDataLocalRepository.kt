@@ -1,6 +1,6 @@
 package org.p2p.wallet.striga.signup
 
-import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 
@@ -11,5 +11,5 @@ interface StrigaPresetDataLocalRepository {
     /**
      * @return true if the country is supported by Striga
      */
-    fun checkIsCountrySupported(country: Country): Boolean
+    fun checkIsCountrySupported(country: CountryCode): Boolean
 }

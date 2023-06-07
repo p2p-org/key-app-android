@@ -13,8 +13,6 @@ import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository

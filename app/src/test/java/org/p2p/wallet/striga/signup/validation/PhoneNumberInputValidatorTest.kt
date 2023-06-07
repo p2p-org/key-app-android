@@ -20,7 +20,7 @@ import org.p2p.core.utils.emptyString
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
-import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.utils.TestCoroutineDispatchers
 import org.p2p.wallet.utils.plantTimberToStdout
 
@@ -39,7 +39,7 @@ class PhoneNumberInputValidatorTest {
     private val currentWorkingDir = Paths.get("").toAbsolutePath().toString()
     private val assetsRoot = File(currentWorkingDir, "build/intermediates/assets/debug")
     private val dispatchers = TestCoroutineDispatchers()
-    lateinit var countryCodeRepository: CountryCodeLocalRepository
+    lateinit var countryCodeRepository: CountryCodeRepository
 
     @Test
     fun `GIVEN valid phone number WHEN validate THEN return true`() {

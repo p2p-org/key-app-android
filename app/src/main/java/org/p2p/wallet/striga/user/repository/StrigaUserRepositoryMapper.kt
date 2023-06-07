@@ -59,7 +59,7 @@ class StrigaUserRepositoryMapper {
             lastName = map.getOrThrow(StrigaSignupDataType.LAST_NAME),
             userEmail = map.getOrThrow(StrigaSignupDataType.EMAIL),
             mobilePhoneDetails = StrigaCreateUserRequest.MobileRequest(
-                countryCode = map.getOrThrow(StrigaSignupDataType.PHONE_CODE),
+                countryCode = map.getOrThrow(StrigaSignupDataType.PHONE_CODE_WITH_PLUS),
                 number = map.getOrThrow(StrigaSignupDataType.PHONE_NUMBER)
             ),
             dateOfBirth = StrigaCreateUserRequest.DateOfBirthRequest(

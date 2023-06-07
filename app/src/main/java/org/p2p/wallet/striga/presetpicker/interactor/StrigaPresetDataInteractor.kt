@@ -1,6 +1,6 @@
 package org.p2p.wallet.striga.presetpicker.interactor
 
-import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
@@ -8,14 +8,14 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
 class StrigaPresetDataInteractor(
     private val presetDataRepository: StrigaPresetDataLocalRepository,
-    private val countryRepository: CountryRepository,
+    private val countryRepository: CountryCodeRepository,
     private val strigaSignupDataRepository: StrigaSignupDataLocalRepository
 ) {
 
     suspend fun getPresetData(type: StrigaPresetDataToPick): List<StrigaPresetDataItem> {
         return when (type) {
             StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY, StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> {
-                countryRepository.getAllCountries().map(StrigaPresetDataItem::Country)
+                countryRepository.getCountryCodes().map(StrigaPresetDataItem::Country)
             }
             StrigaPresetDataToPick.SOURCE_OF_FUNDS -> {
                 presetDataRepository.getSourceOfFundsList().map(StrigaPresetDataItem::SourceOfFunds)
@@ -38,12 +38,12 @@ class StrigaPresetDataInteractor(
     private suspend fun createPresetDataItem(type: StrigaPresetDataToPick, value: String): StrigaPresetDataItem? {
         return when (type) {
             StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY -> {
-                countryRepository.findCountryByIsoAlpha2(value)?.let {
+                countryRepository.findCountryCodeByIsoAlpha2(value)?.let {
                     StrigaPresetDataItem.Country(it)
                 }
             }
             StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> {
-                countryRepository.findCountryByIsoAlpha3(value)?.let {
+                countryRepository.findCountryCodeByIsoAlpha3(value)?.let {
                     StrigaPresetDataItem.Country(it)
                 }
             }

@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.onboarding.interactor
 
-import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
@@ -10,25 +10,25 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
 class StrigaOnboardingInteractor(
-    private val countryRepository: CountryRepository,
+    private val countryRepository: CountryCodeRepository,
     private val strigaPresetDataLocalRepository: StrigaPresetDataLocalRepository,
     private val signupDataRepository: StrigaSignupDataLocalRepository
 ) {
-    suspend fun getChosenCountry(): Country {
+    suspend fun getChosenCountry(): CountryCode {
         return signupDataRepository.getUserSignupDataByType(StrigaSignupDataType.COUNTRY)
             .successOrNull()
             ?.value
-            ?.let { countryRepository.findCountryByIsoAlpha2(it) }
+            ?.let { countryRepository.findCountryCodeByIsoAlpha2(it) }
             ?: countryRepository.detectCountryOrDefault()
     }
 
-    suspend fun saveCurrentCountry(country: Country) {
+    suspend fun saveCurrentCountry(country: CountryCode) {
         signupDataRepository.updateSignupData(
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, country.codeAlpha2)
+            StrigaSignupData(StrigaSignupDataType.COUNTRY, country.nameCodeAlpha2)
         )
     }
 
-    fun checkIsCountrySupported(country: Country): Boolean {
+    fun checkIsCountrySupported(country: CountryCode): Boolean {
         return strigaPresetDataLocalRepository.checkIsCountrySupported(country)
     }
 

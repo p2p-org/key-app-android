@@ -20,7 +20,7 @@ import org.p2p.uikit.utils.image.bind
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bind
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOnboardingBinding
 import org.p2p.wallet.intercom.IntercomService
@@ -76,8 +76,8 @@ class StrigaOnboardingFragment :
         replaceFragment(StrigaSignUpFirstStepFragment.create())
     }
 
-    override fun setCurrentCountry(country: Country) {
-        mapCountryView(country.name, country.flagEmoji)
+    override fun setCurrentCountry(country: CountryCode) {
+        mapCountryView(country.countryName, country.flagEmoji)
     }
 
     override fun setAvailabilityState(state: StrigaOnboardingContract.View.AvailabilityState) {

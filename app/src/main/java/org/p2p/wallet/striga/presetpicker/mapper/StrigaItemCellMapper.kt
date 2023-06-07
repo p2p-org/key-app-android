@@ -9,7 +9,7 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
@@ -75,10 +75,10 @@ class StrigaItemCellMapper {
         )
     }
 
-    private fun Country.mapItemToCellItem(): FinanceBlockCellModel {
+    private fun CountryCode.mapItemToCellItem(): FinanceBlockCellModel {
         val leftSideCellModel = LeftSideCellModel.IconWithText(
             firstLineText = TextViewCellModel.Raw(
-                text = TextContainer(toUiTitle(name)),
+                text = TextContainer(toUiTitle(countryName)),
                 textAppearance = R.style.UiKit_TextAppearance_Regular_Text3,
                 textColor = R.color.text_night
             ),

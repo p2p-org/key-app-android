@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.onboarding
 
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract.View.AvailabilityState
@@ -19,7 +19,7 @@ class StrigaOnboardingPresenter(
         }
     }
 
-    override fun onCurrentCountryChanged(selectedCountry: Country) {
+    override fun onCurrentCountryChanged(selectedCountry: CountryCode) {
         launch {
             interactor.saveCurrentCountry(selectedCountry)
 
@@ -40,7 +40,7 @@ class StrigaOnboardingPresenter(
         view?.openHelp()
     }
 
-    private fun isCountrySupported(country: Country): Boolean {
+    private fun isCountrySupported(country: CountryCode): Boolean {
         return interactor.checkIsCountrySupported(country)
     }
 }

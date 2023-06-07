@@ -11,7 +11,6 @@ import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.auth.repository.Country
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
 import org.p2p.wallet.auth.widget.PhoneNumberInputView
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -184,7 +183,7 @@ class StrigaSignUpFirstStepFragment :
                     this[it] = editTextPhoneNumber
                     editTextPhoneNumber.setViewTag(it)
                 }
-                StrigaSignupDataType.PHONE_CODE.let {
+                StrigaSignupDataType.PHONE_CODE_WITH_PLUS.let {
                     this[it] = editTextPhoneNumber.phoneCodeView
                     editTextPhoneNumber.phoneCodeView.tag = it
                 }

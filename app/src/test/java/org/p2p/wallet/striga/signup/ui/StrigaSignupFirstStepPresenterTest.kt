@@ -11,10 +11,7 @@ import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.auth.model.PhoneMask
-import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
-import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
@@ -52,7 +49,7 @@ class StrigaSignupFirstStepPresenterTest {
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
 
     @MockK(relaxed = true)
-    lateinit var countryCodeRepository: CountryCodeLocalRepository
+    lateinit var countryCodeRepository: CountryCodeRepository
 
     lateinit var interactor: StrigaSignupInteractor
 
@@ -182,7 +179,7 @@ class StrigaSignupFirstStepPresenterTest {
         presenter.attach(view)
 
         presenter.onFieldChanged("+90 555 666 77 88", StrigaSignupDataType.PHONE_NUMBER)
-        presenter.onFieldChanged("+90", StrigaSignupDataType.PHONE_CODE)
+        presenter.onFieldChanged("+90", StrigaSignupDataType.PHONE_CODE_WITH_PLUS)
         presenter.onFieldChanged("Vasya", StrigaSignupDataType.FIRST_NAME)
         presenter.onFieldChanged("Pupkin", StrigaSignupDataType.LAST_NAME)
         presenter.onFieldChanged("10.10.2010", StrigaSignupDataType.DATE_OF_BIRTH)

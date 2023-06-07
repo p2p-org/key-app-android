@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.signup.ui
 
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
@@ -63,10 +63,10 @@ class StrigaSignUpSecondStepPresenter(
         )
     }
 
-    private fun onCountryChanged(newValue: Country) {
-        setCachedData(StrigaSignupDataType.COUNTRY, newValue.codeAlpha2)
+    private fun onCountryChanged(newValue: CountryCode) {
+        setCachedData(StrigaSignupDataType.COUNTRY, newValue.nameCodeAlpha2)
         view?.updateSignupField(
-            newValue = "${newValue.flagEmoji} ${newValue.name}",
+            newValue = "${newValue.flagEmoji} ${newValue.countryName}",
             type = StrigaSignupDataType.COUNTRY
         )
     }

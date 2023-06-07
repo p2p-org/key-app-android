@@ -11,9 +11,6 @@ import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.auth.model.PhoneMask
-import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult

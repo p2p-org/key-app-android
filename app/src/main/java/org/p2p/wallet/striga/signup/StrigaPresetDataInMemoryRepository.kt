@@ -6,7 +6,7 @@ import com.google.gson.JsonArray
 import timber.log.Timber
 import java.io.InputStream
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.utils.unsafeLazy
@@ -52,8 +52,8 @@ class StrigaPresetDataInMemoryRepository(
         return cachedSourceOfFunds.ifEmpty(::parseSourceOfFundsFile)
     }
 
-    override fun checkIsCountrySupported(country: Country): Boolean {
-        return country.codeAlpha2.lowercase() in supportedStrigaCountries
+    override fun checkIsCountrySupported(country: CountryCode): Boolean {
+        return country.nameCodeAlpha2.lowercase() in supportedStrigaCountries
     }
 
     private fun parseOccupationFile(): List<StrigaOccupation> {

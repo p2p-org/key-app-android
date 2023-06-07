@@ -28,9 +28,7 @@ import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
-import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
-import org.p2p.wallet.auth.repository.CountryInMemoryRepository
-import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
@@ -162,8 +160,7 @@ object AuthModule {
 
         factoryOf(::PhoneNumberEnterPresenter) bind PhoneNumberEnterContract.Presenter::class
         factoryOf(::CountryCodePickerPresenter) bind CountryCodePickerContract.Presenter::class
-        singleOf(::CountryCodeInMemoryRepository) bind CountryCodeLocalRepository::class
-        factoryOf(::CountryInMemoryRepository) bind CountryRepository::class
+        singleOf(::CountryCodeInMemoryRepository) bind CountryCodeRepository::class
         single { PhoneNumberUtil.createInstance(androidContext()) }
         factoryOf(::CountryCodeXmlParser)
 
