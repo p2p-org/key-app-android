@@ -88,7 +88,7 @@ class StrigaSignUpFirstStepPresenter(
         }
     }
 
-    override fun onCountryCodeChanged(newCountry: CountryCode?) {
+    override fun onPhoneCountryCodeChanged(newCountry: CountryCode?) {
         selectedCountryCode = newCountry
         val phoneCodeWithPlus = "+${selectedCountryCode?.phoneCode}"
         setCachedData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, phoneCodeWithPlus)

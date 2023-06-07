@@ -12,6 +12,10 @@ class PhoneNumberInputValidator(
 
     override var errorMessage: TextContainer = TextContainer(R.string.striga_validation_error_phone_number)
 
+    /**
+     * @param [regionCode] EN, RU or KZ
+     * @param[phoneNumber] trimmed value without regionCode
+     */
     override fun validate(input: String?): Boolean {
         return countryCodeRepository.isValidNumberForRegion(phoneNumber, regionCode)
     }
