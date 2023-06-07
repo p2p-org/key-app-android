@@ -253,9 +253,9 @@ class StrigaSignupSecondStepPresenterTest {
 
         coEvery { interactor.createUser() } throws Exception("error")
 
-        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaOccupationItem(StrigaOccupation("loafer", "some_emoji")))
-        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaSourceOfFundsItem(StrigaSourceOfFunds("unemployed")))
-        presenter.onPresetDataChanged(StrigaPresetDataItem.StrigaCountryItem(SupportedCountry))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.Occupation(StrigaOccupation("loafer", "some_emoji")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.SourceOfFunds(StrigaSourceOfFunds("unemployed")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.Country(SupportedCountry))
         presenter.onFieldChanged("any city", StrigaSignupDataType.CITY)
         presenter.onFieldChanged("any address", StrigaSignupDataType.CITY_ADDRESS_LINE)
         presenter.onFieldChanged("any zip-code", StrigaSignupDataType.CITY_POSTAL_CODE)

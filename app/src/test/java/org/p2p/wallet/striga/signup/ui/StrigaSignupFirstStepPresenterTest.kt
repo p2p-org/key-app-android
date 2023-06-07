@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -19,13 +20,13 @@ import java.nio.file.Paths
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.auth.interactor.MetadataInteractor
-import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeRepository
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -37,11 +38,11 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
-import org.p2p.wallet.utils.plantTimberToStdout
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.mutableListQueueOf
+import org.p2p.wallet.utils.plantTimberToStdout
 
 private val SupportedCountry = CountryCode(
     countryName = "United Kingdom",

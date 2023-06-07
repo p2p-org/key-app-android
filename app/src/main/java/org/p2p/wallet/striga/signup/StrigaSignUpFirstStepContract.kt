@@ -19,7 +19,7 @@ interface StrigaSignUpFirstStepContract {
         fun setupPhoneCountryCodePicker(selectedCountryCode: CountryCode?, selectedPhoneNumber: String?)
         fun showCountryCode(countryCode: CountryCode?)
         fun onNewCountryDetected(countryCode: CountryCode)
-        fun showCountryCodePicker(selectedCountryCode: CountryCode?)
+        fun showPhoneCountryCodePicker(selectedCountryCode: CountryCode?)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -30,6 +30,6 @@ interface StrigaSignUpFirstStepContract {
         fun onSubmit()
         fun onPhoneCountryCodeChanged(newCountry: CountryCode)
         fun onPhoneNumberChanged(newPhone: String)
-        fun onCountryCodeInputClicked()
+        fun onPhoneCountryCodeInputClicked()
     }
 }

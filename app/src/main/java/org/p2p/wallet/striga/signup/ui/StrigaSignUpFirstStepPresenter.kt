@@ -104,8 +104,8 @@ class StrigaSignUpFirstStepPresenter(
         view?.clearError(StrigaSignupDataType.PHONE_NUMBER)
     }
 
-    override fun onCountryCodeInputClicked() {
-        view?.showCountryCodePicker(selectedCountryCode)
+    override fun onPhoneCountryCodeInputClicked() {
+        view?.showPhoneCountryCodePicker(selectedCountryCode)
     }
 
     override fun saveChanges() {

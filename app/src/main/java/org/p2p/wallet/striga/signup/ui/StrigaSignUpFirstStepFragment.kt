@@ -230,7 +230,7 @@ class StrigaSignUpFirstStepFragment :
     }
 
     private fun onCountryClickListener() {
-        presenter.onCountryCodeInputClicked()
+        presenter.onPhoneCountryCodeInputClicked()
     }
 
     override fun showCountryCode(countryCode: CountryCode?) {
@@ -241,7 +241,7 @@ class StrigaSignUpFirstStepFragment :
         binding.editTextPhoneNumber.onFoundNewCountry(countryCode)
     }
 
-    override fun showCountryCodePicker(selectedCountryCode: CountryCode?) {
+    override fun showPhoneCountryCodePicker(selectedCountryCode: CountryCode?) {
         addFragment(
             target = CountryCodePickerFragment.create(
                 selectedCountryCode,

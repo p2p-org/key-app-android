@@ -3,11 +3,11 @@ package org.p2p.wallet.striga.signup.interactor
 import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
-import org.p2p.wallet.auth.model.PhoneMask
-import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult

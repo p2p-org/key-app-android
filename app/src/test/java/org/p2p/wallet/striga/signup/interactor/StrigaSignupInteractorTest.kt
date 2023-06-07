@@ -18,13 +18,10 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
-import org.p2p.wallet.auth.model.PhoneMask
-import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
@@ -94,7 +91,6 @@ class StrigaSignupInteractorTest {
         every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateWeb3Flag
         every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateUserCreateFlag
 
-        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
         coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
     }
 
