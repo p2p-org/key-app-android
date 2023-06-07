@@ -180,19 +180,18 @@ class StrigaOnboardingFragment :
         }
     }
 
-    private fun handleViewState(state: AvailabilityState) {
-        with(binding) {
-            imageViewImage.bind(getImageModel(state))
-            textViewTitle.bind(getTitleModel(state))
-            textViewHelp.isVisible = state.isHelpVisible
+    private fun handleViewState(state: AvailabilityState) = with(binding) {
+        imageViewImage.bind(getImageModel(state))
+        textViewTitle.bind(getTitleModel(state))
+        textViewHelp.isVisible = state.isHelpVisible
+        textViewPoweredBy.isVisible = state.isPoweredByStrigaVisible
 
-            buttonContinue.apply {
-                setText(state.buttonTextRes)
-                icon = if (state.isButtonArrowVisible) {
-                    getDrawable(R.drawable.ic_arrow_right)
-                } else {
-                    null
-                }
+        buttonContinue.apply {
+            setText(state.buttonTextRes)
+            icon = if (state.isButtonArrowVisible) {
+                getDrawable(R.drawable.ic_arrow_right)
+            } else {
+                null
             }
         }
     }

@@ -13,7 +13,7 @@
         Now you need to go through document and selfie verification.
         This is a one-time procedure to ensure safety of your account.
     </string>
-    <string name="striga_onboarding_button_change_country">Change Country</string>
+    <string name="striga_onboarding_button_change_country">Change country</string>
     <string name="striga_powered_by">Powered by Striga</string>
     <string name="striga_powered_by_url">https://striga.com</string>
     <string name="striga_onboarding_country_subtitle">Your country</string>

@@ -12,24 +12,23 @@ class StrigaOnboardingPresenter(
     private val interactor: StrigaOnboardingInteractor,
 ) : BasePresenter<StrigaOnboardingContract.View>(dispatchers.ui), StrigaOnboardingContract.Presenter {
 
-    override fun firstAttach() {
-        super.firstAttach()
+    override fun attach(view: StrigaOnboardingContract.View) {
+        super.attach(view)
         launch {
-            onCurrentCountryChanged(interactor.getChosenCountry())
+            showCountry(interactor.getChosenCountry())
         }
     }
 
     override fun onCurrentCountryChanged(selectedCountry: CountryCode) {
         launch {
             interactor.saveCurrentCountry(selectedCountry)
-
-            view?.setCurrentCountry(selectedCountry)
-            if (isCountrySupported(selectedCountry)) {
-                view?.setAvailabilityState(AvailabilityState.Available)
-            } else {
-                view?.setAvailabilityState(AvailabilityState.Unavailable)
-            }
+            showCountry(selectedCountry)
         }
+    }
+
+    private fun showCountry(country: CountryCode) {
+        view?.setCurrentCountry(country)
+        view?.setAvailabilityState(isCountrySupported(country))
     }
 
     override fun onClickContinue() {
@@ -40,7 +39,10 @@ class StrigaOnboardingPresenter(
         view?.openHelp()
     }
 
-    private fun isCountrySupported(country: CountryCode): Boolean {
-        return interactor.checkIsCountrySupported(country)
-    }
+    private fun isCountrySupported(country: CountryCode): AvailabilityState =
+        if (interactor.checkIsCountrySupported(country)) {
+            AvailabilityState.Available
+        } else {
+            AvailabilityState.Unavailable
+        }
 }
