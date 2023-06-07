@@ -86,7 +86,6 @@ class StrigaSignUpSecondStepPresenter(
             launch {
                 try {
                     interactor.createUser()
-                    userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
                     view?.navigateNext()
                 } catch (e: Throwable) {
                     Timber.e(e, "Unable to create striga user")

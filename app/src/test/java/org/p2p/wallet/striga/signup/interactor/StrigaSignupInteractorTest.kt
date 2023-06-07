@@ -8,8 +8,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -18,8 +16,6 @@ import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import retrofit2.HttpException
-import retrofit2.Response
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
@@ -44,6 +40,7 @@ import org.p2p.wallet.striga.user.model.StrigaUserInitialKycDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
+import org.p2p.wallet.utils.createHttpException
 
 private val SupportedCountry = Country(
     name = "United Kingdom",
@@ -325,10 +322,12 @@ class StrigaSignupInteractorTest {
                 "status": 500,
                 "errorCode": 0
             }
-        """.trimIndent().toResponseBody("application/json".toMediaTypeOrNull())
-        coEvery { userInteractor.createUser(any()) } returns StrigaDataLayerError.ApiServiceUnavailable(
-            HttpException(Response.error<Any>(500, responseBody))
-        ).toFailureResult()
+        """.trimIndent()
+        coEvery { userInteractor.createUser(any()) } answers {
+            StrigaDataLayerError.ApiServiceUnavailable(
+                createHttpException(500, responseBody)
+            ).toFailureResult()
+        }
 
         val interactor = createInteractor()
         assertThrows<StrigaDataLayerError.ApiServiceUnavailable> {

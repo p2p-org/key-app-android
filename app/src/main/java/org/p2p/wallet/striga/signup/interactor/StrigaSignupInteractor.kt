@@ -1,8 +1,6 @@
 package org.p2p.wallet.striga.signup.interactor
 
 import timber.log.Timber
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
@@ -20,6 +18,7 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.unsafeLazy
 
 typealias ValidationResult = Pair<Boolean, List<StrigaSignupFieldState>>
@@ -114,6 +113,28 @@ class StrigaSignupInteractor(
         Timber.d("Striga signup data: saved")
     }
 
+    @Throws(IllegalStateException::class, StrigaDataLayerError::class)
+    suspend fun createUser() {
+        if (inAppFeatureFlags.strigaSimulateUserCreateFlag.featureValue) {
+            delay(1000)
+            return
+        }
+        // firstly, check if metadata is available
+        metadataInteractor.currentMetadata
+            ?: error("Metadata is not fetched")
+
+        when (val result = userInteractor.createUser(getSignupData())) {
+            is StrigaDataLayerResult.Success -> {
+                updateMetadata(result.value.userId)
+            }
+            is StrigaDataLayerResult.Failure -> {
+                throw result.error
+            }
+        }
+
+        userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
+    }
+
     private fun validateStep(
         data: Map<StrigaSignupDataType, StrigaSignupData>,
         types: Set<StrigaSignupDataType>
@@ -136,29 +157,9 @@ class StrigaSignupInteractor(
         val newMetadata = currentMetadata.copy(
             strigaMetadata = GatewayOnboardingMetadata.StrigaMetadata(
                 userId = userId,
-                userIdTimestamp = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS).inWholeSeconds
+                userIdTimestamp = DateTimeUtils.getCurrentTimestampInSeconds()
             )
         )
         metadataInteractor.updateMetadata(newMetadata)
-    }
-
-    @Throws(IllegalStateException::class, StrigaDataLayerError::class)
-    suspend fun createUser() {
-        if (inAppFeatureFlags.strigaSimulateUserCreateFlag.featureValue) {
-            delay(1000)
-            return
-        }
-        // firstly, check if metadata is available
-        metadataInteractor.currentMetadata
-            ?: error("Metadata is not fetched")
-
-        when (val result = userInteractor.createUser(getSignupData())) {
-            is StrigaDataLayerResult.Success -> {
-                updateMetadata(result.value.userId)
-            }
-            is StrigaDataLayerResult.Failure -> {
-                throw result.error
-            }
-        }
     }
 }
