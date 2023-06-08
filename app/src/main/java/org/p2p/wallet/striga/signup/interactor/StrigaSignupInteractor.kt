@@ -106,15 +106,16 @@ class StrigaSignupInteractor(
         }
     }
 
-    /**
-     * This method saves data only if it was changed
-     */
     fun saveChanges(data: Collection<StrigaSignupData>) {
         // use AppScope to make sure that data will be saved even if view scope has been cancelled
         appScope.launch {
             signupDataRepository.updateSignupData(data)
         }
         Timber.d("Striga signup data: saved")
+    }
+
+    suspend fun saveChangesNow(data: Collection<StrigaSignupData>) {
+        signupDataRepository.updateSignupData(data)
     }
 
     @Throws(IllegalStateException::class, StrigaDataLayerError::class)

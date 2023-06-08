@@ -23,7 +23,18 @@ class StrigaSignupDataValidator {
             EmptyInputValidator(),
             BirthdayInputValidator()
         ),
-
+        StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3 to listOf(
+            EmptyInputValidator()
+        ),
+        StrigaSignupDataType.COUNTRY_ALPHA_2 to listOf(
+            EmptyInputValidator(),
+        ),
+        StrigaSignupDataType.OCCUPATION to listOf(
+            EmptyInputValidator()
+        ),
+        StrigaSignupDataType.SOURCE_OF_FUNDS to listOf(
+            EmptyInputValidator()
+        ),
         StrigaSignupDataType.CITY to listOf(
             EmptyInputValidator(),
             LengthInputValidator(1..40)

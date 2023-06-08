@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.signup.ui
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -17,6 +18,7 @@ class StrigaSignUpFirstStepPresenter(
     dispatchers: CoroutineDispatchers,
     private val interactor: StrigaSignupInteractor,
     private val countryRepository: CountryCodeRepository,
+    private val metadataInteractor: MetadataInteractor,
 ) : BasePresenter<StrigaSignUpFirstStepContract.View>(dispatchers.ui),
     StrigaSignUpFirstStepContract.Presenter {
 
@@ -123,7 +125,13 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     private suspend fun initialLoadSignupData() {
-        val data = interactor.getSignupDataFirstStep().associateBy { it.type }
+        val data = interactor.getSignupDataFirstStep().associateBy { it.type }.toMutableMap()
+        metadataInteractor.currentMetadata?.let { metadata ->
+            data[StrigaSignupDataType.EMAIL] = StrigaSignupData(
+                type = StrigaSignupDataType.EMAIL,
+                value = metadata.socialShareOwnerEmail
+            )
+        }
 
         // fill pre-saved values as-is
         data.values.forEach {
@@ -142,17 +150,37 @@ class StrigaSignUpFirstStepPresenter(
                 selectedPhoneNumber = selectedPhoneNumber
             )
         } else {
-            // find default country code for phone
             try {
-                phoneCountryCode = countryRepository.detectCountryOrDefault().also { countryCode ->
-                    val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+                // 1. getting number from db
+                var selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
 
-                    onPhoneCountryCodeChanged(countryCode)
-                    view?.setupPhoneCountryCodePicker(
-                        selectedCountryCode = countryCode,
-                        selectedPhoneNumber = selectedPhoneNumber
-                    )
+                // 2. getting code from db
+                var phoneCode = getCachedPhoneCodeWithoutPlus()?.let {
+                    countryRepository.findCountryCodeByPhoneCode(it)
                 }
+
+                // 3. if code is null, attempting to get phone code from metadata
+                // if phone number is not set, then we will use metadata phone number
+                val metadata = metadataInteractor.currentMetadata
+                if (phoneCode == null && metadata != null) {
+                    val parsePhoneResult = countryRepository.parsePhoneNumber(metadata.customSharePhoneNumberE164)
+                    phoneCode = parsePhoneResult?.first
+                    selectedPhoneNumber = selectedPhoneNumber.takeIf {
+                        it?.isNotBlank() == true
+                    } ?: parsePhoneResult?.second
+                }
+
+                // 4. if phone code still is not detected, then getting default one
+                phoneCode = phoneCode ?: countryRepository.detectCountryOrDefault()
+
+                onPhoneCountryCodeChanged(phoneCode)
+
+                // Using the updated phoneCode and selectedPhoneNumber
+                view?.setupPhoneCountryCodePicker(
+                    selectedCountryCode = phoneCode,
+                    selectedPhoneNumber = selectedPhoneNumber
+                )
+                view?.updateSignupField(StrigaSignupDataType.PHONE_NUMBER, selectedPhoneNumber.orEmpty())
             } catch (e: Throwable) {
                 Timber.e(e, "Loading default country code failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)

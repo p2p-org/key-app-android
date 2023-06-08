@@ -82,4 +82,13 @@ class CountryCodeXmlParser(
             return false
         }
     }
+
+    fun parsePhoneNumber(phoneNumber: String, region: String): Phonenumber.PhoneNumber? {
+        return try {
+            phoneNumberUtil.parse(phoneNumber, region.uppercase())
+        } catch (countryNotFound: Throwable) {
+            Timber.i(countryNotFound, "Phone number validation failed")
+            null
+        }
+    }
 }

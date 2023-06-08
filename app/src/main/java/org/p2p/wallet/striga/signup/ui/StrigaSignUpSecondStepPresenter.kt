@@ -100,7 +100,7 @@ class StrigaSignUpSecondStepPresenter(
             view?.setProgressIsVisible(true)
             launch {
                 try {
-                    interactor.saveChanges(cachedSignupData.values)
+                    interactor.saveChangesNow(cachedSignupData.values)
                     interactor.createUser()
                     view?.navigateNext()
                 } catch (e: Throwable) {
