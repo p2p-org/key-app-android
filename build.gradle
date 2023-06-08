@@ -23,6 +23,7 @@ allprojects {
         maven { url 'https://jitpack.io' }
         maven { url "https://maven.google.com/" }
         maven { url "https://maven.lokalise.com" }
+        maven { url "https://maven.sumsub.com/repository/maven-public/" }
     }
 }
 

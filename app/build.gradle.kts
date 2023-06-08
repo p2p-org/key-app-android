@@ -180,16 +180,19 @@ dependencies {
 
     implementation("io.michaelrocks:libphonenumber-android:8.12.52")
 
+    // Striga SDK https://developers.sumsub.com/msdk/android/changelog.html
+    implementation ("com.sumsub.sns:idensic-mobile-sdk:1.25.0")
+
     // core
-    testImplementation("androidx.test:core-ktx:1.4.0")
-    testImplementation("androidx.test.ext:junit-ktx:1.1.3")
-    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("androidx.test.ext:junit-ktx:1.1.5")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     // https://github.com/mockk/mockk
     testImplementation("io.mockk:mockk:1.12.0")
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation("junit:junit:4.13.2")
     // https://github.com/robolectric/robolectric
-    testImplementation("org.robolectric:robolectric:4.5.1")
+    testImplementation("org.robolectric:robolectric:4.7.3")
 
     implementation("com.lokalise.android:sdk:2.1.1") {
         isTransitive = true

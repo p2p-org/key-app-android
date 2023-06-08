@@ -8,7 +8,7 @@ import org.p2p.wallet.striga.StrigaUserConstants
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.user.api.StrigaCreateUserRequest
+import org.p2p.wallet.striga.user.api.request.StrigaCreateUserRequest
 import org.p2p.wallet.striga.user.api.response.StrigaCreateUserResponse
 import org.p2p.wallet.striga.user.api.response.StrigaUserDetailsResponse
 import org.p2p.wallet.striga.user.model.StrigaUserAddress
