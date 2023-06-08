@@ -66,8 +66,8 @@ class CountryCodeInMemoryRepository(
 
     override suspend fun detectCountryOrDefault(): CountryCode {
         return detectCountryCodeBySimCard()
-            ?: detectCountryCodeByNetwork()
             ?: detectCountryCodeByLocale()
+            ?: detectCountryCodeByNetwork()
             ?: allCountryCodes.first()
     }
 }
