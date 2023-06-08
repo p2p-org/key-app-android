@@ -52,8 +52,10 @@ class CountryCodeInMemoryRepository(
         }
     }
 
-    override fun findCountryCodeByPhoneCode(phoneCode: String): CountryCode? =
-        allCountryCodes.firstOrNull { it.phoneCode == phoneCode }
+    override fun findCountryCodeByPhoneCode(phoneCode: String): CountryCode? {
+        val rawPhoneCode = phoneCode.replace("+", "")
+        return allCountryCodes.firstOrNull { it.phoneCode == rawPhoneCode }
+    }
 
     override fun findCountryCodeByIsoAlpha2(nameCode: String): CountryCode? =
         allCountryCodes.firstOrNull { it.nameCodeAlpha2.equals(nameCode, ignoreCase = true) }

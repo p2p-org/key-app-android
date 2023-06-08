@@ -23,8 +23,7 @@ object SmsInputFactory {
         destinationFragment: Class<T>,
         destinationArgs: Bundle? = null
     ): BaseSmsInputFragment {
-        val fragment = type.clazz.newInstance() as? BaseSmsInputFragment
-            ?: throw IllegalArgumentException("Unknown type: $type")
+        val fragment = requireNotNull(type.clazz.newInstance() as? BaseSmsInputFragment) { "Unknown type: $type" }
 
         return fragment.apply {
             arguments = bundleOf(
