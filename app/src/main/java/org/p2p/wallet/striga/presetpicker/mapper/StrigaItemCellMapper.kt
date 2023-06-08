@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.presetpicker.mapper
 import androidx.annotation.StringRes
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -57,7 +58,8 @@ class StrigaItemCellMapper {
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
-            payload = StrigaPresetDataItem.Occupation(this)
+            payload = StrigaPresetDataItem.Occupation(this),
+            styleType = FinanceBlockStyle.BASE_CELL
         )
     }
 
@@ -71,7 +73,8 @@ class StrigaItemCellMapper {
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
-            payload = StrigaPresetDataItem.SourceOfFunds(this)
+            payload = StrigaPresetDataItem.SourceOfFunds(this),
+            styleType = FinanceBlockStyle.BASE_CELL
         )
     }
 
@@ -86,7 +89,8 @@ class StrigaItemCellMapper {
         )
         return FinanceBlockCellModel(
             leftSideCellModel = leftSideCellModel,
-            payload = StrigaPresetDataItem.Country(this)
+            payload = StrigaPresetDataItem.Country(this),
+            styleType = FinanceBlockStyle.BASE_CELL
         )
     }
 

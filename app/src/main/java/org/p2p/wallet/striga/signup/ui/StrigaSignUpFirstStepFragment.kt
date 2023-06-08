@@ -26,9 +26,9 @@ import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStackTo
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toDp
-import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -107,12 +107,14 @@ class StrigaSignUpFirstStepFragment :
     }
 
     override fun showCountryOfBirthPicker() {
-        addFragment(
+        replaceFragmentForResult(
             StrigaPresetDataPickerFragment.create(
                 dataToPick = StrigaPresetDataToPick.COUNTRY_OF_BIRTH,
                 requestKey = REQUEST_KEY_COUNTRY,
                 resultKey = RESULT_KEY_COUNTRY
-            )
+            ),
+            requestKey = REQUEST_KEY_COUNTRY,
+            onResult = ::onFragmentResult
         )
     }
 
@@ -178,12 +180,14 @@ class StrigaSignUpFirstStepFragment :
     }
 
     override fun showPhoneCountryCodePicker(selectedCountryCode: CountryCode?) {
-        addFragment(
+        replaceFragmentForResult(
             target = CountryCodePickerFragment.create(
                 selectedCountry = selectedCountryCode,
                 requestKey = REQUEST_KEY_PHONE_COUNTRY_CODE,
                 resultKey = RESULT_KEY_PHONE_COUNTRY_CODE
-            )
+            ),
+            requestKey = REQUEST_KEY_PHONE_COUNTRY_CODE,
+            onResult = ::onFragmentResult
         )
     }
 

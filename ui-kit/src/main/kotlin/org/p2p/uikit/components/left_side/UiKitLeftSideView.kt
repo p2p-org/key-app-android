@@ -9,6 +9,8 @@ import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.databinding.WidgetLeftSideIconTripleTextBinding
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.inflateViewBinding
+import org.p2p.uikit.utils.setMargins
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindOrGone
 
 class UiKitLeftSideView @JvmOverloads constructor(
