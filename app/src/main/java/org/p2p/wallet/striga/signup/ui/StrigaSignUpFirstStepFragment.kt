@@ -180,9 +180,9 @@ class StrigaSignUpFirstStepFragment :
     override fun showPhoneCountryCodePicker(selectedCountryCode: CountryCode?) {
         addFragment(
             target = CountryCodePickerFragment.create(
-                selectedCountryCode,
-                REQUEST_KEY_PHONE_COUNTRY_CODE,
-                RESULT_KEY_PHONE_COUNTRY_CODE
+                selectedCountry = selectedCountryCode,
+                requestKey = REQUEST_KEY_PHONE_COUNTRY_CODE,
+                resultKey = RESULT_KEY_PHONE_COUNTRY_CODE
             )
         )
     }
