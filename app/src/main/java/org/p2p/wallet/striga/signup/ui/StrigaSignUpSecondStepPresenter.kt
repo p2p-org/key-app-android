@@ -1,7 +1,9 @@
 package org.p2p.wallet.striga.signup.ui
 
+import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
@@ -95,7 +97,18 @@ class StrigaSignUpSecondStepPresenter(
         val (isValid, states) = interactor.validateSecondStep(cachedSignupData)
 
         if (isValid) {
-            view?.navigateNext()
+            view?.setProgressIsVisible(true)
+            launch {
+                try {
+                    interactor.saveChanges(cachedSignupData.values)
+                    interactor.createUser()
+                    view?.navigateNext()
+                } catch (e: Throwable) {
+                    Timber.e(e, "Unable to create striga user")
+                    view?.setProgressIsVisible(false)
+                    view?.showUiKitSnackBar(e.message, R.string.error_general_message)
+                }
+            }
         } else {
             view?.setErrors(states)
             // disable button is there are errors

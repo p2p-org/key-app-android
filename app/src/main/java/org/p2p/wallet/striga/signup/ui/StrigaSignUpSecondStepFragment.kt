@@ -130,6 +130,13 @@ class StrigaSignUpSecondStepFragment :
         }
     }
 
+    override fun setProgressIsVisible(visible: Boolean) {
+        with(binding.buttonNext) {
+            isClickable = !visible
+            setLoading(visible)
+        }
+    }
+
     override fun scrollToFirstError(type: StrigaSignupDataType) {
         editTextFieldsMap[type]?.let {
             binding.containerScroll.post {

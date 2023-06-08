@@ -2,8 +2,10 @@ package org.p2p.wallet.striga.signup.ui
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -15,7 +17,11 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.MetadataInteractor
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
@@ -30,6 +36,7 @@ import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.back
@@ -56,6 +63,15 @@ class StrigaSignupSecondStepPresenterTest {
     @MockK
     lateinit var onboardingInteractor: StrigaOnboardingInteractor
 
+    @MockK(relaxed = true)
+    lateinit var userInteractor: StrigaUserInteractor
+
+    @MockK(relaxed = true)
+    lateinit var metadataInteractor: MetadataInteractor
+
+    @MockK(relaxed = true)
+    lateinit var inAppFeatureFlags: InAppFeatureFlags
+
     lateinit var interactor: StrigaSignupInteractor
 
     private val signupDataValidator = StrigaSignupDataValidator()
@@ -80,11 +96,26 @@ class StrigaSignupSecondStepPresenterTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        interactor = StrigaSignupInteractor(
-            appScope = appScope,
-            validator = signupDataValidator,
-            countryCodeRepository = countryCodeRepository,
-            signupDataRepository = signupDataRepository,
+
+        val simulateWeb3Flag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        val simulateUserCreateFlag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateWeb3Flag
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateUserCreateFlag
+
+        interactor = spyk(
+            StrigaSignupInteractor(
+                appScope = appScope,
+                inAppFeatureFlags = inAppFeatureFlags,
+                validator = signupDataValidator,
+                countryCodeRepository = countryCodeRepository,
+                signupDataRepository = signupDataRepository,
+                userInteractor = userInteractor,
+                metadataInteractor = metadataInteractor,
+            )
         )
     }
 
@@ -206,7 +237,40 @@ class StrigaSignupSecondStepPresenterTest {
         presenter.onSubmit()
         advanceUntilIdle()
 
+        verify(exactly = 1) { view.setProgressIsVisible(true) }
         verify(exactly = 1) { view.navigateNext() }
+
+        presenter.saveChanges()
+        presenter.detach()
+    }
+
+    @Test
+    fun `GIVEN error while creating user WHEN user clicks next THEN check snackback error`() = runTest {
+        val initialSignupData = listOf(
+            StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
+        )
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+
+        val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
+        val presenter = createPresenter()
+        presenter.attach(view)
+
+        coEvery { interactor.createUser() } throws Exception("error")
+
+        presenter.onPresetDataChanged(StrigaPresetDataItem.Occupation(StrigaOccupation("loafer", "some_emoji")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.SourceOfFunds(StrigaSourceOfFunds("unemployed")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.Country(SupportedCountry))
+        presenter.onFieldChanged(StrigaSignupDataType.CITY, "any city")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_ADDRESS_LINE, "any address")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_POSTAL_CODE, "any zip-code")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_STATE, "any state")
+        presenter.onSubmit()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { view.setProgressIsVisible(true) }
+        verify(exactly = 1) { view.showUiKitSnackBar("error", R.string.error_general_message) }
+        verify(exactly = 1) { view.setProgressIsVisible(false) }
+        verify(exactly = 0) { view.navigateNext() }
 
         presenter.saveChanges()
         presenter.detach()

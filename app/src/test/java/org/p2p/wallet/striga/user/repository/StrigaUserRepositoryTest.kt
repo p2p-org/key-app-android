@@ -3,11 +3,7 @@ package org.p2p.wallet.striga.user.repository
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
-import retrofit2.HttpException
-import retrofit2.Response
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -26,6 +22,7 @@ import org.p2p.wallet.striga.user.api.StrigaCreateUserRequest
 import org.p2p.wallet.striga.user.api.response.StrigaCreateUserResponse
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
+import org.p2p.wallet.utils.createHttpException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrigaUserRepositoryTest {
@@ -53,10 +50,9 @@ class StrigaUserRepositoryTest {
                 "status": 400,
                 "errorCode": ${StrigaApiErrorCode.USER_DOES_NOT_EXIST.code.toInt()}
             }
-        """.trimIndent().toResponseBody("application/json".toMediaTypeOrNull())
-
+        """.trimIndent()
         val api = mockk<StrigaApi>() {
-            coEvery { createUser(any()) } throws HttpException(Response.error<StrigaCreateUserRequest>(400, responseBody))
+            coEvery { createUser(any()) } throws createHttpException(400, responseBody)
         }
         val userIdProvider = mockk<StrigaUserIdProvider>()
         val mapper = StrigaUserRepositoryMapper()

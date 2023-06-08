@@ -27,10 +27,13 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeRepository
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
@@ -41,6 +44,7 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.back
@@ -74,6 +78,16 @@ class StrigaSignupFirstStepPresenterTest {
 
     @MockK(relaxed = true)
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
+
+    @MockK
+    lateinit var userInteractor: StrigaUserInteractor
+
+    @MockK
+    lateinit var metadataInteractor: MetadataInteractor
+
+    @MockK(relaxed = true)
+    lateinit var inAppFeatureFlags: InAppFeatureFlags
+
     lateinit var interactor: StrigaSignupInteractor
 
     private val signupDataValidator = StrigaSignupDataValidator()
@@ -97,12 +111,25 @@ class StrigaSignupFirstStepPresenterTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+
+        val simulateWeb3Flag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        val simulateUserCreateFlag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateWeb3Flag
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateUserCreateFlag
+
         interactor = spyk(
             StrigaSignupInteractor(
                 appScope = appScope,
+                inAppFeatureFlags = inAppFeatureFlags,
                 validator = signupDataValidator,
                 countryCodeRepository = countryCodeRepository,
                 signupDataRepository = signupDataRepository,
+                userInteractor = userInteractor,
+                metadataInteractor = metadataInteractor
             )
         )
     }

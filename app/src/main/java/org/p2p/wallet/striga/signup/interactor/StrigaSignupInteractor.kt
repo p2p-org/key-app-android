@@ -1,10 +1,15 @@
 package org.p2p.wallet.striga.signup.interactor
 
 import timber.log.Timber
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
@@ -12,15 +17,20 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.unsafeLazy
 
 typealias ValidationResult = Pair<Boolean, List<StrigaSignupFieldState>>
 
 class StrigaSignupInteractor(
     private val appScope: AppScope,
+    private val inAppFeatureFlags: InAppFeatureFlags,
     private val validator: StrigaSignupDataValidator,
     private val countryCodeRepository: CountryCodeRepository,
-    private val signupDataRepository: StrigaSignupDataLocalRepository
+    private val signupDataRepository: StrigaSignupDataLocalRepository,
+    private val userInteractor: StrigaUserInteractor,
+    private val metadataInteractor: MetadataInteractor
 ) {
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
         setOf(
@@ -80,10 +90,14 @@ class StrigaSignupInteractor(
     suspend fun getSignupDataFirstStep(): List<StrigaSignupData> = getSignupData(firstStepDataTypes)
     suspend fun getSignupDataSecondStep(): List<StrigaSignupData> = getSignupData(secondStepDataTypes)
 
-    private suspend fun getSignupData(fields: Set<StrigaSignupDataType>): List<StrigaSignupData> {
+    suspend fun getSignupData(fields: Set<StrigaSignupDataType> = emptySet()): List<StrigaSignupData> {
         return when (val data = signupDataRepository.getUserSignupData()) {
             is StrigaDataLayerResult.Success -> {
-                data.value.filter { it.type in fields }
+                if (fields.isEmpty()) {
+                    data.value
+                } else {
+                    data.value.filter { it.type in fields }
+                }
             }
             is StrigaDataLayerResult.Failure -> {
                 Timber.e(data.error, "Striga signup data: failed to get")
@@ -103,6 +117,28 @@ class StrigaSignupInteractor(
         Timber.d("Striga signup data: saved")
     }
 
+    @Throws(IllegalStateException::class, StrigaDataLayerError::class)
+    suspend fun createUser() {
+        if (inAppFeatureFlags.strigaSimulateUserCreateFlag.featureValue) {
+            delay(1000)
+            return
+        }
+        // firstly, check if metadata is available
+        metadataInteractor.currentMetadata
+            ?: error("Metadata is not fetched")
+
+        when (val result = userInteractor.createUser(getSignupData())) {
+            is StrigaDataLayerResult.Success -> {
+                updateMetadata(result.value.userId)
+            }
+            is StrigaDataLayerResult.Failure -> {
+                throw result.error
+            }
+        }
+
+        userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
+    }
+
     private fun validateStep(
         data: Map<StrigaSignupDataType, StrigaSignupData>,
         types: Set<StrigaSignupDataType>
@@ -119,4 +155,15 @@ class StrigaSignupInteractor(
     }
 
     private fun validate(data: StrigaSignupData): StrigaSignupFieldState = validator.validate(data)
+
+    private suspend fun updateMetadata(userId: String) {
+        val currentMetadata = metadataInteractor.currentMetadata ?: return
+        val newMetadata = currentMetadata.copy(
+            strigaMetadata = GatewayOnboardingMetadata.StrigaMetadata(
+                userId = userId,
+                userIdTimestamp = DateTimeUtils.getCurrentTimestampInSeconds()
+            )
+        )
+        metadataInteractor.updateMetadata(newMetadata)
+    }
 }
