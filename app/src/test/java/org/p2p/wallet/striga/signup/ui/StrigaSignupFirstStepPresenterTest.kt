@@ -12,8 +12,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
-import io.mockk.mockk
-import io.mockk.verify
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -128,7 +126,7 @@ class StrigaSignupFirstStepPresenterTest {
                 appScope = appScope,
                 inAppFeatureFlags = inAppFeatureFlags,
                 validator = signupDataValidator,
-                countryRepository = countryRepository,
+                countryCodeRepository = countryCodeRepository,
                 signupDataRepository = signupDataRepository,
                 userInteractor = userInteractor,
                 metadataInteractor = metadataInteractor

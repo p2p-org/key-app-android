@@ -15,7 +15,6 @@ import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.signup.validation.InputValidator
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
@@ -28,7 +27,7 @@ class StrigaSignupInteractor(
     private val appScope: AppScope,
     private val inAppFeatureFlags: InAppFeatureFlags,
     private val validator: StrigaSignupDataValidator,
-    private val countryRepository: CountryCodeRepository,
+    private val countryCodeRepository: CountryCodeRepository,
     private val signupDataRepository: StrigaSignupDataLocalRepository,
     private val userInteractor: StrigaUserInteractor,
     private val metadataInteractor: MetadataInteractor

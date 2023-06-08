@@ -111,7 +111,7 @@ class StrigaSignupSecondStepPresenterTest {
                 appScope = appScope,
                 inAppFeatureFlags = inAppFeatureFlags,
                 validator = signupDataValidator,
-                countryRepository = countryCodeRepository,
+                countryCodeRepository = countryCodeRepository,
                 signupDataRepository = signupDataRepository,
                 userInteractor = userInteractor,
                 metadataInteractor = metadataInteractor,
@@ -260,10 +260,10 @@ class StrigaSignupSecondStepPresenterTest {
         presenter.onPresetDataChanged(StrigaPresetDataItem.Occupation(StrigaOccupation("loafer", "some_emoji")))
         presenter.onPresetDataChanged(StrigaPresetDataItem.SourceOfFunds(StrigaSourceOfFunds("unemployed")))
         presenter.onPresetDataChanged(StrigaPresetDataItem.Country(SupportedCountry))
-        presenter.onFieldChanged("any city", StrigaSignupDataType.CITY)
-        presenter.onFieldChanged("any address", StrigaSignupDataType.CITY_ADDRESS_LINE)
-        presenter.onFieldChanged("any zip-code", StrigaSignupDataType.CITY_POSTAL_CODE)
-        presenter.onFieldChanged("any state", StrigaSignupDataType.CITY_STATE)
+        presenter.onFieldChanged(StrigaSignupDataType.CITY, "any city")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_ADDRESS_LINE, "any address")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_POSTAL_CODE, "any zip-code")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_STATE, "any state")
         presenter.onSubmit()
         advanceUntilIdle()
 
