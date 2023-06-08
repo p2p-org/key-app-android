@@ -48,11 +48,7 @@ class PhoneNumberEnterPresenter(
 
     private suspend fun loadDefaultCountryCode() {
         try {
-            val countryCode: CountryCode? =
-                countryCodeRepository.detectCountryCodeBySimCard()
-                    ?: countryCodeRepository.detectCountryCodeByNetwork()
-                    ?: countryCodeRepository.detectCountryCodeByLocale()
-
+            val countryCode: CountryCode = countryCodeRepository.detectCountryOrDefault()
             selectedCountryCode = countryCode
 
             view?.showDefaultCountryCode(countryCode)
