@@ -14,9 +14,7 @@ class CountryCodeInMemoryRepository(
     private val countryCodeHelper: CountryCodeXmlParser
 ) : CountryCodeRepository {
 
-    private val allCountryCodes: List<CountryCode> by lazy {
-        countryCodeHelper.parserCountryCodesFromXmlFile()
-    }
+    private val allCountryCodes: List<CountryCode> = countryCodeHelper.parserCountryCodesFromXmlFile()
 
     override suspend fun getCountryCodes(): List<CountryCode> = allCountryCodes
 
@@ -66,8 +64,8 @@ class CountryCodeInMemoryRepository(
 
     override suspend fun detectCountryOrDefault(): CountryCode {
         return detectCountryCodeBySimCard()
-            ?: detectCountryCodeByNetwork()
             ?: detectCountryCodeByLocale()
+            ?: detectCountryCodeByNetwork()
             ?: allCountryCodes.first()
     }
 }
