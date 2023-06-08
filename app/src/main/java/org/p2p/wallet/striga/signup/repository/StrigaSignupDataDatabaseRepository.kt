@@ -35,6 +35,19 @@ class StrigaSignupDataDatabaseRepository(
         )
     }
 
+    override suspend fun getUserSignupDataAsMap(): StrigaDataLayerResult<Map<StrigaSignupDataType, StrigaSignupData>> =
+        try {
+            dao.getSignupDataForUser(currentUserPublicKey.base58Value)
+                .map(mapper::fromEntity)
+                .associateBy(StrigaSignupData::type)
+                .toSuccessResult()
+        } catch (error: Throwable) {
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            )
+        }
+
     override suspend fun getUserSignupDataByType(
         type: StrigaSignupDataType
     ): StrigaDataLayerResult<StrigaSignupData> = try {

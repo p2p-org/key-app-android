@@ -26,7 +26,7 @@ class StrigaSmsInputPresenter(
     private fun initPhoneNumber() {
         launch {
             try {
-                val (phoneCode, phoneNumber) = interactor.getUserPhoneCodeToPhoneNumber().unwrap()
+                val (phoneCode, phoneNumber) = interactor.getUserPhoneCodeToPhoneNumber()
                 val phoneMask = interactor.getUserPhoneMask(phoneCode)
                     ?.replace(Regex("\\d"), "#")
                     ?: error("Couldn't find any masks for given code $phoneCode")
