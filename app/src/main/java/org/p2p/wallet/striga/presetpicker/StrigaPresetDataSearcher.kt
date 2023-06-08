@@ -10,7 +10,7 @@ class StrigaPresetDataSearcher {
     }
 
     private fun performSearch(query: String, items: List<StrigaPresetDataItem>): List<StrigaPresetDataItem> {
-        val searchResult = items.filter { it.itemTitle.contains(query, ignoreCase = true) }
+        val searchResult = items.filter { it.itemTitle.startsWith(query, ignoreCase = true) }
         searchTextMap[query] = searchResult
         return searchResult
     }
