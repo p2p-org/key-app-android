@@ -8,6 +8,8 @@ private const val KEY_DEBUG_FEATURE_TOGGLES_ENABLED = "KEY_DEBUG_FEATURE_TOGGLES
 class DebugTogglesFeatureFlag(prefs: SharedPreferences) : InAppFeatureFlag() {
     override val featureName: String = KEY_DEBUG_FEATURE_TOGGLES_ENABLED
     override var featureValue: Boolean by BooleanPreference(
-        preferences = prefs, key = KEY_DEBUG_FEATURE_TOGGLES_ENABLED, defaultValue = false
+        preferences = prefs,
+        key = KEY_DEBUG_FEATURE_TOGGLES_ENABLED,
+        defaultValue = false
     )
 }
