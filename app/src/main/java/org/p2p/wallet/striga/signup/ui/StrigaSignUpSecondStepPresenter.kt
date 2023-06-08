@@ -24,6 +24,8 @@ class StrigaSignUpSecondStepPresenter(
 
     private val cachedSignupData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
 
+    private var isSubmittedFirstTime = false
+
     override fun firstAttach() {
         super.firstAttach()
         launch {
@@ -31,7 +33,7 @@ class StrigaSignUpSecondStepPresenter(
         }
     }
 
-    override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
+    override fun onFieldChanged(type: StrigaSignupDataType, newValue: String) {
         val isPresetDataChanged = type in setOf(
             StrigaSignupDataType.COUNTRY_ALPHA_2,
             StrigaSignupDataType.OCCUPATION,
@@ -41,8 +43,14 @@ class StrigaSignUpSecondStepPresenter(
             setCachedData(type, newValue)
         }
 
-        view?.clearError(type)
-        // enabling button if something changed
+        if (isSubmittedFirstTime) {
+            val validationResult = interactor.validateField(type, newValue)
+            if (validationResult.isValid) {
+                view?.clearError(type)
+            } else {
+                view?.setErrors(listOf(validationResult))
+            }
+        }
         view?.setButtonIsEnabled(true)
     }
 
@@ -79,6 +87,9 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     override fun onSubmit() {
+        if (!isSubmittedFirstTime) {
+            isSubmittedFirstTime = true
+        }
         view?.clearErrors()
 
         val (isValid, states) = interactor.validateSecondStep(cachedSignupData)
@@ -105,7 +116,7 @@ class StrigaSignUpSecondStepPresenter(
         cachedSignupData[StrigaSignupDataType.SOURCE_OF_FUNDS]?.value?.let {
             // convert UI string into STRIGA_FORMAT
             setCachedData(
-                type = StrigaSignupDataType.OCCUPATION,
+                type = StrigaSignupDataType.SOURCE_OF_FUNDS,
                 value = strigaItemCellMapper.fromUiTitle(it)
             )
         }

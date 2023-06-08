@@ -49,8 +49,7 @@ class PhoneNumberInputValidatorTest {
         val regionCode = "kg"
 
         val validator = PhoneNumberInputValidator(
-            phoneNumber = phoneNumber,
-            regionCode = regionCode,
+            regionCodeAlpha2 = regionCode,
             countryCodeRepository = countryCodeRepository
         )
 
@@ -63,13 +62,44 @@ class PhoneNumberInputValidatorTest {
     }
 
     @Test
+    fun `GIVEN valid US phone number WHEN validate THEN return true`() {
+        // Given
+        val validator = PhoneNumberInputValidator(
+            regionCodeAlpha2 = "US",
+            countryCodeRepository = countryCodeRepository
+        )
+
+        // When
+        val result = validator.validate("555 55 55")
+
+        // Then
+        assertFalse(result)
+        assertEquals(TextContainer(R.string.striga_validation_error_phone_number), validator.errorMessage)
+    }
+
+    @Test
+    fun `GIVEN invalid US phone number WHEN validate THEN return true`() {
+        // Given
+        val validator = PhoneNumberInputValidator(
+            regionCodeAlpha2 = "US",
+            countryCodeRepository = countryCodeRepository
+        )
+
+        // When
+        val result = validator.validate("555 55 55 55")
+
+        // Then
+        assertFalse(result)
+        assertEquals(TextContainer(R.string.striga_validation_error_phone_number), validator.errorMessage)
+    }
+
+    @Test
     fun `GIVEN invalid phone number WHEN validate THEN return false`() {
         // Given
         val phoneNumber = "12345"
         val regionCode = "kg"
         val validator = PhoneNumberInputValidator(
-            phoneNumber = phoneNumber,
-            regionCode = regionCode,
+            regionCodeAlpha2 = regionCode,
             countryCodeRepository = countryCodeRepository
         )
 
@@ -85,8 +115,7 @@ class PhoneNumberInputValidatorTest {
     fun `GIVEN null input WHEN validate THEN return false`() {
         // Given
         val validator = PhoneNumberInputValidator(
-            phoneNumber = emptyString(),
-            regionCode = emptyString(),
+            regionCodeAlpha2 = emptyString(),
             countryCodeRepository = countryCodeRepository
         )
 
@@ -102,8 +131,7 @@ class PhoneNumberInputValidatorTest {
     fun `GIVEN empty input WHEN validate THEN return false`() {
         // Given
         val validator = PhoneNumberInputValidator(
-            phoneNumber = emptyString(),
-            regionCode = emptyString(),
+            regionCodeAlpha2 = emptyString(),
             countryCodeRepository = countryCodeRepository
         )
 

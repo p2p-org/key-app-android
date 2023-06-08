@@ -4,19 +4,19 @@ import org.p2p.core.common.TextContainer
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 
+/**
+ * @param regionCodeAlpha2 ISO alpha2 format: EN, RU or KZ
+ */
 class PhoneNumberInputValidator(
-    val regionCode: String,
-    val phoneNumber: String,
+    val regionCodeAlpha2: String,
     private val countryCodeRepository: CountryCodeRepository,
 ) : InputValidator {
 
     override var errorMessage: TextContainer = TextContainer(R.string.striga_validation_error_phone_number)
 
-    /**
-     * @param [regionCode] EN, RU or KZ
-     * @param[phoneNumber] trimmed value without regionCode
-     */
     override fun validate(input: String?): Boolean {
-        return countryCodeRepository.isValidNumberForRegion(phoneNumber, regionCode)
+        if (input.isNullOrBlank()) return false
+        val phoneNumber = input.replace("\\D".toRegex(), "")
+        return countryCodeRepository.isValidNumberForRegion(phoneNumber, regionCodeAlpha2)
     }
 }

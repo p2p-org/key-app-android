@@ -209,7 +209,7 @@ class StrigaSignupInteractorTest {
         return StrigaSignupInteractor(
             appScope = appScope,
             validator = signupDataValidator,
-            countryRepository = countryRepository,
+            countryCodeRepository = countryRepository,
             signupDataRepository = signupDataRepository,
         )
     }

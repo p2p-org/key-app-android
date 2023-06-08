@@ -63,7 +63,7 @@ class StrigaSignUpSecondStepFragment :
             StrigaSignupDataType.values().forEach { dataType ->
                 val inputView = editTextFieldsMap[dataType] ?: return@forEach
                 inputView.addOnTextChangedListener { editable ->
-                    presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
+                    presenter.onFieldChanged(type = dataType, newValue = editable.toString())
                 }
             }
 
