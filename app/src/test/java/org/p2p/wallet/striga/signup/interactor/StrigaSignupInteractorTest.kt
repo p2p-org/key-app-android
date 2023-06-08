@@ -362,7 +362,7 @@ class StrigaSignupInteractorTest {
             appScope = appScope,
             inAppFeatureFlags = inAppFeatureFlags,
             validator = signupDataValidator,
-            countryRepository = countryRepository,
+            countryCodeRepository = countryRepository,
             signupDataRepository = signupDataRepository,
             userInteractor = userInteractor,
             metadataInteractor = metadataInteractor

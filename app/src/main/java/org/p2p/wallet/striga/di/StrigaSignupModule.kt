@@ -2,7 +2,9 @@ package org.p2p.wallet.striga.di
 
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.named
 import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -13,6 +15,10 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaHeaderSignatureGenerator
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
+import org.p2p.wallet.smsinput.SmsInputContract
+import org.p2p.wallet.smsinput.SmsInputFactory
+import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
+import org.p2p.wallet.smsinput.striga.StrigaSmsInputPresenter
 import org.p2p.wallet.striga.StrigaUserIdProvider
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingPresenter
@@ -62,6 +68,11 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaSignupDataValidator)
         factoryOf(::StrigaSignupInteractor)
         factoryOf(::StrigaUserInteractor)
+        factoryOf(::StrigaSmsInputInteractor)
+        factoryOf(::StrigaSmsInputPresenter) {
+            bind<SmsInputContract.Presenter>()
+            named(SmsInputFactory.Type.Striga.name)
+        }
     }
 
     private fun Module.initDataLayer() {
@@ -74,8 +85,6 @@ object StrigaSignupModule : InjectionModule {
             ).create()
         }
 
-        factoryOf(::StrigaHeaderSignatureGenerator)
-
         factoryOf(::StrigaUserRepositoryMapper)
         factoryOf(::StrigaUserRemoteRepository) bind StrigaUserRepository::class
 
@@ -85,5 +94,6 @@ object StrigaSignupModule : InjectionModule {
 
         factoryOf(::StrigaUserIdProvider)
         factoryOf(::StrigaItemCellMapper)
+        factoryOf(::StrigaHeaderSignatureGenerator)
     }
 }

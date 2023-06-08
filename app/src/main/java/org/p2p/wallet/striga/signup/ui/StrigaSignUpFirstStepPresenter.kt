@@ -22,39 +22,46 @@ class StrigaSignUpFirstStepPresenter(
 
     private val signupData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
     private var countryOfBirth: CountryCode? = null
-    private var selectedCountryCode: CountryCode? = null
+    private var phoneCountryCode: CountryCode? = null
+    private var isSubmittedFirstTime = false
 
     override fun firstAttach() {
         super.firstAttach()
         launch {
             initialLoadSignupData()
-            initialLoadCountryCode()
         }
     }
 
-    private suspend fun initialLoadCountryCode() {
-        if (selectedCountryCode != null) {
-            val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
-            view?.setupPhoneCountryCodePicker(
-                selectedCountryCode = selectedCountryCode,
-                selectedPhoneNumber = selectedPhoneNumber
-            )
-            return
+    override fun attach(view: StrigaSignUpFirstStepContract.View) {
+        super.attach(view)
+        launch {
+            loadPhoneCountryCode()
         }
-        loadDefaultCountryCode()
     }
 
-    override fun onFieldChanged(newValue: String, type: StrigaSignupDataType) {
+    override fun detach() {
+        super.detach()
+        isSubmittedFirstTime = false
+    }
+
+    override fun onFieldChanged(type: StrigaSignupDataType, newValue: String) {
         if (type != StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3) {
             setCachedData(type, newValue)
         }
 
-        view?.clearError(type)
+        if (isSubmittedFirstTime) {
+            val validationResult = interactor.validateField(type, newValue)
+            if (validationResult.isValid) {
+                view?.clearError(type)
+            } else {
+                view?.setErrors(listOf(validationResult))
+            }
+        }
         // enabling button if something changed
         view?.setButtonIsEnabled(isEnabled = true)
     }
 
-    override fun onCountryChanged(newCountry: CountryCode) {
+    override fun onCountryOfBirthdayChanged(newCountry: CountryCode) {
         view?.updateSignupField(
             newValue = "${newCountry.flagEmoji} ${newCountry.countryName}",
             type = StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3
@@ -63,18 +70,11 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onSubmit() {
+        if (!isSubmittedFirstTime) {
+            isSubmittedFirstTime = true
+        }
         view?.clearErrors()
 
-        val phoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value.orEmpty()
-        val regionCode = selectedCountryCode?.nameCodeAlpha2.orEmpty()
-
-        interactor.addValidator(
-            PhoneNumberInputValidator(
-                phoneNumber = phoneNumber,
-                regionCode = regionCode,
-                countryCodeRepository = countryRepository
-            )
-        )
         val (isValid, states) = interactor.validateFirstStep(signupData)
 
         if (isValid) {
@@ -91,21 +91,30 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onPhoneCountryCodeChanged(newCountry: CountryCode) {
-        selectedCountryCode = newCountry
-        val phoneCodeWithPlus = "+${selectedCountryCode?.phoneCode}"
-        setCachedData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, phoneCodeWithPlus)
-        view?.showCountryCode(selectedCountryCode)
+        phoneCountryCode = newCountry
+        view?.showPhoneCountryCode(phoneCountryCode)
+
+        interactor.setPhoneValidator(
+            PhoneNumberInputValidator(
+                regionCodeAlpha2 = newCountry.nameCodeAlpha2,
+                countryCodeRepository = countryRepository
+            )
+        )
     }
 
     override fun onPhoneNumberChanged(newPhone: String) {
-        val countryCode = "+${selectedCountryCode?.phoneCode}"
-        val phoneWithoutCountryCode = newPhone.replace(countryCode, "")
-        setCachedData(StrigaSignupDataType.PHONE_NUMBER, phoneWithoutCountryCode)
-        view?.clearError(StrigaSignupDataType.PHONE_NUMBER)
+        phoneCountryCode?.let {
+            val phoneWithoutCountryCode = newPhone.replace(it.phoneCodeWithPlusSign, "")
+            onFieldChanged(StrigaSignupDataType.PHONE_NUMBER, phoneWithoutCountryCode)
+        }
     }
 
-    override fun onPhoneCountryCodeInputClicked() {
-        view?.showPhoneCountryCodePicker(selectedCountryCode)
+    override fun onPhoneCountryCodeClicked() {
+        view?.showPhoneCountryCodePicker(phoneCountryCode)
+    }
+
+    override fun onCountryOfBirthClicked() {
+        view?.showCountryOfBirthPicker()
     }
 
     override fun saveChanges() {
@@ -125,44 +134,65 @@ class StrigaSignUpFirstStepPresenter(
         getAndUpdateCountryField(data)
     }
 
+    private suspend fun loadPhoneCountryCode() {
+        if (phoneCountryCode != null) {
+            val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+            view?.setupPhoneCountryCodePicker(
+                selectedCountryCode = phoneCountryCode,
+                selectedPhoneNumber = selectedPhoneNumber
+            )
+        } else {
+            // find default country code for phone
+            try {
+                phoneCountryCode = countryRepository.detectCountryOrDefault().also { countryCode ->
+                    val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+
+                    onPhoneCountryCodeChanged(countryCode)
+                    view?.setupPhoneCountryCodePicker(
+                        selectedCountryCode = countryCode,
+                        selectedPhoneNumber = selectedPhoneNumber
+                    )
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Loading default country code failed")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+        }
+    }
+
     private suspend fun getAndUpdateCountryField(signupData: Map<StrigaSignupDataType, StrigaSignupData>) {
         // db stores COUNTRY_OF_BIRTH as country name code ISO 3166-1 alpha-3,
         // so we need to find country by code and convert to country name
         val selectedCountryValue = signupData[StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3]?.value.orEmpty()
         interactor.findCountryByIsoAlpha3(selectedCountryValue)
-            ?.also { onCountryChanged(it) }
+            ?.also { onCountryOfBirthdayChanged(it) }
 
-        val selectedCountryCodeValue = signupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value ?: return
-        selectedCountryCode = countryRepository.findCountryCodeByPhoneCode(selectedCountryCodeValue)
+        getCachedPhoneCodeWithoutPlus()?.let {
+            val phoneCountryCode = countryRepository.findCountryCodeByPhoneCode(it)
+            phoneCountryCode?.let(::onPhoneCountryCodeChanged)
+        }
     }
 
     private fun mapDataForStorage() {
         countryOfBirth?.nameCodeAlpha3?.let { setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, it) }
-    }
-
-    private suspend fun loadDefaultCountryCode() {
-        try {
-            val countryCode: CountryCode = countryRepository.detectCountryOrDefault()
-            selectedCountryCode = countryCode
-            setCachedData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, countryCode.phoneCode)
-
-            val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
-
-            view?.setupPhoneCountryCodePicker(
-                selectedCountryCode = countryCode,
-                selectedPhoneNumber = selectedPhoneNumber
-            )
-        } catch (e: Throwable) {
-            Timber.e(e, "Loading default country code failed")
-            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+        phoneCountryCode?.let {
+            setCachedData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, it.phoneCodeWithPlusSign)
         }
-    }
-
-    override fun onCountryClicked() {
-        view?.showCountryPicker()
     }
 
     private fun setCachedData(type: StrigaSignupDataType, newValue: String) {
         signupData[type] = StrigaSignupData(type = type, value = newValue)
+    }
+
+    private fun getCachedPhoneCodeWithoutPlus(): String? {
+        return signupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value?.let {
+            check(it.isNotBlank()) { "Given blank phone code from storage!" }
+            if (it[0] == '+') {
+                it.substring(1)
+            } else {
+                // i'm not sure if it's possible, but just in case leave it here
+                it
+            }
+        }
     }
 }

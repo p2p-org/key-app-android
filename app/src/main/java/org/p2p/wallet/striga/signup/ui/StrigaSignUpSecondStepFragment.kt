@@ -20,8 +20,8 @@ import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.utils.getParcelableCompat
-import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.viewbinding.getDrawable
@@ -64,7 +64,7 @@ class StrigaSignUpSecondStepFragment :
             StrigaSignupDataType.values().forEach { dataType ->
                 val inputView = editTextFieldsMap[dataType] ?: return@forEach
                 inputView.addOnTextChangedListener { editable ->
-                    presenter.onFieldChanged(newValue = editable.toString(), type = dataType)
+                    presenter.onFieldChanged(type = dataType, newValue = editable.toString())
                 }
             }
 
@@ -95,13 +95,11 @@ class StrigaSignUpSecondStepFragment :
     }
 
     override fun navigateNext() {
-        val smsFragment = SmsInputFactory.create(
-            type = SmsInputFactory.Type.Striga,
-            destinationFragment = StrigaSignupFinishFragment::class.java
-        )
-        popAndReplaceFragment(
-            target = smsFragment,
-            popTo = StrigaSignUpFirstStepFragment::class
+        replaceFragment(
+            SmsInputFactory.create(
+                type = SmsInputFactory.Type.Striga,
+                destinationFragment = StrigaSignupFinishFragment::class.java,
+            )
         )
     }
 

@@ -16,6 +16,7 @@ import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.InputValidator
+import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.DateTimeUtils
@@ -56,12 +57,16 @@ class StrigaSignupInteractor(
         )
     }
 
+    fun validateField(type: StrigaSignupDataType, value: String): StrigaSignupFieldState {
+        return validator.validate(StrigaSignupData(type, value))
+    }
+
     fun validateFirstStep(data: Map<StrigaSignupDataType, StrigaSignupData>): ValidationResult {
         return validateStep(data, firstStepDataTypes)
     }
 
-    fun addValidator(inputValidator: InputValidator) {
-        validator.addValidator(inputValidator)
+    fun setPhoneValidator(inputValidator: PhoneNumberInputValidator) {
+        validator.setPhoneValidator(inputValidator)
     }
 
     fun validateSecondStep(data: Map<StrigaSignupDataType, StrigaSignupData>): ValidationResult {
@@ -70,17 +75,17 @@ class StrigaSignupInteractor(
 
     suspend fun getSelectedCountry(): CountryCode {
         // todo: get saved country
-        return countryRepository.detectCountryOrDefault()
+        return countryCodeRepository.detectCountryOrDefault()
     }
 
     suspend fun findCountryByIsoAlpha2(codeAlpha2: String?): CountryCode? {
         if (codeAlpha2.isNullOrBlank()) return null
-        return countryRepository.findCountryCodeByIsoAlpha2(codeAlpha2)
+        return countryCodeRepository.findCountryCodeByIsoAlpha2(codeAlpha2)
     }
 
     suspend fun findCountryByIsoAlpha3(codeAlpha3: String?): CountryCode? {
         if (codeAlpha3.isNullOrBlank()) return null
-        return countryRepository.findCountryCodeByIsoAlpha3(codeAlpha3)
+        return countryCodeRepository.findCountryCodeByIsoAlpha3(codeAlpha3)
     }
 
     suspend fun getSignupDataFirstStep(): List<StrigaSignupData> = getSignupData(firstStepDataTypes)

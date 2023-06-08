@@ -15,21 +15,20 @@ interface StrigaSignUpFirstStepContract {
         fun clearError(type: StrigaSignupDataType)
         fun setButtonIsEnabled(isEnabled: Boolean)
         fun scrollToFirstError(type: StrigaSignupDataType)
-        fun showCountryPicker()
+        fun showCountryOfBirthPicker()
         fun setupPhoneCountryCodePicker(selectedCountryCode: CountryCode?, selectedPhoneNumber: String?)
-        fun showCountryCode(countryCode: CountryCode?)
-        fun onNewCountryDetected(countryCode: CountryCode)
+        fun showPhoneCountryCode(countryCode: CountryCode?)
         fun showPhoneCountryCodePicker(selectedCountryCode: CountryCode?)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onFieldChanged(newValue: String, type: StrigaSignupDataType)
-        fun onCountryChanged(newCountry: CountryCode)
-        fun onCountryClicked()
+        fun onFieldChanged(type: StrigaSignupDataType, newValue: String)
+        fun onCountryOfBirthdayChanged(newCountry: CountryCode)
+        fun onCountryOfBirthClicked()
         fun saveChanges()
         fun onSubmit()
         fun onPhoneCountryCodeChanged(newCountry: CountryCode)
         fun onPhoneNumberChanged(newPhone: String)
-        fun onPhoneCountryCodeInputClicked()
+        fun onPhoneCountryCodeClicked()
     }
 }

@@ -21,7 +21,8 @@
     <string name="striga_onboarding_title_unavailable">This service is available only for European Economic Area countries</string>
     <string name="striga_onboarding_help_common_text">Check the list of countries %1$s</string>
     <string name="striga_onboarding_help_highlight_text">here</string>
-    <string name="striga_sms_input_title">To start verification confirm your phone number %1$s</string>
+    <string name="striga_sms_input_title">Enter code from SMS</string>
+    <string name="striga_sms_input_description">To start verification confirm your phone number %1$s</string>
     <string name="striga_sms_input_toolbar_title">Step 3 of 3</string>
     <string name="striga_exit_sms_input_warning_dialog_title">Do you want to stop registration?</string>
     <string name="striga_exit_sms_input_warning_dialog_message">You can confirm the phone number and finish the registration later</string>

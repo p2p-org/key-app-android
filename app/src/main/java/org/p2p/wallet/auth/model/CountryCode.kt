@@ -13,6 +13,8 @@ data class CountryCode(
     var mask: String = ""
 ) : Parcelable {
 
+    val phoneCodeWithPlusSign get() = "+$phoneCode"
+
     fun getZeroFilledMask(): String {
         return mask.map { symbol -> if (symbol.isDigit()) '0' else ' ' }.joinToString("")
     }

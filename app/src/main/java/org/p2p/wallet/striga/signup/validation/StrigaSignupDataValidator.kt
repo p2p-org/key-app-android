@@ -7,24 +7,41 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
 class StrigaSignupDataValidator {
     private val validators = mutableMapOf(
-        StrigaSignupDataType.FIRST_NAME to listOf(LengthInputValidator(2..40)),
-        StrigaSignupDataType.LAST_NAME to listOf(LengthInputValidator(2..40)),
-        StrigaSignupDataType.DATE_OF_BIRTH to listOf(BirthdayInputValidator()),
+        StrigaSignupDataType.EMAIL to listOf(EmptyInputValidator()),
+        StrigaSignupDataType.PHONE_CODE_WITH_PLUS to listOf(EmptyInputValidator()),
+        StrigaSignupDataType.PHONE_NUMBER to listOf(EmptyInputValidator()),
 
-        StrigaSignupDataType.CITY to listOf(LengthInputValidator(1..40)),
-        StrigaSignupDataType.CITY_ADDRESS_LINE to listOf(LengthInputValidator(1..80)),
-        StrigaSignupDataType.CITY_POSTAL_CODE to listOf(LengthInputValidator(1..20)),
-        StrigaSignupDataType.CITY_STATE to listOf(LengthInputValidator(1..20)),
+        StrigaSignupDataType.FIRST_NAME to listOf(
+            EmptyInputValidator(),
+            LengthInputValidator(2..40)
+        ),
+        StrigaSignupDataType.LAST_NAME to listOf(
+            EmptyInputValidator(),
+            LengthInputValidator(2..40)
+        ),
+        StrigaSignupDataType.DATE_OF_BIRTH to listOf(
+            EmptyInputValidator(),
+            BirthdayInputValidator()
+        ),
+
+        StrigaSignupDataType.CITY to listOf(
+            EmptyInputValidator(),
+            LengthInputValidator(1..40)
+        ),
+        StrigaSignupDataType.CITY_ADDRESS_LINE to listOf(
+            EmptyInputValidator(),
+            LengthInputValidator(1..80)
+        ),
+        StrigaSignupDataType.CITY_POSTAL_CODE to listOf(
+            EmptyInputValidator(),
+            LengthInputValidator(1..20)
+        ),
+        // state is an optional field
+        StrigaSignupDataType.CITY_STATE to listOf(LengthInputValidator(0..20)),
     )
-    private val allFieldsValidator = EmptyInputValidator()
 
     fun validate(data: StrigaSignupData): StrigaSignupFieldState {
         val fieldValue = data.value?.trim()
-
-        // all fields must be not empty and not null
-        if (!allFieldsValidator.validate(fieldValue)) {
-            return data.toUiField(false, allFieldsValidator.errorMessage)
-        }
 
         // find validator for specific field
         // if no validators found, then field is valid
@@ -45,8 +62,11 @@ class StrigaSignupDataValidator {
         )
     }
 
-    fun addValidator(validator: InputValidator) {
-        validators[StrigaSignupDataType.PHONE_NUMBER] = listOf(validator)
+    fun setPhoneValidator(validator: InputValidator) {
+        validators[StrigaSignupDataType.PHONE_NUMBER] = listOf(
+            EmptyInputValidator(),
+            validator
+        )
     }
 
     private fun StrigaSignupData.toUiField(

@@ -10,4 +10,5 @@ interface StrigaSignupDataLocalRepository {
     suspend fun updateSignupData(newData: StrigaSignupData): StrigaDataLayerResult<Unit>
     suspend fun updateSignupData(newData: Collection<StrigaSignupData>): StrigaDataLayerResult<Unit>
     suspend fun getUserSignupDataByType(type: StrigaSignupDataType): StrigaDataLayerResult<StrigaSignupData>
+    suspend fun getUserSignupDataAsMap(): StrigaDataLayerResult<Map<StrigaSignupDataType, StrigaSignupData>>
 }
