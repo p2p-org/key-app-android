@@ -14,7 +14,9 @@ class CountryCodeInMemoryRepository(
     private val countryCodeHelper: CountryCodeXmlParser
 ) : CountryCodeRepository {
 
-    private val allCountryCodes: List<CountryCode> = countryCodeHelper.parserCountryCodesFromXmlFile()
+    private val allCountryCodes: List<CountryCode> by lazy {
+        countryCodeHelper.parserCountryCodesFromXmlFile()
+    }
 
     override suspend fun getCountryCodes(): List<CountryCode> = allCountryCodes
 
