@@ -328,7 +328,7 @@ class HomePresenter(
         } catch (t: Throwable) {
             Timber.e(t, "Error on loading sol tokens")
         } finally {
-            showRefreshing(true)
+            showRefreshing(false)
         }
     }
 
