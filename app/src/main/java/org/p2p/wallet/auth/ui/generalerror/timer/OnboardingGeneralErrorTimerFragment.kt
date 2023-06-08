@@ -1,24 +1,24 @@
 package org.p2p.wallet.auth.ui.generalerror.timer
 
+import androidx.activity.addCallback
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
-import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.io.File
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.Presenter
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.OnboardingSpanUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import java.io.File
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.View as ContractView
 
 private const val ARG_TIMER_ERROR_TYPE = "ARG_TIMER_ERROR_TYPE"
@@ -61,7 +61,7 @@ class OnboardingGeneralErrorTimerFragment :
 
     private fun FragmentOnboardingGeneralErrorTimerBinding.initViews() {
         textViewTermsAndPolicy.apply {
-            text = SpanUtils.buildTermsAndPolicyText(
+            text = OnboardingSpanUtils.buildTermsAndPolicyText(
                 context = requireContext(),
                 onTermsClick = { presenter.onTermsClick() },
                 onPolicyClick = { presenter.onPolicyClick() }

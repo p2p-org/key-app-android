@@ -9,6 +9,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
 import java.security.KeyStore
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
@@ -66,11 +67,9 @@ object StorageModule {
             )
         } bind AccountStorageContract::class
 
-        single {
-            LocalFeatureToggleStorage(
-                sharedPreferences = androidPreferences(prefsName = PREFS_TOGGLE)
-            )
-        }
+        single { LocalFeatureToggleStorage(androidPreferences(prefsName = PREFS_TOGGLE)) }
+
+        single { InAppFeatureFlags(androidPreferences(prefsName = PREFS_TOGGLE)) }
 
         factory {
             val prefs = androidPreferences(PREFS_SWAP)
