@@ -19,12 +19,13 @@ sealed interface SmartSelectionTrigger {
     data class SourceTokenChanged(
         val solToken: Token.Active,
         val newSourceToken: Token.Active,
-        val inputAmount: BigDecimal
+        val inputAmount: BigDecimal?
     ) : SmartSelectionTrigger
 
     data class FeePayerManuallyChanged(
         val sourceToken: Token.Active,
-        val newFeePayer: Token.Active
+        val newFeePayer: Token.Active,
+        val inputAmount: BigDecimal
     ) : SmartSelectionTrigger
 
     data class MaxAmountEntered(

@@ -103,7 +103,6 @@ class UserInteractor(
 
         // Save tokens to the file
         externalStorageRepository.saveJson(json = gson.toJson(data), fileName = TOKENS_FILE_NAME)
-        return
     }
 
     fun fetchTokens(searchText: String = emptyString(), count: Int, refresh: Boolean) {

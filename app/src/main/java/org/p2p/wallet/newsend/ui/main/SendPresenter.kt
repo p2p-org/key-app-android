@@ -2,6 +2,7 @@ package org.p2p.wallet.newsend.ui.main
 
 import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
+import timber.log.Timber
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -80,10 +81,13 @@ class SendPresenter(
     }
 
     private fun observeState() {
-        sendStateManager.getStateFlow().onEach(::handleState).launchIn(this)
+        sendStateManager.getStateFlow()
+            .onEach(::handleState)
+            .launchIn(this)
     }
 
     private fun handleState(newState: SendState) {
+        Timber.d("### newState: $newState")
         when (newState) {
             is SendState.Idle -> Unit
             is SendState.CalculationUpdate -> handleCalculationState(newState.calculationState)
@@ -99,31 +103,41 @@ class SendPresenter(
 
     private fun handleCalculationState(newState: CalculationState) {
         when (newState) {
-            is CalculationState.CalculationCompleted -> {
-                view?.showAroundValue(newState.aroundValue)
-            }
-            is CalculationState.InputFractionUpdate -> {
-                view?.updateInputFraction(newState.fraction)
-            }
-            is CalculationState.LabelsUpdate -> {
-                view?.setSwitchLabel(newState.switchSymbol)
-                view?.setMainAmountLabel(newState.mainSymbol)
-            }
-            is CalculationState.MaxValueEntered -> {
-                handleMaxInputEntered(newState)
-            }
-            is CalculationState.MaxButtonVisible -> {
-                view?.setMaxButtonVisible(isVisible = newState.isMaxButtonVisible)
-            }
-            is CalculationState.CurrencySwitched -> {
-                view?.setSwitchLabel(newState.switchSymbol)
-                view?.setMainAmountLabel(newState.mainSymbol)
-                view?.updateInputValue(newState.newInputAmount)
-
-                newSendAnalytics.logSwitchCurrencyModeClicked(isCryptoMode = newState.isFiat)
-            }
+            is CalculationState.TokenUpdated -> handleTokenUpdated(newState)
+            is CalculationState.AmountChanged -> handleAmountChanged(newState)
+            is CalculationState.AmountReduced -> handleAmountReduced(newState)
+            is CalculationState.MaxValueEntered -> handleMaxInputEntered(newState)
+            is CalculationState.CurrencySwitched -> handleCurrencySwitched(newState)
             is CalculationState.Idle -> Unit
         }
+    }
+
+    private fun handleCurrencySwitched(newState: CalculationState.CurrencySwitched) {
+        view?.updateInputValue(newState.newInputAmount)
+        view?.showAroundValue(newState.approximateAmount)
+        view?.setSwitchLabel(newState.switchInputSymbol)
+        view?.setMainAmountLabel(newState.currentInputSymbol)
+        view?.updateInputFraction(newState.fraction)
+
+        newSendAnalytics.logSwitchCurrencyModeClicked(isCryptoMode = newState.isFiat)
+    }
+
+    private fun handleAmountReduced(newState: CalculationState.AmountReduced) {
+        view?.showAroundValue(newState.approximateAmount)
+        view?.setMaxButtonVisible(isVisible = newState.isMaxButtonVisible)
+        view?.updateInputValue(newState.newInputAmount)
+    }
+
+    private fun handleAmountChanged(newState: CalculationState.AmountChanged) {
+        view?.showAroundValue(newState.approximateAmount)
+        view?.setMaxButtonVisible(isVisible = newState.isMaxButtonVisible)
+    }
+
+    private fun handleTokenUpdated(newState: CalculationState.TokenUpdated) {
+        view?.setSwitchLabel(newState.switchInputSymbol)
+        view?.setMainAmountLabel(newState.currentInputSymbol)
+        view?.updateInputFraction(newState.fraction)
+        view?.showAroundValue(newState.approximateAmount)
     }
 
     private fun handleFeePayerState(newState: FeePayerState) {
@@ -199,7 +213,6 @@ class SendPresenter(
 
     private fun handleReduceAmount(newState: FeePayerState.ReduceAmount) {
         view?.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
-        view?.updateInputValue(newState.newInputAmount.toPlainString())
     }
 
     private fun handleDisableInput(newState: WidgetState.DisableInput) {

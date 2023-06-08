@@ -1,9 +1,14 @@
 package org.p2p.wallet.newsend.smartselection.handler
 
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
-import org.p2p.wallet.feerelayer.model.FeeCalculationState
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.Cancelled
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.Failed
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.NoFees
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.PoolsNotFound
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.Success
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.smartselection.SmartSelectionState
@@ -12,7 +17,8 @@ import org.p2p.wallet.newsend.smartselection.SmartSelectionTrigger
 import org.p2p.wallet.newsend.smartselection.strategy.AmountReduceStrategy
 import org.p2p.wallet.newsend.smartselection.strategy.FeePayerSelectionStrategy
 import org.p2p.wallet.newsend.smartselection.strategy.SolanaTokenStrategy
-import org.p2p.wallet.newsend.smartselection.strategy.SourceTokenStrategy
+import org.p2p.wallet.newsend.smartselection.strategy.SourceSolanaTokenStrategy
+import org.p2p.wallet.newsend.smartselection.strategy.SourceSplTokenStrategy
 import org.p2p.wallet.newsend.smartselection.strategy.SplTokenStrategy
 
 class MaxAmountEnteredHandler(
@@ -38,20 +44,21 @@ class MaxAmountEnteredHandler(
         )
 
         val newState = when (feeState) {
-            is FeeCalculationState.Success -> {
+            is Success -> {
                 val strategies = generateStrategies(
                     solToken = trigger.solToken,
                     sourceToken = trigger.sourceToken,
                     inputAmount = trigger.inputAmount,
                     feePayerToken = feePayerToken,
-                    fee = feeState.fee
+                    fee = feeState.fee,
+                    minRentExemption = feeCalculator.getMinRentExemption()
                 )
                 SmartSelectionState.ReadyForSmartSelection(strategies)
             }
-            is FeeCalculationState.PoolsNotFound -> SmartSelectionState.SolanaFeeOnly(feeState.feeInSol)
-            is FeeCalculationState.NoFees -> SmartSelectionState.NoFees(trigger.sourceToken)
-            is FeeCalculationState.Cancelled -> SmartSelectionState.Cancelled
-            is FeeCalculationState.Failed -> SmartSelectionState.Failed(feeState.e)
+            is PoolsNotFound -> SmartSelectionState.SolanaFeeOnly(feeState.feeInSol)
+            is NoFees -> SmartSelectionState.NoFees(trigger.sourceToken, trigger.inputAmount)
+            is Cancelled -> SmartSelectionState.Cancelled
+            is Failed -> SmartSelectionState.Failed(feeState.e)
         }
 
         updateState(newState)
@@ -62,11 +69,13 @@ class MaxAmountEnteredHandler(
         sourceToken: Token.Active,
         feePayerToken: Token.Active,
         inputAmount: BigDecimal,
-        fee: FeeRelayerFee
+        fee: FeeRelayerFee,
+        minRentExemption: BigInteger
     ): LinkedHashSet<FeePayerSelectionStrategy> {
         return linkedSetOf(
-            SourceTokenStrategy(sourceToken, inputAmount, fee),
-            SolanaTokenStrategy(solToken, sourceToken, inputAmount, fee),
+            SourceSplTokenStrategy(sourceToken, inputAmount, fee),
+            SourceSolanaTokenStrategy(recipient, sourceToken, inputAmount, fee, minRentExemption),
+            SolanaTokenStrategy(recipient, solToken, sourceToken, inputAmount, fee, minRentExemption),
             SplTokenStrategy(sourceToken, feePayerToken, inputAmount, fee, emptyList()),
             AmountReduceStrategy(sourceToken, inputAmount, fee, feePayerToken)
         )

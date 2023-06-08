@@ -100,7 +100,7 @@ class SmartSelectionCoordinator(
                     feePayerToken = newFeePayerState.feePayerToken
                 }
 
-                feePayerState.value = newFeePayerState
+                updateState(newFeePayerState)
             }
             is SmartSelectionState.SolanaFeeOnly -> {
                 // TODO
@@ -110,12 +110,12 @@ class SmartSelectionCoordinator(
                     sourceToken = state.sourceToken,
                     initialAmount = state.initialAmount
                 )
-                feePayerState.value = noFeesState
+                updateState(noFeesState)
             }
             is SmartSelectionState.Failed -> {
                 val reason = FeePayerFailureReason.CalculationError(state.e)
                 val failureState = FeePayerState.Failure(reason)
-                feePayerState.value = failureState
+                updateState(failureState)
             }
             is SmartSelectionState.Cancelled -> Unit
         }
@@ -123,5 +123,9 @@ class SmartSelectionCoordinator(
 
     fun release() {
         coroutineContext.cancelChildren()
+    }
+
+    private fun updateState(newState: FeePayerState) {
+        feePayerState.value = newState
     }
 }

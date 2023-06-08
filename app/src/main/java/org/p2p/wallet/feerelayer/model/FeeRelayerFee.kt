@@ -29,4 +29,8 @@ data class FeeRelayerFee(
 
     val totalInSpl: BigInteger
         get() = transactionFeeInSpl + accountCreationFeeInSpl
+
+    companion object {
+        val EMPTY = FeeRelayerFee(FeeAmount(), FeeAmount(), FeeAmount())
+    }
 }

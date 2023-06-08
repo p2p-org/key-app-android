@@ -14,11 +14,11 @@ import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason
 import org.p2p.wallet.newsend.smartselection.validator.SourceSolValidator
 
 /**
- * SOL token as a fee payer is a second priority in paying fees after initial tokens
+ * Source token should be a highest priority token for fee payment
+ * Checking only if source token total is enough to cover all expenses.
  * */
-class SolanaTokenStrategy(
+class SourceSolanaTokenStrategy(
     private val recipient: SearchResult,
-    private val solToken: Token.Active,
     private val sourceToken: Token.Active,
     private val inputAmount: BigDecimal?,
     private val fee: FeeRelayerFee,
@@ -26,28 +26,22 @@ class SolanaTokenStrategy(
 ) : FeePayerSelectionStrategy {
 
     override fun isPayable(): Boolean {
+        if (!sourceToken.isSOL) {
+            return false
+        }
+
         val inputAmountLamports = inputAmount.orZero().toLamports(sourceToken.decimals)
 
-        // calculating if SOL balance is enough
-        val totalSolNeeded = if (sourceToken.isSOL) {
-            fee.totalInSol + inputAmountLamports
-        } else {
-            fee.totalInSol
-        }
+        // calculating the total needed amount in SOL
+        val requiredAmount = fee.totalInSol + inputAmountLamports
 
-        if (solToken.totalInLamports < totalSolNeeded) {
-            return false
-        }
-
-        // checking if source token balance is enough to cover input
-        if (sourceToken.totalInLamports < inputAmountLamports) {
-            return false
-        }
-
-        return true
+        // checking if SOL balance is enough to cover fee and input amount
+        val tokenTotal = sourceToken.totalInLamports
+        return tokenTotal >= requiredAmount
     }
 
     override fun execute(): FeePayerState {
+        val solToken = sourceToken
         val inputAmountLamports = inputAmount.orZero().toLamports(sourceToken.decimals)
 
         val solValidator = SourceSolValidator(

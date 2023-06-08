@@ -1,17 +1,22 @@
 package org.p2p.wallet.newsend.smartselection.handler
 
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
-import org.p2p.core.utils.orZero
-import org.p2p.wallet.feerelayer.model.FeeCalculationState
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.Cancelled
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.Failed
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.NoFees
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.PoolsNotFound
+import org.p2p.wallet.feerelayer.model.FeeCalculationState.Success
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.smartselection.SmartSelectionState
 import org.p2p.wallet.newsend.smartselection.FeeCalculator
 import org.p2p.wallet.newsend.smartselection.SmartSelectionTrigger
 import org.p2p.wallet.newsend.smartselection.strategy.FeePayerSelectionStrategy
-import org.p2p.wallet.newsend.smartselection.strategy.SourceTokenStrategy
+import org.p2p.wallet.newsend.smartselection.strategy.SourceSolanaTokenStrategy
+import org.p2p.wallet.newsend.smartselection.strategy.SourceSplTokenStrategy
 
 class InitializationHandler(
     private val recipient: SearchResult,
@@ -26,10 +31,6 @@ class InitializationHandler(
 
         if (trigger !is SmartSelectionTrigger.Initialization) return
 
-        fun updateState(newState: SmartSelectionState) {
-            currentState.value = newState
-        }
-
         val feeState = feeCalculator.calculateFee(
             sourceToken = trigger.initialToken,
             feePayerToken = trigger.initialToken,
@@ -37,38 +38,41 @@ class InitializationHandler(
         )
 
         val newState = when (feeState) {
-            is FeeCalculationState.Success -> {
+            is Success -> {
                 val strategies = generateStrategies(
                     sourceToken = trigger.initialToken,
                     inputAmount = trigger.initialAmount,
-                    fee = feeState.fee
+                    fee = feeState.fee,
+                    minRentExemption = feeCalculator.getMinRentExemption()
                 )
                 SmartSelectionState.ReadyForSmartSelection(strategies)
             }
-            is FeeCalculationState.PoolsNotFound -> {
+            is PoolsNotFound -> {
                 SmartSelectionState.SolanaFeeOnly(feeState.feeInSol)
             }
-            is FeeCalculationState.NoFees -> {
+            is NoFees -> {
                 SmartSelectionState.NoFees(trigger.initialToken, trigger.initialAmount)
             }
-            is FeeCalculationState.Cancelled -> {
+            is Cancelled -> {
                 SmartSelectionState.Cancelled
             }
-            is FeeCalculationState.Failed -> {
+            is Failed -> {
                 SmartSelectionState.Failed(feeState.e)
             }
         }
 
-        updateState(newState)
+        currentState.value = newState
     }
 
     private fun generateStrategies(
+        minRentExemption: BigInteger,
         sourceToken: Token.Active,
         inputAmount: BigDecimal?,
         fee: FeeRelayerFee
     ): LinkedHashSet<FeePayerSelectionStrategy> {
         return linkedSetOf(
-            SourceTokenStrategy(sourceToken, inputAmount.orZero(), fee)
+            SourceSplTokenStrategy(sourceToken, inputAmount, fee),
+            SourceSolanaTokenStrategy(recipient, sourceToken, inputAmount, fee, minRentExemption)
         )
     }
 }

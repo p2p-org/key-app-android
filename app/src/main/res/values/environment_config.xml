@@ -18,7 +18,6 @@
 
     <string name="moonpayServerSideProxyUrl">https://moonpay.key.app/</string>
     <string name="moonpayServerSideProxySandboxUrl">https://moonpay-sandbox.key.app/</string>
-    <string name="moonpayBaseDomain">buy-staging.moonpay.com</string>
     <string name="moonpayClientSideBaseUrl">https://api.moonpay.com/</string>
 
     <string name="blockstreamUrl">https://blockstream.info/</string>

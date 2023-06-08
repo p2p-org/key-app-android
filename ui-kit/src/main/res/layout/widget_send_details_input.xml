@@ -167,20 +167,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/containerToken">
 
-        <TextView
-            android:id="@+id/textViewMainAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="6dp"
-            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
-            app:layout_constraintBottom_toTopOf="@+id/textViewAmountTypeSwitchLabel"
-            app:layout_constraintEnd_toStartOf="@+id/imageViewSwitchTo"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_goneMarginEnd="24dp"
-            tools:text="USD" />
-
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/editTextAmount"
             android:layout_width="wrap_content"
@@ -209,6 +195,19 @@
             tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
+            android:id="@+id/textViewMainAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="6dp"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewSwitchTo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginEnd="24dp"
+            tools:text="USD" />
+
+        <TextView
             android:id="@+id/textViewMax"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -232,9 +231,9 @@
             android:gravity="center"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
             android:textColor="@color/text_mountain"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewSecondAmount"
             app:layout_constraintEnd_toStartOf="@+id/imageViewSwitchTo"
-            app:layout_constraintTop_toBottomOf="@+id/textViewMainAmount"
+            app:layout_constraintTop_toTopOf="@+id/textViewSecondAmount"
             tools:text="Tap to switch to [tokenName]" />
 
         <TextView
@@ -242,6 +241,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
+            android:layout_marginTop="4dp"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="20dp"
             android:ellipsize="middle"
@@ -253,6 +253,7 @@
             app:layout_constraintEnd_toStartOf="@id/textViewAmountTypeSwitchLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextAmount"
+            app:layout_constraintVertical_bias="0"
             tools:text="12.30 USD" />
 
         <ImageView

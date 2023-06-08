@@ -17,7 +17,7 @@ sealed interface SmartSelectionState {
 
     data class NoFees(
         val sourceToken: Token.Active,
-        val initialAmount: BigDecimal? = BigDecimal.ZERO
+        val initialAmount: BigDecimal?
     ) : SmartSelectionState
 
     data class Failed(val e: Throwable) : SmartSelectionState

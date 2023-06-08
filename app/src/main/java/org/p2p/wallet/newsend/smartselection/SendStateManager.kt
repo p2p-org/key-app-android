@@ -14,19 +14,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.toUsd
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.newsend.interactor.SendInteractor
-import org.p2p.wallet.newsend.model.CalculationState
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeePayerState
 import org.p2p.wallet.newsend.model.SendActionEvent
@@ -87,11 +85,7 @@ class SendStateManager(
             val userTokens = userInteractor.getNonZeroUserTokens()
             validateTokenSelection(userTokens)
 
-            if (::sourceToken.isInitialized) {
-                restoreScreen()
-            } else {
-                initializeScreen(userTokens)
-            }
+            initializeScreen(userTokens)
 
             val trigger = SmartSelectionTrigger.Initialization(
                 initialToken = sourceToken,
@@ -100,16 +94,11 @@ class SendStateManager(
             smartSelectionCoordinator.setInitialFeePayer(sourceToken)
             smartSelectionCoordinator.onNewTrigger(trigger)
 
-            observeTokenUpdates(sourceToken)
             validateCurrencySwitch()
             validateInput()
+
+            observeTokenUpdates(sourceToken)
         }
-    }
-
-    private fun restoreScreen() {
-        updateToken(sourceToken)
-
-
     }
 
     private suspend fun initializeScreen(userTokens: List<Token.Active>) {
@@ -122,6 +111,8 @@ class SendStateManager(
             feeLimitInfo = sendInteractor.getFreeTransactionsInfo(useCache = false)
             sendInteractor.getMinRelayRentExemption().also { inputCalculator.saveMinRentExemption(it) }
             sendInteractor.initialize()
+
+            updateToken(sourceToken)
         } catch (e: Throwable) {
             Timber.tag(TAG).i(e, "Send initial loading failed")
             updateState(GeneralError(e))
@@ -136,7 +127,8 @@ class SendStateManager(
         val trigger = SmartSelectionTrigger.AmountChanged(
             solToken = solToken,
             sourceToken = sourceToken,
-            inputAmount = event.newInputAmount.toBigDecimalOrNull(),
+            inputAmount = inputCalculator.getCurrentAmount().takeIf { it.isNotZero() },
+
         )
         smartSelectionCoordinator.onNewTrigger(trigger)
     }
@@ -149,7 +141,7 @@ class SendStateManager(
         val trigger = SmartSelectionTrigger.SourceTokenChanged(
             solToken = solToken,
             newSourceToken = event.newSourceToken,
-            inputAmount = inputCalculator.getCurrentAmount()
+            inputAmount = inputCalculator.getCurrentAmount().takeIf { it.isNotZero() }
         )
         smartSelectionCoordinator.onNewTrigger(trigger)
     }
@@ -157,7 +149,8 @@ class SendStateManager(
     private fun handleFeePayerChanged(event: SendActionEvent.FeePayerManuallyChanged) {
         val trigger = SmartSelectionTrigger.FeePayerManuallyChanged(
             sourceToken = sourceToken,
-            newFeePayer = event.newFeePayerToken
+            newFeePayer = event.newFeePayerToken,
+            inputAmount = inputCalculator.getCurrentAmount()
         )
         smartSelectionCoordinator.onNewTrigger(trigger)
     }
@@ -191,27 +184,21 @@ class SendStateManager(
     }
 
     private fun observeInternalStates() {
-        merge(
-            smartSelectionCoordinator.getFeePayerStateFlow(),
-            inputCalculator.getStateFlow()
-        )
-            .onEach { state -> onInternalStateUpdated(state) }
-            .launchIn(this)
-    }
-
-    private fun onInternalStateUpdated(state: Any) {
-        when (state) {
-            is FeePayerState -> {
+        smartSelectionCoordinator.getFeePayerStateFlow()
+            .onEach { state ->
                 if (state is FeePayerState.ReduceAmount) {
                     inputCalculator.reduceAmount(state.newInputAmount)
                 }
-                currentState.value = SendState.FeePayerUpdate(state)
+                updateState(SendState.FeePayerUpdate(state))
             }
-            is CalculationState -> {
-                currentState.value = SendState.CalculationUpdate(state)
+
+            .launchIn(this)
+
+        inputCalculator.getStateFlow()
+            .onEach { calculationState ->
+                updateState(SendState.CalculationUpdate(calculationState))
             }
-            else -> Unit
-        }
+            .launchIn(this)
     }
 
     private fun observeTokenUpdates(token: Token.Active) {
@@ -264,22 +251,8 @@ class SendStateManager(
         updateState(SendState.WidgetUpdate(widgetState))
     }
 
-    fun getState(): SendState = currentState.value
-
     suspend fun sendTransaction(destinationAddress: PublicKey, token: Token.Active, lamports: BigInteger): String =
         sendInteractor.sendTransaction(destinationAddress, token, lamports)
-
-    private fun buildSolanaFee(
-        newFeePayer: Token.Active,
-        source: Token.Active,
-        feeRelayerFee: FeeRelayerFee
-    ): SendSolanaFee {
-        return SendSolanaFee(
-            feePayerToken = newFeePayer,
-            feeRelayerFee = feeRelayerFee,
-            sourceToken = source
-        )
-    }
 
     fun release() {
         updateState(SendState.Idle)

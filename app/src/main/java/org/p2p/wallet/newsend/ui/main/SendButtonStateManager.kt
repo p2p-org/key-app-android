@@ -98,16 +98,21 @@ class SendButtonStateManager(
     }
 
     private fun createEnabledState(formattedInput: String): State.Enabled = State.Enabled(
-        textResId = R.string.send_format, value = formattedInput, totalAmountTextColor = R.color.text_night
+        textResId = R.string.send_format,
+        value = formattedInput,
+        totalAmountTextColor = R.color.text_night
     )
 
     sealed interface State {
         class Disabled(
-            val textContainer: TextContainer, @ColorRes val totalAmountTextColor: Int
+            val textContainer: TextContainer,
+            @ColorRes val totalAmountTextColor: Int
         ) : State
 
         class Enabled(
-            @StringRes val textResId: Int, val value: String, @ColorRes val totalAmountTextColor: Int
+            @StringRes val textResId: Int,
+            val value: String,
+            @ColorRes val totalAmountTextColor: Int
         ) : State
     }
 }

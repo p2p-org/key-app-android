@@ -26,7 +26,6 @@ class SendInputCalculator(
     private val sendModeProvider: SendModeProvider,
     private val lessThenMinString: String
 ) {
-
     private val calculationState = MutableStateFlow<CalculationState>(CalculationState.Idle)
 
     private var currencyMode: CurrencyMode = sendModeProvider.sendMode
@@ -38,6 +37,8 @@ class SendInputCalculator(
     private lateinit var currentToken: Token.Active
 
     private var inputAmount: String = emptyString()
+    private var approximateAmount: String = emptyString()
+
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
@@ -46,20 +47,38 @@ class SendInputCalculator(
     fun getStateFlow(): StateFlow<CalculationState> = calculationState.asStateFlow()
 
     fun updateToken(newToken: Token.Active) {
-        if (!::currentToken.isInitialized || newToken.mintAddress != currentToken.mintAddress) {
-            this.currentToken = newToken.also { updateTokenMode(it) }
-            emitFractionUpdate(currencyMode)
+        if (::currentToken.isInitialized && newToken.mintAddress == currentToken.mintAddress) {
+            return
         }
 
-        updateLabels()
+        currentToken = newToken
+
+        if (currencyMode is CurrencyMode.Token) {
+            currencyMode = CurrencyMode.Token(newToken)
+        }
+
+        val (currentInputSymbol, switchInputSymbol) = currencyMode.getInputSymbols(currentToken)
+
+        calculateApproximateAmount(inputAmount)
+
+        val newState = CalculationState.TokenUpdated(
+            currentInputSymbol = currentInputSymbol,
+            switchInputSymbol = switchInputSymbol,
+            fraction = currencyMode.fractionLength,
+            approximateAmount = approximateAmount
+        )
+        updateState(newState)
     }
 
     fun updateInputAmount(newInputAmount: String) {
-        this.inputAmount = newInputAmount
-        recalculate(inputAmount)
+        inputAmount = newInputAmount
 
-        val isMaxButtonVisible = isMaxButtonVisible(minRentExemption)
-        val newState = CalculationState.MaxButtonVisible(isMaxButtonVisible = isMaxButtonVisible)
+        calculateApproximateAmount(inputAmount)
+
+        val newState = CalculationState.AmountChanged(
+            approximateAmount = approximateAmount,
+            isMaxButtonVisible = isMaxButtonVisible(minRentExemption)
+        )
         updateState(newState)
     }
 
@@ -67,21 +86,25 @@ class SendInputCalculator(
         this.minRentExemption = minRentExemption
     }
 
-    fun reduceAmount(newTokenAmount: BigDecimal): BigDecimal {
+    fun reduceAmount(newTokenAmount: BigDecimal) {
         val newUsdAmount = newTokenAmount.toUsd(currentToken).orZero()
         val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
-
         usdAmount = newUsdAmount
         tokenAmount = newTokenAmount
         inputAmount = newAmount.toString()
 
         if (currencyMode is CurrencyMode.Fiat) {
-            formatTokenAmount()
+            calculateApproximateTokenAmount()
         } else {
-            formatUsdAmount()
+            calculateApproximateUsdAmount()
         }
 
-        return newAmount
+        val newState = CalculationState.AmountReduced(
+            approximateAmount = approximateAmount,
+            isMaxButtonVisible = isMaxButtonVisible(minRentExemption),
+            newInputAmount = inputAmount
+        )
+        updateState(newState)
     }
 
     fun getCurrentAmount(): BigDecimal = tokenAmount
@@ -92,21 +115,22 @@ class SendInputCalculator(
         tokenAmount = currentToken.total
         usdAmount = currentToken.totalInUsdScaled.orZero()
 
-        val maxAmount = when (currencyMode) {
+        val newInputAmount = when (currencyMode) {
             is CurrencyMode.Fiat -> {
-                formatTokenAmount()
-                currentToken.totalInUsdScaled
+                calculateApproximateTokenAmount()
+                currentToken.totalInUsdScaled?.toString().orEmpty()
             }
             is CurrencyMode.Token -> {
-                formatUsdAmount()
-                currentToken.total.scaleLong()
+                calculateApproximateUsdAmount()
+                currentToken.total.scaleLong().toString()
             }
         }
 
-        inputAmount = maxAmount?.toString().orEmpty()
+        inputAmount = newInputAmount
 
         val isMaxButtonVisible = isMaxButtonVisible(minRentExemption)
         val newCalculationState = CalculationState.MaxValueEntered(
+            approximateAmount = approximateAmount,
             newInputAmount = inputAmount,
             isMaxButtonVisible = isMaxButtonVisible,
             sourceTokenSymbol = currentToken.tokenSymbol
@@ -115,26 +139,30 @@ class SendInputCalculator(
     }
 
     fun toggleMode() {
-        currencyMode = when (currencyMode) {
-            is CurrencyMode.Token -> CurrencyMode.Fiat.Usd // only support USD
-            is CurrencyMode.Fiat -> CurrencyMode.Token(currentToken)
+        val oldMode = currencyMode
+        val newMode = currencyMode.toggle(currentToken).also { currencyMode = it }
+
+        when (newMode) {
+            is CurrencyMode.Token -> {
+                inputAmount = tokenAmount.toPlainString()
+                newMode.symbol to (oldMode as CurrencyMode.Fiat).fiatAbbreviation
+            }
+            is CurrencyMode.Fiat -> {
+                inputAmount = usdAmount.toPlainString()
+                newMode.fiatAbbreviation to (oldMode as CurrencyMode.Token).symbol
+            }
         }
 
-        emitFractionUpdate(currencyMode)
+        calculateApproximateAmount(inputAmount)
 
-        val (switchSymbol, mainSymbol) = if (currencyMode.isFiat()) {
-            inputAmount = usdAmount.toPlainString()
-            currencyMode.getTypedSymbol() to currentToken.tokenSymbol
-        } else {
-            inputAmount = tokenAmount.toPlainString()
-            currentToken.tokenSymbol to currencyMode.getTypedSymbol()
-        }
+        val (currentInput, switchInput) = newMode.getInputSymbols(currentToken)
 
         val newState = CalculationState.CurrencySwitched(
             newInputAmount = inputAmount,
-            switchSymbol = switchSymbol,
-            mainSymbol = mainSymbol,
-            isFiat = currencyMode.isFiat()
+            approximateAmount = approximateAmount,
+            currentInputSymbol = currentInput,
+            switchInputSymbol = switchInput,
+            fraction = currencyMode.fractionLength
         )
         updateState(newState)
     }
@@ -155,24 +183,7 @@ class SendInputCalculator(
         }
     }
 
-    private fun updateTokenMode(newToken: Token.Active) {
-        if (currencyMode is CurrencyMode.Token) {
-            currencyMode = CurrencyMode.Token(newToken)
-        }
-    }
-
-    private fun updateLabels() {
-        val (switchSymbol, mainSymbol) = when (val mode = currencyMode) {
-            is CurrencyMode.Token -> USD_READABLE_SYMBOL to currentToken.tokenSymbol
-            is CurrencyMode.Fiat -> currentToken.tokenSymbol to mode.fiatAbbreviation
-        }
-
-        updateState(CalculationState.LabelsUpdate(switchSymbol = switchSymbol, mainSymbol = mainSymbol))
-
-        recalculate(inputAmount)
-    }
-
-    private fun recalculate(inputAmount: String) {
+    private fun calculateApproximateAmount(inputAmount: String) {
         when (currencyMode) {
             is CurrencyMode.Token -> calculateByToken(inputAmount)
             is CurrencyMode.Fiat -> calculateByUsd(inputAmount)
@@ -181,37 +192,24 @@ class SendInputCalculator(
 
     private fun calculateByUsd(inputAmount: String) {
         usdAmount = inputAmount.toBigDecimalOrZero()
-
         val tokenAround = usdAmount.divideSafe(currentToken.usdRateOrZero, currentToken.decimals)
         tokenAmount = tokenAround
-
-        formatTokenAmount()
+        calculateApproximateTokenAmount()
     }
 
     private fun calculateByToken(inputAmount: String) {
         tokenAmount = inputAmount.toBigDecimalOrZero()
         usdAmount = if (tokenAmount.isZero()) BigDecimal.ZERO else tokenAmount.multiply(currentToken.usdRateOrZero)
-
-        formatUsdAmount()
+        calculateApproximateUsdAmount()
     }
 
-    private fun formatTokenAmount() {
-        handleCalculationUpdate(tokenAmount.formatToken(currentToken.decimals), currentToken.tokenSymbol)
+    private fun calculateApproximateTokenAmount() {
+        approximateAmount = "${tokenAmount.formatToken(currentToken.decimals)} ${currentToken.tokenSymbol}"
     }
 
-    private fun formatUsdAmount() {
+    private fun calculateApproximateUsdAmount() {
         val formattedUsdAmount = if (usdAmount.lessThenMinValue()) lessThenMinString else usdAmount.formatFiat()
-        handleCalculationUpdate(formattedUsdAmount, USD_READABLE_SYMBOL)
-    }
-
-    private fun emitFractionUpdate(mode: CurrencyMode) {
-        val newState = CalculationState.InputFractionUpdate(fraction = mode.fractionLength)
-        updateState(newState)
-    }
-
-    private fun handleCalculationUpdate(value: String, symbol: String) {
-        val state = CalculationState.CalculationCompleted("$value $symbol")
-        updateState(state)
+        approximateAmount = "$formattedUsdAmount $USD_READABLE_SYMBOL"
     }
 
     private fun updateState(newState: CalculationState) {
