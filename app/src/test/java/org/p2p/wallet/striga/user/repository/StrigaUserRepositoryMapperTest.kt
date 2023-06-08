@@ -50,14 +50,14 @@ class StrigaUserRepositoryMapperTest {
     fun `GIVEN correct signup data without placeOfBirth WHEN toNetwork THEN check is error occurred`() = runTest {
         val data = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "aaa"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "aaa"),
             StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "aaa"),
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.DATE_OF_BIRTH, "05.05.2005"),
             StrigaSignupData(StrigaSignupDataType.OCCUPATION, "Loafer"),
             StrigaSignupData(StrigaSignupDataType.SOURCE_OF_FUNDS, "NOTHING"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, "TR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, "TR"),
             StrigaSignupData(StrigaSignupDataType.CITY, "Antalya"),
             StrigaSignupData(StrigaSignupDataType.CITY_ADDRESS_LINE, "Hurma mahalesi, Ataturk prospect 1"),
             StrigaSignupData(StrigaSignupDataType.CITY_POSTAL_CODE, "056987"),
@@ -73,22 +73,22 @@ class StrigaUserRepositoryMapperTest {
         }
         assertNotNull(error)
         error as StrigaDataLayerError.InternalError
-        assertEquals("Key COUNTRY_OF_BIRTH not found in map", error.message)
+        assertEquals("Key COUNTRY_OF_BIRTH_ALPHA_3 not found in map", error.message)
     }
 
     @Test
     fun `GIVEN correct signup data WHEN toNetwork THEN everything is ok`() = runTest {
         val data = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "aaa"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "aaa"),
             StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "aaa"),
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.DATE_OF_BIRTH, "05.05.2005"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "TUR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, "TUR"),
             StrigaSignupData(StrigaSignupDataType.OCCUPATION, "Loafer"),
             StrigaSignupData(StrigaSignupDataType.SOURCE_OF_FUNDS, "NOTHING"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, "TR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, "TR"),
             StrigaSignupData(StrigaSignupDataType.CITY, "Antalya"),
             StrigaSignupData(StrigaSignupDataType.CITY_ADDRESS_LINE, "Hurma mahalesi, Ataturk prospect 1"),
             StrigaSignupData(StrigaSignupDataType.CITY_POSTAL_CODE, "056987"),

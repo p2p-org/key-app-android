@@ -13,9 +13,8 @@ import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.auth.model.PhoneMask
-import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerError
@@ -27,17 +26,13 @@ import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 
-private val SupportedCountry = Country(
-    name = "United Kingdom",
+private val SupportedCountry = CountryCode(
+    countryName = "United Kingdom",
     flagEmoji = "🇬🇧",
-    codeAlpha2 = "gb",
-    codeAlpha3 = "gbr"
-)
-
-private val DefaultPhoneMask = PhoneMask(
-    countryCodeAlpha2 = "ua",
-    phoneCode = "+380",
-    mask = "380 ## ### ## ##"
+    nameCodeAlpha2 = "gb",
+    nameCodeAlpha3 = "gbr",
+    phoneCode = "123",
+    mask = ""
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,7 +42,7 @@ class StrigaSignupInteractorTest {
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
 
     @MockK
-    lateinit var countryRepository: CountryRepository
+    lateinit var countryRepository: CountryCodeRepository
 
     private val signupDataValidator = StrigaSignupDataValidator()
 
@@ -63,7 +58,6 @@ class StrigaSignupInteractorTest {
     fun setUp() {
         MockKAnnotations.init(this)
 
-        coEvery { countryRepository.findPhoneMaskByCountry(any()) } returns DefaultPhoneMask
         coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
     }
 
@@ -93,7 +87,7 @@ class StrigaSignupInteractorTest {
         val interactor = createInteractor()
         val data = mutableMapOf(
             StrigaSignupDataType.PHONE_NUMBER to StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "1234567890"),
-            StrigaSignupDataType.COUNTRY to StrigaSignupData(StrigaSignupDataType.COUNTRY, "TR")
+            StrigaSignupDataType.COUNTRY_ALPHA_2 to StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, "TR")
         )
 
         // WHEN
@@ -118,7 +112,7 @@ class StrigaSignupInteractorTest {
         setData(StrigaSignupDataType.FIRST_NAME, "1234567890")
         setData(StrigaSignupDataType.LAST_NAME, "1234567890")
         setData(StrigaSignupDataType.DATE_OF_BIRTH, "1234567890")
-        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "1234567890")
+        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, "1234567890")
         val (isValid, _) = interactor.validateFirstStep(firstStepData)
         val (isValidSecond, _) = interactor.validateSecondStep(firstStepData)
 
@@ -135,12 +129,12 @@ class StrigaSignupInteractorTest {
 
         // WHEN
         setData(StrigaSignupDataType.EMAIL, "aaa@bbb.ccc")
-        setData(StrigaSignupDataType.PHONE_CODE, "+1")
+        setData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "+1")
         setData(StrigaSignupDataType.PHONE_NUMBER, "+1234567890")
         setData(StrigaSignupDataType.FIRST_NAME, "Vasya")
         setData(StrigaSignupDataType.LAST_NAME, "Pupkin")
         setData(StrigaSignupDataType.DATE_OF_BIRTH, "10.10.2010")
-        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "Somewhere")
+        setData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, "Somewhere")
         val (isValid, statesFirst) = interactor.validateFirstStep(firstStepData)
         val (isValidSecond, statesSecond) = interactor.validateSecondStep(secondStepData)
 
@@ -169,7 +163,7 @@ class StrigaSignupInteractorTest {
         // WHEN
         setData(StrigaSignupDataType.OCCUPATION, "")
         setData(StrigaSignupDataType.SOURCE_OF_FUNDS, " world")
-        setData(StrigaSignupDataType.COUNTRY, "")
+        setData(StrigaSignupDataType.COUNTRY_ALPHA_2, "")
         setData(StrigaSignupDataType.CITY, "")
         setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "")
         setData(StrigaSignupDataType.CITY_POSTAL_CODE, "")
@@ -191,7 +185,7 @@ class StrigaSignupInteractorTest {
         // WHEN
         setData(StrigaSignupDataType.OCCUPATION, "a")
         setData(StrigaSignupDataType.SOURCE_OF_FUNDS, "a")
-        setData(StrigaSignupDataType.COUNTRY, "a")
+        setData(StrigaSignupDataType.COUNTRY_ALPHA_2, "a")
         setData(StrigaSignupDataType.CITY, "a")
         setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "a")
         setData(StrigaSignupDataType.CITY_POSTAL_CODE, "a")
@@ -202,13 +196,6 @@ class StrigaSignupInteractorTest {
         // THEN
         assertTrue(isValid)
         assertFalse(isValidFirst)
-    }
-
-    @Test
-    fun `GIVEN existing phone mask for country WHEN findPhoneMaskByCountry THEN mask is not null`() = runTest {
-        val interactor = createInteractor()
-        val mask = interactor.findPhoneMaskByCountry(SupportedCountry)
-        assertEquals(DefaultPhoneMask, mask)
     }
 
     @Test

@@ -1,35 +1,42 @@
 package org.p2p.wallet.striga.onboarding.interactor
 
-import org.p2p.wallet.auth.repository.Country
-import org.p2p.wallet.auth.repository.CountryRepository
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.repository.CountryCodeRepository
+import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
-import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
+import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
 class StrigaOnboardingInteractor(
-    private val countryRepository: CountryRepository,
-    private val strigaPresetDataLocalRepository: StrigaPresetDataLocalRepository
+    private val countryRepository: CountryCodeRepository,
+    private val strigaPresetDataLocalRepository: StrigaPresetDataLocalRepository,
+    private val signupDataRepository: StrigaSignupDataLocalRepository
 ) {
-    suspend fun getDefaultCountry(): Country {
-        // todo: get saved country and return it if exists
-        return countryRepository.detectCountryOrDefault()
+    suspend fun getChosenCountry(): CountryCode {
+        return signupDataRepository.getUserSignupDataByType(StrigaSignupDataType.COUNTRY_ALPHA_2)
+            .successOrNull()
+            ?.value
+            ?.let { countryRepository.findCountryCodeByIsoAlpha2(it) }
+            ?: countryRepository.detectCountryOrDefault()
     }
 
-    fun checkIsCountrySupported(country: Country): Boolean {
+    suspend fun saveCurrentCountry(country: CountryCode) {
+        signupDataRepository.updateSignupData(
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, country.nameCodeAlpha2)
+        )
+    }
+
+    fun checkIsCountrySupported(country: CountryCode): Boolean {
         return strigaPresetDataLocalRepository.checkIsCountrySupported(country)
     }
 
-    suspend fun getAllCountries(): List<Country> = countryRepository.getAllCountries()
-
-    fun getOccupationValuesList(): List<StrigaOccupation> = strigaPresetDataLocalRepository.getOccupationValuesList()
-
-    fun getSourceOfFundsList(): List<StrigaSourceOfFunds> = strigaPresetDataLocalRepository.getSourceOfFundsList()
-
-    fun getOccupationByName(name: String): StrigaOccupation {
-        return strigaPresetDataLocalRepository.getOccupationValuesList().first { it.occupationName == name }
+    fun getOccupationByName(name: String): StrigaOccupation? {
+        return strigaPresetDataLocalRepository.getOccupationValuesList().firstOrNull { it.occupationName == name }
     }
 
-    fun getSourcesOfFundsByName(name: String): StrigaSourceOfFunds {
-        return strigaPresetDataLocalRepository.getSourceOfFundsList().first { it.sourceName == name }
+    fun getSourcesOfFundsByName(name: String): StrigaSourceOfFunds? {
+        return strigaPresetDataLocalRepository.getSourceOfFundsList().firstOrNull { it.sourceName == name }
     }
 }

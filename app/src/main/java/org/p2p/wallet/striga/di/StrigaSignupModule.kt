@@ -22,12 +22,14 @@ import org.p2p.wallet.striga.countrypicker.StrigaPresetDataPickerPresenter
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingPresenter
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
+import org.p2p.wallet.striga.presetpicker.StrigaPresetDataSearcher
+import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataInteractor
 import org.p2p.wallet.striga.signup.StrigaPresetDataInMemoryRepository
 import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
-import org.p2p.wallet.striga.signup.model.StrigaPickerItem
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataDatabaseRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
@@ -44,12 +46,16 @@ object StrigaSignupModule : InjectionModule {
         initDataLayer()
 
         factoryOf(::StrigaOnboardingInteractor)
+        factoryOf(::StrigaPresetDataInteractor)
+        factoryOf(::StrigaPresetDataSearcher)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
-        factory { (selectedItem: StrigaPickerItem) ->
+        factory { (selectedItem: StrigaPresetDataToPick) ->
             StrigaPresetDataPickerPresenter(
-                strigaOnboardingInteractor = get(),
-                selectedItem = selectedItem,
-                strigaElementCellMapper = get()
+                presetDataToPick = selectedItem,
+                strigaElementCellMapper = get(),
+                strigaPresetDataInteractor = get(),
+                dataSearcher = get(),
+                dispatchers = get()
             )
         } bind StrigaPresetDataPickerContract.Presenter::class
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class

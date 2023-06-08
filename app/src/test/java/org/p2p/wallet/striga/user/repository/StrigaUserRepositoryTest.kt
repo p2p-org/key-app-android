@@ -34,15 +34,15 @@ class StrigaUserRepositoryTest {
     fun `GIVEN http error 400 WHEN createUser THEN check error is presented`() = runTest {
         val data = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "aaa"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "aaa"),
             StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "aaa"),
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "aaa"),
             StrigaSignupData(StrigaSignupDataType.DATE_OF_BIRTH, "05.05.2005"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "TUR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, "TUR"),
             StrigaSignupData(StrigaSignupDataType.OCCUPATION, "Loafer"),
             StrigaSignupData(StrigaSignupDataType.SOURCE_OF_FUNDS, "NOTHING"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, "TR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, "TR"),
             StrigaSignupData(StrigaSignupDataType.CITY, "Antalya"),
             StrigaSignupData(StrigaSignupDataType.CITY_ADDRESS_LINE, "Hurma mahalesi, Ataturk prospect 1"),
             StrigaSignupData(StrigaSignupDataType.CITY_POSTAL_CODE, "056987"),
@@ -83,15 +83,15 @@ class StrigaUserRepositoryTest {
     fun `GIVEN correct data and successful response WHEN createUser THEN check error is not presented`() = runTest {
         val data = listOf(
             StrigaSignupData(StrigaSignupDataType.EMAIL, "aaa"),
-            StrigaSignupData(StrigaSignupDataType.PHONE_CODE, "bbb"),
+            StrigaSignupData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "bbb"),
             StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "ccc"),
             StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "ddd"),
             StrigaSignupData(StrigaSignupDataType.LAST_NAME, "eee"),
             StrigaSignupData(StrigaSignupDataType.DATE_OF_BIRTH, "05.05.2005"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH, "TUR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, "TUR"),
             StrigaSignupData(StrigaSignupDataType.OCCUPATION, "Loafer"),
             StrigaSignupData(StrigaSignupDataType.SOURCE_OF_FUNDS, "NOTHING"),
-            StrigaSignupData(StrigaSignupDataType.COUNTRY, "TR"),
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, "TR"),
             StrigaSignupData(StrigaSignupDataType.CITY, "Antalya"),
             StrigaSignupData(StrigaSignupDataType.CITY_ADDRESS_LINE, "Hurma mahalesi, Ataturk avenue 1"),
             StrigaSignupData(StrigaSignupDataType.CITY_POSTAL_CODE, "056987"),
@@ -136,7 +136,7 @@ class StrigaUserRepositoryTest {
         with(createdData.captured) {
             val dataMap = data.associate { it.type to it.value }
             assertEquals(dataMap[StrigaSignupDataType.EMAIL], userEmail)
-            assertEquals(dataMap[StrigaSignupDataType.PHONE_CODE], mobilePhoneDetails.countryCode)
+            assertEquals(dataMap[StrigaSignupDataType.PHONE_CODE_WITH_PLUS], mobilePhoneDetails.countryCode)
             assertEquals(dataMap[StrigaSignupDataType.PHONE_NUMBER], mobilePhoneDetails.number)
             assertEquals(dataMap[StrigaSignupDataType.FIRST_NAME], firstName)
             assertEquals(dataMap[StrigaSignupDataType.LAST_NAME], lastName)
@@ -144,10 +144,10 @@ class StrigaUserRepositoryTest {
             assertEquals(birthday[0].toInt(), dateOfBirth.day)
             assertEquals(birthday[1].toInt(), dateOfBirth.month)
             assertEquals(birthday[2].toInt(), dateOfBirth.year)
-            assertEquals(dataMap[StrigaSignupDataType.COUNTRY_OF_BIRTH], placeOfBirth)
+            assertEquals(dataMap[StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3], placeOfBirth)
             assertEquals(dataMap[StrigaSignupDataType.OCCUPATION], occupation)
             assertEquals(dataMap[StrigaSignupDataType.SOURCE_OF_FUNDS], sourceOfFunds)
-            assertEquals(dataMap[StrigaSignupDataType.COUNTRY], address.country)
+            assertEquals(dataMap[StrigaSignupDataType.COUNTRY_ALPHA_2], address.country)
             assertEquals(dataMap[StrigaSignupDataType.CITY], address.city)
             assertEquals(dataMap[StrigaSignupDataType.CITY_ADDRESS_LINE], address.addressLine1)
             assertEquals("", address.addressLine2)

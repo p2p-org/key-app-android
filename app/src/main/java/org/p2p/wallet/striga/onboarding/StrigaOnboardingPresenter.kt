@@ -1,9 +1,10 @@
 package org.p2p.wallet.striga.onboarding
 
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.repository.Country
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract.View.AvailabilityState
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 
 class StrigaOnboardingPresenter(
@@ -13,38 +14,35 @@ class StrigaOnboardingPresenter(
 
     override fun attach(view: StrigaOnboardingContract.View) {
         super.attach(view)
-
         launch {
-            onCountrySelected(interactor.getDefaultCountry())
+            showCountry(interactor.getChosenCountry())
         }
     }
 
-    override fun onCountrySelected(country: Country) {
-        view?.setCurrentCountry(country)
-        if (isCountrySupported(country)) {
-            view?.setAvailabilityState(StrigaOnboardingContract.View.AvailabilityState.Available)
-
-            // todo: save country
-            // interactor.saveUserCountry(country)
-        } else {
-            view?.setAvailabilityState(StrigaOnboardingContract.View.AvailabilityState.Unavailable)
+    override fun onCurrentCountryChanged(selectedCountry: CountryCode) {
+        launch {
+            interactor.saveCurrentCountry(selectedCountry)
+            showCountry(selectedCountry)
         }
+    }
+
+    private fun showCountry(country: CountryCode) {
+        view?.setCurrentCountry(country)
+        view?.setAvailabilityState(isCountrySupported(country))
     }
 
     override fun onClickContinue() {
-        // todo: find where we should navigate next
         view?.navigateNext()
-    }
-
-    override fun onClickChangeCountry() {
-        view?.openCountrySelection()
     }
 
     override fun onClickHelp() {
         view?.openHelp()
     }
 
-    private fun isCountrySupported(country: Country): Boolean {
-        return interactor.checkIsCountrySupported(country)
-    }
+    private fun isCountrySupported(country: CountryCode): AvailabilityState =
+        if (interactor.checkIsCountrySupported(country)) {
+            AvailabilityState.Available
+        } else {
+            AvailabilityState.Unavailable
+        }
 }

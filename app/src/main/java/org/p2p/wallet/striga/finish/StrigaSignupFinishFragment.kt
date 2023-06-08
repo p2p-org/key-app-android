@@ -39,7 +39,6 @@ class StrigaSignupFinishFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpVie
                     false
                 }
             }
-            setNavigationOnClickListener { returnToMain() }
         }
 
         binding.buttonContinue.setOnClickListener {

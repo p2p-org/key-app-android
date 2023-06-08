@@ -32,19 +32,6 @@ class StrigaSignupDataValidatorTest {
     }
 
     @Test
-    fun `GIVEN invalid phone number WHEN validating data THEN field state is invalid`() {
-        // Arrange
-        val data = StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, "12345")
-
-        // Act
-        val fieldState = validator.validate(data)
-
-        // Assert
-        assertFalse(fieldState.isValid)
-        assertNotNull(fieldState.errorMessage)
-    }
-
-    @Test
     fun `GIVEN valid first name WHEN validating data THEN field state is valid`() {
         // Arrange
         val data = StrigaSignupData(StrigaSignupDataType.FIRST_NAME, "John")

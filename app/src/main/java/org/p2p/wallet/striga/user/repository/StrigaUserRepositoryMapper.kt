@@ -59,7 +59,7 @@ class StrigaUserRepositoryMapper {
             lastName = map.getOrThrow(StrigaSignupDataType.LAST_NAME),
             userEmail = map.getOrThrow(StrigaSignupDataType.EMAIL),
             mobilePhoneDetails = StrigaCreateUserRequest.MobileRequest(
-                countryCode = map.getOrThrow(StrigaSignupDataType.PHONE_CODE),
+                countryCode = map.getOrThrow(StrigaSignupDataType.PHONE_CODE_WITH_PLUS),
                 number = map.getOrThrow(StrigaSignupDataType.PHONE_NUMBER)
             ),
             dateOfBirth = StrigaCreateUserRequest.DateOfBirthRequest(
@@ -72,12 +72,12 @@ class StrigaUserRepositoryMapper {
                 addressLine2 = emptyString(),
                 city = map.getOrThrow(StrigaSignupDataType.CITY),
                 state = map.getOrThrow(StrigaSignupDataType.CITY_STATE),
-                country = map.getOrThrow(StrigaSignupDataType.COUNTRY),
+                country = map.getOrThrow(StrigaSignupDataType.COUNTRY_ALPHA_2),
                 postalCode = map.getOrThrow(StrigaSignupDataType.CITY_POSTAL_CODE)
             ),
             occupation = map.getOrThrow(StrigaSignupDataType.OCCUPATION),
             sourceOfFunds = map.getOrThrow(StrigaSignupDataType.SOURCE_OF_FUNDS),
-            placeOfBirth = map.getOrThrow(StrigaSignupDataType.COUNTRY_OF_BIRTH),
+            placeOfBirth = map.getOrThrow(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3),
             expectedIncomingTxVolumeYearly = StrigaUserConstants.EXPECTED_INCOMING_TX_YEARLY,
             expectedOutgoingTxVolumeYearly = StrigaUserConstants.EXPECTED_OUTGOING_TX_YEARLY,
             isSelfPepDeclaration = StrigaUserConstants.SELF_PEP_DECLARATION,

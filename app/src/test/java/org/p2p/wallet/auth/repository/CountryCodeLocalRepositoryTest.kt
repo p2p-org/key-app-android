@@ -26,7 +26,7 @@ class CountryCodeLocalRepositoryTest {
 
     private val currentWorkingDir = Paths.get("").toAbsolutePath().toString()
     private val assetsRoot = File(currentWorkingDir, "build/intermediates/assets/debug")
-    private lateinit var repo: CountryCodeLocalRepository
+    private lateinit var repo: CountryCodeRepository
 
     @Before
     fun setUp() {
@@ -107,7 +107,7 @@ class CountryCodeLocalRepositoryTest {
 
      */
 
-    private fun createRepository(): CountryCodeLocalRepository {
+    private fun createRepository(): CountryCodeRepository {
         val assetManager: AssetManager = mockk {
             every { open(any()) } answers {
                 val file = File(assetsRoot, arg<String>(0))
