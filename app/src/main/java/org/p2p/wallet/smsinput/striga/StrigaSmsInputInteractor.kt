@@ -33,7 +33,7 @@ class StrigaSmsInputInteractor(
 
     suspend fun validateSms(smsCode: String): StrigaDataLayerResult<Unit> {
         return if (inAppFeatureFlags.strigaSmsVerificationMockFlag.featureValue) {
-            return validateMockSmsCodes(smsCode)
+            mockVerifyPhoneNumber(smsCode)
         } else {
             strigaUserRepository.verifyPhoneNumber(smsCode)
         }
@@ -42,7 +42,7 @@ class StrigaSmsInputInteractor(
     suspend fun resendSms(): StrigaDataLayerResult<Unit> =
         strigaUserRepository.resendSmsForVerifyPhoneNumber()
 
-    private fun validateMockSmsCodes(smsCode: String): StrigaDataLayerResult<Unit> {
+    private fun mockVerifyPhoneNumber(smsCode: String): StrigaDataLayerResult<Unit> {
         return when (smsCode) {
             "123456" -> StrigaDataLayerResult.Success(Unit)
             "000000" -> {
