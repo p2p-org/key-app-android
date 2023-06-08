@@ -18,28 +18,29 @@ object SpanUtils {
 
     fun highlightLinkNoUnderline(
         text: String,
-        highlighted: String,
-        @ColorInt color: Int,
+        linkToHighlight: String,
+        @ColorInt linkColor: Int,
         onClick: (View) -> Unit
     ): SpannableString {
         val spannable = SpannableString(text)
-        val startIndex = text.indexOf(highlighted)
-        val endIndex = startIndex + highlighted.length
+        val startIndex = text.indexOf(linkToHighlight)
+        val endIndex = startIndex + linkToHighlight.length
 
         if (startIndex == -1) return spannable
 
-        spannable.setSpan(
-            object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    onClick(widget)
-                }
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                onClick(widget)
+            }
 
-                override fun updateDrawState(ds: TextPaint) {
-                    super.updateDrawState(ds)
-                    ds.color = color
-                    ds.isUnderlineText = false
-                }
-            },
+            override fun updateDrawState(ds: TextPaint) {
+                ds.color = linkColor
+                ds.isUnderlineText = false
+            }
+        }
+
+        spannable.setSpan(
+            clickableSpan,
             startIndex,
             endIndex,
             Spanned.SPAN_INCLUSIVE_INCLUSIVE
@@ -68,7 +69,12 @@ object SpanUtils {
             val copyEnd = stringBuilder.indexOf(it) + it.length
             if (copyStart == -1) return@forEach
 
-            stringBuilder.setSpan(StyleSpan(Typeface.BOLD), copyStart, copyEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            stringBuilder.setSpan(
+                StyleSpan(Typeface.BOLD),
+                copyStart,
+                copyEnd,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
 
         return stringBuilder
