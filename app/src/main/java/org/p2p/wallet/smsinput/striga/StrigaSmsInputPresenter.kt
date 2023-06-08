@@ -1,10 +1,11 @@
 package org.p2p.wallet.smsinput.striga
 
 import timber.log.Timber
-import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
@@ -13,12 +14,30 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.utils.removeWhiteSpaces
 
 class StrigaSmsInputPresenter(
-    private val interactor: StrigaSmsInputInteractor
+    private val interactor: StrigaSmsInputInteractor,
 ) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
 
     override fun attach(view: SmsInputContract.View) {
         super.attach(view)
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
+        initPhoneNumber()
+    }
+
+    private fun initPhoneNumber() {
+        launch {
+            try {
+                val (phoneCode, phoneNumber) = interactor.getUserPhoneCodeToPhoneNumber().unwrap()
+                val phoneMask = interactor.getUserPhoneMask(phoneCode)
+                    ?.replace(Regex("\\d"), "#")
+                    ?: error("Couldn't find any masks for given code $phoneCode")
+
+                val formattedPhoneNumber = SimpleMaskFormatter(phoneMask).format(phoneNumber)
+                view?.initView(PhoneNumber(formattedValue = "+$phoneCode$formattedPhoneNumber"))
+            } catch (initViewError: Throwable) {
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+                Timber.e(initViewError, "failed to init view for sms input")
+            }
+        }
     }
 
     override fun onSmsInputChanged(smsCode: String) {
@@ -50,7 +69,7 @@ class StrigaSmsInputPresenter(
     private fun handleError(error: StrigaDataLayerError) {
         when (error) {
             is StrigaDataLayerError.ApiServiceError -> {
-                handleApiError(error.errorCode)
+                handleApiError(error)
             }
             is StrigaDataLayerError.ApiServiceUnavailable, is StrigaDataLayerError.InternalError -> {
                 Timber.e(error, "Sms verification failed")
@@ -59,25 +78,22 @@ class StrigaSmsInputPresenter(
         }
     }
 
-    private fun handleApiError(code: StrigaApiErrorCode) {
-        when (code) {
+    private fun handleApiError(apiServiceError: StrigaDataLayerError.ApiServiceError) {
+        when (apiServiceError.errorCode) {
             StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED -> {
-                // separate screen
+                view?.navigateToNumberAlreadyUsed()
             }
             StrigaApiErrorCode.INVALID_VERIFICATION_CODE -> {
                 view?.renderIncorrectSms()
             }
             StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS -> {
-                view?.renderSmsTimerState(
-                    SmsInputTimerState.SmsValidationBlocked(1.days.inWholeSeconds.toInt())
-                )
+                view?.navigateToExceededConfirmationAttempts()
             }
             StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT -> {
-                view?.renderSmsTimerState(
-                    SmsInputTimerState.SmsValidationResendButtonExceeded(1.days.inWholeSeconds.toInt())
-                )
+                view?.navigateToExceededDailyResendSmsLimit()
             }
             else -> {
+                Timber.e(apiServiceError, "Unknown code met when handling error for sms input")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
@@ -87,9 +103,7 @@ class StrigaSmsInputPresenter(
         launch {
             when (val result = interactor.resendSms()) {
                 is StrigaDataLayerResult.Success -> {
-                    view?.renderSmsTimerState(
-                        SmsInputTimerState.ResendSmsNotReady(5)
-                    )
+                    view?.renderSmsTimerState(SmsInputTimerState.ResendSmsNotReady(60))
                 }
                 is StrigaDataLayerResult.Failure -> {
                     handleError(result.error)

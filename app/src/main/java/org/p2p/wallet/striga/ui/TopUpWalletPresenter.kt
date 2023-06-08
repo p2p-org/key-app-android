@@ -20,7 +20,7 @@ class TopUpWalletPresenter(
     override fun attach(view: TopUpWalletContract.View) {
         super.attach(view)
 
-        if (strigaSignupFeatureToggle.isFeatureEnabled && isUserAuthByWeb3) {
+        if (true) {
             view.showStrigaBankTransferView()
         } else {
             view.hideStrigaBankTransferView()

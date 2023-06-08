@@ -3,6 +3,8 @@ package org.p2p.wallet.smsinput.striga
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
@@ -10,9 +12,16 @@ import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
+import org.p2p.wallet.smsinput.SmsInputContract
+import org.p2p.wallet.smsinput.SmsInputFactory
+import org.p2p.wallet.striga.sms.StrigaSmsErrorFragment
+import org.p2p.wallet.striga.sms.StrigaSmsErrorViewType
 import org.p2p.wallet.utils.popBackStackTo
+import org.p2p.wallet.utils.replaceFragment
 
 class StrigaSmsInputFragment : BaseSmsInputFragment() {
+
+    override val presenter: SmsInputContract.Presenter by inject(named(SmsInputFactory.Type.Striga.name))
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -25,8 +34,9 @@ class StrigaSmsInputFragment : BaseSmsInputFragment() {
     }
 
     override fun initView(userPhoneNumber: PhoneNumber) {
-        binding.checkNumberTitleText.text =
-            getString(R.string.striga_sms_input_title, userPhoneNumber.formattedValue)
+        binding.textViewTitle.text = getString(R.string.striga_sms_input_title)
+        binding.textViewDescription.text =
+            getString(R.string.striga_sms_input_description, userPhoneNumber.formattedValue)
     }
 
     override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long) = Unit
@@ -46,5 +56,17 @@ class StrigaSmsInputFragment : BaseSmsInputFragment() {
                 popBackStackTo(MainFragment::class)
             }
             .show()
+    }
+
+    override fun navigateToExceededDailyResendSmsLimit() {
+        replaceFragment(StrigaSmsErrorFragment.create(viewType = StrigaSmsErrorViewType.ExceededResendAttempts()))
+    }
+
+    override fun navigateToExceededConfirmationAttempts() {
+        replaceFragment(StrigaSmsErrorFragment.create(viewType = StrigaSmsErrorViewType.ExceededConfirmationAttempts()))
+    }
+
+    override fun navigateToNumberAlreadyUsed() {
+        replaceFragment(StrigaSmsErrorFragment.create(viewType = StrigaSmsErrorViewType.NumberAlreadyUsed()))
     }
 }

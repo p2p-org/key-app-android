@@ -4,7 +4,6 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
-import org.koin.android.ext.android.inject
 import timber.log.Timber
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
@@ -27,7 +26,6 @@ abstract class BaseSmsInputFragment :
     }
 
     protected val binding: FragmentSmsInputBinding by viewBinding()
-    override val presenter: SmsInputContract.Presenter by inject()
 
     private val nextDestinationClass: Class<Fragment> by args(ARG_NEXT_DESTINATION_CLASS)
     private val nextDestinationArgs: Bundle? by args(ARG_NEXT_DESTINATION_ARGS)

@@ -11,6 +11,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpSecondStepBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
@@ -94,8 +95,12 @@ class StrigaSignUpSecondStepFragment :
     }
 
     override fun navigateNext() {
-        // todo: replace in 8460
-        replaceFragment(StrigaSignupFinishFragment.create())
+        replaceFragment(
+            SmsInputFactory.create(
+                type = SmsInputFactory.Type.Striga,
+                destinationFragment = StrigaSignupFinishFragment::class.java,
+            )
+        )
     }
 
     override fun setErrors(errors: List<StrigaSignupFieldState>) {
