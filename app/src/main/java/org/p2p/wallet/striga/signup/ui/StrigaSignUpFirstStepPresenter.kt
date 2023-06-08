@@ -103,9 +103,8 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onPhoneNumberChanged(newPhone: String) {
-        val countryCode = "+${phoneCountryCode?.phoneCode}"
         phoneCountryCode?.let {
-            val phoneWithoutCountryCode = newPhone.replace(countryCode, "")
+            val phoneWithoutCountryCode = newPhone.replace(it.phoneCodeWithPlusSign, "")
             onFieldChanged(StrigaSignupDataType.PHONE_NUMBER, phoneWithoutCountryCode)
         }
     }
