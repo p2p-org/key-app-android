@@ -90,7 +90,8 @@ class UiKitEditText @JvmOverloads constructor(
         if (!text.isNullOrEmpty()) {
             binding.editTextField.setText(text)
         }
-        binding.editTextField.isEnabled = styleAttrs.getBoolean(R.styleable.UiKitEditText_android_enabled, true)
+
+        isEnabled = styleAttrs.getBoolean(R.styleable.UiKitEditText_android_enabled, true)
 
         binding.containerInputView.background = bgNormal
         val isDropdown = styleAttrs.getBoolean(R.styleable.UiKitEditText_isDropdown, false)
@@ -108,6 +109,7 @@ class UiKitEditText @JvmOverloads constructor(
             val digits = styleAttrs.getString(R.styleable.UiKitEditText_android_digits)
             digits?.let(::setDigits)
         }
+
         styleAttrs.recycle()
 
         binding.editTextField.isSaveEnabled = false
