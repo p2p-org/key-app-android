@@ -117,7 +117,7 @@ class UiKitEditText @JvmOverloads constructor(
 
     override fun setEnabled(isEnable: Boolean) {
         super.setEnabled(isEnabled)
-        binding.editTextField.background = if (isEnable) bgNormal else bgDisabled
+        binding.containerInputView.background = if (isEnable) bgNormal else bgDisabled
         binding.editTextField.isEnabled = isEnabled
         binding.editTextField.isFocusable = isEnable
         val textColor = context.getColor(if (isEnable) R.color.text_night else R.color.text_night_30)
