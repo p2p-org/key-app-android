@@ -16,15 +16,14 @@ interface TopUpWalletContract {
     }
 
     interface View : MvpView {
-
+        fun showStrigaBankTransferView(showProgress: Boolean = false)
         fun hideStrigaBankTransferView()
-        fun showStrigaBankTransferView(
-            navigationTarget: BankTransferNavigationTarget = BankTransferNavigationTarget.StrigaOnboarding,
-            showProgress: Boolean = false
-        )
+        fun navigateToBankTransferTarget(target: BankTransferNavigationTarget)
         fun showBankCardView(tokenToBuy: Token)
         fun hideBankCardView()
         fun showCryptoReceiveView()
     }
-    interface Presenter : MvpPresenter<View>
+    interface Presenter : MvpPresenter<View> {
+        fun onBankTransferClicked()
+    }
 }

@@ -18,6 +18,7 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.user.model.StrigaUserDetails
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.unsafeLazy
 
@@ -54,6 +55,17 @@ class StrigaSignupInteractor(
             StrigaSignupDataType.CITY_POSTAL_CODE,
             StrigaSignupDataType.CITY_STATE
         )
+    }
+
+    suspend fun loadAndSaveSignupData() {
+        if (!userInteractor.isUserCreated()) {
+            return
+        }
+        val signupData = getSignupData()
+        if (signupData.isEmpty()) {
+            Timber.d("Striga signup data: loading from remote")
+            loadSignupDataFromRemote()
+        }
     }
 
     fun validateField(type: StrigaSignupDataType, value: String): StrigaSignupFieldState {
@@ -166,5 +178,17 @@ class StrigaSignupInteractor(
             )
         )
         metadataInteractor.updateMetadata(newMetadata)
+    }
+
+    private suspend fun loadSignupDataFromRemote() {
+        when (val userDetails = userInteractor.getUserDetails()) {
+            is StrigaDataLayerResult.Success<StrigaUserDetails> -> {
+                val signupData = userDetails.value.toSignupData()
+                signupDataRepository.updateSignupData(signupData)
+            }
+            is StrigaDataLayerResult.Failure -> {
+                Timber.e(userDetails.error, "Unable to load striga user details")
+            }
+        }
     }
 }

@@ -49,10 +49,9 @@ class TopUpWalletBottomSheet :
 
     override val presenter: TopUpWalletContract.Presenter by inject()
 
-    override fun showStrigaBankTransferView(
-        navigationTarget: BankTransferNavigationTarget,
-        showProgress: Boolean
-    ) {
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
+
+    override fun showStrigaBankTransferView(showProgress: Boolean) {
         binding.bankTransferView.isVisible = true
         binding.bankTransferView.bind(
             model = getFinanceBlock(
@@ -65,28 +64,35 @@ class TopUpWalletBottomSheet :
         )
         binding.bankTransferView.setOnClickAction { _, _ ->
             if (showProgress) return@setOnClickAction
-            val fragment = when (navigationTarget) {
-                BankTransferNavigationTarget.StrigaOnboarding -> StrigaOnboardingFragment.create()
-                BankTransferNavigationTarget.StrigaSignupFirstStep -> StrigaSignUpFirstStepFragment.create()
-                BankTransferNavigationTarget.StrigaSignupSecondStep -> StrigaSignUpFirstStepFragment.create()
-                BankTransferNavigationTarget.StrigaSmsVerification -> {
-                    SmsInputFactory.create(
-                        type = SmsInputFactory.Type.Striga,
-                        destinationFragment = StrigaSignupFinishFragment::class.java
-                    )
-                }
-                BankTransferNavigationTarget.SumSubVerification -> {
-                    showToast(TextContainer("SumSub verification is not implemented yet"))
-                    null
-                }
-                else -> null
-            }
-            fragment?.let(::dismissAndNavigate)
+            presenter.onBankTransferClicked()
         }
     }
 
     override fun hideStrigaBankTransferView() {
         binding.bankTransferView.isVisible = false
+    }
+
+    override fun navigateToBankTransferTarget(target: BankTransferNavigationTarget) {
+        val fragment = when (target) {
+            BankTransferNavigationTarget.StrigaOnboarding -> StrigaOnboardingFragment.create()
+            BankTransferNavigationTarget.StrigaSignupFirstStep -> StrigaSignUpFirstStepFragment.create()
+            BankTransferNavigationTarget.StrigaSignupSecondStep -> StrigaSignUpFirstStepFragment.create()
+            BankTransferNavigationTarget.StrigaSmsVerification -> {
+                SmsInputFactory.create(
+                    type = SmsInputFactory.Type.Striga,
+                    destinationFragment = StrigaSignupFinishFragment::class.java
+                )
+            }
+            BankTransferNavigationTarget.SumSubVerification -> {
+                showToast(TextContainer("SumSub verification is not implemented yet"))
+                null
+            }
+            else -> null
+        }
+        fragment?.let(::dismissAndNavigate)
+//        dismissAndNavigate(
+//            StrigaSignUpFirstStepFragment.create()
+//        )
     }
 
     override fun showBankCardView(tokenToBuy: Token) {
@@ -180,6 +186,4 @@ class TopUpWalletBottomSheet :
         replaceFragment(fragment)
         dismiss()
     }
-
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 }

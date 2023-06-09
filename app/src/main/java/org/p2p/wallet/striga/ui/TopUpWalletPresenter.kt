@@ -1,7 +1,8 @@
 package org.p2p.wallet.striga.ui
 
+import timber.log.Timber
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -26,14 +27,11 @@ class TopUpWalletPresenter(
     TopUpWalletContract.Presenter {
 
     private val strigaBankTransferProgress = MutableSharedFlow<Boolean>(replay = 1)
-    private val strigaUserStatus = MutableSharedFlow<StrigaUserStatus>(replay = 1)
+    private val strigaUserStatus = MutableStateFlow<StrigaUserStatus?>(null)
 
     init {
         launch {
-            strigaBankTransferProgress.emit(true)
-            strigaUserStatus.emit(
-                strigaUserInteractor.getUserStatus()
-            )
+            loadUserStatus()
         }
     }
 
@@ -47,18 +45,7 @@ class TopUpWalletPresenter(
         super.attach(view)
 
         if (strigaSignupFeatureToggle.isFeatureEnabled && isUserAuthByWeb3) {
-            //
-            strigaBankTransferProgress.filter { it }
-                .onEach {
-                    view.showStrigaBankTransferView(
-                        navigationTarget = BankTransferNavigationTarget.Nowhere,
-                        showProgress = true
-                    )
-                }
-                .launchIn(this)
-
-            strigaUserStatus
-                .onEach(::handleStrigaUserStatus)
+            strigaBankTransferProgress.onEach(view::showStrigaBankTransferView)
                 .launchIn(this)
         } else {
             view.hideStrigaBankTransferView()
@@ -72,32 +59,53 @@ class TopUpWalletPresenter(
         view.showCryptoReceiveView()
     }
 
-    private fun handleStrigaUserStatus(userStatus: StrigaUserStatus) {
-        when {
-            !userStatus.isUserCreated -> {
-                view?.showStrigaBankTransferView(
-                    navigationTarget = BankTransferNavigationTarget.StrigaOnboarding,
-                    showProgress = false
-                )
+    override fun onBankTransferClicked() {
+        if (strigaUserInteractor.isUserCreated() && strigaUserStatus.value == null) {
+            Timber.d("Striga user status is not fetched. Trying again...")
+            launch {
+                loadUserStatus()
+            }
+        } else {
+            val target = getBankTransferNavigationTarget(strigaUserStatus.value)
+            if (target == BankTransferNavigationTarget.StrigaSmsVerification) {
+                // todo: send sms or maybe we should send first sms directly from sms verification screen?
+            }
+            view?.navigateToBankTransferTarget(target)
+        }
+    }
+
+    private suspend fun loadUserStatus() {
+        if (!strigaUserInteractor.isUserCreated()) {
+            return
+        }
+
+        val status = strigaUserInteractor.getSavedUserStatus()
+        if (status != null) {
+            strigaUserStatus.emit(status)
+            strigaBankTransferProgress.emit(false)
+        } else {
+            strigaBankTransferProgress.emit(true)
+            strigaUserStatus.emit(strigaUserInteractor.getUserStatus())
+            strigaBankTransferProgress.emit(false)
+        }
+    }
+
+    private fun getBankTransferNavigationTarget(userStatus: StrigaUserStatus?): BankTransferNavigationTarget {
+        if (userStatus == null) return BankTransferNavigationTarget.Nowhere
+
+        return when {
+            !strigaUserInteractor.isUserCreated() -> {
+                BankTransferNavigationTarget.StrigaOnboarding
             }
             !userStatus.isMobileVerified -> {
-                view?.showStrigaBankTransferView(
-                    navigationTarget = BankTransferNavigationTarget.StrigaSmsVerification,
-                    showProgress = false
-                )
+                BankTransferNavigationTarget.StrigaSmsVerification
             }
             userStatus.kycStatus == StrigaUserVerificationStatus.INITIATED -> {
-                view?.showStrigaBankTransferView(
-                    navigationTarget = BankTransferNavigationTarget.SumSubVerification,
-                    showProgress = false
-                )
+                BankTransferNavigationTarget.SumSubVerification
             }
             else -> {
-                // other statuses don't imply doing something, so should we just hide the view?
-                view?.showStrigaBankTransferView(
-                    navigationTarget = BankTransferNavigationTarget.Nowhere,
-                    showProgress = false
-                )
+                // todo: on/off ramp
+                BankTransferNavigationTarget.Nowhere
             }
         }
     }
