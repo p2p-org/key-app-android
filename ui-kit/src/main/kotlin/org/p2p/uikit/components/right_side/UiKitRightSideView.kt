@@ -7,7 +7,9 @@ import org.p2p.uikit.R
 import org.p2p.uikit.components.finance_block.FinanceBlockStyle
 import org.p2p.uikit.databinding.WidgetRightSideDoubleTextBinding
 import org.p2p.uikit.databinding.WidgetRightSideIconWrapperBinding
+import org.p2p.uikit.databinding.WidgetRightSideProgressWrapperBinding
 import org.p2p.uikit.databinding.WidgetRightSideSingleTextTwoIconBinding
+import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.image.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
@@ -28,6 +30,7 @@ class UiKitRightSideView @JvmOverloads constructor(
             RightSideCellModel.SingleTextTwoIcon::class -> inflateViewBinding<WidgetRightSideSingleTextTwoIconBinding>()
                 .apply { updateStyle(styleType) }
             RightSideCellModel.IconWrapper::class -> inflateViewBinding<WidgetRightSideIconWrapperBinding>()
+            RightSideCellModel.Progress::class -> inflateViewBinding<WidgetRightSideProgressWrapperBinding>()
             else -> error("No type for viewPool: $this")
         }
     }
@@ -75,6 +78,9 @@ class UiKitRightSideView @JvmOverloads constructor(
             }
             is RightSideCellModel.IconWrapper ->
                 (pair.first as WidgetRightSideIconWrapperBinding).bind(model)
+            is RightSideCellModel.Progress -> {
+                (pair.first as WidgetRightSideProgressWrapperBinding).bind(model)
+            }
         }
         this.currentModel = model
     }
@@ -92,6 +98,12 @@ class UiKitRightSideView @JvmOverloads constructor(
 
     private fun WidgetRightSideIconWrapperBinding.bind(model: RightSideCellModel.IconWrapper) {
         this.iconWrapper.bindOrGone(model.iconWrapper)
+    }
+
+    private fun WidgetRightSideProgressWrapperBinding.bind(model: RightSideCellModel.Progress) {
+        if(model.indeterminateProgressTint != null) {
+            this.progressWrapper.indeterminateDrawable.setTint(getColor(model.indeterminateProgressTint))
+        }
     }
 
     private fun WidgetRightSideDoubleTextBinding.updateStyle(style: FinanceBlockStyle) {

@@ -1,5 +1,6 @@
 package org.p2p.uikit.components.right_side
 
+import androidx.annotation.ColorRes
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -19,5 +20,9 @@ sealed interface RightSideCellModel {
 
     data class IconWrapper(
         val iconWrapper: IconWrapperCellModel? = null,
+    ) : RightSideCellModel
+
+    data class Progress(
+        @ColorRes val indeterminateProgressTint: Int? = null
     ) : RightSideCellModel
 }

@@ -23,7 +23,11 @@ import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTopupWalletBinding
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.receive.ReceiveFragmentFactory
+import org.p2p.wallet.smsinput.SmsInputFactory
+import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
+import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
+import org.p2p.wallet.striga.ui.TopUpWalletContract.BankTransferNavigationTarget
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -45,18 +49,39 @@ class TopUpWalletBottomSheet :
 
     override val presenter: TopUpWalletContract.Presenter by inject()
 
-    override fun showStrigaBankTransferView() {
+    override fun showStrigaBankTransferView(
+        navigationTarget: BankTransferNavigationTarget,
+        showProgress: Boolean
+    ) {
         binding.bankTransferView.isVisible = true
         binding.bankTransferView.bind(
             model = getFinanceBlock(
                 titleResId = R.string.bank_transfer_title,
                 subtitleRes = R.string.bank_transfer_subtitle,
                 iconResId = R.drawable.ic_bank_transfer,
-                backgroundTintId = R.color.light_grass
+                backgroundTintId = R.color.light_grass,
+                showRightProgress = showProgress
             )
         )
         binding.bankTransferView.setOnClickAction { _, _ ->
-            dismissAndNavigate(StrigaSignUpFirstStepFragment.create())
+            if (showProgress) return@setOnClickAction
+            val fragment = when (navigationTarget) {
+                BankTransferNavigationTarget.StrigaOnboarding -> StrigaOnboardingFragment.create()
+                BankTransferNavigationTarget.StrigaSignupFirstStep -> StrigaSignUpFirstStepFragment.create()
+                BankTransferNavigationTarget.StrigaSignupSecondStep -> StrigaSignUpFirstStepFragment.create()
+                BankTransferNavigationTarget.StrigaSmsVerification -> {
+                    SmsInputFactory.create(
+                        type = SmsInputFactory.Type.Striga,
+                        destinationFragment = StrigaSignupFinishFragment::class.java
+                    )
+                }
+                BankTransferNavigationTarget.SumSubVerification -> {
+                    showToast(TextContainer("SumSub verification is not implemented yet"))
+                    null
+                }
+                else -> null
+            }
+            fragment?.let(::dismissAndNavigate)
         }
     }
 
@@ -101,7 +126,8 @@ class TopUpWalletBottomSheet :
         titleResId: Int,
         subtitleRes: Int,
         iconResId: Int,
-        backgroundTintId: Int
+        backgroundTintId: Int,
+        showRightProgress: Boolean = false
     ): FinanceBlockCellModel {
         val leftSideCellModel = LeftSideCellModel.IconWithText(
             icon = IconWrapperCellModel.SingleIcon(
@@ -123,14 +149,20 @@ class TopUpWalletBottomSheet :
             )
         )
 
-        val rightSideCellModel = RightSideCellModel.IconWrapper(
-            iconWrapper = IconWrapperCellModel.SingleIcon(
-                icon = ImageViewCellModel(
-                    icon = DrawableContainer(R.drawable.ic_chevron_right),
-                    iconTint = R.color.icons_mountain
+        val rightSideCellModel = if (showRightProgress) {
+            RightSideCellModel.Progress(
+                indeterminateProgressTint = R.color.night
+            )
+        } else {
+            RightSideCellModel.IconWrapper(
+                iconWrapper = IconWrapperCellModel.SingleIcon(
+                    icon = ImageViewCellModel(
+                        icon = DrawableContainer(R.drawable.ic_chevron_right),
+                        iconTint = R.color.icons_mountain
+                    )
                 )
             )
-        )
+        }
         val background = DrawableCellModel(
             drawable = shapeDrawable(shapeRounded16dp()),
             tint = R.color.bg_snow

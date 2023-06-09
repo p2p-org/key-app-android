@@ -48,7 +48,10 @@ class StrigaSignupDataValidator {
             LengthInputValidator(1..20)
         ),
         // state is an optional field
-        StrigaSignupDataType.CITY_STATE to listOf(LengthInputValidator(0..20)),
+        StrigaSignupDataType.CITY_STATE to listOf(
+            EmptyInputValidator(),
+            LengthInputValidator(1..20)
+        ),
     )
 
     fun validate(data: StrigaSignupData): StrigaSignupFieldState {
