@@ -36,16 +36,18 @@ class AmountChangedHandler(
 
         val minRentExemption = feeCalculator.getMinRentExemption()
 
+        val sourceToken = trigger.sourceToken
+
         val feeState = feeCalculator.calculateFee(
             sourceToken = trigger.sourceToken,
-            feePayerToken = feePayerToken,
+            feePayerToken = sourceToken,
             recipient = recipient.addressState.address
         )
 
         val newState = when (feeState) {
-            is Success -> prepareForSmartSelection(trigger, feePayerToken, feeState, minRentExemption)
+            is Success -> prepareForSmartSelection(trigger, sourceToken, feeState, minRentExemption)
             is PoolsNotFound -> SmartSelectionState.SolanaFeeOnly(feeState.feeInSol)
-            is NoFees -> validateSolOrNoFees(trigger, feePayerToken, minRentExemption)
+            is NoFees -> validateSolOrNoFees(trigger, sourceToken, minRentExemption)
             is Cancelled -> SmartSelectionState.Cancelled
             is Failed -> SmartSelectionState.Failed(feeState.e)
         }
@@ -55,10 +57,10 @@ class AmountChangedHandler(
 
     private fun validateSolOrNoFees(
         trigger: SmartSelectionTrigger.AmountChanged,
-        feePayerToken: Token.Active,
+        sourceToken: Token.Active,
         minRentExemption: BigInteger
     ) = if (trigger.sourceToken.isSOL) {
-        val strategies = generateNoFeesStrategies(trigger, feePayerToken, minRentExemption)
+        val strategies = generateNoFeesStrategies(trigger, sourceToken, minRentExemption)
         SmartSelectionState.ReadyForSmartSelection(strategies)
     } else {
         SmartSelectionState.NoFees(trigger.sourceToken, trigger.inputAmount)
@@ -87,13 +89,12 @@ class AmountChangedHandler(
 
     private fun generateNoFeesStrategies(
         trigger: SmartSelectionTrigger.AmountChanged,
-        feePayerToken: Token.Active,
+        sourceToken: Token.Active,
         minRentExemption: BigInteger
     ): LinkedHashSet<FeePayerSelectionStrategy> {
         return linkedSetOf(
-            SolanaTokenStrategy(
+            SourceSolanaTokenStrategy(
                 recipient = recipient,
-                solToken = trigger.solToken,
                 sourceToken = trigger.sourceToken,
                 inputAmount = trigger.inputAmount,
                 fee = FeeRelayerFee.EMPTY,
@@ -101,7 +102,7 @@ class AmountChangedHandler(
             ),
             ValidationStrategy(
                 sourceToken = trigger.sourceToken,
-                feePayerToken = feePayerToken,
+                feePayerToken = sourceToken,
                 minRentExemption = minRentExemption,
                 inputAmount = trigger.inputAmount.orZero(),
                 fee = FeeRelayerFee.EMPTY

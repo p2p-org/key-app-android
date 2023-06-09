@@ -28,8 +28,6 @@ class SourceSplTokenStrategy(
         // calculating the total needed amount in SPL
         val requiredAmount = fee.totalInSpl + inputAmountLamports
 
-        Timber.d("### isPayableSpl: ${fee.totalInSpl} + ${inputAmountLamports}")
-
         // checking if SPL balance is enough to cover fee and input amount
         val tokenTotal = sourceToken.totalInLamports
         return tokenTotal >= requiredAmount
@@ -37,11 +35,12 @@ class SourceSplTokenStrategy(
 
     // this should be called only if `isPayable` returned true
     // we are not checking `isPayable` in execute to avoid double work
-    override fun execute(): FeePayerState =
-        FeePayerState.CalculationSuccess(
+    override fun execute(): FeePayerState {
+        return FeePayerState.CalculationSuccess(
             sourceToken = sourceToken,
             feePayerToken = sourceToken,
             fee = fee,
             inputAmount = inputAmount
         )
+    }
 }

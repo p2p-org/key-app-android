@@ -3,18 +3,15 @@ package org.p2p.wallet.newsend.smartselection.strategy
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.token.Token
-import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleLong
-import org.p2p.core.utils.toLamports
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.newsend.model.FeePayerState
 import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason
-import org.p2p.wallet.newsend.smartselection.validator.SourceSolValidator
 
 /**
  * SOL token as a fee payer is a second priority in paying fees after initial tokens
+ * This should be called if source token is SPL only
+ *
+ * We calculate if SOL balance is enough to cover ONLY FEES
  * */
 class SolanaTokenStrategy(
     private val recipient: SearchResult,
@@ -25,62 +22,21 @@ class SolanaTokenStrategy(
     private val minRentExemption: BigInteger
 ) : FeePayerSelectionStrategy {
 
+    // this strategy can be called only if source SPL token balance is not enough to cover fees
     override fun isPayable(): Boolean {
-        val inputAmountLamports = inputAmount.orZero().toLamports(sourceToken.decimals)
-
-        // calculating if SOL balance is enough
-        val totalSolNeeded = if (sourceToken.isSOL) {
-            fee.totalInSol + inputAmountLamports
-        } else {
-            fee.totalInSol
-        }
-
-        if (solToken.totalInLamports < totalSolNeeded) {
+        if (sourceToken.isSOL) {
             return false
         }
 
-        // checking if source token balance is enough to cover input
-        if (sourceToken.totalInLamports < inputAmountLamports) {
-            return false
-        }
-
-        return true
+        return solToken.totalInLamports >= fee.totalInSol
     }
 
     override fun execute(): FeePayerState {
-        val inputAmountLamports = inputAmount.orZero().toLamports(sourceToken.decimals)
-
-        val solValidator = SourceSolValidator(
+        return FeePayerState.CalculationSuccess(
             sourceToken = sourceToken,
-            recipient = recipient,
-            inputAmount = inputAmountLamports,
-            minRentExemption = minRentExemption
+            feePayerToken = solToken,
+            fee = fee,
+            inputAmount = inputAmount
         )
-
-        return when {
-            solValidator.isLowMinBalanceIgnored() -> {
-                val reason = FeePayerFailureReason.LowMinBalanceIgnored
-                FeePayerState.Failure(reason)
-            }
-            solValidator.isAmountInvalidForRecipient() -> {
-                val minRequiredSolBalance = minRentExemption.fromLamports().scaleLong().toPlainString()
-                val reason = FeePayerFailureReason.InvalidAmountForRecipient(minRequiredSolBalance)
-                FeePayerState.Failure(reason)
-            }
-            solValidator.isAmountInvalidForSender() -> {
-                val maxSolAmountAllowedLamports = sourceToken.totalInLamports - minRentExemption
-                val maxSolAmountAllowed = maxSolAmountAllowedLamports.fromLamports().scaleLong().toPlainString()
-                val reason = FeePayerFailureReason.InvalidAmountForSender(maxSolAmountAllowed)
-                FeePayerState.Failure(reason)
-            }
-            else -> {
-                FeePayerState.CalculationSuccess(
-                    sourceToken = sourceToken,
-                    feePayerToken = solToken,
-                    fee = fee,
-                    inputAmount = inputAmount
-                )
-            }
-        }
     }
 }
