@@ -116,7 +116,7 @@ class SendStateManager(
     }
 
     private fun handleLaunchSending() {
-        val address = initialData.recipient.addressState.address
+        val address = initialData.recipient.address
         val currentAmount = inputCalculator.getCurrentAmount()
         val currentAmountUsd = inputCalculator.getCurrentAmountUsd()
         val lamports = inputCalculator.getCurrentAmountLamports()
@@ -343,7 +343,7 @@ class SendStateManager(
             receiveUsd = currentAmount.toUsd(sourceToken),
             sourceSymbol = sourceToken.tokenSymbol,
             sendFee = solanaFee,
-            recipientAddress = initialData.recipient.addressState.address,
+            recipientAddress = initialData.recipient.address,
             feeLimit = feeLimitInfo
         )
     }
@@ -363,7 +363,7 @@ class SendStateManager(
             type = RpcHistoryTransactionType.SEND,
             senderAddress = tokenKeyProvider.publicKey,
             amount = RpcHistoryAmount(inputCalculator.getCurrentAmount(), inputCalculator.getCurrentAmountUsd()),
-            destination = initialData.recipient.addressState.address,
+            destination = initialData.recipient.address,
             counterPartyUsername = initialData.recipient.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,

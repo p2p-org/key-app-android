@@ -40,7 +40,7 @@ class MaxAmountEnteredHandler(
         val feeState = feeCalculator.calculateFee(
             sourceToken = trigger.sourceToken,
             feePayerToken = feePayerToken,
-            recipient = recipient.addressState.address
+            recipient = recipient.address
         )
 
         val newState = when (feeState) {

@@ -33,7 +33,7 @@ class FeePayerChangedHandler(
         val feeState = feeCalculator.calculateFee(
             sourceToken = trigger.sourceToken,
             feePayerToken = trigger.newFeePayer,
-            recipient = recipient.addressState.address
+            recipient = recipient.address
         )
 
         val minRentExemption = feeCalculator.getMinRentExemption()

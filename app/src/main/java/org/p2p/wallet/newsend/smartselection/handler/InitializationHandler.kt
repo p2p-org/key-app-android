@@ -34,7 +34,7 @@ class InitializationHandler(
         val feeState = feeCalculator.calculateFee(
             sourceToken = trigger.initialToken,
             feePayerToken = trigger.initialToken,
-            recipient = recipient.addressState.address
+            recipient = recipient.address
         )
 
         val newState = when (feeState) {

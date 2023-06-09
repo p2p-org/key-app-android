@@ -6,7 +6,6 @@ import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import java.math.BigInteger
 import org.p2p.wallet.svl.model.TemporaryAccount
 
 interface SendViaLinkContract {
@@ -29,6 +28,7 @@ interface SendViaLinkContract {
             lamports: BigInteger,
             currencyModeSymbol: String
         )
+
         fun enableSwitchAmounts()
     }
 

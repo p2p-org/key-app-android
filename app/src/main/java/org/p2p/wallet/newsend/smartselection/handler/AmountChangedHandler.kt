@@ -38,7 +38,7 @@ class AmountChangedHandler(
         val feeState = feeCalculator.calculateFee(
             sourceToken = trigger.sourceToken,
             feePayerToken = trigger.sourceToken,
-            recipient = recipient.addressState.address
+            recipient = recipient.address
         )
 
         val newState = when (feeState) {
