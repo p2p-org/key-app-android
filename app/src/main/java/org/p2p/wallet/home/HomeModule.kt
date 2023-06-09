@@ -33,6 +33,8 @@ import org.p2p.wallet.receive.renbtc.ReceiveRenBtcContract
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcPresenter
 import org.p2p.wallet.receive.token.ReceiveTokenContract
 import org.p2p.wallet.receive.token.ReceiveTokenPresenter
+import org.p2p.wallet.striga.ui.TopUpWalletContract
+import org.p2p.wallet.striga.ui.TopUpWalletPresenter
 import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
 import org.p2p.wallet.updates.subscribe.SplTokenProgramSubscriber
 
@@ -140,5 +142,6 @@ object HomeModule : InjectionModule {
         factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
 
         factoryOf(::HomeActionsPresenter) bind HomeActionsContract.Presenter::class
+        factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
     }
 }

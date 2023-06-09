@@ -25,10 +25,19 @@ abstract class BasePresenter<V : MvpView>(
     protected var view: V? = null
         private set
 
+    private var isInitialized = false
+
     @CallSuper
     override fun attach(view: V) {
         this.view = view
+        if (!isInitialized) {
+            isInitialized = true
+            firstAttach()
+        }
     }
+
+    @CallSuper
+    protected open fun firstAttach() = Unit
 
     @CallSuper
     override fun detach() {

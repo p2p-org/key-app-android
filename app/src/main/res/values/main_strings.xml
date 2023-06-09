@@ -2,7 +2,7 @@
     <!--Main Screen Banner-->
     <string name="main_banner_title">Top up your account to get started</string>
     <string name="main_banner_subtitle">Make your first deposit or buy crypto with your credit card or Google pay</string>
-    <string name="main_banner_button">Receive</string>
+    <string name="main_banner_button">Top up</string>
 
     <!-- Home -->
     <string name="main_loading">Loading</string>
@@ -11,11 +11,11 @@
     <!--Home Screen Actions-->
     <string name="home_actions_title">Actions</string>
 
-    <string name="home_actions_sell_title">Cash out crypto to fiat</string>
-    <string name="home_actions_sell_subtitle">via bank transfer</string>
+    <string name="home_actions_sell_title">Cash out</string>
+    <string name="home_actions_sell_subtitle">crypto to fiat via bank transfer</string>
 
-    <string name="home_actions_buy_title">Buy</string>
-    <string name="home_actions_buy_subtitle">using Google Pay or credit card</string>
+    <string name="home_actions_buy_title">Add money</string>
+    <string name="home_actions_buy_subtitle">bank card, bank transfer or crypto</string>
 
     <string name="home_actions_receive_title">Receive</string>
     <string name="home_actions_receive_subtitle">from another wallet or exchange</string>

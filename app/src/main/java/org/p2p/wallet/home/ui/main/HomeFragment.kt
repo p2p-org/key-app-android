@@ -38,7 +38,7 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.moonpay.ui.BuySolanaFragment
+import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.model.SearchOpenedFromScreen
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
@@ -51,6 +51,7 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
@@ -100,6 +101,7 @@ class HomeFragment :
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
+    private val buyFragmentFactory: BuyFragmentFactory by inject()
     private val layoutManager: LinearLayoutManager by lazy {
         HomeScreenLayoutManager(requireContext())
     }
@@ -199,8 +201,8 @@ class HomeFragment :
         homeRecyclerView.doOnDetach {
             homeRecyclerView.layoutManager = null
         }
-        swipeRefreshLayout.setOnRefreshListener { presenter.refreshTokens() }
-        viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
+        swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
+        viewActionButtons.onButtonClicked = ::onActionButtonClicked
 
         // hidden. temporary. PWN-4381
         viewBuyTokenBanner.root.isVisible = false
@@ -227,24 +229,20 @@ class HomeFragment :
 
     private fun onActionButtonClicked(clickedButton: ActionButton) {
         when (clickedButton) {
-            ActionButton.BUY_BUTTON -> {
-                presenter.onBuyClicked()
-            }
-
-            ActionButton.RECEIVE_BUTTON -> {
-                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
-            }
-
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
             }
-
             ActionButton.SELL_BUTTON -> {
                 replaceFragment(SellPayloadFragment.create())
             }
-
             ActionButton.SWAP_BUTTON -> {
                 showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
+            }
+            ActionButton.TOP_UP_BUTTON -> {
+                TopUpWalletBottomSheet.show(fm = parentFragmentManager)
+            }
+            else -> {
+                // unsupported on this screen
             }
         }
     }
@@ -252,13 +250,11 @@ class HomeFragment :
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
-                result.getParcelableCompat<Token>(KEY_RESULT_TOKEN)?.also(::showOldBuyScreen)
+                result.getParcelableCompat<Token>(KEY_RESULT_TOKEN)?.also(::navigateToBuyScreen)
             }
-
             KEY_REQUEST_TOKEN_INFO -> {
                 result.getParcelableCompat<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
             }
-
             KEY_REQUEST_ACTION -> {
                 result.getSerializableCompat<HomeAction>(KEY_RESULT_ACTION)?.also(::openScreenByHomeAction)
             }
@@ -268,7 +264,7 @@ class HomeFragment :
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
             HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
-            HomeAction.BUY -> presenter.onBuyClicked()
+            HomeAction.TOP_UP -> TopUpWalletBottomSheet.show(parentFragmentManager)
             HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             HomeAction.SWAP -> showSwap(SwapOpenedFrom.ACTION_PANEL)
             HomeAction.SEND -> presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
@@ -279,8 +275,12 @@ class HomeFragment :
         replaceFragment(NewSearchFragment.create(openedFromScreen))
     }
 
-    override fun showOldBuyScreen(token: Token) {
-        replaceFragment(BuySolanaFragment.create(token))
+    override fun navigateToBuyScreen(token: Token) {
+        replaceFragment(buyFragmentFactory.buyFragment(token))
+    }
+
+    override fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?) {
+        replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
     }
 
     override fun showSendNoTokens(fallbackToken: Token) {
@@ -293,10 +293,6 @@ class HomeFragment :
 
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
         listener?.showTransactionProgress(bundleId, progressDetails)
-    }
-
-    override fun showNewBuyScreen(token: Token, fiatToken: String?, fiatAmount: String?) {
-        replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
@@ -354,14 +350,12 @@ class HomeFragment :
     override fun onBannerClicked(bannerId: Int) {
         when (bannerId) {
             R.id.home_banner_top_up -> {
-                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
+                TopUpWalletBottomSheet.show(parentFragmentManager)
             }
-
             R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
                 replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
             }
-
             R.string.home_feedback_banner_option -> {
                 browseAnalytics.logBannerFeedbackPressed()
                 IntercomService.showMessenger()

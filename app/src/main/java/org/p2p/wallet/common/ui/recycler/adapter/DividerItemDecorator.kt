@@ -19,7 +19,7 @@ class DividerItemDecorator(
         val dividerLeft = parent.paddingLeft
         val dividerRight = parent.width - parent.paddingRight
         val childCount = parent.childCount
-        for (i in 0..childCount - 2) {
+        for (i in 1..childCount - 2) {
             val child = parent.getChildAt(i)
             val params = child.layoutParams as RecyclerView.LayoutParams
             val dividerTop = child.bottom + params.bottomMargin

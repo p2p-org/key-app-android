@@ -5,12 +5,15 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CountryCode(
-    val nameCode: String,
+    val nameCodeAlpha2: String,
+    val nameCodeAlpha3: String,
     val phoneCode: String,
-    val name: String,
+    val countryName: String,
     val flagEmoji: String,
     var mask: String = ""
 ) : Parcelable {
+
+    val phoneCodeWithPlusSign get() = "+$phoneCode"
 
     fun getZeroFilledMask(): String {
         return mask.map { symbol -> if (symbol.isDigit()) '0' else ' ' }.joinToString("")

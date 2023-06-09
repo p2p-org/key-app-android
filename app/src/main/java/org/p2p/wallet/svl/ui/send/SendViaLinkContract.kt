@@ -1,5 +1,6 @@
 package org.p2p.wallet.svl.ui.send
 
+import java.math.BigInteger
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
@@ -28,6 +29,7 @@ interface SendViaLinkContract {
             lamports: BigInteger,
             currencyModeSymbol: String
         )
+        fun enableSwitchAmounts()
     }
 
     interface Presenter : MvpPresenter<View> {

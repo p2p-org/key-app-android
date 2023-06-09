@@ -12,57 +12,55 @@ import org.p2p.wallet.utils.cutMiddle
 
 private const val EMPTY_BALANCE = 0L
 
-sealed class SearchResult(
-    open val addressState: AddressState
-) : Parcelable {
+sealed class SearchResult(open val address: String) : Parcelable {
 
     val formattedAddress: String
-        get() = addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
+        get() = address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
 
     fun isInvalid(): Boolean =
         this is InvalidDirectAddress || this is OwnAddressError
 
     @Parcelize
     data class InvalidDirectAddress(
-        val address: String,
+        override val address: String,
         val directToken: TokenData
-    ) : SearchResult(AddressState(address))
+    ) : SearchResult(address)
 
     @Parcelize
     data class OwnAddressError(
-        val address: String,
+        override val address: String,
         val directToken: TokenData? = null
-    ) : SearchResult(AddressState(address))
+    ) : SearchResult(address)
 
     @Parcelize
     data class AddressFound(
-        override val addressState: AddressState,
+        override val address: String,
         val sourceToken: Token.Active? = null,
         val date: Date? = null,
         val balance: Long = EMPTY_BALANCE,
         val networkType: NetworkType = NetworkType.SOLANA
-    ) : SearchResult(addressState) {
+    ) : SearchResult(address) {
         @IgnoredOnParcel
         val isEmptyBalance = balance == EMPTY_BALANCE
 
         fun copyWithBalance(balance: Long): AddressFound {
-            return AddressFound(addressState, sourceToken, date, balance)
+            return AddressFound(address, sourceToken, date, balance)
         }
     }
 
     @Parcelize
     data class UsernameFound constructor(
-        override val addressState: AddressState,
+        override val address: String,
         val username: String,
         val formattedUsername: String,
         val date: Date? = null
-    ) : SearchResult(addressState)
+    ) : SearchResult(address)
 }
 
 fun TemporaryAccount.toSearchResult(): SearchResult =
-    SearchResult.AddressFound(AddressState(address))
+    SearchResult.AddressFound(address)
 
 fun SearchResult.nicknameOrAddress(): String {
     return if (this is SearchResult.UsernameFound) formattedUsername
-    else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
+    else address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
 }

@@ -2,6 +2,7 @@ package org.p2p.wallet.svl.ui.send
 
 import android.content.res.Resources
 import timber.log.Timber
+import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
@@ -30,6 +31,8 @@ import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.unsafeLazy
+
+private const val ACCEPTABLE_RATE_DIFF = 0.02
 
 class SendViaLinkPresenter(
     private val userInteractor: UserInteractor,
@@ -111,6 +114,7 @@ class SendViaLinkPresenter(
         launch {
             view.showToken(token)
             calculationMode.updateToken(token)
+            checkTokenRatesAndSetSwitchAmountState(token)
 
             val userTokens = userInteractor.getNonZeroUserTokens()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
@@ -137,6 +141,8 @@ class SendViaLinkPresenter(
 
             val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
             token = initialToken
+
+            checkTokenRatesAndSetSwitchAmountState(initialToken)
 
             val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
             if (solToken == null) {
@@ -170,8 +176,26 @@ class SendViaLinkPresenter(
     override fun updateToken(newToken: Token.Active) {
         svlAnalytics.logTokenChanged(newToken.tokenSymbol)
         token = newToken
+        checkTokenRatesAndSetSwitchAmountState(newToken)
         showMaxButtonIfNeeded()
         updateButton(requireToken())
+    }
+
+    private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
+        val isStableCoin = token.isUSDC || token.isUSDT
+        if (token.rate == null || isStableCoin && isStableCoinRateDiffAcceptable(token)) {
+            if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                switchCurrencyMode()
+            }
+            view?.disableSwitchAmounts()
+        } else {
+            view?.enableSwitchAmounts()
+        }
+    }
+
+    private fun isStableCoinRateDiffAcceptable(token: Token.Active): Boolean {
+        val delta = token.rate.orZero() - BigDecimal.ONE
+        return delta.abs() < BigDecimal(ACCEPTABLE_RATE_DIFF)
     }
 
     override fun switchCurrencyMode() {

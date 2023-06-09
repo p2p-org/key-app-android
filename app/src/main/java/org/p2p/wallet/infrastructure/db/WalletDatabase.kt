@@ -24,6 +24,8 @@ import org.p2p.wallet.newsend.db.RecipientEntity
 import org.p2p.wallet.newsend.db.RecipientsDao
 import org.p2p.wallet.renbtc.db.SessionDao
 import org.p2p.wallet.renbtc.db.SessionEntity
+import org.p2p.wallet.striga.signup.dao.StrigaSignupDataDao
+import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
 
 @Database(
     entities = [
@@ -39,7 +41,9 @@ import org.p2p.wallet.renbtc.db.SessionEntity
 
         RecipientEntity::class,
 
-        UserSendLinkEntity::class
+        UserSendLinkEntity::class,
+
+        StrigaSignupDataEntity::class
     ],
     version = DATABASE_VERSION,
     exportSchema = false
@@ -48,7 +52,7 @@ import org.p2p.wallet.renbtc.db.SessionEntity
 abstract class WalletDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 11
+        const val DATABASE_VERSION = 12
         const val DATABASE_NAME = "p2p.wallet"
     }
 
@@ -64,4 +68,5 @@ abstract class WalletDatabase : RoomDatabase() {
 
     abstract fun recipientsDao(): RecipientsDao
     abstract fun userSendLinksDao(): UserSendLinksDao
+    abstract fun strigaSignupDao(): StrigaSignupDataDao
 }

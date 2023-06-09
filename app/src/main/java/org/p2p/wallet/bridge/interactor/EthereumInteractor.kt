@@ -45,7 +45,7 @@ class EthereumInteractor(
         }
     }
 
-    suspend fun getEthAddress(): EthAddress {
+    fun getEthAddress(): EthAddress {
         return ethereumRepository.getAddress()
     }
 

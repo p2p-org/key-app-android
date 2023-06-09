@@ -8,7 +8,8 @@ import android.text.Editable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.TextView
-import org.p2p.core.utils.orZero
+import org.p2p.core.common.TextContainer
+import org.p2p.core.common.bind
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
@@ -30,6 +31,8 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     protected val binding = inflateViewBinding<WidgetPhoneInputViewBinding>()
 
     private lateinit var phoneTextWatcher: PhoneNumberTextWatcher
+    val phoneCodeView: TextView by lazy { binding.editTextCountryCode }
+    private var viewTag: Any? = null
 
     private val bgRed = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
@@ -46,24 +49,45 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     }
 
     init {
-        val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitTextField, 0, 0)
-        val labelText = styleAttrs.getString(R.styleable.UiKitTextField_labelText).orEmpty()
+        val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitEditText, 0, 0)
+        val labelText = styleAttrs.getString(R.styleable.UiKitEditText_labelText).orEmpty()
         if (labelText.isNotEmpty()) {
             binding.textViewLabel.text = labelText
             binding.textViewLabel.isVisible = true
         }
-        val hintText = styleAttrs.getString(R.styleable.UiKitTextField_hintText).orEmpty()
+        val hintText = styleAttrs.getString(R.styleable.UiKitEditText_hintText).orEmpty()
         if (hintText.isNotEmpty()) {
             binding.textViewHint.text = hintText
             binding.textViewHint.isVisible = true
         }
-        val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitTextField_android_textAppearance, -1)
+        val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitEditText_android_textAppearance, -1)
         if (textAppearance != -1) {
             binding.editTextPhoneNumber.setTextAppearance(textAppearance)
+            binding.editTextCountryCode.setTextAppearance(textAppearance)
+            binding.textViewPlusSign.setTextAppearance(textAppearance)
         }
-        val text = styleAttrs.getText(R.styleable.UiKitTextField_android_text)
+        val text = styleAttrs.getText(R.styleable.UiKitEditText_android_text)
         if (!text.isNullOrEmpty()) {
             binding.editTextPhoneNumber.setText(text)
+        }
+        val backgroundTint = styleAttrs.getResourceId(R.styleable.UiKitEditText_android_backgroundTint, -1)
+        if (backgroundTint != -1) {
+            bgNormal.setColor(context.getColor(backgroundTint))
+            bgNormal.setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
+
+            bgRed.setColor(context.getColor(backgroundTint))
+        }
+        val textSize = styleAttrs.getDimensionPixelSize(R.styleable.UiKitEditText_android_textSize, -1)
+        if (textSize != -1) {
+            val minSize = 12
+            val granularity = binding.autoSizeHelperTextView.autoSizeStepGranularity
+            val unit = 0
+            binding.autoSizeHelperTextView.setAutoSizeTextTypeUniformWithConfiguration(
+                minSize,
+                textSize,
+                granularity,
+                unit
+            )
         }
         binding.inputViewContainer.background = bgNormal
         styleAttrs.recycle()
@@ -71,6 +95,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun setText(text: String) {
         binding.editTextPhoneNumber.setText(text)
+        binding.editTextPhoneNumber.setSelection(text.length)
     }
 
     fun setHint(hint: String) {
@@ -91,8 +116,10 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun setupViewState(
         countryCode: CountryCode?,
+        savedPhoneNumber: String? = null,
         onPhoneChanged: (String) -> Unit,
-        onCountryClickListener: () -> Unit
+        onCountryClickListener: () -> Unit,
+        requestFocus: Boolean = true
     ) = with(binding) {
         countryCode?.phoneCode.let { editTextCountryCode.text = it }
 
@@ -111,6 +138,12 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         val originalTextSize = editTextPhoneNumber.textSize
         editTextPhoneNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, originalTextSize)
 
+        val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
+        if (requestFocus) {
+            focusView.focusAndShowKeyboard()
+        }
+        editTextPhoneNumber.setSelection(restoredNumber.length)
+
         phoneTextWatcher = PhoneNumberTextWatcher(binding.editTextPhoneNumber) { phoneNumber ->
             resizeInputs(phoneNumber, originalTextSize)
 
@@ -118,15 +151,12 @@ open class PhoneNumberInputView @JvmOverloads constructor(
             val phone = phoneNumber.getFullPhoneNumber()
             onPhoneChanged.invoke(phone)
         }
-
         editTextPhoneNumber.addTextChangedListener(phoneTextWatcher)
 
-        val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
-        focusView.focusAndShowKeyboard()
-
-        editTextPhoneNumber.setSelection(editTextPhoneNumber.text?.length.orZero())
-
-        if (restoredNumber.isNotEmpty()) onPhoneChanged(restoredNumber.getFullPhoneNumber())
+        if (restoredNumber.isNotEmpty()) {
+            editTextPhoneNumber.setText(savedPhoneNumber)
+            onPhoneChanged(restoredNumber.getFullPhoneNumber())
+        }
     }
 
     private fun WidgetPhoneInputViewBinding.resizeInputs(
@@ -154,18 +184,23 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         editTextPhoneNumber.setHintText(hint)
 
         with(editTextPhoneNumber) {
-            addTextChangedListener(phoneTextWatcher)
             setHintText(countryCode.getZeroFilledMask())
             setSelection(length())
             focusAndShowKeyboard()
         }
-        showError(null)
+        showError(text = null)
     }
 
     fun showError(text: String?) = with(binding) {
         textViewError.text = text
         textViewError.isVisible = !text.isNullOrEmpty()
         inputViewContainer.background = if (!text.isNullOrEmpty()) bgRed else bgNormal
+    }
+
+    fun showError(textContainer: TextContainer?) = with(binding) {
+        textContainer?.let { textViewError.bind(it) }
+        textViewError.isVisible = textContainer != null
+        inputViewContainer.background = if (textContainer != null) bgRed else bgNormal
     }
 
     fun onFoundNewCountry(countryCode: CountryCode) {
@@ -178,5 +213,10 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun focusAndShowKeyboard() {
         binding.editTextPhoneNumber.focusAndShowKeyboard()
+    }
+
+    fun setViewTag(tag: Any?) {
+        binding.root.tag = tag
+        viewTag = tag
     }
 }

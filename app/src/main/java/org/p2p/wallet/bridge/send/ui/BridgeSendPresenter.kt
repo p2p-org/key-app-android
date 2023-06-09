@@ -459,14 +459,14 @@ class BridgeSendPresenter(
     private fun getFeeDetails(): BridgeFeeDetails {
         val fees = currentState.lastStaticState.bridgeFee?.fee
         return bridgeSendUiMapper.makeBridgeFeeDetails(
-            recipientAddress = recipientAddress.addressState.address,
+            recipientAddress = recipientAddress.address,
             fees = fees
         )
     }
 
     private fun SearchResult.nicknameOrAddress(): String {
         return if (this is SearchResult.UsernameFound) formattedUsername
-        else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
+        else address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
     private fun isInternetConnectionEnabled(): Boolean =
@@ -495,7 +495,7 @@ class BridgeSendPresenter(
             currency = calculationMode.getCurrencyMode().getTypedSymbol(),
             sendAmount = calculationMode.getCurrentAmount().toPlainString(),
             arbiterFeeAmount = arbiterFeeAmount.orEmpty(),
-            recipientEthPubkey = recipientAddress.addressState.address,
+            recipientEthPubkey = recipientAddress.address,
             error = e
         )
     }

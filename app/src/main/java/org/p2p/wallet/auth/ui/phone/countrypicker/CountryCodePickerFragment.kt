@@ -10,7 +10,6 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
-import org.p2p.wallet.auth.widget.AnimatedSearchView
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCountryPickerBinding
 import org.p2p.wallet.utils.args
@@ -52,11 +51,6 @@ class CountryCodePickerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener {
-                setFragmentResult(requestKey, bundleOf())
-                close()
-            }
-
             recyclerViewCountryCodes.adapter = adapter
             initSearch()
         }
@@ -72,18 +66,13 @@ class CountryCodePickerFragment :
             presenter.search(searchText?.toString() ?: emptyString())
         }
 
-        setStateListener(object : AnimatedSearchView.SearchStateListener {
-            override fun onClosed() {
-                presenter.search(emptyString())
-            }
-        })
-        searchView.openSearch()
+        setStateListener { presenter.search(emptyString()) }
+        openSearch()
     }
 
     override fun showCountries(items: List<CountryCodeItem>) {
         adapter.setItems(items)
         binding.recyclerViewCountryCodes.isVisible = items.isNotEmpty()
-        binding.textViewError.isVisible = items.isEmpty()
     }
 
     private fun onCountryCodeClicked(code: CountryCode) {

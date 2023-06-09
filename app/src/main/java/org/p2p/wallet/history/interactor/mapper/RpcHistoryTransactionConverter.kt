@@ -1,13 +1,10 @@
 package org.p2p.wallet.history.interactor.mapper
 
 import com.google.gson.Gson
-import java.math.BigDecimal
 import org.p2p.core.utils.Constants.FEE_RELAYER_ACCOUNTS
-import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.bridge.claim.repository.EthereumBridgeInMemoryRepository
 import org.p2p.wallet.bridge.model.BridgeFee
-import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.api.model.RpcHistoryFeeResponse
 import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
@@ -247,18 +244,8 @@ class RpcHistoryTransactionConverter(
             bundle?.fees?.gasFeeInToken
         )
 
-        val total: BigDecimal
-        val totalInUsd: BigDecimal
-        if (bundle == null || bundle.compensationDeclineReason.isEmpty()) {
-            total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero()
-            totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero()
-        } else {
-            val bridgeAmount = bundle.resultAmount.toBridgeAmount()
-            total = bridgeAmount.tokenAmount.orZero() - bundleFees.sumOf { it.amountInToken }
-            totalInUsd = bridgeAmount.fiatAmount.orZero() - bundleFees.sumOf {
-                it.amountInUsd.toBigDecimalOrZero()
-            }
-        }
+        val total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero()
+        val totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero()
 
         return RpcHistoryTransaction.WormholeReceive(
             signature = transaction.signature,
@@ -368,13 +355,14 @@ fun List<BridgeFee>.parseBridgeFees(): List<RpcFee>? {
     return if (isEmpty()) {
         null
     } else {
+        val tokenForMetadata = firstOrNull { it.symbol.isNotEmpty() }
         val feeInTokens = sumOf { it.amountInToken }
         val feeInFiat = sumOf { it.amountInUsd.toBigDecimalOrZero() }
         val finalFee = RpcFee(
             totalInTokens = feeInTokens,
             totalInUsd = feeInFiat,
-            tokensDecimals = firstOrNull()?.decimals,
-            tokenSymbol = firstOrNull()?.symbol
+            tokensDecimals = tokenForMetadata?.decimals,
+            tokenSymbol = tokenForMetadata?.symbol
         )
         listOf(finalFee)
     }

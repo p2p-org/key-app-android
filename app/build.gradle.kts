@@ -3,25 +3,44 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("org.p2p.wallet.android.application")
-    id("org.p2p.wallet.android.coverage")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("io.sentry.android.gradle") version "3.2.0"
+    id("org.jetbrains.kotlinx.kover") version "0.7.0"
 }
 
-keyappCoverage {
-    enableForConfiguration += "debug"
-    reportXml = true
-    excludes += listOf(
-        "org/p2p/wallet/databinding/*",
-        "com/bumptech/glide/*"
-    )
-    configureJacoco {
-        reportsDirectory.set(file("${buildDir}/reports/jacoco"))
+koverReport {
+    androidReports("debug") {
+        filters {
+            excludes {
+                packages(
+                    "com.bumptech.glide*",
+                )
+                classes(
+                    "*Module",
+                    "*Module\$*",
+                    "*Fragment",
+                    "*Fragment\$*",
+                    "*Activity",
+                    "*Activity\$*",
+                    "*Service",
+                    "*Service\$*",
+                    "*BottomSheet",
+                    "*BottomSheet\$*",
+                    "*View",
+                    "*View\$*",
+                    "*Interceptor",
+                    "*Interceptor\$*",
+                    "*.databinding.*",
+                    "*.BuildConfig",
+
+                    // excludes debug classes
+                    "*.DebugUtil"
+                )
+            }
+        }
     }
 }
-
-
 
 android {
     applicationVariants.all {
@@ -197,4 +216,9 @@ dependencies {
 
     // timezone for unit testing
     testImplementation("org.threeten:threetenbp:1.6.8")
+
+    // XmlPullParser goes with android.jar and doesn't work in unit tests
+    testImplementation("xmlpull:xmlpull:1.1.3.4a@jar")
+    // KXmlParser needs for XmlPullParserFactory
+    testImplementation("net.sf.kxml:kxml2:2.3.0")
 }

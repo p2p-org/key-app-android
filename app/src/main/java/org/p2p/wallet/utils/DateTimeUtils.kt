@@ -8,6 +8,8 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import org.p2p.wallet.R
 
 object DateTimeUtils {
@@ -24,6 +26,8 @@ object DateTimeUtils {
     private const val PATTERN_DAY_OF_WEEK_FULL = "EEEE"
     private const val PATTERN_DATE_AND_TIME = "dd.MM HH:mm"
     private const val PATTERN_DATEPICKER_DATE = "EE, dd MMM"
+
+    const val PATTERN_DD_MM_YYYY = "dd.MM.yyyy"
     const val PATTERN_HH_MM_SS_SS = "HH:mm:ss:SSSS"
 
     private const val SECOND = 1000
@@ -88,6 +92,10 @@ object DateTimeUtils {
 
     fun getFormattedDateAndTime(timestamp: Long): String = getFormatter(PATTERN_DATE_AND_TIME)
         .format(timestamp)
+
+    fun getCurrentTimestampInSeconds(): Long {
+        return System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS).inWholeSeconds
+    }
 
     private fun getCalendar(timeInMillis: Long): Calendar {
         val cal = Calendar.getInstance(Locale.getDefault())
