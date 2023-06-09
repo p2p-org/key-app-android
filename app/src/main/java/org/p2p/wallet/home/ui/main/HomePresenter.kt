@@ -12,7 +12,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
@@ -116,6 +118,9 @@ class HomePresenter(
     private var state = HomeScreenViewState(areZerosHidden = settingsInteractor.areZerosHidden())
     private val buttonsStateFlow = MutableStateFlow<List<ActionButton>>(emptyList())
 
+    // use flow since it's the only way we can show progress before view is attached
+    private val refreshingFlow = MutableStateFlow(true)
+
     private val userPublicKey: String by unsafeLazy { tokenKeyProvider.publicKey }
     private var homeStateSubscribed = false
     private var loadSolTokensJob: Job? = null
@@ -165,6 +170,7 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
+        observeRefreshingStatus()
         observeInternetConnection()
         observeActionButtonState()
         handleDeeplinks()
@@ -178,7 +184,7 @@ class HomePresenter(
     override fun refreshTokens() {
         launchInternetAware(connectionManager) {
             try {
-                view?.showRefreshing(isRefreshing = true)
+                showRefreshing(isRefreshing = true)
                 tokensPolling.refreshTokens()
                 initializeActionButtons(isRefreshing = true)
             } catch (cancelled: CancellationException) {
@@ -187,7 +193,7 @@ class HomePresenter(
                 Timber.e(error, "Error refreshing user tokens")
                 view?.showErrorMessage(error)
             } finally {
-                view?.showRefreshing(isRefreshing = false)
+                showRefreshing(isRefreshing = false)
             }
         }
     }
@@ -208,7 +214,7 @@ class HomePresenter(
                 state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
                 initializeActionButtons()
                 handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
-                view?.showRefreshing(homeState.isRefreshing)
+                showRefreshing(homeState.isRefreshing)
             }
     }
 
@@ -218,6 +224,13 @@ class HomePresenter(
                 view?.showActionButtons(buttons)
             }
         }
+    }
+
+    private fun observeRefreshingStatus() {
+        refreshingFlow.onEach {
+            view?.showRefreshing(it)
+        }
+            .launchIn(this)
     }
 
     private fun observeInternetConnection() {
@@ -295,6 +308,7 @@ class HomePresenter(
      * Don't split this method, as it could lead to one more data race since rates are loading asynchronously
      */
     private fun loadSolTokensAndRates(): Job = launch {
+        showRefreshing(true)
         try {
             // this job also depends on the internet
             userInteractor.loadAllTokensDataIfEmpty()
@@ -313,6 +327,8 @@ class HomePresenter(
             Timber.d("Cannot load sol tokens: no internet")
         } catch (t: Throwable) {
             Timber.e(t, "Error on loading sol tokens")
+        } finally {
+            showRefreshing(false)
         }
     }
 
@@ -600,4 +616,6 @@ class HomePresenter(
         environmentManager.removeEnvironmentListener(this::class)
         super.detach()
     }
+
+    private fun showRefreshing(isRefreshing: Boolean) = refreshingFlow.tryEmit(isRefreshing)
 }

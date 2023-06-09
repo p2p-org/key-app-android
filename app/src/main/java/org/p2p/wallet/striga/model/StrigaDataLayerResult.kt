@@ -27,3 +27,10 @@ fun <T, E : StrigaDataLayerError> E.toFailureResult(): StrigaDataLayerResult.Fai
 
 fun <T> T.toSuccessResult(): StrigaDataLayerResult.Success<T> =
     StrigaDataLayerResult.Success(this)
+
+inline fun <T, R> StrigaDataLayerResult<T>.map(transform: (T) -> R): StrigaDataLayerResult<R> {
+    return when (this) {
+        is StrigaDataLayerResult.Success -> StrigaDataLayerResult.Success(transform(value))
+        is StrigaDataLayerResult.Failure -> StrigaDataLayerResult.Failure(error)
+    }
+}

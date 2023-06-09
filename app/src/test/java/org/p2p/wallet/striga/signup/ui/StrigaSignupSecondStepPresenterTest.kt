@@ -2,18 +2,26 @@ package org.p2p.wallet.striga.signup.ui
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.MetadataInteractor
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
@@ -22,13 +30,16 @@ import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.model.StrigaOccupation
+import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
+import org.p2p.wallet.utils.back
 import org.p2p.wallet.utils.mutableListQueueOf
 import org.p2p.wallet.utils.plantTimberToStdout
 
@@ -44,13 +55,22 @@ private val SupportedCountry = CountryCode(
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrigaSignupSecondStepPresenterTest {
     @MockK(relaxed = true)
-    lateinit var countryRepository: CountryCodeRepository
+    lateinit var countryCodeRepository: CountryCodeRepository
 
     @MockK(relaxed = true)
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
 
     @MockK
     lateinit var onboardingInteractor: StrigaOnboardingInteractor
+
+    @MockK(relaxed = true)
+    lateinit var userInteractor: StrigaUserInteractor
+
+    @MockK(relaxed = true)
+    lateinit var metadataInteractor: MetadataInteractor
+
+    @MockK(relaxed = true)
+    lateinit var inAppFeatureFlags: InAppFeatureFlags
 
     lateinit var interactor: StrigaSignupInteractor
 
@@ -76,11 +96,26 @@ class StrigaSignupSecondStepPresenterTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        interactor = StrigaSignupInteractor(
-            appScope = appScope,
-            validator = signupDataValidator,
-            countryRepository = countryRepository,
-            signupDataRepository = signupDataRepository,
+
+        val simulateWeb3Flag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        val simulateUserCreateFlag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
+            every { featureValue } returns false
+        }
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateWeb3Flag
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateUserCreateFlag
+
+        interactor = spyk(
+            StrigaSignupInteractor(
+                appScope = appScope,
+                inAppFeatureFlags = inAppFeatureFlags,
+                validator = signupDataValidator,
+                countryCodeRepository = countryCodeRepository,
+                signupDataRepository = signupDataRepository,
+                userInteractor = userInteractor,
+                metadataInteractor = metadataInteractor,
+            )
         )
     }
 
@@ -90,7 +125,7 @@ class StrigaSignupSecondStepPresenterTest {
             StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, SupportedCountry.nameCodeAlpha2)
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
+        coEvery { countryCodeRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -148,7 +183,7 @@ class StrigaSignupSecondStepPresenterTest {
         val presenter = createPresenter()
         presenter.attach(view)
 
-        presenter.onFieldChanged("123", StrigaSignupDataType.PHONE_NUMBER)
+        presenter.onFieldChanged(StrigaSignupDataType.PHONE_NUMBER, "123")
         advanceUntilIdle()
 
         verify(exactly = 0) { view.setErrors(any()) }
@@ -169,7 +204,7 @@ class StrigaSignupSecondStepPresenterTest {
         val presenter = createPresenter()
         presenter.attach(view)
 
-        presenter.onFieldChanged("123", StrigaSignupDataType.PHONE_NUMBER)
+        presenter.onFieldChanged(StrigaSignupDataType.PHONE_NUMBER, "123")
         presenter.onSubmit()
         advanceUntilIdle()
 
@@ -192,17 +227,50 @@ class StrigaSignupSecondStepPresenterTest {
         val presenter = createPresenter()
         presenter.attach(view)
 
-        presenter.onFieldChanged("any city", StrigaSignupDataType.CITY)
-        presenter.onFieldChanged("any address", StrigaSignupDataType.CITY_ADDRESS_LINE)
-        presenter.onFieldChanged("any zip-code", StrigaSignupDataType.CITY_POSTAL_CODE)
-        presenter.onFieldChanged("any state", StrigaSignupDataType.CITY_STATE)
+        presenter.onFieldChanged(StrigaSignupDataType.CITY, "any city")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_ADDRESS_LINE, "any address")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_POSTAL_CODE, "any zip-code")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_STATE, "any state")
         presenter.onPresetDataChanged(StrigaPresetDataItem.Occupation(StrigaOccupation("leafer", "some_emoji")))
         presenter.onPresetDataChanged(StrigaPresetDataItem.SourceOfFunds(StrigaSourceOfFunds("leafer")))
         presenter.onPresetDataChanged(StrigaPresetDataItem.Country(CountryCode("leafer", "emoji", "fr", "fra", "", "")))
         presenter.onSubmit()
         advanceUntilIdle()
 
+        verify(exactly = 1) { view.setProgressIsVisible(true) }
         verify(exactly = 1) { view.navigateNext() }
+
+        presenter.saveChanges()
+        presenter.detach()
+    }
+
+    @Test
+    fun `GIVEN error while creating user WHEN user clicks next THEN check snackback error`() = runTest {
+        val initialSignupData = listOf(
+            StrigaSignupData(StrigaSignupDataType.EMAIL, "email@email.email")
+        )
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+
+        val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
+        val presenter = createPresenter()
+        presenter.attach(view)
+
+        coEvery { interactor.createUser() } throws Exception("error")
+
+        presenter.onPresetDataChanged(StrigaPresetDataItem.Occupation(StrigaOccupation("loafer", "some_emoji")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.SourceOfFunds(StrigaSourceOfFunds("unemployed")))
+        presenter.onPresetDataChanged(StrigaPresetDataItem.Country(SupportedCountry))
+        presenter.onFieldChanged(StrigaSignupDataType.CITY, "any city")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_ADDRESS_LINE, "any address")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_POSTAL_CODE, "any zip-code")
+        presenter.onFieldChanged(StrigaSignupDataType.CITY_STATE, "any state")
+        presenter.onSubmit()
+        advanceUntilIdle()
+
+        verify(exactly = 1) { view.setProgressIsVisible(true) }
+        verify(exactly = 1) { view.showUiKitSnackBar("error", R.string.error_general_message) }
+        verify(exactly = 1) { view.setProgressIsVisible(false) }
+        verify(exactly = 0) { view.navigateNext() }
 
         presenter.saveChanges()
         presenter.detach()
@@ -216,7 +284,7 @@ class StrigaSignupSecondStepPresenterTest {
         )
         coEvery { onboardingInteractor.getSourcesOfFundsByName(sourceOfFunds.sourceName) } returns sourceOfFunds
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
+        coEvery { countryCodeRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -238,7 +306,7 @@ class StrigaSignupSecondStepPresenterTest {
         )
         coEvery { onboardingInteractor.getOccupationByName(occupation.occupationName) } returns occupation
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
+        coEvery { countryCodeRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenter()
@@ -258,18 +326,46 @@ class StrigaSignupSecondStepPresenterTest {
             StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, SupportedCountry.nameCodeAlpha3)
         )
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
-        coEvery { countryRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
-        coEvery { countryRepository.findCountryCodeByIsoAlpha3(SupportedCountry.nameCodeAlpha3) } returns SupportedCountry
+        coEvery { countryCodeRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
+        coEvery { countryCodeRepository.findCountryCodeByIsoAlpha3(SupportedCountry.nameCodeAlpha3) } returns SupportedCountry
 
         val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
         val presenter = createPresenter()
         presenter.attach(view)
         presenter.onSubmit()
-        presenter.onFieldChanged("123", StrigaSignupDataType.CITY)
+        presenter.onFieldChanged(StrigaSignupDataType.CITY, "123")
         advanceUntilIdle()
 
         verify { view.setErrors(any()) }
         verify { view.setButtonIsEnabled(any()) }
         verify { view.clearError(StrigaSignupDataType.CITY) }
+    }
+
+    @Test
+    fun `GIVEN user input WHEN user types invalid data THEN check dynamic validation works after submit clicked`() = runTest {
+        val initialSignupData = listOf(
+            StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, SupportedCountry.nameCodeAlpha3)
+        )
+        coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
+        coEvery { countryCodeRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
+        coEvery { countryCodeRepository.findCountryCodeByIsoAlpha3(SupportedCountry.nameCodeAlpha3) } returns SupportedCountry
+
+        val view = mockk<StrigaSignUpSecondStepContract.View>(relaxed = true)
+        val presenter = createPresenter()
+        presenter.attach(view)
+        presenter.onSubmit()
+        presenter.onFieldChanged(StrigaSignupDataType.CITY, "")
+        advanceUntilIdle()
+
+        val errorsStates = mutableListQueueOf<List<StrigaSignupFieldState>>()
+
+        verify { view.setErrors(capture(errorsStates)) }
+
+        assertEquals(2, errorsStates.size)
+        assertEquals(1, errorsStates[1].size)
+        val firstNameErrorState = errorsStates.back()?.first()
+        assertNotNull(firstNameErrorState)
+        assertEquals(StrigaSignupDataType.CITY, firstNameErrorState.type)
+        Assert.assertFalse(firstNameErrorState.isValid)
     }
 }

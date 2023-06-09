@@ -1,15 +1,15 @@
 package org.p2p.wallet.utils
 
+import androidx.core.content.ContextCompat
 import android.content.Context
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.view.View
-import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
 
-object SpanUtils {
+object OnboardingSpanUtils {
 
     fun buildTermsAndPolicyText(
         context: Context,

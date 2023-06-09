@@ -30,6 +30,7 @@
             android:layout_height="32dp"
             android:autoSizeTextType="uniform"
             android:layout_gravity="center"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
             tools:text="🇪🇪" />
     </FrameLayout>
 </merge>

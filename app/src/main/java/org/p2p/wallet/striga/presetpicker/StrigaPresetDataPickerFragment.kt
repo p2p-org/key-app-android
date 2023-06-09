@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
+import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.wallet.R
@@ -54,7 +54,9 @@ class StrigaPresetDataPickerFragment :
 
     private val adapter = CommonAnyCellAdapter(
         sectionHeaderCellDelegate(),
-        financeBlockCellDelegate(onItemClicked = { presenter.onPresetDataSelected(it.typedPayload()) }),
+        baseCellDelegate(inflateListener = { financeBlock ->
+            financeBlock.setOnClickAction { _, item -> presenter.onPresetDataSelected(item.typedPayload()) }
+        }),
     )
 
     private val requestKey: String by args(EXTRA_REQUEST_KEY)

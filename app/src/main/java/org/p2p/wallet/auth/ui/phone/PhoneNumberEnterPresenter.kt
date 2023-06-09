@@ -48,11 +48,7 @@ class PhoneNumberEnterPresenter(
 
     private suspend fun loadDefaultCountryCode() {
         try {
-            val countryCode: CountryCode? =
-                countryCodeRepository.detectCountryCodeBySimCard()
-                    ?: countryCodeRepository.detectCountryCodeByNetwork()
-                    ?: countryCodeRepository.detectCountryCodeByLocale()
-
+            val countryCode: CountryCode = countryCodeRepository.detectCountryOrDefault()
             selectedCountryCode = countryCode
 
             view?.showDefaultCountryCode(countryCode)
@@ -71,7 +67,10 @@ class PhoneNumberEnterPresenter(
 
     override fun onPhoneChanged(phoneNumber: String) {
         selectedCountryCode?.let {
-            val isValidNumber = countryCodeRepository.isValidNumberForRegion(it.phoneCode, phoneNumber)
+            val isValidNumber = countryCodeRepository.isValidNumberForRegion(
+                regionCode = it.phoneCode,
+                phoneNumber = phoneNumber
+            )
             val newButtonState = if (isValidNumber) {
                 PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE
             } else {
@@ -90,10 +89,10 @@ class PhoneNumberEnterPresenter(
         view?.showCountryCodePicker(selectedCountryCode)
     }
 
-    override fun submitUserPhoneNumber(phoneNumberString: String) {
+    override fun submitUserPhoneNumber(phoneNumber: String) {
         launch {
             view?.setLoadingState(isLoading = true)
-            val userPhoneNumber = PhoneNumber(selectedCountryCode?.phoneCode + phoneNumberString)
+            val userPhoneNumber = PhoneNumber(selectedCountryCode?.phoneCode + phoneNumber)
             onboardingInteractor.temporaryPhoneNumber = userPhoneNumber
             when (onboardingInteractor.currentFlow) {
                 is OnboardingFlow.CreateWallet -> {

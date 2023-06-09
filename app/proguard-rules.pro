@@ -85,6 +85,7 @@
 -keep public class * implements org.p2p.wallet.newsend.model.FeeRelayerStateError
 -keep public class * implements org.p2p.wallet.feerelayer.model.FeeCalculationState
 -keep public class * implements org.p2p.wallet.bridge.model.BridgeResult
+-keep public class * extends org.p2p.wallet.striga.model.StrigaDataLayerError
 
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }

@@ -14,11 +14,12 @@ interface StrigaSignUpSecondStepContract {
         fun clearErrors()
         fun clearError(type: StrigaSignupDataType)
         fun setButtonIsEnabled(isEnabled: Boolean)
+        fun setProgressIsVisible(visible: Boolean)
         fun scrollToFirstError(type: StrigaSignupDataType)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onFieldChanged(newValue: String, type: StrigaSignupDataType)
+        fun onFieldChanged(type: StrigaSignupDataType, newValue: String)
         fun onSubmit()
         fun saveChanges()
         fun onPresetDataChanged(selectedItem: StrigaPresetDataItem)

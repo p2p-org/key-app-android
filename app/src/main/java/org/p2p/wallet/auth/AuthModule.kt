@@ -6,6 +6,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.named
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -64,9 +65,6 @@ import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundPresenter
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenContract
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
-import org.p2p.wallet.smsinput.SmsInputContract
-import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputPresenter
-import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule
@@ -78,6 +76,10 @@ import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.settings.ui.recovery.userseedphrase.UserSeedPhraseContract
 import org.p2p.wallet.settings.ui.recovery.userseedphrase.UserSeedPhrasePresenter
+import org.p2p.wallet.smsinput.SmsInputContract
+import org.p2p.wallet.smsinput.SmsInputFactory
+import org.p2p.wallet.smsinput.SmsInputTimer
+import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputPresenter
 import org.p2p.wallet.splash.SplashContract
 import org.p2p.wallet.splash.SplashPresenter
 
@@ -168,8 +170,10 @@ object AuthModule {
         factoryOf(::RestoreErrorScreenPresenter) bind RestoreErrorScreenContract.Presenter::class
 
         singleOf(::SmsInputTimer)
-        factoryOf(::OnboardingSmsInputPresenter) bind SmsInputContract.Presenter::class
-
+        factoryOf(::OnboardingSmsInputPresenter) {
+            bind<SmsInputContract.Presenter>()
+            named(SmsInputFactory.Type.Onboarding.name)
+        }
         factoryOf(::RestoreUserResultHandler)
 
         factory { (error: GeneralErrorTimerScreenError, timerLeftTime: Long) ->
