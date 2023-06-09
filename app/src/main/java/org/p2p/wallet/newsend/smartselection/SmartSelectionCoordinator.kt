@@ -65,8 +65,17 @@ class SmartSelectionCoordinator(
         }
     }
 
-    fun setInitialFeePayer(initialFeePayerToken: Token.Active) {
-        this.feePayerToken = initialFeePayerToken
+    fun updateFeePayer(newFeePayerToken: Token.Active) {
+        this.feePayerToken = newFeePayerToken
+    }
+
+    @Throws(IllegalStateException::class)
+    fun requireFeePayer(): Token.Active {
+        if (!::feePayerToken.isInitialized) {
+            throw IllegalStateException("Fee Payer is not initialized!")
+        }
+
+        return feePayerToken
     }
 
     fun onNewTrigger(newTrigger: SmartSelectionTrigger) {

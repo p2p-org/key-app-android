@@ -150,6 +150,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     }
 
     fun showFeeLoading(isLoading: Boolean) {
+
         progressBarFees.isVisible = isLoading
         imageViewFeesInfo.isVisible = !isLoading
     }

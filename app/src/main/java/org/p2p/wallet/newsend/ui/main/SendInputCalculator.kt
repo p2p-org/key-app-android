@@ -28,7 +28,7 @@ class SendInputCalculator(
 ) {
     private val calculationState = MutableStateFlow<CalculationState>(CalculationState.Idle)
 
-    private var currencyMode: CurrencyMode = sendModeProvider.sendMode
+    var currencyMode: CurrencyMode = sendModeProvider.sendMode
         set(value) {
             sendModeProvider.sendMode = value
             field = value
@@ -44,7 +44,7 @@ class SendInputCalculator(
 
     private var minRentExemption: BigInteger = BigInteger.ZERO
 
-    fun getStateFlow(): StateFlow<CalculationState> = calculationState.asStateFlow()
+    fun getCalculationStateFlow(): StateFlow<CalculationState> = calculationState.asStateFlow()
 
     fun updateToken(newToken: Token.Active) {
         if (::currentToken.isInitialized && newToken.mintAddress == currentToken.mintAddress) {
@@ -109,6 +109,8 @@ class SendInputCalculator(
 
     fun getCurrentAmount(): BigDecimal = tokenAmount
 
+    fun getCurrentAmountLamports(): BigInteger = tokenAmount.toLamports(currentToken.decimals)
+
     fun getCurrentAmountUsd(): BigDecimal? = usdAmount.takeIf { currentToken.rate != null }
 
     fun onMaxClicked() {
@@ -144,16 +146,20 @@ class SendInputCalculator(
 
         when (newMode) {
             is CurrencyMode.Token -> {
+                val fiat = oldMode as CurrencyMode.Fiat
+
+                approximateAmount = "$usdAmount ${fiat.fiatAbbreviation}"
                 inputAmount = tokenAmount.toPlainString()
-                newMode.symbol to (oldMode as CurrencyMode.Fiat).fiatAbbreviation
+                newMode.symbol to fiat.fiatAbbreviation
             }
             is CurrencyMode.Fiat -> {
+                val token = oldMode as CurrencyMode.Token
+
+                approximateAmount = "${tokenAmount.toPlainString()} ${token.symbol}"
                 inputAmount = usdAmount.toPlainString()
-                newMode.fiatAbbreviation to (oldMode as CurrencyMode.Token).symbol
+                newMode.fiatAbbreviation to token.symbol
             }
         }
-
-        calculateApproximateAmount(inputAmount)
 
         val (currentInput, switchInput) = newMode.getInputSymbols(currentToken)
 

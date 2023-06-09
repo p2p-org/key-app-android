@@ -14,7 +14,6 @@ import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.smartselection.SmartSelectionState
 import org.p2p.wallet.newsend.smartselection.FeeCalculator
 import org.p2p.wallet.newsend.smartselection.SmartSelectionTrigger
-import org.p2p.wallet.newsend.smartselection.strategy.FeePayerSelectionStrategy
 import org.p2p.wallet.newsend.smartselection.strategy.SolanaTokenStrategy
 import org.p2p.wallet.newsend.smartselection.strategy.SourceSolanaTokenStrategy
 import org.p2p.wallet.newsend.smartselection.strategy.SourceSplTokenStrategy
@@ -36,18 +35,16 @@ class AmountChangedHandler(
 
         val minRentExemption = feeCalculator.getMinRentExemption()
 
-        val sourceToken = trigger.sourceToken
-
         val feeState = feeCalculator.calculateFee(
             sourceToken = trigger.sourceToken,
-            feePayerToken = sourceToken,
+            feePayerToken = trigger.sourceToken,
             recipient = recipient.addressState.address
         )
 
         val newState = when (feeState) {
-            is Success -> prepareForSmartSelection(trigger, sourceToken, feeState, minRentExemption)
+            is Success -> generateFeeStrategies(trigger, feeState, minRentExemption)
             is PoolsNotFound -> SmartSelectionState.SolanaFeeOnly(feeState.feeInSol)
-            is NoFees -> validateSolOrNoFees(trigger, sourceToken, minRentExemption)
+            is NoFees -> generateNoFeesStrategies(trigger, minRentExemption)
             is Cancelled -> SmartSelectionState.Cancelled
             is Failed -> SmartSelectionState.Failed(feeState.e)
         }
@@ -55,20 +52,8 @@ class AmountChangedHandler(
         currentState.value = newState
     }
 
-    private fun validateSolOrNoFees(
+    private fun generateFeeStrategies(
         trigger: SmartSelectionTrigger.AmountChanged,
-        sourceToken: Token.Active,
-        minRentExemption: BigInteger
-    ) = if (trigger.sourceToken.isSOL) {
-        val strategies = generateNoFeesStrategies(trigger, sourceToken, minRentExemption)
-        SmartSelectionState.ReadyForSmartSelection(strategies)
-    } else {
-        SmartSelectionState.NoFees(trigger.sourceToken, trigger.inputAmount)
-    }
-
-    private fun prepareForSmartSelection(
-        trigger: SmartSelectionTrigger.AmountChanged,
-        feePayerToken: Token.Active,
         feeState: Success,
         minRentExemption: BigInteger
     ): SmartSelectionState.ReadyForSmartSelection {
@@ -81,18 +66,17 @@ class AmountChangedHandler(
             SourceSplTokenStrategy(sourceToken, inputAmount, fee),
             SourceSolanaTokenStrategy(recipient, sourceToken, inputAmount, fee, minRentExemption),
             SolanaTokenStrategy(recipient, solToken, sourceToken, inputAmount, fee, minRentExemption),
-            SplTokenStrategy(sourceToken, feePayerToken, inputAmount, fee, emptyList()),
-            ValidationStrategy(sourceToken, feePayerToken, minRentExemption, inputAmount.orZero(), fee)
+            SplTokenStrategy(sourceToken, sourceToken, inputAmount, fee, emptyList()),
+            ValidationStrategy(sourceToken, sourceToken, minRentExemption, inputAmount.orZero(), fee)
         )
         return SmartSelectionState.ReadyForSmartSelection(strategies)
     }
 
     private fun generateNoFeesStrategies(
         trigger: SmartSelectionTrigger.AmountChanged,
-        sourceToken: Token.Active,
         minRentExemption: BigInteger
-    ): LinkedHashSet<FeePayerSelectionStrategy> {
-        return linkedSetOf(
+    ): SmartSelectionState {
+        val strategies = linkedSetOf(
             SourceSolanaTokenStrategy(
                 recipient = recipient,
                 sourceToken = trigger.sourceToken,
@@ -100,13 +84,20 @@ class AmountChangedHandler(
                 fee = FeeRelayerFee.EMPTY,
                 minRentExemption = minRentExemption
             ),
+            SourceSplTokenStrategy(
+                sourceToken = trigger.sourceToken,
+                inputAmount = trigger.inputAmount,
+                fee = FeeRelayerFee.EMPTY
+            ),
             ValidationStrategy(
                 sourceToken = trigger.sourceToken,
-                feePayerToken = sourceToken,
+                feePayerToken = trigger.sourceToken,
                 minRentExemption = minRentExemption,
                 inputAmount = trigger.inputAmount.orZero(),
                 fee = FeeRelayerFee.EMPTY
             )
         )
+
+        return SmartSelectionState.ReadyForSmartSelection(strategies)
     }
 }

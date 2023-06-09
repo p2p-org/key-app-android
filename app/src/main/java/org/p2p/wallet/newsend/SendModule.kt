@@ -101,22 +101,20 @@ object SendModule : InjectionModule {
                 smartSelectionCoordinator = getSmartSelectionCoordinator(initialData.recipient),
                 inputCalculator = get(),
                 userInteractor = get(),
+                tokenKeyProvider = get(),
+                transactionManager = get(),
+                historyInteractor = get(),
+                newSendAnalytics = get(),
+                alertErrorsLogger = get(),
+                appScope = get(),
                 dispatchers = get()
             )
 
             SendPresenter(
-                initialData = initialData,
-                userInteractor = get(),
                 resources = get(),
-                tokenKeyProvider = get(),
-                transactionManager = get(),
                 connectionStateProvider = get(),
                 newSendAnalytics = get(),
-                appScope = get(),
-                sendModeProvider = get(),
-                historyInteractor = get(),
                 sendStateManager = sendStateManager,
-                alertErrorsLogger = get(),
                 sendButtonStateManager = get(),
                 feeDebugInfoBuilder = get()
             )

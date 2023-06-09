@@ -3,11 +3,13 @@ package org.p2p.wallet.newsend.smartselection.handler
 import java.math.BigInteger
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.feerelayer.model.FeeCalculationState.Cancelled
 import org.p2p.wallet.feerelayer.model.FeeCalculationState.Failed
 import org.p2p.wallet.feerelayer.model.FeeCalculationState.NoFees
 import org.p2p.wallet.feerelayer.model.FeeCalculationState.PoolsNotFound
 import org.p2p.wallet.feerelayer.model.FeeCalculationState.Success
+import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.smartselection.SmartSelectionState
 import org.p2p.wallet.newsend.smartselection.FeeCalculator
@@ -17,6 +19,7 @@ import org.p2p.wallet.newsend.smartselection.strategy.SolanaTokenStrategy
 import org.p2p.wallet.newsend.smartselection.strategy.SourceSolanaTokenStrategy
 import org.p2p.wallet.newsend.smartselection.strategy.SourceSplTokenStrategy
 import org.p2p.wallet.newsend.smartselection.strategy.SplTokenStrategy
+import org.p2p.wallet.newsend.smartselection.strategy.ValidationStrategy
 
 class SourceTokenChangedHandler(
     private val recipient: SearchResult,
@@ -45,7 +48,7 @@ class SourceTokenChangedHandler(
         val newState = when (feeState) {
             is Success -> prepareForSmartSelection(trigger, feePayerToken, feeState, minRentExemption)
             is PoolsNotFound -> SmartSelectionState.SolanaFeeOnly(feeState.feeInSol)
-            is NoFees -> SmartSelectionState.NoFees(trigger.newSourceToken, trigger.inputAmount)
+            is NoFees -> generateNoFeesStrategies(trigger, minRentExemption)
             is Cancelled -> SmartSelectionState.Cancelled
             is Failed -> SmartSelectionState.Failed(feeState.e)
         }
@@ -73,6 +76,35 @@ class SourceTokenChangedHandler(
             SplTokenStrategy(sourceToken, feePayerToken, inputAmount, fee, emptyList()),
             AmountReduceStrategy(sourceToken, inputAmount, fee, feePayerToken)
         )
+        return SmartSelectionState.ReadyForSmartSelection(strategies)
+    }
+
+    private fun generateNoFeesStrategies(
+        trigger: SmartSelectionTrigger.SourceTokenChanged,
+        minRentExemption: BigInteger
+    ): SmartSelectionState {
+        val strategies = linkedSetOf(
+            SourceSolanaTokenStrategy(
+                recipient = recipient,
+                sourceToken = trigger.newSourceToken,
+                inputAmount = trigger.inputAmount,
+                fee = FeeRelayerFee.EMPTY,
+                minRentExemption = minRentExemption
+            ),
+            SourceSplTokenStrategy(
+                sourceToken = trigger.newSourceToken,
+                inputAmount = trigger.inputAmount,
+                fee = FeeRelayerFee.EMPTY
+            ),
+            ValidationStrategy(
+                sourceToken = trigger.newSourceToken,
+                feePayerToken = trigger.newSourceToken,
+                minRentExemption = minRentExemption,
+                inputAmount = trigger.inputAmount.orZero(),
+                fee = FeeRelayerFee.EMPTY
+            )
+        )
+
         return SmartSelectionState.ReadyForSmartSelection(strategies)
     }
 }

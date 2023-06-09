@@ -38,7 +38,7 @@ class AlarmErrorsLogger(
 
     fun triggerSendAlarm(
         token: Token.Active,
-        currencyMode: CurrencyMode,
+        currency: String,
         amount: String,
         feePayerToken: Token.Active,
         accountCreationFee: String?,
@@ -53,7 +53,7 @@ class AlarmErrorsLogger(
             try {
                 val request = sendErrorConverter.toSendErrorRequest(
                     token = token,
-                    currencyMode = currencyMode,
+                    currency = currency,
                     amount = amount,
                     feePayerToken = feePayerToken,
                     accountCreationFee = accountCreationFee,

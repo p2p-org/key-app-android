@@ -19,6 +19,7 @@ import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -98,7 +99,8 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
                     is TransactionState.Progress -> handleProgress(state)
                     is TransactionState.SendSuccess -> handleSendSuccess(state)
                     is TransactionState.SwapSuccess -> handleSwapSuccess(state)
-                    is TransactionState.Error -> handleError(state)
+                    is TransactionState.
+                    Error -> handleError(state)
                 }
             }
         }
@@ -150,7 +152,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     private fun handleError(state: TransactionState.Error) {
         with(binding) {
-            titleTextView.text = state.message
+            titleTextView.text = state.e.getErrorMessage { resources.getString(it) }
             progressBar.isVisible = false
 
             transactionImageView.setImageResource(R.drawable.ic_error_transaction)

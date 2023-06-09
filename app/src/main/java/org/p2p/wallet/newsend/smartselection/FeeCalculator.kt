@@ -6,7 +6,6 @@ import java.util.concurrent.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerCalculationInteractor
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
-import org.p2p.wallet.feerelayer.model.FeeInSol
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 
 private const val TAG = "FeeCalculator"
@@ -23,7 +22,7 @@ class FeeCalculator(
         useCache: Boolean = true
     ): FeeCalculationState {
         try {
-            val feeInSol = calculateFeeInSol(
+            val feeInSol = feeRelayerCalculationInteractor.calculateFeesInSol(
                 feePayerToken = feePayerToken,
                 sourceToken = sourceToken,
                 recipient = recipient,
@@ -34,7 +33,7 @@ class FeeCalculator(
                 return FeeCalculationState.NoFees
             }
 
-            return calculateFeeInSpl(
+            return feeRelayerCalculationInteractor.calculateFeesInSpl(
                 feePayerToken = feePayerToken,
                 feeInSol = feeInSol
             )
@@ -48,28 +47,4 @@ class FeeCalculator(
     }
 
     suspend fun getMinRentExemption(): BigInteger = rpcAmountRepository.getMinBalanceForRentExemption(0)
-
-    private suspend fun calculateFeeInSpl(
-        feePayerToken: Token.Active,
-        feeInSol: FeeInSol
-    ): FeeCalculationState {
-        return feeRelayerCalculationInteractor.calculateFeesInSpl(
-            feePayerToken = feePayerToken,
-            feeInSol = feeInSol
-        )
-    }
-
-    private suspend fun calculateFeeInSol(
-        sourceToken: Token.Active,
-        feePayerToken: Token.Active,
-        recipient: String,
-        useCache: Boolean = true
-    ): FeeInSol {
-        return feeRelayerCalculationInteractor.calculateFeesInSol(
-            feePayerToken = feePayerToken,
-            sourceToken = sourceToken,
-            recipient = recipient,
-            useCache = useCache
-        )
-    }
 }

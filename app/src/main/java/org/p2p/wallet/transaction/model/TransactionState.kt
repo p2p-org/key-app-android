@@ -46,7 +46,7 @@ sealed class TransactionState {
     ) : TransactionState()
 
     data class Error(
-        val message: String,
+        val e: Throwable,
         val transaction: HistoryTransaction? = null,
     ) : TransactionState()
 }

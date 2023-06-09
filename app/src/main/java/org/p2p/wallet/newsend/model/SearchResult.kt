@@ -61,3 +61,8 @@ sealed class SearchResult(
 
 fun TemporaryAccount.toSearchResult(): SearchResult =
     SearchResult.AddressFound(AddressState(address))
+
+fun SearchResult.nicknameOrAddress(): String {
+    return if (this is SearchResult.UsernameFound) formattedUsername
+    else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
+}

@@ -16,6 +16,7 @@ import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
  * [SendSolanaFee] can be null only if total fees is Zero. (transaction fee and account creation fee)
  * */
 
+@Deprecated("refactor this class, don't use in UI widgets. Consider creating UI models")
 @Parcelize
 class SendFeeTotal constructor(
     val currentAmount: BigDecimal,

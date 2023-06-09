@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
@@ -21,6 +22,7 @@ import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.newsend.model.SendOpenedFrom
+import org.p2p.wallet.newsend.model.SendPromptData
 import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.newsend.smartselection.initial.SendInitialData
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsBottomSheet
@@ -281,10 +283,13 @@ class SendFragment :
         fee: SendSolanaFee,
         alternativeFeePayerTokens: List<Token.Active>
     ) {
-        val target = SendNoAccountFragment.create(
-            tokenSymbol = fee.feePayerSymbol,
+        val promptData = SendPromptData(
+            feePayerToken = fee.feePayerToken,
             approximateFeeUsd = fee.getApproxAccountCreationFeeUsd(withBraces = false).orEmpty(),
             alternativeFeePayerTokens = alternativeFeePayerTokens,
+        )
+        val target = SendNoAccountFragment.create(
+            promptData = promptData,
             requestKey = KEY_REQUEST_SEND,
             resultKey = KEY_RESULT_NEW_FEE_PAYER
         )

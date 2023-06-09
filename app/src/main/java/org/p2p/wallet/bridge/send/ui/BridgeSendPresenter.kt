@@ -451,8 +451,7 @@ class BridgeSendPresenter(
                 userInteractor.addRecipient(recipientAddress, transactionDate)
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending the token via bridge")
-                val message = e.getErrorMessage { res -> resources.getString(res) }
-                transactionManager.emitTransactionState(transactionId, TransactionState.Error(message))
+                transactionManager.emitTransactionState(transactionId, TransactionState.Error(e))
                 logSendErrorAlarm(e)
             }
         }

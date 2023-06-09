@@ -22,7 +22,6 @@ import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.newsend.model.SendFatalError
 import org.p2p.wallet.newsend.model.SendTransactionFailed
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
@@ -44,32 +43,11 @@ class SendInteractor(
 ) {
 
     /*
-    * If transaction will need to create a new account,
-    * then the fee for account creation will be paid via this token
-    * */
-    @Deprecated("fee payer token will be cached in presenter")
-    private lateinit var feePayerToken: Token.Active
-
-    /*
     * Initialize fee payer token
     * */
     suspend fun initialize() {
         feeRelayerInteractor.load()
         orcaInfoInteractor.load()
-    }
-
-    fun setFeePayerToken(newToken: Token.Active) {
-        if (!::feePayerToken.isInitialized) throw SendFatalError("FeePayerToken is not initialized")
-        if (newToken.publicKey == feePayerToken.publicKey) return
-
-        feePayerToken = newToken
-        Timber.tag(TAG).i("Fee payer token switched: ${newToken.mintAddress}")
-    }
-
-    fun getFeePayerToken(): Token.Active = feePayerToken
-
-    fun switchFeePayerToSol(solToken: Token.Active?) {
-        solToken?.let(::setFeePayerToken)
     }
 
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
@@ -81,12 +59,14 @@ class SendInteractor(
     suspend fun sendTransaction(
         destinationAddress: PublicKey,
         token: Token.Active,
+        feePayerToken: Token.Active,
         lamports: BigInteger
     ): String = withContext(dispatchers.io) {
         Timber.tag(TAG).i("Start sendTransaction")
 
         val preparedTransaction = prepareForSending(
             token = token,
+            feePayerToken = feePayerToken,
             receiver = destinationAddress.toBase58(),
             amount = lamports
         )
@@ -133,6 +113,7 @@ class SendInteractor(
 
     private suspend fun prepareForSending(
         token: Token.Active,
+        feePayerToken: Token.Active,
         receiver: String,
         amount: BigInteger,
         recentBlockhash: String? = null,
