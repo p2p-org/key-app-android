@@ -40,20 +40,16 @@
 
     </FrameLayout>
 
-    <FrameLayout
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPresetData"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_country_code" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewPresetData"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_country_code" />
-
-        <include
-            android:id="@+id/containerEmptyResult"
-            layout="@layout/layout_striga_preset_data_picker_empty" />
-    </FrameLayout>
+    <include
+        android:id="@+id/containerEmptyResult"
+        layout="@layout/layout_striga_preset_data_picker_empty" />
 </LinearLayout>
