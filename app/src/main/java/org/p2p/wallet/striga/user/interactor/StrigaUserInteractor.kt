@@ -71,5 +71,6 @@ class StrigaUserInteractor(
 
     private fun saveUserStatus(status: StrigaUserStatus?) {
         strigaStorage.userStatus = status
+        Timber.d("Save striga user status: $status")
     }
 }
