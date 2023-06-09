@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
@@ -197,8 +196,8 @@ class SendFragment :
         binding.widgetSendDetails.disableInputs()
     }
 
-    override fun showAroundValue(value: String) {
-        binding.widgetSendDetails.setAroundValue(value)
+    override fun showApproximateAmount(approximateAmount: String) {
+        binding.widgetSendDetails.setApproximateAmount(approximateAmount)
     }
 
     override fun setTokenContainerEnabled(isEnabled: Boolean) {

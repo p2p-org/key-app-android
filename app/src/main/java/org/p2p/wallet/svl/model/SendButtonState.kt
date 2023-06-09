@@ -26,11 +26,14 @@ class SendButtonState(
 
     sealed interface State {
         class Disabled(
-            val textContainer: TextContainer, @ColorRes val totalAmountTextColor: Int
+            val textContainer: TextContainer,
+            @ColorRes val totalAmountTextColor: Int
         ) : State
 
         class Enabled(
-            @StringRes val textResId: Int, val value: String, @ColorRes val totalAmountTextColor: Int
+            @StringRes val textResId: Int,
+            val value: String,
+            @ColorRes val totalAmountTextColor: Int
         ) : State
     }
 

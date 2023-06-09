@@ -51,7 +51,6 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.getErrorMessage
 
 private val MAX_FEE_AMOUNT = BigDecimal(30)
 
@@ -206,7 +205,7 @@ class BridgeSendPresenter(
     override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) = Unit
 
     private fun initialize(view: BridgeSendContract.View) {
-        calculationMode.onCalculationCompleted = { view.showAroundValue(it) }
+        calculationMode.onCalculationCompleted = { view.showApproximateAmount(it) }
         calculationMode.onInputFractionUpdated = { view.updateInputFraction(it) }
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
             view.setSwitchLabel(switchSymbol)

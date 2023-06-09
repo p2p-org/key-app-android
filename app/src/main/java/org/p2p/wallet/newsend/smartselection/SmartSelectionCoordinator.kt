@@ -55,7 +55,9 @@ class SmartSelectionCoordinator(
 
     fun getFeePayerStateFlow(): StateFlow<FeePayerState> = feePayerState.asStateFlow()
 
-    fun isTransactionFree(): Boolean = feePayerState.value.isTransactionFree()
+    fun isFreeAndInputEmpty(): Boolean {
+        return feePayerState.value.isTransactionFree() && feePayerState.value.isEmptyInput()
+    }
 
     fun getFeeData(): Pair<Token.Active, FeeRelayerFee>? {
         return when (val currentState = feePayerState.value) {

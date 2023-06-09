@@ -39,5 +39,27 @@ sealed interface FeePayerState {
 
     data class Failure(val reason: FeePayerFailureReason) : FeePayerState
 
-    fun isTransactionFree(): Boolean = this is FreeTransaction
+    fun isTransactionFree(): Boolean {
+        if (this is FreeTransaction) {
+            return true
+        }
+
+        if (this is CalculationSuccess) {
+            return this.fee.isFree()
+        }
+
+        return false
+    }
+
+    fun isEmptyInput(): Boolean {
+        if (this is FreeTransaction) {
+            return this.initialAmount == null
+        }
+
+        if (this is CalculationSuccess) {
+            return this.inputAmount == null
+        }
+
+        return false
+    }
 }

@@ -178,8 +178,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
     }
 
-    fun setAroundValue(aroundValue: String) {
-        binding.textViewSecondAmount.text = aroundValue
+    fun setApproximateAmount(approximateAmount: String) {
+        binding.textViewSecondAmount.text = approximateAmount
     }
 
     fun setInputEnabled(isEnabled: Boolean) {
@@ -259,7 +259,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
 interface UiKitSendDetailsWidgetContract {
     fun showToken(token: Token.Active)
-    fun showAroundValue(value: String)
+    fun showApproximateAmount(approximateAmount: String)
     fun showSliderCompleteAnimation()
     fun showFeeViewLoading(isLoading: Boolean)
     fun showDelayedFeeViewLoading(isLoading: Boolean)

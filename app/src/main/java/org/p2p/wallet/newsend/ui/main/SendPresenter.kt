@@ -15,7 +15,6 @@ import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.model.CalculationState
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeePayerState
-import org.p2p.wallet.newsend.model.FeesStringFormat
 import org.p2p.wallet.newsend.model.SendActionEvent
 import org.p2p.wallet.newsend.model.SendCommonState
 import org.p2p.wallet.newsend.model.SendSolanaFee
@@ -24,6 +23,8 @@ import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason
 import org.p2p.wallet.newsend.smartselection.FeeDebugInfoBuilder
 import org.p2p.wallet.newsend.smartselection.SendStateManager
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
+
+private const val TAG = "SendPresenter"
 
 class SendPresenter(
     private val resources: Resources,
@@ -65,6 +66,8 @@ class SendPresenter(
     }
 
     private fun handleCommonState(newState: SendCommonState) {
+        Timber.tag(TAG).i("Received SendCommonState: $newState")
+
         when (newState) {
             is SendCommonState.Idle -> Unit
             is SendCommonState.WidgetUpdate -> handleWidgetState(newState.widgetState)
@@ -78,6 +81,8 @@ class SendPresenter(
     }
 
     private fun handleCalculationState(newState: CalculationState) {
+        Timber.tag(TAG).i("Received CalculationState: $newState")
+
         when (newState) {
             is CalculationState.TokenUpdated -> handleTokenUpdated(newState)
             is CalculationState.AmountChanged -> handleAmountChanged(newState)
@@ -89,7 +94,8 @@ class SendPresenter(
     }
 
     private fun handleFeePayerState(newState: FeePayerState) {
-        Timber.d("### FeePayerState: $newState")
+        Timber.tag(TAG).i("Received FeePayerState: $newState")
+
         when (newState) {
             is FeePayerState.Idle -> Unit
             is FeePayerState.FreeTransaction -> handleFreeTransaction(newState)
@@ -106,7 +112,7 @@ class SendPresenter(
         view?.updateInputFraction(newState.fraction)
 
         view?.updateInputValue(newState.newInputAmount)
-        view?.showAroundValue(newState.approximateAmount)
+        view?.showApproximateAmount(newState.approximateAmount)
         view?.setSwitchLabel(newState.switchInputSymbol)
         view?.setMainAmountLabel(newState.currentInputSymbol)
 
@@ -114,13 +120,13 @@ class SendPresenter(
     }
 
     private fun handleAmountReduced(newState: CalculationState.AmountReduced) {
-        view?.showAroundValue(newState.approximateAmount)
+        view?.showApproximateAmount(newState.approximateAmount)
         view?.setMaxButtonVisible(isVisible = newState.isMaxButtonVisible)
         view?.updateInputValue(newState.newInputAmount)
     }
 
     private fun handleAmountChanged(newState: CalculationState.AmountChanged) {
-        view?.showAroundValue(newState.approximateAmount)
+        view?.showApproximateAmount(newState.approximateAmount)
         view?.setMaxButtonVisible(isVisible = newState.isMaxButtonVisible)
     }
 
@@ -128,7 +134,7 @@ class SendPresenter(
         view?.setSwitchLabel(newState.switchInputSymbol)
         view?.setMainAmountLabel(newState.currentInputSymbol)
         view?.updateInputFraction(newState.fraction)
-        view?.showAroundValue(newState.approximateAmount)
+        view?.showApproximateAmount(newState.approximateAmount)
     }
 
     private fun handleFailure(reason: FeePayerFailureReason) {
@@ -155,7 +161,6 @@ class SendPresenter(
     }
 
     private fun handleLoadingState(loadingState: FeeLoadingState) {
-        Timber.d("### handleLoadingState: $loadingState")
         if (loadingState.isFeeLoading()) {
             view?.showFeeVisible(isVisible = true)
             view?.setFeeLabel(resources.getString(R.string.send_fees))
@@ -173,8 +178,15 @@ class SendPresenter(
     }
 
     private fun handleFreeTransaction(newState: FeePayerState.FreeTransaction) {
-        val textRes = if (newState.initialAmount == null) R.string.send_fees_free else R.string.send_fees_zero
-        view?.setFeeLabel(FeesStringFormat(textRes).format(resources))
+        view?.showFeeViewLoading(isLoading = false)
+
+        if (newState.initialAmount == null) {
+            view?.setFeeLabel(resources.getString(R.string.send_fees_free))
+            return
+        }
+
+        val label = "${resources.getString(R.string.send_fees_zero)} ${newState.sourceToken.tokenSymbol}"
+        view?.setFeeLabel(label)
     }
 
     private fun handleCalculationSuccess(newState: FeePayerState.CalculationSuccess) {
@@ -184,8 +196,12 @@ class SendPresenter(
             sourceToken = newState.sourceToken
         )
 
-        val feesFormat = FeesStringFormat(R.string.send_fees_format, solanaFee.totalFee)
-        view?.setFeeLabel(feesFormat.format(resources))
+        if (newState.inputAmount == null) {
+            view?.setFeeLabel(resources.getString(R.string.send_fees_free))
+            return
+        }
+
+        view?.setFeeLabel(resources.getString(R.string.send_fees_format, solanaFee.totalFee))
 
         if (BuildConfig.DEBUG) showFeeDebugText(solanaFee)
     }
@@ -216,7 +232,7 @@ class SendPresenter(
     private fun handleMaxInputEntered(newState: CalculationState.MaxValueEntered) {
         view?.setMaxButtonVisible(isVisible = newState.isMaxButtonVisible)
         view?.updateInputValue(textValue = newState.newInputAmount)
-
+        view?.showApproximateAmount(approximateAmount = newState.approximateAmount)
         val message = resources.getString(R.string.send_using_max_amount, newState.sourceTokenSymbol)
         view?.showToast(TextContainer.Raw(message))
     }

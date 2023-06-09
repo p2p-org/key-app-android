@@ -14,7 +14,6 @@ class FeeRelayerStatistics(
     val build: String = BuildConfig.VERSION_NAME
 )
 
-
 enum class FeeRelayerEnvironment(val stringValue: String) {
     DEVELOP("dev"),
     RELEASE("release");

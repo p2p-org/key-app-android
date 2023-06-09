@@ -156,8 +156,8 @@ class SendViaLinkFragment :
         binding.widgetSendDetails.disableInputs()
     }
 
-    override fun showAroundValue(value: String) {
-        binding.widgetSendDetails.setAroundValue(value)
+    override fun showApproximateAmount(approximateAmount: String) {
+        binding.widgetSendDetails.setApproximateAmount(approximateAmount)
     }
 
     override fun setTokenContainerEnabled(isEnabled: Boolean) {

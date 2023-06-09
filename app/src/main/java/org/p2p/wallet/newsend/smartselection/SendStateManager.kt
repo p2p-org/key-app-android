@@ -212,7 +212,7 @@ class SendStateManager(
             sourceToken = sourceToken,
             inputAmount = inputCalculator.getCurrentAmount().takeIf { it.isNotZero() },
 
-            )
+        )
         smartSelectionCoordinator.onNewTrigger(trigger)
     }
 
@@ -259,7 +259,7 @@ class SendStateManager(
     }
 
     private fun handleFeeClicked() {
-        if (smartSelectionCoordinator.isTransactionFree()) {
+        if (smartSelectionCoordinator.isFreeAndInputEmpty()) {
             updateCommonState(SendCommonState.ShowFreeTransactionDetails())
         } else {
             updateCommonState(SendCommonState.ShowTransactionDetails(createFeeTotal()))

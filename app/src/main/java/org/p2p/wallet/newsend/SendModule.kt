@@ -120,7 +120,6 @@ object SendModule : InjectionModule {
             )
         } bind SendContract.Presenter::class
 
-
         factory { (recipient: SearchResult) ->
             val triggerHandlers: List<TriggerHandler> = get(parameters = { parametersOf(recipient) })
             SmartSelectionCoordinator(get(), triggerHandlers, get())

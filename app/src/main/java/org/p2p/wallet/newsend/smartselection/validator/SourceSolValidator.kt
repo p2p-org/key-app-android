@@ -3,7 +3,6 @@ package org.p2p.wallet.newsend.smartselection.validator
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
-import org.p2p.core.utils.isZero
 import org.p2p.wallet.newsend.model.SearchResult
 
 class SourceSolValidator(

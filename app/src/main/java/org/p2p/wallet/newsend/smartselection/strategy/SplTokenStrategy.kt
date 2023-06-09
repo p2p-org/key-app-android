@@ -2,7 +2,6 @@ package org.p2p.wallet.newsend.smartselection.strategy
 
 import java.math.BigDecimal
 import org.p2p.core.token.Token
-import org.p2p.core.utils.isZero
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.newsend.model.FeePayerState
 

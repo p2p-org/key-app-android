@@ -1,6 +1,5 @@
 package org.p2p.wallet.newsend.smartselection.strategy
 
-import timber.log.Timber
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.utils.orZero

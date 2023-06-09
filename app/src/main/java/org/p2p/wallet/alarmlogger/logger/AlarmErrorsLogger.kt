@@ -3,7 +3,6 @@ package org.p2p.wallet.alarmlogger.logger
 import timber.log.Timber
 import java.math.BigInteger
 import kotlinx.coroutines.launch
-import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi

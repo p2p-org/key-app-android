@@ -3,7 +3,6 @@ package org.p2p.wallet.alarmlogger.model
 import com.google.gson.Gson
 import java.math.BigInteger
 import java.net.UnknownHostException
-import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsBridgeClaimRequest

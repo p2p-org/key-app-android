@@ -179,14 +179,12 @@ class SendInputCalculator(
         }
     }
 
-    private fun isMaxButtonVisible(minRentExemption: BigInteger): Boolean {
-        return if (currentToken.isSOL) {
-            val maxAllowedAmount = currentToken.totalInLamports - minRentExemption
-            val amountInLamports = tokenAmount.toLamports(currentToken.decimals)
-            inputAmount.isEmpty() || amountInLamports >= maxAllowedAmount && amountInLamports < currentToken.totalInLamports
-        } else {
-            inputAmount.isEmpty()
-        }
+    private fun isMaxButtonVisible(minRentExemption: BigInteger): Boolean = if (currentToken.isSOL) {
+        val maxAllowedAmount = currentToken.totalInLamports - minRentExemption
+        val amountInLamports = tokenAmount.toLamports(currentToken.decimals)
+        inputAmount.isEmpty() || amountInLamports >= maxAllowedAmount && amountInLamports < currentToken.totalInLamports
+    } else {
+        inputAmount.isEmpty()
     }
 
     private fun calculateApproximateAmount(inputAmount: String) {
