@@ -70,7 +70,7 @@ class SourceTokenChangedHandler(
         val strategies = linkedSetOf(
             SourceSplTokenStrategy(sourceToken, inputAmount, fee),
             SourceSolanaTokenStrategy(recipient, sourceToken, inputAmount, fee, minRentExemption),
-            SolanaTokenStrategy(recipient, solToken, sourceToken, inputAmount, fee, minRentExemption),
+            SolanaTokenStrategy(solToken, sourceToken, inputAmount, fee),
 
             // todo: alternative fee payers
             SplTokenStrategy(sourceToken, feePayerToken, inputAmount, fee, emptyList()),

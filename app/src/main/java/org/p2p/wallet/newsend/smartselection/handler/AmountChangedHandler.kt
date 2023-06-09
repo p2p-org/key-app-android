@@ -65,7 +65,7 @@ class AmountChangedHandler(
         val strategies = linkedSetOf(
             SourceSplTokenStrategy(sourceToken, inputAmount, fee),
             SourceSolanaTokenStrategy(recipient, sourceToken, inputAmount, fee, minRentExemption),
-            SolanaTokenStrategy(recipient, solToken, sourceToken, inputAmount, fee, minRentExemption),
+            SolanaTokenStrategy(solToken, sourceToken, inputAmount, fee),
             SplTokenStrategy(sourceToken, sourceToken, inputAmount, fee, emptyList()),
             ValidationStrategy(sourceToken, sourceToken, minRentExemption, inputAmount.orZero(), fee)
         )

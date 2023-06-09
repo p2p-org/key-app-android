@@ -11,7 +11,7 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.newsend.model.FeePayerState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason
-import org.p2p.wallet.newsend.smartselection.validator.SourceSolValidator
+import org.p2p.wallet.newsend.smartselection.validator.SourceSolanaNegativeValidator
 
 /**
  * Source token should be a highest priority token for fee payment
@@ -44,7 +44,7 @@ class SourceSolanaTokenStrategy(
         val solToken = sourceToken
         val inputAmountLamports = inputAmount.orZero().toLamports(sourceToken.decimals)
 
-        val solValidator = SourceSolValidator(
+        val solValidator = SourceSolanaNegativeValidator(
             sourceToken = sourceToken,
             recipient = recipient,
             inputAmount = inputAmountLamports,

@@ -75,7 +75,7 @@ class MaxAmountEnteredHandler(
         return linkedSetOf(
             SourceSplTokenStrategy(sourceToken, inputAmount, fee),
             SourceSolanaTokenStrategy(recipient, sourceToken, inputAmount, fee, minRentExemption),
-            SolanaTokenStrategy(recipient, solToken, sourceToken, inputAmount, fee, minRentExemption),
+            SolanaTokenStrategy(solToken, sourceToken, inputAmount, fee),
             SplTokenStrategy(sourceToken, feePayerToken, inputAmount, fee, emptyList()),
             AmountReduceStrategy(sourceToken, inputAmount, fee, feePayerToken)
         )

@@ -5,7 +5,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.newsend.model.SearchResult
 
-class SourceSolValidator(
+class SourceSolanaNegativeValidator(
     private val sourceToken: Token.Active,
     private val recipient: SearchResult,
     private val inputAmount: BigInteger,
@@ -56,20 +56,17 @@ class SourceSolValidator(
             return false
         }
 
-        val isRecipientEmpty = recipient is SearchResult.AddressFound && recipient.isEmptyBalance
-
         val sourceTotalLamports = sourceToken.totalInLamports
-        val minRequiredBalance = minRentExemption
 
+        val isRecipientEmpty = recipient is SearchResult.AddressFound && recipient.isEmptyBalance
         val diff = sourceTotalLamports - inputAmount
-
         val maxSolAmountAllowed = if (isRecipientEmpty) {
             // if recipient has no solana account (balance == 0) we can send at least minRentExemption amount
-            sourceTotalLamports - minRequiredBalance
+            sourceTotalLamports - minRentExemption
         } else {
             sourceTotalLamports
         }
 
-        return diff.isNotZero() && maxSolAmountAllowed < minRequiredBalance
+        return diff.isNotZero() && maxSolAmountAllowed < minRentExemption
     }
 }
