@@ -90,9 +90,6 @@ class TopUpWalletBottomSheet :
             else -> null
         }
         fragment?.let(::dismissAndNavigate)
-//        dismissAndNavigate(
-//            StrigaSignUpFirstStepFragment.create()
-//        )
     }
 
     override fun showBankCardView(tokenToBuy: Token) {
