@@ -5,8 +5,11 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 class StrigaUserIdProvider(
     private val metadataInteractor: MetadataInteractor
 ) {
-    fun getUserId(): String {
+    fun getUserId(): String? {
         return metadataInteractor.currentMetadata?.strigaMetadata?.userId
-            ?: error("Striga userId has not been set to metadata")
+    }
+
+    fun getUserIdOrThrow(): String {
+        return getUserId() ?: error("Striga userId has not been set to metadata")
     }
 }

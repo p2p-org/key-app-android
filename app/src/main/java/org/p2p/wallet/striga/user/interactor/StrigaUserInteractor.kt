@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.user.interactor
 
 import timber.log.Timber
-import org.p2p.wallet.auth.interactor.MetadataInteractor
+import org.p2p.wallet.striga.StrigaUserIdProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.map
 import org.p2p.wallet.striga.signup.model.StrigaUserStatus
@@ -13,7 +13,7 @@ import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 
 class StrigaUserInteractor(
     private val userRepository: StrigaUserRepository,
-    private val metadataInteractor: MetadataInteractor,
+    private val strigaUserIdProvider: StrigaUserIdProvider,
 ) {
 
     suspend fun createUser(data: List<StrigaSignupData>): StrigaDataLayerResult<StrigaUserInitialDetails> {
@@ -64,6 +64,6 @@ class StrigaUserInteractor(
     }
 
     private fun isUserCreated(): Boolean {
-        return metadataInteractor.currentMetadata?.strigaMetadata?.userId != null
+        return strigaUserIdProvider.getUserId() != null
     }
 }
