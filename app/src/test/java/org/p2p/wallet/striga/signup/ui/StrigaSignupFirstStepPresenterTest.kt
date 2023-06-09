@@ -160,7 +160,7 @@ class StrigaSignupFirstStepPresenterTest {
         )
         every { metadataInteractor.currentMetadata } returns GatewayOnboardingMetadata(
             deviceShareDeviceName = "",
-            customSharePhoneNumberE164 = "${expectedPhoneCode}${expectedPhoneNumber}",
+            customSharePhoneNumberE164 = "${expectedPhoneCode}$expectedPhoneNumber",
             socialShareOwnerEmail = expectedEmail,
             ethPublic = null,
             metaTimestampSec = 0L,
@@ -467,7 +467,7 @@ class StrigaSignupFirstStepPresenterTest {
 
         every { metadataInteractor.currentMetadata } returns GatewayOnboardingMetadata(
             deviceShareDeviceName = "Device",
-            customSharePhoneNumberE164 = "${expectedPhoneCountry.phoneCodeWithPlusSign}${expectedPhoneNumber}",
+            customSharePhoneNumberE164 = "${expectedPhoneCountry.phoneCodeWithPlusSign}$expectedPhoneNumber",
             socialShareOwnerEmail = "email@email.email",
             ethPublic = null,
             metaTimestampSec = 0L,
