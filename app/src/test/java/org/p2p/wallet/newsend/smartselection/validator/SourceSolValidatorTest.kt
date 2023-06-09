@@ -114,4 +114,3 @@ internal class SourceSolValidatorTest {
         assertThat(validator.isLowMinBalanceIgnored()).isTrue()
     }
 }
-

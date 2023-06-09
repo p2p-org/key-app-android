@@ -1,7 +1,6 @@
 package org.p2p.wallet.newsend.smartselection.strategy
 
 import assertk.assertThat
-import assertk.assertions.isDataClassEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
