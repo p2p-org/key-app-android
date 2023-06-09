@@ -14,10 +14,7 @@ class StrigaStorage(
 ) : StrigaStorageContract {
 
     override var userStatus: StrigaUserStatus?
-        get() {
-            return sharedPreferences.getString(KEY_USER_STATUS, null)
-                ?.let(gson::fromJsonReified)
-        }
+        get() = sharedPreferences.getString(KEY_USER_STATUS, null)?.let(gson::fromJsonReified)
         set(value) {
             sharedPreferences.edit {
                 if (value == null) {
