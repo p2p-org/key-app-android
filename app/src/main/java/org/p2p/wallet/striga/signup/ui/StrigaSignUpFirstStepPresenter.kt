@@ -163,6 +163,7 @@ class StrigaSignUpFirstStepPresenter(
                 // if phone number is not set, then we will use metadata phone number
                 val metadata = metadataInteractor.currentMetadata
                 if (phoneCode == null && metadata != null) {
+                    check(metadata.customSharePhoneNumberE164.isNotBlank()) { "Metadata phone number can't be empty" }
                     val parsePhoneResult = countryRepository.parsePhoneNumber(metadata.customSharePhoneNumberE164)
                     phoneCode = parsePhoneResult?.first
                     selectedPhoneNumber = selectedPhoneNumber.takeIf {
