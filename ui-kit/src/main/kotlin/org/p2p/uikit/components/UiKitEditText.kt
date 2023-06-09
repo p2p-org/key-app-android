@@ -47,6 +47,13 @@ class UiKitEditText @JvmOverloads constructor(
         setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
     }
 
+    private val bgDisabled = GradientDrawable().apply {
+        shape = GradientDrawable.RECTANGLE
+        cornerRadius = CORNER_RADIUS
+        setColor(context.getColor(R.color.snow))
+        setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
+    }
+
     val input: HintEditText
         get() = binding.editTextField
 
@@ -83,7 +90,8 @@ class UiKitEditText @JvmOverloads constructor(
         if (!text.isNullOrEmpty()) {
             binding.editTextField.setText(text)
         }
-        binding.editTextField.isEnabled = styleAttrs.getBoolean(R.styleable.UiKitEditText_android_enabled, true)
+
+        isEnabled = styleAttrs.getBoolean(R.styleable.UiKitEditText_android_enabled, true)
 
         binding.containerInputView.background = bgNormal
         val isDropdown = styleAttrs.getBoolean(R.styleable.UiKitEditText_isDropdown, false)
@@ -101,9 +109,19 @@ class UiKitEditText @JvmOverloads constructor(
             val digits = styleAttrs.getString(R.styleable.UiKitEditText_android_digits)
             digits?.let(::setDigits)
         }
+
         styleAttrs.recycle()
 
         binding.editTextField.isSaveEnabled = false
+    }
+
+    override fun setEnabled(isEnable: Boolean) {
+        super.setEnabled(isEnabled)
+        binding.editTextField.background = if (isEnable) bgNormal else bgDisabled
+        binding.editTextField.isEnabled = isEnabled
+        binding.editTextField.isFocusable = isEnable
+        val textColor = context.getColor(if (isEnable) R.color.text_night else R.color.text_night_30)
+        binding.editTextField.setTextColor(textColor)
     }
 
     fun setText(text: String) {
