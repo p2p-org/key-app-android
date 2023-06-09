@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.ui.main
+package org.p2p.wallet.newsend.smartselection
 
 import java.math.BigDecimal
 import java.math.BigInteger

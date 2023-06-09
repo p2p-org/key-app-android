@@ -10,10 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -40,19 +37,16 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.interactor.SendInteractor
-import org.p2p.wallet.newsend.model.CalculationState
 import org.p2p.wallet.newsend.model.FeeLoadingState
-import org.p2p.wallet.newsend.model.FeePayerState
 import org.p2p.wallet.newsend.model.SendActionEvent
-import org.p2p.wallet.newsend.model.SendCommonState
-import org.p2p.wallet.newsend.model.SendCommonState.GeneralError
-import org.p2p.wallet.newsend.model.SendCommonState.Loading
 import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.newsend.model.SendSolanaFee
+import org.p2p.wallet.newsend.model.SendState
+import org.p2p.wallet.newsend.model.SendState.GeneralError
+import org.p2p.wallet.newsend.model.SendState.Loading
 import org.p2p.wallet.newsend.model.main.WidgetState
 import org.p2p.wallet.newsend.model.nicknameOrAddress
 import org.p2p.wallet.newsend.smartselection.initial.SendInitialData
-import org.p2p.wallet.newsend.ui.main.SendInputCalculator
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
@@ -80,7 +74,7 @@ class SendStateManager(
     override val coroutineContext: CoroutineContext =
         SupervisorJob() + dispatchers.io + Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
-    private val currentState: MutableStateFlow<SendCommonState> = MutableStateFlow(SendCommonState.Idle)
+    private val currentState: Channel<SendState> = Channel()
 
     private lateinit var feeLimitInfo: TransactionFeeLimits
     private lateinit var solToken: Token.Active
@@ -88,11 +82,23 @@ class SendStateManager(
 
     private var observeTokensJob: Job? = null
 
-    fun observeFeePayerState(): StateFlow<FeePayerState> = smartSelectionCoordinator.getFeePayerStateFlow()
+    init {
+        smartSelectionCoordinator.getFeePayerStateFlow()
+            .onEach {
+                val feePayerUpdate = SendState.FeePayerUpdate(it)
+                updateState(feePayerUpdate)
+            }
+            .launchIn(this)
 
-    fun observeCalculationState(): StateFlow<CalculationState> = inputCalculator.getCalculationStateFlow()
+        inputCalculator.getCalculationStateFlow()
+            .onEach {
+                val calculationUpdate = SendState.CalculationUpdate(it)
+                updateState(calculationUpdate)
+            }
+            .launchIn(this)
+    }
 
-    fun observeCommonStates(): StateFlow<SendCommonState> = currentState.asStateFlow()
+    fun observeState(): Channel<SendState> = currentState
 
     fun onNewEvent(newEvent: SendActionEvent) {
         when (newEvent) {
@@ -117,7 +123,7 @@ class SendStateManager(
         val feePayerToken = try {
             smartSelectionCoordinator.requireFeePayer()
         } catch (e: Throwable) {
-            updateCommonState(GeneralError(e))
+            updateState(GeneralError(e))
             return
         }
 
@@ -138,7 +144,7 @@ class SendStateManager(
             totalFees = total.getFeesCombined(checkFeePayer = false)?.let { listOf(it) }
         )
 
-        updateCommonState(SendCommonState.ShowProgress(internalTransactionId, progressDetails))
+        updateState(SendState.ShowProgress(internalTransactionId, progressDetails))
 
         appScope.launch {
             try {
@@ -164,9 +170,9 @@ class SendStateManager(
     // Load or restore the initial send state
     private fun executeInitialLoading() {
         launch {
-            val userTokens = userInteractor.getNonZeroUserTokens()
-            validateTokenSelection(userTokens)
+            setLoading(isLoading = true)
 
+            val userTokens = userInteractor.getNonZeroUserTokens()
             initializeScreen(userTokens)
 
             val trigger = SmartSelectionTrigger.Initialization(
@@ -177,16 +183,17 @@ class SendStateManager(
             smartSelectionCoordinator.onNewTrigger(trigger)
 
             validateCurrencySwitch()
+            validateTokenSelection(userTokens)
             validateInput()
 
             observeTokenUpdates(sourceToken)
+
+            setLoading(isLoading = false)
         }
     }
 
     private suspend fun initializeScreen(userTokens: List<Token.Active>) {
         try {
-            setLoading(isLoading = true)
-
             sourceToken = initialData.selectInitialToken(userTokens)
             solToken = initialData.findSolToken(sourceToken, userInteractor.getUserSolToken())
 
@@ -197,10 +204,7 @@ class SendStateManager(
             updateToken(sourceToken)
         } catch (e: Throwable) {
             Timber.tag(TAG).i(e, "Send initial loading failed")
-            updateCommonState(GeneralError(e))
-        } finally {
-            delay(250L)
-            setLoading(isLoading = false)
+            updateState(GeneralError(e))
         }
     }
 
@@ -255,14 +259,14 @@ class SendStateManager(
     }
 
     private fun handleTokenClicked() {
-        updateCommonState(SendCommonState.ShowTokenSelection(sourceToken))
+        updateState(SendState.ShowTokenSelection(sourceToken))
     }
 
     private fun handleFeeClicked() {
         if (smartSelectionCoordinator.isFreeAndInputEmpty()) {
-            updateCommonState(SendCommonState.ShowFreeTransactionDetails())
+            updateState(SendState.ShowFreeTransactionDetails)
         } else {
-            updateCommonState(SendCommonState.ShowTransactionDetails(createFeeTotal()))
+            updateState(SendState.ShowTransactionDetails(createFeeTotal()))
         }
     }
 
@@ -279,8 +283,8 @@ class SendStateManager(
     private fun validateCurrencySwitch() {
         val isCurrencyDisabled = sourceToken.isCurrencyDisabled()
         val widgetState = WidgetState.EnableCurrencySwitch(isEnabled = !isCurrencyDisabled)
-        val newState = SendCommonState.WidgetUpdate(widgetState)
-        updateCommonState(newState)
+        val newState = SendState.WidgetUpdate(widgetState)
+        updateState(newState)
 
         if (isCurrencyDisabled) {
             inputCalculator.enableTokenMode()
@@ -291,8 +295,8 @@ class SendStateManager(
         if (initialData.isInitialAmountEntered()) {
             val inputAmount = initialData.inputAmount!!.toPlainString()
             val widgetState = WidgetState.DisableInput(inputAmount = inputAmount)
-            val newState = SendCommonState.WidgetUpdate(widgetState)
-            updateCommonState(newState)
+            val newState = SendState.WidgetUpdate(widgetState)
+            updateState(newState)
 
             inputCalculator.enableTokenMode()
             inputCalculator.updateInputAmount(inputAmount)
@@ -303,27 +307,27 @@ class SendStateManager(
         val isEnabled = initialData.isTokenSelectionEnabled(userTokens)
 
         val widgetState = WidgetState.TokenSelectionEnabled(isEnabled = isEnabled)
-        val newState = SendCommonState.WidgetUpdate(widgetState)
-        updateCommonState(newState)
+        val newState = SendState.WidgetUpdate(widgetState)
+        updateState(newState)
     }
 
     private fun updateToken(updatedToken: Token.Active) {
         sourceToken = updatedToken
-
         inputCalculator.updateToken(newToken = updatedToken)
 
         val widgetState = WidgetState.TokenUpdated(updatedToken)
-        updateCommonState(SendCommonState.WidgetUpdate(widgetState))
+        updateState(SendState.WidgetUpdate(widgetState))
     }
 
     fun release() {
-        updateCommonState(SendCommonState.Idle)
+        updateState(SendState.Idle)
         smartSelectionCoordinator.release()
+        currentState.close()
     }
 
     private fun setLoading(isLoading: Boolean) {
         val loadingState = FeeLoadingState.Instant(isLoading = isLoading)
-        updateCommonState(Loading(loadingState))
+        updateState(Loading(loadingState))
     }
 
     private fun createFeeTotal(): SendFeeTotal {
@@ -344,8 +348,11 @@ class SendStateManager(
         )
     }
 
-    private fun updateCommonState(newState: SendCommonState) {
-        currentState.value = newState
+    private fun updateState(newState: SendState) {
+        launch {
+            Timber.tag("SendPresenter").i("UpdateCommonState SendCommonState: $newState")
+            currentState.send(newState)
+        }
     }
 
     private fun buildTransaction(transactionId: String): HistoryTransaction =

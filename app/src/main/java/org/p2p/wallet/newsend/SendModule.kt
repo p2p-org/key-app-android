@@ -34,9 +34,9 @@ import org.p2p.wallet.newsend.smartselection.initial.SendInitialData
 import org.p2p.wallet.newsend.smartselection.strategy.StrategyExecutor
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsPresenter
-import org.p2p.wallet.newsend.ui.main.SendButtonStateManager
+import org.p2p.wallet.newsend.smartselection.SendButtonStateManager
 import org.p2p.wallet.newsend.ui.main.SendContract
-import org.p2p.wallet.newsend.ui.main.SendInputCalculator
+import org.p2p.wallet.newsend.smartselection.SendInputCalculator
 import org.p2p.wallet.newsend.ui.main.SendPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
 import org.p2p.wallet.newsend.ui.search.NewSearchPresenter

@@ -12,5 +12,8 @@ sealed interface WidgetState {
 
     data class EnableCurrencySwitch(val isEnabled: Boolean) : WidgetState
 
-    data class InputUpdated(val newInput: String, val isForced: Boolean = true) : WidgetState
+    data class InputUpdated(
+        val newInput: String,
+        val isForced: Boolean = true
+    ) : WidgetState
 }

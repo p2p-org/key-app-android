@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.ui.main
+package org.p2p.wallet.newsend.smartselection
 
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes

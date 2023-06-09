@@ -2,9 +2,7 @@ package org.p2p.wallet.newsend.ui.main
 
 import android.content.res.Resources
 import timber.log.Timber
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
@@ -16,11 +14,12 @@ import org.p2p.wallet.newsend.model.CalculationState
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeePayerState
 import org.p2p.wallet.newsend.model.SendActionEvent
-import org.p2p.wallet.newsend.model.SendCommonState
 import org.p2p.wallet.newsend.model.SendSolanaFee
+import org.p2p.wallet.newsend.model.SendState
 import org.p2p.wallet.newsend.model.main.WidgetState
 import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason
 import org.p2p.wallet.newsend.smartselection.FeeDebugInfoBuilder
+import org.p2p.wallet.newsend.smartselection.SendButtonStateManager
 import org.p2p.wallet.newsend.smartselection.SendStateManager
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 
@@ -39,7 +38,7 @@ class SendPresenter(
         super.attach(view)
         logScreenOpened()
 
-        observeStates()
+        observeState()
 
         sendStateManager.onNewEvent(SendActionEvent.InitialLoading)
     }
@@ -49,34 +48,28 @@ class SendPresenter(
         super.detach()
     }
 
-    private fun observeStates() {
-        sendStateManager.observeCommonStates()
-            .buffer()
-            .onEach(::handleCommonState)
-            .launchIn(this)
-
-        sendStateManager.observeCalculationState()
-            .buffer()
-            .onEach(::handleCalculationState)
-            .launchIn(this)
-
-        sendStateManager.observeFeePayerState()
-            .onEach(::handleFeePayerState)
-            .launchIn(this)
+    private fun observeState() {
+        launch {
+            sendStateManager.observeState()
+                .consumeAsFlow()
+                .collect { handleState(it) }
+        }
     }
 
-    private fun handleCommonState(newState: SendCommonState) {
+    private fun handleState(newState: SendState) {
         Timber.tag(TAG).i("Received SendCommonState: $newState")
 
         when (newState) {
-            is SendCommonState.Idle -> Unit
-            is SendCommonState.WidgetUpdate -> handleWidgetState(newState.widgetState)
-            is SendCommonState.ShowFreeTransactionDetails -> handleFreeTransactionClicked()
-            is SendCommonState.ShowTransactionDetails -> view?.showTransactionDetails(newState.feeTotal)
-            is SendCommonState.ShowTokenSelection -> view?.showTokenSelection(newState.currentToken)
-            is SendCommonState.Loading -> handleLoadingState(newState.loadingState)
-            is SendCommonState.ShowProgress -> view?.showProgressDialog(newState.internalUUID, newState.data)
-            is SendCommonState.GeneralError -> handleGeneralError(newState.cause)
+            is SendState.Idle -> Unit
+            is SendState.FeePayerUpdate -> handleFeePayerState(newState.feePayerUpdate)
+            is SendState.CalculationUpdate -> handleCalculationState(newState.calculationState)
+            is SendState.WidgetUpdate -> handleWidgetState(newState.widgetState)
+            is SendState.ShowFreeTransactionDetails -> handleFreeTransactionClicked()
+            is SendState.ShowTransactionDetails -> view?.showTransactionDetails(newState.feeTotal)
+            is SendState.ShowTokenSelection -> view?.showTokenSelection(newState.currentToken)
+            is SendState.Loading -> handleLoadingState(newState.loadingState)
+            is SendState.ShowProgress -> view?.showProgressDialog(newState.internalUUID, newState.data)
+            is SendState.GeneralError -> handleGeneralError(newState.cause)
         }
     }
 
