@@ -4,6 +4,6 @@
     android:shape="rectangle">
 
     <corners android:radius="@dimen/home_address_button_radius" />
-    <solid android:color="@color/bg_rain" />
+    <solid android:color="@color/bg_snow" />
 
 </shape>
