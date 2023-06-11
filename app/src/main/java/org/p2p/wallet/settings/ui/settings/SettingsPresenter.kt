@@ -94,8 +94,8 @@ class SettingsPresenter(
         analytics.logSettingsUsernameViewed(isUsernameExists)
     }
 
-    override fun onRecoveryKitClicked() {
-        view?.openRecoveryKitScreen()
+    override fun onSecurityClicked() {
+        view?.openSecurityAndPrivacy()
     }
 
     override fun onNetworkEnvironmentChanged(newNetworkEnvironment: NetworkEnvironment) {

@@ -1,8 +1,8 @@
 package org.p2p.wallet.settings.ui.recovery
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.insets.appleBottomInsets
 import org.p2p.core.utils.insets.appleTopInsets
@@ -12,7 +12,7 @@ import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentRecoveryKitBinding
+import org.p2p.wallet.databinding.FragmentSecurityAndPrivacyBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.recovery.unlockseedphrase.SeedPhraseUnlockFragment
 import org.p2p.wallet.utils.popBackStack
@@ -20,15 +20,15 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class RecoveryKitFragment :
-    BaseMvpFragment<RecoveryKitContract.View, RecoveryKitContract.Presenter>(R.layout.fragment_recovery_kit),
+class SecurityAndPrivacyFragment :
+    BaseMvpFragment<RecoveryKitContract.View, RecoveryKitContract.Presenter>(R.layout.fragment_security_and_privacy),
     RecoveryKitContract.View {
 
     companion object {
-        fun create(): RecoveryKitFragment = RecoveryKitFragment()
+        fun create(): SecurityAndPrivacyFragment = SecurityAndPrivacyFragment()
     }
 
-    private val binding: FragmentRecoveryKitBinding by viewBinding()
+    private val binding: FragmentSecurityAndPrivacyBinding by viewBinding()
 
     override val presenter: RecoveryKitContract.Presenter by inject()
 

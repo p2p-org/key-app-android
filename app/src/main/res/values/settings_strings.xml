@@ -39,7 +39,7 @@
     <string name="settings_item_sign_out_button_title">Log out</string>
 
     <string name="settings_item_group_title_security">Security</string>
-    <string name="settings_item_title_recovery_kit">Recovery kit</string>
+    <string name="settings_item_title_security">Security &amp; privacy</string>
     <string name="settings_item_title_pin">Your PIN</string>
     <string name="settings_item_title_networks">Network</string>
     <string name="settings_item_title_touch_id">Touch ID</string>
@@ -67,9 +67,9 @@
     <string name="settings_item_logout_confirm_title">Are you sure you want to log out?</string>
 
     <!--Recovery Kit-->
-    <string name="recovery_title">Recovery kit</string>
-    <string name="recovery_text">Your recovery kit</string>
-    <string name="recovery_sub_text">If you switch devices, you can easily restore your wallet. No private keys needed.</string>
+    <string name="recovery_title">Security &amp; privacy</string>
+    <string name="recovery_text">Security &amp; privacy</string>
+    <string name="recovery_sub_text">To access your account from another device, you need to use any 2 factors from the list below</string>
     <string name="recovery_multi_factor_header">Multi-factor authentication</string>
     <string name="recovery_device_title">Device</string>
     <string name="recovery_phone_title">Phone</string>
