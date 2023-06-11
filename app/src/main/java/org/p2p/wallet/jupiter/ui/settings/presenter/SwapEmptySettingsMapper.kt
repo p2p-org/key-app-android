@@ -4,8 +4,8 @@ import java.math.BigDecimal
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.formatToken
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.FinanceBlockStyle
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -26,7 +26,7 @@ class SwapEmptySettingsMapper(
     }
 
     private fun MutableList<AnyCellItem>.addMinimumReceivedCell(tokenB: SwapTokenModel, amount: BigDecimal? = null) {
-        this += FinanceBlockCellModel(
+        this += MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_minimum_received_title),
@@ -46,7 +46,7 @@ class SwapEmptySettingsMapper(
                 )
             ),
             payload = SwapSettingsPayload.MINIMUM_RECEIVED,
-            styleType = FinanceBlockStyle.BASE_CELL,
+            styleType = MainCellStyle.BASE_CELL,
         )
     }
 }

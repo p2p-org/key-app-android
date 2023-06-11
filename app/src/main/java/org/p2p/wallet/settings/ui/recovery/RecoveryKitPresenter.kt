@@ -1,12 +1,12 @@
 package org.p2p.wallet.settings.ui.recovery
 
+import android.content.res.Resources
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.common.AppRestarter
-import android.content.res.Resources
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
@@ -47,9 +47,7 @@ class RecoveryKitPresenter(
                 )
             }
         )
-        if (seedPhraseProviderType != SeedPhraseSource.MANUAL) {
-            fetchMetadata()
-        }
+        fetchMetadataIfNeeded()
     }
 
     private fun setUnavailableState() {
@@ -61,7 +59,9 @@ class RecoveryKitPresenter(
         }
     }
 
-    private fun fetchMetadata() {
+    private fun fetchMetadataIfNeeded() {
+//        if (seedPhraseProviderType == SeedPhraseSource.MANUAL) return
+
         secureStorage.getObject(
             SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
             GatewayOnboardingMetadata::class
