@@ -5,6 +5,9 @@ inputs:
   current-ref-name:
     description: "We are getting different hash commits for PRs and develop changelog. develop or feature/*."
     required: true
+  workflow-type:
+    description: "According to workflow type, it will generate different last_commit_hash"
+    required: false
 
 runs:
   using: composite
@@ -15,8 +18,15 @@ runs:
         # Pull changes from the remote repository and merge them into the current branch
         git pull
         
-        # Get the latest commit hash was saved in LastCommit.kt
-        last_commit_hash=$(cd $GITHUB_WORKSPACE && sed -n 's/^ *const *val *COMMIT_HASH *= *"\(.*\)".*$/\1/p' buildSrc/src/main/java/LastCommit.kt)
+        type=${{ inputs.workflow-type }}
+        
+        if [[ $type == "scheduled" ]]; then
+          # Get the commit hash from the last night
+          last_commit_hash=$(git rev-list -n 1 --before="yesterday 00:00" origin/$current_ref)
+        else
+          # Get the latest commit hash was saved in LastCommit.kt
+          last_commit_hash=$(cd $GITHUB_WORKSPACE && sed -n 's/^ *const *val *COMMIT_HASH *= *"\(.*\)".*$/\1/p' buildSrc/src/main/java/LastCommit.kt)
+        fi
         
         # Fetch the latest changes from the remote repository
         git fetch origin
