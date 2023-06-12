@@ -151,37 +151,19 @@ class StrigaSignUpFirstStepPresenter(
             )
         } else {
             try {
-                // 1. getting number from db
-                var selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+                val phoneNumberWithCode = interactor.retrievePhoneNumberWithCode(
+                    cachedPhoneCode = signupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value,
+                    cachedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+                )
 
-                // 2. getting code from db
-                var phoneCode = getCachedPhoneCodeWithoutPlus()?.let {
-                    countryRepository.findCountryCodeByPhoneCode(it)
-                }
-
-                // 3. if code is null, attempting to get phone code from metadata
-                // if phone number is not set, then we will use metadata phone number
-                val metadata = metadataInteractor.currentMetadata
-                if (phoneCode == null && metadata != null) {
-                    check(metadata.customSharePhoneNumberE164.isNotBlank()) { "Metadata phone number can't be empty" }
-                    val parsePhoneResult = countryRepository.parsePhoneNumber(metadata.customSharePhoneNumberE164)
-                    phoneCode = parsePhoneResult?.first
-                    selectedPhoneNumber = selectedPhoneNumber.takeIf {
-                        it?.isNotBlank() == true
-                    } ?: parsePhoneResult?.second
-                }
-
-                // 4. if phone code still is not detected, then getting default one
-                phoneCode = phoneCode ?: countryRepository.detectCountryOrDefault()
-
-                onPhoneCountryCodeChanged(phoneCode)
+                onPhoneCountryCodeChanged(phoneNumberWithCode.phoneCode)
 
                 // Using the updated phoneCode and selectedPhoneNumber
                 view?.setupPhoneCountryCodePicker(
-                    selectedCountryCode = phoneCode,
-                    selectedPhoneNumber = selectedPhoneNumber
+                    selectedCountryCode = phoneNumberWithCode.phoneCode,
+                    selectedPhoneNumber = phoneNumberWithCode.phoneNumberNational
                 )
-                view?.updateSignupField(StrigaSignupDataType.PHONE_NUMBER, selectedPhoneNumber.orEmpty())
+                view?.updateSignupField(StrigaSignupDataType.PHONE_NUMBER, phoneNumberWithCode.phoneNumberNational)
             } catch (e: Throwable) {
                 Timber.e(e, "Loading default country code failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
@@ -196,7 +178,7 @@ class StrigaSignUpFirstStepPresenter(
         interactor.findCountryByIsoAlpha3(selectedCountryValue)
             ?.also { onCountryOfBirthdayChanged(it) }
 
-        getCachedPhoneCodeWithoutPlus()?.let {
+        signupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value?.let {
             val phoneCountryCode = countryRepository.findCountryCodeByPhoneCode(it)
             phoneCountryCode?.let(::onPhoneCountryCodeChanged)
         }
@@ -211,17 +193,5 @@ class StrigaSignUpFirstStepPresenter(
 
     private fun setCachedData(type: StrigaSignupDataType, newValue: String) {
         signupData[type] = StrigaSignupData(type = type, value = newValue)
-    }
-
-    private fun getCachedPhoneCodeWithoutPlus(): String? {
-        return signupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value?.let {
-            check(it.isNotBlank()) { "Given blank phone code from storage!" }
-            if (it[0] == '+') {
-                it.substring(1)
-            } else {
-                // i'm not sure if it's possible, but just in case leave it here
-                it
-            }
-        }
     }
 }

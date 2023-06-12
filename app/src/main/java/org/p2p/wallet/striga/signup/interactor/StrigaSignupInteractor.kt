@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
@@ -89,12 +90,12 @@ class StrigaSignupInteractor(
         return countryCodeRepository.detectCountryOrDefault()
     }
 
-    suspend fun findCountryByIsoAlpha2(codeAlpha2: String?): CountryCode? {
+    fun findCountryByIsoAlpha2(codeAlpha2: String?): CountryCode? {
         if (codeAlpha2.isNullOrBlank()) return null
         return countryCodeRepository.findCountryCodeByIsoAlpha2(codeAlpha2)
     }
 
-    suspend fun findCountryByIsoAlpha3(codeAlpha3: String?): CountryCode? {
+    fun findCountryByIsoAlpha3(codeAlpha3: String?): CountryCode? {
         if (codeAlpha3.isNullOrBlank()) return null
         return countryCodeRepository.findCountryCodeByIsoAlpha3(codeAlpha3)
     }
@@ -150,6 +151,44 @@ class StrigaSignupInteractor(
         }
 
         userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
+    }
+
+    /**
+     * Retrieves phone number with code from metadata or from cached data
+     * @param cachedPhoneNumber - phone number from cached data
+     * @param cachedPhoneCode - phone code from cached data
+     * @return [PhoneNumberWithCode] with phone number and phone code;
+     * !! pay attention that returning phone number can be an empty string
+     */
+    suspend fun retrievePhoneNumberWithCode(
+        cachedPhoneCode: String?,
+        cachedPhoneNumber: String?
+    ): PhoneNumberWithCode {
+        // 1. getting cached number
+        var selectedPhoneNumber = cachedPhoneNumber
+
+        // 2. getting cached phone code
+        var phoneCode = cachedPhoneCode?.let {
+            countryCodeRepository.findCountryCodeByPhoneCode(it)
+        }
+
+        // 3. if cached code is null, attempting to get phone code from metadata
+        // if cached phone number is not set, then we will use metadata phone number
+        val metadata = metadataInteractor.currentMetadata
+        if (phoneCode == null && metadata != null) {
+            check(metadata.customSharePhoneNumberE164.isNotBlank()) { "Metadata phone number can't be empty" }
+            val parsePhoneResult = countryCodeRepository.parsePhoneNumber(metadata.customSharePhoneNumberE164)
+            phoneCode = parsePhoneResult?.phoneCode
+            selectedPhoneNumber = selectedPhoneNumber.takeIf {
+                it?.isNotBlank() == true
+            } ?: parsePhoneResult?.phoneNumberNational
+        }
+
+        // 4. if phone code still is not detected, then getting default one
+        phoneCode = phoneCode ?: countryCodeRepository.detectCountryOrDefault()
+
+        // 5. if phone number is not either detected or cached, then it will be an empty string
+        return PhoneNumberWithCode(phoneCode, selectedPhoneNumber.orEmpty())
     }
 
     private fun validateStep(
