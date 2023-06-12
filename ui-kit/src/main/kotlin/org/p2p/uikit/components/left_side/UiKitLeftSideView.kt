@@ -5,12 +5,10 @@ import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
 import org.p2p.uikit.R
-import org.p2p.uikit.components.finance_block.FinanceBlockStyle
+import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.databinding.WidgetLeftSideIconTripleTextBinding
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.inflateViewBinding
-import org.p2p.uikit.utils.setMargins
-import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindOrGone
 
 class UiKitLeftSideView @JvmOverloads constructor(
@@ -19,16 +17,16 @@ class UiKitLeftSideView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs) {
 
     private val binding = inflateViewBinding<WidgetLeftSideIconTripleTextBinding>()
-    private var styleType = FinanceBlockStyle.FINANCE_BLOCK
+    private var styleType = MainCellStyle.FINANCE_BLOCK
 
     init {
         bindViewStyle(styleType)
     }
 
-    fun bindViewStyle(style: FinanceBlockStyle) {
+    fun bindViewStyle(style: MainCellStyle) {
         styleType = style
         when (style) {
-            FinanceBlockStyle.FINANCE_BLOCK -> with(binding) {
+            MainCellStyle.FINANCE_BLOCK -> with(binding) {
                 textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_SemiBold_Text3)
                 textViewFirst.setTextColor(getColorStateList(R.color.text_night))
                 textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
@@ -36,7 +34,7 @@ class UiKitLeftSideView @JvmOverloads constructor(
                 textViewThird.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)
                 textViewThird.setTextColor(getColorStateList(R.color.text_mountain))
             }
-            FinanceBlockStyle.BASE_CELL -> with(binding) {
+            MainCellStyle.BASE_CELL -> with(binding) {
                 textViewFirst.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Text3)
                 textViewFirst.setTextColor(getColorStateList(R.color.text_night))
                 textViewSecond.setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label1)

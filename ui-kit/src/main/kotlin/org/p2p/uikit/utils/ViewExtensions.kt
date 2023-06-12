@@ -20,6 +20,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
@@ -123,14 +124,8 @@ fun Fragment.toast(@StringRes textRes: Int, duration: Int = Toast.LENGTH_SHORT) 
     Toast.makeText(requireContext(), textRes, duration).show()
 }
 
-fun Context.dip(value: Int): Int = dipF(value).toInt()
-fun Context.dipF(value: Int): Float = value * resources.displayMetrics.density
-
-fun View.dip(value: Int): Int = context.dip(value)
-fun View.dipF(value: Int): Float = context.dipF(value)
-
-fun Fragment.dip(value: Int): Int = requireContext().dip(value)
-fun Fragment.dipF(value: Int): Float = requireContext().dipF(value)
+fun dip(value: Int): Int = dipF(value).toInt()
+fun dipF(value: Int): Float = value * Resources.getSystem().displayMetrics.density
 
 fun RecyclerView.attachAdapter(adapter: RecyclerView.Adapter<*>) {
     doOnAttach { this.adapter = adapter }

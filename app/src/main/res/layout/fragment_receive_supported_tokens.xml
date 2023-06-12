@@ -91,7 +91,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutReceiveBanner"
         app:layout_goneMarginTop="0dp"
-        tools:listitem="@layout/item_finance_block" />
+        tools:listitem="@layout/item_main_cell" />
 
     <TextView
         android:id="@+id/textViewEmpty"

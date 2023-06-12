@@ -62,7 +62,7 @@ class NewSelectTokenViewHolder(
     }
 
     fun setCornersRadius(item: SelectTokenItem.SelectableToken) {
-        val cornerRadiusDp = itemView.dip(CORNER_RADIUS_DP).toFloat()
+        val cornerRadiusDp = dip(CORNER_RADIUS_DP).toFloat()
         val gradientDrawable = GradientDrawable()
         gradientDrawable.setColor(itemView.getColor(R.color.bg_snow))
 

@@ -1,6 +1,6 @@
 package org.p2p.wallet.jupiter.ui.settings
 
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
@@ -16,7 +16,7 @@ interface JupiterSwapSettingsContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onSettingItemClick(item: FinanceBlockCellModel)
+        fun onSettingItemClick(item: MainCellModel)
         fun onCustomSlippageChange(slippage: Double?)
     }
 }

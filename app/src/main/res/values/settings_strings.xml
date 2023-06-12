@@ -77,6 +77,19 @@
     <string name="recovery_seed_title">Seed phrase</string>
     <string name="recovery_footer">Your private key is split into multiple factors. At least, you should have three factors, but you can create more. To log in to different devices, you need at least two factors.</string>
     <string name="recovery_not_available">Not available for now</string>
+    <string name="recovery_manage">Manage</string>
+
+    <!-- change device share -->
+    <string name="devices_title">Devices</string>
+    <string name="devices_subtitle">We\'ve noticed that you\'re using a new device. \n\nFor security, change your authorization device to restore access if needed.</string>
+    <string name="devices_confirmation_title">Are you sure you want to update your authorization device?</string>
+    <string name="devices_confirmation_subtitle">You will not be able to use the old device for recovery</string>
+    <string name="devices_confirmation_button_title">Update</string>
+    <string name="devices_this_device">THIS DEVICE</string>
+    <string name="devices_authorization_device">AUTHORIZATION DEVICE</string>
+    <string name="devices_set_up">Set up</string>
+    <string name="devices_make_sure_your_device">Make sure this is still your device</string>
+    <string name="devices_footer_message">Attention! If you update your current device, you will not be able to use the old device for recovery.</string>
 
     <!--Seed Phrase Kit-->
     <string name="seed_phrase_title">Details seed phrase</string>

@@ -2,8 +2,8 @@ package org.p2p.wallet.jupiter.ui.settings.presenter
 
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.FinanceBlockStyle
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -28,7 +28,7 @@ class SwapLoadingSettingsMapper(
 
     private fun MutableList<AnyCellItem>.addRouteCell() {
         add(
-            FinanceBlockCellModel(
+            MainCellModel(
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = TextViewCellModel.Raw(
                         text = TextContainer(R.string.swap_settings_route_title),
@@ -47,14 +47,14 @@ class SwapLoadingSettingsMapper(
                     )
                 ),
                 payload = SwapSettingsPayload.ROUTE,
-                styleType = FinanceBlockStyle.BASE_CELL,
+                styleType = MainCellStyle.BASE_CELL,
             )
         )
     }
 
     private fun MutableList<AnyCellItem>.addMinimumReceivedCell() {
         add(
-            FinanceBlockCellModel(
+            MainCellModel(
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = TextViewCellModel.Raw(
                         text = TextContainer(R.string.swap_settings_minimum_received_title),
@@ -70,14 +70,14 @@ class SwapLoadingSettingsMapper(
                     )
                 ),
                 payload = SwapSettingsPayload.MINIMUM_RECEIVED,
-                styleType = FinanceBlockStyle.BASE_CELL,
+                styleType = MainCellStyle.BASE_CELL,
             )
         )
     }
 
     private fun MutableList<AnyCellItem>.addAccountFeeCell() {
         add(
-            FinanceBlockCellModel(
+            MainCellModel(
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = TextViewCellModel.Raw(
                         text = TextContainer(R.string.swap_settings_creation_fee_title),
@@ -96,14 +96,14 @@ class SwapLoadingSettingsMapper(
                     )
                 ),
                 payload = SwapSettingsPayload.CREATION_FEE,
-                styleType = FinanceBlockStyle.BASE_CELL,
+                styleType = MainCellStyle.BASE_CELL,
             )
         )
     }
 
     private fun MutableList<AnyCellItem>.addLiquidityFeeCell() {
         add(
-            FinanceBlockCellModel(
+            MainCellModel(
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = TextViewCellModel.Raw(
                         text = TextContainer(R.string.swap_settings_liquidity_fee_title),
@@ -122,14 +122,14 @@ class SwapLoadingSettingsMapper(
                     )
                 ),
                 payload = SwapSettingsPayload.LIQUIDITY_FEE,
-                styleType = FinanceBlockStyle.BASE_CELL,
+                styleType = MainCellStyle.BASE_CELL,
             )
         )
     }
 
     private fun MutableList<AnyCellItem>.addEstimatedFeeCell() {
         add(
-            FinanceBlockCellModel(
+            MainCellModel(
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = TextViewCellModel.Raw(
                         text = TextContainer(R.string.swap_settings_estimated_fee_title),
@@ -142,7 +142,7 @@ class SwapLoadingSettingsMapper(
                     ),
                 ),
                 payload = SwapSettingsPayload.ESTIMATED_FEE,
-                styleType = FinanceBlockStyle.BASE_CELL,
+                styleType = MainCellStyle.BASE_CELL,
             )
         )
     }

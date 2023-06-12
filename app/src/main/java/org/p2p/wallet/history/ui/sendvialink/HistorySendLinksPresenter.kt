@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.formatToken
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
@@ -53,7 +53,7 @@ class HistorySendLinksPresenter(
         return HistoryDateCellModel(this)
     }
 
-    private fun UserSendLink.toCellModel(): FinanceBlockCellModel {
+    private fun UserSendLink.toCellModel(): MainCellModel {
         val icon = ImageViewCellModel(
             icon = DrawableContainer(R.drawable.ic_copy_link),
             iconTint = R.color.bg_night,
@@ -77,7 +77,7 @@ class HistorySendLinksPresenter(
         val rightSide = RightSideCellModel.TwoLineText(
             firstLineText = TextViewCellModel.Raw(tokenAmount, maxLines = 2)
         )
-        return FinanceBlockCellModel(
+        return MainCellModel(
             leftSideCellModel = leftSide,
             rightSideCellModel = rightSide,
             payload = uuid

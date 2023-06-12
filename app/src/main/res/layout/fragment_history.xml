@@ -19,7 +19,7 @@
         app:titleMargin="16dp"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
-    <org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
+    <org.p2p.uikit.components.finance_block.UiKitMainCellView
         android:id="@+id/viewUserSendLinks"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
