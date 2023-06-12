@@ -17,6 +17,9 @@ runs:
     - name: "Create signing properties file"
       shell: bash
       run: |
+        mkdir -p .properties
+        cd .properties
+        
         touch signing.properties
         echo "keystorePassword=${{ inputs.keystore-password }}" >> signing.properties
         echo "keyAlias=${{ inputs.key-alias }}" >> signing.properties
