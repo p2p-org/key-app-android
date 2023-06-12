@@ -110,7 +110,9 @@ object HomeModule : InjectionModule {
                 updateSubscribers = subscribers,
                 claimUiMapper = get(),
                 bridgeFeatureToggle = get(),
-                context = get()
+                context = get(),
+                strigaUserInteractor = get(),
+                strigaSignupInteractor = get(),
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

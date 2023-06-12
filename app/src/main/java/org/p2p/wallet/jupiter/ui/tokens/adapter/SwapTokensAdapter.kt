@@ -2,8 +2,8 @@ package org.p2p.wallet.jupiter.ui.tokens.adapter
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.FinanceBlockViewHolder
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.MainCellViewHolder
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderViewHolder
@@ -26,7 +26,7 @@ class SwapTokensAdapter(
 
     override fun getItemViewType(position: Int): Int = when (val item = items[position]) {
         is SectionHeaderCellModel -> SectionHeaderViewHolder.DEFAULT_VIEW_TYPE
-        is FinanceBlockCellModel -> FinanceBlockViewHolder.DEFAULT_VIEW_TYPE
+        is MainCellModel -> MainCellViewHolder.DEFAULT_VIEW_TYPE
         else -> error("Not supported cell model: ${item.javaClass.simpleName}")
     }
 
@@ -34,8 +34,8 @@ class SwapTokensAdapter(
         SectionHeaderViewHolder.DEFAULT_VIEW_TYPE -> {
             SectionHeaderViewHolder(parent.inflateViewBinding(attachToRoot = false))
         }
-        FinanceBlockViewHolder.DEFAULT_VIEW_TYPE -> {
-            FinanceBlockViewHolder(
+        MainCellViewHolder.DEFAULT_VIEW_TYPE -> {
+            MainCellViewHolder(
                 binding = parent.inflateViewBinding(attachToRoot = false),
                 inflateListener = {
                     it.setOnClickAction { _, item ->
@@ -51,7 +51,7 @@ class SwapTokensAdapter(
         val item = items[position]
         when (holder) {
             is SectionHeaderViewHolder -> holder.bind(item as SectionHeaderCellModel)
-            is FinanceBlockViewHolder -> holder.bind(item as FinanceBlockCellModel)
+            is MainCellViewHolder -> holder.bind(item as MainCellModel)
         }
     }
 

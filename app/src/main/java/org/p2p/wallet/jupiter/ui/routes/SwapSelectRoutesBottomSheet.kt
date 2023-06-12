@@ -5,8 +5,8 @@ import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.UiKitMainCellView
 import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
@@ -82,7 +82,7 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet(R.layout.dialog_swap_select_
         is SwapState.SwapException -> getRoutesList(state.previousFeatureState)
     }
 
-    private fun onRouteClick(item: FinanceBlockCellModel, view: UiKitFinanceBlockView) {
+    private fun onRouteClick(item: MainCellModel, view: UiKitMainCellView) {
         val route = (item.payload as? JupiterSwapRoute) ?: return
         analytics.logSwapRouteChanged(route)
 

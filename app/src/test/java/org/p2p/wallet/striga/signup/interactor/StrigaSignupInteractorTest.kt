@@ -10,6 +10,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -18,9 +19,11 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.utils.emptyString
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
@@ -48,6 +51,15 @@ private val SupportedCountry = CountryCode(
     nameCodeAlpha3 = "gbr",
     phoneCode = "123",
     mask = ""
+)
+
+private val TurkeyCountry = CountryCode(
+    countryName = "Turkey",
+    flagEmoji = "\uF1F9\uF1F7",
+    nameCodeAlpha2 = "TR",
+    nameCodeAlpha3 = "TUR",
+    phoneCode = "90",
+    mask = " 212 345 67 89"
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -356,6 +368,74 @@ class StrigaSignupInteractorTest {
         val updatedMetadata = updatedMetadataSlot.captured
         assertEquals("userId", updatedMetadata.strigaMetadata?.userId)
     }
+
+    @Test
+    fun `GIVEN empty cache metadata WHEN retrievePhoneNumber THEN code is default and number is empty`() =
+        runTest {
+            every { metadataInteractor.currentMetadata } returns null
+            coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
+
+            val interactor = createInteractor()
+            val result = interactor.retrievePhoneNumberWithCode(null, null)
+            assertEquals(emptyString(), result.phoneNumberNational)
+            assertEquals(SupportedCountry, result.phoneCode)
+        }
+
+    @Test
+    fun `GIVEN empty cache and not empty metadata WHEN retrievePhoneNumber THEN code and number from metadata`() =
+        runTest {
+            val expectedCode = "+90"
+            val expectedNumber = "5348558899"
+            every { metadataInteractor.currentMetadata } returns GatewayOnboardingMetadata(
+                deviceShareDeviceName = "",
+                customSharePhoneNumberE164 = "${expectedCode}$expectedNumber",
+                socialShareOwnerEmail = "",
+                ethPublic = null,
+                metaTimestampSec = 0L,
+                deviceNameTimestampSec = 0L,
+                phoneNumberTimestampSec = 0L,
+                emailTimestampSec = 0L,
+                authProviderTimestampSec = 0L,
+                strigaMetadata = null
+            )
+            every { countryRepository.parsePhoneNumber(any(), any()) } returns PhoneNumberWithCode(TurkeyCountry, expectedNumber)
+            coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
+
+            val interactor = createInteractor()
+            val result = interactor.retrievePhoneNumberWithCode(null, null)
+            assertEquals(expectedNumber, result.phoneNumberNational)
+            assertEquals(TurkeyCountry, result.phoneCode)
+        }
+
+    @Test
+    fun `GIVEN not empty cache and not empty metadata WHEN retrievePhoneNumber THEN code and number from cache`() =
+        runTest {
+            val codeFromMetadata = "+90"
+            val numberFromMetadata = "5348558800"
+            val expectedCode = "+90"
+            val expectedNumber = "5348558899"
+            every { metadataInteractor.currentMetadata } returns GatewayOnboardingMetadata(
+                deviceShareDeviceName = "",
+                customSharePhoneNumberE164 = "${codeFromMetadata}$numberFromMetadata",
+                socialShareOwnerEmail = "",
+                ethPublic = null,
+                metaTimestampSec = 0L,
+                deviceNameTimestampSec = 0L,
+                phoneNumberTimestampSec = 0L,
+                emailTimestampSec = 0L,
+                authProviderTimestampSec = 0L,
+                strigaMetadata = null
+            )
+
+            every { countryRepository.findCountryCodeByPhoneCode("+90") } returns TurkeyCountry
+            coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
+
+            val interactor = createInteractor()
+            val result = interactor.retrievePhoneNumberWithCode(cachedPhoneCode = expectedCode, cachedPhoneNumber = expectedNumber)
+            assertNotEquals(numberFromMetadata, result.phoneNumberNational)
+            assertEquals(expectedNumber, result.phoneNumberNational)
+            assertEquals(TurkeyCountry, result.phoneCode)
+        }
 
     private fun createInteractor(): StrigaSignupInteractor {
         return StrigaSignupInteractor(

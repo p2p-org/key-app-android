@@ -9,7 +9,7 @@ android {
         }
 
         release {
-            def signingProperties = new PropertiesFile(rootProject.file("signing.properties"), logger)
+            def signingProperties = new PropertiesFile(rootProject.file(".properties/signing.properties"), logger)
             storeFile rootProject.file('p2pwallet.jks')
             storePassword signingProperties.getOrNull('keystorePassword')
             keyAlias signingProperties.getOrNull('keyAlias')

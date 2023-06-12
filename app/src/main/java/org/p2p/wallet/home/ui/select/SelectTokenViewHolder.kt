@@ -1,20 +1,20 @@
 package org.p2p.wallet.home.ui.select
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
+import java.util.Locale
 import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.dip
 import org.p2p.wallet.databinding.ItemTokenSimpleBinding
-import java.util.Locale
 
 class SelectTokenViewHolder(
     binding: ItemTokenSimpleBinding,
@@ -45,7 +45,7 @@ class SelectTokenViewHolder(
 
     fun onBind(item: Token) {
         if (bindingAdapterPosition == 0) {
-            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
+            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = dip(LIST_TOP_MARGIN_IN_DP)
         } else {
             (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
         }

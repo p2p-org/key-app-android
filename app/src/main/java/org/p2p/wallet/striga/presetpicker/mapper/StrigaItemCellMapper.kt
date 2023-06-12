@@ -2,8 +2,8 @@ package org.p2p.wallet.striga.presetpicker.mapper
 
 import androidx.annotation.StringRes
 import org.p2p.core.common.TextContainer
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.FinanceBlockStyle
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -39,7 +39,7 @@ class StrigaItemCellMapper {
         textAppearance = R.style.UiKit_TextAppearance_Regular_Caps
     )
 
-    private fun mapItemToCellItem(item: StrigaPresetDataItem): FinanceBlockCellModel {
+    private fun mapItemToCellItem(item: StrigaPresetDataItem): MainCellModel {
         return when (item) {
             is StrigaPresetDataItem.Country -> item.details.mapItemToCellItem()
             is StrigaPresetDataItem.SourceOfFunds -> item.details.mapItemToCellItem()
@@ -47,7 +47,7 @@ class StrigaItemCellMapper {
         }
     }
 
-    private fun StrigaOccupation.mapItemToCellItem(): FinanceBlockCellModel {
+    private fun StrigaOccupation.mapItemToCellItem(): MainCellModel {
         val leftSideCellModel = LeftSideCellModel.IconWithText(
             firstLineText = TextViewCellModel.Raw(
                 text = TextContainer(toUiTitle(occupationName)),
@@ -56,14 +56,14 @@ class StrigaItemCellMapper {
             ),
             icon = IconWrapperCellModel.SingleEmoji(emoji = emoji)
         )
-        return FinanceBlockCellModel(
+        return MainCellModel(
             leftSideCellModel = leftSideCellModel,
             payload = StrigaPresetDataItem.Occupation(this),
-            styleType = FinanceBlockStyle.BASE_CELL
+            styleType = MainCellStyle.BASE_CELL
         )
     }
 
-    private fun StrigaSourceOfFunds.mapItemToCellItem(): FinanceBlockCellModel {
+    private fun StrigaSourceOfFunds.mapItemToCellItem(): MainCellModel {
         val leftSideCellModel = LeftSideCellModel.IconWithText(
             firstLineText = TextViewCellModel.Raw(
                 text = TextContainer(toUiTitle(sourceName)),
@@ -71,14 +71,14 @@ class StrigaItemCellMapper {
                 textColor = R.color.text_night
             )
         )
-        return FinanceBlockCellModel(
+        return MainCellModel(
             leftSideCellModel = leftSideCellModel,
             payload = StrigaPresetDataItem.SourceOfFunds(this),
-            styleType = FinanceBlockStyle.BASE_CELL
+            styleType = MainCellStyle.BASE_CELL
         )
     }
 
-    private fun CountryCode.mapItemToCellItem(): FinanceBlockCellModel {
+    private fun CountryCode.mapItemToCellItem(): MainCellModel {
         val leftSideCellModel = LeftSideCellModel.IconWithText(
             firstLineText = TextViewCellModel.Raw(
                 text = TextContainer(toUiTitle(countryName)),
@@ -87,10 +87,10 @@ class StrigaItemCellMapper {
             ),
             icon = IconWrapperCellModel.SingleEmoji(emoji = flagEmoji)
         )
-        return FinanceBlockCellModel(
+        return MainCellModel(
             leftSideCellModel = leftSideCellModel,
             payload = StrigaPresetDataItem.Country(this),
-            styleType = FinanceBlockStyle.BASE_CELL
+            styleType = MainCellStyle.BASE_CELL
         )
     }
 

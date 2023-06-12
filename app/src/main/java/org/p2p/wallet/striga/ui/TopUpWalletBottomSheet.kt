@@ -7,7 +7,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
@@ -23,7 +23,11 @@ import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTopupWalletBinding
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.receive.ReceiveFragmentFactory
+import org.p2p.wallet.smsinput.SmsInputFactory
+import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
+import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
+import org.p2p.wallet.striga.ui.TopUpWalletContract.BankTransferNavigationTarget
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -45,23 +49,47 @@ class TopUpWalletBottomSheet :
 
     override val presenter: TopUpWalletContract.Presenter by inject()
 
-    override fun showStrigaBankTransferView() {
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
+
+    override fun showStrigaBankTransferView(showProgress: Boolean) {
         binding.bankTransferView.isVisible = true
         binding.bankTransferView.bind(
             model = getFinanceBlock(
                 titleResId = R.string.bank_transfer_title,
                 subtitleRes = R.string.bank_transfer_subtitle,
                 iconResId = R.drawable.ic_bank_transfer,
-                backgroundTintId = R.color.light_grass
+                backgroundTintId = R.color.light_grass,
+                showRightProgress = showProgress
             )
         )
         binding.bankTransferView.setOnClickAction { _, _ ->
-            dismissAndNavigate(StrigaOnboardingFragment.create())
+            if (showProgress) return@setOnClickAction
+            presenter.onBankTransferClicked()
         }
     }
 
     override fun hideStrigaBankTransferView() {
         binding.bankTransferView.isVisible = false
+    }
+
+    override fun navigateToBankTransferTarget(target: BankTransferNavigationTarget) {
+        val fragment = when (target) {
+            BankTransferNavigationTarget.StrigaOnboarding -> StrigaOnboardingFragment.create()
+            BankTransferNavigationTarget.StrigaSignupFirstStep -> StrigaSignUpFirstStepFragment.create()
+            BankTransferNavigationTarget.StrigaSignupSecondStep -> StrigaSignUpFirstStepFragment.create()
+            BankTransferNavigationTarget.StrigaSmsVerification -> {
+                SmsInputFactory.create(
+                    type = SmsInputFactory.Type.Striga,
+                    destinationFragment = StrigaSignupFinishFragment::class.java
+                )
+            }
+            BankTransferNavigationTarget.SumSubVerification -> {
+                showToast(TextContainer("SumSub verification is not implemented yet"))
+                null
+            }
+            BankTransferNavigationTarget.Nowhere -> null
+        }
+        fragment?.let(::dismissAndNavigate)
     }
 
     override fun showBankCardView(tokenToBuy: Token) {
@@ -101,8 +129,9 @@ class TopUpWalletBottomSheet :
         titleResId: Int,
         subtitleRes: Int,
         iconResId: Int,
-        backgroundTintId: Int
-    ): FinanceBlockCellModel {
+        backgroundTintId: Int,
+        showRightProgress: Boolean = false
+    ): MainCellModel {
         val leftSideCellModel = LeftSideCellModel.IconWithText(
             icon = IconWrapperCellModel.SingleIcon(
                 icon = ImageViewCellModel(
@@ -123,20 +152,26 @@ class TopUpWalletBottomSheet :
             )
         )
 
-        val rightSideCellModel = RightSideCellModel.IconWrapper(
-            iconWrapper = IconWrapperCellModel.SingleIcon(
-                icon = ImageViewCellModel(
-                    icon = DrawableContainer(R.drawable.ic_chevron_right),
-                    iconTint = R.color.icons_mountain
+        val rightSideCellModel = if (showRightProgress) {
+            RightSideCellModel.Progress(
+                indeterminateProgressTint = R.color.night
+            )
+        } else {
+            RightSideCellModel.IconWrapper(
+                iconWrapper = IconWrapperCellModel.SingleIcon(
+                    icon = ImageViewCellModel(
+                        icon = DrawableContainer(R.drawable.ic_chevron_right),
+                        iconTint = R.color.icons_mountain
+                    )
                 )
             )
-        )
+        }
         val background = DrawableCellModel(
             drawable = shapeDrawable(shapeRounded16dp()),
             tint = R.color.bg_snow
         )
 
-        return FinanceBlockCellModel(
+        return MainCellModel(
             leftSideCellModel = leftSideCellModel,
             rightSideCellModel = rightSideCellModel,
             background = background,
@@ -148,6 +183,4 @@ class TopUpWalletBottomSheet :
         replaceFragment(fragment)
         dismiss()
     }
-
-    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 }

@@ -11,7 +11,7 @@ import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.uikit.utils.withTextOrGone
 
-@Deprecated("use [UiKitFinanceBlockView] without [FinanceBlockCellModel.rightSideCellModel]")
+@Deprecated("use [UiKitFinanceBlockView] without [MainCellModel.rightSideCellModel]")
 class UiKitStartAmountView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -31,7 +31,7 @@ class UiKitStartAmountView @JvmOverloads constructor(
             field = value
         }
 
-    var subtitle: String? = null
+    var subtitle: CharSequence? = null
         set(value) {
             binding.subtitleTextView.withTextOrGone(value)
             field = value

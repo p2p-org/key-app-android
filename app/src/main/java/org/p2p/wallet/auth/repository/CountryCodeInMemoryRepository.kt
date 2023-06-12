@@ -2,10 +2,12 @@ package org.p2p.wallet.auth.repository
 
 import android.content.Context
 import android.telephony.TelephonyManager
+import io.michaelrocks.libphonenumber.android.Phonenumber.PhoneNumber
 import timber.log.Timber
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 
 class CountryCodeInMemoryRepository(
@@ -65,6 +67,13 @@ class CountryCodeInMemoryRepository(
 
     override fun isValidNumberForRegion(phoneNumber: String, regionCode: String): Boolean =
         countryCodeHelper.isValidNumberForRegion(phoneNumber, regionCode)
+
+    override fun parsePhoneNumber(number: String, defaultRegionAlpha2: String): PhoneNumberWithCode? {
+        val phoneNumber: PhoneNumber = countryCodeHelper.parsePhoneNumber(number, defaultRegionAlpha2) ?: return null
+        val countryCode = findCountryCodeByPhoneCode(phoneNumber.countryCode.toString()) ?: return null
+
+        return PhoneNumberWithCode(countryCode, phoneNumber.nationalNumber.toString())
+    }
 
     override suspend fun detectCountryOrDefault(): CountryCode {
         return detectCountryCodeBySimCard()

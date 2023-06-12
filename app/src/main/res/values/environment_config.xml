@@ -13,7 +13,7 @@
 
     <string name="torusBaseUrl">https://torus.beardict.net</string>
 
-    <string name="torusNetwork">testnet</string>
+    <string name="torusNetwork">cyan</string>
     <string name="torusLogLevel">debug</string>
 
     <string name="moonpayServerSideProxyUrl">https://moonpay.key.app/</string>

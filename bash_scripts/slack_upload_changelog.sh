@@ -5,4 +5,3 @@ curl \
 -F channels="$2" \
 -F file=@$3 \
 https://slack.com/api/files.upload
-

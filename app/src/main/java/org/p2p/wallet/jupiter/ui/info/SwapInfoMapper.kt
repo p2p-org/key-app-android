@@ -5,8 +5,8 @@ import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.asUsdSwap
 import org.p2p.core.utils.fromLamports
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.FinanceBlockStyle
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.info_block.InfoBlockCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -72,7 +72,7 @@ class SwapInfoMapper {
     fun getLiquidityFeeCell(
         marketInfo: JupiterSwapMarketInformation,
         allTokens: List<SwapTokenModel>
-    ): FinanceBlockCellModel {
+    ): MainCellModel {
         val label = marketInfo.label
         val liquidityToken = allTokens.find { marketInfo.liquidityFee.mint == it.mintAddress }
         val liquidityFee = marketInfo.liquidityFee
@@ -90,8 +90,8 @@ class SwapInfoMapper {
             )
         }
 
-        return FinanceBlockCellModel(
-            styleType = FinanceBlockStyle.BASE_CELL,
+        return MainCellModel(
+            styleType = MainCellStyle.BASE_CELL,
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = firstLineText,
                 secondLineText = secondLineText
@@ -162,9 +162,9 @@ class SwapInfoMapper {
 
     fun updateLiquidityFee(
         marketInfo: JupiterSwapMarketInformation,
-        oldCell: FinanceBlockCellModel,
+        oldCell: MainCellModel,
         state: SwapRateLoaderState
-    ): FinanceBlockCellModel {
+    ): MainCellModel {
         return when (state) {
             SwapRateLoaderState.Empty -> oldCell
             is SwapRateLoaderState.NoRateAvailable,

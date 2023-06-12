@@ -6,13 +6,13 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import android.graphics.Rect
 import android.view.View
 import kotlin.reflect.KClass
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 
 fun offsetFinanceBlockDecoration(offset: Int = 8.toPx()) =
-    OffsetByCellDecoration(FinanceBlockCellModel::class, offset)
+    OffsetByCellDecoration(MainCellModel::class, offset)
 
 class OffsetByCellDecoration(
     private val itemCellType: KClass<out AnyCellItem>,

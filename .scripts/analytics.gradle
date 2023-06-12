@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     defaultConfig {
-        def sentryProperties = new PropertiesFile(rootProject.file("sentry.properties"), logger)
+        def sentryProperties = new PropertiesFile(rootProject.file(".properties/sentry.properties"), logger)
         def sentryDsn = sentryProperties.getOrThrow('auth.dsn')
         manifestPlaceholders = [SENTRY_DSN: "$sentryDsn"]
     }
 
     buildTypes {
-        def analyticsProperties = new PropertiesFile(rootProject.file("analytics.properties"), logger)
+        def analyticsProperties = new PropertiesFile(rootProject.file(".properties/analytics.properties"), logger)
         def debugKey = analyticsProperties.getOrThrow('amplitudeDebugKey')
 
         debug {

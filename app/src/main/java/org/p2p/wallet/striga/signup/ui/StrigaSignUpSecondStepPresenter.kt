@@ -100,7 +100,8 @@ class StrigaSignUpSecondStepPresenter(
             view?.setProgressIsVisible(true)
             launch {
                 try {
-                    interactor.saveChanges(cachedSignupData.values)
+                    mapDataForStorage()
+                    interactor.saveChangesNow(cachedSignupData.values)
                     interactor.createUser()
                     view?.navigateNext()
                 } catch (e: Throwable) {
@@ -123,7 +124,7 @@ class StrigaSignUpSecondStepPresenter(
         cachedSignupData[StrigaSignupDataType.OCCUPATION]?.value?.let {
             setCachedData(
                 type = StrigaSignupDataType.OCCUPATION,
-                value = it.uppercase()
+                value = strigaItemCellMapper.fromUiTitle(it.uppercase())
             )
         }
         cachedSignupData[StrigaSignupDataType.SOURCE_OF_FUNDS]?.value?.let {

@@ -14,7 +14,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityAndPrivacyBinding
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.settings.ui.recovery.unlockseedphrase.SeedPhraseUnlockFragment
+import org.p2p.wallet.settings.ui.devices.DevicesFragment
+import org.p2p.wallet.settings.ui.recovery.unlock.SeedPhraseUnlockFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
@@ -42,6 +43,10 @@ class SecurityAndPrivacyFragment :
             recoveryViewSeed.setOnClickListener {
                 presenter.onSeedPhraseClicked()
             }
+
+            textViewDeviceManage.setOnClickListener {
+                replaceFragment(DevicesFragment.create())
+            }
         }
     }
 
@@ -54,7 +59,7 @@ class SecurityAndPrivacyFragment :
         }
     }
 
-    override fun showDeviceName(deviceName: String) {
+    override fun showDeviceName(deviceName: CharSequence) {
         binding.recoveryViewDevice.subtitle = deviceName
     }
 
