@@ -121,9 +121,6 @@ runs:
     - name: "Create sentry.properties file"
       shell: bash
       run: |
-        mkdir -p .properties
-        cd .properties
-        
         touch sentry.properties
         echo "defaults.project=${{ inputs.default-project }}" >> sentry.properties
         echo "defaults.org=${{ inputs.default-organization }}" >> sentry.properties
