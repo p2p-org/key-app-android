@@ -1,4 +1,4 @@
-package org.p2p.wallet.settings.ui.recovery.userseedphrase
+package org.p2p.wallet.settings.ui.recovery.seed
 
 import android.os.Bundle
 import android.view.View

@@ -14,7 +14,6 @@ import org.p2p.wallet.settings.ui.network.SettingsNetworkContract
 import org.p2p.wallet.settings.ui.network.SettingsNetworkPresenter
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitContract
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitPresenter
-import org.p2p.wallet.settings.ui.recovery.SecurityCellMapper
 import org.p2p.wallet.settings.ui.resetpin.pin.ResetPinContract
 import org.p2p.wallet.settings.ui.resetpin.pin.ResetPinPresenter
 import org.p2p.wallet.settings.ui.settings.SettingsContract
@@ -27,7 +26,6 @@ object SettingsModule : InjectionModule {
         factoryOf(::SettingsInteractor)
         factoryOf(::ThemeInteractor)
 
-        factoryOf(::SecurityCellMapper)
         factoryOf(::SettingsItemMapper)
         factoryOf(::SettingsPresenterAnalytics)
         factoryOf(::SettingsPresenter) bind SettingsContract.Presenter::class

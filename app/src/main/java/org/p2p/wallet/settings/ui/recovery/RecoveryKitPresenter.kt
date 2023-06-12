@@ -47,7 +47,7 @@ class RecoveryKitPresenter(
                 )
             }
         )
-        fetchMetadataIfNeeded()
+        fetchMetadata()
     }
 
     private fun setUnavailableState() {
@@ -59,9 +59,7 @@ class RecoveryKitPresenter(
         }
     }
 
-    private fun fetchMetadataIfNeeded() {
-//        if (seedPhraseProviderType == SeedPhraseSource.MANUAL) return
-
+    private fun fetchMetadata() {
         secureStorage.getObject(
             SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
             GatewayOnboardingMetadata::class

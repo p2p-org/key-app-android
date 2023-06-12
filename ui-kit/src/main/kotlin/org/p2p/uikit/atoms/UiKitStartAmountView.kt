@@ -31,7 +31,7 @@ class UiKitStartAmountView @JvmOverloads constructor(
             field = value
         }
 
-    var subtitle: String? = null
+    var subtitle: CharSequence? = null
         set(value) {
             binding.subtitleTextView.withTextOrGone(value)
             field = value
