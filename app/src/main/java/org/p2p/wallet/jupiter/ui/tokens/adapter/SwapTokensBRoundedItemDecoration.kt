@@ -7,8 +7,8 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
 import com.google.android.material.shape.ShapeAppearanceModel
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.FinanceBlockViewHolder
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.MainCellViewHolder
 import org.p2p.uikit.components.finance_block.asFinanceCell
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
 import org.p2p.uikit.utils.drawable.shape.shapeBottomRounded
@@ -33,7 +33,7 @@ class SwapTokensBRoundedItemDecoration(
     private val groupedRounding = groupedRoundingFinanceBlockDecoration()
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-        val currentViewHolder = parent.getChildViewHolder(view) as? FinanceBlockViewHolder ?: return
+        val currentViewHolder = parent.getChildViewHolder(view) as? MainCellViewHolder ?: return
         val currentItemPayload = currentViewHolder.asFinanceCell
             ?.getPayload<SwapTokensCellModelPayload>()
             ?: return
@@ -47,7 +47,7 @@ class SwapTokensBRoundedItemDecoration(
         val adapterPosition = parent.getChildAdapterPosition(view)
         val adapter = parent.adapter ?: return
         val items = adapter.getItems()
-        val previousCell = items.getOrNull(adapterPosition - 1) as? FinanceBlockCellModel
+        val previousCell = items.getOrNull(adapterPosition - 1) as? MainCellModel
 
         val shouldCheckForBottomPadding = !currentItemPayload.hasPopularLabel
 
@@ -61,7 +61,7 @@ class SwapTokensBRoundedItemDecoration(
 
     private fun addTopPaddingToNotPopularGroup(
         outRect: Rect,
-        previousCell: FinanceBlockCellModel?,
+        previousCell: MainCellModel?,
     ) {
         val prevTokenPayload = previousCell?.payload as? SwapTokensCellModelPayload
         val isPopularGroupFinished = prevTokenPayload?.hasPopularLabel == true
@@ -77,7 +77,7 @@ class SwapTokensBRoundedItemDecoration(
     }
 
     private fun roundItem(view: View, recyclerView: RecyclerView) {
-        val viewHolder = recyclerView.getChildViewHolder(view) as? FinanceBlockViewHolder ?: return
+        val viewHolder = recyclerView.getChildViewHolder(view) as? MainCellViewHolder ?: return
         val payload = viewHolder.getPayload<SwapTokensCellModelPayload>()
 
         val adapterPosition = viewHolder.layoutPosition
@@ -151,7 +151,7 @@ class SwapTokensBRoundedItemDecoration(
             ?.getPayload<SwapTokensCellModelPayload>()
 
         val isPopularTokensGroupStarted =
-            previousItem !is FinanceBlockViewHolder &&
+            previousItem !is MainCellViewHolder &&
                 nextItemPayload?.hasPopularLabel == true
 
         val isPopularTokensGroupFinished =

@@ -8,12 +8,12 @@ import org.p2p.uikit.model.CellModelPayload
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
 
-data class FinanceBlockCellModel(
+data class MainCellModel(
     val leftSideCellModel: LeftSideCellModel? = null,
     val rightSideCellModel: RightSideCellModel? = null,
     val accessibility: ViewAccessibilityCellModel = ViewAccessibilityCellModel(),
     val background: DrawableCellModel? = DrawableCellModel(tint = R.color.snow),
-    val styleType: FinanceBlockStyle = FinanceBlockStyle.FINANCE_BLOCK,
+    val styleType: MainCellStyle = MainCellStyle.FINANCE_BLOCK,
     override val payload: Any? = null,
 ) : CellModelPayload, AnyCellItem {
 

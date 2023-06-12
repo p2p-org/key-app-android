@@ -10,8 +10,8 @@ import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.Constants
 import org.p2p.ethereumkit.external.model.ERC20Tokens
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.mainCellDelegate
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
@@ -50,12 +50,12 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSmoke
 
     private val networkAdapter = CommonAnyCellAdapter(
-        financeBlockCellDelegate(inflateListener = { financeBlock ->
+        mainCellDelegate(inflateListener = { financeBlock ->
             financeBlock.setOnClickAction { _, item -> onNetworkClick(item) }
         })
     )
 
-    private fun onNetworkClick(item: FinanceBlockCellModel) {
+    private fun onNetworkClick(item: MainCellModel) {
         val network = item.typedPayload<ReceiveNetwork>()
         setFragmentResult(requestKey, bundleOf(resultKey to network))
         dismissAllowingStateLoss()
@@ -95,8 +95,8 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
         network: ReceiveNetwork,
         networkName: String,
         tokenIcon: String
-    ): FinanceBlockCellModel {
-        return FinanceBlockCellModel(
+    ): MainCellModel {
+        return MainCellModel(
             leftSideCellModel = createLeftSideModel(
                 tokenIconUrl = tokenIcon,
                 tokenName = networkName,

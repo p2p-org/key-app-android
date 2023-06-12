@@ -2,7 +2,7 @@ package org.p2p.wallet.jupiter.ui.tokens.presenter
 
 import timber.log.Timber
 import kotlinx.coroutines.launch
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.jupiter.interactor.SwapTokensInteractor
@@ -78,7 +78,7 @@ class SwapTokensPresenter(
                 val cellItems = searchResultMapper.toCellItems(searchResult)
                 view?.setTokenItems(cellItems)
 
-                val isEmpty = cellItems.none { it is FinanceBlockCellModel }
+                val isEmpty = cellItems.none { it is MainCellModel }
                 view?.showEmptyState(isEmpty = isEmpty)
             } catch (error: Throwable) {
                 view?.setTokenItems(emptyList())

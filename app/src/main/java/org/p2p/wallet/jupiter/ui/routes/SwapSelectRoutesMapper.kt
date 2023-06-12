@@ -5,8 +5,8 @@ import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.FinanceBlockStyle
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -22,8 +22,8 @@ class SwapSelectRoutesMapper {
 
     fun mapLoadingList(): List<AnyCellItem> = buildList {
         repeat(3) {
-            this += FinanceBlockCellModel(
-                styleType = FinanceBlockStyle.BASE_CELL,
+            this += MainCellModel(
+                styleType = MainCellStyle.BASE_CELL,
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = titleSkeleton(),
                     secondLineText = subtitleSkeleton(),
@@ -42,7 +42,7 @@ class SwapSelectRoutesMapper {
         routes.forEachIndexed { index, route ->
             val rightIcon = if (index == activeRouteIndex) getActiveRouteIcon() else null
 
-            this += FinanceBlockCellModel(
+            this += MainCellModel(
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = TextViewCellModel.Raw(
                         text = formatRouteName(
@@ -60,7 +60,7 @@ class SwapSelectRoutesMapper {
                 ),
                 rightSideCellModel = rightIcon,
                 payload = route,
-                styleType = FinanceBlockStyle.BASE_CELL,
+                styleType = MainCellStyle.BASE_CELL,
             )
         }
     }

@@ -7,7 +7,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
@@ -131,7 +131,7 @@ class TopUpWalletBottomSheet :
         iconResId: Int,
         backgroundTintId: Int,
         showRightProgress: Boolean = false
-    ): FinanceBlockCellModel {
+    ): MainCellModel {
         val leftSideCellModel = LeftSideCellModel.IconWithText(
             icon = IconWrapperCellModel.SingleIcon(
                 icon = ImageViewCellModel(
@@ -171,7 +171,7 @@ class TopUpWalletBottomSheet :
             tint = R.color.bg_snow
         )
 
-        return FinanceBlockCellModel(
+        return MainCellModel(
             leftSideCellModel = leftSideCellModel,
             rightSideCellModel = rightSideCellModel,
             background = background,

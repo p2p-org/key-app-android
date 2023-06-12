@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.components.info_block.InfoBlockCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -49,7 +49,7 @@ enum class SwapInfoType {
     NETWORK_FEE, ACCOUNT_FEE, LIQUIDITY_FEE, MINIMUM_RECEIVED
 }
 
-private typealias LoadRateBox = Triple<JupiterSwapMarketInformation, FinanceBlockCellModel, SwapRateLoaderState>
+private typealias LoadRateBox = Triple<JupiterSwapMarketInformation, MainCellModel, SwapRateLoaderState>
 
 class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
 
@@ -183,7 +183,7 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
     private fun getRateLoaderFlow(
         marketInfo: JupiterSwapMarketInformation,
         tokens: List<SwapTokenModel>,
-        loadingCell: FinanceBlockCellModel,
+        loadingCell: MainCellModel,
     ): Flow<LoadRateBox> {
         val lpToken = tokens.find { it.mintAddress == marketInfo.liquidityFee.mint }
         val loadingCellFlow = flowOf(marketInfo to loadingCell)

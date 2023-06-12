@@ -11,7 +11,7 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 import org.p2p.uikit.R
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.recycler.getItems
@@ -20,7 +20,7 @@ import org.p2p.uikit.utils.toPx
 fun onePxDividerFinanceBlockDecoration(
     context: Context,
     orientation: Int = LinearLayout.VERTICAL,
-) = OnePxDividerDecoration(FinanceBlockCellModel::class, context, orientation)
+) = OnePxDividerDecoration(MainCellModel::class, context, orientation)
 
 class OnePxDividerDecoration(
     private val itemCellType: KClass<out AnyCellItem>,
