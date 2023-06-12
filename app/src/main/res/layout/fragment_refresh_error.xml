@@ -16,7 +16,7 @@
         android:id="@+id/image_view_box"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:src="@drawable/ic_timer_error"
+        android:src="@drawable/ic_timer_error_raster"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent=".26"
         app:layout_constraintStart_toStartOf="parent"

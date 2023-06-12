@@ -7,7 +7,9 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
@@ -20,7 +22,6 @@ import org.p2p.core.network.ConnectionManager
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
-import org.p2p.core.utils.launchRestartable
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
@@ -125,10 +126,12 @@ class MainFragment :
             hide(refreshErrorFragment)
         }
 
-        lifecycle.launchRestartable {
-            connectionManager.connectionStatus.onEach { isConnected ->
-                if (!isConnected) showInternetError(showError = true)
-            }.launchIn(this)
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                connectionManager.connectionStatus.collect { isConnected ->
+                    if (!isConnected) showInternetError(showError = true)
+                }
+            }
         }
 
         // todo: this is just a fake solution, we need to hide error when user clicks on refresh button
