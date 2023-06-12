@@ -146,7 +146,8 @@ class StrigaUserRepositoryTest {
             assertEquals(dataMap[StrigaSignupDataType.COUNTRY_ALPHA_2], address.country)
             assertEquals(dataMap[StrigaSignupDataType.CITY], address.city)
             assertEquals(dataMap[StrigaSignupDataType.CITY_ADDRESS_LINE], address.addressLine1)
-            assertEquals("", address.addressLine2)
+            // we just copy the same to address line 2
+            assertEquals(dataMap[StrigaSignupDataType.CITY_ADDRESS_LINE], address.addressLine2)
             assertEquals(dataMap[StrigaSignupDataType.CITY_POSTAL_CODE], address.postalCode)
             assertEquals(dataMap[StrigaSignupDataType.CITY_STATE], address.state)
 

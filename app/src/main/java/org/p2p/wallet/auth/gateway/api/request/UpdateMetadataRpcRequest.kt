@@ -17,7 +17,7 @@ data class UpdateMetadataRpcRequest(
     params = buildMap {
         put("ethereum_id", ethereumAddress)
         put("solana_pubkey", userPublicKey)
-        put("encrypted_metadata", encryptedMetadata)
+        put("metadata", encryptedMetadata)
         put("timestamp_device", timestamp)
         put("signature", requestSignature)
     }

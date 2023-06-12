@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.signup.ui
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -17,6 +18,7 @@ class StrigaSignUpFirstStepPresenter(
     dispatchers: CoroutineDispatchers,
     private val interactor: StrigaSignupInteractor,
     private val countryRepository: CountryCodeRepository,
+    private val metadataInteractor: MetadataInteractor,
 ) : BasePresenter<StrigaSignUpFirstStepContract.View>(dispatchers.ui),
     StrigaSignUpFirstStepContract.Presenter {
 
@@ -123,7 +125,13 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     private suspend fun initialLoadSignupData() {
-        val data = interactor.getSignupDataFirstStep().associateBy { it.type }
+        val data = interactor.getSignupDataFirstStep().associateBy { it.type }.toMutableMap()
+        metadataInteractor.currentMetadata?.let { metadata ->
+            data[StrigaSignupDataType.EMAIL] = StrigaSignupData(
+                type = StrigaSignupDataType.EMAIL,
+                value = metadata.socialShareOwnerEmail
+            )
+        }
 
         // fill pre-saved values as-is
         data.values.forEach {
@@ -142,17 +150,20 @@ class StrigaSignUpFirstStepPresenter(
                 selectedPhoneNumber = selectedPhoneNumber
             )
         } else {
-            // find default country code for phone
             try {
-                phoneCountryCode = countryRepository.detectCountryOrDefault().also { countryCode ->
-                    val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+                val phoneNumberWithCode = interactor.retrievePhoneNumberWithCode(
+                    cachedPhoneCode = signupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value,
+                    cachedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+                )
 
-                    onPhoneCountryCodeChanged(countryCode)
-                    view?.setupPhoneCountryCodePicker(
-                        selectedCountryCode = countryCode,
-                        selectedPhoneNumber = selectedPhoneNumber
-                    )
-                }
+                onPhoneCountryCodeChanged(phoneNumberWithCode.phoneCode)
+
+                // Using the updated phoneCode and selectedPhoneNumber
+                view?.setupPhoneCountryCodePicker(
+                    selectedCountryCode = phoneNumberWithCode.phoneCode,
+                    selectedPhoneNumber = phoneNumberWithCode.phoneNumberNational
+                )
+                view?.updateSignupField(StrigaSignupDataType.PHONE_NUMBER, phoneNumberWithCode.phoneNumberNational)
             } catch (e: Throwable) {
                 Timber.e(e, "Loading default country code failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
@@ -167,7 +178,7 @@ class StrigaSignUpFirstStepPresenter(
         interactor.findCountryByIsoAlpha3(selectedCountryValue)
             ?.also { onCountryOfBirthdayChanged(it) }
 
-        getCachedPhoneCodeWithoutPlus()?.let {
+        signupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value?.let {
             val phoneCountryCode = countryRepository.findCountryCodeByPhoneCode(it)
             phoneCountryCode?.let(::onPhoneCountryCodeChanged)
         }
@@ -182,17 +193,5 @@ class StrigaSignUpFirstStepPresenter(
 
     private fun setCachedData(type: StrigaSignupDataType, newValue: String) {
         signupData[type] = StrigaSignupData(type = type, value = newValue)
-    }
-
-    private fun getCachedPhoneCodeWithoutPlus(): String? {
-        return signupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value?.let {
-            check(it.isNotBlank()) { "Given blank phone code from storage!" }
-            if (it[0] == '+') {
-                it.substring(1)
-            } else {
-                // i'm not sure if it's possible, but just in case leave it here
-                it
-            }
-        }
     }
 }
