@@ -87,7 +87,7 @@ class TopUpWalletBottomSheet :
                 showToast(TextContainer("SumSub verification is not implemented yet"))
                 null
             }
-            else -> null
+            BankTransferNavigationTarget.Nowhere -> null
         }
         fragment?.let(::dismissAndNavigate)
     }
