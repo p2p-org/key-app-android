@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     defaultConfig {
-        def apiKeysProperties = new PropertiesFile(rootProject.file("apikeys.properties"), logger)
+        def apiKeysProperties = new PropertiesFile(rootProject.file(".properties/apikeys.properties"), logger)
 
         buildConfigField("String", "rpcPoolApiKey", "\"${apiKeysProperties.getOrThrow('rpcPoolApiKey')}\"")
         buildConfigField("String", "moonpayKey", "\"${apiKeysProperties.getOrThrow('moonpayKey')}\"")
@@ -13,7 +13,7 @@ android {
         buildConfigField("String", "lokaliseKey", "\"${apiKeysProperties.getOrThrow('lokaliseKey')}\"")
         buildConfigField("String", "lokaliseAppId", "\"${apiKeysProperties.getOrThrow('lokaliseAppId')}\"")
 
-        def commonProperties = new PropertiesFile(rootProject.file("common.properties"), logger)
+        def commonProperties = new PropertiesFile(rootProject.file(".properties/common.properties"), logger)
         buildConfigField("String", "saltPrefix", "\"${commonProperties.getOrThrow('saltPrefix')}\"")
         buildConfigField("String", "svlMemoSend", "\"${commonProperties.getOrThrow('svlMemoSend')}\"")
         buildConfigField("String", "svlMemoClaim", "\"${commonProperties.getOrThrow('svlMemoClaim')}\"")
