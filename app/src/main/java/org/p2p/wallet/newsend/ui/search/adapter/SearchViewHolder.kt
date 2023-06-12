@@ -28,7 +28,7 @@ class SearchViewHolder(
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    val iconPadding = 12.toPx()
+    private val iconPadding = 12.toPx()
 
     fun onBind(item: SearchResult) {
         when (item) {
