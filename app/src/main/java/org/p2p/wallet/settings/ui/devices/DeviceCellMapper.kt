@@ -87,8 +87,8 @@ class DeviceCellMapper(
             TextViewCellModel.Raw(
                 text = TextContainer(subtitle),
                 textColor = R.color.text_rose,
-                textAppearance = R.style.UiKit_TextAppearance_SemiBold_Text4,
-                textSize = TextViewSize(textSize = 13f)
+                textAppearance = R.style.UiKit_TextAppearance_Regular_Label1,
+                textSize = TextViewSize(textSize = 12f)
             )
         }
         val leftSideCellModel = LeftSideCellModel.IconWithText(
