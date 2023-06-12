@@ -130,8 +130,6 @@ jobs:
         uses: ./.github/actions/setup-changelog
       - name: "Send start deploy message to slack"
         run: bash bash_scripts/slack_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-      - name: "Generate a unique version build"
-        uses: ./.github/actions/setup-version-build
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
       - name: "Upload APK to Firebase (Feature)"
@@ -152,9 +150,3 @@ jobs:
         run: |
           value=`cat timestamp.txt`
           bash bash_scripts/slack_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-      - name: "Get last commit hash and save into LastCommit.kt"
-        run: ./gradlew setLastCommitHash -Phash=$(git rev-parse HEAD)
-      - name: "Commit and Push changes"
-        uses: ./.github/actions/setup-commit
-        with:
-          github-author-email: ${{ vars.GIT_AUTHOR_EMAIL }}
