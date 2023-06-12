@@ -84,3 +84,77 @@ jobs:
         run: |
           echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
           echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
+
+  android-build-artifacts:
+    name: "Run build feature artifacts"
+    environment: manual
+    needs:
+      - android-lint
+      - android-unit-tests
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout to the current commit hash"
+        uses: actions/checkout@v3
+        with:
+          ref: develop
+          fetch-depth: 0
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: "Initializing firebase configs"
+        uses: ./.github/actions/setup-google-services
+        with:
+          google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+      - name: "Initialize project keys"
+        uses: ./.github/actions/setup-project
+        with:
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+          svl-memo-send: ${{ secrets.SVL_MEMO_SEND }}
+          svl-memo-claim: ${{ secrets.SVL_MEMO_CLAIM }}
+          salt-prefix: ${{ secrets.SALT_PREFIX }}
+      - name: "Generate changelog"
+        uses: ./.github/actions/setup-changelog
+      - name: "Send start deploy message to slack"
+        run: bash bash_scripts/slack_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+      - name: "Generate a unique version build"
+        uses: ./.github/actions/setup-version-build
+      - name: "Build feature APK"
+        run: ./gradlew assembleFeature
+      - name: "Upload APK to Firebase (Feature)"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: ./gradlew appDistributionUploadFeature
+      - name: "Upload APK to Slack (Feature)"
+        uses: ./.github/actions/setup-slack
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "feature"
+          artifact-type: "apk"
+      - name: "Upload changelog, and Jira ticket to slack channel"
+        run: bash bash_scripts/slack_upload_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} CHANGELOG.txt
+      - name: "Send finish deploy message to slack"
+        run: |
+          value=`cat timestamp.txt`
+          bash bash_scripts/slack_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+      - name: "Get last commit hash and save into LastCommit.kt"
+        run: ./gradlew setLastCommitHash -Phash=$(git rev-parse HEAD)
+      - name: "Commit and Push changes"
+        uses: ./.github/actions/setup-commit
+        with:
+          github-author-email: ${{ vars.GIT_AUTHOR_EMAIL }}
