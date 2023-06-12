@@ -22,6 +22,7 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsContract
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
+import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.NetworkType
@@ -110,7 +111,8 @@ object HomeModule : InjectionModule {
                 updateSubscribers = subscribers,
                 claimUiMapper = get(),
                 bridgeFeatureToggle = get(),
-                context = get()
+                context = get(),
+                strigaUiBannerMapper = StrigaKycUiBannerMapper()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

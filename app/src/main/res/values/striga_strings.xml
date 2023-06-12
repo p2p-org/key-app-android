@@ -92,4 +92,30 @@
     <string name="striga_sms_error_exceeded_resend_attempts_subtitle">After 5 SMS requests we disabled it for 1 day to secure your account</string>
     <string name="striga_sms_error_exceeded_confirmation_attempts_title">Please, wait 1 day for the next try</string>
     <string name="striga_sms_error_exceeded_confirmation_attempts_subtitle">After 5 incorrect attempts we disabled SMS verification for 1 day to secure your account.</string>
+
+    <string name="striga_kyc_signup_banner_pending_title">Your documents\nverification is pending</string>
+    <string name="striga_kyc_signup_banner_pending_message">Usually it takes a few hours</string>
+    <string name="striga_kyc_signup_banner_pending_action">View</string>
+
+    <string name="striga_kyc_signup_banner_finish_title">Verification is done</string>
+    <string name="striga_kyc_signup_banner_finish_message">Continue your top up via a bank transfer</string>
+    <string name="striga_kyc_signup_banner_finish_action">Top up</string>
+
+    <string name="striga_kyc_signup_banner_action_required_title">Action required</string>
+    <string name="striga_kyc_signup_banner_action_required_message">Please, check the details and update your data</string>
+    <string name="striga_kyc_signup_banner_action_required_action">Check details</string>
+
+    <string name="striga_kyc_signup_banner_rejected_title">Verification is rejected</string>
+    <string name="striga_kyc_signup_banner_rejected_message">Topup via bank transfer is unavailable</string>
+    <string name="striga_kyc_signup_banner_rejected_action">See details</string>
+
+    <string name="striga_kyc_signup_banner_identify_title">Finish identity verification to send your money worldwide</string>
+    <string name="striga_kyc_signup_banner_identify_subtitle" />
+    <string name="striga_kyc_signup_banner_identify_action">Continue</string>
+
+
+
+
+
+
 </resources>

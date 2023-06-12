@@ -1,15 +1,16 @@
 package org.p2p.wallet.home.ui.main.adapter
 
+import androidx.core.view.isVisible
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import org.p2p.uikit.utils.getColor
-import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemBannerSingleBinding
-import org.p2p.wallet.home.model.Banner
+import org.p2p.wallet.databinding.ItemHomeBannerBinding
+import org.p2p.wallet.home.model.HomeScreenBanner
+import org.p2p.wallet.kyc.model.StrigaKycBanner
+import org.p2p.wallet.utils.viewbinding.context
 
 class SingleBannerViewHolder(
-    private val binding: ItemBannerSingleBinding,
+    private val binding: ItemHomeBannerBinding,
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -21,7 +22,7 @@ class SingleBannerViewHolder(
         parent: ViewGroup,
         listener: OnHomeItemsClickListener
     ) : this(
-        binding = ItemBannerSingleBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+        binding = ItemHomeBannerBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         listener = listener
     )
 
@@ -33,21 +34,32 @@ class SingleBannerViewHolder(
         screenWidth = pxWidth - MARGIN_HORIZONTAL
     }
 
-    fun onBind(item: Banner) {
-        with(binding) {
-            val width = if (item.isSingle) {
-                screenWidth
-            } else {
-                root.resources.getDimension(R.dimen.min_banner_width).toInt()
-            }
-            colorView.layoutParams.width = width
+    fun onBind(item: HomeScreenBanner) {
+        when (item) {
+            is StrigaKycBanner -> onBind(item)
+        }
+    }
 
-            optionsTextView.setText(item.optionTextId)
-            actionTextView.setText(item.actionTextId)
-            bannerImageView.setImageResource(item.drawableRes)
-            colorView.setBackgroundColor(root.getColor(item.backgroundColorRes))
+    private fun onBind(item: StrigaKycBanner) = with(binding) {
+        val item = item.status
+        textViewTitle.setText(item.bannerTitleResId)
 
-            root.setOnClickListener { listener.onBannerClicked(item.optionTextId) }
+        val subtitleText = context.getString(item.bannerMessageResId)
+        textViewSubtitle.text = subtitleText
+        textViewSubtitle.isVisible = subtitleText.isNotEmpty()
+
+        textViewSubtitle.setText(item.bannerMessageResId)
+        imageViewIcon.setImageResource(item.placeholderResId)
+        buttonAction.setText(item.actionTitleResId)
+        root.background.setTint(context.getColor(item.backgroundTint))
+
+        buttonClose.isVisible = item.isCloseButtonVisible
+
+        buttonAction.setOnClickListener {
+            listener.onBannerClicked(item.bannerTitleResId)
+        }
+        buttonClose.setOnClickListener {
+            listener.onBannerCloseClicked(item.bannerTitleResId)
         }
     }
 }
