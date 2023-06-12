@@ -30,5 +30,5 @@ runs:
         -F token="${{ inputs.bot-token }}" \
         -F text="Build $version_name is published!" \
         -F channels="${{ inputs.channel-id }}" \
-        -F "file=@apk_file" \
+        -F "file=@$apk_file" \
         https://slack.com/api/files.upload
