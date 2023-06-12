@@ -36,7 +36,7 @@ android {
             abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
         }
 
-        setProperty("archivesBaseName", Versions.CURRENT_APP_NAME)
+        setProperty("archivesBaseName", Versions.generateReleaseAppName())
     }
 
     buildTypes {
@@ -94,7 +94,7 @@ android {
         outputs
             .map { it as BaseVariantOutputImpl }
             .forEach { output ->
-                output.outputFileName = Versions.CURRENT_APP_NAME + "-${buildType.name}.apk"
+                output.outputFileName = Versions.generateDebugAppName() + ".apk"
             }
     }
 

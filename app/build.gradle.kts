@@ -47,7 +47,7 @@ android {
         outputs
             .map { it as BaseVariantOutputImpl }
             .forEach { output ->
-                output.outputFileName = Versions.CURRENT_APP_NAME + "-${buildType.name}.apk"
+                output.outputFileName = Versions.generateDebugAppName() + ".apk"
             }
     }
 
