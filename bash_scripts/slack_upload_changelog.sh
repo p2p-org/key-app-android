@@ -1,7 +1,8 @@
 #!/bin/bash
 
 apk_file=$3
-version_name=$(aapt dump badging "$apk_file" | awk -v FS="'" '/versionName=/{print $2}')
+apk_filename=$(basename "$apk_file")
+version_name=$(echo "$apk_filename" | sed 's/^key-app-\(.*\)$/\1/')
 
 slack_ktlint_message="Build $version_name is published!"
 
