@@ -91,6 +91,10 @@
     <string name="devices_make_sure_your_device">Make sure this is still your device</string>
     <string name="devices_footer_message">Attention! If you update your current device, you will not be able to use the old device for recovery.</string>
 
+    <string name="devices_almost_done">Nice! Almost done</string>
+    <string name="devices_almost_done_message">Confirm access to your account that was used to create the wallet</string>
+    <string name="devices_restore_google">Restore with Google</string>
+
     <!--Seed Phrase Kit-->
     <string name="seed_phrase_title">Details seed phrase</string>
     <string name="seed_phrase_text">Showing seed phrase</string>
