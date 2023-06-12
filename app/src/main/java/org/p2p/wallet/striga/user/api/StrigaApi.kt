@@ -1,6 +1,7 @@
 package org.p2p.wallet.striga.user.api
 
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import org.p2p.wallet.striga.user.api.response.StrigaCreateUserResponse
@@ -10,7 +11,7 @@ interface StrigaApi {
     @POST("v1/user/create")
     suspend fun createUser(@Body body: StrigaCreateUserRequest): StrigaCreateUserResponse
 
-    @POST("v1/user/{userId}")
+    @GET("v1/user/{userId}")
     suspend fun getUserDetails(@Path("userId") userId: String): StrigaUserDetailsResponse
 
     /**

@@ -7,6 +7,9 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.settings.model.SettingsItemMapper
+import org.p2p.wallet.settings.ui.devices.DeviceCellMapper
+import org.p2p.wallet.settings.ui.devices.DevicesContract
+import org.p2p.wallet.settings.ui.devices.DevicesPresenter
 import org.p2p.wallet.settings.ui.network.SettingsNetworkContract
 import org.p2p.wallet.settings.ui.network.SettingsNetworkPresenter
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitContract
@@ -30,5 +33,8 @@ object SettingsModule : InjectionModule {
         factoryOf(::RecoveryKitPresenter) bind RecoveryKitContract.Presenter::class
         factoryOf(::ResetPinPresenter) bind ResetPinContract.Presenter::class
         factoryOf(::SettingsNetworkPresenter) bind SettingsNetworkContract.Presenter::class
+
+        factoryOf(::DevicesPresenter) bind DevicesContract.Presenter::class
+        factoryOf(::DeviceCellMapper)
     }
 }

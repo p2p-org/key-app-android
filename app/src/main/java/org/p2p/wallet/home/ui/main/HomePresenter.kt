@@ -63,6 +63,8 @@ import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
+import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SocketState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
@@ -110,6 +112,8 @@ class HomePresenter(
     private val transactionManager: TransactionManager,
     private val claimUiMapper: ClaimUiMapper,
     private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
+    private val strigaUserInteractor: StrigaUserInteractor,
+    private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaUiBannerMapper: StrigaKycUiBannerMapper,
     bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     context: Context
@@ -148,7 +152,12 @@ class HomePresenter(
         launch {
             awaitAll(
                 async { networkObserver.start() },
-                async { metadataInteractor.tryLoadAndSaveMetadata() }
+                async {
+                    // todo: move it somewhere to unify all home loadings
+                    metadataInteractor.tryLoadAndSaveMetadata()
+                    strigaUserInteractor.loadAndSaveUserData()
+                    strigaSignupInteractor.loadAndSaveSignupData()
+                }
             )
 
             // save the job to prevent do the same job twice in observeInternetConnection

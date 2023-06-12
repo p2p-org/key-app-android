@@ -1,6 +1,5 @@
 package org.p2p.uikit.organisms.sectionheader
 
-import com.google.android.material.resources.TextAppearance
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.model.CellModelPayload
@@ -13,4 +12,4 @@ data class SectionHeaderCellModel(
     val textColor: Int? = null,
     val textAppearance: Int? = null
     // todo: add shevron container
-): CellModelPayload, AnyCellItem
+) : CellModelPayload, AnyCellItem

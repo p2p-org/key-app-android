@@ -111,6 +111,8 @@ object HomeModule : InjectionModule {
                 updateSubscribers = subscribers,
                 claimUiMapper = get(),
                 bridgeFeatureToggle = get(),
+                strigaUserInteractor = get(),
+                strigaSignupInteractor = get(),
                 context = get(),
                 strigaUiBannerMapper = StrigaKycUiBannerMapper()
             )

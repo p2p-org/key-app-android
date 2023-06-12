@@ -5,7 +5,7 @@ import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatFiat
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
@@ -13,6 +13,7 @@ import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.utils.image.commonCircleImage
 import org.p2p.uikit.utils.text.TextViewBackgroundModel
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.badgePadding
 import org.p2p.uikit.utils.text.badgeRounded
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
@@ -60,7 +61,7 @@ class SwapTokensCommonMapper {
     fun SwapTokenModel.toTokenFinanceCellModel(
         isPopularToken: Boolean = false,
         isSearchResult: Boolean = false
-    ): FinanceBlockCellModel = when (this) {
+    ): MainCellModel = when (this) {
         is SwapTokenModel.JupiterToken -> asTokenFinanceCellModel(isPopularToken, isSearchResult)
         is SwapTokenModel.UserToken -> asTokenFinanceCellModel(isPopularToken, isSearchResult)
     }
@@ -68,7 +69,7 @@ class SwapTokensCommonMapper {
     private fun SwapTokenModel.UserToken.asTokenFinanceCellModel(
         isPopularToken: Boolean,
         isSearchResult: Boolean
-    ): FinanceBlockCellModel =
+    ): MainCellModel =
         with(details) {
             createTokenFinanceCellModel(
                 tokenIconUrl = iconUrl.orEmpty(),
@@ -88,7 +89,7 @@ class SwapTokensCommonMapper {
     private fun SwapTokenModel.JupiterToken.asTokenFinanceCellModel(
         isPopularToken: Boolean,
         isSearchResult: Boolean
-    ): FinanceBlockCellModel =
+    ): MainCellModel =
         with(details) {
             createTokenFinanceCellModel(
                 tokenIconUrl = iconUrl.orEmpty(),
@@ -113,8 +114,8 @@ class SwapTokensCommonMapper {
         totalTokenPriceInUsd: String?,
         payload: SwapTokensCellModelPayload,
         addPopularLabel: Boolean,
-    ): FinanceBlockCellModel {
-        return FinanceBlockCellModel(
+    ): MainCellModel {
+        return MainCellModel(
             leftSideCellModel = createLeftSideModel(
                 tokenIconUrl = tokenIconUrl,
                 tokenName = tokenName,
@@ -157,9 +158,10 @@ class SwapTokensCommonMapper {
             text = TextViewCellModel.Raw(
                 text = TextContainer(R.string.swap_tokens_popular_label),
                 badgeBackground = TextViewBackgroundModel(
-                    badgeRounded(tint = R.color.elements_rain)
+                    background = badgeRounded(tint = R.color.elements_rain),
+                    padding = badgePadding()
                 )
-            ),
+            )
         )
     }
 

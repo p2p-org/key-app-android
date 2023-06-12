@@ -32,7 +32,7 @@ class StrigaSmsInputPresenter(
                     ?: error("Couldn't find any masks for given code $phoneCode")
 
                 val formattedPhoneNumber = SimpleMaskFormatter(phoneMask).format(phoneNumber)
-                view?.initView(PhoneNumber(formattedValue = "+$phoneCode$formattedPhoneNumber"))
+                view?.initView(PhoneNumber(formattedValue = "$phoneCode$formattedPhoneNumber"))
             } catch (initViewError: Throwable) {
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 Timber.e(initViewError, "failed to init view for sms input")

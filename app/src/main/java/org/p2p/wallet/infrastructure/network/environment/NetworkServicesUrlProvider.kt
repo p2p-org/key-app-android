@@ -1,12 +1,11 @@
 package org.p2p.wallet.infrastructure.network.environment
 
-import androidx.core.content.edit
 import android.content.Context
-import android.content.SharedPreferences
 import timber.log.Timber
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.wallet.common.feature_toggles.remote_config.NetworkServicesUrlStorage
 import org.p2p.wallet.utils.getStringResourceByName
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
@@ -21,12 +20,12 @@ private const val KEY_GATEWAY_BASE_URL = "KEY_GATEWAY_BASE_URL"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
-    private val sharedPreferences: SharedPreferences,
+    private val storage: NetworkServicesUrlStorage,
     private val crashLogger: CrashLogger
 ) {
 
     fun loadFeeRelayerEnvironment(): FeeRelayerEnvironment {
-        val url = sharedPreferences.getString(
+        val url = storage.getString(
             KEY_FEE_RELAYER_BASE_URL,
             context.getString(R.string.feeRelayerBaseUrl)
         ).orEmpty()
@@ -36,11 +35,11 @@ class NetworkServicesUrlProvider(
     }
 
     fun saveFeeRelayerEnvironment(newUrl: String) {
-        sharedPreferences.edit { putString(KEY_FEE_RELAYER_BASE_URL, newUrl) }
+        storage.putString(KEY_FEE_RELAYER_BASE_URL, newUrl)
     }
 
     fun loadNameServiceEnvironment(): NameServiceEnvironment {
-        val url = sharedPreferences.getString(
+        val url = storage.getString(
             KEY_NAME_SERVICE_BASE_URL,
             context.getString(R.string.registerUsernameServiceProductionUrl)
         ).orEmpty()
@@ -61,11 +60,11 @@ class NetworkServicesUrlProvider(
     }
 
     private fun saveNameServiceEnvironment(newUrl: String) {
-        sharedPreferences.edit { putString(KEY_NAME_SERVICE_BASE_URL, newUrl) }
+        storage.putString(KEY_NAME_SERVICE_BASE_URL, newUrl)
     }
 
     fun loadNotificationServiceEnvironment(): NotificationServiceEnvironment {
-        val url = sharedPreferences.getString(
+        val url = storage.getString(
             KEY_NOTIFICATION_SERVICE_BASE_URL,
             context.getString(R.string.notificationServiceBaseUrl)
         ).orEmpty()
@@ -75,11 +74,11 @@ class NetworkServicesUrlProvider(
     }
 
     fun saveNotificationServiceEnvironment(newUrl: String) {
-        sharedPreferences.edit { putString(KEY_NOTIFICATION_SERVICE_BASE_URL, newUrl) }
+        storage.putString(KEY_NOTIFICATION_SERVICE_BASE_URL, newUrl)
     }
 
     fun loadBridgesServiceEnvironment(): BridgesServiceEnvironment {
-        val url = sharedPreferences.getString(
+        val url = storage.getString(
             KEY_BRIDGES_SERVICE_BASE_URL,
             context.getString(R.string.bridgesServiceBaseUrl)
         ).orEmpty()
@@ -90,11 +89,11 @@ class NetworkServicesUrlProvider(
     }
 
     fun saveBridgesServiceEnvironment(newUrl: String) {
-        sharedPreferences.edit { putString(KEY_BRIDGES_SERVICE_BASE_URL, newUrl) }
+        storage.putString(KEY_BRIDGES_SERVICE_BASE_URL, newUrl)
     }
 
     fun loadGatewayServiceEnvironment(): GatewayServiceEnvironment {
-        val url = sharedPreferences.getString(
+        val url = storage.getString(
             KEY_GATEWAY_BASE_URL,
             context.getString(R.string.web3AuthServiceBaseUrl)
         ).orEmpty()
@@ -103,20 +102,21 @@ class NetworkServicesUrlProvider(
     }
 
     fun saveGatewayServiceEnvironment(newUrl: String) {
-        sharedPreferences.edit { putString(KEY_GATEWAY_BASE_URL, newUrl) }
+        storage.putString(KEY_GATEWAY_BASE_URL, newUrl)
     }
 
     fun loadTorusEnvironment(): TorusEnvironment {
-        val url = sharedPreferences.getString(
+        val url = storage.getString(
             KEY_TORUS_BASE_URL,
             context.getString(R.string.torusBaseUrl)
         ).orEmpty()
-        val verifier = sharedPreferences.getString(
+        val verifier = storage.getString(
             KEY_TORUS_BASE_VERIFIER,
             context.getString(R.string.torusVerifier)
         ).orEmpty()
+        Timber.d("Torus verifier: $verifier")
 
-        val subVerifier = sharedPreferences.getString(
+        val subVerifier = storage.getString(
             KEY_TORUS_BASE_SUB_VERIFIER,
             context.getStringResourceByName("torusSubVerifier")
         ).orEmpty()
@@ -132,7 +132,7 @@ class NetworkServicesUrlProvider(
     }
 
     fun saveTorusEnvironment(newUrl: String?, newVerifier: String?, newSubVerifier: String?) {
-        sharedPreferences.edit {
+        storage.edit {
             newUrl?.let {
                 putString(KEY_TORUS_BASE_URL, it)
             }
@@ -154,7 +154,7 @@ class NetworkServicesUrlProvider(
         } else {
             context.getString(R.string.moonpayServerSideProxyUrl)
         }
-        val serverSideBaseUrl = sharedPreferences.getString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, defaultUrl).orEmpty()
+        val serverSideBaseUrl = storage.getString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, defaultUrl).orEmpty()
         val clientSideBaseUrl = context.getString(R.string.moonpayClientSideBaseUrl)
         val isSandboxEnabled = serverSideBaseUrl == context.getString(R.string.moonpayServerSideProxySandboxUrl)
 
@@ -178,10 +178,10 @@ class NetworkServicesUrlProvider(
     }
 
     private fun saveMoonpayEnvironment(newServerSideUrl: String) {
-        sharedPreferences.edit { putString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, newServerSideUrl) }
+        storage.putString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, newServerSideUrl)
     }
 
     fun resetMoonpayEnvironment() {
-        sharedPreferences.edit { remove(KEY_MOONPAY_SERVER_SIDE_BASE_URL) }
+        storage.remove(KEY_MOONPAY_SERVER_SIDE_BASE_URL)
     }
 }

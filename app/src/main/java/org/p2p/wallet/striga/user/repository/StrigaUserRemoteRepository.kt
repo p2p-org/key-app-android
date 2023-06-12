@@ -32,7 +32,7 @@ class StrigaUserRemoteRepository(
 
     override suspend fun getUserDetails(): StrigaDataLayerResult<StrigaUserDetails> {
         return try {
-            val response = api.getUserDetails(strigaUserIdProvider.getUserId())
+            val response = api.getUserDetails(strigaUserIdProvider.getUserIdOrThrow())
             mapper.fromNetwork(response).toSuccessResult()
         } catch (error: Throwable) {
             StrigaDataLayerError.from(
@@ -45,7 +45,7 @@ class StrigaUserRemoteRepository(
     override suspend fun verifyPhoneNumber(verificationCode: String): StrigaDataLayerResult<Unit> {
         return try {
             val request = StrigaVerifyMobileNumberRequest(
-                userId = strigaUserIdProvider.getUserId(),
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
                 verificationCode = verificationCode
             )
             api.verifyMobileNumber(request)
@@ -61,7 +61,7 @@ class StrigaUserRemoteRepository(
     override suspend fun resendSmsForVerifyPhoneNumber(): StrigaDataLayerResult<Unit> {
         return try {
             val request = StrigaResendSmsRequest(
-                userId = strigaUserIdProvider.getUserId(),
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
             )
             api.resendSms(request)
             StrigaDataLayerResult.Success(Unit)

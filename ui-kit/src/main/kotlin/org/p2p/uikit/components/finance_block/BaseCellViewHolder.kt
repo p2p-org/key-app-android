@@ -2,27 +2,27 @@ package org.p2p.uikit.components.finance_block
 
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.uikit.R
-import org.p2p.uikit.databinding.ItemFinanceBlockBinding
+import org.p2p.uikit.databinding.ItemMainCellBinding
 
 class BaseCellViewHolder(
-    private val binding: ItemFinanceBlockBinding,
-    inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
-    private val onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit)? = null,
+    private val binding: ItemMainCellBinding,
+    inflateListener: ((financeBlock: UiKitMainCellView) -> Unit)? = null,
+    private val onBindListener: ((view: UiKitMainCellView, item: MainCellModel) -> Unit)? = null,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
-        val DEFAULT_VIEW_TYPE: Int = R.layout.item_finance_block.plus(FinanceBlockStyle.BASE_CELL.ordinal)
+        val DEFAULT_VIEW_TYPE: Int = R.layout.item_main_cell.plus(MainCellStyle.BASE_CELL.ordinal)
     }
 
     init {
-        binding.root.bindViewStyle(FinanceBlockStyle.BASE_CELL)
+        binding.root.bindViewStyle(MainCellStyle.BASE_CELL)
         inflateListener?.invoke(binding.root)
     }
 
-    val item: FinanceBlockCellModel
+    val item: MainCellModel
         get() = binding.root.item
 
-    fun bind(model: FinanceBlockCellModel) {
+    fun bind(model: MainCellModel) {
         binding.root.bind(model)
         onBindListener?.invoke(binding.root, model)
     }
