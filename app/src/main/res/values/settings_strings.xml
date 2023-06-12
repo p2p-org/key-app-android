@@ -84,7 +84,7 @@
     <string name="seed_phrase_info">Make sure you understand the aspects</string>
     <string name="seed_phrase_warn">Your seed phrase must never be shared</string>
     <string name="seed_phrase_hint_1">A seed phrase is like a password — words — that allows you to access and manage your crypto funds</string>
-    <string name="seed_phrase_hint_2">Except you, no one keeps your entire seed tphrase. The parts are distributed decentralized on Torus Network nodes</string>
+    <string name="seed_phrase_hint_2">Except you, no one keeps your entire seed phrase. The parts are distributed decentralized on Torus Network nodes</string>
     <string name="seed_phrase_hint_3">Your seed phrase must never be shared. Keep it private, even from us</string>
     <string name="seed_phrase_show_key_button">Show my private key</string>
     <string name="seed_phrase_copy_key_button">Copy to clipboard</string>
