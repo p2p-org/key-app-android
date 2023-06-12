@@ -14,6 +14,7 @@ import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFeatureToggleStorage
+import org.p2p.wallet.common.feature_toggles.remote_config.NetworkServicesUrlStorage
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.infrastructure.account.AccountStorage
@@ -32,7 +33,7 @@ private const val PREFS_SWAP = "swap_prefs"
 private const val PREFS_STRIGA = "striga_prefs"
 
 object StorageModule {
-    private fun Scope.androidPreferences(prefsName: String): SharedPreferences {
+    fun Scope.androidPreferences(prefsName: String): SharedPreferences {
         return with(androidContext()) {
             getSharedPreferences("$packageName.$prefsName", Context.MODE_PRIVATE)
         }
@@ -73,6 +74,8 @@ object StorageModule {
         single { LocalFeatureToggleStorage(androidPreferences(prefsName = PREFS_TOGGLE)) }
 
         single { InAppFeatureFlags(androidPreferences(prefsName = PREFS_TOGGLE)) }
+
+        single { NetworkServicesUrlStorage(androidPreferences(prefsName = PREFS_TOGGLE)) }
 
         factory {
             val prefs = androidPreferences(PREFS_SWAP)

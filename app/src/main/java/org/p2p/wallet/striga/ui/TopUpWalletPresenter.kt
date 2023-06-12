@@ -76,6 +76,7 @@ class TopUpWalletPresenter(
 
     private suspend fun loadUserStatus() {
         if (!strigaUserInteractor.isUserCreated()) {
+            strigaBankTransferProgress.emit(false)
             return
         }
 
