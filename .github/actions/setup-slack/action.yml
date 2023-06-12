@@ -26,20 +26,9 @@ runs:
         apk_filename=$(basename "$apk_file")
         version_name=$(echo "$apk_filename" | sed 's/^key-app-\(.*\)$/\1/')
         
-        response = $(curl \
-          -F token="${{ inputs.bot-token }}" \
-          -F channels="${{ inputs.channel-id }}" \
-          -F "file=@$apk_file" \
-          https://slack.com/api/files.upload
-        )
-        
-        echo "$response" > timestamp.json
-        echo $(sed -n 's|.*"ts":"\([^"]*\)".*|\1|p' timestamp.json ) > timestamp.txt
-        slack_ts=`cat timestamp.txt`
-        
         curl \
         -F token="${{ inputs.bot-token }}" \
-        -F channel="${{ inputs.channel-id }}" \
-        -F ts="$slack_ts" \
-        -F text="Build $version_name is published!" \
-        https://slack.com/api/chat.update
+        -F channels="${{ inputs.channel-id }}" \
+        -F initial_comment="Build $version_name is published!" \
+        -F "file=@$apk_file" \
+        https://slack.com/api/files.upload
