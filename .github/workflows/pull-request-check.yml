@@ -88,9 +88,9 @@ jobs:
   android-build-artifacts:
     name: "Run build feature artifacts"
     environment: manual
-    needs:
-      - android-lint
-      - android-unit-tests
+#    needs:
+#      - android-lint
+#      - android-unit-tests
 
     runs-on: ubuntu-latest
     steps:
