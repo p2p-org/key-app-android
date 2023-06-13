@@ -92,11 +92,16 @@ class TopUpWalletPresenter(
     }
 
     private fun getBankTransferNavigationTarget(userStatus: StrigaUserStatus?): BankTransferNavigationTarget {
-        if (userStatus == null) return BankTransferNavigationTarget.Nowhere
-
         return when {
-            !strigaUserInteractor.isUserCreated() -> {
+            !strigaUserInteractor.isUserCreated() && userStatus == null -> {
                 BankTransferNavigationTarget.StrigaOnboarding
+            }
+            userStatus == null -> {
+                Timber.e(
+                    "Unable to navigate bank transfer since user status is null and user is created.\n" +
+                        "Check that userStatus is fetched"
+                )
+                BankTransferNavigationTarget.Nowhere
             }
             !userStatus.isMobileVerified -> {
                 BankTransferNavigationTarget.StrigaSmsVerification
@@ -105,8 +110,7 @@ class TopUpWalletPresenter(
                 BankTransferNavigationTarget.SumSubVerification
             }
             else -> {
-                // todo: on/off ramp
-                BankTransferNavigationTarget.Nowhere
+                BankTransferNavigationTarget.Nowhere // todo: on/off ramp
             }
         }
     }
