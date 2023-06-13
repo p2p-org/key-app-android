@@ -38,7 +38,7 @@
     <string name="registerUsernameServiceProductionUrl">https://name-register.key.app/</string>
     <string name="registerUsernameServiceBaseUrl">@string/registerUsernameServiceProductionUrl</string>
 
-    <string name="googleClientId">553127941597-j88bgo2invnpiefq2j1fhq8duju6o2tq.apps.googleusercontent.com</string>
+    <string name="webClientGoogleId">553127941597-j88bgo2invnpiefq2j1fhq8duju6o2tq.apps.googleusercontent.com</string>
 
     <string name="alarmErrorsServiceBaseUrl">https://oncall.keyapp.org/</string>
 
