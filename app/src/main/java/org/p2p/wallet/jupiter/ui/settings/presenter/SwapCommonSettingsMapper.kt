@@ -3,8 +3,8 @@ package org.p2p.wallet.jupiter.ui.settings.presenter
 import androidx.annotation.StringRes
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.FinanceBlockStyle
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -17,8 +17,8 @@ import org.p2p.wallet.jupiter.ui.settings.view.SwapCustomSlippageCellModel
 
 class SwapCommonSettingsMapper {
 
-    fun getNetworkFeeCell(): FinanceBlockCellModel {
-        return FinanceBlockCellModel(
+    fun getNetworkFeeCell(): MainCellModel {
+        return MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_network_fee_title),
@@ -39,7 +39,7 @@ class SwapCommonSettingsMapper {
                 )
             ),
             payload = SwapSettingsPayload.NETWORK_FEE,
-            styleType = FinanceBlockStyle.BASE_CELL,
+            styleType = MainCellStyle.BASE_CELL,
         )
     }
 
@@ -82,7 +82,7 @@ class SwapCommonSettingsMapper {
         payload: SwapSlippagePayload,
     ) {
         add(
-            FinanceBlockCellModel(
+            MainCellModel(
                 leftSideCellModel = LeftSideCellModel.IconWithText(
                     firstLineText = TextViewCellModel.Raw(
                         text = slippage,
@@ -99,7 +99,7 @@ class SwapCommonSettingsMapper {
                     }
                 ),
                 payload = payload,
-                styleType = FinanceBlockStyle.BASE_CELL,
+                styleType = MainCellStyle.BASE_CELL,
             )
         )
     }

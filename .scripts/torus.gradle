@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     buildTypes {
-        def torusProperties = new PropertiesFile(rootProject.file("torus.properties"), logger)
+        def torusProperties = new PropertiesFile(rootProject.file(".properties/torus.properties"), logger)
 
         debug {
             resValue "string", "torusVerifier", "${torusProperties.getOrThrow('TORUS_VERIFIER_DEBUG')}"

@@ -19,7 +19,7 @@ object DateTimeUtils {
     const val PATTERN_FULL_DAY = "HH:mm"
     private const val PATTERN_AM_PM = "hh:mm a"
     private const val PATTERN_DATE = "dd.MM.yyyy"
-    private const val PATTERN_MONTH_DATE_SHORT = "MM dd"
+    private const val PATTERN_MONTH_DATE_SHORT = "MMM dd"
     private const val PATTERN_CURRENT_YEAR_DATE = "d MMM"
     private const val PATTERN_CURRENT_YEAR_DATE_FULL = "d MMMM"
     private const val PATTERN_DAY_OF_WEEK_SHORT = "EE"

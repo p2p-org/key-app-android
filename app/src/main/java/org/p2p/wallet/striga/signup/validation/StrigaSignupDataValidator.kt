@@ -23,7 +23,18 @@ class StrigaSignupDataValidator {
             EmptyInputValidator(),
             BirthdayInputValidator()
         ),
-
+        StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3 to listOf(
+            EmptyInputValidator()
+        ),
+        StrigaSignupDataType.COUNTRY_ALPHA_2 to listOf(
+            EmptyInputValidator(),
+        ),
+        StrigaSignupDataType.OCCUPATION to listOf(
+            EmptyInputValidator()
+        ),
+        StrigaSignupDataType.SOURCE_OF_FUNDS to listOf(
+            EmptyInputValidator()
+        ),
         StrigaSignupDataType.CITY to listOf(
             EmptyInputValidator(),
             LengthInputValidator(1..40)
@@ -37,7 +48,10 @@ class StrigaSignupDataValidator {
             LengthInputValidator(1..20)
         ),
         // state is an optional field
-        StrigaSignupDataType.CITY_STATE to listOf(LengthInputValidator(0..20)),
+        StrigaSignupDataType.CITY_STATE to listOf(
+            EmptyInputValidator(),
+            LengthInputValidator(1..20)
+        ),
     )
 
     fun validate(data: StrigaSignupData): StrigaSignupFieldState {

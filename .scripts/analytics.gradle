@@ -8,7 +8,7 @@ android {
     }
 
     buildTypes {
-        def analyticsProperties = new PropertiesFile(rootProject.file("analytics.properties"), logger)
+        def analyticsProperties = new PropertiesFile(rootProject.file(".properties/analytics.properties"), logger)
         def debugKey = analyticsProperties.getOrThrow('amplitudeDebugKey')
 
         debug {

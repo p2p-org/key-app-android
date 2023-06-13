@@ -83,6 +83,9 @@ runs:
     - name: "Create analytics properties file"
       shell: bash
       run: |
+        mkdir -p .properties
+        cd .properties
+        
         touch analytics.properties
         echo "amplitudeDebugKey=${{ inputs.amplitude-key-debug }}" >> analytics.properties
         echo "amplitudeReleaseKey=${{ inputs.amplitude-key-release }}" >> analytics.properties
@@ -90,6 +93,9 @@ runs:
     - name: "Create torus properties file"
       shell: bash
       run: |
+        mkdir -p .properties
+        cd .properties
+        
         touch torus.properties
         echo "TORUS_VERIFIER_DEBUG=${{ inputs.torus-verifier-debug }}" >> torus.properties
         echo "TORUS_VERIFIER_FEATURE=${{ inputs.torus-verifier-feature }}" >> torus.properties
@@ -99,6 +105,9 @@ runs:
     - name: "Create api keys properties file"
       shell: bash
       run: |
+        mkdir -p .properties
+        cd .properties
+        
         touch apikeys.properties
         echo "rpcPoolApiKey=${{ inputs.rpc-pool-key }}" >> apikeys.properties
         echo "moonpayKey=${{ inputs.moonpay-key }}" >> apikeys.properties
@@ -122,6 +131,9 @@ runs:
     - name: "Create common.properties file"
       shell: bash
       run: |
+        mkdir -p .properties
+        cd .properties
+        
         touch common.properties
         echo "svlMemoSend=${{ inputs.svl-memo-send }}" >> common.properties
         echo "svlMemoClaim=${{ inputs.svl-memo-claim }}" >> common.properties

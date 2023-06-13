@@ -22,8 +22,13 @@ runs:
       shell: bash
       run: |
         ls -R app/build/outputs/${{ inputs.artifact-type }}/${{ inputs.build-type }}
+        apk_file=$(find app/build/outputs/${{ inputs.artifact-type }}/${{ inputs.build-type }} -name 'key-app*')
+        apk_filename=$(basename "$apk_file")
+        version_name=$(echo "$apk_filename" | sed 's/^key-app-\(.*\)$/\1/')
+        
         curl \
         -F token="${{ inputs.bot-token }}" \
         -F channels="${{ inputs.channel-id }}" \
-        -F "file=@$(find app/build/outputs/${{ inputs.artifact-type }}/${{ inputs.build-type }} -name 'key-app*')" \
+        -F initial_comment="Build $version_name is published!" \
+        -F "file=@$apk_file" \
         https://slack.com/api/files.upload

@@ -71,7 +71,7 @@ class SettingsItemMapper(
     ): List<SettingsItem> = listOfNotNull(
         SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_security),
         ComplexSettingsItem(
-            nameRes = R.string.settings_item_title_recovery_kit,
+            nameRes = R.string.settings_item_title_security,
             iconRes = R.drawable.ic_settings_shield,
             hasSeparator = true
         ),

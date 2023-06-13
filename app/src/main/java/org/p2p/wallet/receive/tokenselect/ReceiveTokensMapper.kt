@@ -5,7 +5,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
 import org.p2p.ethereumkit.external.model.ERC20Tokens
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.icon_wrapper.TwoIconAngle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -29,7 +29,7 @@ object ReceiveTokensMapper {
         val isErc20Token = ERC20Tokens.findTokenByMint(mintAddress) != null
         val isSol = symbol == Constants.SOL_SYMBOL
         val replacedName = if (isSol) Constants.SOL_NAME else name
-        return FinanceBlockCellModel(
+        return MainCellModel(
             leftSideCellModel = createLeftSideModel(
                 tokenIconUrl = iconUrl.orEmpty(),
                 tokenName = replacedName,

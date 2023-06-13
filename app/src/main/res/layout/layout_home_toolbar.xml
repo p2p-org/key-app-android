@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/bg_snow"
+    android:background="@color/bg_smoke"
     android:minHeight="?attr/actionBarSize"
     app:contentInsetStart="0dp">
 

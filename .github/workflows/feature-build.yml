@@ -1,16 +1,25 @@
 # Workflow for develop branch changes.
 # When a pull request is being merged in develop, this workflows triggers
 on:
-  push:
-    branches:
-      - develop
+  pull_request:
+    types:
+      - closed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   android-lint:
     name: "Run ktlint check"
-    if: "!contains(github.event.head_commit.message, '[CI-processing]')"
     runs-on: ubuntu-latest
     steps:
+      - name: "Check if pull request was merged"
+        run: |
+          if [ "${{ github.event.pull_request.merged }}" != "true" ]; then
+            echo "Pull request was not merged. Skipping the workflow."
+            exit 0
+          fi
       - uses: actions/checkout@v3
         with:
           ref: develop
@@ -118,6 +127,8 @@ jobs:
           salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: "Generate changelog"
         uses: ./.github/actions/setup-changelog
+        with:
+          current-ref-name: "develop"
       - name: "Send start deploy message to slack"
         run: bash bash_scripts/slack_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Generate a unique version build"

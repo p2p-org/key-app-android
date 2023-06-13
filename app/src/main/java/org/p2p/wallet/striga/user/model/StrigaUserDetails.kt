@@ -1,7 +1,11 @@
 package org.p2p.wallet.striga.user.model
 
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import org.p2p.core.utils.MillisSinceEpoch
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.utils.DateTimeUtils
 
 data class StrigaUserDetails(
     val userId: String,
@@ -9,13 +13,37 @@ data class StrigaUserDetails(
     val userInfo: StrigaUserInfo,
     val addressDetails: StrigaUserAddress,
     val kycDetails: StrigaUserKycInfo
-)
+) {
+    fun toSignupData(): List<StrigaSignupData> {
+        return buildList {
+            this += StrigaSignupData(StrigaSignupDataType.EMAIL, userInfo.email)
+            this += StrigaSignupData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, userInfo.phoneNumberCode)
+            this += StrigaSignupData(StrigaSignupDataType.PHONE_NUMBER, userInfo.phoneNumber)
+            this += StrigaSignupData(StrigaSignupDataType.FIRST_NAME, userInfo.firstName)
+            this += StrigaSignupData(StrigaSignupDataType.LAST_NAME, userInfo.lastName)
+            this += StrigaSignupData(
+                StrigaSignupDataType.DATE_OF_BIRTH,
+                userInfo.dateOfBirth.format(
+                    DateTimeFormatter.ofPattern(DateTimeUtils.PATTERN_DD_MM_YYYY)
+                )
+            )
+            this += StrigaSignupData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, userInfo.placeOfBirth)
+            this += StrigaSignupData(StrigaSignupDataType.OCCUPATION, kycDetails.occupation)
+            this += StrigaSignupData(StrigaSignupDataType.SOURCE_OF_FUNDS, kycDetails.sourceOfFunds)
+            this += StrigaSignupData(StrigaSignupDataType.COUNTRY_ALPHA_2, addressDetails.country)
+            this += StrigaSignupData(StrigaSignupDataType.CITY, addressDetails.city)
+            this += StrigaSignupData(StrigaSignupDataType.CITY_ADDRESS_LINE, addressDetails.addressLine1)
+            this += StrigaSignupData(StrigaSignupDataType.CITY_POSTAL_CODE, addressDetails.postalCode)
+            this += StrigaSignupData(StrigaSignupDataType.CITY_STATE, addressDetails.postalCode)
+        }
+    }
+}
 
 class StrigaUserInfo(
     val firstName: String,
     val lastName: String,
     val dateOfBirth: ZonedDateTime,
-    val nationality: String,
+    val nationality: String?,
     val email: String,
     val phoneNumber: String,
     val phoneNumberCode: String,
