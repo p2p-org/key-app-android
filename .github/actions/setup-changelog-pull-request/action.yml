@@ -1,0 +1,20 @@
+name: "Generate changelog"
+description: "Getting all commit for current pull request"
+
+runs:
+  using: composite
+  steps:
+    - name: "Find last commit hash and current one"
+      shell: bash
+      run: |
+        # Pull changes from the remote repository and merge them into the current branch
+        git pull
+        
+        # Fetch the latest changes from the remote repository
+        git fetch origin
+        
+        # Retrieves the commit messages for the current branch 
+        commits=$(git log origin/$GITHUB_HEAD_REF --not origin/develop --pretty=format:%s --no-merges -n 100)
+        
+        # Saving commits into changelog file
+        echo "$commits" > CHANGELOG.txt
