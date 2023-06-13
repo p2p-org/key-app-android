@@ -51,6 +51,7 @@
             android:imeOptions="actionDone"
             android:inputType="text"
             android:paddingStart="16dp"
+            android:textColorHint="@color/text_mountain"
             android:paddingEnd="16dp"
             android:textColor="@color/text_night"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"

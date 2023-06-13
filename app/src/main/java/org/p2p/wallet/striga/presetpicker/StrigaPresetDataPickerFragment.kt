@@ -15,7 +15,6 @@ import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.recycler.adapter.DividerItemDecorator
 import org.p2p.wallet.databinding.FragmentStrigaPresetDataPickerBinding
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.utils.args
@@ -71,7 +70,7 @@ class StrigaPresetDataPickerFragment :
 
             binding.recyclerViewPresetData.adapter = adapter
             binding.recyclerViewPresetData.addItemDecoration(
-                DividerItemDecorator(
+                StrigaPresetPickItemDecorator(
                     context = requireContext(),
                     dividerDrawableRes = R.drawable.list_divider_smoke
                 )
