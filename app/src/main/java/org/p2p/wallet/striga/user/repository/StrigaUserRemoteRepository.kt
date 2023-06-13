@@ -6,8 +6,9 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.user.api.StrigaApi
-import org.p2p.wallet.striga.user.api.StrigaResendSmsRequest
-import org.p2p.wallet.striga.user.api.StrigaVerifyMobileNumberRequest
+import org.p2p.wallet.striga.user.api.request.StrigaResendSmsRequest
+import org.p2p.wallet.striga.user.api.request.StrigaStartKycRequest
+import org.p2p.wallet.striga.user.api.request.StrigaVerifyMobileNumberRequest
 import org.p2p.wallet.striga.user.model.StrigaUserDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 
@@ -65,6 +66,20 @@ class StrigaUserRemoteRepository(
             )
             api.resendSms(request)
             StrigaDataLayerResult.Success(Unit)
+        } catch (error: Throwable) {
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            )
+        }
+    }
+
+    override suspend fun getAccessToken(): StrigaDataLayerResult<String> {
+        return try {
+            val request = StrigaStartKycRequest(
+                userId = strigaUserIdProvider.getUserId(),
+            )
+            StrigaDataLayerResult.Success(api.getAccessToken(request).accessToken)
         } catch (error: Throwable) {
             StrigaDataLayerError.from(
                 error = error,
