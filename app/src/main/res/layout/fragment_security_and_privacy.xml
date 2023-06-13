@@ -130,7 +130,10 @@
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="8dp"
                         android:text="@string/recovery_manage"
-                        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4" />
+                        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
                 </FrameLayout>
 
                 <View
