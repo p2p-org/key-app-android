@@ -125,7 +125,13 @@ class NetworkServicesUrlProvider(
             Timber.e(IllegalArgumentException("torusSubVerifier is missing for release builds!"))
         }
 
-        val torusEnvironment = TorusEnvironment(url, verifier, subVerifier)
+        val torusEnvironment = TorusEnvironment(
+            baseUrl = url,
+            verifier = verifier,
+            subVerifier = subVerifier,
+            torusNetwork = context.getString(R.string.torusNetwork),
+            torusLogLevel = context.getString(R.string.torusLogLevel)
+        )
 
         Timber.i("Torus environment init: $torusEnvironment")
         return torusEnvironment
