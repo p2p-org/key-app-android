@@ -12,7 +12,7 @@ interface Web3AuthApi {
     ): Web3AuthSignUpResponse
 
     suspend fun triggerSignInNoCustom(
-        socialShare: String,
+        torusKey: String,
         deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
     ): Web3AuthSignInResponse
 
@@ -23,12 +23,15 @@ interface Web3AuthApi {
     ): Web3AuthSignInResponse
 
     suspend fun triggerSignInNoDevice(
-        socialShare: String,
+        torusKey: String,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         encryptedMnemonic: JsonObject
     ): Web3AuthSignInResponse
 
+    /**
+     * @param signInGoogleIdToken used to auth user on Web3Auth server-side using google web client id.
+     */
     suspend fun obtainTorusKey(
-        googleUserToken: String
+        signInGoogleIdToken: String
     ): String
 }

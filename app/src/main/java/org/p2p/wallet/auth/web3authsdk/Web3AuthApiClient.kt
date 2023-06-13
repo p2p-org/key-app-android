@@ -5,17 +5,17 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import timber.log.Timber
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
-import timber.log.Timber
-import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"
@@ -28,8 +28,6 @@ class Web3AuthApiClient(
     private val mapper: Web3AuthClientMapper,
     private val gson: Gson,
     private val authRepository: AuthRepository,
-    private val torusNetworkEnv: String,
-    private val torusLogLevel: String,
     private val durationTracker: Web3AuthDurationTracker
 ) : Web3AuthApi {
 
@@ -92,7 +90,7 @@ class Web3AuthApiClient(
         }
     }
 
-    override suspend fun obtainTorusKey(googleUserToken: String): String {
+    override suspend fun obtainTorusKey(signInGoogleIdToken: String): String {
         return suspendCancellableCoroutine {
             this.continuation = it
 
@@ -101,7 +99,7 @@ class Web3AuthApiClient(
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signup",
-                    jsMethodCall = "obtainTorusKey('$googleUserToken')"
+                    jsMethodCall = "obtainTorusKey('$signInGoogleIdToken')"
                 ),
                 null
             )
@@ -158,10 +156,11 @@ class Web3AuthApiClient(
 
     private fun generateFacade(type: String, jsMethodCall: String): String {
         val useNewUth = true
-        val torusLoginType = "google"
-        val torusEndpoint = torusNetwork.baseUrl
+        val torusStorageProviderEndpoint = torusNetwork.baseUrl
         val torusVerifier = torusNetwork.verifier
         val torusSubVerifier = torusNetwork.subVerifier
+        val torusNetworkEnv = torusNetwork.torusNetwork
+        val torusLogLevel = torusNetwork.torusLogLevel
 
         if (userGeneratedSeedPhrase.isEmpty()) {
             runBlocking { userGeneratedSeedPhrase = authRepository.generatePhrase() }
@@ -174,8 +173,8 @@ class Web3AuthApiClient(
             append("type: '$type', ")
             append("useNewEth: $useNewUth, ")
             append("torusNetwork: '$torusNetworkEnv', ")
-            append("torusLoginType: '$torusLoginType', ")
-            append("torusEndpoint: '$torusEndpoint', ")
+            append("torusLoginType: 'google', ")
+            append("torusEndpoint: '$torusStorageProviderEndpoint', ")
             append("torusVerifier: '$torusVerifier', ")
             append("logLevel: '$torusLogLevel', ")
             if (!torusSubVerifier.isNullOrBlank()) {
@@ -185,12 +184,13 @@ class Web3AuthApiClient(
             append("})")
             append(".$jsMethodCall")
         }
-            .also { Timber.tag(TAG).i("facade generated: $it") }
+            .also { Timber.tag(TAG).d("facade generated: $it") }
     }
 
     /**
      * All method names should be exact named as the methods in Web3Auth SDK
      */
+    @Suppress("UNCHECKED_CAST")
     private inner class AndroidCommunicationChannel {
         @JavascriptInterface
         fun handleSignUpResponse(msg: String) {
