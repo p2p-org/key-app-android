@@ -11,7 +11,7 @@ interface SettingsContract {
         fun showSettings(settings: List<SettingsItem>)
         fun showSignOutConfirmDialog()
         fun openUsernameScreen()
-        fun openRecoveryKitScreen()
+        fun openSecurityAndPrivacy()
         fun openReserveUsernameScreen()
         fun confirmBiometrics(pinCodeCipher: EncodeCipher)
         fun updateSwitchItem(switchItemId: Int, isSwitched: Boolean)
@@ -19,7 +19,7 @@ interface SettingsContract {
 
     interface Presenter : MvpPresenter<View> {
         fun onUsernameSettingClicked()
-        fun onRecoveryKitClicked()
+        fun onSecurityClicked()
         fun changeZeroBalanceHiddenFlag(hideValue: Boolean)
         fun onSignOutClicked()
         fun onConfirmSignOutClicked()

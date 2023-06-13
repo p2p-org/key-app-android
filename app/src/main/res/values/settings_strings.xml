@@ -39,7 +39,7 @@
     <string name="settings_item_sign_out_button_title">Log out</string>
 
     <string name="settings_item_group_title_security">Security</string>
-    <string name="settings_item_title_recovery_kit">Recovery kit</string>
+    <string name="settings_item_title_security">Security &amp; privacy</string>
     <string name="settings_item_title_pin">Your PIN</string>
     <string name="settings_item_title_networks">Network</string>
     <string name="settings_item_title_touch_id">Touch ID</string>
@@ -67,9 +67,9 @@
     <string name="settings_item_logout_confirm_title">Are you sure you want to log out?</string>
 
     <!--Recovery Kit-->
-    <string name="recovery_title">Recovery kit</string>
-    <string name="recovery_text">Your recovery kit</string>
-    <string name="recovery_sub_text">If you switch devices, you can easily restore your wallet. No private keys needed.</string>
+    <string name="recovery_title">Security &amp; privacy</string>
+    <string name="recovery_text">Security &amp; privacy</string>
+    <string name="recovery_sub_text">To access your account from another device, you need to use any 2 factors from the list below</string>
     <string name="recovery_multi_factor_header">Multi-factor authentication</string>
     <string name="recovery_device_title">Device</string>
     <string name="recovery_phone_title">Phone</string>
@@ -91,13 +91,17 @@
     <string name="devices_make_sure_your_device">Make sure this is still your device</string>
     <string name="devices_footer_message">Attention! If you update your current device, you will not be able to use the old device for recovery.</string>
 
+    <string name="devices_almost_done">Nice! Almost done</string>
+    <string name="devices_almost_done_message">Confirm access to your account that was used to create the wallet</string>
+    <string name="devices_restore_google">Restore with Google</string>
+
     <!--Seed Phrase Kit-->
     <string name="seed_phrase_title">Details seed phrase</string>
     <string name="seed_phrase_text">Showing seed phrase</string>
     <string name="seed_phrase_info">Make sure you understand the aspects</string>
     <string name="seed_phrase_warn">Your seed phrase must never be shared</string>
     <string name="seed_phrase_hint_1">A seed phrase is like a password — words — that allows you to access and manage your crypto funds</string>
-    <string name="seed_phrase_hint_2">Except you, no one keeps your entire seed tphrase. The parts are distributed decentralized on Torus Network nodes</string>
+    <string name="seed_phrase_hint_2">Except you, no one keeps your entire seed phrase. The parts are distributed decentralized on Torus Network nodes</string>
     <string name="seed_phrase_hint_3">Your seed phrase must never be shared. Keep it private, even from us</string>
     <string name="seed_phrase_show_key_button">Show my private key</string>
     <string name="seed_phrase_copy_key_button">Copy to clipboard</string>
