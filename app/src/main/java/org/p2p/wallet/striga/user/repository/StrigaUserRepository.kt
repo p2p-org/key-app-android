@@ -10,4 +10,6 @@ interface StrigaUserRepository {
     suspend fun getUserDetails(): StrigaDataLayerResult<StrigaUserDetails>
     suspend fun verifyPhoneNumber(verificationCode: String): StrigaDataLayerResult<Unit>
     suspend fun resendSmsForVerifyPhoneNumber(): StrigaDataLayerResult<Unit>
+
+    suspend fun getAccessToken(): StrigaDataLayerResult<String>
 }

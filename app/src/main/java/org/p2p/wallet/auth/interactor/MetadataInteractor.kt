@@ -8,8 +8,8 @@ import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
-import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key.Companion.withCustomKey
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.Companion.withCustomKey
@@ -73,6 +73,9 @@ class MetadataInteractor(
     }
 
     private fun getMetadataFromStorage(): GatewayOnboardingMetadata? {
+        if (seedPhraseProvider.getUserSeedPhrase().provider != SeedPhraseSource.WEB_AUTH) {
+            return null
+        }
         // TODO PWN-8771 - implement database for metadata
         val ethAddress = getEthereumPublicKey().orEmpty()
         return secureStorageContract.getObject(
