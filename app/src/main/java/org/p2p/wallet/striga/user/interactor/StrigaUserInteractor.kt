@@ -19,9 +19,8 @@ class StrigaUserInteractor(
         if (!isUserCreated()) {
             return
         }
-
-        // it automatically saves user status
-        getUserStatus()
+        val userStatus = getUserStatus()
+        saveUserStatus(userStatus)
     }
 
     suspend fun createUser(data: List<StrigaSignupData>): StrigaDataLayerResult<StrigaUserInitialDetails> {
@@ -62,7 +61,7 @@ class StrigaUserInteractor(
                 Timber.e(userDetails.error, "Unable to get striga user status")
                 null
             }
-        }.also(::saveUserStatus)
+        }
     }
 
     fun isUserCreated(): Boolean {

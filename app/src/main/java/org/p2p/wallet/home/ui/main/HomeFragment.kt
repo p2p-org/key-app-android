@@ -37,7 +37,7 @@ import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.kyc.StrigaKycFragmentFactory
+import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.kyc.model.StrigaKycSignUpStatus
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -102,7 +102,7 @@ class HomeFragment :
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
-    private val strigaKycFragmentFactory: StrigaKycFragmentFactory by inject()
+    private val strigaKycFragmentFactory: StrigaFragmentFactory by inject()
     private val buyFragmentFactory: BuyFragmentFactory by inject()
     private val layoutManager: LinearLayoutManager by lazy {
         HomeScreenLayoutManager(requireContext())

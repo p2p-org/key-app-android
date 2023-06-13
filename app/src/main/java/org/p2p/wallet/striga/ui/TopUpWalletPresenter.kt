@@ -11,8 +11,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledF
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
+import org.p2p.wallet.striga.model.BankTransferNavigationTarget
 import org.p2p.wallet.striga.signup.model.StrigaUserStatus
-import org.p2p.wallet.striga.ui.TopUpWalletContract.BankTransferNavigationTarget
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -22,17 +22,16 @@ class TopUpWalletPresenter(
     private val userInteractor: UserInteractor,
     private val strigaSignupFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val seedPhraseProvider: SeedPhraseProvider,
-    private val strigaUserInteractor: StrigaUserInteractor,
+    private val strigaUserInteractor: StrigaUserInteractor
 ) : BasePresenter<TopUpWalletContract.View>(),
     TopUpWalletContract.Presenter {
 
     private val strigaBankTransferProgress = MutableSharedFlow<Boolean>(replay = 1)
     private val strigaUserStatus = MutableStateFlow<StrigaUserStatus?>(null)
 
-    init {
-        launch {
-            loadUserStatus()
-        }
+    override fun firstAttach() {
+        super.firstAttach()
+        launch { loadUserStatus() }
     }
 
     private val isUserAuthByWeb3: Boolean

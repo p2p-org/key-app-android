@@ -15,7 +15,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaHeaderSignatureGenerator
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
-import org.p2p.wallet.kyc.StrigaKycFragmentFactory
+import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
@@ -96,6 +96,6 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaUserIdProvider)
         factoryOf(::StrigaItemCellMapper)
         factoryOf(::StrigaHeaderSignatureGenerator)
-        factoryOf(::StrigaKycFragmentFactory)
+        factoryOf(::StrigaFragmentFactory)
     }
 }

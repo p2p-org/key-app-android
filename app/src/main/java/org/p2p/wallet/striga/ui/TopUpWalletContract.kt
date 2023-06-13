@@ -3,17 +3,9 @@ package org.p2p.wallet.striga.ui
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.striga.model.BankTransferNavigationTarget
 
 interface TopUpWalletContract {
-
-    enum class BankTransferNavigationTarget {
-        Nowhere,
-        StrigaOnboarding,
-        StrigaSignupFirstStep,
-        StrigaSignupSecondStep,
-        StrigaSmsVerification,
-        SumSubVerification,
-    }
 
     interface View : MvpView {
         fun showStrigaBankTransferView(showProgress: Boolean = false)
@@ -23,6 +15,7 @@ interface TopUpWalletContract {
         fun hideBankCardView()
         fun showCryptoReceiveView()
     }
+
     interface Presenter : MvpPresenter<View> {
         fun onBankTransferClicked()
     }

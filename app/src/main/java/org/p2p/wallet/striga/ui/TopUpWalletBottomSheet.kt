@@ -21,13 +21,10 @@ import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTopupWalletBinding
+import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.receive.ReceiveFragmentFactory
-import org.p2p.wallet.smsinput.SmsInputFactory
-import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
-import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
-import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
-import org.p2p.wallet.striga.ui.TopUpWalletContract.BankTransferNavigationTarget
+import org.p2p.wallet.striga.model.BankTransferNavigationTarget
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -46,6 +43,7 @@ class TopUpWalletBottomSheet :
     private val binding: DialogTopupWalletBinding by viewBinding()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val buyFragmentFactory: BuyFragmentFactory by inject()
+    private val strigaFragmentFactory: StrigaFragmentFactory by inject()
 
     override val presenter: TopUpWalletContract.Presenter by inject()
 
@@ -73,23 +71,7 @@ class TopUpWalletBottomSheet :
     }
 
     override fun navigateToBankTransferTarget(target: BankTransferNavigationTarget) {
-        val fragment = when (target) {
-            BankTransferNavigationTarget.StrigaOnboarding -> StrigaOnboardingFragment.create()
-            BankTransferNavigationTarget.StrigaSignupFirstStep -> StrigaSignUpFirstStepFragment.create()
-            BankTransferNavigationTarget.StrigaSignupSecondStep -> StrigaSignUpFirstStepFragment.create()
-            BankTransferNavigationTarget.StrigaSmsVerification -> {
-                SmsInputFactory.create(
-                    type = SmsInputFactory.Type.Striga,
-                    destinationFragment = StrigaSignupFinishFragment::class.java
-                )
-            }
-            BankTransferNavigationTarget.SumSubVerification -> {
-                showToast(TextContainer("SumSub verification is not implemented yet"))
-                null
-            }
-            BankTransferNavigationTarget.Nowhere -> null
-        }
-        fragment?.let(::dismissAndNavigate)
+        strigaFragmentFactory.bankTransferFragment(target)?.let(::dismissAndNavigate)
     }
 
     override fun showBankCardView(tokenToBuy: Token) {
