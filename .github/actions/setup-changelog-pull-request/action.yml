@@ -7,8 +7,11 @@ runs:
     - name: "Find last commit hash and current one"
       shell: bash
       run: |
-        # Pull changes from the remote repository and merge them into the current branch
-        git pull
+        # Checkout the current branch
+        git checkout $GITHUB_HEAD_REF
+  
+        # Pull the latest changes for the current branch
+        git pull origin $GITHUB_HEAD_REF
         
         # Fetch the latest changes from the remote repository
         git fetch origin
