@@ -48,6 +48,10 @@
     <string name="settings_item_title_notifications">Notifications</string>
     <string name="settings_item_title_zero_balances">Hide zero balances</string>
 
+    <string name="settings_item_group_title_community">Community</string>
+    <string name="settings_item_title_twitter">Follow us on Twitter</string>
+    <string name="settings_item_title_discord">Join our Discord</string>
+
     <string name="settings_item_title_app_version">App version</string>
 
     <!-- Change pin code -->
