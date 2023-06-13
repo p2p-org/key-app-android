@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
+import timber.log.Timber
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import org.p2p.wallet.auth.model.RestoreError
@@ -18,7 +19,6 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
 
 class UserRestoreInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -58,7 +58,7 @@ class UserRestoreInteractor(
             RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound
         } else {
             val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(
-                socialShare = torusKey!!,
+                torusKey = torusKey!!,
                 thirdShare = customShare,
                 encryptedMnemonic = encryptedMnemonic
             )
@@ -160,7 +160,7 @@ class UserRestoreInteractor(
             ?: error("Device+Social restore way failed. Social share ID is null")
 
         val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoCustom(
-            socialShare = torusKey,
+            torusKey = torusKey,
             deviceShare = deviceShare
         )
         signUpDetailsStorage.save(

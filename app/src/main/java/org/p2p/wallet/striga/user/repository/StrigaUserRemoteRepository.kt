@@ -77,7 +77,7 @@ class StrigaUserRemoteRepository(
     override suspend fun getAccessToken(): StrigaDataLayerResult<String> {
         return try {
             val request = StrigaStartKycRequest(
-                userId = strigaUserIdProvider.getUserId(),
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
             )
             StrigaDataLayerResult.Success(api.getAccessToken(request).accessToken)
         } catch (error: Throwable) {

@@ -10,7 +10,6 @@ import org.koin.core.module.dsl.named
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -143,8 +142,6 @@ object AuthModule {
                 mapper = get(),
                 gson = get(),
                 authRepository = get(),
-                torusNetworkEnv = androidContext().getString(R.string.torusNetwork),
-                torusLogLevel = androidContext().getString(R.string.torusLogLevel),
                 durationTracker = get()
             )
         }
