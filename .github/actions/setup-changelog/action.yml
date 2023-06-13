@@ -20,6 +20,8 @@ runs:
         
         type=${{ inputs.workflow-type }}
         
+        current_ref=${{ inputs.current-ref-name }}
+        
         if [[ $type == "scheduled" ]]; then
           # Get the commit hash from the last night
           last_commit_hash=$(git rev-list -n 1 --before="yesterday 00:00" origin/$current_ref)
@@ -30,8 +32,6 @@ runs:
         
         # Fetch the latest changes from the remote repository
         git fetch origin
-        
-        current_ref=${{ inputs.current-ref-name }}
         
         # Determine the current head commit hash
         current_commit_hash="$(git log -n 1 --pretty=%H origin/$current_ref)"
