@@ -69,7 +69,7 @@ class SecurityAndPrivacyFragment :
         }
     }
 
-    override fun showManageDevice(isVisible: Boolean) {
+    override fun showManageVisible(isVisible: Boolean) {
         binding.textViewDeviceManage.isVisible = isVisible
     }
 

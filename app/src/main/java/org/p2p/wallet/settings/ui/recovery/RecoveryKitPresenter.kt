@@ -67,13 +67,14 @@ class RecoveryKitPresenter(
             SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
             GatewayOnboardingMetadata::class
         )?.let { metadata ->
-            val areDevicesSame = DeviceInfoHelper.getCurrentDeviceName() == metadata.deviceShareDeviceName
-            view?.showDeviceName(metadata.deviceShareDeviceName, isDifferentFromDeviceShare = !areDevicesSame)
+            val isSameDevice = DeviceInfoHelper.getCurrentDeviceName() == metadata.deviceShareDeviceName
+            view?.showDeviceName(metadata.deviceShareDeviceName, isDifferentFromDeviceShare = !isSameDevice)
             view?.showPhoneNumber(metadata.customSharePhoneNumberE164)
             view?.showSocialId(metadata.socialShareOwnerEmail)
             val userDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()
             val hasDeviceShare = userDetails?.signUpDetails?.deviceShare != null
-            view?.showManageDevice(!hasDeviceShare && !areDevicesSame)
+            val isManageVisible = !hasDeviceShare && !isSameDevice
+            view?.showManageVisible(isVisible = isManageVisible)
         } ?: setUnavailableState()
 
         view?.setWebAuthInfoVisibility(isVisible = true)
