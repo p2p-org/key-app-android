@@ -13,7 +13,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSmsInputBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 abstract class BaseSmsInputFragment :
@@ -68,7 +68,7 @@ abstract class BaseSmsInputFragment :
     }
 
     override fun navigateNext() {
-        popAndReplaceFragment(createNextDestination(), inclusive = true)
+        replaceFragment(createNextDestination())
     }
 
     override fun renderSmsFormatValid() {
