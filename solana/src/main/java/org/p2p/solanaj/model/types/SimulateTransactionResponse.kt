@@ -1,7 +1,7 @@
 package org.p2p.solanaj.model.types
 
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
-import org.json.JSONObject
 
 data class SimulateTransactionResponse(
     @SerializedName("value")
@@ -10,7 +10,7 @@ data class SimulateTransactionResponse(
 
 data class SimulateTransactionDetailsResponse(
     @SerializedName("err")
-    val error: JSONObject?,
+    val error: JsonElement,
     @SerializedName("accounts")
     val accounts: String?,
     @SerializedName("logs")

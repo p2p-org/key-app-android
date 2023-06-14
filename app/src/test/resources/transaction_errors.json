@@ -43,5 +43,13 @@
         }
       ]
     }
+  },
+  {
+    "err": {
+      "InstructionError": [
+        4,
+        "ProgramFailedToComplete"
+      ]
+    }
   }
 ]

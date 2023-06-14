@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.solanaj.rpc.TransactionSimulationResult
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesValidationEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -29,7 +30,8 @@ class JupiterSwapRouteValidator(
     private class SwapRouteValidation(
         val route: JupiterSwapRoute,
         val ordinal: Int,
-        val isRouteValid: Boolean
+        val isRouteValid: Boolean,
+        val errorIfNotValid: String?
     )
 
     private val userPublicKey: Base58String
@@ -42,18 +44,27 @@ class JupiterSwapRouteValidator(
             return@withContext routes
         }
 
-        Timber.tag(TAG).d("Validating routes: ${routes.size}")
+        Timber.tag(TAG).i("Validating routes: ${routes.size}")
         val validatingRoutesJobs = routes.mapIndexed { index, route ->
             async { validateRoute(route, index) }
         }
         validatingRoutesJobs.awaitAll()
+            .onEach {
+                Timber.i(
+                    buildString {
+                        append("route number: ${it.ordinal} ")
+                        append("isValid=${it.isRouteValid} ")
+                        append("error=${it.errorIfNotValid} ")
+                    }
+                )
+            }
             .asSequence()
             .filter(SwapRouteValidation::isRouteValid)
             .sortedByDescending(SwapRouteValidation::ordinal) // to save order
             .map(SwapRouteValidation::route)
             .toList()
             .also {
-                Timber.tag(TAG).i("Validating routes finished, total valid routes = ${it.size}")
+                Timber.tag(TAG).i("Validating routes finished, total valid routes = ${it.size}; was = ${routes.size}")
             }
     }
 
@@ -66,11 +77,12 @@ class JupiterSwapRouteValidator(
         return SwapRouteValidation(
             route = route,
             ordinal = ordinal,
-            isRouteValid = isRouteValid
+            isRouteValid = isRouteValid.isSimulationSuccess,
+            errorIfNotValid = isRouteValid.errorIfSimulationFailed
         )
     }
 
-    private suspend fun checkThatRouteValid(route: JupiterSwapRoute): Boolean {
+    private suspend fun checkThatRouteValid(route: JupiterSwapRoute): TransactionSimulationResult {
         return try {
             val userAccount = Account(tokenKeyProvider.keyPair)
             val routeTransaction = swapTransactionRepository.createSwapTransactionForRoute(route, userPublicKey)
@@ -81,14 +93,13 @@ class JupiterSwapRouteValidator(
                 // if pass our own recent blockhash, there is an error
                 recentBlockhash = null
             )
-            val isSimulationSuccess = rpcSolanaRepository.simulateTransaction(
+            rpcSolanaRepository.simulateTransaction(
                 serializedTransaction = signedSwapTransaction.transaction.base58Value,
                 encoding = Encoding.BASE58
             )
-            isSimulationSuccess
         } catch (error: Throwable) {
             Timber.i(error, "Something went wrong while validating route")
-            false
+            TransactionSimulationResult(false, null)
         }
     }
 }

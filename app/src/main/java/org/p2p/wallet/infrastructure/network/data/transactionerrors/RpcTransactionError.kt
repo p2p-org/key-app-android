@@ -5,6 +5,7 @@ import androidx.annotation.Keep
 /**
  * https://docs.rs/solana-sdk/latest/solana_sdk/transaction/enum.TransactionError.html
  * sealed class mapped from Solana docs errors
+ * to create instance of this class use Gson, we have a type adapter for this class.
  */
 @Keep
 sealed interface RpcTransactionError {
