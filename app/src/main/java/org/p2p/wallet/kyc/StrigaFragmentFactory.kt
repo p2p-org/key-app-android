@@ -1,13 +1,12 @@
 package org.p2p.wallet.kyc
 
 import androidx.fragment.app.Fragment
-import org.p2p.core.common.TextContainer
 import org.p2p.wallet.kyc.model.StrigaKycSignUpStatus
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
-import org.p2p.wallet.striga.model.BankTransferNavigationTarget
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 
 class StrigaFragmentFactory() {
 
@@ -21,21 +20,24 @@ class StrigaFragmentFactory() {
         }
     }
 
-    fun bankTransferFragment(target: BankTransferNavigationTarget): Fragment? {
+    fun bankTransferFragment(target: StrigaUserStatusDestination): Fragment? {
         return when (target) {
-            BankTransferNavigationTarget.StrigaOnboarding -> StrigaOnboardingFragment.create()
-            BankTransferNavigationTarget.StrigaSignupFirstStep -> StrigaSignUpFirstStepFragment.create()
-            BankTransferNavigationTarget.StrigaSignupSecondStep -> StrigaSignUpFirstStepFragment.create()
-            BankTransferNavigationTarget.StrigaSmsVerification -> {
+            StrigaUserStatusDestination.ONBOARDING -> {
+                StrigaOnboardingFragment.create()
+            }
+            StrigaUserStatusDestination.SIGN_UP_FIRST_STEP,
+            StrigaUserStatusDestination.SIGN_UP_SECOND_STEP -> {
+                StrigaSignUpFirstStepFragment.create()
+            }
+            StrigaUserStatusDestination.SMS_VERIFICATION -> {
                 SmsInputFactory.create(
                     type = SmsInputFactory.Type.Striga,
                     destinationFragment = StrigaSignupFinishFragment::class.java
                 )
             }
-            BankTransferNavigationTarget.SumSubVerification -> {
+            else -> {
                 null
             }
-            BankTransferNavigationTarget.Nowhere -> null
         }
     }
 }

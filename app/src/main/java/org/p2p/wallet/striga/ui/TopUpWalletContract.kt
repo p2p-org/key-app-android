@@ -3,14 +3,14 @@ package org.p2p.wallet.striga.ui
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.striga.model.BankTransferNavigationTarget
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 
 interface TopUpWalletContract {
 
     interface View : MvpView {
         fun showStrigaBankTransferView(showProgress: Boolean = false)
         fun hideStrigaBankTransferView()
-        fun navigateToBankTransferTarget(target: BankTransferNavigationTarget)
+        fun navigateToBankTransferTarget(target: StrigaUserStatusDestination)
         fun showBankCardView(tokenToBuy: Token)
         fun hideBankCardView()
         fun showCryptoReceiveView()

@@ -24,7 +24,7 @@ import org.p2p.wallet.databinding.DialogTopupWalletBinding
 import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.receive.ReceiveFragmentFactory
-import org.p2p.wallet.striga.model.BankTransferNavigationTarget
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -70,7 +70,7 @@ class TopUpWalletBottomSheet :
         binding.bankTransferView.isVisible = false
     }
 
-    override fun navigateToBankTransferTarget(target: BankTransferNavigationTarget) {
+    override fun navigateToBankTransferTarget(target: StrigaUserStatusDestination) {
         strigaFragmentFactory.bankTransferFragment(target)?.let(::dismissAndNavigate)
     }
 

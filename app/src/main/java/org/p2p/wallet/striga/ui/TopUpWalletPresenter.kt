@@ -1,8 +1,6 @@
 package org.p2p.wallet.striga.ui
 
-import timber.log.Timber
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -11,10 +9,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledF
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
-import org.p2p.wallet.striga.model.BankTransferNavigationTarget
-import org.p2p.wallet.striga.signup.model.StrigaUserStatus
-import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
-import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
+import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 
 class TopUpWalletPresenter(
@@ -22,17 +18,11 @@ class TopUpWalletPresenter(
     private val userInteractor: UserInteractor,
     private val strigaSignupFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val seedPhraseProvider: SeedPhraseProvider,
-    private val strigaUserInteractor: StrigaUserInteractor
+    private val strigaUserStatusRepository: StrigaUserStatusRepository
 ) : BasePresenter<TopUpWalletContract.View>(),
     TopUpWalletContract.Presenter {
 
     private val strigaBankTransferProgress = MutableSharedFlow<Boolean>(replay = 1)
-    private val strigaUserStatus = MutableStateFlow<StrigaUserStatus?>(null)
-
-    override fun firstAttach() {
-        super.firstAttach()
-        launch { loadUserStatus() }
-    }
 
     private val isUserAuthByWeb3: Boolean
         get() {
@@ -59,58 +49,11 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
-        if (strigaUserInteractor.isUserCreated() && strigaUserStatus.value == null) {
-            Timber.d("Striga user status is not fetched. Trying again...")
-            launch {
-                loadUserStatus()
-            }
+        val userStatusNavigation = strigaUserStatusRepository.getUserDestination()
+        if (userStatusNavigation == StrigaUserStatusDestination.SMS_VERIFICATION) {
+            // todo: send sms or maybe we should send first sms directly from sms verification screen?
         } else {
-            val target = getBankTransferNavigationTarget(strigaUserStatus.value)
-            if (target == BankTransferNavigationTarget.StrigaSmsVerification) {
-                // todo: send sms or maybe we should send first sms directly from sms verification screen?
-            }
-            view?.navigateToBankTransferTarget(target)
-        }
-    }
-
-    private suspend fun loadUserStatus() {
-        if (!strigaUserInteractor.isUserCreated()) {
-            strigaBankTransferProgress.emit(false)
-            return
-        }
-
-        val status = strigaUserInteractor.getSavedUserStatus()
-        if (status != null) {
-            strigaUserStatus.emit(status)
-            strigaBankTransferProgress.emit(false)
-        } else {
-            strigaBankTransferProgress.emit(true)
-            strigaUserStatus.emit(strigaUserInteractor.getUserStatus())
-            strigaBankTransferProgress.emit(false)
-        }
-    }
-
-    private fun getBankTransferNavigationTarget(userStatus: StrigaUserStatus?): BankTransferNavigationTarget {
-        return when {
-            !strigaUserInteractor.isUserCreated() && userStatus == null -> {
-                BankTransferNavigationTarget.StrigaOnboarding
-            }
-            userStatus == null -> {
-                Timber.e(
-                    "Unable to navigate bank transfer since user status is null and user is created.\n" +
-                        "Check that userStatus is fetched"
-                )
-                BankTransferNavigationTarget.Nowhere
-            }
-            !userStatus.isMobileVerified -> {
-                BankTransferNavigationTarget.StrigaSmsVerification
-            }
-            userStatus.kycStatus == StrigaUserVerificationStatus.INITIATED -> {
-                BankTransferNavigationTarget.SumSubVerification
-            }
-            else -> {
-                BankTransferNavigationTarget.Nowhere // todo: on/off ramp
-            }
+            view?.navigateToBankTransferTarget(userStatusNavigation)
         }
     }
 }

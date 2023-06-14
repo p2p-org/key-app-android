@@ -20,8 +20,8 @@ class StrigaKycUiBannerMapper {
 
 private fun StrigaKycSignUpStatus.toHomeBannerItem(): HomeBannerItem {
     return HomeBannerItem(
-        titleTextId = bannerTitleResId,
-        subtitleTextId = bannerMessageResId,
+        titleTextId = bigBannerTitleResId,
+        subtitleTextId = bigBannerMessageResId,
         buttonTextId = actionTitleResId,
         drawableRes = placeholderResId,
         backgroundColorRes = backgroundTint
