@@ -135,6 +135,8 @@ class StrigaUserRepositoryMapper {
         }
         return StrigaUserInitialKycDetails(
             status = status,
+            isEmailVerified = kycDetails.isEmailVerified,
+            isMobileVerified = kycDetails.isMobileVerified
         )
     }
 

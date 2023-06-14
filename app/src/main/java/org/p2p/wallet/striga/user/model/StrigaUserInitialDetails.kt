@@ -7,5 +7,7 @@ data class StrigaUserInitialDetails(
 )
 
 class StrigaUserInitialKycDetails(
-    val status: StrigaUserVerificationStatus
+    val status: StrigaUserVerificationStatus,
+    val isEmailVerified: Boolean,
+    val isMobileVerified: Boolean,
 )
