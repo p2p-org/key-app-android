@@ -1,11 +1,13 @@
 package org.p2p.wallet.striga.ui
 
 import timber.log.Timber
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.MetadataInteractor
+import org.p2p.wallet.auth.model.MetadataLoadStatus
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -23,14 +25,16 @@ class TopUpWalletPresenter(
     private val strigaSignupFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val seedPhraseProvider: SeedPhraseProvider,
     private val strigaUserInteractor: StrigaUserInteractor,
+    private val metadataInteractor: MetadataInteractor,
 ) : BasePresenter<TopUpWalletContract.View>(),
     TopUpWalletContract.Presenter {
 
-    private val strigaBankTransferProgress = MutableSharedFlow<Boolean>(replay = 1)
+    private val strigaBankTransferProgress = MutableStateFlow(false)
     private val strigaUserStatus = MutableStateFlow<StrigaUserStatus?>(null)
 
     init {
         launch {
+            loadMetadataIfNot()
             loadUserStatus()
         }
     }
@@ -60,34 +64,65 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
-        if (strigaUserInteractor.isUserCreated() && strigaUserStatus.value == null) {
-            Timber.d("Striga user status is not fetched. Trying again...")
-            launch {
-                loadUserStatus()
+        when {
+
+            // cannot fill the form, check whether user is created etc without metadata, loading if it's not loaded
+            metadataInteractor.currentMetadata == null -> {
+                Timber.i("Metadata is not fetched. Trying again...")
+                launch {
+                    loadMetadataIfNot()
+                }
             }
-        } else {
-            val target = getBankTransferNavigationTarget(strigaUserStatus.value)
-            if (target == BankTransferNavigationTarget.StrigaSmsVerification) {
-                // todo: send sms or maybe we should send first sms directly from sms verification screen?
+            // checking again whether status is loaded, if it's not - loading ...
+            strigaUserInteractor.isUserCreated() && strigaUserStatus.value == null -> {
+                Timber.i("Striga user status is not fetched. Trying again...")
+                launch {
+                    loadUserStatus()
+                }
             }
-            view?.navigateToBankTransferTarget(target)
+            else -> navigateToTarget()
         }
     }
 
     private suspend fun loadUserStatus() {
         if (!strigaUserInteractor.isUserCreated()) {
-            strigaBankTransferProgress.emit(false)
             return
         }
 
         val status = strigaUserInteractor.getSavedUserStatus()
         if (status != null) {
             strigaUserStatus.emit(status)
-            strigaBankTransferProgress.emit(false)
         } else {
-            strigaBankTransferProgress.emit(true)
-            strigaUserStatus.emit(strigaUserInteractor.getUserStatus())
-            strigaBankTransferProgress.emit(false)
+            withProgress {
+                strigaUserStatus.emit(strigaUserInteractor.getUserStatus())
+            }
+        }
+    }
+
+    private suspend fun loadMetadataIfNot() {
+        if (metadataInteractor.currentMetadata != null) {
+            return
+        }
+
+        withProgress {
+            if (metadataInteractor.tryLoadAndSaveMetadata() is MetadataLoadStatus.Failure) {
+                view?.showUiKitSnackBar(null, R.string.error_general_message)
+            }
+        }
+    }
+
+    private fun navigateToTarget() {
+        val target = getBankTransferNavigationTarget(strigaUserStatus.value)
+
+        Timber.d("Navigating to $target")
+        if (target == BankTransferNavigationTarget.StrigaSmsVerification) {
+            // todo: send sms or maybe we should send first sms directly from sms verification screen?
+            launch {
+                strigaUserInteractor.resendSmsForVerifyPhoneNumber()
+                view?.navigateToBankTransferTarget(target)
+            }
+        } else {
+            view?.navigateToBankTransferTarget(target)
         }
     }
 
@@ -113,5 +148,11 @@ class TopUpWalletPresenter(
                 BankTransferNavigationTarget.Nowhere // todo: on/off ramp
             }
         }
+    }
+
+    private suspend fun withProgress(block: suspend () -> Unit) {
+        strigaBankTransferProgress.emit(true)
+        block()
+        strigaBankTransferProgress.emit(false)
     }
 }

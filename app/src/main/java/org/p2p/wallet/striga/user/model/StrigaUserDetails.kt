@@ -52,9 +52,9 @@ class StrigaUserInfo(
 
 data class StrigaUserAddress(
     val addressLine1: String,
-    val addressLine2: String,
+    val addressLine2: String?,
     val city: String,
-    val state: String,
+    val state: String?,
     val country: String,
     val postalCode: String
 )
