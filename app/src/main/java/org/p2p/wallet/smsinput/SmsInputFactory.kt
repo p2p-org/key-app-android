@@ -5,11 +5,13 @@ import androidx.fragment.app.Fragment
 import android.os.Bundle
 import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputFragment
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputFragment
+import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputFragment
 
 object SmsInputFactory {
     enum class Type(val clazz: Class<out Fragment>) {
         Onboarding(OnboardingSmsInputFragment::class.java),
-        Striga(StrigaSmsInputFragment::class.java)
+        Striga(StrigaSmsInputFragment::class.java),
+        UpdateDevice(UpdateDeviceSmsInputFragment::class.java),
     }
 
     /**

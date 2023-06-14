@@ -7,6 +7,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
+import org.p2p.wallet.auth.ui.animationscreen.TimerState
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentEmailConfirmBinding
@@ -95,7 +96,12 @@ class SettingsEmailConfirmFragment :
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
         if (isScreenLoading) {
-            AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = false)
+            AnimationProgressFragment.show(
+                fragmentManager = requireActivity().supportFragmentManager,
+                timerStateList = listOf(
+                    TimerState(R.string.devices_change_update_message),
+                )
+            )
         } else {
             AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }

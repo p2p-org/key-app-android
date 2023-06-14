@@ -1,15 +1,17 @@
 package org.p2p.wallet.auth.repository
 
 import com.google.gson.JsonObject
+import timber.log.Timber
+import kotlin.time.Duration.Companion.minutes
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
 
 private const val TAG = "RestoreFlowDataLocalRepository"
 
@@ -18,6 +20,8 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     var isRestoreWalletRequestSent = false
 
     var userPhoneNumberEnteredCount = 0
+
+    var torusKeyTimeStamp: Long = 0
 
     val userRestorePublicKey: Base58String?
         get() = restoreUserKeyPair?.publicKey?.toBase58Instance()
@@ -68,6 +72,7 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     var torusKey: String? = null
         set(value) {
             field = value
+            torusKeyTimeStamp = DateTimeUtils.getCurrentTimestampInSeconds()
             Timber.tag(TAG).i("torusKey is generated and set: ${torusKey?.length}")
         }
 
@@ -92,5 +97,9 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
 
     fun resetUserPhoneNumberEnteredCount() {
         userPhoneNumberEnteredCount = 0
+    }
+
+    fun isTorusKeyValid(): Boolean {
+        return DateTimeUtils.getCurrentTimestampInSeconds() - torusKeyTimeStamp < 15.minutes.inWholeSeconds
     }
 }
