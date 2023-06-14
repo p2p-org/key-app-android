@@ -6,11 +6,13 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.settings.DeviceInfoHelper
 
 class RecoveryKitPresenter(
     private val secureStorage: SecureStorageContract,
@@ -18,7 +20,8 @@ class RecoveryKitPresenter(
     private val seedPhraseProvider: SeedPhraseProvider,
     private val adminAnalytics: AdminAnalytics,
     private val appRestarter: AppRestarter,
-    private val authLogoutInteractor: AuthLogoutInteractor
+    private val authLogoutInteractor: AuthLogoutInteractor,
+    private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
 ) : BasePresenter<RecoveryKitContract.View>(),
     RecoveryKitContract.Presenter {
 
@@ -53,7 +56,7 @@ class RecoveryKitPresenter(
     private fun setUnavailableState() {
         val notAvailableString = resources.getString(R.string.recovery_not_available)
         view?.apply {
-            showDeviceName(notAvailableString)
+            showDeviceName(notAvailableString, isDifferentFromDeviceShare = false)
             showPhoneNumber(notAvailableString)
             showSocialId(notAvailableString)
         }
@@ -64,9 +67,14 @@ class RecoveryKitPresenter(
             SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
             GatewayOnboardingMetadata::class
         )?.let { metadata ->
-            view?.showDeviceName(metadata.deviceShareDeviceName)
+            val isSameDevice = DeviceInfoHelper.getCurrentDeviceName() == metadata.deviceShareDeviceName
+            view?.showDeviceName(metadata.deviceShareDeviceName, isDifferentFromDeviceShare = !isSameDevice)
             view?.showPhoneNumber(metadata.customSharePhoneNumberE164)
             view?.showSocialId(metadata.socialShareOwnerEmail)
+            val userDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()
+            val hasDeviceShare = userDetails?.signUpDetails?.deviceShare != null
+            val isManageVisible = !hasDeviceShare && !isSameDevice
+            view?.showManageVisible(isVisible = isManageVisible)
         } ?: setUnavailableState()
 
         view?.setWebAuthInfoVisibility(isVisible = true)

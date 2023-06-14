@@ -19,16 +19,14 @@
             android:id="@+id/contentView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_banner_top_rounded"
             android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/colorView"
-                android:layout_width="@dimen/min_banner_width"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="3"
-                tools:background="@color/backgroundBanner">
+                android:weightSum="3">
 
                 <TextView
                     android:id="@+id/optionsTextView"
@@ -38,7 +36,6 @@
                     android:layout_weight="2"
                     android:maxLines="2"
                     android:paddingHorizontal="20dp"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
                     tools:text="Get your own short crypto address" />
 
             </LinearLayout>
@@ -49,7 +46,6 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="12dp"
-                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
                 tools:text="Reserve your username" />
         </LinearLayout>
 
@@ -60,7 +56,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:src="@drawable/ic_username"
         android:translationZ="5dp"
         tools:ignore="ContentDescription" />
 </FrameLayout>

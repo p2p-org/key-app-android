@@ -10,6 +10,7 @@ import org.p2p.wallet.push_notifications.model.DeviceInfo
 import org.p2p.wallet.push_notifications.model.DeviceToken
 import org.p2p.wallet.push_notifications.repository.DeviceTokenRepository
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
+import org.p2p.wallet.settings.DeviceInfoHelper
 
 private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
 private const val TOKEN_SEND_RETRY_DELAY_MS = 60000L
@@ -33,7 +34,7 @@ class PushNotificationsInteractor(
         val deviceInfo = DeviceInfo(
             osName = "Android",
             osVersion = Build.VERSION.RELEASE,
-            deviceModel = Build.MANUFACTURER + ' ' + Build.MODEL
+            deviceModel = DeviceInfoHelper.getCurrentDeviceName()
         )
 
         val deviceToken = DeviceToken(

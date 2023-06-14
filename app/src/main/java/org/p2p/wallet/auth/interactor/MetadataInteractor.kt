@@ -5,6 +5,7 @@ import kotlinx.coroutines.CancellationException
 import org.p2p.solanaj.core.Account
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.auth.model.MetadataLoadStatus
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
@@ -33,9 +34,9 @@ class MetadataInteractor(
             saveMetadataToStorage(value)
         }
 
-    suspend fun tryLoadAndSaveMetadata() {
+    suspend fun tryLoadAndSaveMetadata(): MetadataLoadStatus {
         val ethereumPublicKey = getEthereumPublicKey()
-        if (ethereumPublicKey != null) {
+        return if (ethereumPublicKey != null) {
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
             tryLoadAndSaveMetadataWithAccount(
@@ -44,7 +45,8 @@ class MetadataInteractor(
                 ethereumPublicKey = ethereumPublicKey
             )
         } else {
-            Timber.i("User doesn't have any Web3Auth sign up data, skipping metadata fetch")
+            Timber.i("User doesn't have ethereum public key, skipping metadata fetch")
+            MetadataLoadStatus.NoEthereumPublicKey
         }
     }
 
@@ -93,8 +95,8 @@ class MetadataInteractor(
         userAccount: Account?,
         mnemonicPhraseWords: List<String>,
         ethereumPublicKey: String
-    ) {
-        try {
+    ): MetadataLoadStatus {
+        return try {
             if (userAccount == null) {
                 throw MetadataFailed.MetadataNoAccount()
             }
@@ -108,12 +110,17 @@ class MetadataInteractor(
                 etheriumAddress = ethereumPublicKey
             )
             compareMetadataAndUpdate(metadata)
+            MetadataLoadStatus.Success
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
+            MetadataLoadStatus.Canceled
         } catch (validationError: MetadataFailed) {
             Timber.e(validationError, "Get onboarding metadata failed")
+            MetadataLoadStatus.Failure(validationError)
         } catch (error: Throwable) {
-            Timber.e(MetadataFailed.OnboardingMetadataRequestFailure(error))
+            val targetError = MetadataFailed.OnboardingMetadataRequestFailure(error)
+            Timber.e(targetError)
+            MetadataLoadStatus.Failure(targetError)
         }
     }
 

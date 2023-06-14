@@ -61,11 +61,11 @@ open class StrigaCreateUserRequest(
         @SerializedName("addressLine1")
         val addressLine1: String,
         @SerializedName("addressLine2")
-        val addressLine2: String,
+        val addressLine2: String? = null,
         @SerializedName("city")
         val city: String,
         @SerializedName("state")
-        val state: String,
+        val state: String? = null,
         @SerializedName("country")
         val country: String,
         @SerializedName("postalCode")
