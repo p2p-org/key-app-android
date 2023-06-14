@@ -19,7 +19,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import kotlin.time.Duration.Companion.seconds
 
-private const val ARG_TITLE_RES = "ARG_TITLE_RES"
+private const val ARG_TIMER_STATE_LIST = "ARG_TIMER_STATE_LIST"
 
 class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progress) {
 
@@ -28,22 +28,34 @@ class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progr
         private val fragmentTag = AnimationProgressFragment::class.java.name
         private var isAnimating = false
 
-        private fun create(loadingTitleRes: Int) =
-            AnimationProgressFragment().withArgs(ARG_TITLE_RES to loadingTitleRes)
+        private fun create(timerStateList: List<TimerState>) =
+            AnimationProgressFragment().withArgs(ARG_TIMER_STATE_LIST to timerStateList)
 
         fun show(fragmentManager: FragmentManager, isCreation: Boolean) {
+            val loadingTitleRes = if (isCreation) {
+                R.string.onboarding_loading_creating_title
+            } else {
+                R.string.onboarding_loading_recovery_title
+            }
+            show(
+                fragmentManager = fragmentManager,
+                timerStateList = listOf(
+                    TimerState(loadingTitleRes, withProgress = false),
+                    TimerState(loadingTitleRes),
+                    TimerState(R.string.onboarding_loading_title_2),
+                    TimerState(R.string.onboarding_loading_title_3),
+                )
+            )
+        }
+
+        fun show(fragmentManager: FragmentManager, timerStateList: List<TimerState>) {
             if (!isAnimating) {
                 isAnimating = true
-                val loadingTitleRes = if (isCreation) {
-                    R.string.onboarding_loading_creating_title
-                } else {
-                    R.string.onboarding_loading_recovery_title
-                }
                 fragmentManager.beginTransaction()
                     .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                     .add(
                         android.R.id.content,
-                        create(loadingTitleRes),
+                        create(timerStateList),
                         fragmentTag
                     )
                     .commit()
@@ -62,7 +74,7 @@ class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progr
 
     private val binding: FragmentAnimationProgressBinding by viewBinding()
 
-    private val loadingTitleRes: Int by args(ARG_TITLE_RES)
+    private val timerStateList: List<TimerState> by args(ARG_TIMER_STATE_LIST)
 
     private var creationProgressJob: Job? = null
 
@@ -88,12 +100,7 @@ class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progr
     }
 
     private fun startCreationProgressJob() {
-        creationProgressJob = listOf(
-            TimerState(loadingTitleRes, withProgress = false),
-            TimerState(loadingTitleRes),
-            TimerState(R.string.onboarding_loading_title_2),
-            TimerState(R.string.onboarding_loading_title_3),
-        ).asSequence()
+        creationProgressJob = timerStateList.asSequence()
             .asFlow()
             .onEach {
                 with(binding) {
