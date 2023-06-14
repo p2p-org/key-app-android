@@ -11,7 +11,7 @@ import org.p2p.uikit.databinding.WidgetSectionHeaderBinding
 import org.p2p.uikit.utils.context
 import org.p2p.uikit.utils.inflateViewBinding
 
-internal class UiKitSectionHeader @JvmOverloads constructor(
+class UiKitSectionHeader @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0

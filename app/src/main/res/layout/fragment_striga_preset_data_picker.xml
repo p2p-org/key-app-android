@@ -27,7 +27,8 @@
                 app:navigationIcon="@drawable/ic_back"
                 app:navigationIconTint="@color/icons_night"
                 app:title="@string/striga_select_your_country"
-                app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
+                app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+                app:titleTextColor="@color/text_night" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -36,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:elevation="6dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
     </FrameLayout>
 

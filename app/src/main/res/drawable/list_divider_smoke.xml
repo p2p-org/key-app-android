@@ -2,11 +2,12 @@
 <inset
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:insetLeft="16dp">
-    <shape
-        android:shape="rectangle">
+    <shape android:shape="rectangle">
 
         <solid android:color="@color/bg_smoke" />
-        <padding android:left="16dp" />
+        <padding
+            android:left="16dp"
+            android:right="16dp" />
         <size android:height="1dp" />
 
     </shape>
