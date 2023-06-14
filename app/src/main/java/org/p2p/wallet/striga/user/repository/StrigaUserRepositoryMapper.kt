@@ -68,9 +68,9 @@ class StrigaUserRepositoryMapper {
             ),
             address = StrigaCreateUserRequest.AddressRequest(
                 addressLine1 = map.getOrThrow(StrigaSignupDataType.CITY_ADDRESS_LINE),
-                addressLine2 = map.getOrThrow(StrigaSignupDataType.CITY_ADDRESS_LINE),
+                addressLine2 = null,
                 city = map.getOrThrow(StrigaSignupDataType.CITY),
-                state = map.getOrThrow(StrigaSignupDataType.CITY_STATE),
+                state = map[StrigaSignupDataType.CITY_STATE]?.takeIf { it.isNotBlank() },
                 country = map.getOrThrow(StrigaSignupDataType.COUNTRY_ALPHA_2),
                 postalCode = map.getOrThrow(StrigaSignupDataType.CITY_POSTAL_CODE)
             ),

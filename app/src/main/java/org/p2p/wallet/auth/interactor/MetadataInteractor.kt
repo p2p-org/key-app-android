@@ -33,9 +33,9 @@ class MetadataInteractor(
             saveMetadataToStorage(value)
         }
 
-    suspend fun tryLoadAndSaveMetadata() {
+    suspend fun tryLoadAndSaveMetadata(): Boolean {
         val ethereumPublicKey = getEthereumPublicKey()
-        if (ethereumPublicKey != null) {
+        return if (ethereumPublicKey != null) {
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
             tryLoadAndSaveMetadataWithAccount(
@@ -45,6 +45,7 @@ class MetadataInteractor(
             )
         } else {
             Timber.i("User doesn't have any Web3Auth sign up data, skipping metadata fetch")
+            false
         }
     }
 
@@ -93,8 +94,8 @@ class MetadataInteractor(
         userAccount: Account?,
         mnemonicPhraseWords: List<String>,
         ethereumPublicKey: String
-    ) {
-        try {
+    ): Boolean {
+        return try {
             if (userAccount == null) {
                 throw MetadataFailed.MetadataNoAccount()
             }
@@ -108,12 +109,16 @@ class MetadataInteractor(
                 etheriumAddress = ethereumPublicKey
             )
             compareMetadataAndUpdate(metadata)
+            true
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
+            false
         } catch (validationError: MetadataFailed) {
             Timber.e(validationError, "Get onboarding metadata failed")
+            false
         } catch (error: Throwable) {
             Timber.e(MetadataFailed.OnboardingMetadataRequestFailure(error))
+            false
         }
     }
 
