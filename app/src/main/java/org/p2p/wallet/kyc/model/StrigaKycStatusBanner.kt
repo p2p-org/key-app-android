@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.R
 
-enum class StrigaKycSignUpStatus(
+enum class StrigaKycStatusBanner(
     @StringRes val bannerTitleResId: Int,
     @StringRes val bigBannerTitleResId: Int,
     @StringRes val bannerMessageResId: Int,
@@ -13,7 +13,7 @@ enum class StrigaKycSignUpStatus(
     @StringRes val actionTitleResId: Int,
     @DrawableRes val placeholderResId: Int,
     @ColorRes val backgroundTint: Int,
-    val isCloseButtonVisible: Boolean = true
+    val isCloseButtonVisible: Boolean = false
 ) {
 
     IDENTIFY(
@@ -41,8 +41,7 @@ enum class StrigaKycSignUpStatus(
         bigBannerMessageResId = R.string.striga_kyc_signup_big_banner_finish_message,
         actionTitleResId = R.string.striga_kyc_signup_banner_finish_action,
         placeholderResId = R.drawable.ic_send_no_token_placeholder,
-        backgroundTint = R.color.light_grass,
-        isCloseButtonVisible = false
+        backgroundTint = R.color.light_grass
     ),
     ACTION_REQUIRED(
         bannerTitleResId = R.string.striga_kyc_signup_banner_action_required_title,

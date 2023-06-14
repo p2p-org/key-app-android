@@ -57,7 +57,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.kyc.model.StrigaKycSignUpStatus
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.sell.interactor.SellInteractor
@@ -65,6 +65,7 @@ import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SocketState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
@@ -115,6 +116,7 @@ class HomePresenter(
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaUiBannerMapper: StrigaKycUiBannerMapper,
+    private val strigaUserStatusRepository: StrigaUserStatusRepository,
     bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
@@ -320,9 +322,7 @@ class HomePresenter(
         view?.showStrigaKyc(statusFromKycBanner)
     }
 
-    override fun onBannerCloseClicked(bannerTitleId: Int) {
-        TODO("Not yet implemented")
-    }
+    override fun onBannerCloseClicked(bannerTitleId: Int) = Unit
 
     /**
      * Don't split this method, as it could lead to one more data race since rates are loading asynchronously
@@ -480,7 +480,7 @@ class HomePresenter(
             userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
                 .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
-        val homeBannerItem = strigaUiBannerMapper.mapToBigBanner(StrigaKycSignUpStatus.VERIFICATION_DONE)
+        val homeBannerItem = strigaUiBannerMapper.mapToBigBanner(StrigaKycStatusBanner.VERIFICATION_DONE)
 
         view?.showEmptyViewData(
             listOf(
@@ -554,7 +554,7 @@ class HomePresenter(
             claimAnalytics.logClaimAvailable(state.ethTokens.any { !it.isClaiming })
 
             val homeToken = buildList {
-                add(HomeElementItem.Banner(strigaUiBannerMapper.mapToBanner(StrigaKycSignUpStatus.ACTION_REQUIRED)))
+                add(HomeElementItem.Banner(strigaUiBannerMapper.mapToBanner(StrigaKycStatusBanner.ACTION_REQUIRED)))
                 addAll(mappedTokens)
             }
 

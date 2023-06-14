@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.databinding.ItemHomeBannerBinding
 import org.p2p.wallet.home.model.HomeScreenBanner
-import org.p2p.wallet.kyc.model.StrigaKycBanner
+import org.p2p.wallet.kyc.model.StrigaBanner
 import org.p2p.wallet.utils.viewbinding.context
 
 class SingleBannerViewHolder(
@@ -36,11 +36,11 @@ class SingleBannerViewHolder(
 
     fun onBind(item: HomeScreenBanner) {
         when (item) {
-            is StrigaKycBanner -> onBind(item)
+            is StrigaBanner -> onBind(item)
         }
     }
 
-    private fun onBind(item: StrigaKycBanner) = with(binding) {
+    private fun onBind(item: StrigaBanner) = with(binding) {
         val item = item.status
         textViewTitle.setText(item.bannerTitleResId)
 

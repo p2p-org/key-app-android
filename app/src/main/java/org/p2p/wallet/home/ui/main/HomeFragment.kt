@@ -38,7 +38,7 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.kyc.StrigaFragmentFactory
-import org.p2p.wallet.kyc.model.StrigaKycSignUpStatus
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
@@ -285,7 +285,7 @@ class HomeFragment :
         replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
     }
 
-    override fun showStrigaKyc(status: StrigaKycSignUpStatus) {
+    override fun showStrigaKyc(status: StrigaKycStatusBanner) {
         replaceFragment(strigaKycFragmentFactory.kycFragment(status))
     }
 

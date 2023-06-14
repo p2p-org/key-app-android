@@ -9,7 +9,7 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
-import org.p2p.wallet.kyc.model.StrigaKycSignUpStatus
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.transaction.model.NewShowProgress
 
@@ -41,7 +41,7 @@ interface HomeContract {
         fun navigateToBuyScreen(token: Token)
         fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?)
 
-        fun showStrigaKyc(status: StrigaKycSignUpStatus)
+        fun showStrigaKyc(status: StrigaKycStatusBanner)
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
