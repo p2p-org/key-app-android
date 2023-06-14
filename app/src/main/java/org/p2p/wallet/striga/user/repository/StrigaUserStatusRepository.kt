@@ -4,8 +4,6 @@ import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -44,15 +42,12 @@ class StrigaUserStatusRepository(
 
     private fun loadUserKycStatus() {
         launch {
-            while (isActive) {
-                try {
-                    val kycStatusDestination = loadUserStatus()
-                    strigaUserDestinationFlow.value = kycStatusDestination.let(::mapToDestination)
-                    strigaBannerFlow.value = kycStatusDestination.let(::mapToBanner)
-                    delay(DELAY_IM_MILLISECONDS)
-                } catch (e: Throwable) {
-                    Timber.tag(TAG).e(e, "Error while fetching user kyc status")
-                }
+            try {
+                val kycStatusDestination = loadUserStatus()
+                strigaUserDestinationFlow.value = kycStatusDestination.let(::mapToDestination)
+                strigaBannerFlow.value = kycStatusDestination.let(::mapToBanner)
+            } catch (e: Throwable) {
+                Timber.tag(TAG).e(e, "Error while fetching user kyc status")
             }
         }
     }
