@@ -9,8 +9,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledF
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
-import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 
 class TopUpWalletPresenter(
@@ -18,7 +18,7 @@ class TopUpWalletPresenter(
     private val userInteractor: UserInteractor,
     private val strigaSignupFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val seedPhraseProvider: SeedPhraseProvider,
-    private val strigaUserStatusRepository: StrigaUserStatusRepository
+    private val strigaUserInteractor: StrigaUserInteractor
 ) : BasePresenter<TopUpWalletContract.View>(),
     TopUpWalletContract.Presenter {
 
@@ -49,7 +49,7 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
-        val userStatusNavigation = strigaUserStatusRepository.getUserDestination()
+        val userStatusNavigation = strigaUserInteractor.getUserDestination()
         if (userStatusNavigation == StrigaUserStatusDestination.SMS_VERIFICATION) {
             // todo: send sms or maybe we should send first sms directly from sms verification screen?
         } else {

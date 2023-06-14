@@ -15,20 +15,20 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="0dp"
+        android:gravity="start"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
         app:layout_constraintEnd_toStartOf="@id/imageViewIcon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:gravity="start"
         tools:text="Finish identity verification\nto send your money\nworldwide" />
 
     <TextView
         android:id="@+id/textViewSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_marginTop="4dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@id/textViewTitle"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +50,7 @@
 
     <ImageView
         android:id="@+id/imageViewIcon"
-        android:layout_width="110dp"
+        android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginHorizontal="8dp"
         android:layout_marginTop="8dp"

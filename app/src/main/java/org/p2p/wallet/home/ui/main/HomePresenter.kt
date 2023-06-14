@@ -57,7 +57,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.sell.interactor.SellInteractor
@@ -65,7 +64,6 @@ import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
-import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SocketState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
@@ -116,7 +114,6 @@ class HomePresenter(
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaUiBannerMapper: StrigaKycUiBannerMapper,
-    private val strigaUserStatusRepository: StrigaUserStatusRepository,
     bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
@@ -157,7 +154,7 @@ class HomePresenter(
                 async {
                     // todo: move it somewhere to unify all home loadings
                     metadataInteractor.tryLoadAndSaveMetadata()
-                    strigaUserInteractor.loadAndSaveUserData()
+                    strigaUserInteractor.loadAndSaveUserStatusData()
                     strigaSignupInteractor.loadAndSaveSignupData()
                 }
             )
@@ -319,7 +316,7 @@ class HomePresenter(
 
     override fun onBannerClicked(bannerTitleId: Int) {
         val statusFromKycBanner = strigaUiBannerMapper.onBannerClicked(bannerTitleId)
-        view?.showStrigaKyc(statusFromKycBanner)
+        view?.showStrigaKycStatus(statusFromKycBanner)
     }
 
     override fun onBannerCloseClicked(bannerTitleId: Int) = Unit
@@ -433,7 +430,6 @@ class HomePresenter(
             } else {
                 userInteractor.getSingleTokenForBuy() ?: return@launch
             }
-
             view?.navigateToBuyScreen(tokenToBuy)
         }
     }
@@ -480,15 +476,16 @@ class HomePresenter(
             userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
                 .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
-        val homeBannerItem = strigaUiBannerMapper.mapToBigBanner(StrigaKycStatusBanner.VERIFICATION_DONE)
+        val strigaBigBanner = strigaUserInteractor.getUserStatusBanner()?.let(strigaUiBannerMapper::mapToBigBanner)
 
-        view?.showEmptyViewData(
-            listOf(
-                homeBannerItem,
-                resources.getString(R.string.main_popular_tokens_header),
-                *tokensForBuy.toTypedArray()
-            )
-        )
+        val emptyDataList = buildList {
+            if (strigaBigBanner != null) {
+                add(strigaBigBanner)
+            }
+            add(resources.getString(R.string.main_popular_tokens_header))
+            add(tokensForBuy.toTypedArray())
+        }
+        view?.showEmptyViewData(emptyDataList)
         logBalance(BigDecimal.ZERO)
 
         view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
@@ -552,9 +549,11 @@ class HomePresenter(
             )
 
             claimAnalytics.logClaimAvailable(state.ethTokens.any { !it.isClaiming })
-
+            val strigaBanner = strigaUserInteractor.getUserStatusBanner()?.let(strigaUiBannerMapper::mapToBanner)
             val homeToken = buildList {
-                add(HomeElementItem.Banner(strigaUiBannerMapper.mapToBanner(StrigaKycStatusBanner.ACTION_REQUIRED)))
+                if (strigaBanner != null) {
+                    add(HomeElementItem.Banner(strigaBanner))
+                }
                 addAll(mappedTokens)
             }
 

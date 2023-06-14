@@ -93,8 +93,8 @@
     <string name="striga_sms_error_exceeded_confirmation_attempts_title">Please, wait 1 day for the next try</string>
     <string name="striga_sms_error_exceeded_confirmation_attempts_subtitle">After 5 incorrect attempts we disabled SMS verification for 1 day to secure your account.</string>
 
-    <string name="striga_kyc_signup_banner_pending_title">Thanks! Your documents\nis already checking</string>
-    <string name="striga_kyc_signup_big_banner_pending_title">Thanks! Your documents\nis already checking</string>
+    <string name="striga_kyc_signup_banner_pending_title">Thanks! Your documents\nare already checking</string>
+    <string name="striga_kyc_signup_big_banner_pending_title">Thanks! Your documents\nare already checking</string>
     <string name="striga_kyc_signup_banner_pending_message">Usually it takes a few hours</string>
     <string name="striga_kyc_signup_big_banner_pending_message">Usually it takes a few hours</string>
     <string name="striga_kyc_signup_banner_pending_action">View</string>

@@ -4,20 +4,15 @@ import androidx.fragment.app.Fragment
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
+import org.p2p.wallet.striga.kyc.ui.StrigaKycFragment
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 
-class StrigaFragmentFactory() {
+class StrigaFragmentFactory {
 
     fun kycFragment(status: StrigaKycStatusBanner): Fragment {
-        when (status) {
-            StrigaKycStatusBanner.IDENTIFY -> TODO()
-            StrigaKycStatusBanner.PENDING -> TODO()
-            StrigaKycStatusBanner.VERIFICATION_DONE -> TODO()
-            StrigaKycStatusBanner.ACTION_REQUIRED -> TODO()
-            StrigaKycStatusBanner.REJECTED -> TODO()
-        }
+        return StrigaKycFragment()
     }
 
     fun bankTransferFragment(target: StrigaUserStatusDestination): Fragment? {

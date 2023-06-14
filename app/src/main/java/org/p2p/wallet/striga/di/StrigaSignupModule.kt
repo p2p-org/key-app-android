@@ -98,7 +98,7 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaItemCellMapper)
         factoryOf(::StrigaHeaderSignatureGenerator)
         factoryOf(::StrigaFragmentFactory)
-        factoryOf(::StrigaUserStatusRepository)
+        singleOf(::StrigaUserStatusRepository)
         factoryOf(::StrigaUserStatusDestinationMapper)
     }
 }

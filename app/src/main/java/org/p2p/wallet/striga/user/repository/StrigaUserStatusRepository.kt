@@ -22,10 +22,6 @@ class StrigaUserStatusRepository(
     private val userRepository: StrigaUserRepository,
 ) : CoroutineScope {
 
-    init {
-        loadUserKycStatus()
-    }
-
     override val coroutineContext: CoroutineContext
         get() = dispatchers.io
 
@@ -40,7 +36,7 @@ class StrigaUserStatusRepository(
 
     fun getUserDestination(): StrigaUserStatusDestination = strigaUserDestinationFlow.value
 
-    private fun loadUserKycStatus() {
+    fun loadUserKycStatus() {
         launch {
             try {
                 val kycStatusDestination = loadUserStatus()

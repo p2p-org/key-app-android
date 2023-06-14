@@ -285,7 +285,7 @@ class HomeFragment :
         replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
     }
 
-    override fun showStrigaKyc(status: StrigaKycStatusBanner) {
+    override fun showStrigaKycStatus(status: StrigaKycStatusBanner) {
         replaceFragment(strigaKycFragmentFactory.kycFragment(status))
     }
 
