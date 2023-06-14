@@ -26,6 +26,7 @@ class TopUpWalletPresenter(
     private val seedPhraseProvider: SeedPhraseProvider,
     private val strigaUserInteractor: StrigaUserInteractor,
     private val metadataInteractor: MetadataInteractor,
+    private val inAppFeatureFlags: InAppFeatureFlags,
 ) : BasePresenter<TopUpWalletContract.View>(),
     TopUpWalletContract.Presenter {
 
@@ -64,8 +65,12 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
-        when {
+        if (inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
+            navigateToTarget()
+            return
+        }
 
+        when {
             // cannot fill the form, check whether user is created etc without metadata, loading if it's not loaded
             metadataInteractor.currentMetadata == null -> {
                 Timber.i("Metadata is not fetched. Trying again...")
@@ -100,7 +105,7 @@ class TopUpWalletPresenter(
     }
 
     private suspend fun loadMetadataIfNot() {
-        if (metadataInteractor.currentMetadata != null) {
+        if (metadataInteractor.currentMetadata != null || inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
             return
         }
 
