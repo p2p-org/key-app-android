@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
+import org.p2p.wallet.auth.model.MetadataLoadStatus
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -67,14 +68,14 @@ class TopUpWalletPresenter(
 
             // cannot fill the form, check whether user is created etc without metadata, loading if it's not loaded
             metadataInteractor.currentMetadata == null -> {
-                Timber.d("Metadata is not fetched. Trying again...")
+                Timber.i("Metadata is not fetched. Trying again...")
                 launch {
                     loadMetadataIfNot()
                 }
             }
             // checking again whether status is loaded, if it's not - loading ...
             strigaUserInteractor.isUserCreated() && strigaUserStatus.value == null -> {
-                Timber.d("Striga user status is not fetched. Trying again...")
+                Timber.i("Striga user status is not fetched. Trying again...")
                 launch {
                     loadUserStatus()
                 }
@@ -104,8 +105,7 @@ class TopUpWalletPresenter(
         }
 
         withProgress {
-            if (!metadataInteractor.tryLoadAndSaveMetadata()) {
-                Timber.e("Unable to load metadata")
+            if (metadataInteractor.tryLoadAndSaveMetadata() is MetadataLoadStatus.Failure) {
                 view?.showUiKitSnackBar(null, R.string.error_general_message)
             }
         }
@@ -150,11 +150,9 @@ class TopUpWalletPresenter(
         }
     }
 
-    private fun withProgress(block: suspend () -> Unit) {
-        launch {
-            strigaBankTransferProgress.emit(true)
-            block()
-            strigaBankTransferProgress.emit(false)
-        }
+    private suspend fun withProgress(block: suspend () -> Unit) {
+        strigaBankTransferProgress.emit(true)
+        block()
+        strigaBankTransferProgress.emit(false)
     }
 }
