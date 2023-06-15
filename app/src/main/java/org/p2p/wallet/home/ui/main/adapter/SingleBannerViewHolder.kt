@@ -41,7 +41,6 @@ class SingleBannerViewHolder(
         textViewSubtitle.text = subtitleText
         textViewSubtitle.isVisible = subtitleText.isNotEmpty()
 
-        textViewSubtitle.setText(status.bannerMessageResId)
         imageViewIcon.setImageResource(status.placeholderResId)
         buttonAction.setText(status.actionTitleResId)
         root.background.setTint(context.getColor(status.backgroundTint))
