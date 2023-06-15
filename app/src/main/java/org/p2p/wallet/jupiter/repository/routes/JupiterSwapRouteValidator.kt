@@ -31,7 +31,7 @@ class JupiterSwapRouteValidator(
         val route: JupiterSwapRoute,
         val ordinal: Int,
         val isRouteValid: Boolean,
-        val errorIfNotValid: String?
+        val error: String?
     )
 
     private val userPublicKey: Base58String
@@ -54,7 +54,7 @@ class JupiterSwapRouteValidator(
                     buildString {
                         append("route number: ${it.ordinal} ")
                         append("isValid=${it.isRouteValid} ")
-                        append("error=${it.errorIfNotValid} ")
+                        append("error=${it.error} ")
                     }
                 )
             }
@@ -78,7 +78,7 @@ class JupiterSwapRouteValidator(
             route = route,
             ordinal = ordinal,
             isRouteValid = isRouteValid.isSimulationSuccess,
-            errorIfNotValid = isRouteValid.errorIfSimulationFailed
+            error = isRouteValid.errorIfSimulationFailed
         )
     }
 
