@@ -2,12 +2,16 @@ package org.p2p.wallet.striga.sms
 
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import android.os.Bundle
 import android.view.View
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.core.utils.hideKeyboard
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.image.bind
 import org.p2p.wallet.R
@@ -60,6 +64,15 @@ class StrigaSmsErrorFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpView>>(
                 }
                 false
             }
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            val systemAndIme = insets.systemAndIme()
+            rootView.updatePadding(top = systemAndIme.top)
+            binding.containerBottomButtons.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 

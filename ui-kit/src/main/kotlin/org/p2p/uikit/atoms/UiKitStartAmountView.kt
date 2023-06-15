@@ -1,5 +1,6 @@
 package org.p2p.uikit.atoms
 
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
@@ -50,6 +51,10 @@ class UiKitStartAmountView @JvmOverloads constructor(
         @DrawableRes bottom: Int = 0
     ) {
         binding.subtitleTextView.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom)
+    }
+
+    fun setSubtitleColor(@ColorInt subtitleTextColor: Int) {
+        binding.subtitleTextView.setTextColor(subtitleTextColor)
     }
 
     private val binding = inflateViewBinding<WidgetStartAmountViewBinding>()

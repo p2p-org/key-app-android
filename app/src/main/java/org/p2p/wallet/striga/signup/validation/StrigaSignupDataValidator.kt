@@ -37,11 +37,11 @@ class StrigaSignupDataValidator {
         ),
         StrigaSignupDataType.CITY to listOf(
             EmptyInputValidator(),
-            LengthInputValidator(1..40)
+            LengthInputValidator(2..40)
         ),
         StrigaSignupDataType.CITY_ADDRESS_LINE to listOf(
             EmptyInputValidator(),
-            LengthInputValidator(1..80)
+            LengthInputValidator(1..160)
         ),
         StrigaSignupDataType.CITY_POSTAL_CODE to listOf(
             EmptyInputValidator(),
@@ -49,8 +49,7 @@ class StrigaSignupDataValidator {
         ),
         // state is an optional field
         StrigaSignupDataType.CITY_STATE to listOf(
-            EmptyInputValidator(),
-            LengthInputValidator(1..20)
+            LengthInputValidator(0..20)
         ),
     )
 
