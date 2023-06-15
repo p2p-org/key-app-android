@@ -100,7 +100,9 @@ class StrigaUserRepositoryTest {
             userId = expectedUserId,
             email = expectedUserEmail,
             kycDetails = StrigaCreateUserResponse.KycDataResponse(
-                status = expectedKycStatus.name
+                status = expectedKycStatus.name,
+                isEmailVerified = false,
+                isMobileVerified = false,
             )
         )
 
