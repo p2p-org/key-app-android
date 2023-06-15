@@ -43,7 +43,10 @@ class StrigaUserInteractor(
         return userStatusRepository.getBanner()
     }
 
-    fun getUserDestination(): StrigaUserStatusDestination {
+    /**
+     * Returns user destination based on user status or null if unable to detect (no user status)
+     */
+    fun getUserDestination(): StrigaUserStatusDestination? {
         return userStatusRepository.getUserDestination()
     }
 }

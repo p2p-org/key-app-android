@@ -30,13 +30,13 @@ class StrigaUserStatusDestinationMapper {
     private fun mapToSignUpStatus(status: StrigaUserStatus?, isUserCreated: Boolean): StrigaUserStatusDestination {
         return when {
             !isUserCreated -> {
-                StrigaUserStatusDestination.NONE
+                StrigaUserStatusDestination.ONBOARDING
             }
             !isMobileVerified(status) -> {
                 StrigaUserStatusDestination.SMS_VERIFICATION
             }
             status?.kysStatus == StrigaUserVerificationStatus.INITIATED -> {
-                StrigaUserStatusDestination.SMS_SUB_VERIFICATION
+                StrigaUserStatusDestination.SUM_SUB_VERIFICATION
             }
             else -> {
                 StrigaUserStatusDestination.NONE
