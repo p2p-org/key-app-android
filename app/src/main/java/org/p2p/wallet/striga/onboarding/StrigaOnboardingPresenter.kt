@@ -12,6 +12,8 @@ class StrigaOnboardingPresenter(
     private val interactor: StrigaOnboardingInteractor,
 ) : BasePresenter<StrigaOnboardingContract.View>(dispatchers.ui), StrigaOnboardingContract.Presenter {
 
+    private var selectedCountryCode: CountryCode? = null
+
     override fun attach(view: StrigaOnboardingContract.View) {
         super.attach(view)
         launch {
@@ -21,9 +23,14 @@ class StrigaOnboardingPresenter(
 
     override fun onCurrentCountryChanged(selectedCountry: CountryCode) {
         launch {
+            selectedCountryCode = selectedCountry
             interactor.saveCurrentCountry(selectedCountry)
             showCountry(selectedCountry)
         }
+    }
+
+    override fun onCountryClicked() {
+        view?.showCountryPicker(selectedCountryCode)
     }
 
     private fun showCountry(country: CountryCode) {
