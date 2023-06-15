@@ -35,9 +35,10 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
+import org.p2p.wallet.kyc.StrigaFragmentFactory
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
@@ -101,6 +102,7 @@ class HomeFragment :
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
+    private val strigaKycFragmentFactory: StrigaFragmentFactory by inject()
     private val buyFragmentFactory: BuyFragmentFactory by inject()
     private val layoutManager: LinearLayoutManager by lazy {
         HomeScreenLayoutManager(requireContext())
@@ -283,6 +285,10 @@ class HomeFragment :
         replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
     }
 
+    override fun navigateToKycStatus(status: StrigaKycStatusBanner) {
+        replaceFragment(strigaKycFragmentFactory.kycFragment(status))
+    }
+
     override fun showSendNoTokens(fallbackToken: Token) {
         replaceFragment(SendUnavailableFragment.create(fallbackToken))
     }
@@ -347,20 +353,12 @@ class HomeFragment :
         replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
     }
 
-    override fun onBannerClicked(bannerId: Int) {
-        when (bannerId) {
-            R.id.home_banner_top_up -> {
-                TopUpWalletBottomSheet.show(parentFragmentManager)
-            }
-            R.string.home_username_banner_option -> {
-                browseAnalytics.logBannerUsernamePressed()
-                replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
-            }
-            R.string.home_feedback_banner_option -> {
-                browseAnalytics.logBannerFeedbackPressed()
-                IntercomService.showMessenger()
-            }
-        }
+    override fun onBannerClicked(bannerTitleId: Int) {
+        presenter.onBannerClicked(bannerTitleId)
+    }
+
+    override fun onBannerCloseClicked(bannerTitleId: Int) {
+        presenter.onBannerClicked(bannerTitleId)
     }
 
     override fun onToggleClicked() {

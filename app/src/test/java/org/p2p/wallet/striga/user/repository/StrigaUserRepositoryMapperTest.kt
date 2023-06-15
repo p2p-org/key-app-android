@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.user.repository
 
 import com.google.gson.GsonBuilder
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -173,7 +174,9 @@ class StrigaUserRepositoryMapperTest {
             userId = "user_id",
             email = "email",
             kycDetails = StrigaCreateUserResponse.KycDataResponse(
-                status = "some_status"
+                status = "some_status",
+                isEmailVerified = false,
+                isMobileVerified = false
             )
         )
         var error: Throwable? = null
@@ -196,7 +199,9 @@ class StrigaUserRepositoryMapperTest {
             userId = "user_id",
             email = "email",
             kycDetails = StrigaCreateUserResponse.KycDataResponse(
-                status = StrigaUserVerificationStatus.NOT_STARTED.toString()
+                status = StrigaUserVerificationStatus.NOT_STARTED.toString(),
+                isEmailVerified = false,
+                isMobileVerified = false
             )
         )
 
@@ -204,5 +209,7 @@ class StrigaUserRepositoryMapperTest {
         assertEquals("user_id", responseData.userId)
         assertEquals("email", responseData.email)
         assertEquals(StrigaUserVerificationStatus.NOT_STARTED, responseData.kycStatus.status)
+        assertFalse(responseData.kycStatus.isEmailVerified)
+        assertFalse(responseData.kycStatus.isMobileVerified)
     }
 }

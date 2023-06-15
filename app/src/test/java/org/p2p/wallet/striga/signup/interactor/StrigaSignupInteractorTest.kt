@@ -355,7 +355,9 @@ class StrigaSignupInteractorTest {
                 userId = "userId",
                 email = "email",
                 kycStatus = StrigaUserInitialKycDetails(
-                    status = StrigaUserVerificationStatus.NOT_STARTED
+                    status = StrigaUserVerificationStatus.NOT_STARTED,
+                    isEmailVerified = false,
+                    isMobileVerified = false
                 )
             )
         )
