@@ -125,8 +125,6 @@ jobs:
           salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: "Generate changelog"
         uses: ./.github/actions/setup-changelog-pull-request
-        with:
-          current-ref-name: $GITHUB_HEAD_REF
       - name: "Send start deploy message to slack"
         run: bash bash_scripts/slack_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Build feature APK"
