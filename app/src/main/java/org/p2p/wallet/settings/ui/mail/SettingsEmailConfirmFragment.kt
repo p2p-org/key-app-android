@@ -76,12 +76,14 @@ class SettingsEmailConfirmFragment :
         }
     }
 
-    override fun showSuccessScreen() {
-        // TODO PWN-8351 close screen and show success
+    override fun showSuccessDeviceChange() {
+        showUiKitSnackBar(message = getString(R.string.devices_change_success_message))
+        popBackStack()
     }
 
-    override fun showErrorScreen() {
-        // TODO PWN-8351 close screen and show error
+    override fun showFailDeviceChange() {
+        showUiKitSnackBar(message = getString(R.string.error_general_message))
+        popBackStack()
     }
 
     override fun onConnectionError() {

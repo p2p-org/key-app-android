@@ -21,7 +21,7 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
 
     var userPhoneNumberEnteredCount = 0
 
-    var torusKeyTimeStamp: Long = 0
+    var torusKeyTimestamp: Long = 0
 
     val userRestorePublicKey: Base58String?
         get() = restoreUserKeyPair?.publicKey?.toBase58Instance()
@@ -72,7 +72,7 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     var torusKey: String? = null
         set(value) {
             field = value
-            torusKeyTimeStamp = DateTimeUtils.getCurrentTimestampInSeconds()
+            torusKeyTimestamp = DateTimeUtils.getCurrentTimestampInSeconds()
             Timber.tag(TAG).i("torusKey is generated and set: ${torusKey?.length}")
         }
 
@@ -100,6 +100,6 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     }
 
     fun isTorusKeyValid(): Boolean {
-        return DateTimeUtils.getCurrentTimestampInSeconds() - torusKeyTimeStamp < 15.minutes.inWholeSeconds
+        return DateTimeUtils.getCurrentTimestampInSeconds() - torusKeyTimestamp < 15.minutes.inWholeSeconds
     }
 }

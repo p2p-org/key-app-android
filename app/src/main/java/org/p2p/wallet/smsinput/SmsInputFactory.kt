@@ -6,7 +6,6 @@ import android.os.Bundle
 import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputFragment
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputFragment
 import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputFragment
-import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputFragment
 
 object SmsInputFactory {
     enum class Type(
@@ -15,7 +14,7 @@ object SmsInputFactory {
     ) {
         Onboarding(OnboardingSmsInputFragment::class.java, SmsInputNavigationStrategy.PopAndReplace(null, true)),
         Striga(StrigaSmsInputFragment::class.java, SmsInputNavigationStrategy.Replace),
-        UpdateDevice(UpdateDeviceSmsInputFragment::class.java),
+        UpdateDevice(UpdateDeviceSmsInputFragment::class.java, SmsInputNavigationStrategy.Replace),
     }
 
     /**

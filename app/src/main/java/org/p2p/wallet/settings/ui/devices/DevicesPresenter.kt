@@ -78,7 +78,9 @@ class DevicesPresenter(
             val phoneNumber = secureStorage.getObject(
                 SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
                 GatewayOnboardingMetadata::class
-            )?.customSharePhoneNumberE164.orEmpty().replace(Regex("[^0-9]"), "")
+            )?.customSharePhoneNumberE164
+                .orEmpty()
+                .replace(Regex("[^0-9]"), "")
             val userPhoneNumber = PhoneNumber(phoneNumber)
             onboardingInteractor.temporaryPhoneNumber = userPhoneNumber
             startRestoringCustomShare(userPhoneNumber)
