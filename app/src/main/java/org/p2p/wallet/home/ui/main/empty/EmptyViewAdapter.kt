@@ -5,8 +5,10 @@ import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.core.token.Token
+import org.p2p.wallet.home.model.HomeScreenBanner
 import org.p2p.wallet.home.ui.main.adapter.HeaderViewHolder
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
+import org.p2p.wallet.home.ui.main.adapter.SingleBannerViewHolder
 
 class EmptyViewAdapter(
     private val listener: OnHomeItemsClickListener
@@ -37,6 +39,7 @@ class EmptyViewAdapter(
             listener.onPopularTokenClicked(popularToken)
         }
         R.layout.item_main_header -> HeaderViewHolder(parent)
+
         else -> error("Unknown viewType: $viewType")
     }
 
@@ -45,6 +48,7 @@ class EmptyViewAdapter(
             is BigBannerViewHolder -> holder.onBind(data[position] as HomeBannerItem)
             is PopularTokenViewHolder -> holder.onBind(data[position] as Token)
             is HeaderViewHolder -> holder.onBind(data[position] as String)
+            is SingleBannerViewHolder -> holder.onBind(data[position] as HomeScreenBanner)
         }
     }
 }

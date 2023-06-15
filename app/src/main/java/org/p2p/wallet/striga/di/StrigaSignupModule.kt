@@ -15,6 +15,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaHeaderSignatureGenerator
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
+import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
@@ -45,7 +46,8 @@ import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepositoryMapper
-
+import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
+import org.p2p.wallet.striga.user.repository.StrigaUserStatusDestinationMapper
 object StrigaSignupModule : InjectionModule {
     override fun create() = module {
         initDataLayer()
@@ -95,5 +97,8 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaUserIdProvider)
         factoryOf(::StrigaItemCellMapper)
         factoryOf(::StrigaHeaderSignatureGenerator)
+        factoryOf(::StrigaFragmentFactory)
+        singleOf(::StrigaUserStatusRepository)
+        factoryOf(::StrigaUserStatusDestinationMapper)
     }
 }
