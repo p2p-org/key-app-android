@@ -40,8 +40,11 @@ class SettingsEmailConfirmPresenter(
                 updateDeviceShare()
             }
             is RestoreFailureState.TitleSubtitleError -> {
-                view?.showUiKitSnackBar(message = restoreHandledState.title)
-                restoreUserWithShares(currentFlow)
+                if (restoreHandledState.email != null) {
+                    view?.showIncorrectAccountScreen(restoreHandledState.email)
+                } else {
+                    view?.showUiKitSnackBar(message = restoreHandledState.title)
+                }
             }
             is RestoreFailureState.ToastError -> {
                 view?.showUiKitSnackBar(message = restoreHandledState.message)

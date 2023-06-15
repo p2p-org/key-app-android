@@ -72,7 +72,17 @@ class SettingsEmailConfirmFragment :
             buttonRestoreGoogle.apply {
                 setLoading(isScreenLoading)
                 isEnabled = !isScreenLoading
+                if (!isScreenLoading) setIconResource(R.drawable.ic_google_logo)
             }
+        }
+    }
+
+    override fun showIncorrectAccountScreen(email: String) {
+        with(binding) {
+            imageViewBanner.setImageResource(R.drawable.ic_not_found)
+            textViewTitle.setText(R.string.devices_incorrect_account)
+            textViewSubtitle.text = getString(R.string.devices_account_associated, email)
+            buttonRestoreGoogle.setText(R.string.devices_restore_another)
         }
     }
 

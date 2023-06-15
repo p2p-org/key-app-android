@@ -99,6 +99,12 @@
     <string name="devices_almost_done_message">Confirm access to your account that was used to create the wallet</string>
     <string name="devices_restore_google">Restore with Google</string>
 
+
+    <string name="devices_incorrect_account">Incorrect Google account</string>
+    <string name="devices_account_associated">This account is associated with %s. Please log in with the correct Google account.</string>
+    <string name="devices_restore_another">Use another account</string>
+
+
     <string name="devices_change_sms_input_toolbar_title">Confirm your number</string>
     <string name="devices_change_update_message">Updating your authorization device</string>
     <string name="devices_change_success_message">✌️ The device was successfully changed</string>
