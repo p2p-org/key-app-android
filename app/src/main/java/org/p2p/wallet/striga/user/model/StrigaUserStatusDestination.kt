@@ -6,5 +6,5 @@ enum class StrigaUserStatusDestination {
     SIGN_UP_FIRST_STEP,
     SIGN_UP_SECOND_STEP,
     SMS_VERIFICATION,
-    SMS_SUB_VERIFICATION;
+    SUM_SUB_VERIFICATION;
 }
