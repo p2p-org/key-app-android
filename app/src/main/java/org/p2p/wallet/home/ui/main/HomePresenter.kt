@@ -47,6 +47,7 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.analytics.HomeAnalytics
+import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.model.VisibilityState
@@ -476,13 +477,13 @@ class HomePresenter(
             userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
                 .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
-        val strigaBigBanner = strigaUserInteractor.getUserStatusBanner()?.let(strigaUiBannerMapper::mapToBigBanner)
+        val strigaBigBanner = strigaUserInteractor.getUserStatusBanner()
+            ?.let(strigaUiBannerMapper::mapToBigBanner)
+            ?: getDefaultBanner()
 
         val emptyDataList = buildList {
-            if (strigaBigBanner != null) {
-                add(strigaBigBanner)
-            }
-            add(resources.getString(R.string.main_popular_tokens_header))
+            this += strigaBigBanner
+            this += resources.getString(R.string.main_popular_tokens_header)
             addAll(tokensForBuy)
         }
         view?.showEmptyViewData(emptyDataList)
@@ -525,6 +526,16 @@ class HomePresenter(
 
     override fun clearTokensCache() {
         state = state.copy(tokens = emptyList())
+    }
+
+    private fun getDefaultBanner(): HomeBannerItem {
+        return HomeBannerItem(
+            titleTextId = R.string.main_banner_title,
+            subtitleTextId = R.string.main_banner_subtitle,
+            buttonTextId = R.string.main_banner_button,
+            drawableRes = R.drawable.ic_main_banner,
+            backgroundColorRes = R.color.bannerBackgroundColor
+        )
     }
 
     private fun showTokensAndBalance() {

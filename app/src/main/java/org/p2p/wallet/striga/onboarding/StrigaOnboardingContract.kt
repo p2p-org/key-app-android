@@ -38,6 +38,7 @@ interface StrigaOnboardingContract {
 
         fun setCurrentCountry(country: CountryCode)
         fun setAvailabilityState(state: AvailabilityState)
+        fun showCountryPicker(selectedItem: CountryCode?)
         fun openHelp()
         fun navigateNext()
     }
@@ -46,5 +47,6 @@ interface StrigaOnboardingContract {
         fun onClickContinue()
         fun onClickHelp()
         fun onCurrentCountryChanged(selectedCountry: CountryCode)
+        fun onCountryClicked()
     }
 }
