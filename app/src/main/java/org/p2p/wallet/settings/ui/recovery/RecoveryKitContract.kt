@@ -5,7 +5,8 @@ import org.p2p.wallet.common.mvp.MvpView
 
 interface RecoveryKitContract {
     interface View : MvpView {
-        fun showDeviceName(deviceName: CharSequence)
+        fun showDeviceName(deviceName: CharSequence, isDifferentFromDeviceShare: Boolean)
+        fun showManageVisible(isVisible: Boolean)
         fun showPhoneNumber(phoneNumber: String)
         fun showSocialId(socialId: String)
         fun setWebAuthInfoVisibility(isVisible: Boolean)

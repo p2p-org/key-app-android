@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.user.api
+package org.p2p.wallet.striga.user.api.request
 
 import com.google.gson.annotations.SerializedName
 
@@ -61,11 +61,11 @@ open class StrigaCreateUserRequest(
         @SerializedName("addressLine1")
         val addressLine1: String,
         @SerializedName("addressLine2")
-        val addressLine2: String,
+        val addressLine2: String? = null,
         @SerializedName("city")
         val city: String,
         @SerializedName("state")
-        val state: String,
+        val state: String? = null,
         @SerializedName("country")
         val country: String,
         @SerializedName("postalCode")

@@ -18,7 +18,7 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.user.api.StrigaApi
-import org.p2p.wallet.striga.user.api.StrigaCreateUserRequest
+import org.p2p.wallet.striga.user.api.request.StrigaCreateUserRequest
 import org.p2p.wallet.striga.user.api.response.StrigaCreateUserResponse
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
@@ -100,7 +100,9 @@ class StrigaUserRepositoryTest {
             userId = expectedUserId,
             email = expectedUserEmail,
             kycDetails = StrigaCreateUserResponse.KycDataResponse(
-                status = expectedKycStatus.name
+                status = expectedKycStatus.name,
+                isEmailVerified = false,
+                isMobileVerified = false,
             )
         )
 
@@ -147,7 +149,7 @@ class StrigaUserRepositoryTest {
             assertEquals(dataMap[StrigaSignupDataType.CITY], address.city)
             assertEquals(dataMap[StrigaSignupDataType.CITY_ADDRESS_LINE], address.addressLine1)
             // we just copy the same to address line 2
-            assertEquals(dataMap[StrigaSignupDataType.CITY_ADDRESS_LINE], address.addressLine2)
+            assertEquals(null, address.addressLine2)
             assertEquals(dataMap[StrigaSignupDataType.CITY_POSTAL_CODE], address.postalCode)
             assertEquals(dataMap[StrigaSignupDataType.CITY_STATE], address.state)
 

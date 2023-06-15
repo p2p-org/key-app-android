@@ -231,7 +231,7 @@ class StrigaSignupInteractorTest {
         setData(StrigaSignupDataType.OCCUPATION, "a")
         setData(StrigaSignupDataType.SOURCE_OF_FUNDS, "a")
         setData(StrigaSignupDataType.COUNTRY_ALPHA_2, "a")
-        setData(StrigaSignupDataType.CITY, "a")
+        setData(StrigaSignupDataType.CITY, "ab")
         setData(StrigaSignupDataType.CITY_ADDRESS_LINE, "a")
         setData(StrigaSignupDataType.CITY_POSTAL_CODE, "a")
         setData(StrigaSignupDataType.CITY_STATE, "a")
@@ -355,7 +355,9 @@ class StrigaSignupInteractorTest {
                 userId = "userId",
                 email = "email",
                 kycStatus = StrigaUserInitialKycDetails(
-                    status = StrigaUserVerificationStatus.NOT_STARTED
+                    status = StrigaUserVerificationStatus.NOT_STARTED,
+                    isEmailVerified = false,
+                    isMobileVerified = false
                 )
             )
         )
