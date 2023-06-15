@@ -12,6 +12,11 @@ class StrigaCreateUserResponse(
 
 ) {
     class KycDataResponse(
-        val status: String
+        @SerializedName("status")
+        val status: String,
+        @SerializedName("emailVerified")
+        val isEmailVerified: Boolean,
+        @SerializedName("mobileVerified")
+        val isMobileVerified: Boolean,
     )
 }
