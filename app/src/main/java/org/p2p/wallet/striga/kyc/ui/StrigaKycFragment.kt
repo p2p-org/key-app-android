@@ -12,6 +12,10 @@ class StrigaKycFragment :
     BaseMvpFragment<StrigaKycContract.View, StrigaKycContract.Presenter>(R.layout.fragment_striga_kyc),
     StrigaKycContract.View {
 
+    companion object {
+        fun create(): StrigaKycFragment = StrigaKycFragment()
+    }
+
     override val presenter: StrigaKycContract.Presenter by inject()
 
     private val strigaKycSdkFacade = StrigaKycSdkFacade()
