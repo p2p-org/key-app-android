@@ -289,6 +289,10 @@ class HomeFragment :
         replaceFragment(strigaKycFragmentFactory.kycFragment())
     }
 
+    override fun showTopupWalletDialog() {
+        TopUpWalletBottomSheet.show(parentFragmentManager)
+    }
+
     override fun showSendNoTokens(fallbackToken: Token) {
         replaceFragment(SendUnavailableFragment.create(fallbackToken))
     }
