@@ -61,9 +61,9 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
-        val userStatusNavigation = strigaUserInteractor.getUserDestination()
-        if (userStatusNavigation == StrigaUserStatusDestination.SMS_VERIFICATION) {
-            // todo: send sms or maybe we should send first sms directly from sms verification screen?
+        val strigaDestination = strigaUserInteractor.getUserDestination()
+        if (strigaDestination == StrigaUserStatusDestination.SMS_VERIFICATION) {
+            // todo: we should send first sms directly from sms verification screen
             launch {
                 strigaUserInteractor.resendSmsForVerifyPhoneNumber()
             }
@@ -71,20 +71,29 @@ class TopUpWalletPresenter(
 
         // in case of simulation web3 user, we don't need to check metadata
         if (inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
-            view?.navigateToBankTransferTarget(userStatusNavigation)
-            return;
+            view?.navigateToBankTransferTarget(StrigaUserStatusDestination.ONBOARDING)
+            return
         }
 
         when {
-            // cannot fill the form, check whether user is created etc without metadata, loading if it's not loaded
+            // cannot fill the form or check whether user is created without metadata, loading if it's not loaded
             metadataInteractor.currentMetadata == null -> {
                 Timber.i("Metadata is not fetched. Trying again...")
                 launch {
                     loadMetadataIfNot()
                 }
             }
+            // if status is not fetched, fetching it
+            strigaDestination == null -> {
+                Timber.i("Striga user status is not fetched. Trying again...")
+                launch {
+                    withProgress {
+                        strigaUserInteractor.loadAndSaveUserStatusData()
+                    }
+                }
+            }
             else -> {
-                view?.navigateToBankTransferTarget(userStatusNavigation)
+                view?.navigateToBankTransferTarget(strigaDestination)
             }
         }
     }
