@@ -25,6 +25,9 @@ class StrigaSignUpSecondStepPresenter(
     StrigaSignUpSecondStepContract.Presenter {
 
     private val cachedSignupData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
+    private var selectedCountry: CountryCode? = null
+    private var selectedOccupation: StrigaOccupation? = null
+    private var selectedFunds: StrigaSourceOfFunds? = null
 
     private var isSubmittedFirstTime = false
 
@@ -58,13 +61,26 @@ class StrigaSignUpSecondStepPresenter(
 
     override fun onPresetDataChanged(selectedItem: StrigaPresetDataItem) {
         when (selectedItem) {
-            is StrigaPresetDataItem.Country -> onCountryChanged(selectedItem.details)
-            is StrigaPresetDataItem.Occupation -> onOccupationChanged(selectedItem.details)
-            is StrigaPresetDataItem.SourceOfFunds -> onSourceOfFundsChanged(selectedItem.details)
+            is StrigaPresetDataItem.Country -> onCountryChanged(selectedItem.details ?: return)
+            is StrigaPresetDataItem.Occupation -> onOccupationChanged(selectedItem.details ?: return)
+            is StrigaPresetDataItem.SourceOfFunds -> onSourceOfFundsChanged(selectedItem.details ?: return)
         }
     }
 
+    override fun onOccupationClicked() {
+        view?.showOccupationPicker(selectedOccupation)
+    }
+
+    override fun onFundsClicked() {
+        view?.showSourceOfFundsPicker(selectedFunds)
+    }
+
+    override fun onCountryClicked() {
+        view?.showCurrentCountryPicker(selectedCountry)
+    }
+
     private fun onSourceOfFundsChanged(newValue: StrigaSourceOfFunds) {
+        selectedFunds = newValue
         view?.updateSignupField(
             newValue = strigaItemCellMapper.toUiTitle(newValue.sourceName),
             type = StrigaSignupDataType.SOURCE_OF_FUNDS
@@ -73,6 +89,7 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     private fun onOccupationChanged(newValue: StrigaOccupation) {
+        selectedOccupation = newValue
         view?.updateSignupField(
             newValue = strigaItemCellMapper.toUiTitle(newValue.occupationName),
             type = StrigaSignupDataType.OCCUPATION
@@ -81,6 +98,7 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     private fun onCountryChanged(newValue: CountryCode) {
+        selectedCountry = newValue
         view?.updateSignupField(
             newValue = "${newValue.flagEmoji} ${newValue.countryName}",
             type = StrigaSignupDataType.COUNTRY_ALPHA_2

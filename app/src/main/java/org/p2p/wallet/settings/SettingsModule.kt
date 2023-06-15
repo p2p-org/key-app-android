@@ -1,6 +1,8 @@
 package org.p2p.wallet.settings
 
+import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
@@ -21,6 +23,9 @@ import org.p2p.wallet.settings.ui.resetpin.pin.ResetPinPresenter
 import org.p2p.wallet.settings.ui.settings.SettingsContract
 import org.p2p.wallet.settings.ui.settings.SettingsPresenter
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics
+import org.p2p.wallet.smsinput.SmsInputContract
+import org.p2p.wallet.smsinput.SmsInputFactory
+import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputPresenter
 
 object SettingsModule : InjectionModule {
 
@@ -38,6 +43,10 @@ object SettingsModule : InjectionModule {
         factoryOf(::SettingsEmailConfirmPresenter) bind SettingsEmailConfirmContract.Presenter::class
 
         factoryOf(::DevicesPresenter) bind DevicesContract.Presenter::class
+        factoryOf(::UpdateDeviceSmsInputPresenter) {
+            bind<SmsInputContract.Presenter>()
+            named(SmsInputFactory.Type.UpdateDevice.name)
+        }
         factoryOf(::DeviceCellMapper)
     }
 }

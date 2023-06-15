@@ -14,7 +14,10 @@ import org.p2p.wallet.auth.ui.animationscreen.TimerState
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDevicesBinding
+import org.p2p.wallet.settings.ui.mail.SettingsEmailConfirmFragment
+import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -90,6 +93,15 @@ class DevicesFragment :
             primaryButtonTextColor = R.color.text_rose,
             secondaryButtonRes = R.string.common_cancel,
             primaryCallback = { presenter.executeDeviceShareChange() }
+        )
+    }
+
+    override fun navigateToSmsInput() {
+        replaceFragment(
+            SmsInputFactory.create(
+                type = SmsInputFactory.Type.UpdateDevice,
+                destinationFragment = SettingsEmailConfirmFragment::class.java
+            )
         )
     }
 }
