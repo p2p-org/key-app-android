@@ -1,5 +1,9 @@
 package org.p2p.wallet.striga.onboarding
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -14,18 +18,29 @@ class StrigaOnboardingPresenter(
 
     private var selectedCountryCode: CountryCode? = null
 
+    // to remove race between onCurrentCountryChanged and attach
+    private val selectedCountryState = MutableStateFlow<CountryCode?>(null)
+
+    override fun firstAttach() {
+        super.firstAttach()
+        launch {
+            selectedCountryState.emit(interactor.getChosenCountry())
+        }
+    }
+
     override fun attach(view: StrigaOnboardingContract.View) {
         super.attach(view)
-        launch {
-            showCountry(interactor.getChosenCountry())
-        }
+        selectedCountryState
+            .filterNotNull()
+            .onEach(::showCountry)
+            .launchIn(this)
     }
 
     override fun onCurrentCountryChanged(selectedCountry: CountryCode) {
         launch {
             selectedCountryCode = selectedCountry
             interactor.saveCurrentCountry(selectedCountry)
-            showCountry(selectedCountry)
+            selectedCountryState.emit(selectedCountry)
         }
     }
 

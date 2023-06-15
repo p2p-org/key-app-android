@@ -191,7 +191,7 @@ class StrigaOnboardingFragment :
         buttonContinue.apply {
             setText(state.buttonTextRes)
             icon = if (state.isButtonArrowVisible) {
-                getDrawable(R.drawable.ic_arrow_right)
+                getDrawable(R.drawable.ic_arrow_forward)
             } else {
                 null
             }
