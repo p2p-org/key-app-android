@@ -11,13 +11,15 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.user.api.request.StrigaCreateUserRequest
 import org.p2p.wallet.striga.user.api.response.StrigaCreateUserResponse
 import org.p2p.wallet.striga.user.api.response.StrigaUserDetailsResponse
-import org.p2p.wallet.striga.user.model.StrigaUserAddress
+import org.p2p.wallet.striga.user.api.response.StrigaUserStatusResponse
+import org.p2p.wallet.striga.user.model.StrigaUserStatus
 import org.p2p.wallet.striga.user.model.StrigaUserDetails
+import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 import org.p2p.wallet.striga.user.model.StrigaUserInfo
+import org.p2p.wallet.striga.user.model.StrigaUserKycInfo
+import org.p2p.wallet.striga.user.model.StrigaUserAddress
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialKycDetails
-import org.p2p.wallet.striga.user.model.StrigaUserKycInfo
-import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 
 class StrigaUserRepositoryMapper {
     @Throws(StrigaDataLayerError.InternalError::class)
@@ -33,6 +35,15 @@ class StrigaUserRepositoryMapper {
         } catch (mappingFailed: Throwable) {
             throw StrigaDataLayerError.InternalError(mappingFailed, "StrigaUserDetails mapping failed")
         }
+    }
+
+    fun fromNetwork(response: StrigaUserStatusResponse): StrigaUserStatus {
+        return StrigaUserStatus(
+            userId = response.userId,
+            isMobileVerified = response.isMobileVerified,
+            isEmailVerified = response.isEmailVerified,
+            kysStatus = StrigaUserVerificationStatus.from(response.status)
+        )
     }
 
     fun fromNetwork(response: StrigaCreateUserResponse): StrigaUserInitialDetails {
@@ -135,6 +146,8 @@ class StrigaUserRepositoryMapper {
         }
         return StrigaUserInitialKycDetails(
             status = status,
+            isEmailVerified = kycDetails.isEmailVerified,
+            isMobileVerified = kycDetails.isMobileVerified
         )
     }
 
