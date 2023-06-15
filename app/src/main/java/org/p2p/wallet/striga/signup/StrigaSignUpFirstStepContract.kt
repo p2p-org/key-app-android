@@ -15,7 +15,7 @@ interface StrigaSignUpFirstStepContract {
         fun clearError(type: StrigaSignupDataType)
         fun setButtonIsEnabled(isEnabled: Boolean)
         fun scrollToFirstError(type: StrigaSignupDataType)
-        fun showCountryOfBirthPicker()
+        fun showCountryOfBirthPicker(countryCode: CountryCode?)
         fun setupPhoneCountryCodePicker(selectedCountryCode: CountryCode?, selectedPhoneNumber: String?)
         fun showPhoneCountryCode(countryCode: CountryCode?)
         fun showPhoneCountryCodePicker(selectedCountryCode: CountryCode?)
