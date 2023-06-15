@@ -316,7 +316,7 @@ class HomePresenter(
 
     override fun onBannerClicked(bannerTitleId: Int) {
         val statusFromKycBanner = strigaUiBannerMapper.onBannerClicked(bannerTitleId)
-        view?.showStrigaKycStatus(statusFromKycBanner)
+        view?.navigateToKycStatus(statusFromKycBanner)
     }
 
     override fun onBannerCloseClicked(bannerTitleId: Int) = Unit
@@ -552,7 +552,7 @@ class HomePresenter(
             val strigaBanner = strigaUserInteractor.getUserStatusBanner()?.let(strigaUiBannerMapper::mapToBanner)
             val homeToken = buildList {
                 if (strigaBanner != null) {
-                    add(HomeElementItem.Banner(strigaBanner))
+                    this += HomeElementItem.Banner(strigaBanner)
                 }
                 addAll(mappedTokens)
             }

@@ -1,30 +1,23 @@
 package org.p2p.wallet.home.ui.main.adapter
 
 import androidx.core.view.isVisible
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.databinding.ItemHomeBannerBinding
 import org.p2p.wallet.home.model.HomeScreenBanner
 import org.p2p.wallet.kyc.model.StrigaBanner
 import org.p2p.wallet.utils.viewbinding.context
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class SingleBannerViewHolder(
-    private val binding: ItemHomeBannerBinding,
+    parent: ViewGroup,
+    private val binding: ItemHomeBannerBinding = parent.inflateViewBinding(),
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
         private const val MARGIN_HORIZONTAL = 32
     }
-
-    constructor(
-        parent: ViewGroup,
-        listener: OnHomeItemsClickListener
-    ) : this(
-        binding = ItemHomeBannerBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-        listener = listener
-    )
 
     private val screenWidth: Int
 
@@ -41,25 +34,25 @@ class SingleBannerViewHolder(
     }
 
     private fun onBind(item: StrigaBanner) = with(binding) {
-        val item = item.status
-        textViewTitle.setText(item.bannerTitleResId)
+        val status = item.status
+        textViewTitle.setText(status.bannerTitleResId)
 
-        val subtitleText = context.getString(item.bannerMessageResId)
+        val subtitleText = context.getString(status.bannerMessageResId)
         textViewSubtitle.text = subtitleText
         textViewSubtitle.isVisible = subtitleText.isNotEmpty()
 
-        textViewSubtitle.setText(item.bannerMessageResId)
-        imageViewIcon.setImageResource(item.placeholderResId)
-        buttonAction.setText(item.actionTitleResId)
-        root.background.setTint(context.getColor(item.backgroundTint))
+        textViewSubtitle.setText(status.bannerMessageResId)
+        imageViewIcon.setImageResource(status.placeholderResId)
+        buttonAction.setText(status.actionTitleResId)
+        root.background.setTint(context.getColor(status.backgroundTint))
 
-        buttonClose.isVisible = item.isCloseButtonVisible
+        buttonClose.isVisible = status.isCloseButtonVisible
 
         buttonAction.setOnClickListener {
-            listener.onBannerClicked(item.bannerTitleResId)
+            listener.onBannerClicked(status.bannerTitleResId)
         }
         buttonClose.setOnClickListener {
-            listener.onBannerCloseClicked(item.bannerTitleResId)
+            listener.onBannerCloseClicked(status.bannerTitleResId)
         }
     }
 }

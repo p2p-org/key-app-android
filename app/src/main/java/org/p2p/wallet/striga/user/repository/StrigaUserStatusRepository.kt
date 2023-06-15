@@ -28,10 +28,6 @@ class StrigaUserStatusRepository(
     private val strigaUserDestinationFlow = MutableStateFlow(StrigaUserStatusDestination.NONE)
     private val strigaBannerFlow = MutableStateFlow<StrigaKycStatusBanner?>(null)
 
-    fun getUserDestinationFlow(): Flow<StrigaUserStatusDestination> = strigaUserDestinationFlow
-
-    fun getBannerFlow(): Flow<StrigaKycStatusBanner?> = strigaBannerFlow
-
     fun getBanner(): StrigaKycStatusBanner? = strigaBannerFlow.value
 
     fun getUserDestination(): StrigaUserStatusDestination = strigaUserDestinationFlow.value

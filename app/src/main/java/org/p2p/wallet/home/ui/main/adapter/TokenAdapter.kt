@@ -54,7 +54,7 @@ class TokenAdapter(
         R.layout.item_token_group_button -> TokenButtonViewHolder(parent, listener)
         R.layout.item_main_header -> HeaderViewHolder(parent)
         R.layout.item_token_to_claim -> TokenToClaimViewHolder(parent, glideManager, listener)
-        R.layout.item_home_banner -> SingleBannerViewHolder(parent, listener)
+        R.layout.item_home_banner -> SingleBannerViewHolder(parent = parent, listener = listener)
         else -> throw IllegalStateException("Unknown viewType: $viewType")
     }
 
