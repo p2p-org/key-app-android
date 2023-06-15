@@ -161,8 +161,8 @@ class StrigaOnboardingPresenterTest {
 
         val countryStates = mutableListQueueOf<CountryCode>()
         val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
-        verify(exactly = 2) { view.setCurrentCountry(capture(countryStates)) }
-        verify(exactly = 2) { view.setAvailabilityState(capture(availabilityStates)) }
+        verify(exactly = 1) { view.setCurrentCountry(capture(countryStates)) }
+        verify(exactly = 1) { view.setAvailabilityState(capture(availabilityStates)) }
         verify(exactly = 0) { view.navigateNext() }
 
         assertEquals(UnsupportedCountry, countryStates.back())

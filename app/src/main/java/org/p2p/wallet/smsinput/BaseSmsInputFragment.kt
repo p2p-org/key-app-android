@@ -13,7 +13,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSmsInputBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 abstract class BaseSmsInputFragment :
@@ -23,12 +22,14 @@ abstract class BaseSmsInputFragment :
     companion object {
         const val ARG_NEXT_DESTINATION_CLASS = "ARG_NEXT_DESTINATION_CLASS"
         const val ARG_NEXT_DESTINATION_ARGS = "ARG_NEXT_DESTINATION_ARGS"
+        const val ARG_NAVIGATION_STRATEGY = "ARG_NAVIGATION_STRATEGY"
     }
 
     protected val binding: FragmentSmsInputBinding by viewBinding()
 
     private val nextDestinationClass: Class<Fragment> by args(ARG_NEXT_DESTINATION_CLASS)
     private val nextDestinationArgs: Bundle? by args(ARG_NEXT_DESTINATION_ARGS)
+    private val navigationStrategy: SmsInputNavigationStrategy by args(ARG_NAVIGATION_STRATEGY)
 
     protected open fun onBackPressed() = Unit
 
@@ -68,7 +69,8 @@ abstract class BaseSmsInputFragment :
     }
 
     override fun navigateNext() {
-        popAndReplaceFragment(createNextDestination(), inclusive = true)
+        val destination = createNextDestination()
+        navigationStrategy.execute(this, destination)
     }
 
     override fun renderSmsFormatValid() {
