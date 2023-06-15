@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.gateway.repository.mapper
 
-import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.near.borshj.Borsh
@@ -25,6 +24,7 @@ import java.util.Date
 import java.util.Locale
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+import org.p2p.wallet.settings.DeviceInfoHelper
 
 const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 
@@ -126,7 +126,7 @@ class GatewayServiceCreateWalletMapper(
             onboardingMetadata = GatewayOnboardingMetadata(
                 ethPublic = etheriumAddress.lowercase(),
                 metaTimestampSec = epochUnixTimeSeconds,
-                deviceShareDeviceName = Build.MANUFACTURER + ' ' + Build.MODEL,
+                deviceShareDeviceName = DeviceInfoHelper.getCurrentDeviceName(),
                 deviceNameTimestampSec = epochUnixTimeSeconds,
                 customSharePhoneNumberE164 = phoneNumber.e164Formatted(),
                 phoneNumberTimestampSec = epochUnixTimeSeconds,

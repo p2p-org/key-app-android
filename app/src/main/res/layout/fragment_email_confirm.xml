@@ -82,5 +82,7 @@
             app:iconGravity="textStart"
             app:iconSize="24dp"
             app:iconTint="@null" />
+
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -59,8 +59,18 @@ class SecurityAndPrivacyFragment :
         }
     }
 
-    override fun showDeviceName(deviceName: CharSequence) {
-        binding.recoveryViewDevice.subtitle = deviceName
+    override fun showDeviceName(deviceName: CharSequence, isDifferentFromDeviceShare: Boolean) {
+        binding.recoveryViewDevice.apply {
+            subtitle = deviceName
+            if (isDifferentFromDeviceShare) {
+                setSubtitleDrawable(left = R.drawable.ic_warning_solid)
+                setSubtitleColor(getColor(R.color.icons_rose))
+            }
+        }
+    }
+
+    override fun showManageVisible(isVisible: Boolean) {
+        binding.textViewDeviceManage.isVisible = isVisible
     }
 
     override fun showPhoneNumber(phoneNumber: String) {

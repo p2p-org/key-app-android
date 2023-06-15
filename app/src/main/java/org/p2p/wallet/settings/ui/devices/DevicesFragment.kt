@@ -9,6 +9,8 @@ import org.p2p.uikit.delegates.textViewCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
+import org.p2p.wallet.auth.ui.animationscreen.TimerState
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDevicesBinding
@@ -31,9 +33,16 @@ class DevicesFragment :
     private val adapter = CommonAnyCellAdapter(
         textViewCellDelegate(),
         sectionHeaderCellDelegate(),
-        mainCellDelegate(inflateListener = {
-            it.setOnRightFirstTextClickListener { showConfirmationDialog() }
-        })
+        mainCellDelegate(
+            inflateListener = {
+                it.setOnRightFirstTextClickListener { showConfirmationDialog() }
+            },
+            onItemClicked = {
+                if (it.rightSideCellModel != null) {
+                    showConfirmationDialog()
+                }
+            }
+        )
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,6 +57,29 @@ class DevicesFragment :
 
     override fun showCells(cells: List<AnyCellItem>) {
         adapter.items = cells
+    }
+
+    override fun setLoadingState(isScreenLoading: Boolean) {
+        if (isScreenLoading) {
+            AnimationProgressFragment.show(
+                fragmentManager = requireActivity().supportFragmentManager,
+                timerStateList = listOf(
+                    TimerState(R.string.devices_change_update_message),
+                )
+            )
+        } else {
+            AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
+        }
+    }
+
+    override fun showSuccessDeviceChange() {
+        showUiKitSnackBar(message = getString(R.string.devices_change_success_message))
+        popBackStack()
+    }
+
+    override fun showFailDeviceChange() {
+        showUiKitSnackBar(message = getString(R.string.error_general_message))
+        popBackStack()
     }
 
     private fun showConfirmationDialog() {

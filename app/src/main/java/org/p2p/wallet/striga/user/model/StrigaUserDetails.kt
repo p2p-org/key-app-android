@@ -52,9 +52,9 @@ class StrigaUserInfo(
 
 data class StrigaUserAddress(
     val addressLine1: String,
-    val addressLine2: String,
+    val addressLine2: String?,
     val city: String,
-    val state: String,
+    val state: String?,
     val country: String,
     val postalCode: String
 )
@@ -74,4 +74,11 @@ data class StrigaUserKycInfo(
     val kycStatus: StrigaUserVerificationStatus,
     val rejectionDetails: List<String> = emptyList(),
     val rejectionUserToAutoComments: Pair<String, String>
+)
+
+data class StrigaUserStatus(
+    val userId: String,
+    val isEmailVerified: Boolean,
+    val isMobileVerified: Boolean,
+    val kysStatus: StrigaUserVerificationStatus
 )

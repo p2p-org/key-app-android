@@ -1,6 +1,5 @@
 package org.p2p.core.wrapper.eth.rlp
 
-import java.util.*
 
 class Value(obj: Any?) {
 
