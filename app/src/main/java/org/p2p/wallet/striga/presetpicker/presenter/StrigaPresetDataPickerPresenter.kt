@@ -5,22 +5,20 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerContract
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataSearcher
-import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataInteractor
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
 
 class StrigaPresetDataPickerPresenter(
-    private val presetDataToPick: StrigaPresetDataToPick,
     private val strigaElementCellMapper: StrigaItemCellMapper,
     private val dataSearcher: StrigaPresetDataSearcher,
     private val strigaPresetDataInteractor: StrigaPresetDataInteractor,
+    private var selectedPresetDataItem: StrigaPresetDataItem,
     dispatchers: CoroutineDispatchers,
 ) : BasePresenter<StrigaPresetDataPickerContract.View>(dispatchers.ui),
     StrigaPresetDataPickerContract.Presenter {
 
     private var allItems: List<StrigaPresetDataItem> = listOf()
-    private var selectedItem: StrigaPresetDataItem? = null
 
     override fun attach(view: StrigaPresetDataPickerContract.View) {
         super.attach(view)
@@ -29,10 +27,9 @@ class StrigaPresetDataPickerPresenter(
 
     private fun loadElements() {
         launch {
-            selectedItem = strigaPresetDataInteractor.getSelectedPresetDataItem(presetDataToPick)
-            allItems = strigaPresetDataInteractor.getPresetData(presetDataToPick)
-
-            view?.showItems(strigaElementCellMapper.buildCellModels(allItems, selectedItem))
+            allItems = strigaPresetDataInteractor.getPresetData(selectedPresetDataItem)
+                .filter { it.getName() != selectedPresetDataItem.getName() }
+            view?.showItems(strigaElementCellMapper.buildCellModels(allItems, selectedPresetDataItem))
         }
     }
 
@@ -40,13 +37,13 @@ class StrigaPresetDataPickerPresenter(
         val resultCellModels = if (text.isBlank()) {
             strigaElementCellMapper.buildCellModels(
                 items = allItems,
-                selectedItem = selectedItem
+                selectedItem = selectedPresetDataItem
             )
         } else {
             val searchResult = dataSearcher.search(text, allItems)
             strigaElementCellMapper.buildCellModels(
                 items = searchResult,
-                selectedItem = selectedItem?.takeIf { it in searchResult }
+                selectedItem = selectedPresetDataItem.takeIf { it in searchResult }
             )
         }
         view?.showItems(resultCellModels)

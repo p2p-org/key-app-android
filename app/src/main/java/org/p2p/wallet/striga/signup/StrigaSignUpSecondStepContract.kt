@@ -1,9 +1,12 @@
 package org.p2p.wallet.striga.signup
 
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
+import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
+import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
 interface StrigaSignUpSecondStepContract {
@@ -16,6 +19,9 @@ interface StrigaSignUpSecondStepContract {
         fun setButtonIsEnabled(isEnabled: Boolean)
         fun setProgressIsVisible(visible: Boolean)
         fun scrollToFirstError(type: StrigaSignupDataType)
+        fun showSourceOfFundsPicker(selectedItem: StrigaSourceOfFunds?)
+        fun showOccupationPicker(selectedItem: StrigaOccupation?)
+        fun showCurrentCountryPicker(selectedItem: CountryCode?)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -23,5 +29,8 @@ interface StrigaSignUpSecondStepContract {
         fun onSubmit()
         fun saveChanges()
         fun onPresetDataChanged(selectedItem: StrigaPresetDataItem)
+        fun onOccupationClicked()
+        fun onFundsClicked()
+        fun onCountryClicked()
     }
 }

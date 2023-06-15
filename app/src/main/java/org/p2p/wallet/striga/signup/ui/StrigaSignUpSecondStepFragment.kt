@@ -8,16 +8,18 @@ import org.p2p.core.common.bind
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpSecondStepBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
-import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
+import org.p2p.wallet.striga.signup.model.StrigaOccupation
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
+import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
@@ -69,13 +71,13 @@ class StrigaSignUpSecondStepFragment :
             }
 
             editTextOccupation.setOnClickListener {
-                showOccupationPicker()
+                presenter.onOccupationClicked()
             }
             editTextFunds.setOnClickListener {
-                showFundsPicker()
+                presenter.onFundsClicked()
             }
             editTextCountry.setOnClickListener {
-                showCurrentCountryPicker()
+                presenter.onCountryClicked()
             }
 
             buttonNext.setOnClickListener {
@@ -145,36 +147,36 @@ class StrigaSignUpSecondStepFragment :
         }
     }
 
-    private fun showOccupationPicker() {
-        replaceFragmentForResult(
-            target = StrigaPresetDataPickerFragment.create(
-                requestKey = OCCUPATION_REQUEST_KEY,
-                resultKey = SELECTED_ITEM_RESULT_KEY,
-                dataToPick = StrigaPresetDataToPick.OCCUPATION
-            ),
-            requestKey = OCCUPATION_REQUEST_KEY,
-            onResult = ::onFragmentResult
-        )
-    }
-
-    private fun showFundsPicker() {
+    override fun showSourceOfFundsPicker(selectedItem: StrigaSourceOfFunds?) {
         replaceFragmentForResult(
             target = StrigaPresetDataPickerFragment.create(
                 requestKey = FUNDS_REQUEST_KEY,
                 resultKey = SELECTED_ITEM_RESULT_KEY,
-                dataToPick = StrigaPresetDataToPick.SOURCE_OF_FUNDS
+                dataToPick = StrigaPresetDataItem.SourceOfFunds(selectedItem)
             ),
             requestKey = FUNDS_REQUEST_KEY,
             onResult = ::onFragmentResult
         )
     }
 
-    private fun showCurrentCountryPicker() {
+    override fun showOccupationPicker(selectedItem: StrigaOccupation?) {
+        replaceFragmentForResult(
+            target = StrigaPresetDataPickerFragment.create(
+                requestKey = OCCUPATION_REQUEST_KEY,
+                resultKey = SELECTED_ITEM_RESULT_KEY,
+                dataToPick = StrigaPresetDataItem.Occupation(selectedItem)
+            ),
+            requestKey = OCCUPATION_REQUEST_KEY,
+            onResult = ::onFragmentResult
+        )
+    }
+
+    override fun showCurrentCountryPicker(selectedItem: CountryCode?) {
         replaceFragmentForResult(
             target = StrigaPresetDataPickerFragment.create(
                 requestKey = COUNTRY_REQUEST_KEY,
                 resultKey = SELECTED_ITEM_RESULT_KEY,
-                dataToPick = StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY
+                dataToPick = StrigaPresetDataItem.Country(selectedItem)
             ),
             requestKey = COUNTRY_REQUEST_KEY,
             onResult = ::onFragmentResult
