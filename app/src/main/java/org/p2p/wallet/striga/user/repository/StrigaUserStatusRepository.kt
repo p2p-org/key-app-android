@@ -4,11 +4,14 @@ import timber.log.Timber
 import kotlin.jvm.Throws
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.StrigaUserIdProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerError
+import org.p2p.wallet.striga.user.StrigaStorageContract
 import org.p2p.wallet.striga.user.model.StrigaUserStatus
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 
@@ -19,12 +22,17 @@ class StrigaUserStatusRepository(
     private val strigaUserIdProvider: StrigaUserIdProvider,
     private val mapper: StrigaUserStatusDestinationMapper,
     private val userRepository: StrigaUserRepository,
+    private val strigaStorage: StrigaStorageContract,
 ) : CoroutineScope by CoroutineScope(dispatchers.io) {
 
     private val strigaUserDestinationFlow = MutableStateFlow<StrigaUserStatusDestination?>(null)
     private val strigaBannerFlow = MutableStateFlow<StrigaKycStatusBanner?>(null)
 
-    fun getBanner(): StrigaKycStatusBanner? = strigaBannerFlow.value
+    init {
+        handleUserStatus(strigaStorage.userStatus)
+    }
+
+    fun getBannerFlow(): StateFlow<StrigaKycStatusBanner?> = strigaBannerFlow.asStateFlow()
 
     fun getUserDestination(): StrigaUserStatusDestination? = strigaUserDestinationFlow.value
 
@@ -38,8 +46,8 @@ class StrigaUserStatusRepository(
                 } else {
                     loadUserStatus()
                 }
-                strigaUserDestinationFlow.value = userStatus.let(::mapToDestination)
-                strigaBannerFlow.value = userStatus.let(::mapToBanner)
+                strigaStorage.userStatus = userStatus
+                handleUserStatus(userStatus)
             } catch (e: Throwable) {
                 Timber.tag(TAG).e(e, "Error while fetching user kyc status")
             }
@@ -49,6 +57,11 @@ class StrigaUserStatusRepository(
     @Throws(StrigaDataLayerError::class)
     private suspend fun loadUserStatus(): StrigaUserStatus {
         return userRepository.getUserStatus().unwrap()
+    }
+
+    private fun handleUserStatus(userStatus: StrigaUserStatus?) {
+        strigaUserDestinationFlow.value = userStatus.let(::mapToDestination)
+        strigaBannerFlow.value = userStatus.let(::mapToBanner)
     }
 
     private fun mapToDestination(status: StrigaUserStatus?): StrigaUserStatusDestination {
