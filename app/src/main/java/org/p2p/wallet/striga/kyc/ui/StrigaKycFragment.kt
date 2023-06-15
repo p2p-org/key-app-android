@@ -25,6 +25,6 @@ class StrigaKycFragment :
     }
 
     override fun navigateBack() {
-        popBackStackTo(MainFragment::class, inclusive = true)
+        popBackStackTo(MainFragment::class)
     }
 }
