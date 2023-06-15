@@ -10,7 +10,7 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
+import org.p2p.wallet.newsend.model.SearchOpenedFromScreen
 import org.p2p.wallet.transaction.model.NewShowProgress
 
 interface HomeContract {
