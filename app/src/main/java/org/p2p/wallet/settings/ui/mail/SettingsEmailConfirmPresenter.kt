@@ -28,7 +28,6 @@ class SettingsEmailConfirmPresenter(
             onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet.SocialPlusCustomShare
             restoreWalletInteractor.obtainTorusKey(userId = userId, idToken = idToken)
             restoreUserWithShares(onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet)
-            // TODO update deviceShare
             view?.setLoadingState(isScreenLoading = false)
         }
     }
@@ -55,13 +54,9 @@ class SettingsEmailConfirmPresenter(
 
     private suspend fun updateDeviceShare() {
         // TODO update with real logic
-        launch {
-            view?.setLoadingState(isScreenLoading = true)
-            updateMetadata()
-            delay(5000)
-            view?.setLoadingState(isScreenLoading = false)
-            view?.showSuccessDeviceChange()
-        }
+        updateMetadata()
+        delay(5000)
+        view?.showSuccessDeviceChange()
     }
 
     private suspend fun updateMetadata() {

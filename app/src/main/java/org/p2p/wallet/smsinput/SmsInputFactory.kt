@@ -3,6 +3,7 @@ package org.p2p.wallet.smsinput
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import android.os.Bundle
+import org.p2p.wallet.settings.ui.recovery.SecurityAndPrivacyFragment
 import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputFragment
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputFragment
 import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputFragment
@@ -12,9 +13,15 @@ object SmsInputFactory {
         val clazz: Class<out Fragment>,
         val navigationStrategy: SmsInputNavigationStrategy,
     ) {
-        Onboarding(OnboardingSmsInputFragment::class.java, SmsInputNavigationStrategy.PopAndReplace(null, true)),
+        Onboarding(
+            OnboardingSmsInputFragment::class.java,
+            SmsInputNavigationStrategy.PopAndReplace(null, true)
+        ),
         Striga(StrigaSmsInputFragment::class.java, SmsInputNavigationStrategy.Replace),
-        UpdateDevice(UpdateDeviceSmsInputFragment::class.java, SmsInputNavigationStrategy.Replace),
+        UpdateDevice(
+            UpdateDeviceSmsInputFragment::class.java,
+            SmsInputNavigationStrategy.PopAndReplace(SecurityAndPrivacyFragment::class.java, false)
+        ),
     }
 
     /**
