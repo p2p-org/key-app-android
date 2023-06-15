@@ -1,6 +1,5 @@
 package org.p2p.wallet.striga.presetpicker
 
-import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -26,7 +25,7 @@ import org.p2p.wallet.utils.withArgs
 typealias ContractView = StrigaPresetDataPickerContract.View
 typealias ContractPresenter = StrigaPresetDataPickerContract.Presenter
 
-private const val EXTRA_DATA_TO_PICK = "EXTRA_DATA_TO_PICK"
+private const val EXTRA_SELECTED_ITEM = "EXTRA_SELECTED_ITEM"
 
 class StrigaPresetDataPickerFragment :
     BaseMvpFragment<ContractView, ContractPresenter>(R.layout.fragment_striga_preset_data_picker),
@@ -39,12 +38,12 @@ class StrigaPresetDataPickerFragment :
         fun create(
             requestKey: String,
             resultKey: String,
-            dataToPick: StrigaPresetDataToPick
+            dataToPick: StrigaPresetDataItem
         ): Fragment = StrigaPresetDataPickerFragment()
             .withArgs(
                 EXTRA_REQUEST_KEY to requestKey,
                 EXTRA_RESULT_KEY to resultKey,
-                EXTRA_DATA_TO_PICK to dataToPick
+                EXTRA_SELECTED_ITEM to dataToPick
             )
     }
 
@@ -60,12 +59,12 @@ class StrigaPresetDataPickerFragment :
 
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
-    private val dataToPick: StrigaPresetDataToPick by args(EXTRA_DATA_TO_PICK)
+    private val dataToPick: StrigaPresetDataItem by args(EXTRA_SELECTED_ITEM)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setTitle(getToolbarTitle(dataToPick))
+            toolbar.setTitle(dataToPick.toolbarTitleId)
             toolbar.setNavigationOnClickListener { popBackStack() }
 
             binding.recyclerViewPresetData.adapter = adapter
@@ -82,7 +81,7 @@ class StrigaPresetDataPickerFragment :
     private fun initSearch() = with(binding.searchView) {
         doAfterTextChanged { searchText -> presenter.search(searchText?.toString().orEmpty()) }
         setStateListener { presenter.search(emptyString()) }
-        setHint(getSearchHint(dataToPick))
+        setHint(dataToPick.searchTitleId)
         setBgColor(R.color.bg_smoke)
 
         isVisible = true
@@ -91,22 +90,6 @@ class StrigaPresetDataPickerFragment :
     override fun showItems(items: List<AnyCellItem>) {
         adapter.items = items
         binding.containerEmptyResult.root.isVisible = items.isEmpty()
-    }
-
-    @StringRes
-    private fun getToolbarTitle(dataToPick: StrigaPresetDataToPick): Int = when (dataToPick) {
-        StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY -> R.string.striga_select_your_country
-        StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> R.string.striga_select_your_country
-        StrigaPresetDataToPick.SOURCE_OF_FUNDS -> R.string.striga_select_your_source
-        StrigaPresetDataToPick.OCCUPATION -> R.string.striga_select_your_occupation
-    }
-
-    @StringRes
-    private fun getSearchHint(dataToPick: StrigaPresetDataToPick): Int = when (dataToPick) {
-        StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY -> R.string.striga_preset_data_hint_country
-        StrigaPresetDataToPick.COUNTRY_OF_BIRTH -> R.string.striga_preset_data_hint_country
-        StrigaPresetDataToPick.SOURCE_OF_FUNDS -> R.string.striga_preset_data_hint_source
-        StrigaPresetDataToPick.OCCUPATION -> R.string.striga_preset_data_hint_occupation
     }
 
     override fun closeWithResult(selectedItem: StrigaPresetDataItem) {

@@ -28,7 +28,6 @@ import org.p2p.wallet.databinding.FragmentStrigaOnboardingBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract.View.AvailabilityState
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
-import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepFragment
 import org.p2p.wallet.utils.getParcelableCompat
@@ -62,10 +61,10 @@ class StrigaOnboardingFragment :
         bindHelpText()
 
         binding.buttonContinue.setOnClickListener {
-            openCountrySelection()
+            presenter.onCountryClicked()
         }
         binding.blockChangeCountry.setOnClickListener {
-            openCountrySelection()
+            presenter.onCountryClicked()
         }
         binding.textViewPoweredBy.setOnClickListener {
             Intent(Intent.ACTION_VIEW, getString(R.string.striga_powered_by_url).toUri())
@@ -100,19 +99,22 @@ class StrigaOnboardingFragment :
             .start()
     }
 
-    private fun openCountrySelection() {
+    override fun showCountryPicker(selectedItem: CountryCode?) {
         replaceFragmentForResult(
             target = StrigaPresetDataPickerFragment.create(
                 requestKey = REQUEST_KEY_PICKER,
                 resultKey = RESULT_KEY_PICKER,
-                dataToPick = StrigaPresetDataToPick.CURRENT_ADDRESS_COUNTRY
+                dataToPick = StrigaPresetDataItem.Country(selectedItem)
             ),
             requestKey = REQUEST_KEY_PICKER,
             onResult = { _, result ->
                 result.getParcelableCompat<StrigaPresetDataItem.Country>(RESULT_KEY_PICKER)
-                    ?.also { presenter.onCurrentCountryChanged(it.details) }
+                    ?.also { presenter.onCurrentCountryChanged(it.details ?: return@also) }
             }
         )
+    }
+
+    private fun openCountrySelection(country: CountryCode?) {
     }
 
     override fun openHelp() {
@@ -176,7 +178,7 @@ class StrigaOnboardingFragment :
     private fun handleUnavailableState(state: AvailabilityState) {
         handleViewState(state)
         binding.buttonContinue.setOnClickListener {
-            openCountrySelection()
+            presenter.onCountryClicked()
         }
     }
 

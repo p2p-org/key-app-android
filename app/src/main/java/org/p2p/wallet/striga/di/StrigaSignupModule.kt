@@ -26,8 +26,8 @@ import org.p2p.wallet.striga.onboarding.StrigaOnboardingPresenter
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerContract
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataSearcher
-import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataInteractor
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
 import org.p2p.wallet.striga.presetpicker.presenter.StrigaPresetDataPickerPresenter
 import org.p2p.wallet.striga.signup.StrigaPresetDataInMemoryRepository
@@ -56,13 +56,13 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaPresetDataInteractor)
         factoryOf(::StrigaPresetDataSearcher)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
-        factory { (selectedItem: StrigaPresetDataToPick) ->
+        factory { (selectedItem: StrigaPresetDataItem) ->
             StrigaPresetDataPickerPresenter(
-                presetDataToPick = selectedItem,
                 strigaElementCellMapper = get(),
                 strigaPresetDataInteractor = get(),
                 dataSearcher = get(),
-                dispatchers = get()
+                dispatchers = get(),
+                selectedPresetDataItem = selectedItem
             )
         } bind StrigaPresetDataPickerContract.Presenter::class
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
