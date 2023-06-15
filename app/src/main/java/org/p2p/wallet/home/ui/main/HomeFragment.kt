@@ -293,10 +293,6 @@ class HomeFragment :
         TopUpWalletBottomSheet.show(parentFragmentManager)
     }
 
-    override fun showTopupWalletDialog() {
-        TopUpWalletBottomSheet.show(parentFragmentManager)
-    }
-
     override fun showSendNoTokens(fallbackToken: Token) {
         replaceFragment(SendUnavailableFragment.create(fallbackToken))
     }
