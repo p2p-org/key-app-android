@@ -24,8 +24,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/textViewErrorTitle"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_max="224dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintVertical_chainStyle="packed"
@@ -53,9 +53,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:layout_marginBottom="32dp"
         android:gravity="center"
         android:paddingHorizontal="32dp"
-        android:layout_marginBottom="32dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@id/containerBottomButtons"
@@ -87,8 +87,7 @@
             android:textColor="@color/night"
             app:iconGravity="textStart"
             app:iconSize="24dp"
-            app:iconTint="@null"
-            />
+            app:iconTint="@null" />
 
         <org.p2p.uikit.components.UiKitButton
             android:id="@+id/buttonWriteToSupport"

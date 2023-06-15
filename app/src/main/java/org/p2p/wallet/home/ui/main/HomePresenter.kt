@@ -483,7 +483,7 @@ class HomePresenter(
                 add(strigaBigBanner)
             }
             add(resources.getString(R.string.main_popular_tokens_header))
-            add(tokensForBuy.toTypedArray())
+            addAll(tokensForBuy)
         }
         view?.showEmptyViewData(emptyDataList)
         logBalance(BigDecimal.ZERO)
