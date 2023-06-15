@@ -8,6 +8,4 @@
     <item name="coin_gecko_enabled" type="id" />
     <item name="phone_watcher_tag_id" type="id" />
 
-    <!--Main Empty State-->
-    <item name="home_banner_top_up" type="id" />
 </resources>

@@ -2,11 +2,9 @@ package org.p2p.wallet.home.model
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 
 class HomeBannerItem(
-    @IdRes val id: Int,
     @StringRes val titleTextId: Int,
     @StringRes val subtitleTextId: Int,
     @StringRes val buttonTextId: Int,

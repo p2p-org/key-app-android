@@ -10,6 +10,7 @@ import org.p2p.wallet.striga.user.api.request.StrigaStartKycRequest
 import org.p2p.wallet.striga.user.api.request.StrigaVerifyMobileNumberRequest
 import org.p2p.wallet.striga.user.api.response.StrigaCreateUserResponse
 import org.p2p.wallet.striga.user.api.response.StrigaUserDetailsResponse
+import org.p2p.wallet.striga.user.api.response.StrigaUserStatusResponse
 
 interface StrigaApi {
     @POST("v1/user/create")
@@ -17,6 +18,9 @@ interface StrigaApi {
 
     @GET("v1/user/{userId}")
     suspend fun getUserDetails(@Path("userId") userId: String): StrigaUserDetailsResponse
+
+    @GET("v1/user/kyc/{userId}")
+    suspend fun getUserVerificationStatus(@Path("userId") userId: String): StrigaUserStatusResponse
 
     /**
      * 30044 - mobile already in use
