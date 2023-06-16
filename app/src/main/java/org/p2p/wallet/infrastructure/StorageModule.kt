@@ -23,6 +23,8 @@ import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorage
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
+import org.p2p.wallet.striga.user.StrigaStorage
+import org.p2p.wallet.striga.user.StrigaStorageContract
 
 private const val PREFS_DEFAULT = "prefs"
 private const val PREFS_ACCOUNT = "account_prefs"
@@ -79,6 +81,11 @@ object StorageModule {
             val prefs = androidPreferences(PREFS_SWAP)
             JupiterSwapStorage(prefs, gson = get())
         } bind JupiterSwapStorageContract::class
+
+        factory {
+            val prefs = androidPreferences(PREFS_STRIGA)
+            StrigaStorage(prefs, gson = get())
+        } bind StrigaStorageContract::class
 
         single { KeyStore.getInstance("AndroidKeyStore") }
         factoryOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class

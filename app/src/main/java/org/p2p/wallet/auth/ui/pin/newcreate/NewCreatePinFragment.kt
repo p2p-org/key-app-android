@@ -12,7 +12,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.PlayAnimation
 import org.p2p.wallet.intercom.IntercomService
@@ -126,7 +126,7 @@ class NewCreatePinFragment :
             arrayListOf()
         }
         popAndReplaceFragment(
-            MainFragment.create(actions),
+            MainContainerFragment.create(actions),
             inclusive = true
         )
     }

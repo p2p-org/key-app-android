@@ -9,14 +9,15 @@ package org.p2p.wallet.striga.user.model
  * @property REJECTED User rejected - Can be final or not
  */
 enum class StrigaUserVerificationStatus {
+    // please, keep order, ordinal is used in comparative operations
+    UNKNOWN,
     NOT_STARTED,
     INITIATED,
     PENDING_REVIEW,
     ON_HOLD,
-    APPROVED,
     REJECTED,
     REJECTED_FINAL,
-    UNKNOWN;
+    APPROVED;
 
     companion object {
         fun from(status: String): StrigaUserVerificationStatus {

@@ -1,4 +1,4 @@
-package org.p2p.wallet.home
+package org.p2p.wallet.home.ui.container
 
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
@@ -8,15 +8,11 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.p2p.core.network.ConnectionManager
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
@@ -26,17 +22,13 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
-import org.p2p.wallet.common.mvp.BaseFragment
+import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
-import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
-import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.home.ui.main.RefreshErrorFragment
@@ -47,7 +39,6 @@ import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
-import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.unsafeLazy
@@ -56,27 +47,22 @@ import org.p2p.wallet.utils.withArgs
 
 private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
-class MainFragment :
-    BaseFragment(R.layout.fragment_main),
+class MainContainerFragment :
+    BaseMvpFragment<MainContainerContract.View, MainContainerContract.Presenter>(R.layout.fragment_main),
+    MainContainerContract.View,
     MainTabsSwitcher,
     CenterActionButtonClickSetter {
+
+    override val presenter: MainContainerContract.Presenter by inject()
 
     private val binding: FragmentMainBinding by viewBinding()
 
     private val tabCachedFragments = SparseArrayCompat<Fragment>()
 
     private val generalAnalytics: GeneralAnalytics by inject()
-    private val swapAnalytics: SwapAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private val deeplinksManager: AppDeeplinksManager by inject()
-    private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle by inject()
-
     private val sellInteractor: SellInteractor by inject()
-
-    private val refreshErrorInteractor: RefreshErrorInteractor by inject()
-    private val connectionManager: ConnectionManager by inject()
 
     private var lastSelectedItemId = R.id.homeItem
 
@@ -85,8 +71,8 @@ class MainFragment :
     }
 
     companion object {
-        fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainFragment =
-            MainFragment()
+        fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainContainerFragment =
+            MainContainerFragment()
                 .withArgs(ARG_MAIN_FRAGMENT_ACTIONS to actions)
     }
 
@@ -107,7 +93,7 @@ class MainFragment :
             onActivityBackPressed()
         }
 
-        inflateBottomNavigation()
+        presenter.loadBottomNavigationMenu()
 
         if (tabCachedFragments.isEmpty) {
             createCachedTabFragments()
@@ -126,45 +112,10 @@ class MainFragment :
         }
 
         lifecycle.launchRestartable {
-            connectionManager.connectionStatus.onEach { isConnected ->
-                if (!isConnected) showInternetError(showError = true)
-            }.launchIn(this)
+            presenter.launchInternetObserver(this)
         }
 
-        // todo: this is just a fake solution, we need to hide error when user clicks on refresh button
-        refreshErrorInteractor.getRefreshEventFlow()
-            .onEach {
-                if (connectionManager.connectionStatus.value) {
-                    showInternetError(false)
-                }
-            }
-            .launchIn(lifecycleScope)
-
-        deeplinksManager.subscribeOnDeeplinks(
-            setOf(
-                DeeplinkTarget.HOME,
-                DeeplinkTarget.HISTORY,
-                DeeplinkTarget.SETTINGS,
-            )
-        )
-            .onEach(::navigateFromDeeplink)
-            .launchIn(lifecycleScope)
-
-        deeplinksManager.setTabsSwitcher(this)
-        deeplinksManager.executeHomePendingDeeplink()
-        deeplinksManager.executeTransferPendingAppLink()
-    }
-
-    private fun showInternetError(showError: Boolean) {
-        parentFragmentManager.commit {
-            if (showError) {
-                show(refreshErrorFragment)
-                hide(this@MainFragment)
-            } else {
-                show(this@MainFragment)
-                hide(refreshErrorFragment)
-            }
-        }
+        presenter.initializeDeeplinks()
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -185,6 +136,18 @@ class MainFragment :
                 systemBars.right,
                 systemBars.bottom + bottomConsume,
             )
+        }
+    }
+
+    override fun showConnectionError(isVisible: Boolean) {
+        parentFragmentManager.commit {
+            if (isVisible) {
+                show(refreshErrorFragment)
+                hide(this@MainContainerFragment)
+            } else {
+                show(this@MainContainerFragment)
+                hide(refreshErrorFragment)
+            }
         }
     }
 
@@ -226,12 +189,11 @@ class MainFragment :
         binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
     }
 
-    override fun onDestroyView() {
-        deeplinksManager.clearTabsSwitcher()
-        super.onDestroyView()
+    override fun showSettingsBadgeVisible(isVisible: Boolean) {
+        binding.bottomNavigation.setBadgeVisible(isVisible = isVisible)
     }
 
-    private fun navigateFromDeeplink(data: DeeplinkData) {
+    override fun navigateFromDeeplink(data: DeeplinkData) {
         when (data.target) {
             DeeplinkTarget.HOME -> {
                 navigate(ScreenTab.HOME_SCREEN)
@@ -262,9 +224,7 @@ class MainFragment :
         }
 
         if (clickedTab == ScreenTab.SWAP_SCREEN) {
-            lifecycleScope.launch {
-                swapAnalytics.logSwapOpenedFromMain(sellInteractor.isSellAvailable())
-            }
+            presenter.logSwapOpened()
         }
 
         val itemId = clickedTab.itemId
@@ -331,11 +291,6 @@ class MainFragment :
         lastSelectedItemId = itemId
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        inflateBottomNavigation()
-    }
-
     private fun checkAndDismissLastBottomSheet() {
         childFragmentManager.apply {
             if (fragments.size > 2) {
@@ -347,14 +302,8 @@ class MainFragment :
         }
     }
 
-    private fun inflateBottomNavigation() {
+    override fun inflateBottomNavigationMenu(menuRes: Int) {
         binding.bottomNavigation.menu.clear()
-
-        val menuRes = when {
-            solendFeatureToggle.isFeatureEnabled -> R.menu.menu_ui_kit_bottom_navigation_earn
-            sellEnabledFeatureToggle.isFeatureEnabled -> R.menu.menu_ui_kit_bottom_navigation_sell
-            else -> R.menu.menu_ui_kit_bottom_navigation
-        }
         binding.bottomNavigation.inflateMenu(menuRes)
         binding.bottomNavigation.menu.findItem(R.id.feedbackItem)?.isCheckable = false
     }
