@@ -9,7 +9,7 @@
     android:foreground="?selectableItemBackground">
 
     <ImageView
-        android:id="@+id/imageViewSettingIcon"
+        android:id="@+id/imageViewSettingsIcon"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_margin="16dp"
@@ -19,6 +19,19 @@
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_settings_pin" />
 
+    <ImageView
+        android:id="@+id/imageViewBadge"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:src="@drawable/bg_rose_circle"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/imageViewSettingsIcon"
+        app:layout_constraintEnd_toEndOf="@id/imageViewSettingsIcon"
+        app:layout_constraintStart_toEndOf="@id/imageViewSettingsIcon"
+        app:layout_constraintTop_toTopOf="@id/imageViewSettingsIcon"
+        tools:ignore="ContentDescription"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/textViewSettingName"
         android:layout_width="0dp"
@@ -27,10 +40,10 @@
         android:layout_marginEnd="24dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
         android:textColor="@color/text_night"
-        app:layout_constraintBottom_toBottomOf="@+id/imageViewSettingIcon"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewSettingsIcon"
         app:layout_constraintEnd_toStartOf="@+id/textViewSettingValue"
-        app:layout_constraintStart_toEndOf="@id/imageViewSettingIcon"
-        app:layout_constraintTop_toTopOf="@id/imageViewSettingIcon"
+        app:layout_constraintStart_toEndOf="@id/imageViewSettingsIcon"
+        app:layout_constraintTop_toTopOf="@id/imageViewSettingsIcon"
         tools:text="Username" />
 
     <TextView
@@ -41,12 +54,12 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
         app:layout_constraintBottom_toBottomOf="@+id/textViewSettingName"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewOpenSetting"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewOpenSettings"
         app:layout_constraintTop_toTopOf="@+id/textViewSettingName"
         tools:text="userin15symbols.p2p.sol" />
 
     <ImageView
-        android:id="@+id/imageViewOpenSetting"
+        android:id="@+id/imageViewOpenSettings"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="24dp"

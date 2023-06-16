@@ -16,7 +16,7 @@ import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
-import org.p2p.wallet.settings.ui.recovery.SecurityAndPrivacyFragment
+import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyFragment
 import org.p2p.wallet.settings.ui.resetpin.main.ResetPinIntroFragment
 import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
 import org.p2p.wallet.utils.BiometricPromptWrapper
