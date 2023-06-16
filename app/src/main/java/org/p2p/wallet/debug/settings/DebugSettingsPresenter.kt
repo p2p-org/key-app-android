@@ -15,8 +15,6 @@ import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
@@ -26,19 +24,16 @@ class DebugSettingsPresenter(
     private val homeLocalRepository: HomeLocalRepository,
     private val context: Context,
     private val resources: Resources,
-    private val tokenKeyProvider: TokenKeyProvider,
     private val networkServicesUrlProvider: NetworkServicesUrlProvider,
     private val inAppFeatureFlags: InAppFeatureFlags,
-    private val appRestarter: AppRestarter
+    private val appRestarter: AppRestarter,
+    private val mapper: DebugSettingsMapper
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
     private var networkName = environmentManager.loadCurrentEnvironment().name
-    private val feeRelayerUrl = networkServicesUrlProvider.loadFeeRelayerEnvironment().baseUrl
-    private val notificationServiceUrl = networkServicesUrlProvider.loadNotificationServiceEnvironment().baseUrl
-    private val torusUrl = networkServicesUrlProvider.loadTorusEnvironment().baseUrl
 
     override fun loadData() {
-        val settings = getMainSettings() + getAppInfoSettings() + getDeviceInfo() + getCiInfo()
+        val settings = mapper.mapMainSettings() + getAppInfoSettings() + getDeviceInfo() + getCiInfo()
         view?.showSettings(settings)
     }
 
@@ -68,74 +63,10 @@ class DebugSettingsPresenter(
         appRestarter.restartApp()
     }
 
-    private fun getMainSettings(): List<SettingsRow> {
-        return listOfNotNull(
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_notifications_title,
-                iconRes = R.drawable.ic_settings_notification
-            ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_deeplinks_title,
-                iconRes = R.drawable.ic_network
-            ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_network,
-                subtitle = networkName,
-                iconRes = R.drawable.ic_settings_network
-            ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_fee_relayer,
-                subtitle = feeRelayerUrl,
-                iconRes = R.drawable.ic_network
-            ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_torus,
-                subtitle = torusUrl,
-                iconRes = R.drawable.ic_network
-            ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_notification_service,
-                subtitle = notificationServiceUrl,
-                iconRes = R.drawable.ic_network
-            ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_feature_toggles_title,
-                iconRes = R.drawable.ic_home_settings
-            ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_stub_public_key,
-                subtitle = tokenKeyProvider.publicKey,
-                iconRes = R.drawable.ic_key
-            ).takeIf { tokenKeyProvider.publicKey.isNotBlank() },
-            SettingsRow.Switcher(
-                titleResId = R.string.debug_settings_name_service,
-                iconRes = R.drawable.ic_network,
-                isDivider = false,
-                subtitle = networkServicesUrlProvider.loadNameServiceEnvironment().baseUrl,
-                isSelected = networkServicesUrlProvider.loadNameServiceEnvironment().isProductionSelected
-            ),
-            SettingsRow.Switcher(
-                titleResId = R.string.debug_settings_moonpay_sandbox,
-                iconRes = R.drawable.ic_network,
-                isDivider = false,
-                subtitle = networkServicesUrlProvider.loadMoonpayEnvironment().baseServerSideUrl,
-                isSelected = networkServicesUrlProvider.loadMoonpayEnvironment().isSandboxEnabled
-            ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_logs_title,
-                subtitle = resources.getString(R.string.debug_settings_logs_subtitle),
-                iconRes = R.drawable.ic_settings_cloud
-            ),
-            SettingsRow.PopupMenu(
-                titleResId = R.string.debug_settings_logs_title,
-                selectedItem = inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString ?: "NO_MOCK",
-                menuOptions = StrigaKycStatusBanner.values().map(StrigaKycStatusBanner::name) + "NO_MOCK"
-            ),
-        )
-    }
+
 
     override fun onSettingsPopupMenuClicked(s: String) {
-        if (s != "NO_MOCK") {
+        if (s.isNotBlank()) {
             inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = s
         } else {
             inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = null
