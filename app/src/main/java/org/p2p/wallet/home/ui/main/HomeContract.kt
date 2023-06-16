@@ -42,6 +42,7 @@ interface HomeContract {
         fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?)
 
         fun navigateToKycStatus(status: StrigaKycStatusBanner)
+        fun showTopupWalletDialog()
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {

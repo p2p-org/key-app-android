@@ -317,7 +317,11 @@ class HomePresenter(
 
     override fun onBannerClicked(bannerTitleId: Int) {
         val statusFromKycBanner = strigaUiBannerMapper.onBannerClicked(bannerTitleId)
-        view?.navigateToKycStatus(statusFromKycBanner)
+        if (statusFromKycBanner != null) {
+            view?.navigateToKycStatus(statusFromKycBanner)
+        } else {
+            view?.showTopupWalletDialog()
+        }
     }
 
     override fun onBannerCloseClicked(bannerTitleId: Int) = Unit
