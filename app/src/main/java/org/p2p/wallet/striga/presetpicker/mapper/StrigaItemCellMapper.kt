@@ -28,6 +28,16 @@ class StrigaItemCellMapper {
         }
     }
 
+    fun buildSearchCellModels(
+        items: List<StrigaPresetDataItem>,
+        selectedItem: StrigaPresetDataItem
+    ): List<AnyCellItem> {
+        return buildList {
+            this += buildHeaderCellItem(getAllItemHeaderTitle(selectedItem))
+            this += items.mapNotNull { mapItemToCellItem(it) }
+        }
+    }
+
     private fun buildHeaderCellItem(@StringRes header: Int): SectionHeaderCellModel = SectionHeaderCellModel(
         sectionTitle = TextContainer(header),
         isShevronVisible = false,
