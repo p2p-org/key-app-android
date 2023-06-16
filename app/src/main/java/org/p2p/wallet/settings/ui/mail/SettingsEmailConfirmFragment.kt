@@ -2,9 +2,13 @@ package org.p2p.wallet.settings.ui.mail
 
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
 import org.p2p.wallet.auth.ui.animationscreen.TimerState
@@ -52,6 +56,15 @@ class SettingsEmailConfirmFragment :
             buttonRestoreGoogle.setOnClickListener {
                 startGoogleFlow()
             }
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            val systemAndIme = insets.systemAndIme()
+            rootView.updatePadding(top = systemAndIme.top)
+            binding.containerButtons.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 

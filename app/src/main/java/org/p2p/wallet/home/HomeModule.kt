@@ -14,6 +14,8 @@ import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
+import org.p2p.wallet.home.ui.container.MainContainerContract
+import org.p2p.wallet.home.ui.container.MainContainerPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
@@ -72,6 +74,8 @@ object HomeModule : InjectionModule {
     }
 
     private fun Module.initPresentationLayer() {
+        factoryOf(::MainContainerPresenter) bind MainContainerContract.Presenter::class
+
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }

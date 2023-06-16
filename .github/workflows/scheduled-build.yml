@@ -63,6 +63,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "feature"
           artifact-type: "apk"
+          workflow-type: "daily"
       - name: "Upload APK to BrowserStack (Feature)"
         run: |
           credentials=${{ secrets.BROWSER_STACK_CREDENTIALS }}

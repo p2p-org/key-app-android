@@ -10,7 +10,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSignInPinBinding
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -74,7 +74,7 @@ class SignInPinFragment :
 
     override fun onSignInSuccess() {
         binding.pinView.onSuccessPin()
-        popAndReplaceFragment(MainFragment.create(), inclusive = true)
+        popAndReplaceFragment(MainContainerFragment.create(), inclusive = true)
     }
 
     override fun onLogout() {

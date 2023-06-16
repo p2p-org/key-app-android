@@ -1,4 +1,4 @@
-package org.p2p.wallet.settings.ui.recovery.unlock
+package org.p2p.wallet.settings.ui.security.unlock
 
 import androidx.fragment.app.setFragmentResultListener
 import android.os.Bundle
@@ -13,7 +13,7 @@ import org.p2p.wallet.auth.ui.pin.validate.ValidatePinFragment
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSeedPhraseUnlockBinding
 import org.p2p.wallet.root.SystemIconsStyle
-import org.p2p.wallet.settings.ui.recovery.seed.UserSeedPhraseFragment
+import org.p2p.wallet.settings.ui.security.seed.UserSeedPhraseFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
