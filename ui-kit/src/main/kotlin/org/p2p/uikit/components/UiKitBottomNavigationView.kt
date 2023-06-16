@@ -45,6 +45,13 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
     fun setChecked(menuItemId: Int) {
         binding.bottomNavigationView.menu.findItem(menuItemId)?.isChecked = true
     }
+
+    fun setBadgeVisible(isVisible: Boolean) {
+        with(binding) {
+            val settingsItem = bottomNavigationView.menu.findItem(ScreenTab.SETTINGS_SCREEN.itemId) ?: return
+            bottomNavigationView.getOrCreateBadge(settingsItem.itemId).isVisible = isVisible
+        }
+    }
 }
 
 enum class ScreenTab(val itemId: Int) {

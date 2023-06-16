@@ -1,4 +1,4 @@
-package org.p2p.wallet.settings.ui.recovery.seed
+package org.p2p.wallet.settings.ui.security.seed
 
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.common.mvp.MvpPresenter

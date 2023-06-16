@@ -14,6 +14,7 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.Companion.withCustomKey
+import org.p2p.wallet.settings.DeviceInfoHelper
 import org.p2p.wallet.utils.toBase58Instance
 
 class MetadataInteractor(
@@ -48,6 +49,26 @@ class MetadataInteractor(
             Timber.i("User doesn't have ethereum public key, skipping metadata fetch")
             MetadataLoadStatus.NoEthereumPublicKey
         }
+    }
+
+    private fun hasDeviceShare(): Boolean {
+        val userDetails = signUpDetailsStorage.getLastSignUpUserDetails()
+        return userDetails?.signUpDetails?.deviceShare != null
+    }
+
+    fun hasDifferentDeviceShare(): Boolean {
+        val metadata = secureStorageContract.getObject(
+            SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
+            GatewayOnboardingMetadata::class
+        ) ?: return false
+
+        // if device share doesn't exist, then the device is new and we can't compare
+        if (!hasDeviceShare()) {
+            return false
+        }
+
+        // if device share is not empty we are checking with the current system device share
+        return DeviceInfoHelper.getCurrentDeviceName() == metadata.deviceShareDeviceName
     }
 
     private fun getEthereumPublicKey(): String? {
