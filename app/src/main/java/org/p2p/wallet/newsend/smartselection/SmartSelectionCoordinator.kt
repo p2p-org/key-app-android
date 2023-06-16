@@ -2,12 +2,10 @@ package org.p2p.wallet.newsend.smartselection
 
 import timber.log.Timber
 import java.util.concurrent.CancellationException
-import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,19 +19,24 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.newsend.model.FeePayerState
 import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason
 import org.p2p.wallet.newsend.model.smartselection.SmartSelectionState
-import org.p2p.wallet.newsend.smartselection.handler.TriggerHandler
+import org.p2p.wallet.newsend.smartselection.handler.SendTriggerHandler
 import org.p2p.wallet.newsend.smartselection.strategy.StrategyExecutor
 
 private const val TAG = "SmartSelectionCoordinator"
 
+/**
+ * This class is responsible for coordinating the smart selection process.
+ * 1. It receives [SmartSelectionTrigger] from the UI and passes them to the trigger handlers.
+ * 2. After [SendTriggerHandler] execution is finished it returns [SmartSelectionState]
+ * 3. According to [SmartSelectionState] we launch some strategies to select fee payer or return the [FeePayerState]
+ * */
 class SmartSelectionCoordinator(
     private val strategyExecutor: StrategyExecutor,
-    private val triggerHandlers: List<TriggerHandler>,
+    private val triggerHandlers: List<SendTriggerHandler>,
     dispatchers: CoroutineDispatchers
 ) : CoroutineScope {
 
-    override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io +
-        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.singleThreadDispatcher
 
     private val feePayerState = MutableStateFlow<FeePayerState>(FeePayerState.Idle)
 
@@ -82,7 +85,7 @@ class SmartSelectionCoordinator(
 
     fun onNewTrigger(newTrigger: SmartSelectionTrigger) {
         if (recentTrigger is SmartSelectionTrigger.FeePayerManuallyChanged) {
-            // just calculate fees with current fee payer token without smart selection
+            // TODO: just calculate fees with current fee payer token without smart selection
             return
         }
 
@@ -92,7 +95,9 @@ class SmartSelectionCoordinator(
 
         launch {
             try {
-                triggerHandlers.forEach { it.handleTrigger(internalSmartSelectionState, newTrigger, feePayerToken) }
+                val triggerHandler = triggerHandlers.firstOrNull { it.canHandle(newTrigger) }
+                val newState = triggerHandler?.handleTrigger(newTrigger, feePayerToken) ?: return@launch
+                internalSmartSelectionState.value = newState
             } catch (e: CancellationException) {
                 Timber.tag(TAG).i("Empty Initialization handler cancelled")
             } catch (e: Throwable) {

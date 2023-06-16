@@ -8,14 +8,13 @@ package org.p2p.wallet.newsend.model
  * The end of the request will cancel the loading if it didn't start yet.
  * Thus we are avoiding the blinking
  * */
-sealed interface FeeLoadingState {
+sealed class FeeLoadingState(val isLoading: Boolean) {
+    class Delayed(isLoading: Boolean) : FeeLoadingState(isLoading)
+    class Instant(isLoading: Boolean) : FeeLoadingState(isLoading)
 
-    data class Delayed(val isLoading: Boolean) : FeeLoadingState
-    data class Instant(val isLoading: Boolean) : FeeLoadingState
-
-    fun isFeeLoading(): Boolean = when (this) {
-        is Delayed -> isLoading
-        is Instant -> isLoading
+    // function actually can be removed
+    fun isFeeLoading(): Boolean {
+        return isLoading
     }
 
     companion object {

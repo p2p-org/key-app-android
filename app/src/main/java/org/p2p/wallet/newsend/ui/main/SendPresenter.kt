@@ -10,7 +10,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.newsend.model.CalculationState
+import org.p2p.wallet.newsend.model.CalculationEvent
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeePayerState
 import org.p2p.wallet.newsend.model.SendActionEvent
@@ -19,7 +19,7 @@ import org.p2p.wallet.newsend.model.SendState
 import org.p2p.wallet.newsend.model.main.WidgetState
 import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason
 import org.p2p.wallet.newsend.smartselection.FeeDebugInfoBuilder
-import org.p2p.wallet.newsend.smartselection.SendButtonStateManager
+import org.p2p.wallet.newsend.smartselection.SendButtonMapper
 import org.p2p.wallet.newsend.smartselection.SendStateManager
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 
@@ -31,7 +31,7 @@ class SendPresenter(
     private val feeDebugInfoBuilder: FeeDebugInfoBuilder,
     private val newSendAnalytics: NewSendAnalytics,
     private val sendStateManager: SendStateManager,
-    private val sendButtonStateManager: SendButtonStateManager
+    private val sendButtonMapper: SendButtonMapper
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     override fun attach(view: SendContract.View) {
@@ -62,27 +62,27 @@ class SendPresenter(
         when (newState) {
             is SendState.Idle -> Unit
             is SendState.FeePayerUpdate -> handleFeePayerState(newState.feePayerUpdate)
-            is SendState.CalculationUpdate -> handleCalculationState(newState.calculationState)
+            is SendState.CalculationUpdate -> handleCalculationEvent(newState.calculationEvent)
             is SendState.WidgetUpdate -> handleWidgetState(newState.widgetState)
             is SendState.ShowFreeTransactionDetails -> handleFreeTransactionClicked()
             is SendState.ShowTransactionDetails -> view?.showTransactionDetails(newState.feeTotal)
             is SendState.ShowTokenSelection -> view?.showTokenSelection(newState.currentToken)
             is SendState.Loading -> handleLoadingState(newState.loadingState)
-            is SendState.ShowProgress -> view?.showProgressDialog(newState.internalUUID, newState.data)
+            is SendState.ShowProgress -> view?.showProgressDialog(newState.internalTransactionUuid, newState.data)
             is SendState.GeneralError -> handleGeneralError(newState.cause)
         }
     }
 
-    private fun handleCalculationState(newState: CalculationState) {
-        Timber.tag(TAG).i("Received CalculationState: $newState")
+    private fun handleCalculationEvent(newEvent: CalculationEvent) {
+        Timber.tag(TAG).i("Received CalculationState: $newEvent")
 
-        when (newState) {
-            is CalculationState.TokenUpdated -> handleTokenUpdated(newState)
-            is CalculationState.AmountChanged -> handleAmountChanged(newState)
-            is CalculationState.AmountReduced -> handleAmountReduced(newState)
-            is CalculationState.MaxValueEntered -> handleMaxInputEntered(newState)
-            is CalculationState.CurrencySwitched -> handleCurrencySwitched(newState)
-            is CalculationState.Idle -> Unit
+        when (newEvent) {
+            is CalculationEvent.TokenUpdated -> handleTokenUpdated(newEvent)
+            is CalculationEvent.AmountChanged -> handleAmountChanged(newEvent)
+            is CalculationEvent.AmountReduced -> handleAmountReduced(newEvent)
+            is CalculationEvent.MaxValueEntered -> handleMaxInputEntered(newEvent)
+            is CalculationEvent.CurrencySwitched -> handleCurrencySwitched(newEvent)
+            is CalculationEvent.Idle -> Unit
         }
     }
 
@@ -98,10 +98,10 @@ class SendPresenter(
             is FeePayerState.Failure -> handleFailure(newState.reason)
         }
 
-        validateButtonState(newState)
+        updateButtonState(newState)
     }
 
-    private fun handleCurrencySwitched(newState: CalculationState.CurrencySwitched) {
+    private fun handleCurrencySwitched(newState: CalculationEvent.CurrencySwitched) {
         view?.updateInputFraction(newState.fraction)
 
         view?.updateInputValue(newState.newInputAmount)
@@ -112,18 +112,18 @@ class SendPresenter(
         newSendAnalytics.logSwitchCurrencyModeClicked(isCryptoMode = newState.isFiat)
     }
 
-    private fun handleAmountReduced(newState: CalculationState.AmountReduced) {
+    private fun handleAmountReduced(newState: CalculationEvent.AmountReduced) {
         view?.showApproximateAmount(newState.approximateAmount)
         view?.setMaxButtonVisible(isVisible = newState.isMaxButtonVisible)
         view?.updateInputValue(newState.newInputAmount)
     }
 
-    private fun handleAmountChanged(newState: CalculationState.AmountChanged) {
+    private fun handleAmountChanged(newState: CalculationEvent.AmountChanged) {
         view?.showApproximateAmount(newState.approximateAmount)
         view?.setMaxButtonVisible(isVisible = newState.isMaxButtonVisible)
     }
 
-    private fun handleTokenUpdated(newState: CalculationState.TokenUpdated) {
+    private fun handleTokenUpdated(newState: CalculationEvent.TokenUpdated) {
         view?.setSwitchLabel(newState.switchInputSymbol)
         view?.setMainAmountLabel(newState.currentInputSymbol)
         view?.updateInputFraction(newState.fraction)
@@ -149,7 +149,7 @@ class SendPresenter(
             is WidgetState.EnableCurrencySwitch -> handleCurrencySwitch(newState)
             is WidgetState.TokenSelectionEnabled -> view?.setTokenContainerEnabled(isEnabled = newState.isEnabled)
             is WidgetState.TokenUpdated -> view?.showToken(newState.updatedToken)
-            is WidgetState.InputUpdated -> view?.updateInputValue(newState.newInput)
+            is WidgetState.InputUpdated -> view?.updateInputValue(newState.newInputValue)
         }
     }
 
@@ -222,7 +222,7 @@ class SendPresenter(
         view?.showFreeTransactionsInfo()
     }
 
-    private fun handleMaxInputEntered(newState: CalculationState.MaxValueEntered) {
+    private fun handleMaxInputEntered(newState: CalculationEvent.MaxValueEntered) {
         view?.setMaxButtonVisible(isVisible = newState.isMaxButtonVisible)
         view?.updateInputValue(textValue = newState.newInputAmount)
         view?.showApproximateAmount(approximateAmount = newState.approximateAmount)
@@ -278,15 +278,15 @@ class SendPresenter(
         sendStateManager.onNewEvent(SendActionEvent.LaunchSending)
     }
 
-    private fun validateButtonState(newState: FeePayerState) {
-        when (val state = sendButtonStateManager.validate(newState)) {
-            is SendButtonStateManager.State.Disabled -> {
+    private fun updateButtonState(newState: FeePayerState) {
+        when (val state = sendButtonMapper.mapToButtonState(newState)) {
+            is SendButtonMapper.State.Disabled -> {
                 view?.setBottomButtonText(state.textContainer)
                 view?.setSliderText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
 
-            is SendButtonStateManager.State.Enabled -> {
+            is SendButtonMapper.State.Enabled -> {
                 view?.setSliderText(resources.getString(state.textResId, state.value))
                 view?.setBottomButtonText(null)
                 view?.setInputColor(state.totalAmountTextColor)

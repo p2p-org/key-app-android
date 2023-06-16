@@ -90,7 +90,7 @@ class SendStateManager(
             }
             .launchIn(this)
 
-        inputCalculator.getCalculationStateFlow()
+        inputCalculator.getCalculationEventFlow()
             .onEach {
                 val calculationUpdate = SendState.CalculationUpdate(it)
                 updateState(calculationUpdate)

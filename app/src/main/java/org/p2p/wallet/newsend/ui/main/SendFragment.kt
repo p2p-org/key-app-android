@@ -15,7 +15,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentSendNewBinding
+import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
@@ -51,7 +51,7 @@ private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
 class SendFragment :
-    BaseMvpFragment<SendContract.View, SendContract.Presenter>(R.layout.fragment_send_new),
+    BaseMvpFragment<SendContract.View, SendContract.Presenter>(R.layout.fragment_send),
     SendContract.View {
 
     companion object {
@@ -74,7 +74,7 @@ class SendFragment :
 
     private val initialData: SendInitialData by args(ARG_INITIAL_DATA)
 
-    private val binding: FragmentSendNewBinding by viewBinding()
+    private val binding: FragmentSendBinding by viewBinding()
 
     override val presenter: SendContract.Presenter by inject { parametersOf(initialData) }
 

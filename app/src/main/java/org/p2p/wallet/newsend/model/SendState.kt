@@ -9,14 +9,14 @@ sealed interface SendState {
 
     data class WidgetUpdate(val widgetState: WidgetState) : SendState
 
-    data class CalculationUpdate(val calculationState: CalculationState) : SendState
+    data class CalculationUpdate(val calculationEvent: CalculationEvent) : SendState
 
     data class FeePayerUpdate(val feePayerUpdate: FeePayerState) : SendState
 
     data class Loading(val loadingState: FeeLoadingState) : SendState
 
     data class ShowProgress(
-        val internalUUID: String,
+        val internalTransactionUuid: String,
         val data: NewShowProgress
     ) : SendState
 

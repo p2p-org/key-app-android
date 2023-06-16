@@ -13,7 +13,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentSendNewBinding
+import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.svl.model.TemporaryAccount
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
@@ -35,7 +35,7 @@ private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
 class SendViaLinkFragment :
-    BaseMvpFragment<SendViaLinkContract.View, SendViaLinkContract.Presenter>(R.layout.fragment_send_new),
+    BaseMvpFragment<SendViaLinkContract.View, SendViaLinkContract.Presenter>(R.layout.fragment_send),
     SendViaLinkContract.View {
 
     companion object {
@@ -49,7 +49,7 @@ class SendViaLinkFragment :
     private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
     private val svlAnalytics: SendViaLinkAnalytics by inject()
 
-    private val binding: FragmentSendNewBinding by viewBinding()
+    private val binding: FragmentSendBinding by viewBinding()
 
     override val presenter: SendViaLinkContract.Presenter by inject()
 

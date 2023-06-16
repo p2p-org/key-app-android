@@ -22,11 +22,16 @@ import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason.Invalid
 import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason.InvalidAmountForSender
 import org.p2p.wallet.newsend.model.smartselection.FeePayerFailureReason.LowMinBalanceIgnored
 
-class SendButtonStateManager(
+/**
+ * According to [FeePayerState] we show the certain state for action button in Send.
+ * It can be enabled and show the amount which can be sent
+ * Or it can be disabled and show the reason why it is disabled
+ * */
+class SendButtonMapper(
     private val resources: Resources
 ) {
 
-    fun validate(state: FeePayerState): State = when (state) {
+    fun mapToButtonState(state: FeePayerState): State = when (state) {
         is Idle -> createEnterAmountState()
         is NoStrategiesFound -> createCalculationErrorState()
         is FreeTransaction -> createEnabledOrEnterAmountState(state.initialAmount, state.formattedAmount)

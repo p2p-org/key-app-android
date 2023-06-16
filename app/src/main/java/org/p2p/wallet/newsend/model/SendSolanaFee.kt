@@ -19,7 +19,7 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 /**
  * This class contains information about fees for transaction or for a new account creation
  * */
-@Deprecated("Add mapping to UI models")
+@Deprecated("Add mapping to UI models, https://p2pvalidator.atlassian.net/browse/PWN-8956")
 @Parcelize
 data class SendSolanaFee constructor(
     val feePayerToken: Token.Active,
@@ -86,7 +86,6 @@ data class SendSolanaFee constructor(
             .fromLamports(feePayerToken.decimals)
             .scaleLong()
 
-    @IgnoredOnParcel
     private val feePayerTotalLamports: BigInteger
         get() = feePayerToken.total.toLamports(feePayerToken.decimals)
 

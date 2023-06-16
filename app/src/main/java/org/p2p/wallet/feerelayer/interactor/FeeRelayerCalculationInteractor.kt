@@ -164,6 +164,31 @@ class FeeRelayerCalculationInteractor(
         }
     }
 
+    /**
+     * We assume that [userTokens] is sorted by USD value in descending order
+     * Therefore, we can assume that if the first token is not available to pay the fee,
+     * then we can't pay the fee with any other token
+     * */
+    suspend fun findSingleFeePayer(
+        potentialFeePayers: List<Token.Active>,
+        feeInSol: FeeRelayerFee
+    ): Token.Active? = withContext(dispatchers.io) {
+        val feePayer = potentialFeePayers.firstOrNull() ?: return@withContext null
+
+        val feeInSpl = getFeesInPayingToken(
+            feePayerToken = feePayer,
+            transactionFeeInSOL = feeInSol.transactionFeeInSol,
+            accountCreationFeeInSOL = feeInSol.accountCreationFeeInSol
+        )
+
+        if (feeInSpl is FeePoolsState.Calculated && feePayer.totalInLamports >= feeInSpl.total) {
+            return@withContext feePayer
+        }
+
+        // TODO: try another fee payer
+        return@withContext null
+    }
+
     /*
    * The request is too complex
    * Wrapped each request into deferred

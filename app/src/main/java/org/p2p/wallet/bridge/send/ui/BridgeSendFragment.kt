@@ -17,7 +17,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.ui.dialog.BridgeSendFeeBottomSheet
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentSendNewBinding
+import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
@@ -45,7 +45,7 @@ private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
 class BridgeSendFragment :
-    BaseMvpFragment<BridgeSendContract.View, BridgeSendContract.Presenter>(R.layout.fragment_send_new),
+    BaseMvpFragment<BridgeSendContract.View, BridgeSendContract.Presenter>(R.layout.fragment_send),
     BridgeSendContract.View {
 
     companion object {
@@ -68,7 +68,7 @@ class BridgeSendFragment :
     private val inputAmount: BigDecimal? by args(ARG_INPUT_AMOUNT)
     private val openedFrom: SendOpenedFrom by args(ARG_OPENED_FROM)
 
-    private val binding: FragmentSendNewBinding by viewBinding()
+    private val binding: FragmentSendBinding by viewBinding()
 
     override val presenter: BridgeSendContract.Presenter by inject {
         parametersOf(recipient, initialToken, inputAmount)

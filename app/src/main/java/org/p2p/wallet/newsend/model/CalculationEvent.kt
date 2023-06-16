@@ -2,33 +2,33 @@ package org.p2p.wallet.newsend.model
 
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 
-sealed interface CalculationState {
-    object Idle : CalculationState
+sealed interface CalculationEvent {
+    object Idle : CalculationEvent
 
     data class TokenUpdated(
         val switchInputSymbol: String,
         val currentInputSymbol: String,
         val fraction: Int,
         val approximateAmount: String
-    ) : CalculationState
+    ) : CalculationEvent
 
     data class AmountChanged(
         val approximateAmount: String,
         val isMaxButtonVisible: Boolean
-    ) : CalculationState
+    ) : CalculationEvent
 
     data class AmountReduced(
         val approximateAmount: String,
         val isMaxButtonVisible: Boolean,
         val newInputAmount: String
-    ) : CalculationState
+    ) : CalculationEvent
 
     data class MaxValueEntered(
         val approximateAmount: String,
         val newInputAmount: String,
         val isMaxButtonVisible: Boolean,
         val sourceTokenSymbol: String
-    ) : CalculationState
+    ) : CalculationEvent
 
     data class CurrencySwitched(
         val newInputAmount: String,
@@ -36,7 +36,7 @@ sealed interface CalculationState {
         val currentInputSymbol: String,
         val switchInputSymbol: String,
         val fraction: Int
-    ) : CalculationState {
+    ) : CalculationEvent {
         val isFiat: Boolean = currentInputSymbol == USD_READABLE_SYMBOL
     }
 }

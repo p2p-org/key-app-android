@@ -6,11 +6,9 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.newsend.smartselection.strategy.FeePayerSelectionStrategy
 
 sealed interface SmartSelectionState {
-    object Cancelled : SmartSelectionState
     data class ReadyForSmartSelection(
         val strategies: LinkedHashSet<FeePayerSelectionStrategy>
     ) : SmartSelectionState
-
     data class SolanaFeeOnly(
         val feeInSol: FeeRelayerFee
     ) : SmartSelectionState
@@ -21,4 +19,6 @@ sealed interface SmartSelectionState {
     ) : SmartSelectionState
 
     data class Failed(val e: Throwable) : SmartSelectionState
+
+    object Cancelled : SmartSelectionState
 }
