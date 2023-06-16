@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.striga.kyc.sdk.StrigaKycSdkFacade
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkInitParams
 import org.p2p.wallet.utils.popBackStackTo
@@ -38,7 +38,7 @@ class StrigaKycFragment :
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 backPressDeferredHandler.collect {
-                    popBackStackTo(MainFragment::class, immediate = false)
+                    popBackStackTo(MainContainerFragment::class, immediate = false)
                 }
             }
         }

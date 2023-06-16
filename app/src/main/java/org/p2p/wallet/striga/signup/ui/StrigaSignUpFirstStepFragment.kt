@@ -16,7 +16,7 @@ import org.p2p.wallet.auth.widget.PhoneNumberInputView
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
@@ -226,7 +226,7 @@ class StrigaSignUpFirstStepFragment :
     }
 
     private fun onBackPressed() {
-        popBackStackTo(MainFragment::class)
+        popBackStackTo(MainContainerFragment::class)
     }
 
     private fun onFragmentResult(requestKey: String, bundle: Bundle) {

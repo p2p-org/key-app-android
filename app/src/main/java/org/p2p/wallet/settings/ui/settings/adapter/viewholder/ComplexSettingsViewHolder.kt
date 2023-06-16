@@ -11,7 +11,8 @@ class ComplexSettingsViewHolder(
     private val onSettingsClicked: (SettingsItem) -> Unit
 ) : NewSettingsViewHolder<ItemSettingsComplexBinding, ComplexSettingsItem>(binding) {
     override fun ItemSettingsComplexBinding.bind(item: ComplexSettingsItem) {
-        imageViewSettingIcon.setImageResource(item.iconRes)
+        imageViewBadge.isVisible = item.isBadgeVisible
+        imageViewSettingsIcon.setImageResource(item.iconRes)
         textViewSettingName.text = getString(item.nameRes)
         item.additionalText?.also { textViewSettingValue.text = it }
 

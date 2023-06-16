@@ -1,12 +1,12 @@
 package org.p2p.wallet.settings.ui.settings
 
-import android.content.Context
 import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
@@ -14,7 +14,6 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.model.SettingsItemMapper
 
@@ -29,8 +28,8 @@ class SettingsPresenter(
     private val settingsInteractor: SettingsInteractor,
     private val homeLocalRepository: HomeLocalRepository,
     private val settingsItemMapper: SettingsItemMapper,
-    private val authInteractor: AuthInteractor,
-    private val context: Context
+    private val metadataInteractor: MetadataInteractor,
+    private val authInteractor: AuthInteractor
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
     override fun attach(view: SettingsContract.View) {
@@ -45,7 +44,8 @@ class SettingsPresenter(
                 isUsernameItemVisible = usernameInteractor.isUsernameItemVisibleInSettings(),
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
-                isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden()
+                isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden(),
+                hasDifferentDeviceShare = metadataInteractor.hasDifferentDeviceShare()
             )
             view?.showSettings(settings)
         } catch (error: Throwable) {
@@ -104,7 +104,6 @@ class SettingsPresenter(
                 environmentManager.chooseEnvironment(newNetworkEnvironment)
 
                 homeLocalRepository.clear()
-                RenVMService.stopService(context)
 
                 analytics.logNetworkChanging(newNetworkEnvironment.name)
                 // Sometimes these operations are completed too quickly

@@ -10,7 +10,7 @@ import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
@@ -53,7 +53,7 @@ class StrigaSmsInputFragment : BaseSmsInputFragment() {
                 dialog.dismiss()
             }
             .setPositiveButton(R.string.striga_exit_sms_input_warning_dialog_btn_positive) { _, _ ->
-                popBackStackTo(MainFragment::class)
+                popBackStackTo(MainContainerFragment::class)
             }
             .show()
     }

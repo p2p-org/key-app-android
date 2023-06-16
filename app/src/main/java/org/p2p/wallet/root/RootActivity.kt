@@ -34,7 +34,7 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.databinding.ActivityRootBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
@@ -195,7 +195,7 @@ class RootActivity :
             if (backStackEntryCount > 1) {
                 val lastScreen = fragments.lastOrNull()
                 if (lastScreen is BottomSheetDialogFragment) lastScreen.dismissAllowingStateLoss()
-                popBackStackImmediate(MainFragment::class.java.name, 0)
+                popBackStackImmediate(MainContainerFragment::class.java.name, 0)
             }
         }
     }

@@ -13,7 +13,7 @@ import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSellErrorBinding
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStackTo
@@ -51,7 +51,7 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
     }
 
     private fun setupView() = with(binding) {
-        toolbar.setNavigationOnClickListener { popBackStackTo(MainFragment::class) }
+        toolbar.setNavigationOnClickListener { popBackStackTo(MainContainerFragment::class) }
         textViewTitle.setText(sellErrorState.titleResId)
         imageView.setImageResource(sellErrorState.iconResId)
         buttonAction.setText(sellErrorState.buttonTextResId)
@@ -61,7 +61,7 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
         buttonAction.setOnClickListener {
             when (sellErrorState) {
                 is SellScreenError.ServerError -> {
-                    popBackStackTo(MainFragment::class)
+                    popBackStackTo(MainContainerFragment::class)
                 }
             }
         }

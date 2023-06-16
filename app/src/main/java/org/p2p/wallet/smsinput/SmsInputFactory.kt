@@ -3,7 +3,7 @@ package org.p2p.wallet.smsinput
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import android.os.Bundle
-import org.p2p.wallet.settings.ui.recovery.SecurityAndPrivacyFragment
+import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyFragment
 import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputFragment
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputFragment
 import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputFragment
