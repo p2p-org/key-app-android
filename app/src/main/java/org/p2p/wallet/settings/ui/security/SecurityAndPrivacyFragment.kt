@@ -13,7 +13,6 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityAndPrivacyBinding
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.devices.DevicesFragment
 import org.p2p.wallet.settings.ui.security.unlock.SeedPhraseUnlockFragment
 import org.p2p.wallet.utils.popBackStack
@@ -39,9 +38,6 @@ class SecurityAndPrivacyFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            imageViewHelp.setOnClickListener {
-                IntercomService.showMessenger()
-            }
             recoveryViewSeed.setOnClickListener {
                 presenter.onSeedPhraseClicked()
             }
