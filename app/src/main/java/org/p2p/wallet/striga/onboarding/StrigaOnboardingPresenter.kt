@@ -24,7 +24,9 @@ class StrigaOnboardingPresenter(
     override fun firstAttach() {
         super.firstAttach()
         launch {
-            selectedCountryState.emit(interactor.getChosenCountry())
+            selectedCountryCode = interactor.getChosenCountry().also {
+                selectedCountryState.emit(it)
+            }
         }
     }
 
@@ -48,13 +50,13 @@ class StrigaOnboardingPresenter(
         view?.showCountryPicker(selectedCountryCode)
     }
 
+    override fun onContinueClicked() {
+        view?.navigateNext()
+    }
+
     private fun showCountry(country: CountryCode) {
         view?.setCurrentCountry(country)
         view?.setAvailabilityState(isCountrySupported(country))
-    }
-
-    override fun onClickContinue() {
-        view?.navigateNext()
     }
 
     override fun onClickHelp() {
