@@ -2,7 +2,6 @@ package org.p2p.wallet.newsend.smartselection
 
 import java.math.BigDecimal
 import org.p2p.core.token.Token
-import org.p2p.core.utils.orZero
 import org.p2p.wallet.newsend.model.smartselection.NoFeesData
 
 /**
@@ -42,7 +41,7 @@ sealed interface SmartSelectionTrigger {
     ) : SmartSelectionTrigger
 }
 
-fun SmartSelectionTrigger.getNoFeesData() : NoFeesData {
+fun SmartSelectionTrigger.getNoFeesData(): NoFeesData {
     val (sourceToken, initialAmount) = when (this) {
         is SmartSelectionTrigger.Initialization -> initialToken to initialAmount
         is SmartSelectionTrigger.AmountChanged -> sourceToken to inputAmount

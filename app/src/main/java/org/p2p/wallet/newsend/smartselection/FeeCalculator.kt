@@ -5,7 +5,6 @@ import java.math.BigInteger
 import java.util.concurrent.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.orZero
-import org.p2p.solanaj.core.FeeAmount
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerCalculationInteractor
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee

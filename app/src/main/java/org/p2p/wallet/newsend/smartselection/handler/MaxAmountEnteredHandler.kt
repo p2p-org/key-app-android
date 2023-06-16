@@ -33,7 +33,6 @@ class MaxAmountEnteredHandler(
         val inputAmount = trigger.inputAmount
         val solToken = trigger.solToken
 
-
         val alternativeFeePayers = feeCalculator.findSingleFeePayer(fee, sourceToken)
             ?.let { listOf(it) } ?: emptyList()
 
