@@ -1,11 +1,11 @@
-package org.p2p.wallet.settings.ui.recovery
+package org.p2p.wallet.settings.ui.security
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
-interface RecoveryKitContract {
+interface SecurityAndPrivacyContract {
     interface View : MvpView {
-        fun showDeviceName(deviceName: CharSequence, isDifferentFromDeviceShare: Boolean)
+        fun showDeviceName(deviceName: CharSequence, showWarning: Boolean)
         fun showManageVisible(isVisible: Boolean)
         fun showPhoneNumber(phoneNumber: String)
         fun showSocialId(socialId: String)

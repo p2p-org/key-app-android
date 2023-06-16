@@ -32,11 +32,6 @@ class AppDeeplinksManager(
     private val deeplinkData = MutableStateFlow<DeeplinkData?>(null)
 
     /**
-     * Tabs switcher for navigate by home screen (see [org.p2p.wallet.home.MainFragment])
-     */
-    private var mainTabsSwitcher: MainTabsSwitcher? = null
-
-    /**
      * Listener for root activity (see [org.p2p.wallet.root.RootActivity])
      */
     private var rootListener: RootListener? = null
@@ -79,16 +74,8 @@ class AppDeeplinksManager(
             }
     }
 
-    fun setTabsSwitcher(mainTabsSwitcher: MainTabsSwitcher) {
-        this.mainTabsSwitcher = mainTabsSwitcher
-    }
-
     fun setRootListener(rootListener: RootListener) {
         this.rootListener = rootListener
-    }
-
-    fun clearTabsSwitcher() {
-        mainTabsSwitcher = null
     }
 
     fun clearRootListener() {

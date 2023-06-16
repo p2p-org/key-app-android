@@ -1,4 +1,4 @@
-package org.p2p.wallet.settings.ui.recovery
+package org.p2p.wallet.settings.ui.security
 
 import androidx.core.view.isVisible
 import android.os.Bundle
@@ -15,15 +15,17 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityAndPrivacyBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.devices.DevicesFragment
-import org.p2p.wallet.settings.ui.recovery.unlock.SeedPhraseUnlockFragment
+import org.p2p.wallet.settings.ui.security.unlock.SeedPhraseUnlockFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class SecurityAndPrivacyFragment :
-    BaseMvpFragment<RecoveryKitContract.View, RecoveryKitContract.Presenter>(R.layout.fragment_security_and_privacy),
-    RecoveryKitContract.View {
+    BaseMvpFragment<SecurityAndPrivacyContract.View, SecurityAndPrivacyContract.Presenter>(
+        R.layout.fragment_security_and_privacy
+    ),
+    SecurityAndPrivacyContract.View {
 
     companion object {
         fun create(): SecurityAndPrivacyFragment = SecurityAndPrivacyFragment()
@@ -31,7 +33,7 @@ class SecurityAndPrivacyFragment :
 
     private val binding: FragmentSecurityAndPrivacyBinding by viewBinding()
 
-    override val presenter: RecoveryKitContract.Presenter by inject()
+    override val presenter: SecurityAndPrivacyContract.Presenter by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,10 +61,10 @@ class SecurityAndPrivacyFragment :
         }
     }
 
-    override fun showDeviceName(deviceName: CharSequence, isDifferentFromDeviceShare: Boolean) {
+    override fun showDeviceName(deviceName: CharSequence, showWarning: Boolean) {
         binding.recoveryViewDevice.apply {
             subtitle = deviceName
-            if (isDifferentFromDeviceShare) {
+            if (showWarning) {
                 setSubtitleDrawable(left = R.drawable.ic_warning_solid)
                 setSubtitleColor(getColor(R.color.icons_rose))
             }
