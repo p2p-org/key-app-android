@@ -3,6 +3,7 @@ package org.p2p.wallet.debug.featuretoggles
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.DebugTogglesFeatureFlag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.InAppFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BooleanFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RemoteFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -45,7 +46,7 @@ class FeatureTogglesPresenter(
                 isInAppFlag = false
             )
         } + inAppFeatureFlags.allInAppFeatureFlags
-            .filter { it !is DebugTogglesFeatureFlag }
+            .filter { it !is DebugTogglesFeatureFlag && it !is InAppFeatureFlag.InAppFeatureFlagString }
             .map {
                 FeatureToggleRowItem(
                     toggleName = it.featureName,

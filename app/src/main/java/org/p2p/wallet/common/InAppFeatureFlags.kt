@@ -5,6 +5,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.inapp.DebugTogglesFeatureFl
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.DevNetFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.InAppFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.PollingFeatureFlag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaKycBannerMockFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateUserCreateFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSmsVerificationMockFlag
@@ -15,6 +16,7 @@ class InAppFeatureFlags(prefs: SharedPreferences) {
     val strigaSimulateWeb3Flag = StrigaSimulateWeb3Flag(prefs)
     val strigaSimulateUserCreateFlag = StrigaSimulateUserCreateFlag(prefs)
     val strigaSmsVerificationMockFlag = StrigaSmsVerificationMockFlag(prefs)
+    val strigaKycBannerMockFlag = StrigaKycBannerMockFlag(prefs)
 
     /**
      * Allows to override values from FirebaseRemoteConfig
@@ -27,7 +29,8 @@ class InAppFeatureFlags(prefs: SharedPreferences) {
         isDebugRemoteConfigEnabled,
         strigaSimulateWeb3Flag,
         strigaSimulateUserCreateFlag,
-        strigaSmsVerificationMockFlag
+        strigaSmsVerificationMockFlag,
+        strigaKycBannerMockFlag
     )
 
     fun findFeatureFlagByName(featureName: String): InAppFeatureFlag? {

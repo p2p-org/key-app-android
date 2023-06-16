@@ -8,7 +8,7 @@ import org.p2p.wallet.settings.model.SettingsRow
 interface DebugSettingsContract {
 
     interface View : MvpView {
-        fun showSettings(item: List<SettingsRow>)
+        fun showSettings(items: List<SettingsRow>)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -16,5 +16,6 @@ interface DebugSettingsContract {
         fun onNetworkChanged(newNetworkEnvironment: NetworkEnvironment)
         fun switchMoonpayUrl(isSandboxSelected: Boolean)
         fun switchNameServiceUrl(isProdSelected: Boolean)
+        fun onSettingsPopupMenuClicked(s: String)
     }
 }

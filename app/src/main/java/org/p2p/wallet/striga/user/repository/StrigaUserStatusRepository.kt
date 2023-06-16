@@ -1,10 +1,10 @@
 package org.p2p.wallet.striga.user.repository
 
 import timber.log.Timber
-import kotlin.jvm.Throws
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.StrigaUserIdProvider
@@ -19,12 +19,17 @@ class StrigaUserStatusRepository(
     private val strigaUserIdProvider: StrigaUserIdProvider,
     private val mapper: StrigaUserStatusDestinationMapper,
     private val userRepository: StrigaUserRepository,
+    private val inAppFeatureFlags: InAppFeatureFlags
 ) : CoroutineScope by CoroutineScope(dispatchers.io) {
 
     private val strigaUserDestinationFlow = MutableStateFlow<StrigaUserStatusDestination?>(null)
     private val strigaBannerFlow = MutableStateFlow<StrigaKycStatusBanner?>(null)
 
-    fun getBanner(): StrigaKycStatusBanner? = strigaBannerFlow.value
+    fun getBanner(): StrigaKycStatusBanner? {
+        return inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString
+            ?.let { StrigaKycStatusBanner.valueOf(it) }
+            ?: strigaBannerFlow.value
+    }
 
     fun getUserDestination(): StrigaUserStatusDestination? = strigaUserDestinationFlow.value
 

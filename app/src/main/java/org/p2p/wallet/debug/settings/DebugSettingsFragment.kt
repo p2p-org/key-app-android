@@ -14,6 +14,13 @@ import org.p2p.wallet.debug.logs.CustomLogDialog
 import org.p2p.wallet.debug.publickey.DebugPublicKeyFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
+import org.p2p.wallet.debug.settings.adapter.SettingsRowAdapter
+import org.p2p.wallet.debug.settings.adapter.settingsRowInfoItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowLogoutItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowPopupMenuItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowSectionItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowSwtichItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowTitleItemDelegate
 import org.p2p.wallet.debug.torus.DebugTorusFragment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.settings.model.SettingsRow
@@ -31,19 +38,26 @@ class DebugSettingsFragment :
     DebugSettingsContract.View {
 
     companion object {
-
         fun create(): DebugSettingsFragment = DebugSettingsFragment()
     }
 
     override val presenter: DebugSettingsContract.Presenter by inject()
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
-    private val adapter = DebugSettingsAdapter(::onSettingsRowClicked, ::onSettingsSwitchClicked)
+
+    private val adapterDelegate = SettingsRowAdapter(
+        settingsRowTitleItemDelegate(),
+        settingsRowSectionItemDelegate(::onSettingsRowClicked),
+        settingsRowLogoutItemDelegate(::onSettingsRowClicked),
+        settingsRowInfoItemDelegate(::onSettingsRowClicked),
+        settingsRowSwtichItemDelegate(::onSettingsSwitchClicked),
+        settingsRowPopupMenuItemDelegate(presenter::onSettingsPopupMenuClicked)
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            settingsRecyclerView.attachAdapter(adapter)
+            settingsRecyclerView.attachAdapter(adapterDelegate)
             toolbar.setNavigationOnClickListener {
                 popBackStack()
             }
@@ -59,9 +73,9 @@ class DebugSettingsFragment :
         presenter.loadData()
     }
 
-    override fun showSettings(item: List<SettingsRow>) {
+    override fun showSettings(items: List<SettingsRow>) {
         requireView().post {
-            adapter.setData(item)
+            adapterDelegate.items = items
         }
     }
 

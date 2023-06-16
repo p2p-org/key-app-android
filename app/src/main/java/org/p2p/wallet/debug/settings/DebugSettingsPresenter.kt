@@ -9,12 +9,14 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.AppRestarter
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
@@ -26,6 +28,7 @@ class DebugSettingsPresenter(
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val networkServicesUrlProvider: NetworkServicesUrlProvider,
+    private val inAppFeatureFlags: InAppFeatureFlags,
     private val appRestarter: AppRestarter
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
@@ -122,8 +125,21 @@ class DebugSettingsPresenter(
                 titleResId = R.string.debug_settings_logs_title,
                 subtitle = resources.getString(R.string.debug_settings_logs_subtitle),
                 iconRes = R.drawable.ic_settings_cloud
-            )
+            ),
+            SettingsRow.PopupMenu(
+                titleResId = R.string.debug_settings_logs_title,
+                selectedItem = inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString ?: "NO_MOCK",
+                menuOptions = StrigaKycStatusBanner.values().map(StrigaKycStatusBanner::name) + "NO_MOCK"
+            ),
         )
+    }
+
+    override fun onSettingsPopupMenuClicked(s: String) {
+        if (s != "NO_MOCK") {
+            inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = s
+        } else {
+            inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = null
+        }
     }
 
     private fun getDeviceInfo(): List<SettingsRow> {

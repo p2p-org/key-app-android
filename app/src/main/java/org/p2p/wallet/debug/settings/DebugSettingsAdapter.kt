@@ -1,9 +1,10 @@
 package org.p2p.wallet.debug.settings
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSettingsDebugSwitchBinding
@@ -12,7 +13,6 @@ import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
 import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
 import org.p2p.wallet.settings.model.SettingsRow
-import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
 class DebugSettingsAdapter(
@@ -56,6 +56,7 @@ class DebugSettingsAdapter(
             is SettingsRow.Info -> R.layout.item_settings_info
             is SettingsRow.Logout -> R.layout.item_settings_logout
             is SettingsRow.Switcher -> R.layout.item_settings_debug_switch
+            else -> error("")
         }
 
     override fun getItemCount(): Int = data.count()
