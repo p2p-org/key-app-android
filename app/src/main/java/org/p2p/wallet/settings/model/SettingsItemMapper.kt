@@ -20,6 +20,7 @@ class SettingsItemMapper(
         isBiometricLoginEnabled: Boolean,
         isZeroBalanceTokenHidden: Boolean,
         isBiometricLoginAvailable: Boolean,
+        hasDifferentDeviceShare: Boolean
     ): List<SettingsItem> = buildList {
         this += profileBlock(
             username = username,
@@ -27,7 +28,8 @@ class SettingsItemMapper(
         )
         this += securityBlock(
             isBiometricLoginEnabled = isBiometricLoginEnabled,
-            isBiometricLoginAvailable = isBiometricLoginAvailable
+            isBiometricLoginAvailable = isBiometricLoginAvailable,
+            hasDifferentDeviceShare = hasDifferentDeviceShare
         )
         this += appearanceBlock(isZeroBalanceTokenHidden)
         this += communityBlock()
@@ -69,12 +71,14 @@ class SettingsItemMapper(
     private fun securityBlock(
         isBiometricLoginEnabled: Boolean,
         isBiometricLoginAvailable: Boolean,
+        hasDifferentDeviceShare: Boolean
     ): List<SettingsItem> = listOfNotNull(
         SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_security),
         ComplexSettingsItem(
             nameRes = R.string.settings_item_title_security,
             iconRes = R.drawable.ic_settings_shield,
-            hasSeparator = true
+            hasSeparator = true,
+            isBadgeVisible = hasDifferentDeviceShare
         ),
         ComplexSettingsItem(
             nameRes = R.string.settings_item_title_pin,
