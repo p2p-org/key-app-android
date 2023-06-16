@@ -28,8 +28,13 @@ class StrigaPresetDataPickerPresenter(
     private fun loadElements() {
         launch {
             allItems = strigaPresetDataInteractor.getPresetData(selectedPresetDataItem)
-                .filter { it.getName() != selectedPresetDataItem.getName() }
-            view?.showItems(strigaElementCellMapper.buildCellModels(allItems, selectedPresetDataItem))
+
+            view?.showItems(
+                items = strigaElementCellMapper.buildCellModels(
+                    items = allItems.filter { it.getName() != selectedPresetDataItem.getName() },
+                    selectedItem = selectedPresetDataItem
+                )
+            )
         }
     }
 
@@ -41,9 +46,9 @@ class StrigaPresetDataPickerPresenter(
             )
         } else {
             val searchResult = dataSearcher.search(text, allItems)
-            strigaElementCellMapper.buildCellModels(
+            strigaElementCellMapper.buildSearchCellModels(
                 items = searchResult,
-                selectedItem = selectedPresetDataItem.takeIf { it in searchResult }
+                selectedItem = selectedPresetDataItem
             )
         }
         view?.showItems(resultCellModels)

@@ -23,13 +23,18 @@
         android:id="@+id/imageViewBox"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/textViewErrorTitle"
-        app:layout_constraintDimensionRatio="1:1"
+        android:layout_marginBottom="16dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/textViewErrorTitle"
+        app:layout_constraintDimensionRatio="2:1.7"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintVertical_bias="0.5"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:src="@drawable/ic_hand_with_square" />
+        app:srcCompat="@drawable/ic_timer_error" />
+
 
     <TextView
         android:id="@+id/textViewErrorTitle"
@@ -39,7 +44,7 @@
         android:gravity="center"
         android:paddingHorizontal="32dp"
         android:text="@string/onboarding_general_error_critical_error_title"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@+id/textViewErrorSubtitle"
         app:layout_constraintEnd_toEndOf="parent"

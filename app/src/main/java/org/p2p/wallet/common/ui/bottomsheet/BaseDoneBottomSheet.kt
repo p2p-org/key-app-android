@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogBaseDoneBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
 /**
@@ -31,10 +30,11 @@ abstract class BaseDoneBottomSheet : BaseBottomSheet(R.layout.dialog_base_done) 
     protected val resultKey: String by args(ARG_RESULT_KEY)
     protected val requestKey: String by args(ARG_REQUEST_KEY)
 
-    val baseDialogBinding: DialogBaseDoneBinding by viewBinding()
+    lateinit var baseDialogBinding: DialogBaseDoneBinding
 
     @CallSuper
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        baseDialogBinding = DialogBaseDoneBinding.inflate(inflater, container, false)
         val innerView = onCreateInnerView(inflater, container, savedInstanceState)
         baseDialogBinding.viewInner.addView(innerView)
         return baseDialogBinding.root

@@ -14,6 +14,9 @@ inputs:
   artifact-type:
     required: true
     description: "apk,bundle"
+  workflow-type:
+    description: "According to workflow type, it will add initial comment to uploaded file"
+    required: false
 
 runs:
   using: composite
@@ -24,11 +27,18 @@ runs:
         ls -R app/build/outputs/${{ inputs.artifact-type }}/${{ inputs.build-type }}
         apk_file=$(find app/build/outputs/${{ inputs.artifact-type }}/${{ inputs.build-type }} -name 'key-app*')
         apk_filename=$(basename "$apk_file")
-        version_name=$(echo "$apk_filename" | sed 's/^key-app-\(.*\)$/\1/')
+        version_name=$(echo "$apk_filename" | sed 's/^key-app-\(.*\)\.apk$/\1/')
+        
+        type=${{ inputs.workflow-type }}
+        if [[ $type == "scheduled" ]]; then
+          initial_comment="Daily build $version_name is published!"
+        else
+          initial_comment="Build $version_name is published!"
+        fi
         
         curl \
         -F token="${{ inputs.bot-token }}" \
         -F channels="${{ inputs.channel-id }}" \
-        -F initial_comment="Build $version_name is published!" \
+        -F initial_comment=$initial_comment \
         -F "file=@$apk_file" \
         https://slack.com/api/files.upload
