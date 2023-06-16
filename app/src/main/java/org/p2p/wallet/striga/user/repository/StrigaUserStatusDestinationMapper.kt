@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.user.repository
 
+import timber.log.Timber
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.model.StrigaUserStatus
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
@@ -30,15 +31,16 @@ class StrigaUserStatusDestinationMapper {
     private fun mapToSignUpStatus(status: StrigaUserStatus?, isUserCreated: Boolean): StrigaUserStatusDestination {
         return when {
             !isUserCreated -> {
-                StrigaUserStatusDestination.NONE
+                StrigaUserStatusDestination.ONBOARDING
             }
             !isMobileVerified(status) -> {
                 StrigaUserStatusDestination.SMS_VERIFICATION
             }
-            status?.kysStatus == StrigaUserVerificationStatus.INITIATED -> {
-                StrigaUserStatusDestination.SMS_SUB_VERIFICATION
+            status?.kysStatus != null && status.kysStatus.ordinal > StrigaUserVerificationStatus.UNKNOWN.ordinal -> {
+                StrigaUserStatusDestination.SUM_SUB_VERIFICATION
             }
             else -> {
+                Timber.d("User status is not defined: cannot navigate to somewhere")
                 StrigaUserStatusDestination.NONE
             }
         }

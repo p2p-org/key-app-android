@@ -286,7 +286,11 @@ class HomeFragment :
     }
 
     override fun navigateToKycStatus(status: StrigaKycStatusBanner) {
-        replaceFragment(strigaKycFragmentFactory.kycFragment(status))
+        replaceFragment(strigaKycFragmentFactory.kycFragment())
+    }
+
+    override fun showTopupWalletDialog() {
+        TopUpWalletBottomSheet.show(parentFragmentManager)
     }
 
     override fun showSendNoTokens(fallbackToken: Token) {

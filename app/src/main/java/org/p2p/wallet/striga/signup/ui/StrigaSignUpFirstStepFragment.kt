@@ -16,10 +16,9 @@ import org.p2p.wallet.auth.widget.PhoneNumberInputView
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
-import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
@@ -102,14 +101,14 @@ class StrigaSignUpFirstStepFragment :
     }
 
     override fun onStop() {
-        super.onStop()
         presenter.saveChanges()
+        super.onStop()
     }
 
-    override fun showCountryOfBirthPicker() {
+    override fun showCountryOfBirthPicker(countryCode: CountryCode?) {
         replaceFragmentForResult(
             StrigaPresetDataPickerFragment.create(
-                dataToPick = StrigaPresetDataToPick.COUNTRY_OF_BIRTH,
+                dataToPick = StrigaPresetDataItem.Country(countryCode),
                 requestKey = REQUEST_KEY_COUNTRY,
                 resultKey = RESULT_KEY_COUNTRY
             ),
@@ -227,7 +226,7 @@ class StrigaSignUpFirstStepFragment :
     }
 
     private fun onBackPressed() {
-        popBackStackTo(MainFragment::class)
+        popBackStackTo(MainContainerFragment::class)
     }
 
     private fun onFragmentResult(requestKey: String, bundle: Bundle) {

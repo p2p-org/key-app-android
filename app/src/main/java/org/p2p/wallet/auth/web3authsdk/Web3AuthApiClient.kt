@@ -11,6 +11,7 @@ import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
@@ -154,7 +155,28 @@ class Web3AuthApiClient(
         }
     }
 
+    override suspend fun refreshDeviceShare(
+        metadata: GatewayOnboardingMetadata
+    ): Web3AuthSignUpResponse.ShareDetailsWithMeta {
+        return suspendCancellableCoroutine {
+            this.continuation = it
+
+            Timber.tag(TAG).i("refreshDeviceShare triggered")
+
+            val metadataAsJsObject = gson.toJson(metadata)
+            onboardingWebView.evaluateJavascript("console.log(lastFacade)", null)
+            onboardingWebView.evaluateJavascript(
+                callToLastFacade(
+                    jsMethodCall = "refreshDeviceShare($metadataAsJsObject)"
+                ),
+                null
+            )
+            durationTracker.startMethodCall("refreshDeviceShare")
+        }
+    }
+
     private fun generateFacade(type: String, jsMethodCall: String): String {
+        val isSignUp = type == "signup"
         val useNewUth = true
         val torusStorageProviderEndpoint = torusNetwork.baseUrl
         val torusVerifier = torusNetwork.verifier
@@ -162,29 +184,35 @@ class Web3AuthApiClient(
         val torusNetworkEnv = torusNetwork.torusNetwork
         val torusLogLevel = torusNetwork.torusLogLevel
 
-        if (userGeneratedSeedPhrase.isEmpty()) {
+        if (isSignUp && userGeneratedSeedPhrase.isEmpty()) {
             runBlocking { userGeneratedSeedPhrase = authRepository.generatePhrase() }
         }
 
         val seedPhraseAsString = userGeneratedSeedPhrase.joinToString(separator = " ")
 
         return buildString {
-            append("new p2pWeb3Auth.AndroidFacade({")
+            append("lastFacade = new p2pWeb3Auth.AndroidFacade({")
             append("type: '$type', ")
             append("useNewEth: $useNewUth, ")
             append("torusNetwork: '$torusNetworkEnv', ")
             append("torusLoginType: 'google', ")
             append("torusEndpoint: '$torusStorageProviderEndpoint', ")
             append("torusVerifier: '$torusVerifier', ")
-            append("logLevel: '$torusLogLevel', ")
+            if (isSignUp) {
+                append("privateInput: '$seedPhraseAsString', ")
+            }
             if (!torusSubVerifier.isNullOrBlank()) {
                 append("torusSubVerifier: '$torusSubVerifier', ")
             }
-            append("privateInput: '$seedPhraseAsString'")
-            append("})")
-            append(".$jsMethodCall")
+            append("logLevel: '$torusLogLevel'")
+            append("}); ").also { Timber.tag(TAG).d("facade generated: $it") }
+            append(callToLastFacade(jsMethodCall))
         }
-            .also { Timber.tag(TAG).d("facade generated: $it") }
+    }
+
+    private fun callToLastFacade(jsMethodCall: String): String {
+        Timber.tag(TAG).d("call to lastFacade: $jsMethodCall")
+        return "lastFacade.$jsMethodCall"
     }
 
     /**
@@ -229,6 +257,16 @@ class Web3AuthApiClient(
             Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
                 ?.resumeWith(mapper.fromNetworkSignIn(msg))
+                ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
+        }
+
+        @JavascriptInterface
+        fun handleRefreshDeviceShare(msg: String) {
+            durationTracker.finishLastMethodCall()
+
+            Timber.tag(TAG).d(msg)
+            (continuation as? CancellableContinuation<Web3AuthSignUpResponse.ShareDetailsWithMeta>)
+                ?.resumeWith(mapper.fromNetworkRefreshDeviceShare(msg))
                 ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
         }
 

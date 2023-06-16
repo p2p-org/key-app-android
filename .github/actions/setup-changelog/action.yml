@@ -18,9 +18,12 @@ runs:
         # Pull changes from the remote repository and merge them into the current branch
         git pull
         
-        type=${{ inputs.workflow-type }}
+        # Fetch the latest changes from the remote repository
+        git fetch origin
         
         current_ref=${{ inputs.current-ref-name }}
+        
+        type=${{ inputs.workflow-type }}
         
         if [[ $type == "scheduled" ]]; then
           # Get the commit hash from the last night
@@ -29,9 +32,6 @@ runs:
           # Get the latest commit hash was saved in LastCommit.kt
           last_commit_hash=$(cd $GITHUB_WORKSPACE && sed -n 's/^ *const *val *COMMIT_HASH *= *"\(.*\)".*$/\1/p' buildSrc/src/main/java/LastCommit.kt)
         fi
-        
-        # Fetch the latest changes from the remote repository
-        git fetch origin
         
         # Determine the current head commit hash
         current_commit_hash="$(git log -n 1 --pretty=%H origin/$current_ref)"

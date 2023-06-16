@@ -13,8 +13,8 @@ class StrigaKycUiBannerMapper {
         return StrigaBanner(status)
     }
 
-    fun onBannerClicked(bannerTitleId: Int): StrigaKycStatusBanner {
-        return StrigaKycStatusBanner.values().first { it.bannerTitleResId == bannerTitleId }
+    fun onBannerClicked(bannerTitleId: Int): StrigaKycStatusBanner? {
+        return StrigaKycStatusBanner.values().firstOrNull { it.bannerTitleResId == bannerTitleId }
     }
 }
 

@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.user.interactor
 
+import kotlinx.coroutines.flow.StateFlow
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.StrigaUserIdProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
@@ -35,15 +36,19 @@ class StrigaUserInteractor(
     fun isUserCreated(): Boolean {
         return strigaUserIdProvider.getUserId() != null
     }
+
     fun loadAndSaveUserStatusData() {
         userStatusRepository.loadUserKycStatus()
     }
 
-    fun getUserStatusBanner(): StrigaKycStatusBanner? {
-        return userStatusRepository.getBanner()
+    fun getUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> {
+        return userStatusRepository.getBannerFlow()
     }
 
-    fun getUserDestination(): StrigaUserStatusDestination {
+    /**
+     * Returns user destination based on user status or null if unable to detect (no user status)
+     */
+    fun getUserDestination(): StrigaUserStatusDestination? {
         return userStatusRepository.getUserDestination()
     }
 }

@@ -16,7 +16,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendBinding
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendFeeTotal
@@ -265,7 +265,7 @@ class SendFragment :
     override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
         listener?.showTransactionProgress(internalTransactionId, data)
         when (initialData.openedFrom) {
-            SendOpenedFrom.SELL_FLOW -> popBackStackTo(target = MainFragment::class, inclusive = false)
+            SendOpenedFrom.SELL_FLOW -> popBackStackTo(target = MainContainerFragment::class, inclusive = false)
             SendOpenedFrom.MAIN_FLOW -> popBackStackTo(target = NewSearchFragment::class, inclusive = true)
         }
     }

@@ -38,7 +38,7 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="@string/onboarding_general_error_timer_title"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
         app:layout_constraintBottom_toTopOf="@+id/text_view_error_subtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

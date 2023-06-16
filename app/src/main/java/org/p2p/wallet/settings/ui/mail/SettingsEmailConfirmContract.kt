@@ -7,8 +7,9 @@ interface SettingsEmailConfirmContract {
     interface View : MvpView {
         fun startGoogleFlow()
         fun setLoadingState(isScreenLoading: Boolean)
-        fun showSuccessScreen()
-        fun showErrorScreen()
+        fun showIncorrectAccountScreen(email: String)
+        fun showSuccessDeviceChange()
+        fun showFailDeviceChange()
     }
 
     interface Presenter : MvpPresenter<View> {

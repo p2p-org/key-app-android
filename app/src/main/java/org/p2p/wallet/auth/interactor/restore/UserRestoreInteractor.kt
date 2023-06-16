@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
 import timber.log.Timber
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import org.p2p.wallet.auth.model.RestoreError
@@ -256,5 +257,20 @@ class UserRestoreInteractor(
         } ?: error("User actual account is null, restoring a user is failed")
 
         usernameInteractor.tryRestoreUsername(tokenKeyProvider.publicKey.toBase58Instance())
+    }
+
+    suspend fun refreshDeviceShare(
+        metadata: GatewayOnboardingMetadata
+    ): Web3AuthSignUpResponse.ShareDetailsWithMeta {
+        val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
+            ?: error("Device+Social restore way failed. Social share ID is null")
+        val deviceShare = web3AuthApi.refreshDeviceShare(metadata)
+        val data = signUpDetailsStorage.getLastSignUpUserDetails()!!.signUpDetails.copy(deviceShare = deviceShare)
+        signUpDetailsStorage.save(
+            data = data,
+            userId = socialShareUserId,
+            isCreate = false
+        )
+        return deviceShare
     }
 }

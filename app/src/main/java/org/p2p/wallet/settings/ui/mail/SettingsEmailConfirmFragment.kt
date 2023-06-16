@@ -2,11 +2,16 @@ package org.p2p.wallet.settings.ui.mail
 
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
+import org.p2p.wallet.auth.ui.animationscreen.TimerState
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentEmailConfirmBinding
@@ -54,6 +59,15 @@ class SettingsEmailConfirmFragment :
         }
     }
 
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            val systemAndIme = insets.systemAndIme()
+            rootView.updatePadding(top = systemAndIme.top)
+            binding.containerButtons.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+    }
+
     override fun startGoogleFlow() {
         signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
     }
@@ -71,16 +85,28 @@ class SettingsEmailConfirmFragment :
             buttonRestoreGoogle.apply {
                 setLoading(isScreenLoading)
                 isEnabled = !isScreenLoading
+                if (!isScreenLoading) setIconResource(R.drawable.ic_google_logo)
             }
         }
     }
 
-    override fun showSuccessScreen() {
-        // TODO PWN-8351 close screen and show success
+    override fun showIncorrectAccountScreen(email: String) {
+        with(binding) {
+            imageViewBanner.setImageResource(R.drawable.ic_not_found)
+            textViewTitle.setText(R.string.devices_incorrect_account)
+            textViewSubtitle.text = getString(R.string.devices_account_associated, email)
+            buttonRestoreGoogle.setText(R.string.devices_restore_another)
+        }
     }
 
-    override fun showErrorScreen() {
-        // TODO PWN-8351 close screen and show error
+    override fun showSuccessDeviceChange() {
+        showUiKitSnackBar(message = getString(R.string.devices_change_success_message))
+        popBackStack()
+    }
+
+    override fun showFailDeviceChange() {
+        showUiKitSnackBar(message = getString(R.string.error_general_message))
+        popBackStack()
     }
 
     override fun onConnectionError() {
@@ -95,7 +121,12 @@ class SettingsEmailConfirmFragment :
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
         if (isScreenLoading) {
-            AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = false)
+            AnimationProgressFragment.show(
+                fragmentManager = requireActivity().supportFragmentManager,
+                timerStateList = listOf(
+                    TimerState(R.string.devices_change_update_message),
+                )
+            )
         } else {
             AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }

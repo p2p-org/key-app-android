@@ -418,7 +418,7 @@ class StrigaSignupFirstStepPresenterTest {
         presenter.onCountryOfBirthClicked()
         advanceUntilIdle()
 
-        verify(exactly = 1) { view.showCountryOfBirthPicker() }
+        verify(exactly = 1) { view.showCountryOfBirthPicker(SupportedCountry) }
 
         presenter.onCountryOfBirthdayChanged(SupportedCountry)
         verify {

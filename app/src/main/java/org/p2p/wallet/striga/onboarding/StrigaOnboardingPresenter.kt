@@ -16,6 +16,8 @@ class StrigaOnboardingPresenter(
     private val interactor: StrigaOnboardingInteractor,
 ) : BasePresenter<StrigaOnboardingContract.View>(dispatchers.ui), StrigaOnboardingContract.Presenter {
 
+    private var selectedCountryCode: CountryCode? = null
+
     // to remove race between onCurrentCountryChanged and attach
     private val selectedCountryState = MutableStateFlow<CountryCode?>(null)
 
@@ -36,9 +38,14 @@ class StrigaOnboardingPresenter(
 
     override fun onCurrentCountryChanged(selectedCountry: CountryCode) {
         launch {
+            selectedCountryCode = selectedCountry
             interactor.saveCurrentCountry(selectedCountry)
             selectedCountryState.emit(selectedCountry)
         }
+    }
+
+    override fun onCountryClicked() {
+        view?.showCountryPicker(selectedCountryCode)
     }
 
     private fun showCountry(country: CountryCode) {
