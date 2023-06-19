@@ -39,12 +39,12 @@ class DevicesFragment :
         mainCellDelegate(
             inflateListener = {
                 it.setOnRightFirstTextClickListener { showConfirmationDialog() }
-            },
-            onItemClicked = {
-                if (it.rightSideCellModel != null) {
-                    showConfirmationDialog()
+                it.setOnClickAction { _, item ->
+                    if (item.rightSideCellModel != null) {
+                        showConfirmationDialog()
+                    }
                 }
-            }
+            },
         )
     )
 

@@ -1,6 +1,8 @@
 package org.p2p.wallet.auth.gateway.repository.mapper
 
 import com.google.gson.Gson
+import timber.log.Timber
+import java.security.SecureRandom
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
@@ -10,8 +12,6 @@ import org.p2p.wallet.utils.chacha.ChaCha20Poly1305SymmetricKeyGenerator
 import org.p2p.wallet.utils.fromJsonReified
 import org.p2p.wallet.utils.toByteArray
 import org.p2p.wallet.utils.toJsonObject
-import timber.log.Timber
-import java.security.SecureRandom
 
 private const val NONCE_SIZE_BYTES = 12
 
@@ -70,6 +70,7 @@ class GatewayServiceOnboardingMetadataCipher(
             nonce = encryptedMetadata.nonce.decodeToBytes(),
             dataToDecrypt = encryptedMetadata.metadataCiphered.decodeToBytes()
         )
+        Timber.tag(TAG).d(String(decryptedJson))
         gson.fromJsonReified(String(decryptedJson)) ?: error("Failed to create object from $decryptedJson")
     } catch (error: Throwable) {
         throw OnboardingMetadataCipherFailed(error)
