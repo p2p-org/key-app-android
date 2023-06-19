@@ -4,7 +4,6 @@ import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -29,16 +28,17 @@ class StrigaUserStatusRepository(
     private val strigaUserDestinationFlow = MutableStateFlow<StrigaUserStatusDestination?>(null)
     private val strigaBannerFlow = MutableStateFlow<StrigaKycStatusBanner?>(null)
 
+    private val bannerMock: StrigaKycStatusBanner?
+        get() = inAppFeatureFlags.strigaKycBannerMockFlag
+            .featureValueString
+            ?.let { StrigaKycStatusBanner.valueOf(it) }
+
     init {
         handleUserStatus(strigaStorage.userStatus)
     }
 
-    fun getBannerFlow(): StateFlow<StrigaKycStatusBanner?> = strigaBannerFlow.asStateFlow()
-
-    fun getBanner(): StrigaKycStatusBanner? {
-        return inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString
-            ?.let { StrigaKycStatusBanner.valueOf(it) }
-            ?: strigaBannerFlow.value
+    fun getBannerFlow(): StateFlow<StrigaKycStatusBanner?> {
+        return if (bannerMock != null) MutableStateFlow(bannerMock) else strigaBannerFlow
     }
 
     fun getUserDestination(): StrigaUserStatusDestination? = strigaUserDestinationFlow.value

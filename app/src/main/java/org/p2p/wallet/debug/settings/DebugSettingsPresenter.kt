@@ -63,11 +63,9 @@ class DebugSettingsPresenter(
         appRestarter.restartApp()
     }
 
-
-
-    override fun onSettingsPopupMenuClicked(s: String) {
-        if (s.isNotBlank()) {
-            inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = s
+    override fun onSettingsPopupMenuClicked(selectedValue: String) {
+        if (selectedValue != "-") {
+            inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = selectedValue
         } else {
             inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = null
         }

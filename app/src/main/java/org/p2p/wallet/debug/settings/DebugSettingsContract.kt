@@ -16,6 +16,6 @@ interface DebugSettingsContract {
         fun onNetworkChanged(newNetworkEnvironment: NetworkEnvironment)
         fun switchMoonpayUrl(isSandboxSelected: Boolean)
         fun switchNameServiceUrl(isProdSelected: Boolean)
-        fun onSettingsPopupMenuClicked(s: String)
+        fun onSettingsPopupMenuClicked(selectedValue: String)
     }
 }

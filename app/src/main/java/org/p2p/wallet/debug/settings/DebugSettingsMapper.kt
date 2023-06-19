@@ -1,6 +1,5 @@
 package org.p2p.wallet.debug.settings
 
-import org.p2p.core.utils.emptyString
 import org.p2p.wallet.R
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
@@ -41,17 +40,18 @@ class DebugSettingsMapper(
             this += SettingsRow.Section(
                 titleResId = R.string.debug_settings_stub_public_key,
                 subtitle = userPublicKey,
-                iconRes = R.drawable.ic_key
+                iconRes = R.drawable.ic_key,
+                isDivider = true
             )
         }
 
         val strigaKycBannerMock = inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString
         val allBanners = StrigaKycStatusBanner.values()
             .map(StrigaKycStatusBanner::name)
-            .plus(emptyString())
+            .plus("-")
         this += SettingsRow.PopupMenu(
-            titleResId = R.string.debug_settings_logs_title,
-            selectedItem = strigaKycBannerMock.orEmpty(),
+            titleResId = R.string.debug_settings_kyc_mock_title,
+            selectedItem = strigaKycBannerMock ?: "-",
             menuOptions = allBanners
         )
     }
@@ -82,7 +82,8 @@ class DebugSettingsMapper(
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_notification_service,
             subtitle = notificationServiceUrl,
-            iconRes = R.drawable.ic_network
+            iconRes = R.drawable.ic_network,
+            isDivider = true
         )
 
         val nameServiceEnvironment = networkUrlProvider.loadNameServiceEnvironment()
@@ -98,7 +99,7 @@ class DebugSettingsMapper(
         this += SettingsRow.Switcher(
             titleResId = R.string.debug_settings_moonpay_sandbox,
             iconRes = R.drawable.ic_network,
-            isDivider = false,
+            isDivider = true,
             subtitle = moonpayEnvironment.baseServerSideUrl,
             isSelected = moonpayEnvironment.isSandboxEnabled
         )

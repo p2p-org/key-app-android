@@ -6,7 +6,7 @@ import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import java.util.Objects
 import org.p2p.wallet.settings.model.SettingsRow
 
-class SettingsRowAdapter(
+class DebugSettingsRowAdapter(
     vararg delegates: AdapterDelegate<List<SettingsRow>>,
 ) : AsyncListDifferDelegationAdapter<SettingsRow>(DefaultDiffCallback(), *delegates)
 

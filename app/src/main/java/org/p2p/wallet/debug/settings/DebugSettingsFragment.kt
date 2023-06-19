@@ -14,7 +14,7 @@ import org.p2p.wallet.debug.logs.CustomLogDialog
 import org.p2p.wallet.debug.publickey.DebugPublicKeyFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
-import org.p2p.wallet.debug.settings.adapter.SettingsRowAdapter
+import org.p2p.wallet.debug.settings.adapter.DebugSettingsRowAdapter
 import org.p2p.wallet.debug.settings.adapter.settingsRowInfoItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowLogoutItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowPopupMenuItemDelegate
@@ -45,7 +45,7 @@ class DebugSettingsFragment :
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
 
-    private val adapterDelegate = SettingsRowAdapter(
+    private val adapterDelegate = DebugSettingsRowAdapter(
         settingsRowTitleItemDelegate(),
         settingsRowSectionItemDelegate(::onSettingsRowClicked),
         settingsRowLogoutItemDelegate(::onSettingsRowClicked),

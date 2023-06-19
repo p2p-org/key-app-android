@@ -11,11 +11,11 @@ import org.p2p.uikit.utils.context
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
+import org.p2p.wallet.databinding.ItemDebugSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsDebugPopupBinding
 import org.p2p.wallet.databinding.ItemSettingsDebugSwitchBinding
 import org.p2p.wallet.databinding.ItemSettingsInfoBinding
 import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
-import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.withTextOrGone
@@ -24,7 +24,7 @@ private typealias SettingsRowClickListener = (titleResId: Int) -> Unit
 
 fun settingsRowSectionItemDelegate(
     onItemClicked: SettingsRowClickListener
-) = adapterDelegateViewBinding<SettingsRow.Section, SettingsRow, ItemSettingsRowItemBinding>(
+) = adapterDelegateViewBinding<SettingsRow.Section, SettingsRow, ItemDebugSettingsRowItemBinding>(
     viewBinding = ::inflateViewBinding
 ) {
     bind {
@@ -71,6 +71,7 @@ fun settingsRowSwtichItemDelegate(
             switchChangeSettings.setOnCheckedChangeListener { _, isChecked ->
                 onSwitchClicked.invoke(item.titleResId, isChecked)
             }
+            viewSeparator.isVisible = item.isDivider
         }
     }
 }
