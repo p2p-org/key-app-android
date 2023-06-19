@@ -14,6 +14,8 @@ import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
+import org.p2p.wallet.home.ui.container.MainContainerContract
+import org.p2p.wallet.home.ui.container.MainContainerPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
@@ -22,6 +24,7 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsContract
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
+import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.NetworkType
@@ -71,6 +74,8 @@ object HomeModule : InjectionModule {
     }
 
     private fun Module.initPresentationLayer() {
+        factoryOf(::MainContainerPresenter) bind MainContainerContract.Presenter::class
+
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
@@ -110,9 +115,10 @@ object HomeModule : InjectionModule {
                 updateSubscribers = subscribers,
                 claimUiMapper = get(),
                 bridgeFeatureToggle = get(),
-                context = get(),
                 strigaUserInteractor = get(),
                 strigaSignupInteractor = get(),
+                context = get(),
+                strigaUiBannerMapper = StrigaKycUiBannerMapper()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

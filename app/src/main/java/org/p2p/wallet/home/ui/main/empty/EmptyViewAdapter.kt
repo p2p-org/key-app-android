@@ -37,6 +37,7 @@ class EmptyViewAdapter(
             listener.onPopularTokenClicked(popularToken)
         }
         R.layout.item_main_header -> HeaderViewHolder(parent)
+
         else -> error("Unknown viewType: $viewType")
     }
 

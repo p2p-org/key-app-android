@@ -1,20 +1,20 @@
 package org.p2p.wallet.striga.ui
 
 import timber.log.Timber
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.MetadataInteractor
+import org.p2p.wallet.auth.model.MetadataLoadStatus
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
-import org.p2p.wallet.striga.signup.model.StrigaUserStatus
-import org.p2p.wallet.striga.ui.TopUpWalletContract.BankTransferNavigationTarget
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
-import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.user.interactor.UserInteractor
 
 class TopUpWalletPresenter(
@@ -23,23 +23,24 @@ class TopUpWalletPresenter(
     private val strigaSignupFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val seedPhraseProvider: SeedPhraseProvider,
     private val strigaUserInteractor: StrigaUserInteractor,
+    private val metadataInteractor: MetadataInteractor,
+    private val inAppFeatureFlags: InAppFeatureFlags,
 ) : BasePresenter<TopUpWalletContract.View>(),
     TopUpWalletContract.Presenter {
-
-    private val strigaBankTransferProgress = MutableSharedFlow<Boolean>(replay = 1)
-    private val strigaUserStatus = MutableStateFlow<StrigaUserStatus?>(null)
-
-    init {
-        launch {
-            loadUserStatus()
-        }
-    }
 
     private val isUserAuthByWeb3: Boolean
         get() {
             return seedPhraseProvider.getUserSeedPhrase().provider == SeedPhraseSource.WEB_AUTH ||
                 appFeatureFlags.strigaSimulateWeb3Flag.featureValue
         }
+
+    private val strigaBankTransferProgress = MutableStateFlow(false)
+
+    init {
+        launch {
+            loadMetadataIfNot()
+        }
+    }
 
     override fun attach(view: TopUpWalletContract.View) {
         super.attach(view)
@@ -60,58 +61,58 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
-        if (strigaUserInteractor.isUserCreated() && strigaUserStatus.value == null) {
-            Timber.d("Striga user status is not fetched. Trying again...")
+        val strigaDestination = strigaUserInteractor.getUserDestination()
+        if (strigaDestination == StrigaUserStatusDestination.SMS_VERIFICATION) {
+            // todo: we should send first sms directly from sms verification screen
             launch {
-                loadUserStatus()
+                strigaUserInteractor.resendSmsForVerifyPhoneNumber()
             }
-        } else {
-            val target = getBankTransferNavigationTarget(strigaUserStatus.value)
-            if (target == BankTransferNavigationTarget.StrigaSmsVerification) {
-                // todo: send sms or maybe we should send first sms directly from sms verification screen?
-            }
-            view?.navigateToBankTransferTarget(target)
         }
-    }
 
-    private suspend fun loadUserStatus() {
-        if (!strigaUserInteractor.isUserCreated()) {
-            strigaBankTransferProgress.emit(false)
+        // in case of simulation web3 user, we don't need to check metadata
+        if (inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
+            view?.navigateToBankTransferTarget(StrigaUserStatusDestination.ONBOARDING)
             return
         }
 
-        val status = strigaUserInteractor.getSavedUserStatus()
-        if (status != null) {
-            strigaUserStatus.emit(status)
-            strigaBankTransferProgress.emit(false)
-        } else {
-            strigaBankTransferProgress.emit(true)
-            strigaUserStatus.emit(strigaUserInteractor.getUserStatus())
-            strigaBankTransferProgress.emit(false)
+        when {
+            // cannot fill the form or check whether user is created without metadata, loading if it's not loaded
+            metadataInteractor.currentMetadata == null -> {
+                Timber.i("Metadata is not fetched. Trying again...")
+                launch {
+                    loadMetadataIfNot()
+                }
+            }
+            // if status is not fetched, fetching it
+            strigaDestination == null -> {
+                Timber.i("Striga user status is not fetched. Trying again...")
+                launch {
+                    withProgress {
+                        strigaUserInteractor.loadAndSaveUserStatusData()
+                    }
+                }
+            }
+            else -> {
+                view?.navigateToBankTransferTarget(strigaDestination)
+            }
         }
     }
 
-    private fun getBankTransferNavigationTarget(userStatus: StrigaUserStatus?): BankTransferNavigationTarget {
-        return when {
-            !strigaUserInteractor.isUserCreated() && userStatus == null -> {
-                BankTransferNavigationTarget.StrigaOnboarding
-            }
-            userStatus == null -> {
-                Timber.e(
-                    "Unable to navigate bank transfer since user status is null and user is created.\n" +
-                        "Check that userStatus is fetched"
-                )
-                BankTransferNavigationTarget.Nowhere
-            }
-            !userStatus.isMobileVerified -> {
-                BankTransferNavigationTarget.StrigaSmsVerification
-            }
-            userStatus.kycStatus == StrigaUserVerificationStatus.INITIATED -> {
-                BankTransferNavigationTarget.SumSubVerification
-            }
-            else -> {
-                BankTransferNavigationTarget.Nowhere // todo: on/off ramp
+    private suspend fun loadMetadataIfNot() {
+        if (metadataInteractor.currentMetadata != null || inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
+            return
+        }
+
+        withProgress {
+            if (metadataInteractor.tryLoadAndSaveMetadata() is MetadataLoadStatus.Failure) {
+                view?.showUiKitSnackBar(null, R.string.error_general_message)
             }
         }
+    }
+
+    private suspend fun withProgress(block: suspend () -> Unit) {
+        strigaBankTransferProgress.emit(true)
+        block()
+        strigaBankTransferProgress.emit(false)
     }
 }

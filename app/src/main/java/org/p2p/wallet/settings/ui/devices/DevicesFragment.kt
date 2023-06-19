@@ -9,10 +9,15 @@ import org.p2p.uikit.delegates.textViewCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
+import org.p2p.wallet.auth.ui.animationscreen.TimerState
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDevicesBinding
+import org.p2p.wallet.settings.ui.mail.SettingsEmailConfirmFragment
+import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -31,9 +36,16 @@ class DevicesFragment :
     private val adapter = CommonAnyCellAdapter(
         textViewCellDelegate(),
         sectionHeaderCellDelegate(),
-        mainCellDelegate(inflateListener = {
-            it.setOnRightFirstTextClickListener { showConfirmationDialog() }
-        })
+        mainCellDelegate(
+            inflateListener = {
+                it.setOnRightFirstTextClickListener { showConfirmationDialog() }
+            },
+            onItemClicked = {
+                if (it.rightSideCellModel != null) {
+                    showConfirmationDialog()
+                }
+            }
+        )
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,6 +62,29 @@ class DevicesFragment :
         adapter.items = cells
     }
 
+    override fun setLoadingState(isScreenLoading: Boolean) {
+        if (isScreenLoading) {
+            AnimationProgressFragment.show(
+                fragmentManager = requireActivity().supportFragmentManager,
+                timerStateList = listOf(
+                    TimerState(R.string.devices_change_update_message),
+                )
+            )
+        } else {
+            AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
+        }
+    }
+
+    override fun showSuccessDeviceChange() {
+        showUiKitSnackBar(message = getString(R.string.devices_change_success_message))
+        popBackStack()
+    }
+
+    override fun showFailDeviceChange() {
+        showUiKitSnackBar(message = getString(R.string.error_general_message))
+        popBackStack()
+    }
+
     private fun showConfirmationDialog() {
         showInfoDialog(
             titleRes = R.string.devices_confirmation_title,
@@ -58,6 +93,15 @@ class DevicesFragment :
             primaryButtonTextColor = R.color.text_rose,
             secondaryButtonRes = R.string.common_cancel,
             primaryCallback = { presenter.executeDeviceShareChange() }
+        )
+    }
+
+    override fun navigateToSmsInput() {
+        replaceFragment(
+            SmsInputFactory.create(
+                type = SmsInputFactory.Type.UpdateDevice,
+                destinationFragment = SettingsEmailConfirmFragment::class.java
+            )
         )
     }
 }

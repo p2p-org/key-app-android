@@ -18,16 +18,23 @@ import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
 class StrigaItemCellMapper {
 
     fun buildCellModels(items: List<StrigaPresetDataItem>, selectedItem: StrigaPresetDataItem?): List<AnyCellItem> {
-        val itemsWithoutSelected = items.filter { it != selectedItem }
         return buildList {
-            if (selectedItem != null) {
+            if (selectedItem?.getName()?.isNotEmpty() == true) {
                 this += buildHeaderCellItem(getSelectedItemHeaderTitle(selectedItem))
-                this += mapItemToCellItem(selectedItem)
+                mapItemToCellItem(selectedItem)?.let { add(it) }
             }
-            if (itemsWithoutSelected.isNotEmpty()) {
-                this += buildHeaderCellItem(getAllItemHeaderTitle(itemsWithoutSelected.first()))
-                this += itemsWithoutSelected.map { mapItemToCellItem(it) }
-            }
+            this += buildHeaderCellItem(getAllItemHeaderTitle(items.first()))
+            this += items.mapNotNull { mapItemToCellItem(it) }
+        }
+    }
+
+    fun buildSearchCellModels(
+        items: List<StrigaPresetDataItem>,
+        selectedItem: StrigaPresetDataItem
+    ): List<AnyCellItem> {
+        return buildList {
+            this += buildHeaderCellItem(getAllItemHeaderTitle(selectedItem))
+            this += items.mapNotNull { mapItemToCellItem(it) }
         }
     }
 
@@ -39,11 +46,11 @@ class StrigaItemCellMapper {
         textAppearance = R.style.UiKit_TextAppearance_Regular_Caps
     )
 
-    private fun mapItemToCellItem(item: StrigaPresetDataItem): MainCellModel {
+    private fun mapItemToCellItem(item: StrigaPresetDataItem): MainCellModel? {
         return when (item) {
-            is StrigaPresetDataItem.Country -> item.details.mapItemToCellItem()
-            is StrigaPresetDataItem.SourceOfFunds -> item.details.mapItemToCellItem()
-            is StrigaPresetDataItem.Occupation -> item.details.mapItemToCellItem()
+            is StrigaPresetDataItem.Country -> item.details?.mapItemToCellItem()
+            is StrigaPresetDataItem.SourceOfFunds -> item.details?.mapItemToCellItem()
+            is StrigaPresetDataItem.Occupation -> item.details?.mapItemToCellItem()
         }
     }
 

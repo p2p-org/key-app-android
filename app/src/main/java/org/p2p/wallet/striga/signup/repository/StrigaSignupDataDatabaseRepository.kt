@@ -1,6 +1,7 @@
 package org.p2p.wallet.striga.signup.repository
 
 import android.content.res.Resources
+import timber.log.Timber
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
@@ -87,6 +88,7 @@ class StrigaSignupDataDatabaseRepository(
     }
 
     override suspend fun updateSignupData(newData: StrigaSignupData): StrigaDataLayerResult<Unit> = try {
+        Timber.tag(TAG).d("updateSignupData: ${newData.type} ${newData.value}")
         val entity = mapper.toEntity(newData, currentUserPublicKey)
         dao.updateOrInsertData(entity)
         success()
@@ -98,6 +100,7 @@ class StrigaSignupDataDatabaseRepository(
     }
 
     override suspend fun updateSignupData(newData: Collection<StrigaSignupData>): StrigaDataLayerResult<Unit> = try {
+        Timber.tag(TAG).d("updateSignupDataList: $newData")
         val entities = newData.map { mapper.toEntity(it, currentUserPublicKey) }
         dao.updateOrInsertData(entities)
         success()

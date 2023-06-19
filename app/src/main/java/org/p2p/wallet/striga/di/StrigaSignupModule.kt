@@ -15,6 +15,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaHeaderSignatureGenerator
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
+import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
@@ -25,8 +26,8 @@ import org.p2p.wallet.striga.onboarding.StrigaOnboardingPresenter
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerContract
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataSearcher
-import org.p2p.wallet.striga.presetpicker.StrigaPresetDataToPick
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataInteractor
+import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
 import org.p2p.wallet.striga.presetpicker.presenter.StrigaPresetDataPickerPresenter
 import org.p2p.wallet.striga.signup.StrigaPresetDataInMemoryRepository
@@ -45,7 +46,8 @@ import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepositoryMapper
-
+import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
+import org.p2p.wallet.striga.user.repository.StrigaUserStatusDestinationMapper
 object StrigaSignupModule : InjectionModule {
     override fun create() = module {
         initDataLayer()
@@ -54,13 +56,13 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaPresetDataInteractor)
         factoryOf(::StrigaPresetDataSearcher)
         factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
-        factory { (selectedItem: StrigaPresetDataToPick) ->
+        factory { (selectedItem: StrigaPresetDataItem) ->
             StrigaPresetDataPickerPresenter(
-                presetDataToPick = selectedItem,
                 strigaElementCellMapper = get(),
                 strigaPresetDataInteractor = get(),
                 dataSearcher = get(),
-                dispatchers = get()
+                dispatchers = get(),
+                selectedPresetDataItem = selectedItem
             )
         } bind StrigaPresetDataPickerContract.Presenter::class
         factoryOf(::StrigaSignUpFirstStepPresenter) bind StrigaSignUpFirstStepContract.Presenter::class
@@ -95,5 +97,8 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaUserIdProvider)
         factoryOf(::StrigaItemCellMapper)
         factoryOf(::StrigaHeaderSignatureGenerator)
+        factoryOf(::StrigaFragmentFactory)
+        singleOf(::StrigaUserStatusRepository)
+        factoryOf(::StrigaUserStatusDestinationMapper)
     }
 }

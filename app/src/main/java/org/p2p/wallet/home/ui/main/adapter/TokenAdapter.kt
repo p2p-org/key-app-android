@@ -7,7 +7,7 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomeElementItem.Action
-import org.p2p.wallet.home.model.HomeElementItem.Banners
+import org.p2p.wallet.home.model.HomeElementItem.Banner
 import org.p2p.wallet.home.model.HomeElementItem.Claim
 import org.p2p.wallet.home.model.HomeElementItem.Hidden
 import org.p2p.wallet.home.model.HomeElementItem.Shown
@@ -41,7 +41,7 @@ class TokenAdapter(
         is Shown -> R.layout.item_token
         is Hidden -> R.layout.item_token_hidden
         is Action -> R.layout.item_token_group_button
-        is Banners -> R.layout.item_banners
+        is Banner -> R.layout.item_home_banner
         is Title -> R.layout.item_main_header
         is Claim -> R.layout.item_token_to_claim
     }
@@ -52,9 +52,9 @@ class TokenAdapter(
         R.layout.item_token -> TokenViewHolder(parent, listener)
         R.layout.item_token_hidden -> TokenHiddenViewHolder(parent, listener)
         R.layout.item_token_group_button -> TokenButtonViewHolder(parent, listener)
-        R.layout.item_banners -> BannersViewHolder(parent, listener)
         R.layout.item_main_header -> HeaderViewHolder(parent)
         R.layout.item_token_to_claim -> TokenToClaimViewHolder(parent, glideManager, listener)
+        R.layout.item_home_banner -> SingleBannerViewHolder(parent = parent, listener = listener)
         else -> throw IllegalStateException("Unknown viewType: $viewType")
     }
 
@@ -63,7 +63,7 @@ class TokenAdapter(
             is TokenViewHolder -> holder.onBind(data[position] as Shown, isZerosHidden)
             is TokenHiddenViewHolder -> holder.onBind(data[position] as Hidden, isZerosHidden)
             is TokenButtonViewHolder -> holder.onBind(data[position] as Action)
-            is BannersViewHolder -> holder.onBind(data[position] as Banners)
+            is SingleBannerViewHolder -> holder.onBind((data[position] as Banner).banner)
             is HeaderViewHolder -> holder.onBind(data[position] as Title)
             is TokenToClaimViewHolder -> holder.onBind(data[position] as Claim)
         }

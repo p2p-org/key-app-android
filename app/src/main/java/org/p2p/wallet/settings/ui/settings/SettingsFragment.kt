@@ -16,13 +16,14 @@ import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
-import org.p2p.wallet.settings.ui.recovery.SecurityAndPrivacyFragment
+import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyFragment
 import org.p2p.wallet.settings.ui.resetpin.main.ResetPinIntroFragment
 import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.requireParcelable
 import org.p2p.wallet.utils.showInfoDialog
+import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -102,6 +103,12 @@ class SettingsFragment :
             R.string.settings_item_title_support -> {
                 IntercomService.showMessenger()
             }
+            R.string.settings_item_title_twitter -> {
+                openTwitter()
+            }
+            R.string.settings_item_title_discord -> {
+                openDiscord()
+            }
         }
     }
 
@@ -146,5 +153,14 @@ class SettingsFragment :
 
     override fun openSecurityAndPrivacy() {
         replaceFragment(SecurityAndPrivacyFragment.create())
+    }
+
+    private fun openTwitter() {
+        requireContext().showUrlInCustomTabs("https://twitter.com/KeyApp_")
+    }
+
+    private fun openDiscord() {
+        val discordLink = "https://discord.gg/SpW3GmEYgU"
+        requireContext().showUrlInCustomTabs(discordLink)
     }
 }

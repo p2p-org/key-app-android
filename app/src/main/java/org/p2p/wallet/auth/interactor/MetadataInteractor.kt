@@ -5,6 +5,7 @@ import kotlinx.coroutines.CancellationException
 import org.p2p.solanaj.core.Account
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.auth.model.MetadataLoadStatus
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
@@ -13,6 +14,7 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.Companion.withCustomKey
+import org.p2p.wallet.settings.DeviceInfoHelper
 import org.p2p.wallet.utils.toBase58Instance
 
 class MetadataInteractor(
@@ -33,9 +35,9 @@ class MetadataInteractor(
             saveMetadataToStorage(value)
         }
 
-    suspend fun tryLoadAndSaveMetadata() {
+    suspend fun tryLoadAndSaveMetadata(): MetadataLoadStatus {
         val ethereumPublicKey = getEthereumPublicKey()
-        if (ethereumPublicKey != null) {
+        return if (ethereumPublicKey != null) {
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
             tryLoadAndSaveMetadataWithAccount(
@@ -44,8 +46,29 @@ class MetadataInteractor(
                 ethereumPublicKey = ethereumPublicKey
             )
         } else {
-            Timber.i("User doesn't have any Web3Auth sign up data, skipping metadata fetch")
+            Timber.i("User doesn't have ethereum public key, skipping metadata fetch")
+            MetadataLoadStatus.NoEthereumPublicKey
         }
+    }
+
+    private fun hasDeviceShare(): Boolean {
+        val userDetails = signUpDetailsStorage.getLastSignUpUserDetails()
+        return userDetails?.signUpDetails?.deviceShare != null
+    }
+
+    fun hasDifferentDeviceShare(): Boolean {
+        val metadata = secureStorageContract.getObject(
+            SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
+            GatewayOnboardingMetadata::class
+        ) ?: return false
+
+        // if device share doesn't exist, then the device is new and we can't compare
+        if (!hasDeviceShare()) {
+            return false
+        }
+
+        // if device share is not empty we are checking with the current system device share
+        return DeviceInfoHelper.getCurrentDeviceName() == metadata.deviceShareDeviceName
     }
 
     private fun getEthereumPublicKey(): String? {
@@ -93,8 +116,8 @@ class MetadataInteractor(
         userAccount: Account?,
         mnemonicPhraseWords: List<String>,
         ethereumPublicKey: String
-    ) {
-        try {
+    ): MetadataLoadStatus {
+        return try {
             if (userAccount == null) {
                 throw MetadataFailed.MetadataNoAccount()
             }
@@ -108,12 +131,17 @@ class MetadataInteractor(
                 etheriumAddress = ethereumPublicKey
             )
             compareMetadataAndUpdate(metadata)
+            MetadataLoadStatus.Success
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
+            MetadataLoadStatus.Canceled
         } catch (validationError: MetadataFailed) {
             Timber.e(validationError, "Get onboarding metadata failed")
+            MetadataLoadStatus.Failure(validationError)
         } catch (error: Throwable) {
-            Timber.e(MetadataFailed.OnboardingMetadataRequestFailure(error))
+            val targetError = MetadataFailed.OnboardingMetadataRequestFailure(error)
+            Timber.e(targetError)
+            MetadataLoadStatus.Failure(targetError)
         }
     }
 

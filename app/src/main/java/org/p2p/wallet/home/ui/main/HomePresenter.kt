@@ -11,6 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
@@ -47,8 +48,8 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
+import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
@@ -58,6 +59,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -113,6 +115,7 @@ class HomePresenter(
     private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
+    private val strigaUiBannerMapper: StrigaKycUiBannerMapper,
     bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
@@ -153,7 +156,7 @@ class HomePresenter(
                 async {
                     // todo: move it somewhere to unify all home loadings
                     metadataInteractor.tryLoadAndSaveMetadata()
-                    strigaUserInteractor.loadAndSaveUserData()
+                    strigaUserInteractor.loadAndSaveUserStatusData()
                     strigaSignupInteractor.loadAndSaveSignupData()
                 }
             )
@@ -213,16 +216,23 @@ class HomePresenter(
 
         tokensPolling.shareTokenPollFlowIn(this)
             .filterNotNull()
+            .combine(strigaUserInteractor.getUserStatusBannerFlow()) { homeState, strigaBanner ->
+                homeState to strigaBanner
+            }
             .onCompletion { homeStateSubscribed = false }
-            .collect { homeState ->
+            .collect { (homeState, strigaBanner) ->
                 run {
                     val solTokensLog = homeState.solTokens
                         .joinToString { "${it.tokenSymbol}(${it.total.formatToken()}; ${it.totalInUsd?.formatFiat()})" }
                     Timber.d("Home state solTokens: $solTokensLog")
                 }
-                state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
+                state = state.copy(
+                    tokens = homeState.solTokens,
+                    ethTokens = homeState.ethTokens,
+                    strigaKycStatusBanner = strigaBanner
+                )
                 initializeActionButtons()
-                handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
+                handleHomeStateChanged(homeState.solTokens, homeState.ethTokens)
                 showRefreshing(homeState.isRefreshing)
             }
     }
@@ -313,6 +323,17 @@ class HomePresenter(
         }
     }
 
+    override fun onBannerClicked(bannerTitleId: Int) {
+        val statusFromKycBanner = strigaUiBannerMapper.onBannerClicked(bannerTitleId)
+        if (statusFromKycBanner != null) {
+            view?.navigateToKycStatus(statusFromKycBanner)
+        } else {
+            view?.showTopupWalletDialog()
+        }
+    }
+
+    override fun onBannerCloseClicked(bannerTitleId: Int) = Unit
+
     /**
      * Don't split this method, as it could lead to one more data race since rates are loading asynchronously
      */
@@ -338,16 +359,6 @@ class HomePresenter(
             Timber.e(t, "Error on loading sol tokens")
         } finally {
             showRefreshing(false)
-        }
-    }
-
-    private fun loadEthTokens() {
-        async {
-            try {
-                ethereumInteractor.loadWalletTokens()
-            } catch (t: Throwable) {
-                Timber.e(t, "Error on loading ethereum Tokens")
-            }
         }
     }
 
@@ -432,7 +443,6 @@ class HomePresenter(
             } else {
                 userInteractor.getSingleTokenForBuy() ?: return@launch
             }
-
             view?.navigateToBuyScreen(tokenToBuy)
         }
     }
@@ -450,7 +460,7 @@ class HomePresenter(
         }
     }
 
-    private fun handleUserTokensLoaded(
+    private fun handleHomeStateChanged(
         userTokens: List<Token.Active>,
         ethTokens: List<Token.Eth>,
     ) {
@@ -479,21 +489,16 @@ class HomePresenter(
             userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
                 .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
-        val homeBannerItem = HomeBannerItem(
-            id = R.id.home_banner_top_up,
-            titleTextId = R.string.main_banner_title,
-            subtitleTextId = R.string.main_banner_subtitle,
-            buttonTextId = R.string.main_banner_button,
-            drawableRes = R.drawable.ic_main_banner,
-            backgroundColorRes = R.color.bannerBackgroundColor
-        )
-        view?.showEmptyViewData(
-            listOf(
-                homeBannerItem,
-                resources.getString(R.string.main_popular_tokens_header),
-                *tokensForBuy.toTypedArray()
-            )
-        )
+        val strigaBigBanner = state.strigaKycStatusBanner
+            ?.let(strigaUiBannerMapper::mapToBigBanner)
+            ?: getDefaultBanner()
+
+        val emptyDataList = buildList {
+            this += strigaBigBanner
+            this += resources.getString(R.string.main_popular_tokens_header)
+            addAll(tokensForBuy)
+        }
+        view?.showEmptyViewData(emptyDataList)
         logBalance(BigDecimal.ZERO)
 
         view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
@@ -520,7 +525,7 @@ class HomePresenter(
             )
 
             val updatedTokens = userInteractor.getUserTokens()
-            handleUserTokensLoaded(updatedTokens, state.ethTokens)
+            handleHomeStateChanged(updatedTokens, state.ethTokens)
         }
     }
 
@@ -533,6 +538,16 @@ class HomePresenter(
 
     override fun clearTokensCache() {
         state = state.copy(tokens = emptyList())
+    }
+
+    private fun getDefaultBanner(): HomeBannerItem {
+        return HomeBannerItem(
+            titleTextId = R.string.main_banner_title,
+            subtitleTextId = R.string.main_banner_subtitle,
+            buttonTextId = R.string.main_banner_button,
+            drawableRes = R.drawable.ic_main_banner,
+            backgroundColorRes = R.color.bannerBackgroundColor
+        )
     }
 
     private fun showTokensAndBalance() {
@@ -557,8 +572,15 @@ class HomePresenter(
             )
 
             claimAnalytics.logClaimAvailable(state.ethTokens.any { !it.isClaiming })
+            val strigaBanner = state.strigaKycStatusBanner?.let(strigaUiBannerMapper::mapToBanner)
+            val homeToken = buildList {
+                if (strigaBanner != null) {
+                    this += HomeElementItem.Banner(strigaBanner)
+                }
+                addAll(mappedTokens)
+            }
 
-            view?.showTokens(mappedTokens, areZerosHidden)
+            view?.showTokens(homeToken, areZerosHidden)
         }
     }
 
@@ -577,33 +599,6 @@ class HomePresenter(
             .mapNotNull(Token.Active::totalInUsd)
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
-    }
-
-    private fun getBanners(): List<Banner> {
-        val usernameExists = state.username != null
-
-        val feedbackBanner = Banner(
-            R.string.home_feedback_banner_option,
-            R.string.main_feedback_banner_action,
-            R.drawable.ic_feedback,
-            R.color.backgroundBannerSecondary,
-            isSingle = usernameExists
-        )
-
-        return if (usernameExists) {
-            listOf(feedbackBanner)
-        } else {
-            val usernameBanner = Banner(
-                R.string.home_username_banner_option,
-                R.string.main_username_banner_action,
-                R.drawable.ic_username,
-                R.color.backgroundBanner
-            )
-            listOf(
-                usernameBanner,
-                feedbackBanner
-            )
-        }
     }
 
     override fun onProfileClick() {

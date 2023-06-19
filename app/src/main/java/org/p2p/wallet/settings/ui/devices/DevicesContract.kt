@@ -8,6 +8,10 @@ interface DevicesContract {
 
     interface View : MvpView {
         fun showCells(cells: List<AnyCellItem>)
+        fun setLoadingState(isScreenLoading: Boolean)
+        fun navigateToSmsInput()
+        fun showSuccessDeviceChange()
+        fun showFailDeviceChange()
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -23,7 +23,7 @@ class StrigaSignUpFirstStepPresenter(
     StrigaSignUpFirstStepContract.Presenter {
 
     private val signupData = mutableMapOf<StrigaSignupDataType, StrigaSignupData>()
-    private var countryOfBirth: CountryCode? = null
+    private var selectedCountryOfBirth: CountryCode? = null
     private var phoneCountryCode: CountryCode? = null
     private var isSubmittedFirstTime = false
 
@@ -64,11 +64,12 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onCountryOfBirthdayChanged(newCountry: CountryCode) {
+        selectedCountryOfBirth = newCountry
+        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, newCountry.nameCodeAlpha3)
         view?.updateSignupField(
             newValue = "${newCountry.flagEmoji} ${newCountry.countryName}",
             type = StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3
         )
-        setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, newCountry.nameCodeAlpha3)
     }
 
     override fun onSubmit() {
@@ -116,7 +117,7 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onCountryOfBirthClicked() {
-        view?.showCountryOfBirthPicker()
+        view?.showCountryOfBirthPicker(selectedCountryOfBirth)
     }
 
     override fun saveChanges() {
@@ -138,7 +139,6 @@ class StrigaSignUpFirstStepPresenter(
             setCachedData(it.type, it.value.orEmpty())
             view?.updateSignupField(it.type, it.value.orEmpty())
         }
-
         getAndUpdateCountryField(data)
     }
 
@@ -171,7 +171,7 @@ class StrigaSignUpFirstStepPresenter(
         }
     }
 
-    private suspend fun getAndUpdateCountryField(signupData: Map<StrigaSignupDataType, StrigaSignupData>) {
+    private fun getAndUpdateCountryField(signupData: Map<StrigaSignupDataType, StrigaSignupData>) {
         // db stores COUNTRY_OF_BIRTH as country name code ISO 3166-1 alpha-3,
         // so we need to find country by code and convert to country name
         val selectedCountryValue = signupData[StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3]?.value.orEmpty()
@@ -185,7 +185,7 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     private fun mapDataForStorage() {
-        countryOfBirth?.nameCodeAlpha3?.let { setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, it) }
+        selectedCountryOfBirth?.nameCodeAlpha3?.let { setCachedData(StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3, it) }
         phoneCountryCode?.let {
             setCachedData(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, it.phoneCodeWithPlusSign)
         }

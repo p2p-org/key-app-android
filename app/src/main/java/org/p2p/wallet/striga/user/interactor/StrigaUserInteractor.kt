@@ -1,28 +1,21 @@
 package org.p2p.wallet.striga.user.interactor
 
-import timber.log.Timber
+import kotlinx.coroutines.flow.StateFlow
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.StrigaUserIdProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.signup.model.StrigaUserStatus
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
-import org.p2p.wallet.striga.user.StrigaStorageContract
 import org.p2p.wallet.striga.user.model.StrigaUserDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
+import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 
 class StrigaUserInteractor(
     private val userRepository: StrigaUserRepository,
     private val strigaUserIdProvider: StrigaUserIdProvider,
-    private val strigaStorage: StrigaStorageContract,
+    private val userStatusRepository: StrigaUserStatusRepository
 ) {
-    suspend fun loadAndSaveUserData() {
-        if (!isUserCreated()) {
-            return
-        }
-
-        // it automatically saves user status
-        getUserStatus()
-    }
 
     suspend fun createUser(data: List<StrigaSignupData>): StrigaDataLayerResult<StrigaUserInitialDetails> {
         return userRepository.createUser(data)
@@ -40,37 +33,22 @@ class StrigaUserInteractor(
         return userRepository.resendSmsForVerifyPhoneNumber()
     }
 
-    fun getSavedUserStatus(): StrigaUserStatus? {
-        return strigaStorage.userStatus
-    }
-
-    /**
-     * @return null if user is not created
-     */
-    suspend fun getUserStatus(): StrigaUserStatus? {
-        if (!isUserCreated()) {
-            return null
-        }
-        return when (val userDetails = getUserDetails()) {
-            is StrigaDataLayerResult.Success<StrigaUserDetails> -> {
-                StrigaUserStatus(
-                    isMobileVerified = userDetails.value.kycDetails.isMobileVerified,
-                    kycStatus = userDetails.value.kycDetails.kycStatus
-                )
-            }
-            is StrigaDataLayerResult.Failure -> {
-                Timber.e(userDetails.error, "Unable to get striga user status")
-                null
-            }
-        }.also(::saveUserStatus)
-    }
-
     fun isUserCreated(): Boolean {
         return strigaUserIdProvider.getUserId() != null
     }
 
-    private fun saveUserStatus(status: StrigaUserStatus?) {
-        strigaStorage.userStatus = status
-        Timber.d("Save striga user status: $status")
+    fun loadAndSaveUserStatusData() {
+        userStatusRepository.loadUserKycStatus()
+    }
+
+    fun getUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> {
+        return userStatusRepository.getBannerFlow()
+    }
+
+    /**
+     * Returns user destination based on user status or null if unable to detect (no user status)
+     */
+    fun getUserDestination(): StrigaUserStatusDestination? {
+        return userStatusRepository.getUserDestination()
     }
 }

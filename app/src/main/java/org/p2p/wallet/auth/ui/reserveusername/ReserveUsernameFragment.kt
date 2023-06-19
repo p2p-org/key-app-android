@@ -15,7 +15,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkip
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.PlayAnimation
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.ShowSnackbar
@@ -181,7 +181,7 @@ class ReserveUsernameFragment :
                 }
 
                 popAndReplaceFragment(
-                    MainFragment.create(actions),
+                    MainContainerFragment.create(actions),
                     inclusive = true
                 )
             }
