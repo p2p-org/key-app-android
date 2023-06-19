@@ -130,7 +130,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-                app:hintText="@string/striga_select_from_list_hint"
+                app:hintText="@string/striga_full_city_name_hint"
                 app:labelText="@string/striga_city" />
 
 
