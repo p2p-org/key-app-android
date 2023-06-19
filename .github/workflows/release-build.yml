@@ -64,6 +64,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "feature"
           artifact-type: "apk"
+          workflow-type: "release"
       - name: "Send finish deploy message to slack"
         run: |
           value=`cat timestamp.txt`
