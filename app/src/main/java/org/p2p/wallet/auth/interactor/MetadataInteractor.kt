@@ -39,10 +39,10 @@ class MetadataInteractor(
         val ethereumPublicKey = getEthereumPublicKey()
         return if (ethereumPublicKey != null) {
             val userAccount = Account(tokenKeyProvider.keyPair)
-            val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
-            tryLoadAndSaveMetadataWithAccount(
+            val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
+            loadAndSaveMetadata(
                 userAccount = userAccount,
-                mnemonicPhraseWords = userSeedPhrase.seedPhrase,
+                mnemonicPhraseWords = userSeedPhrase,
                 ethereumPublicKey = ethereumPublicKey
             )
         } else {
@@ -90,8 +90,8 @@ class MetadataInteractor(
         // TODO PWN-8771 - implement database for metadata
         val ethAddress = getEthereumPublicKey().orEmpty()
         secureStorageContract.saveObject(
-            SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
-            metadata
+            key = SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
+            data = metadata
         )
     }
 
@@ -112,7 +112,7 @@ class MetadataInteractor(
         tryToUploadMetadata(metadata)
     }
 
-    private suspend fun tryLoadAndSaveMetadataWithAccount(
+    private suspend fun loadAndSaveMetadata(
         userAccount: Account?,
         mnemonicPhraseWords: List<String>,
         ethereumPublicKey: String
@@ -130,7 +130,7 @@ class MetadataInteractor(
                 userSeedPhrase = mnemonicPhraseWords,
                 etheriumAddress = ethereumPublicKey
             )
-            compareMetadataAndUpdate(metadata)
+            compareMetadataAndSave(metadata)
             MetadataLoadStatus.Success
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
@@ -149,10 +149,10 @@ class MetadataInteractor(
         val ethereumPublicKey = getEthereumPublicKey()
         if (ethereumPublicKey != null) {
             val userAccount = Account(tokenKeyProvider.keyPair)
-            val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
+            val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
             tryToUploadMetadata(
                 userAccount = userAccount,
-                mnemonicPhraseWords = userSeedPhrase.seedPhrase,
+                mnemonicPhraseWords = userSeedPhrase,
                 ethereumPublicKey = ethereumPublicKey,
                 newMetadata = metadata
             )
@@ -190,7 +190,7 @@ class MetadataInteractor(
         }
     }
 
-    private suspend fun compareMetadataAndUpdate(serverMetadata: GatewayOnboardingMetadata) {
+    private suspend fun compareMetadataAndSave(serverMetadata: GatewayOnboardingMetadata) {
         val finalMetadata = currentMetadata?.let { deviceMetadata ->
             val updatedMetadata = gatewayMetadataMerger.merge(deviceMetadata, serverMetadata)
             if (updatedMetadata != serverMetadata) {
