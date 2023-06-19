@@ -50,4 +50,12 @@ class Web3AuthClientMapper(private val gson: Gson) {
         }
         return response.copy(errorType = errorType)
     }
+
+    fun fromNetworkRefreshDeviceShare(responseJson: String): Result<Web3AuthSignUpResponse.ShareDetailsWithMeta> = try {
+        Result.success(gson.fromJsonReified<Web3AuthSignUpResponse.ShareDetailsWithMeta>(responseJson)!!)
+    } catch (mappingError: Throwable) {
+        Timber.i(mappingError)
+        Timber.i(responseJson)
+        Result.failure(Web3AuthSdkInternalError(INTERNAL_ERROR_MESSAGE, mappingError))
+    }
 }

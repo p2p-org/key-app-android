@@ -1,18 +1,18 @@
 package org.p2p.wallet.debug.settings
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.R
+import org.p2p.wallet.databinding.ItemDebugSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsDebugSwitchBinding
 import org.p2p.wallet.databinding.ItemSettingsInfoBinding
 import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
-import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
 import org.p2p.wallet.settings.model.SettingsRow
-import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
 class DebugSettingsAdapter(
@@ -24,7 +24,7 @@ class DebugSettingsAdapter(
     private val data = mutableListOf<SettingsRow>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
-        R.layout.item_settings_row_item -> ViewHolder(parent, onSettingsRowClickListener)
+        R.layout.item_debug_settings_row_item -> ViewHolder(parent, onSettingsRowClickListener)
         R.layout.item_settings_logout -> LogoutViewHolder(parent, onLogoutClickListener)
         R.layout.item_settings_title -> TitleViewHolder(parent)
         R.layout.item_settings_info -> InfoViewHolder(parent)
@@ -51,11 +51,12 @@ class DebugSettingsAdapter(
 
     override fun getItemViewType(position: Int): Int =
         when (data[position]) {
-            is SettingsRow.Section -> R.layout.item_settings_row_item
+            is SettingsRow.Section -> R.layout.item_debug_settings_row_item
             is SettingsRow.Title -> R.layout.item_settings_title
             is SettingsRow.Info -> R.layout.item_settings_info
             is SettingsRow.Logout -> R.layout.item_settings_logout
             is SettingsRow.Switcher -> R.layout.item_settings_debug_switch
+            else -> error("getItemViewType failed with type in $position for ${data[position]::class.java}")
         }
 
     override fun getItemCount(): Int = data.count()
@@ -67,7 +68,7 @@ class DebugSettingsAdapter(
     }
 
     inner class ViewHolder(
-        binding: ItemSettingsRowItemBinding,
+        binding: ItemDebugSettingsRowItemBinding,
         private val listener: (titleResId: Int) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -75,7 +76,7 @@ class DebugSettingsAdapter(
             parent: ViewGroup,
             listener: (Int) -> Unit
         ) : this(
-            binding = ItemSettingsRowItemBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            binding = ItemDebugSettingsRowItemBinding.inflate(LayoutInflater.from(parent.context), parent, false),
             listener = listener
         )
 

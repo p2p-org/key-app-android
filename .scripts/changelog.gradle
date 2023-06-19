@@ -49,7 +49,7 @@ task gitChangelogTask(type: Exec) {
     def to = findProperty('toCommit')
 
     executable "sh"
-    args "-c", "git log $from..$to --no-merges --pretty=format:\"%h - %s - %an\" > CHANGELOG.txt"
+    args "-c", "git log $from..$to --no-merges --pretty=format:\"%h - %s - %an\" | sed '/\\[CI-processing\\]/d' > CHANGELOG.txt"
 
     doFirst {
         if (from == null || to == null) {

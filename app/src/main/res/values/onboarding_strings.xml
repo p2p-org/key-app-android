@@ -83,7 +83,7 @@
     <string name="onboarding_sms_input_before_resend_sms">Resend after %1$d sec.</string>
     <string name="onboarding_sms_input_request_overflow">Too many tries, sms validation blocked for %1$d sec.</string>
     <string name="onboarding_sms_input_title">The code from SMS</string>
-    <string name="onboarding_sms_input_phone_number_title">Check the number %1$s</string>
+    <string name="onboarding_sms_input_phone_number_title">Check the number +%1$s</string>
     <string name="onboarding_sms_starting_screen">Starting screen</string>
     <string name="onboarding_sms_verify_error_title">It’s okay\nto be wrong</string>
     <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we have frozen\n your account for %s min</string>

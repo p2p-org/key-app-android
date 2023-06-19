@@ -60,9 +60,6 @@ class StrigaOnboardingFragment :
         initBackPress()
         bindHelpText()
 
-        binding.buttonContinue.setOnClickListener {
-            presenter.onCountryClicked()
-        }
         binding.blockChangeCountry.setOnClickListener {
             presenter.onCountryClicked()
         }
@@ -112,9 +109,6 @@ class StrigaOnboardingFragment :
                     ?.also { presenter.onCurrentCountryChanged(it.details ?: return@also) }
             }
         )
-    }
-
-    private fun openCountrySelection(country: CountryCode?) {
     }
 
     override fun openHelp() {
@@ -171,7 +165,7 @@ class StrigaOnboardingFragment :
     private fun handleAvailableState(state: AvailabilityState) {
         handleViewState(state)
         binding.buttonContinue.setOnClickListener {
-            presenter.onClickContinue()
+            presenter.onContinueClicked()
         }
     }
 

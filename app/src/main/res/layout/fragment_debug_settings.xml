@@ -26,7 +26,7 @@
         android:background="@color/backgroundPrimary"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_settings_row_item" />
+        tools:listitem="@layout/item_debug_settings_row_item" />
 
 </LinearLayout>
 
