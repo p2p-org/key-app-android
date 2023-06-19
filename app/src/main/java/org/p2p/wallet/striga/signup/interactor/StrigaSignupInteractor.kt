@@ -136,7 +136,7 @@ class StrigaSignupInteractor(
     @Throws(IllegalStateException::class, StrigaDataLayerError::class)
     suspend fun createUser() {
         if (inAppFeatureFlags.strigaSimulateMobileAlreadyVerifiedFlag.featureValue) {
-            throw StrigaDataLayerError.PhoneNumberAlreadyUsedError(
+            throw StrigaDataLayerError.ApiServiceError.PhoneNumberAlreadyUsed(
                 StrigaApiErrorResponse(400, StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED, "phone number already used")
             )
         }

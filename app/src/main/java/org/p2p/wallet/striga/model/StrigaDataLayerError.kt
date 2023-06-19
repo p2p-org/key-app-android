@@ -9,14 +9,24 @@ sealed class StrigaDataLayerError(override val message: String) : Throwable() {
         body: String = cause.errorBodyOrNull().orEmpty()
     ) : StrigaDataLayerError("Striga API unavailable, code: ${cause.code()} body: $body")
 
-    open class ApiServiceError(
+    sealed class ApiServiceError(
         val response: StrigaApiErrorResponse,
     ) : StrigaDataLayerError("Striga API returned error: code=${response.errorCode.code} details=${response.details}") {
         val errorCode: StrigaApiErrorCode
             get() = response.errorCode
-    }
 
-    class PhoneNumberAlreadyUsedError(response: StrigaApiErrorResponse) : ApiServiceError(response)
+        class General(response: StrigaApiErrorResponse) : ApiServiceError(response)
+        class PhoneNumberAlreadyUsed(response: StrigaApiErrorResponse) : ApiServiceError(response)
+
+        companion object {
+            operator fun invoke(response: StrigaApiErrorResponse): ApiServiceError {
+                return when (response.errorCode) {
+                    StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED -> PhoneNumberAlreadyUsed(response)
+                    else -> General(response)
+                }
+            }
+        }
+    }
 
     class InternalError(
         override val cause: Throwable? = null,

@@ -123,7 +123,7 @@ class StrigaSignUpSecondStepPresenter(
                     interactor.saveChangesNow(cachedSignupData.values)
                     interactor.createUser()
                     view?.navigateNext()
-                } catch (e: StrigaDataLayerError.PhoneNumberAlreadyUsedError) {
+                } catch (e: StrigaDataLayerError.ApiServiceError.PhoneNumberAlreadyUsed) {
                     view?.navigateToPhoneError()
                 } catch (e: Throwable) {
                     Timber.e(e, "Unable to create striga user")
