@@ -1,7 +1,6 @@
 package org.p2p.wallet.settings.ui.mail
 
 import timber.log.Timber
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
@@ -62,9 +61,8 @@ class SettingsEmailConfirmPresenter(
             deviceShareDeviceName = DeviceInfoHelper.getCurrentDeviceName(),
             deviceNameTimestampSec = DateTimeUtils.getCurrentTimestampInSeconds()
         )
-        // refreshDeviceShare(newMetadata)
+        refreshDeviceShare(newMetadata)
         metadataInteractor.updateMetadata(newMetadata)
-        delay(5000)
         view?.showSuccessDeviceChange()
     }
 
@@ -72,6 +70,7 @@ class SettingsEmailConfirmPresenter(
         try {
             restoreWalletInteractor.refreshDeviceShare(newMetadata)
         } catch (error: Throwable) {
+            view?.showFailDeviceChange()
             Timber.e(error, "Error on refreshDeviceShare")
         }
     }

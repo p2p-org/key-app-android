@@ -1,7 +1,6 @@
 package org.p2p.wallet.settings.ui.devices
 
 import timber.log.Timber
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
@@ -36,11 +35,9 @@ class DevicesPresenter(
     override fun executeDeviceShareChange() {
         val isTorusKeyValid = restoreFlowDataLocalRepository.isTorusKeyValid()
         if (isTorusKeyValid) {
-            // TODO update with real logic
             launch {
                 view?.setLoadingState(isScreenLoading = true)
-                updateMetadata()
-                delay(5000)
+                updateDeviceShare()
                 view?.setLoadingState(isScreenLoading = false)
                 view?.showSuccessDeviceChange()
             }
@@ -49,13 +46,24 @@ class DevicesPresenter(
         }
     }
 
-    private suspend fun updateMetadata() {
+    private suspend fun updateDeviceShare() {
         val currentMetadata = metadataInteractor.currentMetadata ?: return
         val newMetadata = currentMetadata.copy(
             deviceShareDeviceName = DeviceInfoHelper.getCurrentDeviceName(),
             deviceNameTimestampSec = DateTimeUtils.getCurrentTimestampInSeconds()
         )
+        refreshDeviceShare(newMetadata)
         metadataInteractor.updateMetadata(newMetadata)
+        view?.showSuccessDeviceChange()
+    }
+
+    private suspend fun refreshDeviceShare(newMetadata: GatewayOnboardingMetadata) {
+        try {
+            restoreWalletInteractor.refreshDeviceShare(newMetadata)
+        } catch (error: Throwable) {
+            view?.showFailDeviceChange()
+            Timber.e(error, "Error on refreshDeviceShare")
+        }
     }
 
     private fun loadInitialData() {
