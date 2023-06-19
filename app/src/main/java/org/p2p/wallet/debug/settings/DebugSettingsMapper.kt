@@ -4,6 +4,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.settings.model.SettingsRow
@@ -12,7 +13,8 @@ class DebugSettingsMapper(
     private val rpcEnvironment: NetworkEnvironmentManager,
     private val networkUrlProvider: NetworkServicesUrlProvider,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val inAppFeatureFlags: InAppFeatureFlags
+    private val inAppFeatureFlags: InAppFeatureFlags,
+    private val seedPhraseProvider: SeedPhraseProvider
 ) {
     fun mapMainSettings(): List<SettingsRow> = buildList {
         this += SettingsRow.Section(
@@ -32,6 +34,12 @@ class DebugSettingsMapper(
             subtitleRes = R.string.debug_settings_logs_subtitle,
             iconRes = R.drawable.ic_settings_cloud
         )
+        if (seedPhraseProvider.isWeb3AuthUser) {
+            this += SettingsRow.Section(
+                titleResId = R.string.debug_settings_web3,
+                iconRes = R.drawable.ic_settings_contacts
+            )
+        }
 
         this += createEnvironmentSettings()
 
