@@ -1,5 +1,7 @@
 package org.p2p.wallet.rpc.repository.solana
 
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import timber.log.Timber
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
@@ -11,9 +13,11 @@ import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.solanaj.rpc.TransactionSimulationResult
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 
 private const val TAG = "RpcSolanaRemoteRepository"
@@ -21,6 +25,7 @@ private const val TAG = "RpcSolanaRemoteRepository"
 class RpcSolanaRemoteRepository(
     private val api: RpcSolanaApi,
     private val blockHashRepository: RpcBlockhashRepository,
+    private val gson: Gson
 ) : RpcSolanaRepository {
 
     override suspend fun sendTransaction(
@@ -47,16 +52,42 @@ class RpcSolanaRemoteRepository(
     /**
      * @return is simulation success
      */
-    override suspend fun simulateTransaction(serializedTransaction: String, encoding: Encoding): Boolean {
-        val params = listOf(
-            serializedTransaction,
-            RpcSendTransactionConfig(encoding)
-        )
-        val request = RpcRequest(method = "simulateTransaction", params = params)
-        return kotlin.runCatching { api.simulateTransaction(request) }
-            .onFailure { Timber.tag(TAG).i(it, "Simulation failed") }
-            .map { it.result.value.error == null }
-            .getOrDefault(false)
+    override suspend fun simulateTransaction(
+        serializedTransaction: String,
+        encoding: Encoding
+    ): TransactionSimulationResult {
+        return try {
+            val params = listOf(
+                serializedTransaction,
+                RpcSendTransactionConfig(encoding)
+            )
+            val request = RpcRequest(method = "simulateTransaction", params = params)
+
+            val response = api.simulateTransaction(request).result
+
+            val simulationError = response.value.error
+            val transactionError: RpcTransactionError? = parseTransactionError(simulationError)
+            TransactionSimulationResult(
+                isSimulationSuccess = simulationError.isJsonNull,
+                errorIfSimulationFailed = transactionError?.toString() ?: simulationError.toString()
+            )
+        } catch (error: Throwable) {
+            Timber.tag(TAG).i(error, "Simulation failed")
+            TransactionSimulationResult(
+                isSimulationSuccess = false,
+                errorIfSimulationFailed = error.toString()
+            )
+        }
+    }
+
+    private fun parseTransactionError(errorObject: JsonElement): RpcTransactionError? {
+        if (errorObject.isJsonNull) {
+            return null
+        }
+        return kotlin.runCatching {
+            gson.fromJson(errorObject, RpcTransactionError::class.java)
+        }
+            .getOrNull()
     }
 
     override suspend fun getRecentPerformanceSamples(exampleCount: Int): List<RecentPerformanceSample> {

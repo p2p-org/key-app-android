@@ -46,7 +46,7 @@ class OnboardingSmsInputPresenter(
                 restoreWalletInteractor.getUserPhoneNumber()
             }
         }
-        userPhoneNumber?.let { view.initView(it) }
+        userPhoneNumber?.let(view::initView)
         connectToTimer()
     }
 
