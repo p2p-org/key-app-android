@@ -182,7 +182,7 @@ class StrigaOnboardingPresenterTest {
 
         val presenter = createPresenter()
         presenter.attach(view)
-        presenter.onClickContinue()
+        presenter.onContinueClicked()
         advanceUntilIdle()
 
         verify(exactly = 1) { view.navigateNext() }
