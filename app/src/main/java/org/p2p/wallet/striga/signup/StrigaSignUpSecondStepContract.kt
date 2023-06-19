@@ -13,6 +13,7 @@ interface StrigaSignUpSecondStepContract {
     interface View : MvpView {
         fun updateSignupField(type: StrigaSignupDataType, newValue: String)
         fun navigateNext()
+        fun navigateToPhoneError()
         fun setErrors(errors: List<StrigaSignupFieldState>)
         fun clearErrors()
         fun clearError(type: StrigaSignupDataType)

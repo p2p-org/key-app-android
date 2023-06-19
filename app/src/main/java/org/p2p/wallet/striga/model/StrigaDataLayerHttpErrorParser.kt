@@ -19,7 +19,7 @@ class StrigaDataLayerHttpErrorParser {
             HttpURLConnection.HTTP_CONFLICT, HttpURLConnection.HTTP_BAD_REQUEST -> {
                 httpException.response()
                     ?.let(::parseJsonErrorBody)
-                    ?.let(StrigaDataLayerError::ApiServiceError)
+                    ?.let(::mapApiError)
                     ?: StrigaDataLayerError.InternalError(cause = httpException)
             }
             else -> {
@@ -43,5 +43,16 @@ class StrigaDataLayerHttpErrorParser {
         }
             .onFailure { Timber.i(it) }
             .getOrNull()
+    }
+
+    private fun mapApiError(error: StrigaApiErrorResponse): StrigaDataLayerError.ApiServiceError {
+        return when (error.errorCode) {
+            StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED -> {
+                StrigaDataLayerError.PhoneNumberAlreadyUsedError(error)
+            }
+            else -> {
+                StrigaDataLayerError.ApiServiceError(error)
+            }
+        }
     }
 }

@@ -132,8 +132,8 @@ class StrigaUserRepositoryMapper {
             isEmailVerified = kycDetails.isEmailVerified,
             isMobileVerified = kycDetails.isMobileVerified,
             kycStatus = StrigaUserVerificationStatus.from(kycDetails.status),
-            rejectionDetails = kycDetails.details,
-            rejectionUserToAutoComments = kycDetails.rejectionComments.run { userComment to autoComment }
+            rejectionDetails = kycDetails.details ?: emptyList(),
+            rejectionUserToAutoComments = kycDetails.rejectionComments?.run { userComment to autoComment }
         )
     }
 

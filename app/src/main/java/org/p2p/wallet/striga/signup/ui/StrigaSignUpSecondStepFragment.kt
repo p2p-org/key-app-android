@@ -105,6 +105,10 @@ class StrigaSignUpSecondStepFragment :
         )
     }
 
+    override fun navigateToPhoneError() {
+        replaceFragment(StrigaSignupErrorNumberAlreadyUsedFragment.create())
+    }
+
     override fun setErrors(errors: List<StrigaSignupFieldState>) {
         errors.forEach {
             editTextFieldsMap[it.type]?.bindError(it.errorMessage)

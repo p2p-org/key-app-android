@@ -2,10 +2,11 @@ package org.p2p.wallet.striga.signup.ui
 
 import timber.log.Timber
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
@@ -122,6 +123,8 @@ class StrigaSignUpSecondStepPresenter(
                     interactor.saveChangesNow(cachedSignupData.values)
                     interactor.createUser()
                     view?.navigateNext()
+                } catch (e: StrigaDataLayerError.PhoneNumberAlreadyUsedError) {
+                    view?.navigateToPhoneError()
                 } catch (e: Throwable) {
                     Timber.e(e, "Unable to create striga user")
                     view?.setProgressIsVisible(false)
