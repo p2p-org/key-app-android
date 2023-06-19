@@ -27,7 +27,7 @@ import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
-import org.p2p.wallet.home.analytics.BrowseAnalytics
+import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
@@ -39,6 +39,7 @@ import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
@@ -98,8 +99,9 @@ class HomeFragment :
 
     private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
 
-    private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val homeAnalytics: HomeAnalytics by inject()
+    private val buyAnalytics: BuyAnalytics by inject()
 
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val strigaKycFragmentFactory: StrigaFragmentFactory by inject()
@@ -193,6 +195,14 @@ class HomeFragment :
         replaceFragment(SellPayloadFragment.create())
     }
 
+    override fun showTopup() {
+        TopUpWalletBottomSheet.show(fm = parentFragmentManager)
+    }
+
+    override fun showSwap() {
+        showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
+    }
+
     private fun FragmentHomeBinding.setupView() {
         layoutToolbar.setupToolbar()
 
@@ -235,13 +245,13 @@ class HomeFragment :
                 presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
             }
             ActionButton.SELL_BUTTON -> {
-                replaceFragment(SellPayloadFragment.create())
+                presenter.onSellClicked()
             }
             ActionButton.SWAP_BUTTON -> {
-                showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
+                presenter.onSwapClicked()
             }
             ActionButton.TOP_UP_BUTTON -> {
-                TopUpWalletBottomSheet.show(fm = parentFragmentManager)
+                presenter.onTopupClicked()
             }
             else -> {
                 // unsupported on this screen
@@ -266,7 +276,10 @@ class HomeFragment :
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
             HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
-            HomeAction.TOP_UP -> TopUpWalletBottomSheet.show(parentFragmentManager)
+            HomeAction.TOP_UP -> {
+                buyAnalytics.logTopupActionButtonClicked()
+                TopUpWalletBottomSheet.show(parentFragmentManager)
+            }
             HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
             HomeAction.SWAP -> showSwap(SwapOpenedFrom.ACTION_PANEL)
             HomeAction.SEND -> presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
@@ -366,10 +379,12 @@ class HomeFragment :
     }
 
     override fun onToggleClicked() {
+        homeAnalytics.logHiddenTokensClicked()
         presenter.toggleTokenVisibilityState()
     }
 
     override fun onTokenClicked(token: Token.Active) {
+        homeAnalytics.logMainScreenTokenDetailsOpen(tokenTier = token.tokenSymbol)
         replaceFragment(TokenHistoryFragment.create(token))
     }
 
@@ -378,6 +393,7 @@ class HomeFragment :
     }
 
     override fun onHideClicked(token: Token.Active) {
+        homeAnalytics
         presenter.toggleTokenVisibility(token)
     }
 
