@@ -18,7 +18,7 @@ import org.p2p.wallet.striga.user.model.StrigaUserInfo
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialKycDetails
 import org.p2p.wallet.striga.user.model.StrigaUserKycInfo
-import org.p2p.wallet.striga.user.model.StrigaUserStatus
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 
 class StrigaUserRepositoryMapper {
@@ -37,8 +37,8 @@ class StrigaUserRepositoryMapper {
         }
     }
 
-    fun fromNetwork(response: StrigaUserStatusResponse): StrigaUserStatus {
-        return StrigaUserStatus(
+    fun fromNetwork(response: StrigaUserStatusResponse): StrigaUserStatusDetails {
+        return StrigaUserStatusDetails(
             userId = response.userId,
             isMobileVerified = response.isMobileVerified,
             isEmailVerified = response.isEmailVerified,

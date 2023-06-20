@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
-import org.p2p.wallet.auth.model.MetadataLoadStatus
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
+import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -22,6 +22,7 @@ class TopUpWalletPresenter(
     private val strigaSignupFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val seedPhraseProvider: SeedPhraseProvider,
     private val strigaUserInteractor: StrigaUserInteractor,
+    private val strigaSignupInteractor: StrigaSignupInteractor,
     private val metadataInteractor: MetadataInteractor,
     private val inAppFeatureFlags: InAppFeatureFlags,
 ) : BasePresenter<TopUpWalletContract.View>(),
@@ -51,61 +52,59 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
-        val strigaDestination = strigaUserInteractor.getUserDestination()
-        if (strigaDestination == StrigaUserStatusDestination.SMS_VERIFICATION) {
-            launch {
-                strigaUserInteractor.resendSmsForVerifyPhoneNumber()
-            }
-        }
-
         // in case of simulation web3 user, we don't need to check metadata
         if (inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
             view?.navigateToBankTransferTarget(StrigaUserStatusDestination.ONBOARDING)
             return
         }
 
-        when {
-            // cannot fill the form or check whether user is created without metadata, loading if it's not loaded
-            metadataInteractor.currentMetadata == null -> {
-                Timber.i("Metadata is not fetched. Trying again...")
-                launch {
-                    loadUserMetadata()
+        launch {
+            try {
+                strigaBankTransferProgress.emit(true)
+
+                checkNeededStrigaDataLoaded()
+
+                val strigaDestination = strigaUserInteractor.getUserDestination()
+                if (strigaDestination == StrigaUserStatusDestination.SMS_VERIFICATION) {
+                    strigaUserInteractor.resendSmsForVerifyPhoneNumber().unwrap()
                 }
-            }
-            // if status is not fetched, fetching it
-            strigaDestination == null -> {
-                Timber.i("Striga user status is not fetched. Trying again...")
-                launch {
-                    loadStrigaUserStatus()
-                }
-            }
-            else -> {
                 view?.navigateToBankTransferTarget(strigaDestination)
+            } catch (strigaDataLoadFailed: Throwable) {
+                Timber.e(strigaDataLoadFailed, "failed to load needed data for bank transfer")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            } finally {
+                strigaBankTransferProgress.emit(false)
+            }
+        }
+    }
+
+    private suspend fun checkNeededStrigaDataLoaded() {
+        if (metadataInteractor.currentMetadata == null) {
+            Timber.i("Metadata is not fetched. Trying again...")
+            loadUserMetadata()
+        }
+
+        if (strigaUserInteractor.isUserCreated()) {
+            if (strigaUserInteractor.isUserVerificationStatusLoaded()) {
+                Timber.i("Striga user status is not fetched. Trying again...")
+                loadStrigaUserStatus()
+            }
+            if (!strigaUserInteractor.isUserDetailsLoaded()) {
+                Timber.i("Striga user signup data is not fetched. Trying again...")
+                loadStrigaUserDetails()
             }
         }
     }
 
     private suspend fun loadUserMetadata() {
-        withBankTransferProgress {
-            if (metadataInteractor.tryLoadAndSaveMetadata() is MetadataLoadStatus.Failure) {
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-            }
-        }
+        metadataInteractor.tryLoadAndSaveMetadata().throwIfFailure()
     }
 
     private suspend fun loadStrigaUserStatus() {
-        withBankTransferProgress {
-            strigaUserInteractor.loadAndSaveUserStatusData()
-                .onFailure {
-                    Timber.e(it, "failed to load user status for Striga")
-                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-                }
-        }
+        strigaUserInteractor.loadAndSaveUserStatusData().unwrap()
     }
 
-    private suspend fun withBankTransferProgress(block: suspend () -> Unit) {
-        strigaBankTransferProgress.emit(true)
-        block()
-        strigaBankTransferProgress.emit(false)
+    private suspend fun loadStrigaUserDetails() {
+        strigaSignupInteractor.loadAndSaveSignupData().unwrap()
     }
 }

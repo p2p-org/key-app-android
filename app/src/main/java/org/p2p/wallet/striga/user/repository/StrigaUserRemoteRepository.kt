@@ -11,7 +11,7 @@ import org.p2p.wallet.striga.user.api.request.StrigaStartKycRequest
 import org.p2p.wallet.striga.user.api.request.StrigaVerifyMobileNumberRequest
 import org.p2p.wallet.striga.user.model.StrigaUserDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
-import org.p2p.wallet.striga.user.model.StrigaUserStatus
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 
 class StrigaUserRemoteRepository(
     private val api: StrigaApi,
@@ -44,7 +44,7 @@ class StrigaUserRemoteRepository(
         }
     }
 
-    override suspend fun getUserStatus(): StrigaDataLayerResult<StrigaUserStatus> {
+    override suspend fun getUserVerificationStatus(): StrigaDataLayerResult<StrigaUserStatusDetails> {
         return try {
             val response = api.getUserVerificationStatus(strigaUserIdProvider.getUserIdOrThrow())
             mapper.fromNetwork(response).toSuccessResult()

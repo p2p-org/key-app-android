@@ -18,6 +18,40 @@
             app:navigationIcon="@drawable/ic_back"
             app:title="Web3 User data" />
 
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonMetadataLogs"
+            style="@style/UiKit.Components.Button.Small"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_small_height"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/bg_night"
+            android:text="Metadata changes logs"
+            android:textColor="@color/bg_snow"
+            app:iconTint="@color/bg_snow"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <org.p2p.uikit.components.UiKitEditText
+            android:id="@+id/editTextDecipherMetadata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:background="@color/bg_light_sun"
+            android:fontFamily="@font/manrope_light"
+            android:paddingHorizontal="24dp"
+            app:labelText="Decipher metadata base64" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonDecipherMetadata"
+            style="@style/UiKit.Components.Button.Small"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_small_height"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/bg_night"
+            android:text="Try decipher"
+            android:textColor="@color/bg_snow"
+            app:iconTint="@color/bg_snow"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
         <TextView
             android:id="@+id/textViewWeb3Title"
             android:layout_width="match_parent"
@@ -30,11 +64,11 @@
         <TextView
             android:id="@+id/textViewWeb3Value"
             android:layout_width="match_parent"
-            android:layout_marginHorizontal="20dp"
-            android:textIsSelectable="true"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
             android:fontFamily="@font/manrope_light"
             android:paddingHorizontal="24dp"
+            android:textIsSelectable="true"
             tools:text="{}" />
 
         <TextView
@@ -49,11 +83,11 @@
         <TextView
             android:id="@+id/textViewMetadataValue"
             android:layout_width="match_parent"
-            android:textIsSelectable="true"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:fontFamily="@font/manrope_light"
-            android:layout_height="wrap_content"
             android:paddingHorizontal="24dp"
+            android:textIsSelectable="true"
             tools:text="{}" />
 
         <org.p2p.uikit.components.UiKitButton
