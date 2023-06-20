@@ -13,6 +13,7 @@
     <string name="debug_settings_torus">Torus Environment</string>
     <string name="debug_settings_notification_service">Notification Service Environment</string>
     <string name="debug_settings_stub_public_key">Public key stubbing 🗡️</string>
+    <string name="debug_settings_web3">Web3 User Data 🤑</string>
     <string name="debug_settings_moonpay_sandbox">Moonpay sandbox</string>
     <string name="debug_settings_title">Settings</string>
     <string name="debug_settings_network">Network</string>

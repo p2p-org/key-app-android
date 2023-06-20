@@ -37,8 +37,8 @@ class StrigaUserInteractor(
         return strigaUserIdProvider.getUserId() != null
     }
 
-    fun loadAndSaveUserStatusData() {
-        userStatusRepository.loadUserKycStatus()
+    suspend fun loadAndSaveUserStatusData(): StrigaDataLayerResult<Unit> {
+        return userStatusRepository.loadUserKycStatus()
     }
 
     fun getUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> {
