@@ -16,10 +16,11 @@ import org.p2p.wallet.settings.ui.mail.SettingsEmailConfirmContract
 import org.p2p.wallet.settings.ui.mail.SettingsEmailConfirmPresenter
 import org.p2p.wallet.settings.ui.network.SettingsNetworkContract
 import org.p2p.wallet.settings.ui.network.SettingsNetworkPresenter
-import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyContract
-import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyPresenter
 import org.p2p.wallet.settings.ui.resetpin.pin.ResetPinContract
 import org.p2p.wallet.settings.ui.resetpin.pin.ResetPinPresenter
+import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyContract
+import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyPresenter
+import org.p2p.wallet.settings.ui.settings.SettingsContract
 import org.p2p.wallet.settings.ui.settings.SettingsPresenter
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics
 import org.p2p.wallet.smsinput.SmsInputContract
@@ -48,7 +49,7 @@ object SettingsModule : InjectionModule {
                 authInteractor = get(),
                 analyticsInteractor = get()
             )
-        }
+        } bind SettingsContract.Presenter::class
 
         factoryOf(::SecurityAndPrivacyPresenter) bind SecurityAndPrivacyContract.Presenter::class
         factoryOf(::ResetPinPresenter) bind ResetPinContract.Presenter::class

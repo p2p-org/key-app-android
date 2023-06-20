@@ -4,8 +4,7 @@ import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import kotlin.time.Duration.Companion.milliseconds
 import org.p2p.core.rpc.JsonRpc
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
@@ -42,7 +41,7 @@ class GatewayServiceUpdateMetadataMapper(
         userSeedPhrase: List<String>,
         metadata: GatewayOnboardingMetadata,
     ): JsonRpc<Map<String, Any>, UpdateMetadataResponse> {
-        val epochUnixTime = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS)
+        val epochUnixTime = System.currentTimeMillis().milliseconds
         val encryptedMetadata: GatewayOnboardingMetadataCiphered = onboardingMetadataCipher.encryptMetadata(
             mnemonicPhrase = userSeedPhrase,
             onboardingMetadata = metadata

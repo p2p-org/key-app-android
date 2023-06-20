@@ -94,7 +94,6 @@
                 app:hintText="@string/striga_email_hint"
                 app:labelText="@string/striga_email" />
 
-
             <org.p2p.wallet.auth.widget.PhoneNumberInputView
                 android:id="@+id/editTextPhoneNumber"
                 android:layout_width="match_parent"

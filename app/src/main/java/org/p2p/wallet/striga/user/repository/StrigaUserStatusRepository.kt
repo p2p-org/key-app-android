@@ -13,8 +13,8 @@ import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.user.StrigaStorageContract
-import org.p2p.wallet.striga.user.model.StrigaUserStatus
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 
 private const val TAG = "StrigaUserStatusRepository"
 
@@ -22,12 +22,12 @@ class StrigaUserStatusRepository(
     private val dispatchers: CoroutineDispatchers,
     private val strigaUserIdProvider: StrigaUserIdProvider,
     private val mapper: StrigaUserStatusDestinationMapper,
-    private val userRepository: StrigaUserRepository,
+    private val strigaUserRepository: StrigaUserRepository,
     private val strigaStorage: StrigaStorageContract,
     private val inAppFeatureFlags: InAppFeatureFlags
 ) : CoroutineScope by CoroutineScope(dispatchers.io) {
 
-    private val strigaUserDestinationFlow = MutableStateFlow<StrigaUserStatusDestination?>(null)
+    private var strigaUserDestination: StrigaUserStatusDestination = StrigaUserStatusDestination.NONE
     private val strigaBannerFlow = MutableStateFlow<StrigaKycStatusBanner?>(null)
 
     private val bannerMock: StrigaKycStatusBanner?
@@ -36,26 +36,28 @@ class StrigaUserStatusRepository(
             ?.let { StrigaKycStatusBanner.valueOf(it) }
 
     init {
-        handleUserStatus(strigaStorage.userStatus)
+        mapUserStatusToFlows(strigaStorage.userStatus)
     }
 
     fun getBannerFlow(): StateFlow<StrigaKycStatusBanner?> {
         return if (bannerMock != null) MutableStateFlow(bannerMock) else strigaBannerFlow
     }
 
-    fun getUserDestination(): StrigaUserStatusDestination? = strigaUserDestinationFlow.value
+    fun getUserDestination(): StrigaUserStatusDestination = strigaUserDestination
 
-    suspend fun loadUserKycStatus(): StrigaDataLayerResult<Unit> = withContext(coroutineContext) {
+    fun getUserVerificationStatus(): StrigaUserStatusDetails? = strigaStorage.userStatus
+
+    suspend fun loadAndSaveUserKycStatus(): StrigaDataLayerResult<Unit> = withContext(coroutineContext) {
         try {
             // null user status can be only in case if user is not created at all (no id),
             // otherwise we must be sure that user status is not null or throw an exception
             val userStatus = if (strigaUserIdProvider.getUserId() == null) {
                 null
             } else {
-                loadUserStatus()
+                strigaUserRepository.getUserVerificationStatus().unwrap()
             }
             strigaStorage.userStatus = userStatus
-            handleUserStatus(userStatus)
+            mapUserStatusToFlows(userStatus)
             Unit.toSuccessResult()
         } catch (e: Throwable) {
             Timber.tag(TAG).i(e, "Error while fetching user kyc status")
@@ -66,24 +68,8 @@ class StrigaUserStatusRepository(
         }
     }
 
-    @Throws(StrigaDataLayerError::class)
-    private suspend fun loadUserStatus(): StrigaUserStatus {
-        return userRepository.getUserStatus().unwrap()
-    }
-
-    private fun handleUserStatus(userStatus: StrigaUserStatus?) {
-        strigaUserDestinationFlow.value = userStatus.let(::mapToDestination)
-        strigaBannerFlow.value = userStatus.let(::mapToBanner)
-    }
-
-    private fun mapToDestination(status: StrigaUserStatus?): StrigaUserStatusDestination {
-        return mapper.mapToDestination(
-            userStatus = status,
-            isUserCreated = strigaUserIdProvider.getUserId() != null
-        )
-    }
-
-    private fun mapToBanner(status: StrigaUserStatus?): StrigaKycStatusBanner? {
-        return mapper.mapToStatusBanner(status)
+    private fun mapUserStatusToFlows(userStatus: StrigaUserStatusDetails?) {
+        strigaUserDestination = userStatus.let(mapper::mapToDestination)
+        strigaBannerFlow.value = userStatus.let(mapper::mapToStatusBanner)
     }
 }

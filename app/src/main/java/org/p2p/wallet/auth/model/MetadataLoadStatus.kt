@@ -8,4 +8,10 @@ sealed interface MetadataLoadStatus {
         val cause: Throwable,
         val message: String? = cause.message
     ) : MetadataLoadStatus
+
+    fun throwIfFailure() {
+        if (this is Failure) {
+            throw this.cause
+        }
+    }
 }
