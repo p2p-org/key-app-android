@@ -56,9 +56,9 @@ class SellInteractor(
             sellRepository.isSellAllowedForUser()
 
         val debugInfo = buildString {
-            append("isFeatureEnabled=${sellEnabledFeatureToggle.isFeatureEnabled}")
-            append("isUserBalancePositive=${isUserBalancePositive()}")
-            append("isSellAllowedForUser=${sellRepository.isSellAllowedForUser()}")
+            append("isFeatureEnabled=${sellEnabledFeatureToggle.isFeatureEnabled} ")
+            append("isUserBalancePositive=${isUserBalancePositive()} ")
+            append("isSellAllowedForUser=${sellRepository.isSellAllowedForUser()} ")
         }
         Timber.i("Checking if sell is available: $debugInfo")
         return isSellAvailable
