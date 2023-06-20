@@ -35,7 +35,10 @@ class HistoryAnalytics(
     }
 
     fun logTokenTransactionClicked(transactionId: String) {
-        tracker.logEvent(HISTORY_TOKEN_SCREEN_CLICK_TRANSACTION, arrayOf("transaction_id" to transactionId))
+        tracker.logEvent(
+            event = HISTORY_TOKEN_SCREEN_CLICK_TRANSACTION,
+            params = mapOf("transaction_id" to transactionId)
+        )
     }
 
     fun logUserSendLinksBlockClicked() {

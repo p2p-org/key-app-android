@@ -6,6 +6,11 @@ import org.p2p.wallet.common.analytics.constants.EventNames.HOME_USER_HAS_POSITI
 import java.math.BigDecimal
 
 private const val TOKEN_DETAILS_CLICKED = "Main_Screen_Token_Details_Open"
+private const val HOME_MAIN_WALLET = "Main_Wallet"
+private const val HOME_MAIN_EARN = "Main_Earn"
+private const val HOME_MAIN_HISTORY = "Main_History"
+private const val HOME_MAIN_SETTINGS = "Main_Settings"
+private const val HOME_HIDDEN_TOKENS_CLICKED = "Main_Screen_Hidden_Tokens"
 
 class HomeAnalytics(private val tracker: Analytics) {
 
@@ -22,30 +27,30 @@ class HomeAnalytics(private val tracker: Analytics) {
     fun logMainScreenTokenDetailsOpen(tokenTier: String) {
         tracker.logEvent(
             event = TOKEN_DETAILS_CLICKED,
-            params = arrayOf(
+            params = mapOf(
                 "Token_Tier" to tokenTier
             )
         )
     }
 
     fun logHiddenTokensClicked() {
-        tracker.logEvent("Main_Screen_Hidden_Tokens")
+        tracker.logEvent(HOME_HIDDEN_TOKENS_CLICKED)
     }
 
     fun logBottomNavigationHomeClicked() {
-        tracker.logEvent("Main_Wallet")
+        tracker.logEvent(event = HOME_MAIN_WALLET)
     }
 
     fun logBottomNavigationEarnClicked() {
-        tracker.logEvent("Main_Earn")
+        tracker.logEvent(event = HOME_MAIN_EARN)
     }
 
     fun logBottomNavigationHistoryClicked() {
-        tracker.logEvent("Main_History")
+        tracker.logEvent(HOME_MAIN_HISTORY)
     }
 
     fun logBottomNavigationSettingsClicked() {
-        tracker.logEvent("Main_Settings")
+        tracker.logEvent(HOME_MAIN_SETTINGS)
     }
 
     private fun logUserAggregateBalanceEvent(usdBalance: BigDecimal) {

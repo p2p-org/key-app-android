@@ -20,7 +20,6 @@ import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyContract
 import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyPresenter
 import org.p2p.wallet.settings.ui.resetpin.pin.ResetPinContract
 import org.p2p.wallet.settings.ui.resetpin.pin.ResetPinPresenter
-import org.p2p.wallet.settings.ui.settings.SettingsContract
 import org.p2p.wallet.settings.ui.settings.SettingsPresenter
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics
 import org.p2p.wallet.smsinput.SmsInputContract
@@ -35,7 +34,21 @@ object SettingsModule : InjectionModule {
 
         factoryOf(::SettingsItemMapper)
         factoryOf(::SettingsPresenterAnalytics)
-        factoryOf(::SettingsPresenter) bind SettingsContract.Presenter::class
+        factory {
+            SettingsPresenter(
+                environmentManager = get(),
+                usernameInteractor = get(),
+                authLogoutInteractor = get(),
+                appRestarter = get(),
+                analytics = get(),
+                settingsInteractor = get(),
+                homeLocalRepository = get(),
+                settingsItemMapper = get(),
+                metadataInteractor = get(),
+                authInteractor = get(),
+                analyticsInteractor = get()
+            )
+        }
 
         factoryOf(::SecurityAndPrivacyPresenter) bind SecurityAndPrivacyContract.Presenter::class
         factoryOf(::ResetPinPresenter) bind ResetPinContract.Presenter::class

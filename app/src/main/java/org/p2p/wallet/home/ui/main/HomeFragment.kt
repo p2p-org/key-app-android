@@ -275,14 +275,22 @@ class HomeFragment :
 
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
-            HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
+            HomeAction.SELL -> {
+                replaceFragment(SellPayloadFragment.create())
+            }
             HomeAction.TOP_UP -> {
                 buyAnalytics.logTopupActionButtonClicked()
-                TopUpWalletBottomSheet.show(parentFragmentManager)
+                showTopup()
             }
-            HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
-            HomeAction.SWAP -> showSwap(SwapOpenedFrom.ACTION_PANEL)
-            HomeAction.SEND -> presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
+            HomeAction.RECEIVE -> {
+                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
+            }
+            HomeAction.SWAP -> {
+                showSwap(SwapOpenedFrom.ACTION_PANEL)
+            }
+            HomeAction.SEND -> {
+                presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
+            }
         }
     }
 
@@ -393,7 +401,7 @@ class HomeFragment :
     }
 
     override fun onHideClicked(token: Token.Active) {
-        homeAnalytics
+        homeAnalytics.logHiddenTokensClicked()
         presenter.toggleTokenVisibility(token)
     }
 
