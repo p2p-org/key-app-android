@@ -62,7 +62,7 @@ class TopUpWalletPresenter(
             try {
                 strigaBankTransferProgress.emit(true)
 
-                checkNeededStrigaDataLoaded()
+                ensureNeededStrigaDataLoaded()
 
                 val strigaDestination = strigaUserInteractor.getUserDestination()
                 if (strigaDestination == StrigaUserStatusDestination.SMS_VERIFICATION) {
@@ -78,7 +78,7 @@ class TopUpWalletPresenter(
         }
     }
 
-    private suspend fun checkNeededStrigaDataLoaded() {
+    private suspend fun ensureNeededStrigaDataLoaded() {
         if (metadataInteractor.currentMetadata == null) {
             Timber.i("Metadata is not fetched. Trying again...")
             loadUserMetadata()
