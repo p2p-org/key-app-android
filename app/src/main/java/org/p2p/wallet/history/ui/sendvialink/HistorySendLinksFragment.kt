@@ -9,6 +9,9 @@ import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.mainCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.recycler.decoration.groupedRoundingFinanceBlockDecoration
+import org.p2p.uikit.utils.setMargins
+import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -30,8 +33,13 @@ class HistorySendLinksFragment :
 
     private val historyAnalytics: HistoryAnalytics by inject()
 
+    private val mainCellHorizontalMargin = 12.toPx()
+
     private val adapter = CommonAnyCellAdapter(
-        mainCellDelegate(inflateListener = { it.setOnClickAction { _, item -> onItemClicked(item) } }),
+        mainCellDelegate(inflateListener = {
+            it.setOnClickAction { _, item -> onItemClicked(item) }
+            it.setMargins(left = mainCellHorizontalMargin, right = mainCellHorizontalMargin)
+        }),
         historyDateTextDelegate()
     )
 
@@ -48,10 +56,12 @@ class HistorySendLinksFragment :
 
         binding.recyclerViewLinks.attachAdapter(adapter)
         binding.recyclerViewLinks.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewLinks.addItemDecoration(groupedRoundingFinanceBlockDecoration())
     }
 
     override fun showUserLinks(userLinksModels: List<AnyCellItem>) {
         adapter.items = userLinksModels
+        binding.recyclerViewLinks.invalidateItemDecorations()
     }
 
     private fun onBackPressed() {

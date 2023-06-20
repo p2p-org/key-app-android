@@ -5,7 +5,6 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import android.content.Context
 import android.util.AttributeSet
-import org.p2p.core.utils.orZero
 import org.p2p.uikit.components.left_side.UiKitLeftSideView
 import org.p2p.uikit.components.right_side.UiKitRightSideView
 import org.p2p.uikit.databinding.WidgetMainCellBinding
