@@ -12,7 +12,6 @@ import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
-import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -29,18 +28,9 @@ class TopUpWalletPresenter(
     TopUpWalletContract.Presenter {
 
     private val isUserAuthByWeb3: Boolean
-        get() {
-            return seedPhraseProvider.getUserSeedPhrase().provider == SeedPhraseSource.WEB_AUTH ||
-                appFeatureFlags.strigaSimulateWeb3Flag.featureValue
-        }
+        get() = seedPhraseProvider.isWeb3AuthUser || appFeatureFlags.strigaSimulateWeb3Flag.featureValue
 
     private val strigaBankTransferProgress = MutableStateFlow(false)
-
-    init {
-        launch {
-            loadMetadataIfNot()
-        }
-    }
 
     override fun attach(view: TopUpWalletContract.View) {
         super.attach(view)
@@ -63,7 +53,6 @@ class TopUpWalletPresenter(
     override fun onBankTransferClicked() {
         val strigaDestination = strigaUserInteractor.getUserDestination()
         if (strigaDestination == StrigaUserStatusDestination.SMS_VERIFICATION) {
-            // todo: we should send first sms directly from sms verification screen
             launch {
                 strigaUserInteractor.resendSmsForVerifyPhoneNumber()
             }
@@ -80,16 +69,14 @@ class TopUpWalletPresenter(
             metadataInteractor.currentMetadata == null -> {
                 Timber.i("Metadata is not fetched. Trying again...")
                 launch {
-                    loadMetadataIfNot()
+                    loadUserMetadata()
                 }
             }
             // if status is not fetched, fetching it
             strigaDestination == null -> {
                 Timber.i("Striga user status is not fetched. Trying again...")
                 launch {
-                    withProgress {
-                        strigaUserInteractor.loadAndSaveUserStatusData()
-                    }
+                    loadStrigaUserStatus()
                 }
             }
             else -> {
@@ -98,19 +85,25 @@ class TopUpWalletPresenter(
         }
     }
 
-    private suspend fun loadMetadataIfNot() {
-        if (metadataInteractor.currentMetadata != null || inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
-            return
-        }
-
-        withProgress {
+    private suspend fun loadUserMetadata() {
+        withBankTransferProgress {
             if (metadataInteractor.tryLoadAndSaveMetadata() is MetadataLoadStatus.Failure) {
-                view?.showUiKitSnackBar(null, R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }
 
-    private suspend fun withProgress(block: suspend () -> Unit) {
+    private suspend fun loadStrigaUserStatus() {
+        withBankTransferProgress {
+            strigaUserInteractor.loadAndSaveUserStatusData()
+                .onFailure {
+                    Timber.e(it, "failed to load user status for Striga")
+                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+                }
+        }
+    }
+
+    private suspend fun withBankTransferProgress(block: suspend () -> Unit) {
         strigaBankTransferProgress.emit(true)
         block()
         strigaBankTransferProgress.emit(false)

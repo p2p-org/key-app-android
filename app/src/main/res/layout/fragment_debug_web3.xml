@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:navigationIcon="@drawable/ic_back"
+            app:title="Web3 User data" />
+
+        <TextView
+            android:id="@+id/textViewWeb3Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="24dp"
+            android:text="Current Web3Auth data:"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewWeb3Value"
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="20dp"
+            android:textIsSelectable="true"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/manrope_light"
+            android:paddingHorizontal="24dp"
+            tools:text="{}" />
+
+        <TextView
+            android:id="@+id/textViewMetadataTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="24dp"
+            android:text="Current Metadata deciphered or error:"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewMetadataValue"
+            android:layout_width="match_parent"
+            android:textIsSelectable="true"
+            android:layout_marginHorizontal="20dp"
+            android:fontFamily="@font/manrope_light"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="24dp"
+            tools:text="{}" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonLoadMetadata"
+            style="@style/UiKit.Components.Button.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_medium_height"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/bg_night"
+            android:text="Try load"
+            android:textColor="@color/bg_snow"
+            app:iconTint="@color/bg_snow"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </LinearLayout>
+
+</ScrollView>
