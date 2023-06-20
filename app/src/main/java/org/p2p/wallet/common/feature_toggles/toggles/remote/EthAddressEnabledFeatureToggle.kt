@@ -7,5 +7,5 @@ class EthAddressEnabledFeatureToggle(
 ) : BooleanFeatureToggle(valuesProvider) {
     override val featureKey: String = "eth_address_enabled"
     override val featureDescription: String = "Is bridges enabled"
-    override val defaultValue: Boolean = false
+    override val defaultValue: Boolean = true
 }
