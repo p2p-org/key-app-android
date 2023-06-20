@@ -12,6 +12,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeature
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
+import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.swap.analytics.SwapAnalytics
@@ -24,7 +25,8 @@ class MainContainerPresenter(
     private val sellInteractor: SellInteractor,
     private val swapAnalytics: SwapAnalytics,
     private val solendFeatureToggle: SolendEnabledFeatureToggle,
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
+    private val homeAnalytics: HomeAnalytics
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
 
     override fun attach(view: MainContainerContract.View) {
@@ -71,6 +73,22 @@ class MainContainerPresenter(
             val isSellEnabled = sellInteractor.isSellAvailable()
             swapAnalytics.logSwapOpenedFromMain(isSellEnabled = isSellEnabled)
         }
+    }
+
+    override fun logHomeOpened() {
+        homeAnalytics.logBottomNavigationHomeClicked()
+    }
+
+    override fun logEarnOpened() {
+        homeAnalytics.logBottomNavigationEarnClicked()
+    }
+
+    override fun logHistoryOpened() {
+        homeAnalytics.logBottomNavigationHistoryClicked()
+    }
+
+    override fun logSettingsOpened() {
+        homeAnalytics.logBottomNavigationSettingsClicked()
     }
 
     private fun observeRefreshEvent() {

@@ -26,7 +26,6 @@ interface SmsInputContract {
 
         fun navigateToExceededDailyResendSmsLimit()
         fun navigateToExceededConfirmationAttempts()
-        fun navigateToNumberAlreadyUsed()
     }
 
     interface Presenter : MvpPresenter<View> {

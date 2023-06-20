@@ -12,14 +12,14 @@ import org.p2p.wallet.striga.user.api.request.StrigaCreateUserRequest
 import org.p2p.wallet.striga.user.api.response.StrigaCreateUserResponse
 import org.p2p.wallet.striga.user.api.response.StrigaUserDetailsResponse
 import org.p2p.wallet.striga.user.api.response.StrigaUserStatusResponse
-import org.p2p.wallet.striga.user.model.StrigaUserStatus
-import org.p2p.wallet.striga.user.model.StrigaUserDetails
-import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
-import org.p2p.wallet.striga.user.model.StrigaUserInfo
-import org.p2p.wallet.striga.user.model.StrigaUserKycInfo
 import org.p2p.wallet.striga.user.model.StrigaUserAddress
+import org.p2p.wallet.striga.user.model.StrigaUserDetails
+import org.p2p.wallet.striga.user.model.StrigaUserInfo
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialKycDetails
+import org.p2p.wallet.striga.user.model.StrigaUserKycInfo
+import org.p2p.wallet.striga.user.model.StrigaUserStatus
+import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 
 class StrigaUserRepositoryMapper {
     @Throws(StrigaDataLayerError.InternalError::class)
@@ -132,8 +132,8 @@ class StrigaUserRepositoryMapper {
             isEmailVerified = kycDetails.isEmailVerified,
             isMobileVerified = kycDetails.isMobileVerified,
             kycStatus = StrigaUserVerificationStatus.from(kycDetails.status),
-            rejectionDetails = kycDetails.details,
-            rejectionUserToAutoComments = kycDetails.rejectionComments.run { userComment to autoComment }
+            rejectionDetails = kycDetails.details.orEmpty(),
+            rejectionUserToAutoComments = kycDetails.rejectionComments?.run { userComment to autoComment }
         )
     }
 

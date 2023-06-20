@@ -15,6 +15,7 @@ import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
+import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.rpc.interactor.TokenInteractor
@@ -32,7 +33,8 @@ class TokenHistoryPresenter(
     private val userRepository: UserLocalRepository,
     private val bridgeSendUiMapper: BridgeSendUiMapper,
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
-    private val userTokensRepository: UserTokensRepository
+    private val userTokensRepository: UserTokensRepository,
+    private val historyAnalytics: HistoryAnalytics
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     override fun attach(view: TokenHistoryContract.View) {
@@ -64,6 +66,7 @@ class TokenHistoryPresenter(
     }
 
     override fun onTransactionClicked(transactionId: String) {
+        historyAnalytics.logTokenTransactionClicked(transactionId)
         view?.showDetailsScreen(transactionId)
     }
 

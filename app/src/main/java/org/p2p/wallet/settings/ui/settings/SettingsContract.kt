@@ -13,6 +13,11 @@ interface SettingsContract {
         fun openUsernameScreen()
         fun openSecurityAndPrivacy()
         fun openReserveUsernameScreen()
+        fun openPinScreen()
+        fun openNetworkScreen()
+        fun openSupportScreen()
+        fun openTwitterScreen()
+        fun openDiscordScreen()
         fun confirmBiometrics(pinCodeCipher: EncodeCipher)
         fun updateSwitchItem(switchItemId: Int, isSwitched: Boolean)
     }
@@ -26,5 +31,10 @@ interface SettingsContract {
         fun onNetworkEnvironmentChanged(newNetworkEnvironment: NetworkEnvironment)
         fun onBiometricSignInSwitchChanged(isSwitched: Boolean)
         fun onBiometricSignInEnableConfirmed(biometricsCipher: EncodeCipher)
+        fun onPinClicked()
+        fun onNetworkClicked()
+        fun onSupportClicked()
+        fun onOpenTwitterClicked()
+        fun onOpenDiscordClicked()
     }
 }

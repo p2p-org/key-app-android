@@ -11,7 +11,7 @@ import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class SingleBannerViewHolder(
     parent: ViewGroup,
-    private val binding: ItemHomeBannerBinding = parent.inflateViewBinding(),
+    private val binding: ItemHomeBannerBinding = parent.inflateViewBinding(attachToRoot = false),
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 

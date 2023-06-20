@@ -18,8 +18,8 @@ sealed class StrigaSmsErrorViewType(
     @Parcelize
     class NumberAlreadyUsed : StrigaSmsErrorViewType(
         imageRes = R.drawable.ic_hand_with_square,
-        titleRes = R.string.string_sms_error_number_already_used_title,
-        subtitleRes = R.string.string_sms_error_number_already_used_subtitle,
+        titleRes = R.string.striga_signup_error_number_already_used_title,
+        subtitleRes = R.string.striga_signup_error_number_already_used_subtitle,
         helpButtonColorRes = R.color.lime
     )
 
