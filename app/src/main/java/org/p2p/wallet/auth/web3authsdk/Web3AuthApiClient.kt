@@ -193,12 +193,12 @@ class Web3AuthApiClient(
         return buildString {
             append("lastFacade = new p2pWeb3Auth.AndroidFacade({")
             append("type: '$type', ")
-            append("useNewEth: $useNewUth, ")
             append("torusNetwork: '$torusNetworkEnv', ")
             append("torusLoginType: 'google', ")
             append("torusEndpoint: '$torusStorageProviderEndpoint', ")
             append("torusVerifier: '$torusVerifier', ")
             if (isSignUp) {
+                append("useNewEth: $useNewUth, ")
                 append("privateInput: '$seedPhraseAsString', ")
             }
             if (!torusSubVerifier.isNullOrBlank()) {
