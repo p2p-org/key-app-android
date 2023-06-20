@@ -20,6 +20,13 @@ sealed interface StrigaDataLayerResult<out T> {
         successOrNull()?.also(action)
         return this
     }
+
+    fun onFailure(action: (StrigaDataLayerError) -> Unit): StrigaDataLayerResult<T> {
+        if (this is Failure) {
+            error.also(action)
+        }
+        return this
+    }
 }
 
 fun <T, E : StrigaDataLayerError> E.toFailureResult(): StrigaDataLayerResult.Failure<T> =

@@ -13,6 +13,9 @@ class SeedPhraseProvider(
     val isAvailable: Boolean
         get() = getUserSeedPhrase().seedPhrase.isNotEmpty()
 
+    val isWeb3AuthUser: Boolean
+        get() = getUserSeedPhrase().provider == SeedPhraseSource.WEB_AUTH
+
     fun getUserSeedPhrase(): UserSeedPhraseDetails {
         return UserSeedPhraseDetails(
             seedPhrase = seedPhrase,

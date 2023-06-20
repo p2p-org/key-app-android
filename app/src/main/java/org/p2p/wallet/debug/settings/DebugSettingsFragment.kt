@@ -14,6 +14,7 @@ import org.p2p.wallet.debug.logs.CustomLogDialog
 import org.p2p.wallet.debug.publickey.DebugPublicKeyFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
+import org.p2p.wallet.debug.pushservice.DebugWeb3Fragment
 import org.p2p.wallet.debug.settings.adapter.DebugSettingsRowAdapter
 import org.p2p.wallet.debug.settings.adapter.settingsRowInfoItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowLogoutItemDelegate
@@ -104,6 +105,9 @@ class DebugSettingsFragment :
             }
             R.string.debug_settings_stub_public_key -> {
                 replaceFragment(DebugPublicKeyFragment.create())
+            }
+            R.string.debug_settings_web3 -> {
+                replaceFragment(DebugWeb3Fragment.create())
             }
         }
     }
