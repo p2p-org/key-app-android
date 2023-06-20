@@ -62,11 +62,15 @@ class CountryCodeXmlParser(
     private fun getMaskForCountryCode(countryCode: String, phoneCode: String): String {
         return try {
             val exampleNumber: Phonenumber.PhoneNumber? = phoneNumberUtil.getExampleNumber(countryCode)
-            val internationalFormat = phoneNumberUtil.format(
-                exampleNumber,
-                PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
-            )
-            internationalFormat.replace("+$phoneCode", emptyString())
+            if (exampleNumber != null) {
+                val internationalFormat = phoneNumberUtil.format(
+                    exampleNumber,
+                    PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
+                )
+                internationalFormat.replace("+$phoneCode", emptyString())
+            } else {
+                emptyString()
+            }
         } catch (e: Throwable) {
             Timber.i(e, "Get mask for country code failed")
             emptyString()
