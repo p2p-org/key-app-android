@@ -17,6 +17,7 @@ private const val HISTORY_CLICK_BLOCK_SEND_VIA_LINK = "History_Click_Block_Send_
 private const val HISTORY_SEND_CLICK_TRANSACTION = "History_Send_Click_Transaction"
 private const val HISTORY_SEND_CLICK_COPY_TRANSACTION = "History_Send_Click_Copy_Transaction"
 private const val HISTORY_SEND_CLICK_SHARE_TRANSACTION = "History_Send_Click_Share_Transaction"
+private const val HISTORY_TOKEN_SCREEN_CLICK_TRANSACTION = "Token_Screen_Transaction"
 
 class HistoryAnalytics(
     private val tracker: Analytics,
@@ -30,6 +31,13 @@ class HistoryAnalytics(
         tracker.logEvent(
             event = HISTORY_OPENED,
             params = mapOf("Sent_Via_Link" to isSendViaLinkBlockVisible)
+        )
+    }
+
+    fun logTokenTransactionClicked(transactionId: String) {
+        tracker.logEvent(
+            event = HISTORY_TOKEN_SCREEN_CLICK_TRANSACTION,
+            params = mapOf("transaction_id" to transactionId)
         )
     }
 

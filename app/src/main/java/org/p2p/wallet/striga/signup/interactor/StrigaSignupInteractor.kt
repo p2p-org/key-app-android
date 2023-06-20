@@ -10,6 +10,8 @@ import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.striga.model.StrigaApiErrorCode
+import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
@@ -133,6 +135,11 @@ class StrigaSignupInteractor(
 
     @Throws(IllegalStateException::class, StrigaDataLayerError::class)
     suspend fun createUser() {
+        if (inAppFeatureFlags.strigaSimulateMobileAlreadyVerifiedFlag.featureValue) {
+            throw StrigaDataLayerError.ApiServiceError.PhoneNumberAlreadyUsed(
+                StrigaApiErrorResponse(400, StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED, "phone number already used")
+            )
+        }
         if (inAppFeatureFlags.strigaSimulateUserCreateFlag.featureValue) {
             delay(1000)
             return

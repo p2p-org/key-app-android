@@ -211,6 +211,7 @@ class SendViaLinkPresenter(
         updateButton(requireToken())
 
         newSendAnalytics.setMaxButtonClicked(isClicked = false)
+        svlAnalytics.setMaxButtonClicked(isClicked = false)
     }
 
     override fun onMaxButtonClicked() {
@@ -221,6 +222,7 @@ class SendViaLinkPresenter(
         showMaxButtonIfNeeded()
 
         newSendAnalytics.setMaxButtonClicked(isClicked = true)
+        svlAnalytics.setMaxButtonClicked(isClicked = true)
 
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showToast(TextContainer.Raw(message))
@@ -301,7 +303,7 @@ class SendViaLinkPresenter(
         token ?: error("Source token cannot be empty!")
 
     private fun logSendClicked(token: Token.Active, amountInToken: String, amountInUsd: String) {
-        newSendAnalytics.logSendConfirmButtonClicked(
+        svlAnalytics.logSendConfirmButtonClicked(
             tokenName = token.tokenName,
             amountInToken = amountInToken,
             amountInUsd = amountInUsd,

@@ -20,5 +20,9 @@ interface MainContainerContract {
         fun launchInternetObserver(coroutineScope: CoroutineScope)
         fun initializeDeeplinks()
         fun logSwapOpened()
+        fun logHomeOpened()
+        fun logEarnOpened()
+        fun logHistoryOpened()
+        fun logSettingsOpened()
     }
 }

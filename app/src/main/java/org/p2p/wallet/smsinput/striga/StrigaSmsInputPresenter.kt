@@ -80,9 +80,6 @@ class StrigaSmsInputPresenter(
 
     private fun handleApiError(apiServiceError: StrigaDataLayerError.ApiServiceError) {
         when (apiServiceError.errorCode) {
-            StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED -> {
-                view?.navigateToNumberAlreadyUsed()
-            }
             StrigaApiErrorCode.INVALID_VERIFICATION_CODE -> {
                 view?.renderIncorrectSms()
             }
