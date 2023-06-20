@@ -73,10 +73,10 @@ data class StrigaUserKycInfo(
     val isMobileVerified: Boolean,
     val kycStatus: StrigaUserVerificationStatus,
     val rejectionDetails: List<String> = emptyList(),
-    val rejectionUserToAutoComments: Pair<String, String>
+    val rejectionUserToAutoComments: Pair<String, String>? = null
 )
 
-data class StrigaUserStatus(
+data class StrigaUserStatusDetails(
     val userId: String,
     val isEmailVerified: Boolean,
     val isMobileVerified: Boolean,

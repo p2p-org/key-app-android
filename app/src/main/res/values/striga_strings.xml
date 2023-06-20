@@ -85,9 +85,10 @@
     <string name="striga_preset_data_hint_source">source of funds</string>
 
     <string name="striga_button_open_wallet_screen">Open Wallet screen</string>
-    <string name="striga_button_write_to_support">Write to support</string>
-    <string name="string_sms_error_number_already_used_title">Seems like this number is already used</string>
-    <string name="string_sms_error_number_already_used_subtitle">With new data you can’t use Striga service for now. Bou you still have Bank card and Crypto options</string>
+    <string name="striga_button_write_to_support">Support</string>
+    <string name="striga_signup_error_number_already_used_button">Open my blank</string>
+    <string name="striga_signup_error_number_already_used_title">Seems like this number is already used</string>
+    <string name="striga_signup_error_number_already_used_subtitle">With new data you can’t use Striga service for now. Bou you still have Bank card and Crypto options</string>
     <string name="striga_sms_error_exceeded_resend_attempts_title">Please, wait 1 day for the next SMS request</string>
     <string name="striga_sms_error_exceeded_resend_attempts_subtitle">After 5 SMS requests we disabled it for 1 day to secure your account</string>
     <string name="striga_sms_error_exceeded_confirmation_attempts_title">Please, wait 1 day for the next try</string>

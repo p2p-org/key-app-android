@@ -25,8 +25,13 @@ private const val RECEIVE_NETWORK_CLICK_BUTTON = "Receive_Network_Click_Button"
 private const val RECEIVE_COPY_ADDRESS_CLICK_BUTTON = "Receive_Copy_Address_Click_Button"
 private const val RECEIVE_COPY_LONG_ADDRESS_CLICK = "Receive_Copy_Long_Address_Click"
 private const val RECEIVE_COPY_ADDRESS_USERNAME = "Receive_Copy_Address_Username"
+private const val RECEIVE_TOKEN_SCREEN_ACTION_CLICKED = "Token_Screen_Receive_Bar"
 
 class ReceiveAnalytics(private val tracker: Analytics) {
+
+    fun logTokenScreenActionClicked() {
+        tracker.logEvent(RECEIVE_TOKEN_SCREEN_ACTION_CLICKED)
+    }
 
     fun logReceiveViewed(isUsernameClaimed: Boolean) {
         tracker.logEvent(

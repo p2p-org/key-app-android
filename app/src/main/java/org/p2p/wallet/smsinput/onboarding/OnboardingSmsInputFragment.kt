@@ -48,6 +48,4 @@ class OnboardingSmsInputFragment : BaseSmsInputFragment() {
     override fun navigateToExceededDailyResendSmsLimit() = Unit
 
     override fun navigateToExceededConfirmationAttempts() = Unit
-
-    override fun navigateToNumberAlreadyUsed() = Unit
 }

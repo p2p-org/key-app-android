@@ -90,24 +90,19 @@ class SettingsFragment :
                 presenter.onUsernameSettingClicked()
             }
             R.string.settings_item_title_pin -> {
-                replaceFragment(ResetPinIntroFragment.create())
+                presenter.onPinClicked()
             }
             R.string.settings_item_title_networks -> {
-                analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.NETWORK)
-                SettingsNetworkBottomSheet.show(
-                    fm = childFragmentManager,
-                    requestKey = REQUEST_KEY,
-                    resultKey = RESULT_KEY_NEW_NETWORK
-                )
+                presenter.onNetworkClicked()
             }
             R.string.settings_item_title_support -> {
-                IntercomService.showMessenger()
+                presenter.onSupportClicked()
             }
             R.string.settings_item_title_twitter -> {
-                openTwitter()
+                presenter.onOpenTwitterClicked()
             }
             R.string.settings_item_title_discord -> {
-                openDiscord()
+                presenter.onOpenDiscordClicked()
             }
         }
     }
@@ -147,20 +142,36 @@ class SettingsFragment :
         replaceFragment(ReserveUsernameFragment.create(ReserveUsernameOpenedFrom.SETTINGS))
     }
 
+    override fun openPinScreen() {
+        replaceFragment(ResetPinIntroFragment.create())
+    }
+
+    override fun openNetworkScreen() {
+        SettingsNetworkBottomSheet.show(
+            fm = childFragmentManager,
+            requestKey = REQUEST_KEY,
+            resultKey = RESULT_KEY_NEW_NETWORK
+        )
+    }
+
+    override fun openSupportScreen() {
+        IntercomService.showMessenger()
+    }
+
+    override fun openTwitterScreen() {
+        requireContext().showUrlInCustomTabs("https://twitter.com/KeyApp_")
+    }
+
+    override fun openDiscordScreen() {
+        val discordLink = "https://discord.gg/SpW3GmEYgU"
+        requireContext().showUrlInCustomTabs(discordLink)
+    }
+
     override fun openUsernameScreen() {
         replaceFragment(UsernameFragment.create())
     }
 
     override fun openSecurityAndPrivacy() {
         replaceFragment(SecurityAndPrivacyFragment.create())
-    }
-
-    private fun openTwitter() {
-        requireContext().showUrlInCustomTabs("https://twitter.com/KeyApp_")
-    }
-
-    private fun openDiscord() {
-        val discordLink = "https://discord.gg/SpW3GmEYgU"
-        requireContext().showUrlInCustomTabs(discordLink)
     }
 }

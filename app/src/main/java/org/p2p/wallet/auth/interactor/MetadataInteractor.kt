@@ -26,6 +26,7 @@ class MetadataInteractor(
     private val gatewayMetadataMerger: GatewayMetadataMerger,
     private val ethereumInteractor: EthereumInteractor,
     private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
+    private val metadataChangesLogger: MetadataChangesLogger
 ) {
 
     var currentMetadata: GatewayOnboardingMetadata? = null
@@ -103,6 +104,10 @@ class MetadataInteractor(
     }
 
     suspend fun updateMetadata(metadata: GatewayOnboardingMetadata) {
+        metadataChangesLogger.logChange(
+            metadataOld = currentMetadata,
+            metadataNew = metadata
+        )
         currentMetadata = metadata
         tryToUploadMetadata(metadata)
     }
@@ -193,6 +198,10 @@ class MetadataInteractor(
             }
             updatedMetadata
         } ?: serverMetadata
+        metadataChangesLogger.logChange(
+            metadataOld = currentMetadata,
+            metadataNew = finalMetadata
+        )
         currentMetadata = finalMetadata
     }
 }

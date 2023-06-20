@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.StateFlow
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.StrigaUserIdProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.user.model.StrigaUserDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
@@ -14,7 +15,8 @@ import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 class StrigaUserInteractor(
     private val userRepository: StrigaUserRepository,
     private val strigaUserIdProvider: StrigaUserIdProvider,
-    private val userStatusRepository: StrigaUserStatusRepository
+    private val userStatusRepository: StrigaUserStatusRepository,
+    private val strigaSignupDataRepository: StrigaSignupDataLocalRepository
 ) {
 
     suspend fun createUser(data: List<StrigaSignupData>): StrigaDataLayerResult<StrigaUserInitialDetails> {
@@ -25,20 +27,20 @@ class StrigaUserInteractor(
         return userRepository.getUserDetails()
     }
 
-    suspend fun verifyPhoneNumber(verificationCode: String): StrigaDataLayerResult<Unit> {
-        return userRepository.verifyPhoneNumber(verificationCode)
-    }
-
     suspend fun resendSmsForVerifyPhoneNumber(): StrigaDataLayerResult<Unit> {
         return userRepository.resendSmsForVerifyPhoneNumber()
     }
 
-    fun isUserCreated(): Boolean {
-        return strigaUserIdProvider.getUserId() != null
+    fun isUserCreated(): Boolean = strigaUserIdProvider.getUserId() != null
+
+    suspend fun isUserDetailsLoaded(): Boolean {
+        return strigaSignupDataRepository.getUserSignupData().unwrap().isEmpty()
     }
 
+    fun isUserVerificationStatusLoaded(): Boolean = userStatusRepository.getUserVerificationStatus() != null
+
     suspend fun loadAndSaveUserStatusData(): StrigaDataLayerResult<Unit> {
-        return userStatusRepository.loadUserKycStatus()
+        return userStatusRepository.loadAndSaveUserKycStatus()
     }
 
     fun getUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> {
@@ -46,9 +48,9 @@ class StrigaUserInteractor(
     }
 
     /**
-     * Returns user destination based on user status or null if unable to detect (no user status)
+     * Returns user destination based on user status or NONE if unable to detect (no user status)
      */
-    fun getUserDestination(): StrigaUserStatusDestination? {
+    fun getUserDestination(): StrigaUserStatusDestination {
         return userStatusRepository.getUserDestination()
     }
 }

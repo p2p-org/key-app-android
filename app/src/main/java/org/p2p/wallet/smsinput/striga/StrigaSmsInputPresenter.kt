@@ -5,7 +5,6 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
@@ -26,13 +25,8 @@ class StrigaSmsInputPresenter(
     private fun initPhoneNumber() {
         launch {
             try {
-                val (phoneCode, phoneNumber) = interactor.getUserPhoneCodeToPhoneNumber()
-                val phoneMask = interactor.getUserPhoneMask(phoneCode)
-                    ?.replace(Regex("\\d"), "#")
-                    ?: error("Couldn't find any masks for given code $phoneCode")
-
-                val formattedPhoneNumber = SimpleMaskFormatter(phoneMask).format(phoneNumber)
-                view?.initView(PhoneNumber(formattedValue = "$phoneCode$formattedPhoneNumber"))
+                val phoneNumber = interactor.getUserPhoneCodeToPhoneNumber()
+                view?.initView(PhoneNumber(formattedValue = phoneNumber.formattedPhoneNumberByMask))
             } catch (initViewError: Throwable) {
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 Timber.e(initViewError, "failed to init view for sms input")
@@ -80,9 +74,6 @@ class StrigaSmsInputPresenter(
 
     private fun handleApiError(apiServiceError: StrigaDataLayerError.ApiServiceError) {
         when (apiServiceError.errorCode) {
-            StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED -> {
-                view?.navigateToNumberAlreadyUsed()
-            }
             StrigaApiErrorCode.INVALID_VERIFICATION_CODE -> {
                 view?.renderIncorrectSms()
             }

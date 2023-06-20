@@ -65,8 +65,4 @@ class StrigaSmsInputFragment : BaseSmsInputFragment() {
     override fun navigateToExceededConfirmationAttempts() {
         replaceFragment(StrigaSmsErrorFragment.create(viewType = StrigaSmsErrorViewType.ExceededConfirmationAttempts()))
     }
-
-    override fun navigateToNumberAlreadyUsed() {
-        replaceFragment(StrigaSmsErrorFragment.create(viewType = StrigaSmsErrorViewType.NumberAlreadyUsed()))
-    }
 }

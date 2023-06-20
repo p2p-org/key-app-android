@@ -15,7 +15,23 @@ import org.p2p.wallet.common.analytics.constants.EventNames.BUY_TOTAL_SHOWED
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import java.math.BigDecimal
 
+private const val TOPUP_HOME_BAR_BUTTON = "Main_Screen_Topup_Bar"
+private const val TOPUP_ACTION_BUTTON_CLICKED = "Action_Button_Buy"
+private const val BUY_TOKEN_SCREEN_ACTION_CLICKED = "Token_Screen_Buy_Bar"
+
 class BuyAnalytics(private val tracker: Analytics) {
+
+    fun logTokenScreenActionClicked() {
+        tracker.logEvent(BUY_TOKEN_SCREEN_ACTION_CLICKED)
+    }
+
+    fun logTopupHomeBarClicked() {
+        tracker.logEvent(TOPUP_HOME_BAR_BUTTON)
+    }
+
+    fun logTopupActionButtonClicked() {
+        tracker.logEvent(TOPUP_ACTION_BUTTON_CLICKED)
+    }
 
     fun logScreenOpened(lastScreenName: String) {
         tracker.logEvent(

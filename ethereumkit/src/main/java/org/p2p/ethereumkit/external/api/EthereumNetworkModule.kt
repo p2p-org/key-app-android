@@ -9,7 +9,6 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import org.p2p.core.rpc.RpcApi
 import org.p2p.ethereumkit.external.api.coingecko.CoinGeckoService
 import org.p2p.ethereumkit.external.api.interceptor.EthereumApiLoggingInterceptor
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
@@ -26,10 +25,10 @@ internal object EthereumNetworkModule {
         single(named(QUALIFIER_ETH_RETROFIT)) {
             getRetrofit(
                 httpClient = get(named(QUALIFIER_ETH_HTTP_CLIENT)),
-                gson = get(named(QUALIFIER_RPC_GSON)))
+                gson = get(named(QUALIFIER_RPC_GSON))
+            )
         }
         single(named(QUALIFIER_RPC_GSON)) { GsonProvider().provide() }
-        single { get<Retrofit>(named(QUALIFIER_ETH_RETROFIT)).create(RpcApi::class.java) }
         single { get<Retrofit>(named(QUALIFIER_ETH_RETROFIT)).create(CoinGeckoService::class.java) }
     }
 
@@ -38,6 +37,7 @@ internal object EthereumNetworkModule {
             val requestBuilder = chain.request().newBuilder()
             chain.proceed(requestBuilder.build())
         }
+
         val httpClient = OkHttpClient.Builder()
             .addInterceptor(EthereumApiLoggingInterceptor())
             .addInterceptor(headersInterceptor)

@@ -222,6 +222,14 @@ class MainContainerFragment :
             }
             return
         }
+        when (clickedTab) {
+            ScreenTab.HOME_SCREEN -> presenter.logHomeOpened()
+            ScreenTab.EARN_SCREEN -> presenter.logEarnOpened()
+            ScreenTab.HISTORY_SCREEN -> presenter.logHistoryOpened()
+            ScreenTab.SWAP_SCREEN -> presenter.logSwapOpened()
+            ScreenTab.SETTINGS_SCREEN -> presenter.logSettingsOpened()
+            else -> Unit
+        }
 
         if (clickedTab == ScreenTab.SWAP_SCREEN) {
             presenter.logSwapOpened()

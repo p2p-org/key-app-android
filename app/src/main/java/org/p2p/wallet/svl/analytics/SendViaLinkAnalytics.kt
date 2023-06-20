@@ -1,5 +1,6 @@
 package org.p2p.wallet.svl.analytics
 
+import org.p2p.core.model.CurrencyMode
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.newsend.model.TemporaryAccount
 
@@ -19,6 +20,7 @@ class SendViaLinkAnalytics(
     private val tracker: Analytics
 ) {
 
+    private var isMaxButtonClicked = false
     fun logStartCreateLink() {
         tracker.logEvent(SEND_CLICK_START_CREATE_LINK)
     }
@@ -87,5 +89,29 @@ class SendViaLinkAnalytics(
 
     fun logLinkCopyIconClicked() {
         tracker.logEvent(SEND_CLICK_COPY_LINK)
+    }
+
+    fun setMaxButtonClicked(isClicked: Boolean) {
+        isMaxButtonClicked = isClicked
+    }
+
+    fun logSendConfirmButtonClicked(
+        tokenName: String,
+        amountInToken: String,
+        amountInUsd: String,
+        isFeeFree: Boolean,
+        mode: CurrencyMode
+    ) {
+        tracker.logEvent(
+            event = SEND_CLICK_CREATE_LINK,
+            params = mapOf(
+                "Token" to tokenName,
+                "Max" to isMaxButtonClicked,
+                "Amount_Token" to amountInToken,
+                "Amount_USD" to amountInUsd,
+                "Fee" to isFeeFree,
+                "Fiat_Input" to (mode is CurrencyMode.Fiat)
+            )
+        )
     }
 }
