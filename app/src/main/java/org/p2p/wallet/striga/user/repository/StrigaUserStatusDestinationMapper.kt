@@ -2,18 +2,34 @@ package org.p2p.wallet.striga.user.repository
 
 import timber.log.Timber
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
-import org.p2p.wallet.striga.user.model.StrigaUserStatus
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 
 class StrigaUserStatusDestinationMapper {
 
-    fun mapToDestination(userStatus: StrigaUserStatus?, isUserCreated: Boolean): StrigaUserStatusDestination {
-        return mapToSignUpStatus(userStatus, isUserCreated)
+    fun mapToDestination(userStatus: StrigaUserStatusDetails?): StrigaUserStatusDestination {
+        val isUserNotCreated = userStatus == null
+        return when {
+            isUserNotCreated -> {
+                StrigaUserStatusDestination.ONBOARDING
+            }
+            userStatus?.isMobileVerified == false -> {
+                StrigaUserStatusDestination.SMS_VERIFICATION
+            }
+            userStatus?.kysStatus != StrigaUserVerificationStatus.UNKNOWN -> {
+                StrigaUserStatusDestination.SUM_SUB_VERIFICATION
+            }
+            else -> {
+                Timber.d("User status is not defined: cannot navigate to somewhere")
+                StrigaUserStatusDestination.NONE
+            }
+        }
     }
 
-    fun mapToStatusBanner(userStatus: StrigaUserStatus?): StrigaKycStatusBanner? {
-        return when (userStatus?.kysStatus) {
+    fun mapToStatusBanner(userStatus: StrigaUserStatusDetails?): StrigaKycStatusBanner? {
+        if (userStatus == null || !userStatus.isMobileVerified) return null
+        return when (userStatus.kysStatus) {
             StrigaUserVerificationStatus.NOT_STARTED,
             StrigaUserVerificationStatus.INITIATED -> StrigaKycStatusBanner.IDENTIFY
             StrigaUserVerificationStatus.PENDING_REVIEW,
@@ -21,28 +37,7 @@ class StrigaUserStatusDestinationMapper {
             StrigaUserVerificationStatus.APPROVED -> StrigaKycStatusBanner.VERIFICATION_DONE
             StrigaUserVerificationStatus.REJECTED -> StrigaKycStatusBanner.ACTION_REQUIRED
             StrigaUserVerificationStatus.REJECTED_FINAL -> StrigaKycStatusBanner.REJECTED
-            else -> null
-        }
-    }
-
-    private fun isMobileVerified(userDetails: StrigaUserStatus?) =
-        userDetails?.isMobileVerified ?: false
-
-    private fun mapToSignUpStatus(status: StrigaUserStatus?, isUserCreated: Boolean): StrigaUserStatusDestination {
-        return when {
-            !isUserCreated -> {
-                StrigaUserStatusDestination.ONBOARDING
-            }
-            !isMobileVerified(status) -> {
-                StrigaUserStatusDestination.SMS_VERIFICATION
-            }
-            status?.kysStatus != null && status.kysStatus.ordinal > StrigaUserVerificationStatus.UNKNOWN.ordinal -> {
-                StrigaUserStatusDestination.SUM_SUB_VERIFICATION
-            }
-            else -> {
-                Timber.d("User status is not defined: cannot navigate to somewhere")
-                StrigaUserStatusDestination.NONE
-            }
+            StrigaUserVerificationStatus.UNKNOWN -> null
         }
     }
 }

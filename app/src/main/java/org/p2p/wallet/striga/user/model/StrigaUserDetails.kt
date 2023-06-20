@@ -76,7 +76,7 @@ data class StrigaUserKycInfo(
     val rejectionUserToAutoComments: Pair<String, String>? = null
 )
 
-data class StrigaUserStatus(
+data class StrigaUserStatusDetails(
     val userId: String,
     val isEmailVerified: Boolean,
     val isMobileVerified: Boolean,

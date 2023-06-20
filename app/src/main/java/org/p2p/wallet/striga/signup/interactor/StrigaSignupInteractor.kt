@@ -14,6 +14,7 @@ import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.model.map
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
@@ -60,14 +61,12 @@ class StrigaSignupInteractor(
         )
     }
 
-    suspend fun loadAndSaveSignupData() {
-        if (!userInteractor.isUserCreated()) {
-            return
-        }
-        val signupData = getSignupData()
-        if (signupData.isEmpty()) {
+    suspend fun loadAndSaveSignupData(): StrigaDataLayerResult<Unit> {
+        return if (userInteractor.isUserCreated() && getSignupData().isEmpty()) {
             Timber.d("Striga signup data: loading from remote")
-            loadSignupDataFromRemote()
+            loadAndSaveSignupDataFromRemote().map { }
+        } else {
+            StrigaDataLayerResult.Success(Unit)
         }
     }
 
@@ -226,14 +225,16 @@ class StrigaSignupInteractor(
         metadataInteractor.updateMetadata(newMetadata)
     }
 
-    private suspend fun loadSignupDataFromRemote() {
-        when (val userDetails = userInteractor.getUserDetails()) {
+    private suspend fun loadAndSaveSignupDataFromRemote(): StrigaDataLayerResult<StrigaUserDetails> {
+        return when (val userDetails = userInteractor.getUserDetails()) {
             is StrigaDataLayerResult.Success<StrigaUserDetails> -> {
                 val signupData = userDetails.value.toSignupData()
                 signupDataRepository.updateSignupData(signupData)
+                userDetails
             }
             is StrigaDataLayerResult.Failure -> {
                 Timber.e(userDetails.error, "Unable to load striga user details")
+                userDetails
             }
         }
     }
