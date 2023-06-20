@@ -109,15 +109,16 @@ class DebugWeb3Fragment : BaseFragment(R.layout.fragment_debug_web3) {
             .orEmpty()
         if (cipheredMetadata.isNotBlank()) {
             // get json like GatewayOnboardingMetadataCiphered
-            val metadataAsJson = kotlin.runCatching {
-                gson.fromJsonReified<GatewayOnboardingMetadataCiphered>(
-                    cipheredMetadata.toBase64Instance()
-                        .decodeToBytes()
-                        .toString(Charset.defaultCharset())
-                )
-            }
-                .onFailure { toast(it.toString()) }
-                .getOrNull()
+            val metadataAsJson =
+                kotlin.runCatching {
+                    gson.fromJsonReified<GatewayOnboardingMetadataCiphered>(
+                        cipheredMetadata.toBase64Instance()
+                            .decodeToBytes()
+                            .toString(Charset.defaultCharset())
+                    )
+                }
+                    .onFailure { toast(it.toString()) }
+                    .getOrNull()
             val seedPhrase = signUpDetailsStorage.getLastSignUpUserDetails()
                 ?.signUpDetails
                 ?.mnemonicPhraseWords
