@@ -80,9 +80,9 @@ class StrigaUserDetailsResponse(
         @SerializedName("status")
         val status: String,
         @SerializedName("details")
-        val details: List<String>,
+        val details: List<String>? = emptyList(),
         @SerializedName("rejectionComments")
-        val rejectionComments: RejectionCommentsResponse
+        val rejectionComments: RejectionCommentsResponse?
     ) {
         class RejectionCommentsResponse(
             @SerializedName("userComment")
