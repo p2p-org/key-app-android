@@ -28,7 +28,8 @@ interface HomeContract {
         fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom)
         fun showSwap(source: SwapOpenedFrom)
         fun showCashOut()
-
+        fun showSwap()
+        fun showTopup()
         fun navigateToProfile()
         fun navigateToReserveUsername()
         fun showAddressCopied(addressOrUsername: String)
@@ -40,13 +41,15 @@ interface HomeContract {
         fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress)
         fun navigateToBuyScreen(token: Token)
         fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?)
-
         fun navigateToKycStatus(status: StrigaKycStatusBanner)
         fun showTopupWalletDialog()
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun onBuyClicked()
+        fun onSellClicked()
+        fun onSwapClicked()
+        fun onTopupClicked()
         fun onSendClicked(clickSource: SearchOpenedFromScreen)
         fun onBuyTokenClicked(token: Token)
         fun onInfoBuyTokenClicked(token: Token)

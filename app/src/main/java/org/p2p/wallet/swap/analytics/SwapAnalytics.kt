@@ -29,8 +29,14 @@ import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_VIEWED
 import java.math.BigDecimal
 
 private const val SWAP_MAIN_SWAP = "Main_Swap"
+private const val SWAP_HOME_BAR_BUTTON = "Main_Swap_Buy_Bar"
+private const val SWAP_TOKEN_SCREEN_ACTION_CLICKED = "Token_Screen_Swap_Bar"
 
 class SwapAnalytics(private val tracker: Analytics) {
+
+    fun logTokenScreenActionClicked() {
+        tracker.logEvent(SWAP_TOKEN_SCREEN_ACTION_CLICKED)
+    }
 
     fun logSwapOpenedFromMain(isSellEnabled: Boolean) {
         tracker.logEvent(
@@ -294,6 +300,10 @@ class SwapAnalytics(private val tracker: Analytics) {
 
     fun logSwapActionButtonClicked() {
         tracker.logEvent(event = SWAP_ACTION_BUTTON_CLICKED)
+    }
+
+    fun logSwapHomeBarClicked() {
+        tracker.logEvent(SWAP_HOME_BAR_BUTTON)
     }
 
     fun logSwapConfirmButtonClicked(
