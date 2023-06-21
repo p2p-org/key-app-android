@@ -70,4 +70,12 @@ class LengthInputValidatorTest {
         val result = validator.validate(input)
         assertTrue(result)
     }
+
+    @Test
+    fun `GIVEN input with only spaces WHEN validate THEN return false with appropriate error message`() {
+        val validator = LengthInputValidator(minLength = 2)
+        val input = "     "
+        val result = validator.validate(input)
+        assertFalse(result)
+    }
 }

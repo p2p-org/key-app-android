@@ -123,7 +123,8 @@ class StrigaSignupInteractor(
     fun saveChanges(data: Collection<StrigaSignupData>) {
         // use AppScope to make sure that data will be saved even if view scope has been cancelled
         appScope.launch {
-            signupDataRepository.updateSignupData(data)
+            val trimmedValues = data.map { it.copy(value = it.value?.trim()) }
+            signupDataRepository.updateSignupData(trimmedValues)
         }
         Timber.d("Striga signup data: saved")
     }
