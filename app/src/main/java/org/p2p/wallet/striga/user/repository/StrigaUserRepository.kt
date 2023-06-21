@@ -5,6 +5,7 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.user.model.StrigaUserDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
+import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 
 interface StrigaUserRepository {
     suspend fun createUser(data: List<StrigaSignupData>): StrigaDataLayerResult<StrigaUserInitialDetails>
@@ -14,4 +15,6 @@ interface StrigaUserRepository {
     suspend fun resendSmsForVerifyPhoneNumber(): StrigaDataLayerResult<Unit>
 
     suspend fun getAccessToken(): StrigaDataLayerResult<String>
+
+    suspend fun simulateUserStatus(status: StrigaUserVerificationStatus): StrigaDataLayerResult<Unit>
 }
