@@ -63,13 +63,8 @@ class MetadataInteractor(
             GatewayOnboardingMetadata::class
         ) ?: return false
 
-        // if device share doesn't exist, then the device is new and we can't compare
-        if (!hasDeviceShare()) {
-            return false
-        }
-
         // if device share is not empty we are checking with the current system device share
-        return DeviceInfoHelper.getCurrentDeviceName() == metadata.deviceShareDeviceName
+        return DeviceInfoHelper.getCurrentDeviceName() != metadata.deviceShareDeviceName
     }
 
     private fun getEthereumPublicKey(): String? {

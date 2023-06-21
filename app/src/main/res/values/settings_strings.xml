@@ -111,7 +111,7 @@
 
 
     <string name="devices_change_sms_input_toolbar_title">Confirm your number</string>
-    <string name="devices_change_update_message">Updating your authorization device</string>
+    <string name="devices_change_update_message">Updating</string>
     <string name="devices_change_success_message">✌️ The device was successfully changed</string>
 
     <!--Seed Phrase Kit-->
