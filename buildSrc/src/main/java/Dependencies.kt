@@ -10,6 +10,7 @@ object Dependencies {
 
     private const val androidBuildToolsVersion = "7.4.1"
 
+
     // Kotlin
     const val kotlinStdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlinVersion}"
     const val kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlinVersion}"
@@ -39,4 +40,9 @@ object Dependencies {
         adapterDelegates,
         adapterDelegatesBinding,
     )
+
+    //Third party libraries version
+    private const val timberVersion = "5.0.1"
+    const val timber = "com.jakewharton.timber:timber:$timberVersion"
+
 }

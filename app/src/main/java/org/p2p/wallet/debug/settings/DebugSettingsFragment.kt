@@ -23,7 +23,7 @@ import org.p2p.wallet.debug.settings.adapter.settingsRowSectionItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowSwtichItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowTitleItemDelegate
 import org.p2p.wallet.debug.torus.DebugTorusFragment
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.utils.getSerializableOrNull
@@ -108,6 +108,12 @@ class DebugSettingsFragment :
             }
             R.string.debug_settings_web3 -> {
                 replaceFragment(DebugWeb3Fragment.create())
+            }
+            R.string.debug_settings_kyc_set_rejected_title -> {
+                presenter.onClickSetKycRejected()
+            }
+            R.string.debug_settings_striga_detach_user_id_title -> {
+                presenter.onClickDetachStrigaUser()
             }
         }
     }

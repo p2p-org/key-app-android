@@ -8,7 +8,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.mvp.NoOpPresenter
 import org.p2p.wallet.databinding.FragmentStrigaSignupFinishBinding
-import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.kyc.ui.StrigaKycFragment
 import org.p2p.wallet.utils.popBackStackTo
@@ -49,6 +49,6 @@ class StrigaSignupFinishFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpVie
     }
 
     private fun returnToMain() {
-        popBackStackTo(HomeFragment::class)
+        popBackStackTo(MainContainerFragment::class)
     }
 }

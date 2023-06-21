@@ -16,7 +16,7 @@ import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
+import org.p2p.core.network.environment.TorusEnvironment
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"
@@ -193,12 +193,12 @@ class Web3AuthApiClient(
         return buildString {
             append("lastFacade = new p2pWeb3Auth.AndroidFacade({")
             append("type: '$type', ")
-            append("useNewEth: $useNewUth, ")
             append("torusNetwork: '$torusNetworkEnv', ")
             append("torusLoginType: 'google', ")
             append("torusEndpoint: '$torusStorageProviderEndpoint', ")
             append("torusVerifier: '$torusVerifier', ")
             if (isSignUp) {
+                append("useNewEth: $useNewUth, ")
                 append("privateInput: '$seedPhraseAsString', ")
             }
             if (!torusSubVerifier.isNullOrBlank()) {

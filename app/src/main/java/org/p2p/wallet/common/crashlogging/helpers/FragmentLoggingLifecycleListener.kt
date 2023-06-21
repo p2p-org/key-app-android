@@ -1,13 +1,12 @@
 package org.p2p.wallet.common.crashlogging.helpers
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import android.os.Bundle
+import android.view.View
 import timber.log.Timber
 
 private const val TAG = "FragmentLoggingLifecycleListener"
-
 class FragmentLoggingLifecycleListener : FragmentManager.FragmentLifecycleCallbacks() {
     private fun logLifecycleAction(fragment: Fragment, action: String) {
         Timber.tag(TAG).i("LIFECYCLE ${fragment.javaClass.simpleName}: $action")

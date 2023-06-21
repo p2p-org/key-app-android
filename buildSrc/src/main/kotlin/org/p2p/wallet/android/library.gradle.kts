@@ -24,8 +24,7 @@ android {
     }
 
     buildTypes {
-        getByName("debug") {
-        }
+        getByName("debug") {}
 
         create("feature") {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

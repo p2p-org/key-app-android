@@ -14,14 +14,14 @@ import org.json.JSONObject
 import org.json.JSONTokener
 import timber.log.Timber
 import java.io.IOException
-import org.p2p.wallet.BuildConfig
+import org.p2p.core.BuildConfig.rpcPoolApiKey
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerErrorResponse
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.utils.toJsonObject
 
 private const val TAG = "RpcInterceptor"
@@ -61,7 +61,7 @@ class RpcInterceptor(
             .host(newHost)
             .apply {
                 if (networkEnvironment == NetworkEnvironment.RPC_POOL) {
-                    addEncodedPathSegment(BuildConfig.rpcPoolApiKey)
+                    addEncodedPathSegment(rpcPoolApiKey)
                 }
             }
             .build()

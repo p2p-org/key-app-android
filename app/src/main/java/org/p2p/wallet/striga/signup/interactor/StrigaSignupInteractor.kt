@@ -156,6 +156,8 @@ class StrigaSignupInteractor(
             }
         }
 
+        // not critical, we can ignore errors from this call
+        userInteractor.loadAndSaveUserStatusData()
         userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
     }
 

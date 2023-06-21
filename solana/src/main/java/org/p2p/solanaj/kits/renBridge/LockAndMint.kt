@@ -6,7 +6,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.kits.renBridge.script.Script
-import org.p2p.solanaj.rpc.RpcEnvironment
+import org.p2p.core.network.environment.RpcEnvironment
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.solanaj.utils.Hash
 import org.p2p.solanaj.utils.Utils

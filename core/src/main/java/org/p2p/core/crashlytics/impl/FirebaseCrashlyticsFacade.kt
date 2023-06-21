@@ -1,7 +1,7 @@
-package org.p2p.wallet.common.crashlogging.impl
+package org.p2p.core.crashlytics.impl
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
+import org.p2p.core.crashlytics.CrashLoggingFacade
 
 @Suppress("DEPRECATION")
 class FirebaseCrashlyticsFacade : CrashLoggingFacade {

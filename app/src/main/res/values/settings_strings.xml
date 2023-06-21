@@ -17,7 +17,10 @@
     <string name="debug_settings_moonpay_sandbox">Moonpay sandbox</string>
     <string name="debug_settings_title">Settings</string>
     <string name="debug_settings_network">Network</string>
+    <string name="debug_settings_striga_title">Striga</string>
     <string name="debug_settings_kyc_mock_title">KYC Banner mock</string>
+    <string name="debug_settings_kyc_set_rejected_title">KYC Simulate rejected</string>
+    <string name="debug_settings_striga_detach_user_id_title">Detach striga from web3 user</string>
 
     <!-- Debug Settings -> Notifications -->
     <string name="debug_notifications_title">Debug Notifications</string>
@@ -108,7 +111,7 @@
 
 
     <string name="devices_change_sms_input_toolbar_title">Confirm your number</string>
-    <string name="devices_change_update_message">Updating your authorization device</string>
+    <string name="devices_change_update_message">Updating</string>
     <string name="devices_change_success_message">✌️ The device was successfully changed</string>
 
     <!--Seed Phrase Kit-->
