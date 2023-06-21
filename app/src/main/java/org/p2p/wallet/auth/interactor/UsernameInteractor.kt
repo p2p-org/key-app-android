@@ -9,7 +9,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
-import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.logger.crashlytics.CrashLogger
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.storage.FileRepository

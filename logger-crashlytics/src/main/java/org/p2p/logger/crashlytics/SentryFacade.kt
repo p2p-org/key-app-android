@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package org.p2p.wallet.common.crashlogging.impl
+package org.p2p.logger.crashlytics
 
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
@@ -9,8 +9,7 @@ import io.sentry.protocol.User
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import kotlinx.coroutines.CancellationException
-import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
+import kotlin.coroutines.cancellation.CancellationException
 
 private const val BREADCRUMB_CATEGORY = "SentryFacade"
 

@@ -13,10 +13,10 @@ import org.p2p.wallet.bridge.claim.ClaimModule
 import org.p2p.wallet.bridge.send.BridgeSendModule
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.analytics.AnalyticsModule
-import org.p2p.wallet.common.crashlogging.CrashLogger
-import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
-import org.p2p.wallet.common.crashlogging.impl.FirebaseCrashlyticsFacade
-import org.p2p.wallet.common.crashlogging.impl.SentryFacade
+import org.p2p.logger.crashlytics.CrashLogger
+import org.p2p.logger.crashlytics.CrashLoggingFacade
+import org.p2p.logger.crashlytics.FirebaseCrashlyticsFacade
+import org.p2p.logger.crashlytics.SentryFacade
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
@@ -57,8 +57,7 @@ object AppModule {
         single { AppRestarter { restartAction.invoke() } }
         single {
             CrashLogger(
-                crashLoggingFacades = getActiveCrashLoggingFacades(),
-                tokenKeyProvider = get()
+                crashLoggingFacades = getActiveCrashLoggingFacades()
             )
         }
         single {

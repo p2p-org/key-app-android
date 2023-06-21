@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.interactor
 
+import org.p2p.logger.crashlytics.CrashLogger
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
@@ -15,7 +16,8 @@ class CreateWalletInteractor(
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
     private val smsInputTimer: SmsInputTimer,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val seedPhraseProvider: SeedPhraseProvider
+    private val seedPhraseProvider: SeedPhraseProvider,
+    private val crashLogger: CrashLogger
 ) {
     class CreateWalletFailure(override val message: String) : Throwable(message)
 
@@ -106,6 +108,7 @@ class CreateWalletInteractor(
         signUpFlowDataRepository.userAccount?.also {
             tokenKeyProvider.keyPair = it.keypair
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
+            crashLogger.setUserId(tokenKeyProvider.publicKey)
         } ?: throw CreateWalletFailure("User account is null, creating a user is failed")
 
         signUpFlowDataRepository.clear()

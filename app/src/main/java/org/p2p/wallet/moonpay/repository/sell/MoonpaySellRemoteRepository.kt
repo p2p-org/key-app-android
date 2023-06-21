@@ -7,7 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.logger.crashlytics.CrashLogger
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi

@@ -4,7 +4,7 @@ import android.content.Context
 import timber.log.Timber
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.logger.crashlytics.CrashLogger
 import org.p2p.wallet.common.feature_toggles.remote_config.NetworkServicesUrlStorage
 import org.p2p.wallet.utils.getStringResourceByName
 

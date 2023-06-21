@@ -1,9 +1,10 @@
-package org.p2p.wallet.common.crashlogging.helpers
+package org.p2p.logger.crashlytics.helpers
 
 import android.util.Log
 import timber.log.Timber
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.logger.BuildConfig
+import org.p2p.logger.crashlytics.CrashLogger
+
 
 class TimberCrashTree(
     private val crashLogger: CrashLogger

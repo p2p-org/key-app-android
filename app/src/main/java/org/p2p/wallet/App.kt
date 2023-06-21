@@ -16,12 +16,13 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import timber.log.Timber
+import org.p2p.logger.crashlytics.CrashLogger
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.common.crashlogging.CrashLogger
-import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
+import org.p2p.logger.crashlytics.helpers.TimberCrashTree
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.root.RootActivity
@@ -34,6 +35,7 @@ class App : Application(), Configuration.Provider {
     private val appsFlyerService: AppsFlyerService by inject()
     private val usernameInteractor: UsernameInteractor by inject()
     private val networkServicesUrlProvider: NetworkServicesUrlProvider by inject()
+    private val userTokenProvider: TokenKeyProvider by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -116,6 +118,7 @@ class App : Application(), Configuration.Provider {
 
     private fun setupCrashLoggingService() {
         crashLogger.apply {
+            setUserId(userTokenProvider.publicKey)
             setCustomKey("crashlytics_enabled", BuildConfig.CRASHLYTICS_ENABLED)
             setCustomKey("verifier", networkServicesUrlProvider.loadTorusEnvironment().verifier)
             setCustomKey("sub_verifier", networkServicesUrlProvider.loadTorusEnvironment().subVerifier.orEmpty())
