@@ -87,7 +87,7 @@ class DebugSettingsPresenter(
         }
     }
 
-    override fun onDetachStrigaUser() {
+    override fun onClickDetachStrigaUser() {
         launch {
             val metadata = metadataInteractor.currentMetadata
             if (metadata == null) {

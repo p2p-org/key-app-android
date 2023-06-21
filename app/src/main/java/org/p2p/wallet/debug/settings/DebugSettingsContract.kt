@@ -18,6 +18,6 @@ interface DebugSettingsContract {
         fun switchNameServiceUrl(isProdSelected: Boolean)
         fun onSettingsPopupMenuClicked(selectedValue: String)
         fun onClickSetKycRejected()
-        fun onDetachStrigaUser()
+        fun onClickDetachStrigaUser()
     }
 }

@@ -113,7 +113,7 @@ class DebugSettingsFragment :
                 presenter.onClickSetKycRejected()
             }
             R.string.debug_settings_striga_detach_user_id_title -> {
-                presenter.onDetachStrigaUser()
+                presenter.onClickDetachStrigaUser()
             }
         }
     }
