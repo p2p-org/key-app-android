@@ -4,9 +4,9 @@ package org.p2p.wallet.striga.signup.interactor
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import io.mockk.slot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -27,7 +27,6 @@ import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
@@ -43,6 +42,7 @@ import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 import org.p2p.wallet.utils.TestAppScope
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.createHttpException
+import org.p2p.wallet.utils.mockInAppFeatureFlag
 
 private val SupportedCountry = CountryCode(
     countryName = "United Kingdom",
@@ -94,14 +94,9 @@ class StrigaSignupInteractorTest {
     fun setUp() {
         MockKAnnotations.init(this)
 
-        val simulateWeb3Flag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
-            every { featureValue } returns false
-        }
-        val simulateUserCreateFlag = mockk<StrigaSimulateWeb3Flag>(relaxed = true) {
-            every { featureValue } returns false
-        }
-        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateWeb3Flag
-        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns simulateUserCreateFlag
+        every { inAppFeatureFlags.strigaSimulateWeb3Flag } returns mockInAppFeatureFlag(false)
+        every { inAppFeatureFlags.strigaSimulateUserCreateFlag } returns mockInAppFeatureFlag(false)
+        every { inAppFeatureFlags.strigaSimulateMobileAlreadyVerifiedFlag } returns mockInAppFeatureFlag(false)
 
         coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
     }
@@ -350,6 +345,7 @@ class StrigaSignupInteractorTest {
             strigaMetadata = null
         )
 
+        coEvery { userInteractor.loadAndSaveUserStatusData() } returns StrigaDataLayerResult.Success(Unit)
         coEvery { userInteractor.createUser(any()) } returns StrigaDataLayerResult.Success(
             StrigaUserInitialDetails(
                 userId = "userId",
@@ -369,6 +365,8 @@ class StrigaSignupInteractorTest {
         assertDoesNotThrow { interactor.createUser() }
         val updatedMetadata = updatedMetadataSlot.captured
         assertEquals("userId", updatedMetadata.strigaMetadata?.userId)
+
+        coVerify(exactly = 1) { userInteractor.loadAndSaveUserStatusData() }
     }
 
     @Test
