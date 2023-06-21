@@ -2,10 +2,10 @@ package org.p2p.wallet.svl.model
 
 import timber.log.Timber
 import kotlin.random.Random
+import org.p2p.core.BuildConfig.saltPrefix
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.AccountCreationFailed
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.utils.emptyString
 
@@ -25,7 +25,7 @@ object SendLinkGenerator {
                 words = generatedSymbols,
                 walletIndex = 0,
                 derivationPath = DerivationPath.BIP44CHANGE,
-                saltPrefix = BuildConfig.saltPrefix,
+                saltPrefix = saltPrefix,
                 includeSpaces = false
             )
         } catch (failed: AccountCreationFailed) {
@@ -47,7 +47,7 @@ object SendLinkGenerator {
             words = seedCode,
             walletIndex = 0,
             derivationPath = DerivationPath.BIP44CHANGE,
-            saltPrefix = BuildConfig.saltPrefix,
+            saltPrefix = saltPrefix,
             includeSpaces = false
         )
 

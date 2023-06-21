@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package org.p2p.logger.crashlytics
+package org.p2p.core.crashlytics.impl
 
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
@@ -10,6 +10,7 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import kotlin.coroutines.cancellation.CancellationException
+import org.p2p.core.crashlytics.CrashLoggingFacade
 
 private const val BREADCRUMB_CATEGORY = "SentryFacade"
 

@@ -1,4 +1,4 @@
-package org.p2p.logger.crashlytics
+package org.p2p.core.crashlytics
 
 class CrashLogger(
     @Suppress("DEPRECATION")

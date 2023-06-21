@@ -5,9 +5,9 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
+import org.p2p.core.BuildConfig.moonpayKey
 import org.p2p.core.token.Token
-import org.p2p.wallet.BuildConfig
-import org.p2p.logger.crashlytics.CrashLogger
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
@@ -48,7 +48,7 @@ class MoonpaySellRemoteRepository(
     override suspend fun loadMoonpayFlags() {
         withContext(dispatchers.io) {
             try {
-                cachedMoonpayIpFlags = moonpayClientSideApi.getIpAddress(BuildConfig.moonpayKey)
+                cachedMoonpayIpFlags = moonpayClientSideApi.getIpAddress(moonpayKey)
                 Timber.tag(TAG).i("Moonpay IP flags were fetched successfully")
                 crashLogger.setCustomKey("is_moonpay_ip_fetched", true)
             } catch (e: Throwable) {
@@ -98,7 +98,7 @@ class MoonpaySellRemoteRepository(
                 kotlin.runCatching {
                     moonpayClientSideApi.getSellTransactionDepositWalletById(
                         transactionId = it.transactionId,
-                        apiKey = BuildConfig.moonpayKey
+                        apiKey = moonpayKey
                     )
                 }.getOrNull() // skip if couldn't fetch
             }
@@ -112,7 +112,7 @@ class MoonpaySellRemoteRepository(
         mapper.fromNetwork(
             moonpayClientSideApi.getSellQuoteForToken(
                 tokenSymbol = tokenToSell.tokenSymbol.lowercase(),
-                apiKey = BuildConfig.moonpayKey,
+                apiKey = moonpayKey,
                 fiatName = fiat.abbriviation,
                 tokenAmount = tokenAmount.toDouble()
             )

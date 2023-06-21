@@ -1,6 +1,6 @@
 package org.p2p.wallet.auth.interactor
 
-import org.p2p.logger.crashlytics.CrashLogger
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository

@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
 import timber.log.Timber
-import org.p2p.logger.crashlytics.CrashLogger
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet

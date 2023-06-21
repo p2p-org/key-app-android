@@ -3,7 +3,7 @@ package org.p2p.wallet.settings.ui.settings
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.wallet.settings.model.SettingsItem
 
 interface SettingsContract {

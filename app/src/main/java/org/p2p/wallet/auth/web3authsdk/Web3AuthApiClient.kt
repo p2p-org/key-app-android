@@ -16,7 +16,7 @@ import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
+import org.p2p.core.network.environment.TorusEnvironment
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"

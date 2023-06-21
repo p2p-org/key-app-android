@@ -89,7 +89,6 @@ dependencies {
     implementation(project(":ui-kit"))
     implementation(project(":core"))
     implementation(project(":ethereumkit"))
-    implementation(project(":logger-crashlytics"))
 
     implementation(files("libs/borshj-0.0.0.jar"))
 

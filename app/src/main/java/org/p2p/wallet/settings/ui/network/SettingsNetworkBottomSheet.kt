@@ -11,7 +11,7 @@ import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSettingsNetworkBinding
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs

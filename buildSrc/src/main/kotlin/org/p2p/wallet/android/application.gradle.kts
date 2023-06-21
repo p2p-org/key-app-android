@@ -15,9 +15,7 @@ apply {
     from("${project.rootDir}/.scripts/ktlint.gradle")
     from("${project.rootDir}/.scripts/versioning.gradle")
     from("${project.rootDir}/.scripts/signing.gradle")
-    from("${project.rootDir}/.scripts/config.gradle")
     from("${project.rootDir}/.scripts/analytics.gradle")
-    from("${project.rootDir}/.scripts/torus.gradle")
 }
 
 android {
@@ -82,12 +80,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     applicationVariants.all {

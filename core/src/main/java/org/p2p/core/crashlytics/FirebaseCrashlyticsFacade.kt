@@ -1,4 +1,4 @@
-package org.p2p.logger.crashlytics
+package org.p2p.core.crashlytics
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 

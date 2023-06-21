@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.web3authsdk
 
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
+import org.p2p.core.network.environment.TorusEnvironment
 import org.p2p.wallet.utils.DateTimeUtils.PATTERN_HH_MM_SS_SS
 import org.p2p.wallet.utils.DateTimeUtils.getFormattedDate
 import org.p2p.wallet.utils.emptyString

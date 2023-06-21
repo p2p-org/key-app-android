@@ -1,4 +1,4 @@
-package org.p2p.wallet.infrastructure.network.environment
+package org.p2p.core.network.environment
 
 data class MoonpayEnvironment(
     val baseServerSideUrl: String,

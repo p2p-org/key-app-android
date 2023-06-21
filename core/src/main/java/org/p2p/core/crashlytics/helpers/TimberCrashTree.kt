@@ -1,9 +1,9 @@
-package org.p2p.logger.crashlytics.helpers
+package org.p2p.core.crashlytics.helpers
 
 import android.util.Log
 import timber.log.Timber
-import org.p2p.logger.BuildConfig
-import org.p2p.logger.crashlytics.CrashLogger
+import org.p2p.core.BuildConfig
+import org.p2p.core.crashlytics.CrashLogger
 
 
 class TimberCrashTree(
