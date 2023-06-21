@@ -71,6 +71,8 @@ class JupiterSwapSendTransactionDelegate(
     } catch (error: Throwable) {
         Timber.i(error, "Unknown error met while sending swap transaction")
         JupiterSwapTokensResult.Failure(error)
+    } finally {
+        retryCount = 0
     }
 
     private suspend fun generateNewSwapTransaction(route: JupiterSwapRoute): Base64String? = try {
