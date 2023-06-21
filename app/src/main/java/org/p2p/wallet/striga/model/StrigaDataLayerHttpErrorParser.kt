@@ -19,7 +19,7 @@ class StrigaDataLayerHttpErrorParser {
             HttpURLConnection.HTTP_CONFLICT, HttpURLConnection.HTTP_BAD_REQUEST -> {
                 httpException.response()
                     ?.let(::parseJsonErrorBody)
-                    ?.let(StrigaDataLayerError::ApiServiceError)
+                    ?.let(StrigaDataLayerError.ApiServiceError::invoke)
                     ?: StrigaDataLayerError.InternalError(cause = httpException)
             }
             else -> {

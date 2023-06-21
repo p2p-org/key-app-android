@@ -12,6 +12,8 @@ private const val SELL_AMOUNT_NEXT = "Sell_Amount_Next"
 private const val SELL_MOONPAY = "Sell_Moonpay"
 private const val SELL_ONLY_SOL_NOTIFICATION = "Sell_Only_SOL_Notification"
 private const val SELL_MOONPAY_OPEN_NOTIFICATION = "Sell_Moonpay_Open_Notification"
+private const val SELL_HOME_BAR_BUTTON = "Main_Screen_Cash_Out_Bar"
+private const val SELL_TOKEN_SCREEN_ACTION_CLICKED = "Token_Screen_Sell_Bar"
 
 class SellAnalytics(
     private val tracker: Analytics
@@ -21,6 +23,14 @@ class SellAnalytics(
             event = SELL_CLICKED,
             params = mapOf("Source" to source.value)
         )
+    }
+
+    fun logTokenScreenActionClicked() {
+        tracker.logEvent(SELL_TOKEN_SCREEN_ACTION_CLICKED)
+    }
+
+    fun logCashOutHomeBarClicked() {
+        tracker.logEvent(SELL_HOME_BAR_BUTTON)
     }
 
     fun logSellServerErrorOpened() {

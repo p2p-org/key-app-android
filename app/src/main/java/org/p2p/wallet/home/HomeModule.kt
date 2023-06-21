@@ -118,7 +118,11 @@ object HomeModule : InjectionModule {
                 strigaUserInteractor = get(),
                 strigaSignupInteractor = get(),
                 context = get(),
-                strigaUiBannerMapper = StrigaKycUiBannerMapper()
+                strigaUiBannerMapper = StrigaKycUiBannerMapper(),
+                sendAnalytics = get(),
+                sellAnalytics = get(),
+                swapAnalytics = get(),
+                buyAnalytics = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

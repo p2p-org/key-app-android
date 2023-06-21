@@ -19,6 +19,7 @@ import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import org.p2p.core.BuildConfig
 import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
+import org.p2p.core.rpc.RpcApi
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
@@ -98,6 +99,15 @@ object NetworkModule : InjectionModule {
                 tag = "Rpc",
                 interceptor = RpcInterceptor(get(), get())
             )
+        }
+        single<RpcApi> {
+            getRetrofit(
+                // no need for baseUrl here, we pass URL inside RpcApi
+                baseUrl = "http://localhost/",
+                tag = "RpcApi",
+                interceptor = null
+            )
+                .create(RpcApi::class.java)
         }
         single(named(REN_POOL_RETROFIT_QUALIFIER)) {
             val environment = get<NetworkEnvironmentManager>().loadRpcEnvironment()

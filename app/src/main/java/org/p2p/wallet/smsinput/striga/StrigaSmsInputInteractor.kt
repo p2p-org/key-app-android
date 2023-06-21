@@ -1,5 +1,6 @@
 package org.p2p.wallet.smsinput.striga
 
+import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
@@ -8,6 +9,7 @@ import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
+import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 
@@ -18,17 +20,21 @@ class StrigaSmsInputInteractor(
     private val inAppFeatureFlags: InAppFeatureFlags,
 ) {
 
-    suspend fun getUserPhoneCodeToPhoneNumber(): Pair<String, String> {
-        val userSignupData = strigaSignupDataRepository.getUserSignupDataAsMap().unwrap()
-        val phoneCode = userSignupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value
-            ?: error("Failed to find phone code")
-        val phoneNumber = userSignupData[StrigaSignupDataType.PHONE_NUMBER]?.value
-            ?: error("Failed to find phone number")
-        return phoneCode to phoneNumber
+    suspend fun getUserPhoneCodeToPhoneNumber(): PhoneNumberWithCode {
+        val userSignupData = strigaSignupDataRepository.getUserSignupDataAsMap()
+            .unwrap()
+        return getPhoneNumberWithCodeFromLocal(userSignupData)
     }
 
-    fun getUserPhoneMask(phoneCode: String): String? {
-        return phoneCodeRepository.findCountryCodeByPhoneCode(phoneCode)?.mask
+    private fun getPhoneNumberWithCodeFromLocal(
+        userSignupData: Map<StrigaSignupDataType, StrigaSignupData>
+    ): PhoneNumberWithCode {
+        val phoneCode = userSignupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value
+            ?.let { phoneCodeRepository.findCountryCodeByPhoneCode(it) }
+            ?: error("Failed to find phone code in signup details")
+        val phoneNumber = userSignupData[StrigaSignupDataType.PHONE_NUMBER]?.value
+            ?: error("Failed to find phone number in signup details")
+        return PhoneNumberWithCode(phoneCode, phoneNumber)
     }
 
     suspend fun validateSms(smsCode: String): StrigaDataLayerResult<Unit> {

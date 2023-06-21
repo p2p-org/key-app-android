@@ -26,6 +26,7 @@ class MetadataInteractor(
     private val gatewayMetadataMerger: GatewayMetadataMerger,
     private val ethereumInteractor: EthereumInteractor,
     private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
+    private val metadataChangesLogger: MetadataChangesLogger
 ) {
 
     var currentMetadata: GatewayOnboardingMetadata? = null
@@ -62,13 +63,8 @@ class MetadataInteractor(
             GatewayOnboardingMetadata::class
         ) ?: return false
 
-        // if device share doesn't exist, then the device is new and we can't compare
-        if (!hasDeviceShare()) {
-            return false
-        }
-
         // if device share is not empty we are checking with the current system device share
-        return DeviceInfoHelper.getCurrentDeviceName() == metadata.deviceShareDeviceName
+        return DeviceInfoHelper.getCurrentDeviceName() != metadata.deviceShareDeviceName
     }
 
     private fun getEthereumPublicKey(): String? {
@@ -108,6 +104,10 @@ class MetadataInteractor(
     }
 
     suspend fun updateMetadata(metadata: GatewayOnboardingMetadata) {
+        metadataChangesLogger.logChange(
+            metadataOld = currentMetadata,
+            metadataNew = metadata
+        )
         currentMetadata = metadata
         tryToUploadMetadata(metadata)
     }
@@ -198,6 +198,10 @@ class MetadataInteractor(
             }
             updatedMetadata
         } ?: serverMetadata
+        metadataChangesLogger.logChange(
+            metadataOld = currentMetadata,
+            metadataNew = finalMetadata
+        )
         currentMetadata = finalMetadata
     }
 }

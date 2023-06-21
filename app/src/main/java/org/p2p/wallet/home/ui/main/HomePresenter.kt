@@ -60,12 +60,16 @@ import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
+import org.p2p.wallet.moonpay.analytics.BuyAnalytics
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
+import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SocketState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
@@ -116,6 +120,10 @@ class HomePresenter(
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaUiBannerMapper: StrigaKycUiBannerMapper,
+    private val sendAnalytics: NewSendAnalytics,
+    private val sellAnalytics: SellAnalytics,
+    private val swapAnalytics: SwapAnalytics,
+    private val buyAnalytics: BuyAnalytics,
     bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
@@ -424,6 +432,21 @@ class HomePresenter(
         }
     }
 
+    override fun onSellClicked() {
+        sellAnalytics.logSellSubmitClicked()
+        view?.showCashOut()
+    }
+
+    override fun onSwapClicked() {
+        swapAnalytics.logSwapActionButtonClicked()
+        view?.showSwap()
+    }
+
+    override fun onTopupClicked() {
+        buyAnalytics.logTopupHomeBarClicked()
+        view?.showTopup()
+    }
+
     override fun onBuyTokenClicked(token: Token) {
         if (token.tokenSymbol !in TOKEN_SYMBOLS_VALID_FOR_BUY) {
             view?.showBuyInfoScreen(token)
@@ -448,6 +471,7 @@ class HomePresenter(
     }
 
     override fun onSendClicked(clickSource: SearchOpenedFromScreen) {
+        sendAnalytics.logSendActionButtonClicked()
         launch {
             val isEmptyAccount = state.tokens.all { it.isZero }
             if (isEmptyAccount) {

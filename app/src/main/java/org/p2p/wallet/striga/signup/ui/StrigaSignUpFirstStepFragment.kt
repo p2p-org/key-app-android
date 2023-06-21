@@ -1,6 +1,8 @@
 package org.p2p.wallet.striga.signup.ui
 
 import androidx.activity.addCallback
+import androidx.annotation.IdRes
+import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import android.os.Bundle
 import android.view.View
@@ -23,10 +25,11 @@ import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStackTo
-import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -42,11 +45,18 @@ class StrigaSignUpFirstStepFragment :
         const val RESULT_KEY_COUNTRY = "RESULT_KEY_COUNTRY"
         const val REQUEST_KEY_PHONE_COUNTRY_CODE = "REQUEST_KEY_COUNTRY_CODE"
         const val RESULT_KEY_PHONE_COUNTRY_CODE = "RESULT_CODE_COUNTRY_CODE"
-        fun create() = StrigaSignUpFirstStepFragment()
+        const val ARG_SCROLL_TO_VIEW_ID = "ARG_SCROLL_TO_VIEW_ID"
+
+        fun create(@IdRes scrollToViewId: Int = View.NO_ID) = StrigaSignUpFirstStepFragment().apply {
+            arguments = bundleOf(
+                ARG_SCROLL_TO_VIEW_ID to scrollToViewId
+            )
+        }
     }
 
     override val presenter: StrigaSignUpFirstStepContract.Presenter by inject()
     private val binding: FragmentStrigaSignUpFirstStepBinding by viewBinding()
+    private val scrollToViewId: Int by args(ARG_SCROLL_TO_VIEW_ID)
 
     private lateinit var editTextFieldsMap: Map<StrigaSignupDataType, View>
 
@@ -97,6 +107,14 @@ class StrigaSignUpFirstStepFragment :
                 REQUEST_KEY_COUNTRY,
                 ::onFragmentResult
             )
+        }
+
+        if (scrollToViewId != View.NO_ID) {
+            binding.root.findViewById<View>(scrollToViewId)?.let { targetView ->
+                binding.containerScroll.post {
+                    binding.containerScroll.scrollTo(0, targetView.top - 32.toDp())
+                }
+            }
         }
     }
 

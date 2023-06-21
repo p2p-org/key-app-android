@@ -3,6 +3,12 @@ package org.p2p.wallet.auth.gateway.repository.mapper
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.near.borshj.Borsh
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
+import org.p2p.core.utils.Constants
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
@@ -15,16 +21,10 @@ import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
+import org.p2p.wallet.settings.DeviceInfoHelper
 import org.p2p.wallet.utils.Base58String
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.toByteArray
 import org.p2p.wallet.utils.toJsonObject
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
-import org.p2p.wallet.settings.DeviceInfoHelper
 
 const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 
@@ -132,6 +132,7 @@ class GatewayServiceCreateWalletMapper(
                 phoneNumberTimestampSec = epochUnixTimeSeconds,
                 socialShareOwnerEmail = socialShareOwnerId,
                 emailTimestampSec = epochUnixTimeSeconds,
+                authProviderTimestampSec = epochUnixTimeSeconds
             )
         )
 

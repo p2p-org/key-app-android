@@ -10,8 +10,11 @@ import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.striga.model.StrigaApiErrorCode
+import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.model.map
 import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
@@ -58,14 +61,12 @@ class StrigaSignupInteractor(
         )
     }
 
-    suspend fun loadAndSaveSignupData() {
-        if (!userInteractor.isUserCreated()) {
-            return
-        }
-        val signupData = getSignupData()
-        if (signupData.isEmpty()) {
+    suspend fun loadAndSaveSignupData(): StrigaDataLayerResult<Unit> {
+        return if (userInteractor.isUserCreated() && getSignupData().isEmpty()) {
             Timber.d("Striga signup data: loading from remote")
-            loadSignupDataFromRemote()
+            loadAndSaveSignupDataFromRemote().map { }
+        } else {
+            StrigaDataLayerResult.Success(Unit)
         }
     }
 
@@ -133,6 +134,11 @@ class StrigaSignupInteractor(
 
     @Throws(IllegalStateException::class, StrigaDataLayerError::class)
     suspend fun createUser() {
+        if (inAppFeatureFlags.strigaSimulateMobileAlreadyVerifiedFlag.featureValue) {
+            throw StrigaDataLayerError.ApiServiceError.PhoneNumberAlreadyUsed(
+                StrigaApiErrorResponse(400, StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED, "phone number already used")
+            )
+        }
         if (inAppFeatureFlags.strigaSimulateUserCreateFlag.featureValue) {
             delay(1000)
             return
@@ -219,14 +225,16 @@ class StrigaSignupInteractor(
         metadataInteractor.updateMetadata(newMetadata)
     }
 
-    private suspend fun loadSignupDataFromRemote() {
-        when (val userDetails = userInteractor.getUserDetails()) {
+    private suspend fun loadAndSaveSignupDataFromRemote(): StrigaDataLayerResult<StrigaUserDetails> {
+        return when (val userDetails = userInteractor.getUserDetails()) {
             is StrigaDataLayerResult.Success<StrigaUserDetails> -> {
                 val signupData = userDetails.value.toSignupData()
                 signupDataRepository.updateSignupData(signupData)
+                userDetails
             }
             is StrigaDataLayerResult.Failure -> {
                 Timber.e(userDetails.error, "Unable to load striga user details")
+                userDetails
             }
         }
     }
