@@ -20,6 +20,9 @@ data class StrigaApiErrorResponse(
  * https://docs.striga.com/reference/error-codes-for-reference-only
  */
 enum class StrigaApiErrorCode(val code: String) {
+    @SerializedName("30041")
+    MOBILE_ALREADY_EXISTS("30041"),
+
     @SerializedName("30044")
     MOBILE_ALREADY_VERIFIED("30044"),
 

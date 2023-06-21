@@ -70,12 +70,9 @@ class StrigaSmsInputInteractor(
                 ).toFailureResult()
             }
             "000002" -> {
-                StrigaDataLayerError.ApiServiceError(
-                    response = StrigaApiErrorResponse(
-                        httpStatus = 400,
-                        internalErrorCode = StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED,
-                        details = "MOBILE_ALREADY_VERIFIED"
-                    )
+                // todo: remove
+                StrigaDataLayerError.InternalError(
+                    cause = IllegalStateException("This error was moved to user creation flow")
                 ).toFailureResult()
             }
             "000003" -> {
