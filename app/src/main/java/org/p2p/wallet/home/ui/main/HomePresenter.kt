@@ -439,6 +439,7 @@ class HomePresenter(
 
     override fun onSwapClicked() {
         swapAnalytics.logSwapActionButtonClicked()
+        view?.showSwap()
     }
 
     override fun onTopupClicked() {
