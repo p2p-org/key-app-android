@@ -1,6 +1,6 @@
 package org.p2p.wallet.moonpay.repository.currencies
 
-import org.p2p.wallet.BuildConfig
+import org.p2p.core.BuildConfig.moonpayKey
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyAmounts
@@ -13,7 +13,7 @@ class MoonpayCurrenciesRemoteRepository(
 ) : MoonpayCurrenciesRepository {
 
     override suspend fun getAllCurrencies(): List<MoonpayCurrency> =
-        clientSideApi.getAllCurrencies(BuildConfig.moonpayKey)
+        clientSideApi.getAllCurrencies(moonpayKey)
             .map(::mapToDomain)
 
     private fun mapToDomain(response: MoonpayCurrencyResponse): MoonpayCurrency = response.run {

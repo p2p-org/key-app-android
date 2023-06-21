@@ -1,5 +1,3 @@
-apply plugin: 'com.android.application'
-
 android {
     buildTypes {
         def torusProperties = new PropertiesFile(rootProject.file(".properties/torus.properties"), logger)

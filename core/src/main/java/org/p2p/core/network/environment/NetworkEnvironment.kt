@@ -1,4 +1,4 @@
-package org.p2p.wallet.infrastructure.network.environment
+package org.p2p.core.network.environment
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

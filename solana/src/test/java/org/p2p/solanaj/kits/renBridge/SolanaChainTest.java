@@ -4,7 +4,7 @@
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.p2p.solanaj.core.PublicKey;
-//import org.p2p.solanaj.rpc.RpcEnvironment;
+//import org.p2p.core.network.environment.RpcEnvironment;
 //import org.p2p.solanaj.rpc.RpcSolanaInteractor;
 //import org.p2p.solanaj.rpc.RpcSolanaRepository;
 //import org.p2p.solanaj.utils.Utils;

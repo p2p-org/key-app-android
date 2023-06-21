@@ -6,18 +6,19 @@ import android.os.Build
 import android.util.DisplayMetrics
 import timber.log.Timber
 import kotlinx.coroutines.launch
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironmentManager
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
+import org.p2p.core.BuildConfig as CoreBuildConfig
+import org.p2p.wallet.BuildConfig as AppBuildConfig
 
 class DebugSettingsPresenter(
     private val environmentManager: NetworkEnvironmentManager,
@@ -102,16 +103,16 @@ class DebugSettingsPresenter(
 
     private fun getCiInfo(): List<SettingsRow> {
         val ciValues = buildString {
-            createApiKeyRecord("amplitudeKey", BuildConfig.amplitudeKey)
-            createApiKeyRecord("intercomApiKey", BuildConfig.intercomApiKey)
-            createApiKeyRecord("intercomAppId", BuildConfig.intercomAppId)
-            createApiKeyRecord("moonpayKey", BuildConfig.moonpayKey)
-            createApiKeyRecord("moonpaySanbdoxKey", BuildConfig.moonpaySandboxKey)
-            createApiKeyRecord("rpcPoolApiKey", BuildConfig.rpcPoolApiKey)
+            createApiKeyRecord("amplitudeKey", AppBuildConfig.amplitudeKey)
+            createApiKeyRecord("intercomApiKey", CoreBuildConfig.intercomApiKey)
+            createApiKeyRecord("intercomAppId", CoreBuildConfig.intercomAppId)
+            createApiKeyRecord("moonpayKey", CoreBuildConfig.moonpayKey)
+            createApiKeyRecord("moonpaySanbdoxKey", CoreBuildConfig.moonpaySandboxKey)
+            createApiKeyRecord("rpcPoolApiKey", CoreBuildConfig.rpcPoolApiKey)
 
             appendBreakLine()
 
-            createFlagRecord("CRASHLYTICS_ENABLED", BuildConfig.CRASHLYTICS_ENABLED)
+            createFlagRecord("CRASHLYTICS_ENABLED", CoreBuildConfig.CRASHLYTICS_ENABLED)
         }
         return listOf(
             SettingsRow.Info(
@@ -126,7 +127,7 @@ class DebugSettingsPresenter(
             SettingsRow.Title(R.string.debug_settings_app_info, isDivider = true),
             SettingsRow.Section(
                 titleResId = R.string.settings_app_version,
-                subtitle = "${BuildConfig.BUILD_TYPE}-${BuildConfig.VERSION_NAME}",
+                subtitle = "${AppBuildConfig.BUILD_TYPE}-${AppBuildConfig.VERSION_NAME}",
                 iconRes = R.drawable.ic_settings_app_version
             )
         )

@@ -14,7 +14,7 @@ import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFeatureToggleStorage
-import org.p2p.wallet.common.feature_toggles.remote_config.NetworkServicesUrlStorage
+import org.p2p.core.network.NetworkServicesUrlStorage
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.infrastructure.account.AccountStorage

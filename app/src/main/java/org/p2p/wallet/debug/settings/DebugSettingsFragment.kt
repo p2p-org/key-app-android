@@ -23,7 +23,7 @@ import org.p2p.wallet.debug.settings.adapter.settingsRowSectionItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowSwtichItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowTitleItemDelegate
 import org.p2p.wallet.debug.torus.DebugTorusFragment
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.utils.getSerializableOrNull

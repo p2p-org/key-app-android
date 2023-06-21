@@ -1,4 +1,4 @@
-package org.p2p.solanaj.rpc
+package org.p2p.core.network.environment
 
 enum class RpcEnvironment(
     val chain: String,

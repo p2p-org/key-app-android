@@ -2,8 +2,18 @@ plugins {
     id("org.p2p.wallet.android.library")
 }
 
+apply {
+    from("${project.rootDir}/.scripts/torus.gradle")
+    from("${project.rootDir}/.scripts/config.gradle")
+}
+
+android {
+    buildFeatures.buildConfig = true
+}
+
 dependencies {
     Dependencies.baseAndroidLibraries.forEach { implementation(it) }
+
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.12.0")
@@ -35,6 +45,18 @@ dependencies {
     implementation("com.tinder.scarlet:message-adapter-gson:$scarlet_version")
     implementation("com.tinder.scarlet:lifecycle-android:$scarlet_version")
     // https://github.com/JakeWharton/timber
-    api("com.jakewharton.timber:timber:5.0.1")
+    api(Dependencies.timber)
+
+    implementation(platform("com.google.firebase:firebase-bom:31.1.1"))
+    implementation("com.google.firebase:firebase-crashlytics")
+
+    // Sentry
+    val sentryVersion = "6.14.0"
+    implementation("io.sentry:sentry-android:$sentryVersion")
+    implementation("io.sentry:sentry-android-fragment:$sentryVersion")
+    implementation("io.sentry:sentry-android-core:$sentryVersion")
+    implementation("io.sentry:sentry-android-okhttp:$sentryVersion")
+    implementation("io.sentry:sentry-android-ndk:$sentryVersion")
+
 
 }

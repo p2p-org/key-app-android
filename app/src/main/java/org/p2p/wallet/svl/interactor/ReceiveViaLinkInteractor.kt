@@ -2,6 +2,7 @@ package org.p2p.wallet.svl.interactor
 
 import timber.log.Timber
 import java.math.BigInteger
+import org.p2p.core.BuildConfig.svlMemoClaim
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
@@ -9,7 +10,6 @@ import org.p2p.core.utils.isMoreThan
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.ConfirmationStatus
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
@@ -125,7 +125,7 @@ class ReceiveViaLinkInteractor(
             destinationAddress = recipient,
             token = token,
             lamports = token.totalInLamports,
-            memo = BuildConfig.svlMemoClaim,
+            memo = svlMemoClaim,
             isSimulation = false,
             shouldCloseAccount = true,
             preflightCommitment = ConfirmationStatus.CONFIRMED

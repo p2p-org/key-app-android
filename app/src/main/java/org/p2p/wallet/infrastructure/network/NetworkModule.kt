@@ -17,10 +17,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
+import org.p2p.core.BuildConfig
 import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.core.rpc.RpcApi
 import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule.REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER
@@ -33,8 +33,9 @@ import org.p2p.wallet.home.model.BigDecimalTypeAdapter
 import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
 import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
 import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionInstructionErrorParser
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.core.network.environment.NetworkEnvironmentManager
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.GatewayServiceInterceptor
@@ -62,7 +63,13 @@ object NetworkModule : InjectionModule {
 
     override fun create() = module {
         singleOf(::NetworkServicesUrlProvider)
-        singleOf(::NetworkEnvironmentManager)
+        single {
+            NetworkEnvironmentManager(
+                sharedPreferences = get(),
+                crashLogger = get(),
+                networksFromRemoteConfig = get<SettingsNetworkListFeatureToggle>().getAvailableEnvironments()
+            )
+        }
         singleOf(::TokenKeyProvider)
         singleOf(::SeedPhraseProvider)
         singleOf(::CertificateManager)

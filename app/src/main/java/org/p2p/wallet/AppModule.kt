@@ -4,6 +4,8 @@ import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.p2p.core.BuildConfig.CRASHLYTICS_ENABLED
+import org.p2p.core.BuildConfig.SENTRY_ENABLED
 import org.p2p.core.network.ConnectionManager
 import org.p2p.ethereumkit.EthereumKitService
 import org.p2p.wallet.alarmlogger.AlarmErrorsModule
@@ -13,10 +15,10 @@ import org.p2p.wallet.bridge.claim.ClaimModule
 import org.p2p.wallet.bridge.send.BridgeSendModule
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.analytics.AnalyticsModule
-import org.p2p.wallet.common.crashlogging.CrashLogger
-import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
-import org.p2p.wallet.common.crashlogging.impl.FirebaseCrashlyticsFacade
-import org.p2p.wallet.common.crashlogging.impl.SentryFacade
+import org.p2p.core.crashlytics.CrashLogger
+import org.p2p.core.crashlytics.CrashLoggingFacade
+import org.p2p.core.crashlytics.FirebaseCrashlyticsFacade
+import org.p2p.core.crashlytics.SentryFacade
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
@@ -57,8 +59,7 @@ object AppModule {
         single { AppRestarter { restartAction.invoke() } }
         single {
             CrashLogger(
-                crashLoggingFacades = getActiveCrashLoggingFacades(),
-                tokenKeyProvider = get()
+                crashLoggingFacades = getActiveCrashLoggingFacades()
             )
         }
         single {
@@ -115,10 +116,10 @@ object AppModule {
     }
 
     private fun getActiveCrashLoggingFacades(): List<CrashLoggingFacade> = buildList {
-        if (BuildConfig.CRASHLYTICS_ENABLED) {
+        if (CRASHLYTICS_ENABLED) {
             add(FirebaseCrashlyticsFacade())
         }
-        if (BuildConfig.SENTRY_ENABLED) {
+        if (SENTRY_ENABLED) {
             add(SentryFacade())
         }
     }
