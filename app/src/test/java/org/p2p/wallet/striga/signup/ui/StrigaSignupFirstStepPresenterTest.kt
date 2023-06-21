@@ -272,7 +272,8 @@ class StrigaSignupFirstStepPresenterTest {
         presenter.attach(view)
         interactor.setPhoneValidator(PhoneNumberInputValidator("90", countryCodeRepository))
         presenter.onPhoneCountryCodeChanged(
-            CountryCode("tr", "tur", "90", "Turkey", ",")
+            CountryCode("tr", "tur", "90", "Turkey", ","),
+            true
         )
         presenter.onPhoneNumberChanged("5556667788")
         presenter.onFieldChanged(StrigaSignupDataType.PHONE_CODE_WITH_PLUS, "+90")
@@ -396,7 +397,7 @@ class StrigaSignupFirstStepPresenterTest {
         verify(exactly = 1) { view.showPhoneCountryCodePicker(TurkeyCountry) }
 
         advanceUntilIdle()
-        presenter.onPhoneCountryCodeChanged(TurkeyCountry)
+        presenter.onPhoneCountryCodeChanged(TurkeyCountry, true)
         verify { view.showPhoneCountryCode(TurkeyCountry) }
 
         presenter.detach()
