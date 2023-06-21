@@ -7,11 +7,13 @@ import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.user.api.StrigaApi
 import org.p2p.wallet.striga.user.api.request.StrigaResendSmsRequest
+import org.p2p.wallet.striga.user.api.request.StrigaSimulateUserStatusRequest
 import org.p2p.wallet.striga.user.api.request.StrigaStartKycRequest
 import org.p2p.wallet.striga.user.api.request.StrigaVerifyMobileNumberRequest
 import org.p2p.wallet.striga.user.model.StrigaUserDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
+import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 
 class StrigaUserRemoteRepository(
     private val api: StrigaApi,
@@ -93,6 +95,21 @@ class StrigaUserRemoteRepository(
                 userId = strigaUserIdProvider.getUserIdOrThrow(),
             )
             StrigaDataLayerResult.Success(api.getAccessToken(request).accessToken)
+        } catch (error: Throwable) {
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            )
+        }
+    }
+
+    override suspend fun simulateUserStatus(status: StrigaUserVerificationStatus): StrigaDataLayerResult<Unit> {
+        return try {
+            val request = StrigaSimulateUserStatusRequest(
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
+                status = status.name
+            )
+            StrigaDataLayerResult.Success(api.simulateUserStatus(request))
         } catch (error: Throwable) {
             StrigaDataLayerError.from(
                 error = error,

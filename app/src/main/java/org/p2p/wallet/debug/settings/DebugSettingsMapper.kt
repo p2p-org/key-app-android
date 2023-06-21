@@ -53,15 +53,7 @@ class DebugSettingsMapper(
             )
         }
 
-        val strigaKycBannerMock = inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString
-        val allBanners = StrigaKycStatusBanner.values()
-            .map(StrigaKycStatusBanner::name)
-            .plus("-")
-        this += SettingsRow.PopupMenu(
-            titleResId = R.string.debug_settings_kyc_mock_title,
-            selectedItem = strigaKycBannerMock ?: "-",
-            menuOptions = allBanners
-        )
+        this += createStrigaSettings()
     }
 
     private fun createEnvironmentSettings(): List<SettingsRow> = buildList {
@@ -110,6 +102,34 @@ class DebugSettingsMapper(
             isDivider = true,
             subtitle = moonpayEnvironment.baseServerSideUrl,
             isSelected = moonpayEnvironment.isSandboxEnabled
+        )
+    }
+
+    private fun createStrigaSettings(): List<SettingsRow> = buildList {
+        this += SettingsRow.Title(
+            titleResId = R.string.debug_settings_striga_title,
+        )
+
+        val strigaKycBannerMock = inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString
+        val allBanners = StrigaKycStatusBanner.values()
+            .map(StrigaKycStatusBanner::name)
+            .plus("-")
+        this += SettingsRow.PopupMenu(
+            titleResId = R.string.debug_settings_kyc_mock_title,
+            selectedItem = strigaKycBannerMock ?: "-",
+            menuOptions = allBanners
+        )
+
+        this += SettingsRow.Section(
+            titleResId = R.string.debug_settings_kyc_set_rejected_title,
+            subtitle = "Click to send API call to Striga to simulate a REJECTED status",
+            iconRes = R.drawable.ic_user
+        )
+
+        this += SettingsRow.Section(
+            titleResId = R.string.debug_settings_striga_detach_user_id_title,
+            subtitle = "Delete striga metadata from web3 metadata (requires app restart)",
+            iconRes = R.drawable.ic_user,
         )
     }
 }
