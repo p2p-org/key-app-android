@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_snow"
+    android:background="@color/bg_smoke"
     android:orientation="vertical">
 
     <org.p2p.uikit.organisms.UiKitToolbar
