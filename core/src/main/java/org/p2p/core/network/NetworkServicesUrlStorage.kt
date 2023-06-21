@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.feature_toggles.remote_config
+package org.p2p.core.network
 
 import androidx.core.content.edit
 import android.content.SharedPreferences

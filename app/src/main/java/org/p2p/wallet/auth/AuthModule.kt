@@ -73,7 +73,7 @@ import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
 import org.p2p.wallet.auth.web3authsdk.Web3AuthDurationTracker
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
-import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.settings.ui.security.seed.UserSeedPhraseContract
 import org.p2p.wallet.settings.ui.security.seed.UserSeedPhrasePresenter
 import org.p2p.wallet.smsinput.SmsInputContract

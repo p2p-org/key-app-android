@@ -2,8 +2,8 @@ package org.p2p.wallet.debug.settings
 
 import org.p2p.wallet.R
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.core.network.environment.NetworkEnvironmentManager
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner

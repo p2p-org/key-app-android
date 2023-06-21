@@ -4,8 +4,8 @@ import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.wallet.auth.analytics.RenBtcAnalytics
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.renbtc.model.RenBTCPayment
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus

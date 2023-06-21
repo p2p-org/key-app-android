@@ -72,7 +72,7 @@
 -keep public class * extends java.lang.Throwable  # Optional: Keep custom exceptions.
 
 # Our own classes
--keep public class org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
+-keep public class org.p2p.core.crashlytics.helpers.TimberCrashTree
 -keep public class org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 -keep class io.sentry.SentryEvent { *; }
 -keep public class * implements org.p2p.wallet.auth.model.OnboardingFlow

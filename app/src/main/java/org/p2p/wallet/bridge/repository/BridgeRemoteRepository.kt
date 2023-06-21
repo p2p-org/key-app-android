@@ -7,7 +7,7 @@ import org.p2p.core.rpc.JsonRpc
 import org.p2p.core.rpc.RpcApi
 import org.p2p.wallet.bridge.api.mapper.BridgeServiceErrorMapper
 import org.p2p.wallet.bridge.model.BridgeResult
-import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 
 private const val TAG = "BridgeRemoteRepository"
 class BridgeRemoteRepository(
