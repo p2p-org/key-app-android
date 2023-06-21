@@ -91,7 +91,7 @@ class DebugSettingsPresenter(
         launch {
             val metadata = metadataInteractor.currentMetadata
             if (metadata == null) {
-                view?.showUiKitSnackBar("Metadata is not resolved. Unable to proceed")
+                view?.showUiKitSnackBar("Metadata is not loaded. Unable to proceed.")
                 return@launch
             }
 

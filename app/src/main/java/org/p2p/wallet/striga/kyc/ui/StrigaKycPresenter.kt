@@ -83,10 +83,7 @@ class StrigaKycPresenter(
     private fun updateUserStatus() {
         appScope.launch(dispatchers.io) {
             // update user status when kyc/start called
-            kotlin
-                .runCatching {
-                    strigaUserInteractor.loadAndSaveUserStatusData()
-                }
+            kotlin.runCatching { strigaUserInteractor.loadAndSaveUserStatusData().unwrap() }
                 .onFailure { Timber.e(it, "Unable to load striga user status") }
         }
     }
