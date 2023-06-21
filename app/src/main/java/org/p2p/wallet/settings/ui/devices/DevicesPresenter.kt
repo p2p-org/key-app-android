@@ -53,13 +53,13 @@ class DevicesPresenter(
             deviceNameTimestampSec = DateTimeUtils.getCurrentTimestampInSeconds()
         )
         refreshDeviceShare(newMetadata)
-        metadataInteractor.updateMetadata(newMetadata)
         view?.showSuccessDeviceChange()
     }
 
     private suspend fun refreshDeviceShare(newMetadata: GatewayOnboardingMetadata) {
         try {
             restoreWalletInteractor.refreshDeviceShare(newMetadata)
+            metadataInteractor.updateMetadata(newMetadata)
         } catch (error: Throwable) {
             view?.showFailDeviceChange()
             Timber.e(error, "Error on refreshDeviceShare")
