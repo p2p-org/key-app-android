@@ -37,7 +37,8 @@ class SettingsNetworkListFeatureToggle(
     fun getAvailableEnvironments(): List<NetworkEnvironment> {
         val networksFromRemoteConfig = value.map { it.url }
         val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
-        return NetworkEnvironment.values().filter(isNetworkAvailable)
+        return NetworkEnvironment.values()
+            .filter(isNetworkAvailable)
             .let { if (BuildConfig.DEBUG) it + NetworkEnvironment.DEVNET else it }
     }
 }

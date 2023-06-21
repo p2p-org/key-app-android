@@ -1,11 +1,12 @@
 package org.p2p.core.crashlytics
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.p2p.core.BuildConfig
 
 @Suppress("DEPRECATION")
 class FirebaseCrashlyticsFacade : CrashLoggingFacade {
     init {
-        crashlytics.setCrashlyticsCollectionEnabled(true)
+        crashlytics.setCrashlyticsCollectionEnabled(BuildConfig.CRASHLYTICS_ENABLED)
     }
 
     private val crashlytics: FirebaseCrashlytics

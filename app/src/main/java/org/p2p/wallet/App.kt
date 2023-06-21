@@ -16,12 +16,7 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import timber.log.Timber
-import org.p2p.core.BuildConfig.intercomApiKey
-import org.p2p.core.BuildConfig.intercomAppId
-import org.p2p.core.BuildConfig.appsFlyerKey
-import org.p2p.core.BuildConfig.lokaliseAppId
-import org.p2p.core.BuildConfig.lokaliseKey
-import org.p2p.core.BuildConfig.CRASHLYTICS_ENABLED
+
 import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.appsflyer.AppsFlyerService
@@ -34,6 +29,8 @@ import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.utils.SolanajTimberLogger
+import org.p2p.core.BuildConfig as CoreBuildConfig
+import org.p2p.wallet.BuildConfig as AppBuildConfig
 
 class App : Application(), Configuration.Provider {
     private val crashLogger: CrashLogger by inject()
@@ -51,7 +48,11 @@ class App : Application(), Configuration.Provider {
 
         setupCrashLoggingService()
 
-        IntercomService.setup(app = this, apiKey = intercomApiKey, appId = intercomAppId)
+        IntercomService.setup(
+            app = this,
+            apiKey = CoreBuildConfig.intercomApiKey,
+            appId = CoreBuildConfig.intercomAppId
+        )
         AndroidThreeTen.init(this)
 
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
@@ -59,15 +60,22 @@ class App : Application(), Configuration.Provider {
         SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
 
         appCreatedAction.invoke()
-        appsFlyerService.install(this, appsFlyerKey)
-        LokaliseService.setup(this, lokaliseKey, lokaliseAppId)
+        appsFlyerService.install(
+            application = this,
+            devKey = CoreBuildConfig.appsFlyerKey
+        )
+        LokaliseService.setup(
+            context = this,
+            lokaliseToken = CoreBuildConfig.lokaliseKey,
+            projectId = CoreBuildConfig.lokaliseAppId
+        )
         setupWorkManager()
     }
 
     override fun getWorkManagerConfiguration(): Configuration {
         val builder = Configuration.Builder()
 
-        if (BuildConfig.DEBUG) {
+        if (AppBuildConfig.DEBUG) {
             builder.setMinimumLoggingLevel(DEBUG)
         } else {
             builder.setMinimumLoggingLevel(ERROR)
@@ -108,7 +116,7 @@ class App : Application(), Configuration.Provider {
     }
 
     private fun setupTimber() {
-        if (BuildConfig.DEBUG) {
+        if (AppBuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
             // for logs in debug drawer
             Timber.plant(
@@ -125,7 +133,7 @@ class App : Application(), Configuration.Provider {
     private fun setupCrashLoggingService() {
         crashLogger.apply {
             setUserId(userTokenProvider.publicKey)
-            setCustomKey("crashlytics_enabled", CRASHLYTICS_ENABLED)
+            setCustomKey("crashlytics_enabled", CoreBuildConfig.CRASHLYTICS_ENABLED)
             setCustomKey("verifier", networkServicesUrlProvider.loadTorusEnvironment().verifier)
             setCustomKey("sub_verifier", networkServicesUrlProvider.loadTorusEnvironment().subVerifier.orEmpty())
             setCustomKey("username", usernameInteractor.getUsername()?.fullUsername.orEmpty())
