@@ -13,7 +13,8 @@ fun interface SnackbarActionButtonClickListener {
 fun View.showSnackbarShort(
     snackbarText: CharSequence,
     onDismissed: () -> Unit = {},
-    style: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
+    style: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK,
+    enableBottomNavOffset: Boolean = true
 ) {
     internalMakeSnackbar(
         this,
@@ -21,7 +22,8 @@ fun View.showSnackbarShort(
         buttonText = null,
         buttonAction = null,
         duration = Snackbar.LENGTH_SHORT,
-        style = style
+        style = style,
+        enableBottomNavOffset = enableBottomNavOffset
     )
         .addOnDismissedCallback(onDismissed)
         .show()
@@ -31,6 +33,7 @@ fun View.showSnackbarShort(
     snackbarText: CharSequence,
     actionButtonText: CharSequence,
     actionButtonListener: SnackbarActionButtonClickListener,
+    enableBottomNavOffset: Boolean = true,
     onDismissed: () -> Unit = {},
     style: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
 ) {
@@ -40,7 +43,8 @@ fun View.showSnackbarShort(
         buttonText = actionButtonText,
         buttonAction = actionButtonListener,
         duration = Snackbar.LENGTH_SHORT,
-        style = style
+        style = style,
+        enableBottomNavOffset = enableBottomNavOffset
     )
         .addOnDismissedCallback(onDismissed)
         .show()
@@ -94,14 +98,19 @@ private fun internalMakeSnackbar(
     buttonText: CharSequence?,
     buttonAction: SnackbarActionButtonClickListener?,
     duration: Int,
-    style: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
+    style: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK,
+    enableBottomNavOffset: Boolean = true
 ): Snackbar {
     return Snackbar.make(view, text, duration).apply {
         if (buttonText != null && buttonAction != null) {
             setAction(buttonText) { buttonAction.onActionButtonClicked(this) }
         }
 
-        val bottomMargin = context.resources.getDimension(R.dimen.bottom_navigation_height).toInt()
+        val bottomMargin = if(enableBottomNavOffset) {
+            context.resources.getDimension(R.dimen.bottom_navigation_height).toInt()
+        } else {
+            0
+        }
         val horizontalMargin = context.resources.getDimension(R.dimen.ui_kit_average_horizontal_margin).toInt()
         val parentParams = this.view.layoutParams as MarginLayoutParams
         parentParams.setMargins(horizontalMargin, 0, horizontalMargin, bottomMargin)

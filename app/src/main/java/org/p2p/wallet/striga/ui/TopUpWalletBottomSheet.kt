@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.ui
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
@@ -11,6 +12,7 @@ import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
+import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shape.shapeRounded16dp
@@ -104,6 +106,34 @@ class TopUpWalletBottomSheet :
         )
         binding.cryptoView.setOnClickAction { _, _ ->
             dismissAndNavigate(receiveFragmentFactory.receiveFragment())
+        }
+    }
+
+    override fun showUiKitSnackBar(
+        message: String?,
+        messageResId: Int?,
+        onDismissed: () -> Unit,
+        actionButtonResId: Int?,
+        actionBlock: ((Snackbar) -> Unit)?
+    ) {
+        require(message != null || messageResId != null) {
+            "Snackbar text must be set from `message` or `messageResId` params"
+        }
+        val snackbarText: String = message ?: messageResId?.let(::getString)!!
+        val root = requireView().rootView
+        if (actionButtonResId != null && actionBlock != null) {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                actionButtonText = getString(actionButtonResId),
+                actionButtonListener = actionBlock,
+                enableBottomNavOffset = false
+            )
+        } else {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                onDismissed = onDismissed,
+                enableBottomNavOffset = false
+            )
         }
     }
 
