@@ -47,8 +47,6 @@ dependencies {
 //Eip712
     implementation("org.web3j:crypto:4.9.6")
 
-    implementation("com.jakewharton.timber:timber:5.0.1")
-
 // Test helpers
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:3.3.3")

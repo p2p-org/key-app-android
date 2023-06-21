@@ -1,15 +1,15 @@
 package org.p2p.wallet.auth.web3authsdk
 
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.core.network.environment.TorusEnvironment
+import org.p2p.wallet.utils.DateTimeUtils.PATTERN_HH_MM_SS_SS
+import org.p2p.wallet.utils.DateTimeUtils.getFormattedDate
+import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import java.util.Date
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
-import org.p2p.wallet.utils.DateTimeUtils.PATTERN_HH_MM_SS_SS
-import org.p2p.wallet.utils.DateTimeUtils.getFormattedDate
-import org.p2p.wallet.utils.emptyString
 
 private const val EXPECTED_REQUEST_TIME_SEC = 15
 private const val TAG = "Web3AuthDuration"

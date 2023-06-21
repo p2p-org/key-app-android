@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
 import timber.log.Timber
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
@@ -27,7 +28,8 @@ class UserRestoreInteractor(
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
     private val seedPhraseProvider: SeedPhraseProvider,
-    private val usernameInteractor: UsernameInteractor
+    private val usernameInteractor: UsernameInteractor,
+    private val crashLogger: CrashLogger
 ) {
 
     suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult {
@@ -254,6 +256,7 @@ class UserRestoreInteractor(
         restoreFlowDataLocalRepository.userActualAccount?.also {
             tokenKeyProvider.keyPair = it.keypair
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
+            crashLogger.setUserId(tokenKeyProvider.publicKey)
         } ?: error("User actual account is null, restoring a user is failed")
 
         usernameInteractor.tryRestoreUsername(tokenKeyProvider.publicKey.toBase58Instance())

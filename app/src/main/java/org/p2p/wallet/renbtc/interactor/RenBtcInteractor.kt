@@ -1,7 +1,7 @@
 package org.p2p.wallet.renbtc.interactor
 
 import org.p2p.solanaj.kits.renBridge.LockAndMint
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.model.RenBtcSession

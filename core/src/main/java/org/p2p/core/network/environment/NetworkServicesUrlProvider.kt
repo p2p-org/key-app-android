@@ -1,12 +1,12 @@
-package org.p2p.wallet.infrastructure.network.environment
+package org.p2p.core.network.environment
 
 import android.content.Context
 import timber.log.Timber
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.R
-import org.p2p.wallet.common.crashlogging.CrashLogger
-import org.p2p.wallet.common.feature_toggles.remote_config.NetworkServicesUrlStorage
-import org.p2p.wallet.utils.getStringResourceByName
+import org.p2p.core.BuildConfig
+import org.p2p.core.R
+import org.p2p.core.network.NetworkServicesUrlStorage
+import org.p2p.core.utils.getStringResourceByName
+import org.p2p.core.crashlytics.CrashLogger
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
@@ -171,7 +171,7 @@ class NetworkServicesUrlProvider(
             baseServerSideUrl = serverSideBaseUrl,
             baseClientSideUrl = clientSideBaseUrl,
             isSandboxEnabled = isSandboxEnabled,
-            moonpayApiKey = if (isSandboxEnabled) BuildConfig.moonpaySandboxKey else BuildConfig.moonpayKey
+                moonpayApiKey = if (isSandboxEnabled) BuildConfig.moonpaySandboxKey else BuildConfig.moonpayKey
         )
     }
 

@@ -155,13 +155,7 @@ dependencies {
     val lottieVersion = "4.0.0"
     implementation("com.airbnb.android:lottie:$lottieVersion")
 
-    // Sentry
-    val sentryVersion = "6.14.0"
-    implementation("io.sentry:sentry-android:$sentryVersion")
-    implementation("io.sentry:sentry-android-fragment:$sentryVersion")
-    implementation("io.sentry:sentry-android-core:$sentryVersion")
-    implementation("io.sentry:sentry-android-okhttp:$sentryVersion")
-    implementation("io.sentry:sentry-android-ndk:$sentryVersion")
+
 
     // dots indicator
     implementation("com.tbuonomo:dotsindicator:4.3")
