@@ -2,9 +2,9 @@ package org.p2p.wallet.moonpay.repository.buy
 
 import java.math.BigDecimal
 import kotlinx.coroutines.withContext
+import org.p2p.core.BuildConfig.moonpayKey
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
@@ -15,7 +15,7 @@ class NewMoonpayBuyRemoteRepository(
     private val dispatchers: CoroutineDispatchers
 ) : NewMoonpayBuyRepository {
 
-    private val moonpayApiKey: String = BuildConfig.moonpayKey
+    private val moonpayApiKey: String = moonpayKey
 
     override suspend fun getBuyCurrencyData(
         baseCurrencyAmount: String?,

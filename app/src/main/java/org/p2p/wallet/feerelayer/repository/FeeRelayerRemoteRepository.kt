@@ -17,7 +17,7 @@ import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapDataConverter
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.utils.toPublicKey
 
 class FeeRelayerRemoteRepository(

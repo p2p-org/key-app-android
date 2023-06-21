@@ -2,7 +2,7 @@ package org.p2p.wallet.settings.ui.network
 
 import android.view.ViewGroup
 import org.p2p.wallet.common.ui.recycler.adapter.BaseSingleSelectionAdapter
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironment
 
 class SelectNetworkAdapter(
     onItemClicked: (NetworkEnvironment) -> Unit

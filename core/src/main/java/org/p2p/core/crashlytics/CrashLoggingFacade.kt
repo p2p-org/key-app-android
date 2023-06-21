@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.crashlogging
+package org.p2p.core.crashlytics
 
 @Deprecated("Do not inject implementations in your code, inject only CrashLogger")
 interface CrashLoggingFacade {

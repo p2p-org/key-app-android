@@ -4,7 +4,7 @@ import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle

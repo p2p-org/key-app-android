@@ -1,10 +1,10 @@
 package org.p2p.wallet.moonpay.model
 
 import android.net.Uri
+import org.p2p.core.BuildConfig.moonpayKey
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.infrastructure.network.environment.MoonpayEnvironment
-import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.core.network.environment.MoonpayEnvironment
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.utils.Base58String
 
 private const val QUERY_API_KEY = "apiKey"
@@ -34,7 +34,7 @@ class MoonpayWidgetUrlBuilder(
     ): String {
         return Uri.parse(networkServicesUrlProvider.loadMoonpayEnvironment().buyWidgetUrl)
             .buildUpon()
-            .appendQueryParameter(QUERY_API_KEY, BuildConfig.moonpayKey)
+            .appendQueryParameter(QUERY_API_KEY, moonpayKey)
             .appendQueryParameter(QUERY_CURRENCY_CODE, tokenSymbol)
             .appendQueryParameter(QUERY_BASE_CURRENCY_AMOUNT, amount)
             .appendQueryParameter(QUERY_BASE_CURRENCY_CODE, currencyCode)

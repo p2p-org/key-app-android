@@ -28,7 +28,7 @@ import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
