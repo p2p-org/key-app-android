@@ -156,6 +156,10 @@ class StrigaSignupInteractor(
             }
         }
 
+        // not critical, we can ignore errors from this call
+        kotlin.runCatching {
+            userInteractor.loadAndSaveUserStatusData().unwrap()
+        }
         userInteractor.resendSmsForVerifyPhoneNumber().unwrap()
     }
 

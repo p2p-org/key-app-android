@@ -8,6 +8,7 @@ import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -17,6 +18,7 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
+import org.p2p.wallet.striga.kyc.ui.StrigaKycInteractor
 import org.p2p.wallet.utils.appendBreakLine
 
 class DebugSettingsPresenter(
@@ -27,7 +29,9 @@ class DebugSettingsPresenter(
     private val networkServicesUrlProvider: NetworkServicesUrlProvider,
     private val inAppFeatureFlags: InAppFeatureFlags,
     private val appRestarter: AppRestarter,
-    private val mapper: DebugSettingsMapper
+    private val mapper: DebugSettingsMapper,
+    private val strigaKycInteractor: StrigaKycInteractor,
+    private val metadataInteractor: MetadataInteractor,
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
     private var networkName = environmentManager.loadCurrentEnvironment().name
@@ -68,6 +72,32 @@ class DebugSettingsPresenter(
             inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = selectedValue
         } else {
             inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = null
+        }
+    }
+
+    override fun onClickSetKycRejected() {
+        launch {
+            try {
+                strigaKycInteractor.simulateKycRejected().unwrap()
+                view?.showUiKitSnackBar("Status successfully changed")
+            } catch (e: Throwable) {
+                Timber.d(e)
+                view?.showErrorMessage(e)
+            }
+        }
+    }
+
+    override fun onDetachStrigaUser() {
+        launch {
+            val metadata = metadataInteractor.currentMetadata
+            if (metadata == null) {
+                view?.showUiKitSnackBar("Metadata is not resolved. Unable to proceed")
+                return@launch
+            }
+
+            metadataInteractor.updateMetadata(metadata.copy(strigaMetadata = null))
+            view?.showUiKitSnackBar("Striga user is successfully detached")
+            appRestarter.restartApp()
         }
     }
 

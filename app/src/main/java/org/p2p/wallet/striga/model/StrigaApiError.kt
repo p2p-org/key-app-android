@@ -20,6 +20,9 @@ data class StrigaApiErrorResponse(
  * https://docs.striga.com/reference/error-codes-for-reference-only
  */
 enum class StrigaApiErrorCode(val code: String) {
+    @SerializedName("30009")
+    KYC_PENDING_REVIEW("30009"),
+
     @SerializedName("30044")
     MOBILE_ALREADY_VERIFIED("30044"),
 

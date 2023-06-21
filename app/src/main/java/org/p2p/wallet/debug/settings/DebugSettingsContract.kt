@@ -17,5 +17,7 @@ interface DebugSettingsContract {
         fun switchMoonpayUrl(isSandboxSelected: Boolean)
         fun switchNameServiceUrl(isProdSelected: Boolean)
         fun onSettingsPopupMenuClicked(selectedValue: String)
+        fun onClickSetKycRejected()
+        fun onDetachStrigaUser()
     }
 }

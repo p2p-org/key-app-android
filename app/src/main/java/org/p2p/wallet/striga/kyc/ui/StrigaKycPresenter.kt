@@ -7,12 +7,18 @@ import com.sumsub.sns.core.data.model.SNSSDKState
 import timber.log.Timber
 import java.util.Locale
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkInitParams
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkListeners
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 
 class StrigaKycPresenter(
-    private val strigaKycInteractor: StrigaKycInteractor
+    private val strigaKycInteractor: StrigaKycInteractor,
+    private val strigaUserInteractor: StrigaUserInteractor,
+    private val appScope: AppScope,
+    private val dispatchers: CoroutineDispatchers,
 ) : BasePresenter<StrigaKycContract.View>(), StrigaKycContract.Presenter {
 
     override fun firstAttach() {
@@ -37,11 +43,12 @@ class StrigaKycPresenter(
                         eventListener = null
                     )
                 )
-
                 view?.startKyc(initParams)
             } catch (initKycError: Throwable) {
                 Timber.e(initKycError, "Failed to init KYC SDK for view")
                 view?.navigateBack()
+            } finally {
+                updateUserStatus()
             }
         }
     }
@@ -57,9 +64,11 @@ class StrigaKycPresenter(
 
     private fun onKycStateChanged(oldState: SNSSDKState, newState: SNSSDKState) {
         Timber.d("KYC SDK state change:\n$oldState->\n$newState")
+        updateUserStatus()
     }
 
     private fun onKycCompletionResult(result: SNSCompletionResult, state: SNSSDKState) {
+        updateUserStatus()
         when (result) {
             is SNSCompletionResult.SuccessTermination -> {
                 Timber.d("The SDK finished successfully, state = $state")
@@ -69,5 +78,16 @@ class StrigaKycPresenter(
             }
         }
         view?.navigateBack()
+    }
+
+    private fun updateUserStatus() {
+        appScope.launch(dispatchers.io) {
+            // update user status when kyc/start called
+            kotlin
+                .runCatching {
+                    strigaUserInteractor.loadAndSaveUserStatusData()
+                }
+                .onFailure { Timber.e(it, "Unable to load striga user status") }
+        }
     }
 }

@@ -15,6 +15,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
 import org.p2p.wallet.auth.widget.PhoneNumberInputView
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
@@ -55,6 +56,8 @@ class StrigaSignUpFirstStepFragment :
     }
 
     override val presenter: StrigaSignUpFirstStepContract.Presenter by inject()
+    private val inAppFeatureFlags: InAppFeatureFlags by inject()
+
     private val binding: FragmentStrigaSignUpFirstStepBinding by viewBinding()
     private val scrollToViewId: Int by args(ARG_SCROLL_TO_VIEW_ID)
 
@@ -107,6 +110,8 @@ class StrigaSignUpFirstStepFragment :
                 REQUEST_KEY_COUNTRY,
                 ::onFragmentResult
             )
+
+            editTextEmail.isEnabled = inAppFeatureFlags.strigaEnableEmailFieldFlag.featureValue
         }
 
         if (scrollToViewId != View.NO_ID) {

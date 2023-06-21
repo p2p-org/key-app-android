@@ -109,6 +109,12 @@ class DebugSettingsFragment :
             R.string.debug_settings_web3 -> {
                 replaceFragment(DebugWeb3Fragment.create())
             }
+            R.string.debug_settings_kyc_set_rejected_title -> {
+                presenter.onClickSetKycRejected()
+            }
+            R.string.debug_settings_striga_detach_user_id_title -> {
+                presenter.onDetachStrigaUser()
+            }
         }
     }
 

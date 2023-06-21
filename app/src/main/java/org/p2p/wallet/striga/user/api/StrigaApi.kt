@@ -2,10 +2,12 @@ package org.p2p.wallet.striga.user.api
 
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import org.p2p.wallet.striga.user.api.request.StrigaCreateUserRequest
 import org.p2p.wallet.striga.user.api.request.StrigaResendSmsRequest
+import org.p2p.wallet.striga.user.api.request.StrigaSimulateUserStatusRequest
 import org.p2p.wallet.striga.user.api.request.StrigaStartKycRequest
 import org.p2p.wallet.striga.user.api.request.StrigaVerifyMobileNumberRequest
 import org.p2p.wallet.striga.user.api.response.StrigaCreateUserResponse
@@ -40,4 +42,10 @@ interface StrigaApi {
 
     @POST("v1/user/kyc/start")
     suspend fun getAccessToken(@Body body: StrigaStartKycRequest): StrigaStartKycResponse
+
+    /**
+     * This method allows to simulate only APPROVED AND REJECTED statuses
+     */
+    @PATCH("v1/simulate/user/kyc")
+    suspend fun simulateUserStatus(@Body body: StrigaSimulateUserStatusRequest)
 }
