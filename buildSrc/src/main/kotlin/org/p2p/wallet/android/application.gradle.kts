@@ -1,7 +1,9 @@
 package org.p2p.wallet.android
 
+import AppVersions
+import BuildConfiguration
+import Versions
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-import org.gradle.kotlin.dsl.kotlin
 
 plugins {
     id("com.android.application")

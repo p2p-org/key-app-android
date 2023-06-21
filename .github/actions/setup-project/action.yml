@@ -15,6 +15,10 @@ inputs:
     description: "Torus verifier - FEATURE"
     required: false
     default: ""
+  torus-sub-verifier-feature:
+    description: "Torus verifier - FEATURE"
+    required: false
+    default: ""
   torus-verifier-release:
     description: "Torus verifier - RELEASE"
     required: false

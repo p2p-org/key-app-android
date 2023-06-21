@@ -8,6 +8,7 @@ import android.view.PixelCopy
 import android.view.View
 import android.view.Window
 
+@Deprecated("old code")
 object PixelCopy {
 
     fun getBitmapView(view: View, window: Window, listener: PixelCopyListener) {

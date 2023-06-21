@@ -5,9 +5,9 @@ import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.CryptoObject
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import org.p2p.wallet.R
 import timber.log.Timber
 import javax.crypto.Cipher
+import org.p2p.wallet.R
 
 class BiometricPromptWrapper(
     fragment: Fragment,
