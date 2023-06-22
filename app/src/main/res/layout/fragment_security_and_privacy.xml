@@ -78,7 +78,7 @@
                 android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:paddingBottom="16dp"
-                android:text="@string/recovery_sub_text"
+                android:text="@string/recovery_sub_text_seed_phrase"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
                 android:textColor="@color/text_night"
                 app:layout_constraintTop_toBottomOf="@id/textViewRecoveryText" />

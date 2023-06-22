@@ -83,9 +83,10 @@ class SecurityAndPrivacyFragment :
         binding.recoveryViewSocial.subtitle = socialId
     }
 
-    override fun setWebAuthInfoVisibility(isVisible: Boolean) {
-        binding.layoutWebAuthInfo.isVisible = isVisible
-        binding.recoveryViewSeed.setBackgroundColor(getColor(R.color.bg_snow))
+    override fun setWebAuthInfoVisibility(isVisible: Boolean) = with(binding) {
+        textViewRecoverySubText.setText(R.string.recovery_sub_text_web3)
+        layoutWebAuthInfo.isVisible = isVisible
+        recoveryViewSeed.setBackgroundColor(getColor(R.color.bg_snow))
     }
 
     override fun showLogoutInfoDialog() {

@@ -63,6 +63,11 @@ class MetadataInteractor(
             GatewayOnboardingMetadata::class
         ) ?: return false
 
+        // if device share exist, then we ignore comparing
+        if (hasDeviceShare()) {
+            return false
+        }
+
         // if device share is not empty we are checking with the current system device share
         return DeviceInfoHelper.getCurrentDeviceName() != metadata.deviceShareDeviceName
     }
