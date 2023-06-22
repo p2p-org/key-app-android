@@ -4,9 +4,11 @@ android {
 
         debug {
             resValue "string", "torusVerifier", "${torusProperties.getOrThrow('TORUS_VERIFIER_DEBUG')}"
+            resValue "string", "torusSubVerifier", "${torusProperties.getOrThrow('TORUS_SUB_VERIFIER_FEATURE')}"
         }
         feature {
             resValue "string", "torusVerifier", "${torusProperties.getOrThrow('TORUS_VERIFIER_FEATURE')}"
+            resValue "string", "torusSubVerifier", "${torusProperties.getOrThrow('TORUS_SUB_VERIFIER_FEATURE')}"
         }
         release {
             resValue "string", "torusVerifier", "${torusProperties.getOrThrow('TORUS_VERIFIER_RELEASE')}"

@@ -1,9 +1,9 @@
 package org.p2p.wallet.utils
 
-import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import android.widget.TextView
 
 infix fun TextView.withTextOrGone(text: CharSequence?) {
     if (text.isNullOrEmpty() || text.contains("null")) {

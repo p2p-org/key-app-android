@@ -27,7 +27,7 @@ interface StrigaSignUpFirstStepContract {
         fun onCountryOfBirthClicked()
         fun saveChanges()
         fun onSubmit()
-        fun onPhoneCountryCodeChanged(newCountry: CountryCode)
+        fun onPhoneCountryCodeChanged(newCountry: CountryCode, changedByUser: Boolean)
         fun onPhoneNumberChanged(newPhone: String)
         fun onPhoneCountryCodeClicked()
     }

@@ -14,6 +14,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetInputTextViewBinding
 import org.p2p.wallet.utils.LetterInputFilter
 
+@Deprecated("delete one day")
 class InputTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

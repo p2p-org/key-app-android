@@ -5,7 +5,6 @@ import java.math.BigInteger
 import kotlinx.coroutines.launch
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
@@ -16,6 +15,7 @@ import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.utils.AppBuildType
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.retryRequest
 import org.p2p.wallet.utils.toBase58Instance
@@ -33,8 +33,8 @@ class AlarmErrorsLogger(
     private val userPublicKey: Base58String
         get() = tokenKeyProvider.publicKey.toBase58Instance()
 
-    private val isDebugBuild: Boolean
-        get() = BuildConfig.DEBUG
+    private val isLoggerEnabled: Boolean
+        get() = AppBuildType.getCurrent().run { isFeatureBuild() || isReleaseBuild() }
 
     fun triggerSendAlarm(
         token: Token.Active,
@@ -47,7 +47,7 @@ class AlarmErrorsLogger(
         recipientAddress: SearchResult,
         error: Throwable
     ) {
-        if (isDebugBuild) return
+        if (!isLoggerEnabled) return
 
         appScope.launch {
             try {
@@ -78,7 +78,7 @@ class AlarmErrorsLogger(
         lamports: BigInteger,
         error: Throwable
     ) {
-        if (isDebugBuild) return
+        if (!isLoggerEnabled) return
 
         appScope.launch {
             try {
@@ -100,7 +100,7 @@ class AlarmErrorsLogger(
         token: Token.Active,
         error: Throwable
     ) {
-        if (isDebugBuild) return
+        if (!isLoggerEnabled) return
 
         appScope.launch {
             try {
@@ -123,7 +123,7 @@ class AlarmErrorsLogger(
         swapState: SwapState.SwapLoaded,
         swapError: Throwable
     ) {
-        if (isDebugBuild) return
+        if (!isLoggerEnabled) return
 
         appScope.launch {
             try {
@@ -145,7 +145,7 @@ class AlarmErrorsLogger(
         claimAmount: String,
         error: Throwable
     ) {
-        if (isDebugBuild) return
+        if (!isLoggerEnabled) return
 
         appScope.launch {
             try {
@@ -171,7 +171,7 @@ class AlarmErrorsLogger(
         recipientEthPubkey: String,
         error: Throwable
     ) {
-        if (isDebugBuild) return
+        if (!isLoggerEnabled) return
 
         appScope.launch {
             try {
@@ -195,7 +195,7 @@ class AlarmErrorsLogger(
         username: String,
         error: Throwable
     ) {
-        if (isDebugBuild) return
+        if (!isLoggerEnabled) return
 
         appScope.launch {
             try {
@@ -212,7 +212,7 @@ class AlarmErrorsLogger(
     }
 
     fun triggerWeb3Alarm(web3Error: String) {
-        if (isDebugBuild) return
+        if (!isLoggerEnabled) return
 
         appScope.launch {
             try {

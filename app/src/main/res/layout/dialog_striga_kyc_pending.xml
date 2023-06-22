@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@drawable/bg_snow_rounded_16"
+    android:backgroundTint="@color/bg_smoke">
+
+    <View
+        android:id="@+id/viewPointer"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_clock"
+        app:layout_constraintBottom_toTopOf="@id/textViewTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewPointer" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:paddingHorizontal="20dp"
+        android:text="@string/striga_dialog_kyc_pending_title"
+        android:textAlignment="center"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+        app:layout_constraintBottom_toTopOf="@id/textViewSubtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewMain" />
+
+    <TextView
+        android:id="@+id/textViewSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:paddingHorizontal="20dp"
+        android:text="@string/striga_dialog_kyc_pending_subtitle"
+        android:textAlignment="center"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        app:layout_constraintBottom_toTopOf="@id/buttonDone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonDone"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="64dp"
+        android:backgroundTint="@color/night"
+        android:text="@string/common_got_it"
+        android:textColor="@color/lime"
+        app:iconTint="@color/night"
+        app:layout_constraintBottom_toTopOf="@id/space"
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitle" />
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

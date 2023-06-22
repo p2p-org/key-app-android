@@ -59,6 +59,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
@@ -336,10 +337,16 @@ class HomePresenter(
 
     override fun onBannerClicked(bannerTitleId: Int) {
         val statusFromKycBanner = strigaUiBannerMapper.onBannerClicked(bannerTitleId)
-        if (statusFromKycBanner != null) {
-            view?.navigateToKycStatus(statusFromKycBanner)
-        } else {
-            view?.showTopupWalletDialog()
+        when {
+            statusFromKycBanner == StrigaKycStatusBanner.PENDING -> {
+                view?.showKycPendingDialog()
+            }
+            statusFromKycBanner != null -> {
+                view?.navigateToKycStatus(statusFromKycBanner)
+            }
+            else -> {
+                view?.showTopupWalletDialog()
+            }
         }
     }
 

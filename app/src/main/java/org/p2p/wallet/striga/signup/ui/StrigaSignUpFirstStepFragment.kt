@@ -260,7 +260,7 @@ class StrigaSignUpFirstStepFragment :
             }
             bundle.containsKey(RESULT_KEY_PHONE_COUNTRY_CODE) -> {
                 val countryCode = bundle.getParcelableCompat<CountryCode>(RESULT_KEY_PHONE_COUNTRY_CODE) ?: return
-                presenter.onPhoneCountryCodeChanged(countryCode)
+                presenter.onPhoneCountryCodeChanged(countryCode, changedByUser = true)
             }
         }
     }

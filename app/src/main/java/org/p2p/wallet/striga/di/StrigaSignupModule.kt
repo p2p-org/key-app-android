@@ -21,6 +21,8 @@ import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputPresenter
 import org.p2p.wallet.striga.StrigaUserIdProvider
+import org.p2p.wallet.striga.finish.StrigaSignupFinishContract
+import org.p2p.wallet.striga.finish.StrigaSignupFinishPresenter
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingPresenter
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
@@ -75,6 +77,7 @@ object StrigaSignupModule : InjectionModule {
             bind<SmsInputContract.Presenter>()
             named(SmsInputFactory.Type.Striga.name)
         }
+        factoryOf(::StrigaSignupFinishPresenter) bind StrigaSignupFinishContract.Presenter::class
     }
 
     private fun Module.initDataLayer() {

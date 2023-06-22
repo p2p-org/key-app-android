@@ -17,11 +17,11 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import timber.log.Timber
+import java.io.File
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import timber.log.Timber
-import java.io.File
 
 fun Context.vibrate(duration: Long = 500) {
     val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
