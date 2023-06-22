@@ -16,6 +16,7 @@ import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private const val ANIMATION_DURATION = 500L
 
+@Deprecated("use uikit snackbar")
 class CustomSnackBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

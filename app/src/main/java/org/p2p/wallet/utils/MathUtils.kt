@@ -1,9 +1,9 @@
 package org.p2p.wallet.utils
 
-import org.p2p.core.utils.isZero
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
+import org.p2p.core.utils.isZero
 
 private const val DEFAULT_DECIMALS_VALUE = 9
 

@@ -11,11 +11,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.whenStateAtLeast
+import kotlin.reflect.KClass
+import kotlinx.coroutines.launch
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragmentContract
-import kotlin.reflect.KClass
-import kotlinx.coroutines.launch
 
 inline fun LifecycleOwner.whenStateAtLeast(state: Lifecycle.State, crossinline block: () -> Unit) {
     if (lifecycle.currentState.isAtLeast(state)) {

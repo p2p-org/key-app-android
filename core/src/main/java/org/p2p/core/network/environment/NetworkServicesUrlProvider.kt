@@ -4,9 +4,9 @@ import android.content.Context
 import timber.log.Timber
 import org.p2p.core.BuildConfig
 import org.p2p.core.R
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.core.network.NetworkServicesUrlStorage
 import org.p2p.core.utils.getStringResourceByName
-import org.p2p.core.crashlytics.CrashLogger
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
@@ -151,7 +151,7 @@ class NetworkServicesUrlProvider(
                 remove(KEY_TORUS_BASE_SUB_VERIFIER)
             }
         }
-        Timber.i("Torus environment changed and saved: $newUrl;$newVerifier;$newSubVerifier")
+        Timber.i("Torus environment changed and saved: $newUrl; $newVerifier; $newSubVerifier")
     }
 
     fun loadMoonpayEnvironment(): MoonpayEnvironment {
@@ -171,7 +171,7 @@ class NetworkServicesUrlProvider(
             baseServerSideUrl = serverSideBaseUrl,
             baseClientSideUrl = clientSideBaseUrl,
             isSandboxEnabled = isSandboxEnabled,
-                moonpayApiKey = if (isSandboxEnabled) BuildConfig.moonpaySandboxKey else BuildConfig.moonpayKey
+            moonpayApiKey = if (isSandboxEnabled) BuildConfig.moonpaySandboxKey else BuildConfig.moonpayKey
         )
     }
 

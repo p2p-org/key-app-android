@@ -1,10 +1,10 @@
 package org.p2p.wallet.utils
 
+import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import androidx.annotation.DrawableRes
-import androidx.appcompat.content.res.AppCompatResources
 
 object BitmapUtils {
     fun fromVectorDrawable(

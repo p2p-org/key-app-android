@@ -75,7 +75,9 @@ class StrigaPresetDataPickerFragment :
                 )
             )
         }
-        initSearch()
+        if (dataToPick is StrigaPresetDataItem.Country) {
+            initSearch()
+        }
     }
 
     private fun initSearch() = with(binding.searchView) {
