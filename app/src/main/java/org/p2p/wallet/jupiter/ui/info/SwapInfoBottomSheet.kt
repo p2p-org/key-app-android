@@ -140,8 +140,8 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
             is SwapState.RoutesLoaded,
             is SwapState.SwapLoaded -> {
                 val route: JupiterSwapRoute = when (state) {
-                    is SwapState.RoutesLoaded -> state.routes.getOrNull(state.activeRoute)
-                    is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRoute)
+                    is SwapState.RoutesLoaded -> state.routes.getOrNull(state.activeRouteIndex)
+                    is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRouteIndex)
                     else -> null
                 } ?: return flowOf(mapper.mapEmptyLiquidityFee())
                 flow {
@@ -173,7 +173,7 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
             is SwapState.LoadingTransaction -> flow {
                 val fullUiList = mapper.mapLoadingLiquidityFee(
                     allTokens = tokens,
-                    route = state.routes.getOrNull(state.activeRoute)
+                    route = state.routes.getOrNull(state.activeRouteIndex)
                 )
                 emit(fullUiList)
             }

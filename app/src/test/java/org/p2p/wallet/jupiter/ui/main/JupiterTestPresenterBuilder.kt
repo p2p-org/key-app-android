@@ -6,6 +6,7 @@ import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
+import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
@@ -108,7 +109,7 @@ class JupiterTestPresenterBuilder {
      * Mock for
      * @see JupiterSwapInteractor.swapTokens(Base64String)
      */
-    var jupiterSwapInteractorSwapTokens: (Base64String) -> JupiterSwapInteractor.JupiterSwapTokensResult = { _ ->
-        JupiterSwapInteractor.JupiterSwapTokensResult.Success("signature")
+    var jupiterSwapInteractorSwapTokens: (Base64String) -> JupiterSwapTokensResult = { _ ->
+        JupiterSwapTokensResult.Success("signature")
     }
 }

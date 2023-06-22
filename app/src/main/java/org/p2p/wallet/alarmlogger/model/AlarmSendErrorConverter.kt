@@ -219,8 +219,9 @@ class AlarmSendErrorConverter(
         userPublicKey: Base58String,
         error: Throwable
     ): AlarmErrorsRequest {
-        val errorDescription = when (error) {
+        val errorDescription: String = when (error) {
             is UsernameServiceError -> "${error.javaClass.simpleName}: ${error.errorCode}, ${error.message}"
+            is ServerException -> error.jsonErrorBody?.toString() ?: error.message ?: error.toString()
             else -> error.message ?: error.toString()
         }
         val request = AlarmErrorsUsernameRequest(

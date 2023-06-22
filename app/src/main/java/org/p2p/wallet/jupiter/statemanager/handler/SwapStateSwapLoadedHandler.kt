@@ -28,7 +28,7 @@ class SwapStateSwapLoadedHandler(
         var tokenB: SwapTokenModel = oldState.tokenB
         var amountTokenA: BigDecimal = oldState.amountTokenA
         var slippage: Slippage = oldState.slippage
-        var activeRouteOrdinal = oldState.activeRoute
+        var activeRouteOrdinal = oldState.activeRouteIndex
 
         when (action) {
             is SwapStateAction.SlippageChanged -> slippage = action.newSlippageValue
