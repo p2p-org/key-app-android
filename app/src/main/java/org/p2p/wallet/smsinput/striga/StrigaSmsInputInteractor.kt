@@ -70,12 +70,6 @@ class StrigaSmsInputInteractor(
                 ).toFailureResult()
             }
             "000002" -> {
-                // todo: remove
-                StrigaDataLayerError.InternalError(
-                    cause = IllegalStateException("This error was moved to user creation flow")
-                ).toFailureResult()
-            }
-            "000003" -> {
                 StrigaDataLayerError.InternalError(
                     cause = IllegalStateException("Mocked Internal error")
                 ).toFailureResult()
