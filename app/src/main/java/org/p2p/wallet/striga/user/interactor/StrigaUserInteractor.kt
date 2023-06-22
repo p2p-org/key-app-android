@@ -27,10 +27,6 @@ class StrigaUserInteractor(
         return userRepository.getUserDetails()
     }
 
-    suspend fun resendSmsForVerifyPhoneNumber(): StrigaDataLayerResult<Unit> {
-        return userRepository.resendSmsForVerifyPhoneNumber()
-    }
-
     fun isUserCreated(): Boolean = strigaUserIdProvider.getUserId() != null
 
     suspend fun isUserDetailsLoaded(): Boolean {

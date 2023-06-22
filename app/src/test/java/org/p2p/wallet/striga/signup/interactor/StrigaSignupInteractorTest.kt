@@ -357,7 +357,6 @@ class StrigaSignupInteractorTest {
                 )
             )
         )
-        coEvery { userInteractor.resendSmsForVerifyPhoneNumber() } returns StrigaDataLayerResult.Success(Unit)
         val updatedMetadataSlot = slot<GatewayOnboardingMetadata>()
         coEvery { metadataInteractor.updateMetadata(capture(updatedMetadataSlot)) } returns Unit
 
@@ -366,7 +365,8 @@ class StrigaSignupInteractorTest {
         val updatedMetadata = updatedMetadataSlot.captured
         assertEquals("userId", updatedMetadata.strigaMetadata?.userId)
 
-        coVerify(exactly = 1) { userInteractor.loadAndSaveUserStatusData() }
+        // we don't get user status after creation anymore
+        coVerify(exactly = 0) { userInteractor.loadAndSaveUserStatusData() }
     }
 
     @Test

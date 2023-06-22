@@ -30,12 +30,14 @@ object SmsInputFactory {
      * @param destinationFragment - next destination fragment, will be navigated to after successful sms input
      * @param destinationArgs - arguments for the [destinationFragment]
      * @param navigationStrategy - uses this value if it's not null, otherwise - [Type.navigationStrategy]
+     * @param args - extra arguments for the [BaseSmsInputFragment] and it's children
      */
     fun <T : Fragment> create(
         type: Type,
         destinationFragment: Class<T>,
         destinationArgs: Bundle? = null,
-        navigationStrategy: SmsInputNavigationStrategy? = null
+        navigationStrategy: SmsInputNavigationStrategy? = null,
+        args: Bundle? = null,
     ): BaseSmsInputFragment {
         val fragment = requireNotNull(type.clazz.newInstance() as? BaseSmsInputFragment) { "Unknown type: $type" }
 
@@ -44,7 +46,9 @@ object SmsInputFactory {
                 BaseSmsInputFragment.ARG_NEXT_DESTINATION_CLASS to destinationFragment,
                 BaseSmsInputFragment.ARG_NEXT_DESTINATION_ARGS to destinationArgs,
                 BaseSmsInputFragment.ARG_NAVIGATION_STRATEGY to (navigationStrategy ?: type.navigationStrategy)
-            )
+            ).also {
+                it.putAll(args ?: Bundle.EMPTY)
+            }
         }
     }
 }

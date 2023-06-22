@@ -156,6 +156,10 @@ object DateTimeUtils {
         return String.format(Locale.US, "%02d:%02d", m, s)
     }
 
+    fun checkTimerIsOver(timeMs: Long, expireDurationMs: Long): Boolean {
+        return timeMs == 0L || System.currentTimeMillis() - timeMs >= expireDurationMs
+    }
+
     data class FormatterKey(val locale: Locale, val pattern: String)
 }
 

@@ -6,23 +6,22 @@ import android.os.Build
 import android.util.DisplayMetrics
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironmentManager
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.core.network.environment.NetworkEnvironment
-import org.p2p.core.network.environment.NetworkEnvironmentManager
-import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
-import org.p2p.wallet.striga.kyc.ui.StrigaKycInteractor
 import org.p2p.wallet.utils.appendBreakLine
 import org.p2p.core.BuildConfig as CoreBuildConfig
 import org.p2p.wallet.BuildConfig as AppBuildConfig
 
 class DebugSettingsPresenter(
+    private val interactor: DebugSettingsInteractor,
     private val environmentManager: NetworkEnvironmentManager,
     private val homeLocalRepository: HomeLocalRepository,
     private val context: Context,
@@ -31,8 +30,7 @@ class DebugSettingsPresenter(
     private val inAppFeatureFlags: InAppFeatureFlags,
     private val appRestarter: AppRestarter,
     private val mapper: DebugSettingsMapper,
-    private val strigaKycInteractor: StrigaKycInteractor,
-    private val metadataInteractor: MetadataInteractor,
+
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
     private var networkName = environmentManager.loadCurrentEnvironment().name
@@ -79,7 +77,7 @@ class DebugSettingsPresenter(
     override fun onClickSetKycRejected() {
         launch {
             try {
-                strigaKycInteractor.simulateKycRejected().unwrap()
+                interactor.setStrigaKycRejected()
                 view?.showUiKitSnackBar("Status successfully changed")
             } catch (e: Throwable) {
                 Timber.d(e)
@@ -90,15 +88,13 @@ class DebugSettingsPresenter(
 
     override fun onClickDetachStrigaUser() {
         launch {
-            val metadata = metadataInteractor.currentMetadata
-            if (metadata == null) {
+            try {
+                interactor.detachStrigaUserFromMetadata()
+                view?.showUiKitSnackBar("Striga user is successfully detached")
+                appRestarter.restartApp()
+            } catch (e: Throwable) {
                 view?.showUiKitSnackBar("Metadata is not loaded. Unable to proceed.")
-                return@launch
             }
-
-            metadataInteractor.updateMetadata(metadata.copy(strigaMetadata = null))
-            view?.showUiKitSnackBar("Striga user is successfully detached")
-            appRestarter.restartApp()
         }
     }
 

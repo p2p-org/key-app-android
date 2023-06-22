@@ -1,5 +1,6 @@
 package org.p2p.wallet.smsinput.striga
 
+import kotlin.time.Duration.Companion.days
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
@@ -11,13 +12,19 @@ import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.user.StrigaStorageContract
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
+import org.p2p.wallet.utils.DateTimeUtils
+
+private val EXCEEDED_VERIFICATION_ATTEMPTS_TIMEOUT_MILLIS = 1.days.inWholeMilliseconds
+private val EXCEEDED_RESEND_ATTEMPTS_TIMEOUT_MILLIS = 1.days.inWholeMilliseconds
 
 class StrigaSmsInputInteractor(
     private val strigaUserRepository: StrigaUserRepository,
     private val strigaSignupDataRepository: StrigaSignupDataLocalRepository,
     private val phoneCodeRepository: CountryCodeRepository,
     private val inAppFeatureFlags: InAppFeatureFlags,
+    private val strigaStorage: StrigaStorageContract,
 ) {
 
     suspend fun getUserPhoneCodeToPhoneNumber(): PhoneNumberWithCode {
@@ -45,8 +52,65 @@ class StrigaSmsInputInteractor(
         }
     }
 
-    suspend fun resendSms(): StrigaDataLayerResult<Unit> =
-        strigaUserRepository.resendSmsForVerifyPhoneNumber()
+    suspend fun resendSms(): StrigaDataLayerResult<Unit> {
+        return when {
+            // avoid api call to show error immediately
+            isExceededVerificationAttempts() -> {
+                StrigaDataLayerError.ApiServiceError(
+                    response = StrigaApiErrorResponse(
+                        httpStatus = 400,
+                        internalErrorCode = StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS,
+                        details = "EXCEEDED_VERIFICATION_ATTEMPTS"
+                    )
+                ).toFailureResult()
+            }
+            isExceededResendAttempts() -> {
+                StrigaDataLayerError.ApiServiceError(
+                    response = StrigaApiErrorResponse(
+                        httpStatus = 400,
+                        internalErrorCode = StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT,
+                        details = "EXCEEDED_DAILY_RESEND_SMS_LIMIT"
+                    )
+                ).toFailureResult()
+            }
+            else -> {
+                strigaUserRepository.resendSmsForVerifyPhoneNumber()
+                    .onTypedFailure<StrigaDataLayerError.ApiServiceError> {
+                        when (it.errorCode) {
+                            StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS -> {
+                                setExceededVerificationAttempts()
+                            }
+                            StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT -> {
+                                setExceededResendAttempts()
+                            }
+                            else -> Unit
+                        }
+                    }
+            }
+        }
+    }
+
+    private fun setExceededVerificationAttempts() {
+        strigaStorage.smsExceededVerificationAttemptsMillis = System.currentTimeMillis()
+    }
+
+    private fun setExceededResendAttempts() {
+        strigaStorage.smsExceededResendAttemptsMillis = System.currentTimeMillis()
+    }
+
+    private fun isExceededVerificationAttempts(): Boolean {
+        return !DateTimeUtils.checkTimerIsOver(
+            strigaStorage.smsExceededVerificationAttemptsMillis,
+            EXCEEDED_VERIFICATION_ATTEMPTS_TIMEOUT_MILLIS
+        )
+    }
+
+    private fun isExceededResendAttempts(): Boolean {
+        return !DateTimeUtils.checkTimerIsOver(
+            strigaStorage.smsExceededResendAttemptsMillis,
+            EXCEEDED_RESEND_ATTEMPTS_TIMEOUT_MILLIS
+        )
+    }
 
     private fun mockVerifyPhoneNumber(smsCode: String): StrigaDataLayerResult<Unit> {
         return when (smsCode) {
