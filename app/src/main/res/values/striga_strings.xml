@@ -119,5 +119,8 @@
     <string name="striga_kyc_signup_banner_identify_subtitle" />
     <string name="striga_kyc_signup_banner_identify_action">Continue</string>
 
+    <string name="striga_dialog_kyc_pending_title">Your KYC verification is pending</string>
+    <string name="striga_dialog_kyc_pending_subtitle">We will update the status once it is finished</string>
+
 
 </resources>

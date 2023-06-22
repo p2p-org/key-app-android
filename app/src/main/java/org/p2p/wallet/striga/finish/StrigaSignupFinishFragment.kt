@@ -3,19 +3,19 @@ package org.p2p.wallet.striga.finish
 import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.common.mvp.NoOpPresenter
 import org.p2p.wallet.databinding.FragmentStrigaSignupFinishBinding
-import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.kyc.ui.StrigaKycFragment
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class StrigaSignupFinishFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpView>>(
+class StrigaSignupFinishFragment : BaseMvpFragment<MvpView, StrigaSignupFinishContract.Presenter>(
     R.layout.fragment_striga_signup_finish
 ) {
 
@@ -23,7 +23,7 @@ class StrigaSignupFinishFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpVie
         fun create(): StrigaSignupFinishFragment = StrigaSignupFinishFragment()
     }
 
-    override val presenter = NoOpPresenter<MvpView>()
+    override val presenter: StrigaSignupFinishContract.Presenter by inject()
 
     private val binding: FragmentStrigaSignupFinishBinding by viewBinding()
 
@@ -49,6 +49,6 @@ class StrigaSignupFinishFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpVie
     }
 
     private fun returnToMain() {
-        popBackStackTo(HomeFragment::class)
+        popBackStackTo(MainContainerFragment::class)
     }
 }

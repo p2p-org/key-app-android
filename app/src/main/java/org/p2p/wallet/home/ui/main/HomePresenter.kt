@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
@@ -53,12 +54,12 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomeMapper
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
-import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
@@ -190,6 +191,9 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
+        if (state.tokens.isNotEmpty() || state.ethTokens.isNotEmpty()) {
+            handleHomeStateChanged(state.tokens, state.ethTokens)
+        }
         observeRefreshingStatus()
         observeInternetConnection()
         observeActionButtonState()
@@ -333,10 +337,16 @@ class HomePresenter(
 
     override fun onBannerClicked(bannerTitleId: Int) {
         val statusFromKycBanner = strigaUiBannerMapper.onBannerClicked(bannerTitleId)
-        if (statusFromKycBanner != null) {
-            view?.navigateToKycStatus(statusFromKycBanner)
-        } else {
-            view?.showTopupWalletDialog()
+        when {
+            statusFromKycBanner == StrigaKycStatusBanner.PENDING -> {
+                view?.showKycPendingDialog()
+            }
+            statusFromKycBanner != null -> {
+                view?.navigateToKycStatus(statusFromKycBanner)
+            }
+            else -> {
+                view?.showTopupWalletDialog()
+            }
         }
     }
 
