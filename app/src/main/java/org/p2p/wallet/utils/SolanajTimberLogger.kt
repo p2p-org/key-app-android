@@ -1,7 +1,7 @@
 package org.p2p.wallet.utils
 
-import org.p2p.solanaj.utils.SolanjLogger
 import timber.log.Timber
+import org.p2p.solanaj.utils.SolanjLogger
 
 private const val SOLANAJ_TAG = "SOLANAJ_MODULE"
 class SolanajTimberLogger : SolanjLogger.Logger {

@@ -1,5 +1,7 @@
 package org.p2p.wallet.utils
 
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.DurationUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -7,8 +9,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.DurationUnit
 
 class FlowDurationTimer(
     private val startValue: Long,
