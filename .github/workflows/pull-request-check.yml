@@ -124,9 +124,7 @@ jobs:
           svl-memo-claim: ${{ secrets.SVL_MEMO_CLAIM }}
           salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: "Generate changelog"
-        uses: ./.github/actions/setup-changelog
-        with:
-          current-ref-name: $GITHUB_HEAD_REF
+        uses: ./.github/actions/setup-changelog-pull-request
       - name: "Send start deploy message to slack"
         run: bash bash_scripts/slack_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Build feature APK"
