@@ -57,7 +57,7 @@ class SwapContentSettingsMapper(
     ): List<AnyCellItem> = mapList(
         slippage = state.slippage,
         routes = state.routes,
-        activeRouteIndex = state.activeRoute,
+        activeRouteIndex = state.activeRouteIndex,
         jupiterTokens = jupiterTokens,
         tokenBAmount = null,
         tokenB = state.tokenB,

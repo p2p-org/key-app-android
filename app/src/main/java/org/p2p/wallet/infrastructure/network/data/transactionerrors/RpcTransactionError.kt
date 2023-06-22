@@ -51,7 +51,13 @@ sealed interface RpcTransactionError {
     data class InstructionError(
         val instructionIndex: Int,
         val instructionErrorType: TransactionInstructionError
-    ) : RpcTransactionError
+    ) : RpcTransactionError {
+        /**
+         * Returns custom instruction error code if it's custom instruction error
+         */
+        fun extractCustomErrorCodeOrNull(): Long? =
+            (this.instructionErrorType as? TransactionInstructionError.Custom)?.programErrorId
+    }
 
     data class Unknown(
         val originalError: String

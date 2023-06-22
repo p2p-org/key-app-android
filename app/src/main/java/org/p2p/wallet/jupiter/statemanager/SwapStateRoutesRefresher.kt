@@ -77,7 +77,7 @@ class SwapStateRoutesRefresher(
                 tokenB = tokenB,
                 amountTokenA = amountTokenA,
                 routes = updatedRoutes,
-                activeRoute = activeRouteIndex,
+                activeRouteIndex = activeRouteIndex,
                 amountTokenB = amountTokenB,
                 slippage = slippage,
             )
@@ -89,7 +89,7 @@ class SwapStateRoutesRefresher(
             tokenB = tokenB,
             amountTokenA = amountTokenA,
             routes = updatedRoutes,
-            activeRoute = activeRouteIndex,
+            activeRouteIndex = activeRouteIndex,
             amountTokenB = amountTokenB,
             slippage = slippage,
         )
@@ -108,7 +108,7 @@ class SwapStateRoutesRefresher(
             lamportsTokenA = activeRoute.inAmountInLamports,
             lamportsTokenB = activeRoute.outAmountInLamports,
             routes = updatedRoutes,
-            activeRoute = activeRouteIndex,
+            activeRouteIndex = activeRouteIndex,
             jupiterSwapTransaction = freshSwapTransaction,
             slippage = slippage
         )
