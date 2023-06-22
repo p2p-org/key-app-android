@@ -42,6 +42,7 @@ interface HomeContract {
         fun navigateToBuyScreen(token: Token)
         fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?)
         fun navigateToKycStatus(status: StrigaKycStatusBanner)
+        fun showKycPendingDialog()
         fun showTopupWalletDialog()
     }
 
