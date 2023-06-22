@@ -63,8 +63,8 @@ class MetadataInteractor(
             GatewayOnboardingMetadata::class
         ) ?: return false
 
-        // if device share doesn't exist, then the device is new and we can't compare
-        if (!hasDeviceShare()) {
+        // if device share exist, then we ignore comparing
+        if (hasDeviceShare()) {
             return false
         }
 
