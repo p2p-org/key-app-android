@@ -109,6 +109,7 @@ jobs:
           amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
           amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
           torus-sub-verifier-feature: ${{ secrets.TORUS_SUB_VERIFIER_FEATURE }}
           torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
           rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
