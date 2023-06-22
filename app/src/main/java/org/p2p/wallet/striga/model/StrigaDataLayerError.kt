@@ -21,7 +21,7 @@ sealed class StrigaDataLayerError(override val message: String) : Throwable() {
         companion object {
             operator fun invoke(response: StrigaApiErrorResponse): ApiServiceError {
                 return when (response.errorCode) {
-                    StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED -> PhoneNumberAlreadyUsed(response)
+                    StrigaApiErrorCode.MOBILE_ALREADY_EXISTS -> PhoneNumberAlreadyUsed(response)
                     else -> General(response)
                 }
             }

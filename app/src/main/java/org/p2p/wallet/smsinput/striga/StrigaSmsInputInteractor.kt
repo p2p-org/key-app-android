@@ -70,15 +70,6 @@ class StrigaSmsInputInteractor(
                 ).toFailureResult()
             }
             "000002" -> {
-                StrigaDataLayerError.ApiServiceError(
-                    response = StrigaApiErrorResponse(
-                        httpStatus = 400,
-                        internalErrorCode = StrigaApiErrorCode.MOBILE_ALREADY_VERIFIED,
-                        details = "MOBILE_ALREADY_VERIFIED"
-                    )
-                ).toFailureResult()
-            }
-            "000003" -> {
                 StrigaDataLayerError.InternalError(
                     cause = IllegalStateException("Mocked Internal error")
                 ).toFailureResult()
