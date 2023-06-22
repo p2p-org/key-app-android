@@ -82,7 +82,7 @@ class JupiterSwapSettingsPresenter(
                 currentContentList = contentMapper.mapForSwapLoadedState(
                     slippage = state.slippage,
                     routes = state.routes,
-                    activeRoute = state.activeRoute,
+                    activeRoute = state.activeRouteIndex,
                     jupiterTokens = tokens,
                     tokenBAmount = state.amountTokenB,
                     tokenB = state.tokenB,
@@ -94,7 +94,7 @@ class JupiterSwapSettingsPresenter(
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
                     routes = state.routes,
-                    activeRoute = state.activeRoute,
+                    activeRoute = state.activeRouteIndex,
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
                     solTokenForFee = solToken,
@@ -105,7 +105,7 @@ class JupiterSwapSettingsPresenter(
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
                     routes = state.routes,
-                    activeRoute = state.activeRoute,
+                    activeRoute = state.activeRouteIndex,
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
                     solTokenForFee = solToken,
