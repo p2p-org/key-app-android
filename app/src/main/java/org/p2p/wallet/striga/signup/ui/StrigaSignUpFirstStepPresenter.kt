@@ -93,7 +93,7 @@ class StrigaSignUpFirstStepPresenter(
         }
     }
 
-    override fun onPhoneCountryCodeChanged(newCountry: CountryCode) {
+    override fun onPhoneCountryCodeChanged(newCountry: CountryCode, changedByUser: Boolean) {
         phoneCountryCode = newCountry
         view?.showPhoneCountryCode(phoneCountryCode)
 
@@ -103,6 +103,10 @@ class StrigaSignUpFirstStepPresenter(
                 countryCodeRepository = countryRepository
             )
         )
+
+        if (changedByUser) {
+            view?.updateSignupField(StrigaSignupDataType.PHONE_NUMBER, "")
+        }
     }
 
     override fun onPhoneNumberChanged(newPhone: String) {
@@ -156,7 +160,7 @@ class StrigaSignUpFirstStepPresenter(
                     cachedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
                 )
 
-                onPhoneCountryCodeChanged(phoneNumberWithCode.phoneCode)
+                onPhoneCountryCodeChanged(phoneNumberWithCode.phoneCode, false)
 
                 // Using the updated phoneCode and selectedPhoneNumber
                 view?.setupPhoneCountryCodePicker(
@@ -180,7 +184,7 @@ class StrigaSignUpFirstStepPresenter(
 
         signupData[StrigaSignupDataType.PHONE_CODE_WITH_PLUS]?.value?.let {
             val phoneCountryCode = countryRepository.findCountryCodeByPhoneCode(it)
-            phoneCountryCode?.let(::onPhoneCountryCodeChanged)
+            phoneCountryCode?.let { countryCode -> onPhoneCountryCodeChanged(countryCode, false) }
         }
     }
 
