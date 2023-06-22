@@ -62,12 +62,12 @@ class SecurityAndPrivacyPresenter(
 
         val metadata = metadataInteractor.currentMetadata ?: return setUnavailableState()
 
-        val isSameDevice = DeviceInfoHelper.getCurrentDeviceName() == metadata.deviceShareDeviceName
-        view?.showDeviceName(metadata.deviceShareDeviceName, showWarning = !isSameDevice)
+        val isChangeEnabled = metadataInteractor.hasDifferentDeviceShare()
+        view?.showDeviceName(metadata.deviceShareDeviceName, showWarning = isChangeEnabled)
         view?.showPhoneNumber(metadata.customSharePhoneNumberE164)
         view?.showSocialId(metadata.socialShareOwnerEmail)
 
-        view?.showManageVisible(isVisible = metadataInteractor.hasDifferentDeviceShare())
+        view?.showManageVisible(isVisible = isChangeEnabled)
     }
 
     override fun logout() {
