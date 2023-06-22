@@ -23,6 +23,9 @@ enum class StrigaApiErrorCode(val code: String) {
     @SerializedName("30009")
     KYC_PENDING_REVIEW("30009"),
 
+    @SerializedName("30041")
+    MOBILE_ALREADY_EXISTS("30041"),
+
     @SerializedName("30044")
     MOBILE_ALREADY_VERIFIED("30044"),
 
