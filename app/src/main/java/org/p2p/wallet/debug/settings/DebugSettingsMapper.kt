@@ -1,9 +1,9 @@
 package org.p2p.wallet.debug.settings
 
-import org.p2p.wallet.R
-import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
+import org.p2p.wallet.R
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
@@ -71,10 +71,12 @@ class DebugSettingsMapper(
             iconRes = R.drawable.ic_network
         )
 
-        val torusUrl = networkUrlProvider.loadTorusEnvironment().baseUrl
+        val torusSubtitle = networkUrlProvider.loadTorusEnvironment().run {
+            "$baseUrl\n$verifier $subVerifier"
+        }
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_torus,
-            subtitle = torusUrl,
+            subtitle = torusSubtitle,
             iconRes = R.drawable.ic_network
         )
 
