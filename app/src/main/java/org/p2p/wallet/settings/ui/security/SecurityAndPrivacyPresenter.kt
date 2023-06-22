@@ -36,7 +36,9 @@ class SecurityAndPrivacyPresenter(
     override fun attach(view: SecurityAndPrivacyContract.View) {
         super.attach(view)
         loadSeedPhrase()
-        loadMetadata()
+        if (seedPhraseProvider.isWeb3AuthUser) {
+            loadMetadata()
+        }
     }
 
     private fun loadSeedPhrase() {
