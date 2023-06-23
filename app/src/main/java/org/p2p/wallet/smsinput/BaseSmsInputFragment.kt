@@ -9,6 +9,10 @@ import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
+import org.p2p.wallet.common.NavigationStrategy
+import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NAVIGATION_STRATEGY
+import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_ARGS
+import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_CLASS
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSmsInputBinding
 import org.p2p.wallet.intercom.IntercomService
@@ -19,17 +23,11 @@ abstract class BaseSmsInputFragment :
     BaseMvpFragment<SmsInputContract.View, SmsInputContract.Presenter>(R.layout.fragment_sms_input),
     SmsInputContract.View {
 
-    companion object {
-        const val ARG_NEXT_DESTINATION_CLASS = "ARG_NEXT_DESTINATION_CLASS"
-        const val ARG_NEXT_DESTINATION_ARGS = "ARG_NEXT_DESTINATION_ARGS"
-        const val ARG_NAVIGATION_STRATEGY = "ARG_NAVIGATION_STRATEGY"
-    }
-
     protected val binding: FragmentSmsInputBinding by viewBinding()
 
     private val nextDestinationClass: Class<Fragment> by args(ARG_NEXT_DESTINATION_CLASS)
     private val nextDestinationArgs: Bundle? by args(ARG_NEXT_DESTINATION_ARGS)
-    private val navigationStrategy: SmsInputNavigationStrategy by args(ARG_NAVIGATION_STRATEGY)
+    private val navigationStrategy: NavigationStrategy by args(ARG_NAVIGATION_STRATEGY)
 
     protected open fun onBackPressed() = Unit
 
