@@ -44,7 +44,7 @@ abstract class LongFeatureToggle(
 ) : RemoteFeatureToggle<Long>() {
     override val value: Long
         get() = valuesProvider.getLong(featureKey) ?: kotlin.run {
-            Timber.tag("IntFeatureToggle").i("No value found for $featureKey; using defaults = $defaultValue")
+            Timber.tag("LongFeatureToggle").i("No value found for $featureKey; using defaults = $defaultValue")
             defaultValue
         }
 }

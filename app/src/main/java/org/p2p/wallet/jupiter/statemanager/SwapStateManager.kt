@@ -162,7 +162,7 @@ class SwapStateManager(
         refreshJob = launch {
             try {
                 while (refreshJob?.isActive == true) {
-                    delay(swapRoutesRefreshFeatureToggle.value)
+                    delay(swapRoutesRefreshFeatureToggle.duration.inWholeMilliseconds)
                     val action = SwapStateAction.RefreshRoutes
                     lastSwapStateAction = action
                     handleNewAction(action)
