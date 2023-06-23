@@ -10,7 +10,6 @@ import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
-import org.p2p.wallet.settings.DeviceInfoHelper
 
 class SecurityAndPrivacyPresenter(
     private val resources: Resources,

@@ -3,6 +3,10 @@ package org.p2p.wallet.smsinput
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import android.os.Bundle
+import org.p2p.wallet.common.NavigationStrategy
+import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NAVIGATION_STRATEGY
+import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_ARGS
+import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_CLASS
 import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyFragment
 import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputFragment
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputFragment
@@ -11,16 +15,16 @@ import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputFragment
 object SmsInputFactory {
     enum class Type(
         val clazz: Class<out Fragment>,
-        val navigationStrategy: SmsInputNavigationStrategy,
+        val navigationStrategy: NavigationStrategy,
     ) {
         Onboarding(
             OnboardingSmsInputFragment::class.java,
-            SmsInputNavigationStrategy.PopAndReplace(null, true)
+            NavigationStrategy.PopAndReplace(null, true)
         ),
-        Striga(StrigaSmsInputFragment::class.java, SmsInputNavigationStrategy.Replace),
+        Striga(StrigaSmsInputFragment::class.java, NavigationStrategy.Replace),
         UpdateDevice(
             UpdateDeviceSmsInputFragment::class.java,
-            SmsInputNavigationStrategy.PopAndReplace(SecurityAndPrivacyFragment::class.java, false)
+            NavigationStrategy.PopAndReplace(SecurityAndPrivacyFragment::class.java, false)
         ),
     }
 
@@ -35,15 +39,15 @@ object SmsInputFactory {
         type: Type,
         destinationFragment: Class<T>,
         destinationArgs: Bundle? = null,
-        navigationStrategy: SmsInputNavigationStrategy? = null
+        navigationStrategy: NavigationStrategy? = null
     ): BaseSmsInputFragment {
         val fragment = requireNotNull(type.clazz.newInstance() as? BaseSmsInputFragment) { "Unknown type: $type" }
 
         return fragment.apply {
             arguments = bundleOf(
-                BaseSmsInputFragment.ARG_NEXT_DESTINATION_CLASS to destinationFragment,
-                BaseSmsInputFragment.ARG_NEXT_DESTINATION_ARGS to destinationArgs,
-                BaseSmsInputFragment.ARG_NAVIGATION_STRATEGY to (navigationStrategy ?: type.navigationStrategy)
+                ARG_NEXT_DESTINATION_CLASS to destinationFragment,
+                ARG_NEXT_DESTINATION_ARGS to destinationArgs,
+                ARG_NAVIGATION_STRATEGY to (navigationStrategy ?: type.navigationStrategy)
             )
         }
     }
