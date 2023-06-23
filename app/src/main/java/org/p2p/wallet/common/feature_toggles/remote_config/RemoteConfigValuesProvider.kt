@@ -5,4 +5,5 @@ interface RemoteConfigValuesProvider {
     fun getBoolean(toggleKey: String): Boolean?
     fun getFloat(toggleKey: String): Float?
     fun getInt(toggleKey: String): Int?
+    fun getLong(toggleKey: String): Long?
 }

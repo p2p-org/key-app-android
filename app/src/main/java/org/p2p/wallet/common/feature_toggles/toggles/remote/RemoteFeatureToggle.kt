@@ -1,7 +1,7 @@
 package org.p2p.wallet.common.feature_toggles.toggles.remote
 
-import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
 import timber.log.Timber
+import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
 
 sealed class RemoteFeatureToggle<ValueType> {
     /**
@@ -34,6 +34,16 @@ abstract class IntFeatureToggle(
 ) : RemoteFeatureToggle<Int>() {
     override val value: Int
         get() = valuesProvider.getInt(featureKey) ?: kotlin.run {
+            Timber.tag("IntFeatureToggle").i("No value found for $featureKey; using defaults = $defaultValue")
+            defaultValue
+        }
+}
+
+abstract class LongFeatureToggle(
+    private val valuesProvider: RemoteConfigValuesProvider
+) : RemoteFeatureToggle<Long>() {
+    override val value: Long
+        get() = valuesProvider.getLong(featureKey) ?: kotlin.run {
             Timber.tag("IntFeatureToggle").i("No value found for $featureKey; using defaults = $defaultValue")
             defaultValue
         }

@@ -106,6 +106,13 @@ class AppFirebaseRemoteConfig(
         return remoteConfig.getString(toggleKey).toIntOrNull()
     }
 
+    override fun getLong(toggleKey: String): Long? {
+        if (isFetchFailed) {
+            return null
+        }
+        return remoteConfig.getString(toggleKey).toLongOrNull()
+    }
+
     override fun getFloat(toggleKey: String): Float? {
         if (isFetchFailed) {
             return null
