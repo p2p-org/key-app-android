@@ -99,14 +99,14 @@ class StrigaSmsInputInteractor(
     }
 
     private fun isExceededVerificationAttempts(): Boolean {
-        return !DateTimeUtils.checkTimerIsOver(
+        return !DateTimeUtils.isTimestampExpired(
             strigaStorage.smsExceededVerificationAttemptsMillis,
             EXCEEDED_VERIFICATION_ATTEMPTS_TIMEOUT_MILLIS
         )
     }
 
     private fun isExceededResendAttempts(): Boolean {
-        return !DateTimeUtils.checkTimerIsOver(
+        return !DateTimeUtils.isTimestampExpired(
             strigaStorage.smsExceededResendAttemptsMillis,
             EXCEEDED_RESEND_ATTEMPTS_TIMEOUT_MILLIS
         )
