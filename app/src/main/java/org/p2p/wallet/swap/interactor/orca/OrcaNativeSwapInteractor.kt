@@ -9,7 +9,7 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
-import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.core.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository

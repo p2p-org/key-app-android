@@ -1,6 +1,6 @@
 package org.p2p.wallet.jupiter.repository.transaction
 
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.jupiter.api.request.CreateSwapTransactionRequest
 import org.p2p.wallet.jupiter.api.request.JupiterSwapFeesRequest
 import org.p2p.wallet.jupiter.api.request.SwapRouteRequest
@@ -8,7 +8,7 @@ import org.p2p.wallet.jupiter.api.response.CreateSwapTransactionResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapFees
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 class JupiterSwapTransactionMapper {
 

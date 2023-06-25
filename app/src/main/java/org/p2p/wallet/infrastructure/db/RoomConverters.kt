@@ -3,8 +3,8 @@ package org.p2p.wallet.infrastructure.db
 import androidx.room.TypeConverter
 import java.math.BigDecimal
 import org.p2p.core.wrapper.HexString
-import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.Base58String
 
 class RoomConverters {
     @TypeConverter

@@ -8,7 +8,7 @@ import org.p2p.wallet.auth.username.api.RegisterUsernameServiceApi
 import org.p2p.wallet.auth.username.repository.mapper.RegisterUsernameServiceApiMapper
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 class UsernameRemoteRepository(
     private val usernameService: RegisterUsernameServiceApi,

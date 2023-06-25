@@ -3,7 +3,7 @@ package org.p2p.wallet.jupiter.interactor
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.utils.isLessThan
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.jupiter.interactor.model.SwapPriceImpactType
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute

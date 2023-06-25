@@ -1,17 +1,17 @@
 package org.p2p.wallet.jupiter.interactor
 
 import timber.log.Timber
-import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.network.data.ServerException
+import org.p2p.core.network.data.transactionerrors.RpcTransactionError
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.solanaj.core.Account
 
 private const val TAG = "JupiterSendSwapTransactionDelegate"
 

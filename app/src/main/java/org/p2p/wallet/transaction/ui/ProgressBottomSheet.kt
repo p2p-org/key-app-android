@@ -99,6 +99,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
                     is TransactionState.SendSuccess -> handleSendSuccess(state)
                     is TransactionState.SwapSuccess -> handleSwapSuccess(state)
                     is TransactionState.Error -> handleError(state)
+                    else -> Unit
                 }
             }
         }

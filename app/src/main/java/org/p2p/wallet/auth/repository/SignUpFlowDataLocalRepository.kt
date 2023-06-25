@@ -5,9 +5,9 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 import timber.log.Timber
 
 private const val TAG = "SignUpFlowDataLocalRepository"

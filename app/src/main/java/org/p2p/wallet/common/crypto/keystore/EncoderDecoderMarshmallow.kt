@@ -4,7 +4,7 @@ import androidx.core.content.edit
 import android.content.SharedPreferences
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import org.p2p.solanaj.utils.crypto.Hex
+import org.p2p.core.crypto.Hex
 import timber.log.Timber
 import java.security.KeyStore
 import java.security.SecureRandom

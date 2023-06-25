@@ -9,9 +9,6 @@ dependencies {
     implementation("net.i2p.crypto:eddsa:0.3.0")
     implementation("com.google.firebase:firebase-crashlytics-buildtools:2.9.4")
 
-    val retrofitVersion = "2.9.0"
-    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
-    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
 
     val coroutinesVersion = "1.6.2"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")

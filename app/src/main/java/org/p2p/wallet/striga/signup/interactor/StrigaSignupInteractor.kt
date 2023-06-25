@@ -9,7 +9,7 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError

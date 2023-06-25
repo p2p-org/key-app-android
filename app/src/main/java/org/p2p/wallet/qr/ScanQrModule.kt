@@ -3,7 +3,7 @@ package org.p2p.wallet.qr
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import org.p2p.wallet.R
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.qr.interactor.QrCodeInteractor
 import org.p2p.wallet.qr.model.QrParams
 

@@ -7,11 +7,11 @@ import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.solanaj.model.types.RpcNotificationResultResponse
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.solanaj.utils.crypto.toBase64Instance
+import org.p2p.core.crypto.toBase64Instance
 import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdateHandler
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 private const val TAG = "TokensBalanceUpdateManager"
 

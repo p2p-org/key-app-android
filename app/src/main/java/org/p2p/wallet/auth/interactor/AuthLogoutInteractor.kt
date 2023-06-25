@@ -8,7 +8,7 @@ import timber.log.Timber
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider

@@ -7,8 +7,8 @@ import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.repository.local.PendingTransactionsLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 
 class HistoryRepository(
     private val repositories: List<HistoryRemoteRepository>,

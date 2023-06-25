@@ -4,14 +4,13 @@ import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import org.junit.Test
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.chacha.ChaCha20Poly1305SymmetricKeyGenerator
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class ChaCha20Poly1305SymmetricKeyGeneratorTest {
     private val expectedSymmetricKey: Base58String =
-        "CDCfsZL9Xd8E2kCYYAHSeKaE16YUH9RMuXDmtTEjNC4S"
-            .toBase58Instance()
+        org.p2p.core.crypto.toBase58Instance()
 
     private val givenMnemonic: List<String> =
         "slice sauce assist glimpse jelly trouble parent horror bread isolate uncle gallery owner angry rose fabric stable phrase much joke cotton mesh ancient erase"
@@ -24,13 +23,13 @@ class ChaCha20Poly1305SymmetricKeyGeneratorTest {
         // when
         var symmetricKey = cha20Poly1305SymmetricKeyGenerator.generateSymmetricKey(givenMnemonic)
         // then
-        assertThat(symmetricKey.toBase58Instance())
+        assertThat(org.p2p.core.crypto.toBase58Instance())
             .isEqualTo(expectedSymmetricKey)
 
         // when 2
         symmetricKey = cha20Poly1305SymmetricKeyGenerator.generateSymmetricKey(givenMnemonic)
         // then 2
-        assertThat(symmetricKey.toBase58Instance())
+        assertThat(org.p2p.core.crypto.toBase58Instance())
             .isEqualTo(expectedSymmetricKey)
     }
 

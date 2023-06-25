@@ -9,8 +9,8 @@ import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
-import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
+import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.network.NetworkCoreModule.getRetrofit
 
 object AlarmErrorsModule : InjectionModule {
     override fun create() = module {

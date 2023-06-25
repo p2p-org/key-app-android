@@ -5,8 +5,8 @@ import org.p2p.wallet.auth.gateway.repository.mapper.BorshSerializable
 import org.p2p.wallet.auth.gateway.repository.mapper.PushServiceSignatureFieldGenerator
 import org.p2p.wallet.auth.gateway.repository.mapper.write
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import java.util.Optional
 
 class HistoryServiceSignatureFieldGenerator(

@@ -19,7 +19,7 @@ import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.MoonpayServerSideApi
 import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 private const val TAG = "MoonpaySellRemoteRepository"
 

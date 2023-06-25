@@ -3,7 +3,7 @@ package org.p2p.wallet.debug
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesContract
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesPresenter
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsContract

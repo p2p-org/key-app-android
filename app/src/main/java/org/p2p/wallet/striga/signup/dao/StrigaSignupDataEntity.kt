@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity.Companion.COLUMN_OWNER
 import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity.Companion.COLUMN_TYPE
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 @Entity(
     tableName = "striga_signup_data",

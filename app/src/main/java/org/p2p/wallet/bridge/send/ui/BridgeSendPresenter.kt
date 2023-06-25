@@ -39,7 +39,7 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager

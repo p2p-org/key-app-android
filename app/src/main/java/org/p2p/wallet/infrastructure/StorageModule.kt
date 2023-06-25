@@ -15,6 +15,8 @@ import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFeatureToggleStorage
 import org.p2p.core.network.NetworkServicesUrlStorage
+import org.p2p.core.network.storage.NetworkEnvironmentPreferenceStorage
+import org.p2p.core.network.storage.NetworkEnvironmentStorage
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.infrastructure.account.AccountStorage
@@ -43,6 +45,11 @@ object StorageModule {
     fun create() = module {
         // TODO PWN-5418 - extract misc data to separate prefs
         single { androidPreferences(PREFS_DEFAULT) }
+
+        factory {
+            val sharedPreferences: SharedPreferences = get()
+            NetworkEnvironmentPreferenceStorage(preferences = sharedPreferences)
+        } bind NetworkEnvironmentStorage::class
 
         // TODO PWN-5418 - extract data to separate prefs from org.p2p.wallet.prefs
         factory {

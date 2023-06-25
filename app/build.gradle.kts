@@ -7,6 +7,7 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("io.sentry.android.gradle") version "3.2.0"
     id("org.jetbrains.kotlinx.kover") version "0.7.0"
+    id("kotlin-kapt")
 }
 
 koverReport {
@@ -89,6 +90,7 @@ dependencies {
     implementation(project(":ui-kit"))
     implementation(project(":core"))
     implementation(project(":ethereumkit"))
+    implementation(project(":market-price"))
 
     implementation(files("libs/borshj-0.0.0.jar"))
 
@@ -111,14 +113,6 @@ dependencies {
     // https://github.com/JakeWharton/ThreeTenABP
     implementation("com.jakewharton.threetenabp:threetenabp:1.3.0")
 
-    val retrofitVersion = "2.9.0"
-    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
-    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
-    implementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
-
-    val okHttpVersion = "4.9.3"
-    implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
-    implementation("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
 
     // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:31.1.1"))
@@ -154,8 +148,6 @@ dependencies {
     // Lottie
     val lottieVersion = "4.0.0"
     implementation("com.airbnb.android:lottie:$lottieVersion")
-
-
 
     // dots indicator
     implementation("com.tbuonomo:dotsindicator:4.3")

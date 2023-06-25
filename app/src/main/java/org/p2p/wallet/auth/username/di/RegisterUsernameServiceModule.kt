@@ -13,7 +13,7 @@ import org.p2p.wallet.auth.username.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.auth.username.repository.mapper.RegisterUsernameServiceApiMapper
 import org.p2p.wallet.auth.username.repository.mapper.UsernameErrorMapper
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 
 object RegisterUsernameServiceModule : InjectionModule {
     const val REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER = "REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER"

@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.gateway.repository.mapper
 
-import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import timber.log.Timber
+import org.p2p.solanaj.utils.TweetNaclFast
 
 private const val TAG = "GatewayServiceSignatureFieldGenerator"
 

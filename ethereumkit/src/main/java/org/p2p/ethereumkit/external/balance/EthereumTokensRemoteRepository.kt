@@ -8,10 +8,10 @@ import org.p2p.ethereumkit.external.api.alchemy.request.GetTokenMetadataJsonRpc
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalancesResponse
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenMetadataResponse
 import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 import java.math.BigInteger
 import java.net.URI
 import org.p2p.core.rpc.RpcApi
+import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
 
 internal class EthereumTokensRemoteRepository(
     private val alchemyService: RpcApi,

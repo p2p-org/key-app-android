@@ -3,7 +3,7 @@ package org.p2p.wallet.jupiter.repository.model
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.utils.scaleShortOrFirstNotZero
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 data class JupiterSwapMarketInformation(
     val id: String,

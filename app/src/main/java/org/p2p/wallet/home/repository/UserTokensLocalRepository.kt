@@ -18,7 +18,7 @@ import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 class UserTokensLocalRepository(
     private val homeLocalRepository: HomeLocalRepository,

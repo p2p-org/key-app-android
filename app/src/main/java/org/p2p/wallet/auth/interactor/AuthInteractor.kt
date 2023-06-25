@@ -3,13 +3,13 @@ package org.p2p.wallet.auth.interactor
 import androidx.biometric.BiometricManager
 import android.content.pm.PackageManager
 import android.os.Build
-import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
+import org.p2p.core.crypto.Pbkdf2HashGenerator
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.BiometricType
 import org.p2p.wallet.auth.model.SignInResult
 import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
