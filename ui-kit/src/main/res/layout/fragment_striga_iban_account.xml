@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke"
+    android:clickable="true"
+    android:gravity="center_horizontal">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_toolbar_back"
+        app:title="Euro account"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night" />
+
+    <TextView
+        android:id="@+id/textView5"
+        style="@style/UiKit.TextAppearance.Regular.Text4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="40dp"
+        android:text="Use these details to receive transfers from a Euro bank account"
+        android:textAlignment="center"
+        android:textColor="@color/bg_mountain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/bg_rounded_solid_snow_16"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_main_cell" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/bg_rounded_solid_rain_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView">
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_rounded_solid_smoke_24"
+            android:padding="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@color/bg_night"
+                app:srcCompat="@drawable/ic_main_history"
+                tools:layout_editor_absoluteX="48dp"
+                tools:layout_editor_absoluteY="52dp" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/UiKit.TextAppearance.Regular.Text4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="24dp"
+            android:text="Transfers usually take from 1 to 3 working days to appear in your KeyApp account"
+            app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/frameLayout"
+            app:layout_constraintTop_toTopOf="@+id/frameLayout" />
+
+        <FrameLayout
+            android:id="@+id/frameLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_rounded_solid_smoke_24"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@color/bg_night"
+                app:srcCompat="@drawable/ic_checkbox_checked"
+                tools:layout_editor_absoluteX="48dp"
+                tools:layout_editor_absoluteY="52dp" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/UiKit.TextAppearance.Regular.Text4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="24dp"
+            android:text="Your money is held and protected by licensed banks. Learn more"
+            app:layout_constraintBottom_toBottomOf="@+id/frameLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/frameLayout2"
+            app:layout_constraintTop_toTopOf="@+id/frameLayout2" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <org.p2p.uikit.components.UiKitInformerView
+        android:id="@+id/informerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+    </org.p2p.uikit.components.UiKitInformerView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
