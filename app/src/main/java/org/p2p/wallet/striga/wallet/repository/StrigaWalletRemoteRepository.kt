@@ -16,10 +16,6 @@ import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
 
-/**
- * key-app. 2023
- * @author Eduard Maximovich (edward.vstock@gmail.com)
- */
 class StrigaWalletRemoteRepository(
     private val api: StrigaWalletApi,
     private val mapper: StrigaWalletRepositoryMapper,
