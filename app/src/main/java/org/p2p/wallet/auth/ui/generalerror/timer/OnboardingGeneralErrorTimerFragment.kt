@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.ui.generalerror.timer
 import androidx.activity.addCallback
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
@@ -14,13 +15,16 @@ import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.Presenter
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
+import org.p2p.wallet.common.NavigationStrategy
+import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NAVIGATION_STRATEGY
+import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_CLASS
+import org.p2p.wallet.common.NavigationStrategy.Replace.navigateNext
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.OnboardingSpanUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.openFile
-import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.View as ContractView
@@ -33,14 +37,28 @@ class OnboardingGeneralErrorTimerFragment :
     ContractView {
 
     companion object {
-        fun create(error: GeneralErrorTimerScreenError, timerLeftTime: Long): OnboardingGeneralErrorTimerFragment =
-            OnboardingGeneralErrorTimerFragment().withArgs(
+        fun create(
+            error: GeneralErrorTimerScreenError,
+            timerLeftTime: Long,
+            destinationFragment: Class<out Fragment>? = null,
+            navigationStrategy: NavigationStrategy? = null
+        ): OnboardingGeneralErrorTimerFragment {
+            val destinationClass = destinationFragment ?: OnboardingRootFragment::class.java
+            val defaultStrategy = NavigationStrategy.PopAndReplace(null, true)
+            val strategy = navigationStrategy ?: defaultStrategy
+            return OnboardingGeneralErrorTimerFragment().withArgs(
                 ARG_TIMER_ERROR_TYPE to error,
-                ARG_TIMER_LEFT_TIME to timerLeftTime
+                ARG_TIMER_LEFT_TIME to timerLeftTime,
+                ARG_NEXT_DESTINATION_CLASS to destinationClass,
+                ARG_NAVIGATION_STRATEGY to strategy
             )
+        }
     }
 
     override val presenter: Presenter by inject { parametersOf(error, timerLeftTime) }
+
+    private val nextDestinationClass: Class<Fragment> by args(ARG_NEXT_DESTINATION_CLASS)
+    private val navigationStrategy: NavigationStrategy by args(ARG_NAVIGATION_STRATEGY)
 
     private val binding: FragmentOnboardingGeneralErrorTimerBinding by viewBinding()
     private val error: GeneralErrorTimerScreenError by args(ARG_TIMER_ERROR_TYPE)
@@ -90,7 +108,7 @@ class OnboardingGeneralErrorTimerFragment :
     }
 
     override fun navigateToStartingScreen() {
-        popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
+        navigationStrategy.navigateNext(this, nextDestinationClass)
     }
 
     override fun showFile(file: File) {

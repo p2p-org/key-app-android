@@ -26,11 +26,13 @@ data class ImageViewCellModel(
 
 fun commonCircleImage(
     icon: DrawableContainer,
+    @ColorRes iconTint: Int? = null,
     @ColorRes backgroundTint: Int = R.color.icons_rain,
     @Px strokeWidth: Float = 0f,
     @ColorRes strokeColor: Int = android.R.color.transparent,
 ): ImageViewCellModel = ImageViewCellModel(
     icon = icon,
+    iconTint = iconTint,
     background = DrawableCellModel(
         drawable = shapeDrawable(shape = shapeCircle()),
         tint = backgroundTint,

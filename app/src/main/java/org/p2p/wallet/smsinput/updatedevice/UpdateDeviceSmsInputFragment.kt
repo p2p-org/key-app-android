@@ -9,10 +9,14 @@ import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
+import org.p2p.wallet.common.NavigationStrategy
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 
 class UpdateDeviceSmsInputFragment : BaseSmsInputFragment() {
 
@@ -33,9 +37,19 @@ class UpdateDeviceSmsInputFragment : BaseSmsInputFragment() {
             getString(R.string.onboarding_sms_input_phone_number_title, userPhoneNumber.formattedValue)
     }
 
-    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long) = Unit
+    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long) {
+        replaceFragment(
+            OnboardingGeneralErrorTimerFragment.create(
+                error = error,
+                timerLeftTime = timerLeftTime,
+                navigationStrategy = NavigationStrategy.PopBackStackTo(MainContainerFragment::class.java)
+            )
+        )
+    }
 
-    override fun navigateToGatewayErrorScreen(handledState: GatewayHandledState) = Unit
+    override fun navigateToGatewayErrorScreen(handledState: GatewayHandledState) {
+        showUiKitSnackBar(messageResId = R.string.error_general_message)
+    }
 
     override fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) = Unit
 

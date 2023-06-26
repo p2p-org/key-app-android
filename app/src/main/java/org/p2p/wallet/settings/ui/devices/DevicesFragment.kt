@@ -13,9 +13,13 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
 import org.p2p.wallet.auth.ui.animationscreen.TimerState
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
+import org.p2p.wallet.common.NavigationStrategy
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDevicesBinding
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.settings.ui.mail.SettingsEmailConfirmFragment
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.utils.popBackStack
@@ -106,6 +110,16 @@ class DevicesFragment :
             SmsInputFactory.create(
                 type = SmsInputFactory.Type.UpdateDevice,
                 destinationFragment = SettingsEmailConfirmFragment::class.java
+            )
+        )
+    }
+
+    override fun navigateToAccountBlocked(cooldownTtl: Long) {
+        replaceFragment(
+            OnboardingGeneralErrorTimerFragment.create(
+                error = GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,
+                timerLeftTime = cooldownTtl,
+                navigationStrategy = NavigationStrategy.PopBackStackTo(MainContainerFragment::class.java)
             )
         )
     }

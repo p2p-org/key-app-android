@@ -12,29 +12,29 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
 import org.p2p.core.utils.emptyString
-import org.p2p.uikit.R
 
 object SpanUtils {
 
     fun highlightLinkNoUnderline(
-        text: String,
-        linkToHighlight: String,
-        @ColorInt linkColor: Int,
+        commonText: String,
+        highlightedText: String,
+        @ColorInt color: Int,
         onClick: (View) -> Unit
     ): SpannableString {
-        val spannable = SpannableString(text)
-        val startIndex = text.indexOf(linkToHighlight)
-        val endIndex = startIndex + linkToHighlight.length
+        val spannable = SpannableString(commonText)
+        val startIndex = commonText.indexOf(highlightedText)
+        val endIndex = startIndex + highlightedText.length
 
         if (startIndex == -1) return spannable
 
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
+                widget.cancelPendingInputEvents()
                 onClick(widget)
             }
 
             override fun updateDrawState(ds: TextPaint) {
-                ds.color = linkColor
+                ds.color = color
                 ds.isUnderlineText = false
             }
         }
@@ -81,7 +81,7 @@ object SpanUtils {
     }
 
     fun String.highlightPublicKey(context: Context): Spannable {
-        val color = context.getColor(R.color.text_night)
+        val color = context.getColor(org.p2p.uikit.R.color.text_night)
         val outPutColoredText: Spannable = SpannableString(this)
         outPutColoredText.setSpan(ForegroundColorSpan(color), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         val endIndex = length - 4

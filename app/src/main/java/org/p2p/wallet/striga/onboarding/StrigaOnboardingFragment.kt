@@ -123,9 +123,9 @@ class StrigaOnboardingFragment :
         val helpHighlightText = getString(R.string.striga_onboarding_help_highlight_text)
         val helpCommonText = getString(R.string.striga_onboarding_help_common_text, helpHighlightText)
         val helpTextSpannable = SpanUtils.highlightLinkNoUnderline(
-            text = helpCommonText,
-            linkToHighlight = helpHighlightText,
-            linkColor = getColor(R.color.sky),
+            commonText = helpCommonText,
+            highlightedText = helpHighlightText,
+            color = getColor(R.color.sky),
             onClick = { presenter.onClickHelp() }
         )
 

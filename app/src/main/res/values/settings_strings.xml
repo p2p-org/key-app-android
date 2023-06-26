@@ -21,6 +21,7 @@
     <string name="debug_settings_kyc_mock_title">KYC Banner mock</string>
     <string name="debug_settings_kyc_set_rejected_title">KYC Simulate rejected</string>
     <string name="debug_settings_striga_detach_user_id_title">Detach striga from web3 user</string>
+    <string name="debug_settings_ui_kit">UiKit examples</string>
 
     <!-- Debug Settings -> Notifications -->
     <string name="debug_notifications_title">Debug Notifications</string>
@@ -79,7 +80,7 @@
     <string name="recovery_title">Security &amp; privacy</string>
     <string name="recovery_text">Security &amp; privacy</string>
     <string name="recovery_sub_text_web3">To access your account from another device, you need to use any 2 factors from the list below</string>
-    <string name="recovery_sub_text_seed_phrase">Seed phrase is the only way to access your funds on another device. Key App doesn\'t have access to this information</string>
+    <string name="recovery_sub_text_seed_phrase">Seed phrase is the only way to access your funds on another device. Key App doesn\'t have access to this information.</string>
     <string name="recovery_multi_factor_header">Multi-factor authentication</string>
     <string name="recovery_device_title">Device</string>
     <string name="recovery_phone_title">Phone</string>
@@ -107,7 +108,7 @@
 
 
     <string name="devices_incorrect_account">Incorrect Google account</string>
-    <string name="devices_account_associated">This account is associated with %s. Please log in with the correct Google account.</string>
+    <string name="devices_account_associated">%s\nPlease log in with the correct Google account.</string>
     <string name="devices_restore_another">Use another account</string>
 
 

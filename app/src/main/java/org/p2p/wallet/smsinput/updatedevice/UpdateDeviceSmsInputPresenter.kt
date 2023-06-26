@@ -67,25 +67,21 @@ class UpdateDeviceSmsInputPresenter(
     }
 
     private fun handleGatewayError(error: PushServiceError) {
-        // TODO PWN-8827 fix error handling!
         when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(error)) {
             is GatewayHandledState.CriticalError -> {
                 view?.navigateToGatewayErrorScreen(gatewayHandledResult)
-                view?.showUiKitSnackBar(gatewayHandledResult.errorCode.toString())
             }
             GatewayHandledState.IncorrectOtpCodeError -> {
                 view?.renderIncorrectSms()
             }
             is GatewayHandledState.TimerBlockError -> {
                 view?.navigateToSmsInputBlocked(gatewayHandledResult.error, gatewayHandledResult.cooldownTtl)
-                view?.showUiKitSnackBar(gatewayHandledResult.error.name)
             }
             is GatewayHandledState.TitleSubtitleError -> {
                 view?.navigateToGatewayErrorScreen(gatewayHandledResult)
-                view?.showUiKitSnackBar(gatewayHandledResult.title)
             }
             is GatewayHandledState.ToastError -> {
-                view?.showUiKitSnackBar(gatewayHandledResult.message)
+                view?.navigateToGatewayErrorScreen(gatewayHandledResult)
             }
             else -> {
                 Timber.i("GatewayService error is not handled")
