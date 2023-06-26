@@ -57,7 +57,6 @@ class DevicesPresenter(
             deviceNameTimestampSec = DateTimeUtils.getCurrentTimestampInSeconds()
         )
         refreshDeviceShare(newMetadata)
-        view?.showSuccessDeviceChange()
     }
 
     private suspend fun refreshDeviceShare(newMetadata: GatewayOnboardingMetadata) {

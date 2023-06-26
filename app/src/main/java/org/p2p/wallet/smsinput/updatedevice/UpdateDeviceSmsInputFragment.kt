@@ -47,7 +47,9 @@ class UpdateDeviceSmsInputFragment : BaseSmsInputFragment() {
         )
     }
 
-    override fun navigateToGatewayErrorScreen(handledState: GatewayHandledState) = Unit
+    override fun navigateToGatewayErrorScreen(handledState: GatewayHandledState) {
+        showUiKitSnackBar(messageResId = R.string.error_general_message)
+    }
 
     override fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) = Unit
 
