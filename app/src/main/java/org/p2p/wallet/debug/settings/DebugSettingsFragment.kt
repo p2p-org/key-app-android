@@ -24,7 +24,7 @@ import org.p2p.wallet.debug.settings.adapter.settingsRowSectionItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowSwtichItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowTitleItemDelegate
 import org.p2p.wallet.debug.torus.DebugTorusFragment
-import org.p2p.wallet.debug.uikit.DebugUiKitFragmentFragment
+import org.p2p.wallet.debug.uikit.DebugUiKitFragment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.utils.getSerializableOrNull
@@ -117,7 +117,7 @@ class DebugSettingsFragment :
                 presenter.onClickDetachStrigaUser()
             }
             R.string.debug_settings_ui_kit -> {
-                replaceFragment(DebugUiKitFragmentFragment())
+                replaceFragment(DebugUiKitFragment())
             }
         }
     }
