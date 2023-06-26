@@ -44,23 +44,19 @@ class UiKitInformerView @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.UiKitInformerView).use { style ->
             val leftIconRes: Int =
                 style.getResourceId(R.styleable.UiKitInformerView_leftIcon, R.drawable.ic_checkbox_checked)
-            val leftIconTint: Int? = style.getResourceId(R.styleable.UiKitInformerView_leftIconTint, -1)
-                .takeIf { it != -1 }
+            val leftIconTint: Int = style.getResourceId(R.styleable.UiKitInformerView_leftIconTint, R.color.icons_mountain)
             val title: String? = style.getString(R.styleable.UiKitInformerView_title)
             val caption: String? = style.getString(R.styleable.UiKitInformerView_caption)
             val infoLine: String? = style.getString(R.styleable.UiKitInformerView_infoLine)
             val infoLinePosition = style.getInt(R.styleable.UiKitInformerView_infoLinePosition, -1)
                 .takeIf { it != -1 }
                 ?.let { InfoLinePosition.values()[it] }
+            val infoLineColor = style.getResourceId(R.styleable.UiKitInformerView_infoLineColor, R.color.text_mountain)
 
-            val leftIconParams = if (leftIconTint != null) {
-                InformerViewCellModel.LeftIconParams(
-                    DrawableContainer(iconRes = leftIconRes),
-                    iconTint = leftIconTint
-                )
-            } else {
-                InformerViewCellModel.LeftIconParams(leftIconRes)
-            }
+            val leftIconParams = InformerViewCellModel.LeftIconParams(
+                DrawableContainer(iconRes = leftIconRes),
+                iconTint = leftIconTint
+            )
 
             InformerViewCellModel(
                 leftIcon = leftIconParams,
@@ -69,7 +65,8 @@ class UiKitInformerView @JvmOverloads constructor(
                 infoLine = infoLine?.let {
                     InformerViewCellModel.InfoLineParams(
                         TextContainer(text = it),
-                        position = infoLinePosition!!
+                        position = infoLinePosition!!,
+                        textColorRes = infoLineColor
                     )
                 }
             )

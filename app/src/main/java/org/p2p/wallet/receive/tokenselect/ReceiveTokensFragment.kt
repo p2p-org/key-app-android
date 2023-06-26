@@ -22,7 +22,7 @@ import org.p2p.uikit.components.finance_block.mainCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.recycler.decoration.groupedRoundingFinanceBlockDecoration
+import org.p2p.uikit.utils.recycler.decoration.groupedRoundingMainCellDecoration
 import org.p2p.uikit.utils.recycler.decoration.onePxDividerFinanceBlockDecoration
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
@@ -90,7 +90,7 @@ class ReceiveTokensFragment :
 
         with(binding.recyclerViewTokens) {
             attachAdapter(this@ReceiveTokensFragment.adapter)
-            addItemDecoration(groupedRoundingFinanceBlockDecoration())
+            addItemDecoration(groupedRoundingMainCellDecoration())
             addItemDecoration(onePxDividerFinanceBlockDecoration(requireContext()))
             doOnAttach {
                 layoutManager = this@ReceiveTokensFragment.layoutManager

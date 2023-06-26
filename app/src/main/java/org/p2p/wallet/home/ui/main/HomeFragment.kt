@@ -53,7 +53,8 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.striga.ui.StrigaKycPendingBottomSheet
+import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
+import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
@@ -308,7 +309,7 @@ class HomeFragment :
     }
 
     override fun navigateToKycStatus(status: StrigaKycStatusBanner) {
-        replaceFragment(strigaKycFragmentFactory.kycFragment())
+        replaceFragment(StrigaUserIbanDetailsFragment())
     }
 
     override fun showKycPendingDialog() {

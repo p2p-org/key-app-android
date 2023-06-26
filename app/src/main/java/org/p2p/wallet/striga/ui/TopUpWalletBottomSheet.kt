@@ -26,10 +26,12 @@ import org.p2p.wallet.databinding.DialogTopupWalletBinding
 import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.receive.ReceiveFragmentFactory
+import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
+// todo: move to main fragment package
 class TopUpWalletBottomSheet :
     BaseMvpBottomSheet<TopUpWalletContract.View, TopUpWalletContract.Presenter>(R.layout.dialog_topup_wallet),
     TopUpWalletContract.View {
@@ -73,7 +75,7 @@ class TopUpWalletBottomSheet :
     }
 
     override fun navigateToBankTransferTarget(target: StrigaUserStatusDestination) {
-        strigaFragmentFactory.bankTransferFragment(target)?.let(::dismissAndNavigate)
+        StrigaUserIbanDetailsFragment()?.let(::dismissAndNavigate)
     }
 
     override fun showBankCardView(tokenToBuy: Token) {
