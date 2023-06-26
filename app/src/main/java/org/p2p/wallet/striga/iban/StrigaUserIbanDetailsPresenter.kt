@@ -34,7 +34,8 @@ class StrigaUserIbanDetailsPresenter :
                             TextContainer.invoke("AD42 5634 6435 4324 5325")
                         )
                     ),
-                    rightSideCellModel = RightSideCellModel.IconWrapper(iconModel)
+                    rightSideCellModel = RightSideCellModel.IconWrapper(iconModel),
+                    payload = "AD42 5634 6435 4324 5325"
                 ),
                 MainCellModel(
                     leftSideCellModel = LeftSideCellModel.IconWithText(
@@ -45,7 +46,7 @@ class StrigaUserIbanDetailsPresenter :
                             TextContainer.invoke("EUR")
                         )
                     ),
-                    rightSideCellModel = null
+                    rightSideCellModel = null,
                 ),
                 MainCellModel(
                     leftSideCellModel = LeftSideCellModel.IconWithText(
@@ -56,7 +57,8 @@ class StrigaUserIbanDetailsPresenter :
                             TextContainer.invoke("CODEWORD")
                         )
                     ),
-                    rightSideCellModel = RightSideCellModel.IconWrapper(iconModel)
+                    rightSideCellModel = RightSideCellModel.IconWrapper(iconModel),
+                    payload = "CODEWORD"
                 ),
                 MainCellModel(
                     leftSideCellModel = LeftSideCellModel.IconWithText(
@@ -67,7 +69,8 @@ class StrigaUserIbanDetailsPresenter :
                             TextContainer.invoke("Name Surmane")
                         )
                     ),
-                    rightSideCellModel = RightSideCellModel.IconWrapper(iconModel)
+                    rightSideCellModel = RightSideCellModel.IconWrapper(iconModel),
+                    payload = "Name Surmane"
                 ),
             )
         )

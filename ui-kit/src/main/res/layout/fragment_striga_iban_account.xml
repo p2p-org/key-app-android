@@ -23,7 +23,7 @@
         app:titleTextColor="@color/text_night" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/textViewTitle"
         style="@style/UiKit.TextAppearance.Regular.Text4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recyclerViewIbanDetails"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -48,49 +48,49 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
         tools:itemCount="3"
         tools:listitem="@layout/item_main_cell" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+        android:id="@+id/containerInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/bg_rounded_solid_rain_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView">
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewIbanDetails">
 
         <org.p2p.uikit.components.UiKitInformerView
-            android:id="@+id/informerView"
+            android:id="@+id/informerFirst"
             android:layout_width="0dp"
-            app:leftIcon="@drawable/ic_main_history"
-            app:leftIconTint="@color/icons_night"
             android:layout_height="wrap_content"
             app:caption="Transfers usually take from 1 to 3 working days to appear in your KeyApp account"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:leftIcon="@drawable/ic_main_history"
+            app:leftIconTint="@color/icons_night">
 
         </org.p2p.uikit.components.UiKitInformerView>
 
         <org.p2p.uikit.components.UiKitInformerView
-            android:id="@+id/informerView2"
+            android:id="@+id/informerSecond"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:leftIcon="@drawable/ic_checkbox_checked"
-            app:leftIconTint="@color/icons_night"
             app:caption="Your money is held and protected by licensed banks."
             app:infoLine="Learn more"
             app:infoLineColor="@color/text_sky"
             app:infoLinePosition="captionLine"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/informerView">
+            app:layout_constraintTop_toBottomOf="@+id/informerFirst"
+            app:leftIcon="@drawable/ic_checkbox_checked"
+            app:leftIconTint="@color/icons_night">
 
         </org.p2p.uikit.components.UiKitInformerView>
     </androidx.constraintlayout.widget.ConstraintLayout>

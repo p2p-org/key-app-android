@@ -40,6 +40,13 @@ class UiKitInformerView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
     private val binding = inflateViewBinding<ViewInformerViewBinding>()
 
+    private lateinit var renderedCellModel:InformerViewCellModel
+
+    /**
+     * In case of static init via XML, use this field to put listeners on info line clicks
+     */
+    var infoLineClickListener: (() -> Unit)? = null
+
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitInformerView).use { style ->
             val leftIconRes: Int =
@@ -75,6 +82,8 @@ class UiKitInformerView @JvmOverloads constructor(
     }
 
     fun bind(model: InformerViewCellModel) = with(binding) {
+        renderedCellModel = model
+
         imageViewLeftIcon.bind(model.leftIcon.iconCellModel())
         textViewTitle.bindOrGone(model.title?.titleCellModel())
         textViewCaption.bindOrGone(model.captionCellModel())
@@ -89,8 +98,9 @@ class UiKitInformerView @JvmOverloads constructor(
         when (model.infoLine?.position) {
             InfoLinePosition.BOTTOM -> {
                 textViewInfoLine.bind(model.infoLine.infoLineCellModel())
+                infoLineClickListener = model.infoLine.onInfoLineClicked
                 textViewInfoLine.setOnClickListener {
-                    model.infoLine.onInfoLineClicked?.invoke(model.infoLine.value.getString(context))
+                    infoLineClickListener?.invoke()
                 }
             }
             InfoLinePosition.CAPTION_LINE -> {
@@ -161,17 +171,11 @@ class UiKitInformerView @JvmOverloads constructor(
         val infoLineText = infoLineParams.value.getString(context)
         val captionText = caption.getString(context)
         val fullCaptionText = "$captionText $infoLineText"
-        return infoLineParams.onInfoLineClicked?.let { listener ->
-            SpanUtils.highlightLinkNoUnderline(
-                commonText = fullCaptionText,
-                highlightedText = infoLineText,
-                color = getColor(infoLineParams.textColorRes),
-                onClick = { listener(infoLineText) }
-            )
-        } ?: SpanUtils.highlightText(
+        return SpanUtils.highlightLinkNoUnderline(
             commonText = fullCaptionText,
             highlightedText = infoLineText,
             color = getColor(infoLineParams.textColorRes),
+            onClick = { infoLineClickListener?.invoke() }
         )
     }
 

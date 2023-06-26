@@ -1,5 +1,7 @@
 package org.p2p.wallet.striga.iban
 
+import androidx.core.net.toUri
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -11,6 +13,7 @@ import org.p2p.uikit.utils.recycler.decoration.groupedRoundingMainCellDecoration
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -25,6 +28,7 @@ class StrigaUserIbanDetailsFragment :
     private val adapter = CommonAnyCellAdapter(
         mainCellDelegate(
             inflateListener = {
+                it.setOnClickAction { _, item -> (item.payload as? String)?.also(::onCopyIconClicked) }
             }
         )
     )
@@ -34,16 +38,28 @@ class StrigaUserIbanDetailsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbar.setOnClickListener {
-            popBackStack()
-        }
+        with(binding) {
+            toolbar.setOnClickListener {
+                popBackStack()
+            }
 
-        binding.recyclerView.attachAdapter(adapter)
-        binding.recyclerView.addItemDecoration(groupedRoundingMainCellDecoration())
-        binding.recyclerView.addItemDecoration(StrigaUserIbanItemDecoration(requireContext()))
+            recyclerViewIbanDetails.attachAdapter(adapter)
+            recyclerViewIbanDetails.addItemDecoration(groupedRoundingMainCellDecoration())
+            recyclerViewIbanDetails.addItemDecoration(StrigaUserIbanItemDecoration(requireContext()))
+
+            informerSecond.infoLineClickListener = {
+                Intent(Intent.ACTION_VIEW, getString(R.string.striga_powered_by_url).toUri())
+                    .also { startActivity(it) }
+            }
+        }
     }
 
     override fun showIbanDetails(details: List<MainCellModel>) {
         adapter.items = details
+    }
+
+    private fun onCopyIconClicked(value: String) {
+        requireContext().copyToClipBoard(value)
+        showUiKitSnackBar(messageResId = R.string.general_copied)
     }
 }

@@ -31,6 +31,10 @@ class StrigaUserIbanItemDecoration(context: Context) : RecyclerView.ItemDecorati
                 )
                 divider.draw(canvas)
             }
+            // remove ripple effect for second item
+            if (parent.getChildAdapterPosition(child) == 1) {
+                child.foreground = null
+            }
         }
     }
 }

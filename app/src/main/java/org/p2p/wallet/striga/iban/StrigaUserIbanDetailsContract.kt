@@ -9,6 +9,5 @@ interface StrigaUserIbanDetailsContract {
         fun showIbanDetails(details: List<MainCellModel>)
     }
 
-    interface Presenter : MvpPresenter<View> {
-    }
+    interface Presenter : MvpPresenter<View>
 }
