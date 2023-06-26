@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.ui.main
 
+import io.mockk.every
 import io.mockk.verify
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -55,6 +56,8 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
 
     @Test
     fun `GIVEN swap screen WHEN onTokenAmountChange equal to balance THEN check swap button enabled`() = runTest {
+        every { swapRoutesRefreshFeatureToggle.durationInMilliseconds } returns 10000L
+
         val (firstToken, secondToken, presenter) = createPresenterAndTokens()
         view.attachCallsLog()
         presenter.attach(view)
@@ -181,6 +184,9 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
             amount = BigDecimal("26.48"),
             rateToUsd = BigDecimal("20.74")
         )
+
+        every { swapRoutesRefreshFeatureToggle.durationInMilliseconds } returns 10000L
+
         val presenter = createPresenter {
             homeRepoAllTokens = mutableListOf(firstToken, secondToken)
             homeRepoUserTokens = homeRepoAllTokens

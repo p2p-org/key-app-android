@@ -78,7 +78,6 @@ class UpdateDeviceSmsInputPresenter(
             }
             is GatewayHandledState.TimerBlockError -> {
                 view?.navigateToSmsInputBlocked(gatewayHandledResult.error, gatewayHandledResult.cooldownTtl)
-                view?.showUiKitSnackBar(gatewayHandledResult.error.name)
             }
             is GatewayHandledState.TitleSubtitleError -> {
                 view?.navigateToGatewayErrorScreen(gatewayHandledResult)

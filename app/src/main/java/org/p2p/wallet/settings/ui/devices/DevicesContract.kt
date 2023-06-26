@@ -12,6 +12,7 @@ interface DevicesContract {
         fun navigateToSmsInput()
         fun showSuccessDeviceChange()
         fun showFailDeviceChange()
+        fun navigateToAccountBlocked(cooldownTtl: Long)
     }
 
     interface Presenter : MvpPresenter<View> {
