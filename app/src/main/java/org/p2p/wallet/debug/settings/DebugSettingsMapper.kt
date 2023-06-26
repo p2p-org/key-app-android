@@ -54,6 +54,11 @@ class DebugSettingsMapper(
         }
 
         this += createStrigaSettings()
+
+        this += SettingsRow.Section(
+            titleResId = R.string.debug_settings_ui_kit,
+            iconRes = R.drawable.ic_settings_cloud
+        )
     }
 
     private fun createEnvironmentSettings(): List<SettingsRow> = buildList {
