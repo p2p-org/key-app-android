@@ -1,18 +1,16 @@
 package org.p2p.wallet.common.feature_toggles.toggles.remote
 
-import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import java.util.concurrent.TimeUnit
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
 
-private const val DEFAULT_INTERVAL_IN_MILLIS = 20_000L
+private const val DEFAULT_INTERVAL_IN_SECONDS = 20L
 
 class SwapRoutesRefreshFeatureToggle(
     valuesProvider: RemoteConfigValuesProvider
 ) : LongFeatureToggle(valuesProvider) {
     override val featureKey: String = "swap_route_refresh"
     override val featureDescription: String = "The interval for refreshing routes"
-    override val defaultValue: Long = DEFAULT_INTERVAL_IN_MILLIS
+    override val defaultValue: Long = DEFAULT_INTERVAL_IN_SECONDS
 
-    val duration: Duration = value.toDuration(DurationUnit.MILLISECONDS)
+    val durationInMilliseconds: Long = TimeUnit.SECONDS.toMillis(value)
 }
