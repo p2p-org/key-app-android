@@ -9,7 +9,10 @@ import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
-
+@Deprecated(
+    "not fully implemented",
+    replaceWith = ReplaceWith("InformerViewCellModel")
+)
 data class InfoBlockCellModel(
     val icon: IconWrapperCellModel? = null,
     val firstLineText: TextViewCellModel? = null,

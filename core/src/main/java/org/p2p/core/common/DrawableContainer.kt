@@ -25,7 +25,7 @@ sealed class DrawableContainer : Parcelable {
     abstract fun applyTo(imageView: ImageView)
 
     @Parcelize
-    class Res(@DrawableRes private val drawableRes: Int) : DrawableContainer() {
+    class Res(@DrawableRes val drawableRes: Int) : DrawableContainer() {
         override fun applyTo(imageView: ImageView) {
             imageView.setImageResource(drawableRes)
         }

@@ -43,6 +43,7 @@
 
     <attr name="sliderIcon" format="reference" />
     <attr name="sliderText" format="string" />
+    <attr name="leftIcon" format="reference"/>
 
     <declare-styleable name="UiKitSliderButton">
         <attr name="android:textColor" />
@@ -67,7 +68,7 @@
     </declare-styleable>
 
     <declare-styleable name="UiKitFourDigitsLargeInput">
-        <attr name="leftIcon" format="reference" />
+        <attr name="leftIcon" />
         <attr name="isChevronVisible" format="boolean" />
         <attr name="rightIcon" format="reference" />
     </declare-styleable>
@@ -109,6 +110,21 @@
         <attr name="android:backgroundTint"/>
         <attr name="android:textSize"/>
         <attr name="isDropdown" format="boolean"/>
+    </declare-styleable>
+
+<!--    can be extended if there is need -->
+<!--    you can add icon to title, background tint etc-->
+    <declare-styleable name="UiKitInformerView">
+        <attr name="leftIcon"/>
+        <attr name="leftIconTint" format="color"/>
+        <attr name="title" format="string"/>
+        <attr name="caption" format="string"/>
+        <attr name="infoLine" format="string"/>
+        <attr name="infoLineColor" format="color"/>
+        <attr name="infoLinePosition" format="enum">
+            <enum name="bottom" value="0"/>
+            <enum name="captionLine" value="1"/>
+        </attr>
     </declare-styleable>
 
 

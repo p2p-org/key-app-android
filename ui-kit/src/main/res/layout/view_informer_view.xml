@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="16dp"
+    tools:background="@color/bg_rain"
+    tools:layout_width="match_parent"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <ImageView
+        android:id="@+id/imageViewLeftIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:duplicateParentState="true"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@drawable/bg_rounded_solid_snow_16"
+        tools:src="@drawable/ic_checkbox_checked" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewLeftIcon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewLeftIcon"
+        app:layout_constraintTop_toTopOf="@+id/imageViewLeftIcon">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="4dp"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+            android:textColor="@color/text_night"
+            android:visibility="visible"
+            tools:drawableEnd="@drawable/ic_info_solid"
+            tools:text="Account creation fee" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textViewCaption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_night"
+            tools:text="0.028813 USDC" />
+
+        <TextView
+            android:id="@+id/textViewInfoLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_mountain"
+            tools:text="Info line" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

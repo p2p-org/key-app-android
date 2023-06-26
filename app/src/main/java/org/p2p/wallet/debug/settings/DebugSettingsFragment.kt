@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -23,7 +24,7 @@ import org.p2p.wallet.debug.settings.adapter.settingsRowSectionItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowSwtichItemDelegate
 import org.p2p.wallet.debug.settings.adapter.settingsRowTitleItemDelegate
 import org.p2p.wallet.debug.torus.DebugTorusFragment
-import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.wallet.debug.uikit.DebugUiKitFragmentFragment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.utils.getSerializableOrNull
@@ -114,6 +115,9 @@ class DebugSettingsFragment :
             }
             R.string.debug_settings_striga_detach_user_id_title -> {
                 presenter.onClickDetachStrigaUser()
+            }
+            R.string.debug_settings_ui_kit -> {
+                replaceFragment(DebugUiKitFragmentFragment())
             }
         }
     }

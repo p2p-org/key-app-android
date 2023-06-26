@@ -134,7 +134,7 @@ class HistorySendLinkDetailsBottomSheet :
         financeBlockLinkValue.rightSideView.setOnClickListener {
             historyAnalytics.logUserSendLinkCopyClicked()
             requireContext().copyToClipBoard(state.link)
-            showUiKitSnackBar(messageResId = R.string.send_via_link_generation_copied)
+            showUiKitSnackBar(messageResId = R.string.general_copied)
         }
         buttonShare.setOnClickListener {
             historyAnalytics.logUserSendLinkShareClicked()
