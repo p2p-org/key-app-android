@@ -44,5 +44,24 @@ enum class StrigaApiErrorCode(val code: String) {
     @SerializedName("31008")
     EXCEEDED_DAILY_RESEND_SMS_LIMIT("31008"),
 
+    // Wallet errors
+    @SerializedName("00013")
+    ADDRESS_ALREADY_WHITELISTED("00013"),
+
+    @SerializedName("41004")
+    ADDRESS_NOT_WHITELISTED("41004"),
+
+    @SerializedName("60001")
+    USER_LIMIT_EXCEEDED("60001"),
+
+    @SerializedName("41008")
+    BELOW_MINIMUM_AMOUNT("41008"),
+
+    @SerializedName("31004")
+    INSUFFICIENT_BALANCE("31004"),
+
+    @SerializedName("41005")
+    INVALID_DESTINATION("41005"),
+
     UNKNOWN("-1")
 }
