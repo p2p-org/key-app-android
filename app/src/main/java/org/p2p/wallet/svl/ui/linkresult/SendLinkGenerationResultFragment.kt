@@ -74,7 +74,7 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
                 imageViewCopy.setOnClickListener {
                     svlAnalytics.logLinkCopyIconClicked()
                     requireContext().copyToClipBoard(state.formattedLink)
-                    showUiKitSnackBar(messageResId = R.string.send_via_link_generation_copied)
+                    showUiKitSnackBar(messageResId = R.string.general_copied)
                 }
             }
             is LinkGenerationState.Error -> {
