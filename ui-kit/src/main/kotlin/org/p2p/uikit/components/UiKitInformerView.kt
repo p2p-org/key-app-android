@@ -25,6 +25,14 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bind
 import org.p2p.uikit.utils.text.bindOrGone
 
+/**
+ * https://www.figma.com/file/13KdUCrfZ6VPBdfT6sLVbi/Android-UI-Kit?type=design&node-id=2148-61961&mode=dev
+ * Can be initialized two ways:
+ * 1) Place it as a part of the list, use informerViewDelegate, create InformerViewCellModels
+ * 2) Use it statically in layout - pass all the needed attrs from R.styleable.UiKitInformerView
+ *
+ * disclaimer: this custom view may not be fully finished, feel free to add stuff that I forgot to add
+ */
 class UiKitInformerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -34,7 +42,8 @@ class UiKitInformerView @JvmOverloads constructor(
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitInformerView).use { style ->
-            val leftIconRes: Int = style.getResourceId(R.styleable.UiKitInformerView_leftIcon, R.drawable.ic_checkbox_checked)
+            val leftIconRes: Int =
+                style.getResourceId(R.styleable.UiKitInformerView_leftIcon, R.drawable.ic_checkbox_checked)
             val leftIconTint: Int? = style.getResourceId(R.styleable.UiKitInformerView_leftIconTint, -1)
                 .takeIf { it != -1 }
             val title: String? = style.getString(R.styleable.UiKitInformerView_title)
@@ -79,7 +88,7 @@ class UiKitInformerView @JvmOverloads constructor(
         }
     }
 
-    private fun bindInfoLine(model: InformerViewCellModel) = with(binding){
+    private fun bindInfoLine(model: InformerViewCellModel) = with(binding) {
         when (model.infoLine?.position) {
             InfoLinePosition.BOTTOM -> {
                 textViewInfoLine.bind(model.infoLine.infoLineCellModel())
@@ -145,6 +154,9 @@ class UiKitInformerView @JvmOverloads constructor(
         )
     }
 
+    /**
+     * In case of info line position in line with caption - add concatenate both texts
+     */
     private fun buildCaptionPlusInfoLine(
         caption: TextContainer,
         infoLineParams: InformerViewCellModel.InfoLineParams
