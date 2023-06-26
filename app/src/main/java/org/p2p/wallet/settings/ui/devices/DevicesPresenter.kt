@@ -103,6 +103,7 @@ class DevicesPresenter(
             if (restoreWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
                 restoreWalletInteractor.resetUserEnterPhoneNumberTriesCount()
                 view?.navigateToAccountBlocked(DEFAULT_BLOCK_TIME_IN_MINUTES.minutes.inWholeSeconds)
+                restoreWalletInteractor.resetUserPhoneNumber()
             } else {
                 restoreWalletInteractor.startRestoreCustomShare(userPhoneNumber = phoneNumber)
                 view?.navigateToSmsInput()
@@ -119,13 +120,13 @@ class DevicesPresenter(
     }
 
     private fun handleGatewayServiceError(gatewayServiceError: PushServiceError) {
-        // TODO PWN-8827 fix error handling!
         when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(gatewayServiceError)) {
             is GatewayHandledState.CriticalError -> {
                 view?.showUiKitSnackBar(gatewayHandledResult.errorCode.toString())
             }
             is GatewayHandledState.TimerBlockError -> {
                 view?.navigateToAccountBlocked(gatewayHandledResult.cooldownTtl)
+                restoreWalletInteractor.resetUserPhoneNumber()
             }
             is GatewayHandledState.TitleSubtitleError -> {
                 view?.showUiKitSnackBar(gatewayHandledResult.title)
