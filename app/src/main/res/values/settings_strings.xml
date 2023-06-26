@@ -107,7 +107,7 @@
 
 
     <string name="devices_incorrect_account">Incorrect Google account</string>
-    <string name="devices_account_associated">This account is associated with %s. Please log in with the correct Google account.</string>
+    <string name="devices_account_associated">%s\nPlease log in with the correct Google account.</string>
     <string name="devices_restore_another">Use another account</string>
 
 
