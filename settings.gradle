@@ -1,2 +1,2 @@
-include ':solana', ':app', ':ui-kit', ':core', ":ethereumkit","market-price"
+include ':solana', ':app', ':ui-kit', ':core', ":ethereumkit","token-service"
 rootProject.name = "key-app"

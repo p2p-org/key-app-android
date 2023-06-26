@@ -14,6 +14,8 @@ import org.json.JSONObject
 import org.json.JSONTokener
 import timber.log.Timber
 import java.io.IOException
+import java.net.URI
+import java.net.URL
 import org.p2p.core.BuildConfig.rpcPoolApiKey
 import org.p2p.core.network.data.EmptyDataException
 import org.p2p.core.network.data.ErrorCode
@@ -54,7 +56,7 @@ class RpcInterceptor(
     }
 
     private fun createRpcUrl(originalUrl: HttpUrl, networkEnvironment: NetworkEnvironment): HttpUrl {
-        val uriFromEnvironment = Uri.parse(networkEnvironment.endpoint)
+        val uriFromEnvironment = URI.create(networkEnvironment.endpoint)
         val newHost = uriFromEnvironment.host ?: error("Host cannot be null $uriFromEnvironment")
 
         return originalUrl.newBuilder()

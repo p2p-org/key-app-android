@@ -10,7 +10,8 @@ import org.p2p.core.crypto.toBase58Instance
 
 class ChaCha20Poly1305SymmetricKeyGeneratorTest {
     private val expectedSymmetricKey: Base58String =
-        org.p2p.core.crypto.toBase58Instance()
+        "CDCfsZL9Xd8E2kCYYAHSeKaE16YUH9RMuXDmtTEjNC4S"
+            .toBase58Instance()
 
     private val givenMnemonic: List<String> =
         "slice sauce assist glimpse jelly trouble parent horror bread isolate uncle gallery owner angry rose fabric stable phrase much joke cotton mesh ancient erase"
@@ -23,13 +24,13 @@ class ChaCha20Poly1305SymmetricKeyGeneratorTest {
         // when
         var symmetricKey = cha20Poly1305SymmetricKeyGenerator.generateSymmetricKey(givenMnemonic)
         // then
-        assertThat(org.p2p.core.crypto.toBase58Instance())
+        assertThat(symmetricKey.toBase58Instance())
             .isEqualTo(expectedSymmetricKey)
 
         // when 2
         symmetricKey = cha20Poly1305SymmetricKeyGenerator.generateSymmetricKey(givenMnemonic)
         // then 2
-        assertThat(org.p2p.core.crypto.toBase58Instance())
+        assertThat(symmetricKey.toBase58Instance())
             .isEqualTo(expectedSymmetricKey)
     }
 

@@ -34,12 +34,12 @@ class JupiterSendSwapTransactionDelegateTest {
     private val rpcSolanaRepository: RpcSolanaRepository = mockk()
     private val relaySdkFacade: RelaySdkFacade = mockk {
         coEvery { signTransaction(any<Base64String>(), any(), any()) }
-            .returns(RelaySdkSignedTransaction(org.p2p.core.crypto.toBase58Instance()))
+            .returns(RelaySdkSignedTransaction(generateRandomBytes().toBase58Instance()))
         coEvery { signTransaction(any<Base58String>(), any(), any()) }
-            .returns(RelaySdkSignedTransaction(org.p2p.core.crypto.toBase58Instance()))
+            .returns(RelaySdkSignedTransaction(generateRandomBytes().toBase58Instance()))
     }
     private val tokenKeyProvider: TokenKeyProvider = mockk {
-        val randomPublicKey = org.p2p.core.crypto.toBase58Instance()
+        val randomPublicKey = generateRandomBytes().toBase58Instance()
         val randomKeyPair = generateRandomBytes(64)
         every { publicKey }.returns(randomPublicKey.base58Value)
         every { publicKeyBase58 }.returns(randomPublicKey)

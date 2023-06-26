@@ -11,6 +11,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.utils.Constants
 
 class UsernameParserTest {
 
@@ -23,7 +24,7 @@ class UsernameParserTest {
     @Test
     fun `GIVEN different usernames with domains WHEN parse THEN domain and username parsed successfully`() {
         // GIVEN
-        val ownerAddress = org.p2p.core.crypto.toBase58Instance()
+        val ownerAddress = Constants.SOL_MINT.toBase58Instance()
         val usernamesToDomains = listOf(
             "alla" to ".key",
             "alla" to ".key.sol",
@@ -54,7 +55,7 @@ class UsernameParserTest {
     @Test
     fun `GIVEN different usernames without domains WHEN parse THEN parsed successfully with default value`() {
         // GIVEN
-        val ownerAddress = org.p2p.core.crypto.toBase58Instance()
+        val ownerAddress = Constants.SOL_MINT.toBase58Instance()
         val usernamesToDomains = listOf(
             "alla" to "",
             "alla" to ".sol",

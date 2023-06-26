@@ -90,7 +90,7 @@ dependencies {
     implementation(project(":ui-kit"))
     implementation(project(":core"))
     implementation(project(":ethereumkit"))
-    implementation(project(":market-price"))
+    implementation(project(":token-service"))
 
     implementation(files("libs/borshj-0.0.0.jar"))
 
