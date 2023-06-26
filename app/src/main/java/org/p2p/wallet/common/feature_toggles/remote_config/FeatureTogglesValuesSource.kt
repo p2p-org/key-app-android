@@ -18,4 +18,5 @@ class FeatureTogglesValuesSource(
     override fun getBoolean(toggleKey: String): Boolean? = sourceToGetFrom.getBoolean(toggleKey)
     override fun getFloat(toggleKey: String): Float? = sourceToGetFrom.getFloat(toggleKey)
     override fun getInt(toggleKey: String): Int? = sourceToGetFrom.getInt(toggleKey)
+    override fun getLong(toggleKey: String): Long? = sourceToGetFrom.getLong(toggleKey)
 }
