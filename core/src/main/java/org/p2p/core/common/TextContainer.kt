@@ -14,7 +14,7 @@ sealed class TextContainer {
         operator fun invoke(@StringRes textRes: Int, vararg args: Any) =
             ResParams(textRes, args.toList())
 
-        operator fun invoke(text: String) =
+        operator fun invoke(text: CharSequence) =
             Raw(text)
     }
 

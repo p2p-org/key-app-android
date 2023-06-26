@@ -12,7 +12,9 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.TypedValue
+import android.view.Gravity
 import android.widget.TextView
+import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.core.utils.insets.InitialViewPadding
@@ -24,6 +26,7 @@ import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
+import org.p2p.uikit.utils.setDrawableTint
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.skeleton.SkeletonDrawable
 import org.p2p.uikit.utils.skeleton.bindSkeleton
@@ -40,7 +43,11 @@ sealed interface TextViewCellModel : AnyCellItem {
         val badgeBackground: TextViewBackgroundModel? = null,
         val autoSizeConfiguration: TextViewAutoSizeConfiguration? = null,
         val maxLines: Int? = null,
-        val ellipsize: TextUtils.TruncateAt? = null
+        val ellipsize: TextUtils.TruncateAt? = null,
+        val drawable: DrawableContainer.Res? = null,
+        @ColorRes val drawableTint: Int? = null,
+        // android.view.Gravity
+        val drawableGravity: Int = Gravity.RIGHT
     ) : TextViewCellModel
 
     data class Skeleton(
@@ -150,6 +157,16 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
             autoSize?.autoSizeStepGranularity ?: initialAutoSize.autoSizeStepGranularity,
             autoSize?.typedValue ?: initialAutoSize.typedValue,
         )
+    }
+
+    model.drawable?.also {
+        setCompoundDrawablesWithIntrinsicBounds(
+            it.drawableRes.takeIf { model.drawableGravity == Gravity.LEFT } ?: 0,
+            it.drawableRes.takeIf { model.drawableGravity == Gravity.TOP } ?: 0,
+            it.drawableRes.takeIf { model.drawableGravity == Gravity.RIGHT } ?: 0,
+            it.drawableRes.takeIf { model.drawableGravity == Gravity.BOTTOM } ?: 0
+        )
+        model.drawableTint?.also(::setDrawableTint)
     }
 
     updatePadding(
