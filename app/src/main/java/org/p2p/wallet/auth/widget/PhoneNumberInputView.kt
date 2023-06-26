@@ -1,6 +1,8 @@
 package org.p2p.wallet.auth.widget
 
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.getIntOrThrow
+import androidx.core.content.res.getResourceIdOrThrow
 import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
@@ -88,6 +90,14 @@ open class PhoneNumberInputView @JvmOverloads constructor(
                 granularity,
                 unit
             )
+        }
+        if (styleAttrs.hasValue(org.p2p.uikit.R.styleable.UiKitEditText_android_nextFocusDown)) {
+            val nextFocusDown = styleAttrs.getResourceIdOrThrow(R.styleable.UiKitEditText_android_nextFocusDown)
+            binding.editTextPhoneNumber.nextFocusDownId = nextFocusDown
+        }
+        if (styleAttrs.hasValue(org.p2p.uikit.R.styleable.UiKitEditText_android_imeOptions)) {
+            val imeOptions = styleAttrs.getIntOrThrow(R.styleable.UiKitEditText_android_imeOptions)
+            binding.editTextPhoneNumber.imeOptions = imeOptions
         }
         binding.inputViewContainer.background = bgNormal
         styleAttrs.recycle()

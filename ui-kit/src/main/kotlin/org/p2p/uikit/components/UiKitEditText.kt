@@ -2,6 +2,7 @@ package org.p2p.uikit.components
 
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.getIntOrThrow
+import androidx.core.content.res.getResourceIdOrThrow
 import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
@@ -10,6 +11,7 @@ import android.os.Parcelable
 import android.text.Editable
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
+import android.view.View
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.uikit.R
@@ -108,6 +110,14 @@ class UiKitEditText @JvmOverloads constructor(
         if (styleAttrs.hasValue(R.styleable.UiKitEditText_android_digits)) {
             val digits = styleAttrs.getString(R.styleable.UiKitEditText_android_digits)
             digits?.let(::setDigits)
+        }
+        if(styleAttrs.hasValue(R.styleable.UiKitEditText_android_nextFocusDown)) {
+            val nextFocusDown = styleAttrs.getResourceIdOrThrow(R.styleable.UiKitEditText_android_nextFocusDown)
+            binding.editTextField.nextFocusDownId = nextFocusDown
+        }
+        if(styleAttrs.hasValue(R.styleable.UiKitEditText_android_imeOptions)) {
+            val imeOptions = styleAttrs.getIntOrThrow(R.styleable.UiKitEditText_android_imeOptions)
+            binding.editTextField.imeOptions = imeOptions
         }
 
         styleAttrs.recycle()
