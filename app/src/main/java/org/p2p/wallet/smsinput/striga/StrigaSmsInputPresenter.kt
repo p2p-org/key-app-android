@@ -13,8 +13,16 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.utils.removeWhiteSpaces
 
 class StrigaSmsInputPresenter(
+    private val resendSmsOnLaunch: Boolean = true,
     private val interactor: StrigaSmsInputInteractor,
 ) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
+
+    override fun firstAttach() {
+        super.firstAttach()
+        if (resendSmsOnLaunch) {
+            resendSms()
+        }
+    }
 
     override fun attach(view: SmsInputContract.View) {
         super.attach(view)
@@ -94,7 +102,8 @@ class StrigaSmsInputPresenter(
         launch {
             when (val result = interactor.resendSms()) {
                 is StrigaDataLayerResult.Success -> {
-                    view?.renderSmsTimerState(SmsInputTimerState.ResendSmsNotReady(60))
+                    // we don't have a timer yet
+                    view?.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
                 }
                 is StrigaDataLayerResult.Failure -> {
                     handleError(result.error)
