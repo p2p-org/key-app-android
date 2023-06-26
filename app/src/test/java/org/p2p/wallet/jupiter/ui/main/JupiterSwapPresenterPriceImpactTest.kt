@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.ui.main
 
+import io.mockk.every
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -41,6 +42,9 @@ class JupiterSwapPresenterPriceImpactTest : JupiterSwapPresenterBaseTest() {
             amount = BigDecimal("26.48"),
             rateToUsd = BigDecimal("20.74")
         )
+
+        every { swapRoutesRefreshFeatureToggle.durationInMilliseconds } returns 10000L
+
         val presenter = createPresenter {
             homeRepoAllTokens = mutableListOf(firstToken, secondToken)
             homeRepoUserTokens = homeRepoAllTokens
@@ -76,6 +80,9 @@ class JupiterSwapPresenterPriceImpactTest : JupiterSwapPresenterBaseTest() {
             amount = BigDecimal("26.48"),
             rateToUsd = BigDecimal("20.74")
         )
+
+        every { swapRoutesRefreshFeatureToggle.durationInMilliseconds } returns 10000L
+
         val presenter = createPresenter {
             homeRepoAllTokens = mutableListOf(firstToken, secondToken)
             homeRepoUserTokens = homeRepoAllTokens
@@ -112,6 +119,9 @@ class JupiterSwapPresenterPriceImpactTest : JupiterSwapPresenterBaseTest() {
                 amount = BigDecimal("26.48"),
                 rateToUsd = BigDecimal("20.74")
             )
+
+            every { swapRoutesRefreshFeatureToggle.durationInMilliseconds } returns 10000L
+
             val presenter = createPresenter {
                 homeRepoAllTokens = mutableListOf(firstToken, secondToken)
                 homeRepoUserTokens = homeRepoAllTokens
@@ -147,6 +157,9 @@ class JupiterSwapPresenterPriceImpactTest : JupiterSwapPresenterBaseTest() {
             amount = BigDecimal("26.48"),
             rateToUsd = BigDecimal("20.74")
         )
+
+        every { swapRoutesRefreshFeatureToggle.durationInMilliseconds } returns 10000L
+
         val presenter = createPresenter {
             homeRepoAllTokens = mutableListOf(firstToken, secondToken)
             homeRepoUserTokens = homeRepoAllTokens
