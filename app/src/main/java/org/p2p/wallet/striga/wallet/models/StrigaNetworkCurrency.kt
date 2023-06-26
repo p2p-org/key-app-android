@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.wallet.models
 
 /**
- * List of supported currencies by striga
+ * List of supported cryptocurrencies by striga
  */
 enum class StrigaNetworkCurrency(val network: StrigaNetworkType) {
     BTC(StrigaNetworkType.BTC),
