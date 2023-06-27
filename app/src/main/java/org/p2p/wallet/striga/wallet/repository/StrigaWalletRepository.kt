@@ -6,8 +6,10 @@ import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
-import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
+import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
+import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
 
 interface StrigaWalletRepository {
 
@@ -60,4 +62,6 @@ interface StrigaWalletRepository {
     suspend fun getFiatAccountDetails(
         accountId: StrigaAccountId
     ): StrigaDataLayerResult<StrigaFiatAccountDetails>
+
+    suspend fun getUserWallet(): StrigaDataLayerResult<StrigaUserWallet>
 }
