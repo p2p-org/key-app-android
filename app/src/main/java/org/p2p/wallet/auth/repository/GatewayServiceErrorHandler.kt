@@ -9,10 +9,7 @@ import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.GoogleButton
 import org.p2p.wallet.auth.model.PrimaryFirstButton
 import org.p2p.wallet.auth.model.SecondaryFirstButton
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import android.content.res.Resources
-
-private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
 
 class GatewayServiceErrorHandler(
     private val resources: Resources,
@@ -99,8 +96,7 @@ class GatewayServiceErrorHandler(
             }
             is PushServiceError.TooManyRequests -> {
                 val cooldownTtl = error.cooldownTtl
-                val error = GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS
-                GatewayHandledState.TimerBlockError(error = error, cooldownTtl = cooldownTtl)
+                GatewayHandledState.TimerBlockError(cooldownTtl = cooldownTtl)
             }
             is PushServiceError.UserAlreadyExists -> {
                 val message = resources.getString(R.string.onboarding_phone_enter_error_phone_confirmed)

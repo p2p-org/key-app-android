@@ -2,7 +2,6 @@ package org.p2p.wallet.auth.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 
 sealed interface GatewayHandledState : Parcelable {
 
@@ -17,7 +16,6 @@ sealed interface GatewayHandledState : Parcelable {
 
     @Parcelize
     data class TimerBlockError(
-        val error: GeneralErrorTimerScreenError,
         val cooldownTtl: Long
     ) : GatewayHandledState
 
