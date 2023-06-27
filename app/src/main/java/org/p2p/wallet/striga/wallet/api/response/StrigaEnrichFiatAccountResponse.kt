@@ -28,7 +28,7 @@ class StrigaEnrichFiatAccountResponse(
     @SerializedName("paymentType")
     val paymentType: String?,
     @SerializedName("domestic")
-    val domestic: Boolean,
+    val isDomesticAccount: Boolean,
     @SerializedName("routingCodeEntries")
     val routingCodeEntries: List<String>,
     @SerializedName("payInReference")

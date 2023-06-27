@@ -17,7 +17,7 @@ data class StrigaFiatAccountDetails(
     val bankAccountHolderName: String,
     val provider: String,
     val paymentType: String?,
-    val domestic: Boolean,
+    val isDomesticAccount: Boolean,
 
     // todo: idk what should be in these 2 fields
     val routingCodeEntries: List<String>,

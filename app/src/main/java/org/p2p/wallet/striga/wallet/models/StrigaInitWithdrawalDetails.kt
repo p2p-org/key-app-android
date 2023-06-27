@@ -1,7 +1,6 @@
 package org.p2p.wallet.striga.wallet.models
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -11,11 +10,11 @@ import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 
 @Parcelize
-data class StrigaInitiateOnchainWithdrawalDetails(
+data class StrigaInitWithdrawalDetails(
     val challengeId: StrigaWithdrawalChallengeId,
     val dateExpires: ZonedDateTime,
-    val transaction: Transaction,
-    val feeEstimate: FeeEstimate,
+    val transaction: WithdrawalTransactionDetails,
+    val feeEstimate: WithdrawalFeeEstimateDetails,
 ) : Parcelable {
 
     /**
@@ -23,7 +22,7 @@ data class StrigaInitiateOnchainWithdrawalDetails(
      * @param amount in wei/satoshi or cents, depending on is the currency a fiat/stable or plain crypto
      */
     @Parcelize
-    data class Transaction(
+    data class WithdrawalTransactionDetails(
         val userId: String,
         val sourceAccountId: StrigaAccountId,
         val parentWalletId: StrigaWalletId,
@@ -37,14 +36,13 @@ data class StrigaInitiateOnchainWithdrawalDetails(
     ) : Parcelable
 
     @Parcelize
-    class FeeEstimate(
+    class WithdrawalFeeEstimateDetails(
         val totalFee: BigInteger,
         val networkFee: BigInteger,
         val ourFee: BigInteger,
         val theirFee: BigInteger,
         val feeCurrency: StrigaNetworkCurrency,
         val gasLimit: BigInteger,
-        @SerializedName("gasPrice")
         val gasPrice: BigDecimal,
     ) : Parcelable
 }

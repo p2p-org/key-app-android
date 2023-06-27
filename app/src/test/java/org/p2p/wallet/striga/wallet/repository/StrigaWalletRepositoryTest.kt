@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.wallet.repository
 
 import com.google.gson.Gson
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -14,7 +15,7 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
-import org.p2p.wallet.striga.wallet.models.StrigaInitiateOnchainWithdrawalDetails
+import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainTxStatus
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainTxType
@@ -62,13 +63,16 @@ class StrigaWalletRepositoryTest {
             assertTrue(result is StrigaDataLayerResult.Success)
             result as StrigaDataLayerResult.Success<List<StrigaWhitelistedAddressItem>>
             assertEquals(1, result.value.size)
-            assertEquals("5945b161-4534-4ada-bbb5-311e1869fe1b", result.value.first().id.value)
-            assertEquals("0xcab7f66371b19b932b8bcecd8998a392026f3237", result.value.first().address)
-            assertEquals(StrigaNetworkCurrency.USDC, result.value.first().currency)
-            assertEquals(StrigaWhitelistedAddressItem.Status.ACTIVATED, result.value.first().status)
-            assertEquals("USD Coin Test (Goerli)", result.value.first().network.name)
-            assertEquals("ERC20", result.value.first().network.type)
-            assertEquals("0x07865c6E87B9F70255377e024ace6630C1Eaa37F", result.value.first().network.contractAddress)
+
+            with(result.value.first()) {
+                assertEquals("5945b161-4534-4ada-bbb5-311e1869fe1b", id.value)
+                assertEquals("0xcab7f66371b19b932b8bcecd8998a392026f3237", address)
+                assertEquals(StrigaNetworkCurrency.USDC, currency)
+                assertEquals(StrigaWhitelistedAddressItem.Status.ACTIVATED, status)
+                assertEquals("USD Coin Test (Goerli)", network.name)
+                assertEquals("ERC20", network.type)
+                assertEquals("0x07865c6E87B9F70255377e024ace6630C1Eaa37F", network.contractAddress)
+            }
         }
 
     @Test
@@ -90,8 +94,7 @@ class StrigaWalletRepositoryTest {
         coEvery { api.addWhitelistedAddress(any()) } returns responseBody.fromJson()
 
         val repo = createRepository()
-        val result = repo.addWhitelistedAddress(
-            userId = userId,
+        val result = repo.whitelistAddress(
             address = "0xcab7f66371b19b932b8bcecd8998a392026f3237",
             currency = StrigaNetworkCurrency.USDC
         )
@@ -110,33 +113,35 @@ class StrigaWalletRepositoryTest {
     @Test
     fun `GIVEN init onchain withdrawal WHEN initiateOnchainWithdrawal THEN check response parsed correctly`() =
         runTest {
-            // todo: this is not actually a real response, it's taken from documentation
+            // real response
             val responseBody = """
             {
-                "challengeId": "eaec4a27-d78d-4f49-80bf-9c1ecba98853",
-                "dateExpires": "2023-03-30T05:21:47.402Z",
-                "transaction": {
-                    "syncedOwnerId": "51a2ed48-3b70-4775-b549-0d7e4850b64d",
-                    "sourceAccountId": "9c73b2f8a7c4e567c0460ef83c309ce1",
-                    "parentWalletId": "2c24c517-c682-4472-bbde-627e4a26fcf8",
-                    "currency": "ETH",
-                    "amount": "10000000000000000",
-                    "status": "PENDING_2FA_CONFIRMATION",
-                    "txType": "ON_CHAIN_WITHDRAWAL_INITIATED",
-                    "blockchainDestinationAddress": "0x6475C4E02248E463fDBbF2D3fB436aFCa9c56DbD",
-                    "blockchainNetwork": {
-                        "name": "Ethereum Test (Goerli)"
-                    },
-                    "transactionCurrency": "ETH"
+                "challengeId":"f8e7e49c-3559-4351-a2a4-e70b633744ec",
+                "dateExpires":"2023-06-27T13:37:53.356Z",
+                "transaction":{
+                    "syncedOwnerId":"65b1c37c-686a-487b-81f4-8d0ea6dd0e53",
+                    "sourceAccountId":"01c1f4e73d8b2587921c74e98951add0",
+                    "parentWalletId":"a927c70c-3678-4d23-b54d-0261dda6bdbb",
+                    "currency":"USDC",
+                    "amount":"2000",
+                    "status":"PENDING_2FA_CONFIRMATION",
+                    "txType":"ON_CHAIN_WITHDRAWAL_INITIATED",
+                    "blockchainDestinationAddress":"0xcab7f66371b19b932b8bcecd8998a392026f3237",
+                    "blockchainNetwork":{
+                        "name":"USD Coin Test (Goerli)",
+                        "type":"ERC20",
+                        "contractAddress":"0x07865c6E87B9F70255377e024ace6630C1Eaa37F"
+                     },
+                     "transactionCurrency":"USDC"
                 },
-                "feeEstimate": {
-                    "totalFee": "948640405755000",
-                    "networkFee": "948640405755000",
-                    "ourFee": "948640405755000",
-                    "theirFee": "0",
-                    "feeCurrency": "ETH",
-                    "gasLimit": "21000",
-                    "gasPrice": "21.044"
+                "feeEstimate":{
+                    "totalFee":"521",
+                    "networkFee":"3058854447819900",
+                    "ourFee":"521",
+                    "theirFee":"0",
+                    "feeCurrency":"USDC",
+                    "gasLimit":"79292",
+                    "gasPrice":"32.595"
                 }
             }
             """.trimIndent()
@@ -145,33 +150,40 @@ class StrigaWalletRepositoryTest {
 
             val repo = createRepository()
             val result = repo.initiateOnchainWithdrawal(
-                userId = userId,
                 sourceAccountId = StrigaAccountId("01c1f4e73d8b2587921c74e98951add0"),
                 whitelistedAddressId = StrigaWhitelistedAddressId("5945b161-4534-4ada-bbb5-311e1869fe1b"),
                 amount = BigInteger("10000000000000000"),
             )
 
             assertTrue(result is StrigaDataLayerResult.Success)
-            result as StrigaDataLayerResult.Success<StrigaInitiateOnchainWithdrawalDetails>
-            assertEquals("eaec4a27-d78d-4f49-80bf-9c1ecba98853", result.value.challengeId.value)
-            assertEquals("2023-03-30T05:21:47.402Z", result.value.dateExpires.toString())
-            assertEquals("51a2ed48-3b70-4775-b549-0d7e4850b64d", result.value.transaction.userId)
-            assertEquals("9c73b2f8a7c4e567c0460ef83c309ce1", result.value.transaction.sourceAccountId.value)
-            assertEquals("2c24c517-c682-4472-bbde-627e4a26fcf8", result.value.transaction.parentWalletId.value)
-            assertEquals(StrigaNetworkCurrency.ETH, result.value.transaction.currency)
-            assertEquals(BigInteger("10000000000000000"), result.value.transaction.amount)
+            result as StrigaDataLayerResult.Success<StrigaInitWithdrawalDetails>
+            assertEquals("f8e7e49c-3559-4351-a2a4-e70b633744ec", result.value.challengeId.value)
+            assertEquals("2023-06-27T13:37:53.356Z", result.value.dateExpires.toString())
+            assertEquals("65b1c37c-686a-487b-81f4-8d0ea6dd0e53", result.value.transaction.userId)
+            assertEquals("01c1f4e73d8b2587921c74e98951add0", result.value.transaction.sourceAccountId.value)
+            assertEquals("a927c70c-3678-4d23-b54d-0261dda6bdbb", result.value.transaction.parentWalletId.value)
+            assertEquals(StrigaNetworkCurrency.USDC, result.value.transaction.currency)
+            assertEquals(BigInteger("2000"), result.value.transaction.amount)
             assertEquals(StrigaOnchainTxStatus.PENDING_2FA_CONFIRMATION, result.value.transaction.status)
             assertEquals(StrigaOnchainTxType.ON_CHAIN_WITHDRAWAL_INITIATED, result.value.transaction.txType)
-            assertEquals("0x6475C4E02248E463fDBbF2D3fB436aFCa9c56DbD", result.value.transaction.blockchainDestinationAddress)
-            assertEquals("Ethereum Test (Goerli)", result.value.transaction.blockchainNetwork.name)
-            assertEquals(StrigaNetworkCurrency.ETH, result.value.transaction.transactionCurrency)
-            assertEquals(BigInteger("948640405755000"), result.value.feeEstimate.totalFee)
-            assertEquals(BigInteger("948640405755000"), result.value.feeEstimate.networkFee)
-            assertEquals(BigInteger("948640405755000"), result.value.feeEstimate.ourFee)
+            assertEquals(
+                "0xcab7f66371b19b932b8bcecd8998a392026f3237",
+                result.value.transaction.blockchainDestinationAddress
+            )
+            assertEquals("USD Coin Test (Goerli)", result.value.transaction.blockchainNetwork.name)
+            assertEquals("ERC20", result.value.transaction.blockchainNetwork.type)
+            assertEquals(
+                "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
+                result.value.transaction.blockchainNetwork.contractAddress
+            )
+            assertEquals(StrigaNetworkCurrency.USDC, result.value.transaction.transactionCurrency)
+            assertEquals(BigInteger("521"), result.value.feeEstimate.totalFee)
+            assertEquals(BigInteger("3058854447819900"), result.value.feeEstimate.networkFee)
+            assertEquals(BigInteger("521"), result.value.feeEstimate.ourFee)
             assertEquals(BigInteger.ZERO, result.value.feeEstimate.theirFee)
-            assertEquals(StrigaNetworkCurrency.ETH, result.value.feeEstimate.feeCurrency)
-            assertEquals(BigInteger("21000"), result.value.feeEstimate.gasLimit)
-            assertEquals(BigDecimal("21.044"), result.value.feeEstimate.gasPrice)
+            assertEquals(StrigaNetworkCurrency.USDC, result.value.feeEstimate.feeCurrency)
+            assertEquals(BigInteger("79292"), result.value.feeEstimate.gasLimit)
+            assertEquals(BigDecimal("32.595"), result.value.feeEstimate.gasPrice)
         }
 
     @Test
@@ -201,7 +213,6 @@ class StrigaWalletRepositoryTest {
 
             val repo = createRepository()
             val result = repo.getFiatAccountDetails(
-                userId,
                 accountId = StrigaAccountId("01c1f4e73d8b2587921c74e98951add0"),
             )
 
@@ -219,7 +230,7 @@ class StrigaWalletRepositoryTest {
             assertEquals("LORD VOLDEMORT", result.value.bankAccountHolderName)
             assertEquals("SIMULATOR", result.value.provider)
             assertEquals(null, result.value.paymentType)
-            assertEquals(false, result.value.domestic)
+            assertEquals(false, result.value.isDomesticAccount)
             assertEquals(emptyList<String>(), result.value.routingCodeEntries)
             assertEquals(null, result.value.payInReference)
         }
@@ -232,6 +243,10 @@ class StrigaWalletRepositoryTest {
         return StrigaWalletRemoteRepository(
             api = api,
             mapper = StrigaWalletRepositoryMapper(),
+            userIdProvider = mockk {
+                every { getUserId() } returns userId
+                every { getUserIdOrThrow() } returns userId
+            }
         )
     }
 }

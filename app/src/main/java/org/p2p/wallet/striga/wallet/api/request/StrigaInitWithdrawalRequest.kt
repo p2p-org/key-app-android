@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
  * @param amount The amount denominated in the smallest divisible unit of the sending currency.
  * For example: cents or satoshis
  */
-class StrigaInitiateOnchainWithdrawalRequest(
+class StrigaInitWithdrawalRequest(
     @SerializedName("userId")
     val userId: String,
     @SerializedName("sourceAccountId")

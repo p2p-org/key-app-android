@@ -5,9 +5,9 @@ import retrofit2.http.POST
 import org.p2p.wallet.striga.wallet.api.request.StrigaAddWhitelistedAddressRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
-import org.p2p.wallet.striga.wallet.api.request.StrigaInitiateOnchainWithdrawalRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaInitWithdrawalRequest
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
-import org.p2p.wallet.striga.wallet.api.response.StrigaInitiateOnchainWithdrawalResponse
+import org.p2p.wallet.striga.wallet.api.response.StrigaInitWithdrawalResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressItemResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressesResponse
 
@@ -15,8 +15,8 @@ interface StrigaWalletApi {
 
     @POST("v1/wallets/send/initiate/onchain")
     suspend fun initiateOnchainWithdrawal(
-        @Body body: StrigaInitiateOnchainWithdrawalRequest
-    ): StrigaInitiateOnchainWithdrawalResponse
+        @Body body: StrigaInitWithdrawalRequest
+    ): StrigaInitWithdrawalResponse
 
     @POST("v1/wallets/get/whitelisted-addresses")
     suspend fun getWhitelistedAddresses(

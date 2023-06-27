@@ -52,16 +52,16 @@ enum class StrigaApiErrorCode(val code: String) {
     ADDRESS_NOT_WHITELISTED("41004"),
 
     @SerializedName("60001")
-    USER_LIMIT_EXCEEDED("60001"),
+    TOO_LARGE_AMOUNT("60001"),
 
     @SerializedName("41008")
-    BELOW_MINIMUM_AMOUNT("41008"),
+    TOO_SMALL_AMOUNT("41008"),
 
     @SerializedName("31004")
     INSUFFICIENT_BALANCE("31004"),
 
     @SerializedName("41005")
-    INVALID_DESTINATION("41005"),
+    INVALID_DESTINATION_ADDRESS("41005"),
 
     UNKNOWN("-1")
 }

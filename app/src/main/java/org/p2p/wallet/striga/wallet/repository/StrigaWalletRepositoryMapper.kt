@@ -5,13 +5,13 @@ import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toBigIntegerOrZero
 import org.p2p.wallet.striga.wallet.api.response.StrigaBlockchainNetworkResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
-import org.p2p.wallet.striga.wallet.api.response.StrigaInitiateOnchainWithdrawalResponse
+import org.p2p.wallet.striga.wallet.api.response.StrigaInitWithdrawalResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressItemResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressesResponse
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
 import org.p2p.wallet.striga.wallet.models.StrigaBlockchainNetworkInfo
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
-import org.p2p.wallet.striga.wallet.models.StrigaInitiateOnchainWithdrawalDetails
+import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainTxStatus
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainTxType
@@ -37,7 +37,7 @@ class StrigaWalletRepositoryMapper {
             accountNumber = accountNumber,
             provider = provider,
             paymentType = paymentType,
-            domestic = domestic,
+            isDomesticAccount = isDomesticAccount,
             routingCodeEntries = routingCodeEntries,
             payInReference = payInReference,
         )
@@ -47,8 +47,8 @@ class StrigaWalletRepositoryMapper {
         return response.addresses.map(this::fromNetwork)
     }
 
-    fun fromNetwork(response: StrigaInitiateOnchainWithdrawalResponse): StrigaInitiateOnchainWithdrawalDetails {
-        return StrigaInitiateOnchainWithdrawalDetails(
+    fun fromNetwork(response: StrigaInitWithdrawalResponse): StrigaInitWithdrawalDetails {
+        return StrigaInitWithdrawalDetails(
             challengeId = StrigaWithdrawalChallengeId(response.challengeId),
             dateExpires = ZonedDateTime.parse(response.dateExpires),
             transaction = response.transaction.toDetailsTransaction(),
@@ -74,9 +74,9 @@ class StrigaWalletRepositoryMapper {
         )
     }
 
-    private fun StrigaInitiateOnchainWithdrawalResponse.FeeEstimate.toDetailsFeeEstimate():
-        StrigaInitiateOnchainWithdrawalDetails.FeeEstimate {
-        return StrigaInitiateOnchainWithdrawalDetails.FeeEstimate(
+    private fun StrigaInitWithdrawalResponse.WithdrawalFeeEstimateResponse.toDetailsFeeEstimate():
+        StrigaInitWithdrawalDetails.WithdrawalFeeEstimateDetails {
+        return StrigaInitWithdrawalDetails.WithdrawalFeeEstimateDetails(
             totalFee = totalFee.toBigIntegerOrZero(),
             networkFee = networkFee.toBigIntegerOrZero(),
             ourFee = ourFee.toBigIntegerOrZero(),
@@ -87,9 +87,9 @@ class StrigaWalletRepositoryMapper {
         )
     }
 
-    private fun StrigaInitiateOnchainWithdrawalResponse.Transaction.toDetailsTransaction():
-        StrigaInitiateOnchainWithdrawalDetails.Transaction {
-        return StrigaInitiateOnchainWithdrawalDetails.Transaction(
+    private fun StrigaInitWithdrawalResponse.WithdrawalTransactionResponse.toDetailsTransaction():
+        StrigaInitWithdrawalDetails.WithdrawalTransactionDetails {
+        return StrigaInitWithdrawalDetails.WithdrawalTransactionDetails(
             userId = syncedOwnerId,
             sourceAccountId = StrigaAccountId(sourceAccountId),
             parentWalletId = StrigaWalletId(parentWalletId),
