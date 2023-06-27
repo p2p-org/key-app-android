@@ -9,7 +9,7 @@ import java.util.Locale
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkInitParams
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkListeners
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor

@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.BuildConfig.moonpayKey
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse

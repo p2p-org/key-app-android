@@ -19,7 +19,7 @@ import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.feerelayer.model.FeeRelayerSignTransaction
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction

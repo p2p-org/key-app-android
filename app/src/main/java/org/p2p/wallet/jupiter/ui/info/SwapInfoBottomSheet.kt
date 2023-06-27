@@ -29,7 +29,7 @@ import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogSwapInfoBinding
 import org.p2p.wallet.databinding.ItemSwapInfoBannerBinding
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.jupiter.interactor.SwapTokensInteractor
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation

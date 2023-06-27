@@ -19,7 +19,7 @@ import org.p2p.wallet.bridge.claim.repository.EthereumBridgeLocalRepository
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState

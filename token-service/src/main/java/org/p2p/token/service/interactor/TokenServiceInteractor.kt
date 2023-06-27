@@ -35,6 +35,8 @@ internal class TokenServiceInteractor(
         }
     }
 
+    fun getTokensPriceFlow(networkChain: TokenServiceNetwork) = priceLocalRepository.attachToTokensPrice(networkChain)
+
     fun findTokenPriceByAddress(networkChain: TokenServiceNetwork, tokenAddress: String): TokenServicePrice? {
         return priceLocalRepository.findTokenPriceByAddress(networkChain = networkChain, address = tokenAddress)
     }

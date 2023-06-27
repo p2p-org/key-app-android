@@ -1,4 +1,4 @@
-package org.p2p.wallet.infrastructure.dispatchers
+package org.p2p.core.dispatchers
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
