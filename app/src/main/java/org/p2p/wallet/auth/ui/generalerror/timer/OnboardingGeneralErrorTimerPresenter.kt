@@ -18,7 +18,6 @@ import kotlin.time.Duration.Companion.seconds
 private const val TIMER_VALUE_FORMAT = "mm:ss"
 
 class OnboardingGeneralErrorTimerPresenter(
-    private val error: GeneralErrorTimerScreenError,
     private val timerLeftTime: Long,
     private val smsInputTimer: SmsInputTimer,
     private val fileInteractor: FileInteractor
@@ -40,28 +39,11 @@ class OnboardingGeneralErrorTimerPresenter(
     }
 
     private fun onTimerValueChanged(timerValue: Long) {
-        val titleRes: Int
-        val subTitleRes: Int
-        when (error) {
-            GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER -> {
-                titleRes = R.string.onboarding_general_error_timer_title
-                subTitleRes = R.string.onboarding_general_error_timer_enter_phone_subtitle
-            }
-            GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS -> {
-                titleRes = R.string.onboarding_general_error_timer_title
-                subTitleRes = R.string.onboarding_general_error_too_many_wrong_attempts
-            }
-
-            GeneralErrorTimerScreenError.BLOCK_SMS_RETRY_BUTTON_TRIES_EXCEEDED -> {
-                titleRes = R.string.onboarding_general_error_let_breath_title
-                subTitleRes = R.string.onboarding_general_error_retry_button_tries_exceeded
-            }
-        }
         val formattedTimerValue = createFormattedTimerValue(secondsLeft = timerValue)
 
         view?.updateText(
-            titleRes = titleRes,
-            subTitleRes = subTitleRes,
+            titleRes = R.string.onboarding_general_error_timer_title,
+            subTitleRes = R.string.onboarding_general_error_too_many_wrong_attempts,
             formattedTimeLeft = formattedTimerValue
         )
     }

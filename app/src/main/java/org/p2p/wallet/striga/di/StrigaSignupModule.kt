@@ -7,6 +7,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.named
 import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.create
@@ -70,10 +71,12 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaSignupInteractor)
         factoryOf(::StrigaUserInteractor)
         factoryOf(::StrigaSmsInputInteractor)
-        factoryOf(::StrigaSmsInputPresenter) {
-            bind<SmsInputContract.Presenter>()
-            named(SmsInputFactory.Type.Striga.name)
-        }
+        factory(named(SmsInputFactory.Type.Striga.name)) { (resendSmsOnLaunch: Boolean) ->
+            StrigaSmsInputPresenter(
+                resendSmsOnLaunch = resendSmsOnLaunch,
+                interactor = get()
+            )
+        } bind SmsInputContract.Presenter::class
         factoryOf(::StrigaSignupFinishPresenter) bind StrigaSignupFinishContract.Presenter::class
     }
 

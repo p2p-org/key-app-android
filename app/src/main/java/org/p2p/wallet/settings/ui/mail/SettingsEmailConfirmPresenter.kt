@@ -10,6 +10,7 @@ import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreError
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreSuccessState
+import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.settings.DeviceInfoHelper
@@ -20,6 +21,7 @@ class SettingsEmailConfirmPresenter(
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val restoreUserResultHandler: RestoreUserResultHandler,
     private val metadataInteractor: MetadataInteractor,
+    private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
 ) : BasePresenter<SettingsEmailConfirmContract.View>(), SettingsEmailConfirmContract.Presenter {
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
@@ -42,6 +44,7 @@ class SettingsEmailConfirmPresenter(
             is RestoreFailureState.TitleSubtitleError -> {
                 if (restoreHandledState.email != null) {
                     view?.showIncorrectAccountScreen(restoreHandledState.email)
+                    restoreFlowDataLocalRepository.resetTorusTimestamp()
                 } else {
                     view?.showUiKitSnackBar(message = restoreHandledState.title)
                 }

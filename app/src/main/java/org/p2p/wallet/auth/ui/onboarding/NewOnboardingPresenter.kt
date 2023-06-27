@@ -29,11 +29,11 @@ class NewOnboardingPresenter(
         view?.startGoogleFlow()
     }
 
-    override fun setIdToken(userId: String, googleIdToken: String) {
+    override fun setIdToken(userId: String, googleIdJwtToken: String) {
         launch {
-            Timber.i("Google id token received: idTokenLen=${googleIdToken.length}")
+            Timber.i("Google id token received: idTokenLen=${googleIdJwtToken.length}")
             view?.setButtonLoadingState(isScreenLoading = true)
-            torusKeyRestoreInteractor.getTorusKey(googleIdToken = googleIdToken, socialShareUserId = userId)
+            torusKeyRestoreInteractor.getTorusKey(googleIdJwtToken = googleIdJwtToken, socialShareUserId = userId)
             when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
                 is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     view?.onSuccessfulSignUp()

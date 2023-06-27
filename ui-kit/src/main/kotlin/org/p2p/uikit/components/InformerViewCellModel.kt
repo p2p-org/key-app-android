@@ -35,7 +35,7 @@ class InformerViewCellModel(
         val value: TextContainer,
         val position: InfoLinePosition,
         @ColorRes val textColorRes: Int = R.color.text_mountain,
-        val onInfoLineClicked: ((value: CharSequence) -> Unit)? = null
+        val onInfoLineClicked: (() -> Unit)? = null
     ) {
         enum class InfoLinePosition {
             BOTTOM, CAPTION_LINE

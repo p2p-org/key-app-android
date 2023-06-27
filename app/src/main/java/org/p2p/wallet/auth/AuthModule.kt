@@ -37,7 +37,6 @@ import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
@@ -174,9 +173,8 @@ object AuthModule {
         }
         factoryOf(::RestoreUserResultHandler)
 
-        factory { (error: GeneralErrorTimerScreenError, timerLeftTime: Long) ->
+        factory { (timerLeftTime: Long) ->
             OnboardingGeneralErrorTimerPresenter(
-                error = error,
                 timerLeftTime = timerLeftTime,
                 smsInputTimer = get(),
                 fileInteractor = get()

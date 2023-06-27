@@ -91,7 +91,7 @@ class Web3AuthApiClient(
         }
     }
 
-    override suspend fun obtainTorusKey(signInGoogleIdToken: String): String {
+    override suspend fun obtainTorusKey(googleIdJwtToken: String): String {
         return suspendCancellableCoroutine {
             this.continuation = it
 
@@ -100,7 +100,7 @@ class Web3AuthApiClient(
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signup",
-                    jsMethodCall = "obtainTorusKey('$signInGoogleIdToken')"
+                    jsMethodCall = "obtainTorusKey('$googleIdJwtToken')"
                 ),
                 null
             )
