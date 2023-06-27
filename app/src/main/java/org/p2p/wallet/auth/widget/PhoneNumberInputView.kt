@@ -91,11 +91,11 @@ open class PhoneNumberInputView @JvmOverloads constructor(
                 unit
             )
         }
-        if (styleAttrs.hasValue(org.p2p.uikit.R.styleable.UiKitEditText_android_nextFocusDown)) {
+        if (styleAttrs.hasValue(R.styleable.UiKitEditText_android_nextFocusDown)) {
             val nextFocusDown = styleAttrs.getResourceIdOrThrow(R.styleable.UiKitEditText_android_nextFocusDown)
             binding.editTextPhoneNumber.nextFocusDownId = nextFocusDown
         }
-        if (styleAttrs.hasValue(org.p2p.uikit.R.styleable.UiKitEditText_android_imeOptions)) {
+        if (styleAttrs.hasValue(R.styleable.UiKitEditText_android_imeOptions)) {
             val imeOptions = styleAttrs.getIntOrThrow(R.styleable.UiKitEditText_android_imeOptions)
             binding.editTextPhoneNumber.imeOptions = imeOptions
         }
