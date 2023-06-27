@@ -6,6 +6,7 @@ import org.p2p.token.service.api.request.TokenServiceMetadataRequest
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServiceQueryResult
+import org.p2p.token.service.model.successOrNull
 import org.p2p.token.service.model.unwrap
 
 class TokenMetadataRemoteRepository(
@@ -19,7 +20,7 @@ class TokenMetadataRemoteRepository(
 
         val queryRequest =
             mapper.toRequest(chain, addresses).let(::TokenServiceMetadataRequest)
-        val queryResponse = api.launch(queryRequest).unwrap().orEmpty()
+        val queryResponse = api.launch(queryRequest).successOrNull().orEmpty()
 
         val tokensMetadata = queryResponse.map { response ->
             val tokenServiceChain = mapper.fromNetwork(response.tokenServiceChainResponse)

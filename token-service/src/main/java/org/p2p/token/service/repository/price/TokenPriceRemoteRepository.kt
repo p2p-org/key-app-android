@@ -6,6 +6,7 @@ import org.p2p.token.service.api.request.TokenServicePriceRequest
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.model.TokenServiceQueryResult
+import org.p2p.token.service.model.successOrNull
 import org.p2p.token.service.model.unwrap
 
 class TokenPriceRemoteRepository(
@@ -19,7 +20,7 @@ class TokenPriceRemoteRepository(
     ): List<TokenServiceQueryResult<TokenServicePrice>> {
 
         val queryRequest = mapper.toRequest(chain, addresses).let(::TokenServicePriceRequest)
-        val queryResponse = api.launch(queryRequest).unwrap().orEmpty()
+        val queryResponse = api.launch(queryRequest).successOrNull().orEmpty()
 
         val tokensPrice = queryResponse.map { response ->
             val tokenServiceChain = mapper.fromNetwork(response.tokenServiceChainResponse)
