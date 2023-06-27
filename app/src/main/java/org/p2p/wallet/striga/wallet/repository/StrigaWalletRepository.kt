@@ -14,7 +14,7 @@ interface StrigaWalletRepository {
 
     /**
      * @param sourceAccountId Source account to withdraw from
-     * @param amount The amount denominated in the smallest divisible unit of the sending currency.
+     * @param amountInUnits The amount denominated in the smallest divisible unit of the sending currency.
      * If source account is crypto (BTC, ETH or BNB) then the amount is in wei/satoshi
      * if source account is fiat (EUR) or stable coin (USD[T/C]) then the amount is in cents
      *
@@ -27,7 +27,7 @@ interface StrigaWalletRepository {
     suspend fun initiateOnchainWithdrawal(
         sourceAccountId: StrigaAccountId,
         whitelistedAddressId: StrigaWhitelistedAddressId,
-        amount: BigInteger,
+        amountInUnits: BigInteger,
     ): StrigaDataLayerResult<StrigaInitWithdrawalDetails>
 
     /**

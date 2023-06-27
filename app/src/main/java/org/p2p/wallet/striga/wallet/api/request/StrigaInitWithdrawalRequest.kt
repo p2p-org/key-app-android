@@ -17,5 +17,5 @@ class StrigaInitWithdrawalRequest(
     @SerializedName("whitelistedAddressId")
     val whitelistedAddressId: String,
     @SerializedName("amount")
-    val amount: String,
+    val amountInUnits: String,
 )

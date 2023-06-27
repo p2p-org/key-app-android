@@ -32,7 +32,7 @@ class StrigaWalletInteractor(
         return repository.initiateOnchainWithdrawal(
             sourceAccountId = sourceAccountId,
             whitelistedAddressId = whitelistedAddressId,
-            amount = amount,
+            amountInUnits = amount,
         )
     }
 

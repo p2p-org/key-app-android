@@ -156,7 +156,7 @@ class StrigaWalletRepositoryEnrichAccountTest {
             val result = repo.initiateOnchainWithdrawal(
                 sourceAccountId = StrigaAccountId("01c1f4e73d8b2587921c74e98951add0"),
                 whitelistedAddressId = StrigaWhitelistedAddressId("5945b161-4534-4ada-bbb5-311e1869fe1b"),
-                amount = BigInteger("10000000000000000"),
+                amountInUnits = BigInteger("10000000000000000"),
             )
 
             assertTrue(result is StrigaDataLayerResult.Success)
@@ -167,7 +167,7 @@ class StrigaWalletRepositoryEnrichAccountTest {
             assertEquals("01c1f4e73d8b2587921c74e98951add0", result.value.transaction.sourceAccountId.value)
             assertEquals("a927c70c-3678-4d23-b54d-0261dda6bdbb", result.value.transaction.parentWalletId.value)
             assertEquals(StrigaNetworkCurrency.USDC, result.value.transaction.currency)
-            assertEquals(BigInteger("2000"), result.value.transaction.amount)
+            assertEquals(BigInteger("2000"), result.value.transaction.amountInUnits)
             assertEquals(StrigaOnchainTxStatus.PENDING_2FA_CONFIRMATION, result.value.transaction.status)
             assertEquals(StrigaOnchainTxType.ON_CHAIN_WITHDRAWAL_INITIATED, result.value.transaction.txType)
             assertEquals(

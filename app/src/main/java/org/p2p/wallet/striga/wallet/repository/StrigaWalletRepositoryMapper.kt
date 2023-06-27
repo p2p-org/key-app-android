@@ -94,7 +94,7 @@ class StrigaWalletRepositoryMapper {
             sourceAccountId = StrigaAccountId(sourceAccountId),
             parentWalletId = StrigaWalletId(parentWalletId),
             currency = StrigaNetworkCurrency.valueOf(currency),
-            amount = amount.toBigIntegerOrZero(),
+            amountInUnits = amountInUnits.toBigIntegerOrZero(),
             status = StrigaOnchainTxStatus.from(status),
             txType = StrigaOnchainTxType.from(txType),
             blockchainDestinationAddress = blockchainDestinationAddress,

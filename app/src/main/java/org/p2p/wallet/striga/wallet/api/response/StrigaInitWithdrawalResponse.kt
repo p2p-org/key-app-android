@@ -22,7 +22,7 @@ class StrigaInitWithdrawalResponse(
         @SerializedName("currency")
         val currency: String,
         @SerializedName("amount")
-        val amount: String,
+        val amountInUnits: String,
         @SerializedName("status")
         val status: String,
         @SerializedName("txType")

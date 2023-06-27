@@ -19,7 +19,7 @@ data class StrigaInitWithdrawalDetails(
 
     /**
      * @param userId is the user id in Striga
-     * @param amount in wei/satoshi or cents, depending on is the currency a fiat/stable or plain crypto
+     * @param amountInUnits in wei/satoshi or cents, depending on is the currency a fiat/stable or plain crypto
      */
     @Parcelize
     data class WithdrawalTransactionDetails(
@@ -27,7 +27,7 @@ data class StrigaInitWithdrawalDetails(
         val sourceAccountId: StrigaAccountId,
         val parentWalletId: StrigaWalletId,
         val currency: StrigaNetworkCurrency,
-        val amount: BigInteger,
+        val amountInUnits: BigInteger,
         val status: StrigaOnchainTxStatus,
         val txType: StrigaOnchainTxType,
         val blockchainDestinationAddress: String,

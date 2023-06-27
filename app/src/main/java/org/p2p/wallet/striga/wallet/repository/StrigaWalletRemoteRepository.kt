@@ -30,14 +30,14 @@ class StrigaWalletRemoteRepository(
     override suspend fun initiateOnchainWithdrawal(
         sourceAccountId: StrigaAccountId,
         whitelistedAddressId: StrigaWhitelistedAddressId,
-        amount: BigInteger,
+        amountInUnits: BigInteger,
     ): StrigaDataLayerResult<StrigaInitWithdrawalDetails> {
         return try {
             val request = StrigaInitWithdrawalRequest(
                 userId = strigaUserIdProvider.getUserIdOrThrow(),
                 sourceAccountId = sourceAccountId.value,
                 whitelistedAddressId = whitelistedAddressId.value,
-                amount = amount.toString()
+                amountInUnits = amountInUnits.toString()
             )
             val response = api.initiateOnchainWithdrawal(request)
             return mapper.fromNetwork(response).toSuccessResult()
