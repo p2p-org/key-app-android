@@ -24,7 +24,7 @@ import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
 import org.p2p.wallet.utils.fromJsonReified
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class StrigaWalletRepositoryTest {
+class StrigaWalletRepositoryEnrichAccountTest {
 
     private val gson = Gson()
     private val api: StrigaWalletApi = mockk()
@@ -232,6 +232,8 @@ class StrigaWalletRepositoryTest {
         return StrigaWalletRemoteRepository(
             api = api,
             mapper = StrigaWalletRepositoryMapper(),
+            walletsMapper = mockk(),
+            strigaUserIdProvider = mockk()
         )
     }
 }

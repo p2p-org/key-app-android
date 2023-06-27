@@ -3,11 +3,12 @@ package org.p2p.wallet.striga.wallet.repository
 import java.math.BigInteger
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
-import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.StrigaInitiateOnchainWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
-import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
+import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
+import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
 
 interface StrigaWalletRepository {
 
@@ -68,4 +69,6 @@ interface StrigaWalletRepository {
         userId: String,
         accountId: StrigaAccountId
     ): StrigaDataLayerResult<StrigaFiatAccountDetails>
+
+    suspend fun getUserWallet(): StrigaDataLayerResult<StrigaUserWallet>
 }
