@@ -90,7 +90,7 @@ class DevicesFragment :
     }
 
     override fun showFailDeviceChange() {
-        showUiKitSnackBar(message = getString(R.string.error_general_message))
+        showCommonError()
         popBackStack()
     }
 
@@ -112,6 +112,10 @@ class DevicesFragment :
                 destinationFragment = SettingsEmailConfirmFragment::class.java
             )
         )
+    }
+
+    override fun showCommonError() {
+        showUiKitSnackBar(message = getString(R.string.error_general_message))
     }
 
     override fun navigateToAccountBlocked(cooldownTtl: Long) {

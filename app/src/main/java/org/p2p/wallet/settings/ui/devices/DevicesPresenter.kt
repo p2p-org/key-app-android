@@ -122,7 +122,7 @@ class DevicesPresenter(
     private fun handleGatewayServiceError(gatewayServiceError: PushServiceError) {
         when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(gatewayServiceError)) {
             is GatewayHandledState.CriticalError -> {
-                view?.showUiKitSnackBar(gatewayHandledResult.errorCode.toString())
+                view?.showCommonError()
             }
             is GatewayHandledState.TimerBlockError -> {
                 view?.navigateToAccountBlocked(gatewayHandledResult.cooldownTtl)
