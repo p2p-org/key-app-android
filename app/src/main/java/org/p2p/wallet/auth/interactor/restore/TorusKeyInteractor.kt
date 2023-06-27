@@ -22,11 +22,11 @@ class TorusKeyInteractor(
         override val cause: Throwable?
     ) : Throwable()
 
-    suspend fun getTorusKey(googleIdToken: String, socialShareUserId: String) {
+    suspend fun getTorusKey(googleIdJwtToken: String, socialShareUserId: String) {
         val currentFlow = onboardingInteractor.currentFlow
         try {
             Timber.tag(TAG).i("getTorusKey with flow: ${currentFlow.javaClass.simpleName}")
-            val fetchedTorusKey = web3AuthApi.obtainTorusKey(googleIdToken)
+            val fetchedTorusKey = web3AuthApi.obtainTorusKey(googleIdJwtToken)
 
             when (onboardingInteractor.currentFlow) {
                 is OnboardingFlow.CreateWallet -> fillCreateFlowData(fetchedTorusKey, socialShareUserId)

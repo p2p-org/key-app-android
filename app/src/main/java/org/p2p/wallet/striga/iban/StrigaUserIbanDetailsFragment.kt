@@ -23,6 +23,10 @@ class StrigaUserIbanDetailsFragment :
     ),
     StrigaUserIbanDetailsContract.View {
 
+    companion object {
+        fun create(): StrigaUserIbanDetailsFragment = StrigaUserIbanDetailsFragment()
+    }
+
     private val binding: FragmentStrigaIbanAccountBinding by viewBinding()
 
     private val adapter = CommonAnyCellAdapter(

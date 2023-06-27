@@ -309,7 +309,11 @@ class HomeFragment :
     }
 
     override fun navigateToKycStatus(status: StrigaKycStatusBanner) {
-        replaceFragment(StrigaUserIbanDetailsFragment())
+        if (status == StrigaKycStatusBanner.VERIFICATION_DONE) {
+            StrigaUserIbanDetailsFragment.create()
+        } else {
+            strigaKycFragmentFactory.kycFragment()
+        }.also(::replaceFragment)
     }
 
     override fun showKycPendingDialog() {
