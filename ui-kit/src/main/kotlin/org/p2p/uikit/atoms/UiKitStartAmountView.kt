@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetStartAmountViewBinding
@@ -49,6 +50,15 @@ class UiKitStartAmountView @JvmOverloads constructor(
         @DrawableRes top: Int = 0,
         @DrawableRes right: Int = 0,
         @DrawableRes bottom: Int = 0
+    ) {
+        binding.subtitleTextView.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom)
+    }
+
+    fun setSubtitleDrawable(
+        left: Drawable? = null,
+        top: Drawable? = null,
+        right: Drawable? = null,
+        bottom: Drawable? = null
     ) {
         binding.subtitleTextView.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom)
     }

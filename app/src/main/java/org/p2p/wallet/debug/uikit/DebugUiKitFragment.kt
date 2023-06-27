@@ -12,7 +12,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDebugUiKitBinding
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class DebugUiKitFragmentFragment :
+class DebugUiKitFragment :
     BaseMvpFragment<DebugUiKitFragmentContract.View, DebugUiKitFragmentContract.Presenter>(
         R.layout.fragment_debug_ui_kit
     ),

@@ -10,6 +10,7 @@ interface DevicesContract {
         fun showCells(cells: List<AnyCellItem>)
         fun setLoadingState(isScreenLoading: Boolean)
         fun navigateToSmsInput()
+        fun showCommonError()
         fun showSuccessDeviceChange()
         fun showFailDeviceChange()
         fun navigateToAccountBlocked(cooldownTtl: Long)
