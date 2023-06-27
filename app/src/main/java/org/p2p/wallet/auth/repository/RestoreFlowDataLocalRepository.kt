@@ -103,4 +103,8 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     fun isTorusKeyValid(): Boolean {
         return DateTimeUtils.getCurrentTimestampInSeconds() - torusKeyTimestamp < 15.minutes.inWholeSeconds
     }
+
+    fun resetTorusTimestamp() {
+        torusKeyTimestamp = 0
+    }
 }
