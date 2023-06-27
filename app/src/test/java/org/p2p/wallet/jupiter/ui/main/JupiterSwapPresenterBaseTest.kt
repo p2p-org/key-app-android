@@ -30,6 +30,7 @@ import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.core.crypto.Base64String
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
@@ -110,6 +111,9 @@ open class JupiterSwapPresenterBaseTest {
 
     @MockK
     lateinit var jupiterSwapTokensRepository: JupiterSwapTokensRepository
+
+    @MockK
+    lateinit var swapRoutesRefreshFeatureToggle: SwapRoutesRefreshFeatureToggle
 
     @MockK(relaxed = true)
     lateinit var relaySdkFacade: RelaySdkFacade
@@ -419,7 +423,8 @@ open class JupiterSwapPresenterBaseTest {
             userTokensChangeHandler = SwapUserTokensChangeHandler(
                 jupiterSwapInteractor,
                 jupiterSwapTokensRepository
-            )
+            ),
+            swapRoutesRefreshFeatureToggle = swapRoutesRefreshFeatureToggle
         )
     }
 

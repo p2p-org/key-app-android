@@ -189,6 +189,7 @@ object JupiterModule : InjectionModule {
                     swapTokensRepository = get(),
                     homeLocalRepository = get(),
                     userTokensChangeHandler = get(),
+                    swapRoutesRefreshFeatureToggle = get(),
                 )
             }
         }

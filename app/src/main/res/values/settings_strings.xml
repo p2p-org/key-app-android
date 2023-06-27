@@ -21,6 +21,7 @@
     <string name="debug_settings_kyc_mock_title">KYC Banner mock</string>
     <string name="debug_settings_kyc_set_rejected_title">KYC Simulate rejected</string>
     <string name="debug_settings_striga_detach_user_id_title">Detach striga from web3 user</string>
+    <string name="debug_settings_ui_kit">UiKit examples</string>
 
     <!-- Debug Settings -> Notifications -->
     <string name="debug_notifications_title">Debug Notifications</string>
@@ -107,7 +108,7 @@
 
 
     <string name="devices_incorrect_account">Incorrect Google account</string>
-    <string name="devices_account_associated">This account is associated with %s. Please log in with the correct Google account.</string>
+    <string name="devices_account_associated">%s\nPlease log in with the correct Google account.</string>
     <string name="devices_restore_another">Use another account</string>
 
 

@@ -72,7 +72,8 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     var torusKey: String? = null
         set(value) {
             field = value
-            torusKeyTimestamp = DateTimeUtils.getCurrentTimestampInSeconds()
+            torusKeyTimestamp = value?.let { DateTimeUtils.getCurrentTimestampInSeconds() } ?: 0
+
             Timber.tag(TAG).i("torusKey is generated and set: ${torusKey?.length}")
         }
 
