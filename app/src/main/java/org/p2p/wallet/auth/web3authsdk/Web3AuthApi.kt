@@ -34,9 +34,9 @@ interface Web3AuthApi {
     ): Web3AuthSignUpResponse.ShareDetailsWithMeta
 
     /**
-     * @param signInGoogleIdToken used to auth user on Web3Auth server-side using google web client id.
+     * @param googleIdJwtToken used to auth user on Web3Auth server-side using google web client id.
      */
     suspend fun obtainTorusKey(
-        signInGoogleIdToken: String
+        googleIdJwtToken: String
     ): String
 }

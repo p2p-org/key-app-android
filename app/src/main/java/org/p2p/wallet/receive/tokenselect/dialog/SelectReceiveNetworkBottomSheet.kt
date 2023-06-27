@@ -20,7 +20,7 @@ import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.image.commonCircleImage
 import org.p2p.uikit.utils.recycler.decoration.offsetFinanceBlockDecoration
-import org.p2p.uikit.utils.recycler.decoration.roundingByCellFinanceBlockDecoration
+import org.p2p.uikit.utils.recycler.decoration.roundingByCellMainCellDecoration
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
@@ -68,7 +68,7 @@ class SelectReceiveNetworkBottomSheet : BaseRecyclerDoneBottomSheet() {
         with(recyclerBinding.recyclerView) {
             layoutManager = LinearLayoutManager(requireContext())
             attachAdapter(networkAdapter)
-            addItemDecoration(roundingByCellFinanceBlockDecoration())
+            addItemDecoration(roundingByCellMainCellDecoration())
             addItemDecoration(offsetFinanceBlockDecoration())
             networkAdapter.items = makeNetworkDataToSelect()
         }
