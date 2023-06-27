@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.wallet.repository
 
 import assertk.all
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
@@ -15,11 +16,13 @@ import org.junit.Before
 import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletsResponse
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
 import org.p2p.wallet.utils.assertThat
+import org.p2p.wallet.utils.createHttpException
 import org.p2p.wallet.utils.fromJsonReified
 import org.p2p.wallet.utils.stub
 
@@ -124,10 +127,9 @@ class StrigaWalletRepositoryGetUserWalletTest {
             coEvery { getUserWallets(any()) }.returns(parsedResponse)
         }
         // WHEN
-        val actualResult: StrigaUserWallet? = repository.getUserWallet().unwrap()
+        val actualResult: StrigaUserWallet = repository.getUserWallet().unwrap()
 
         actualResult.assertThat()
-            .isNotNull()
             .all {
                 prop(StrigaUserWallet::walletId).isEqualTo(StrigaWalletId("3d57a943-8145-4183-8079-cd86b68d2993"))
                 prop(StrigaUserWallet::userId).isEqualTo(userId)
@@ -136,5 +138,17 @@ class StrigaWalletRepositoryGetUserWalletTest {
 
                 prop(StrigaUserWallet::accounts).isNotEmpty()
             }
+    }
+
+    @Test
+    fun `GIVEN 400 response WHEN get wallets THEN user wallet is not gotten`() = runTest {
+        // GIVEN
+        api.stub {
+            coEvery { getUserWallets(any()) }.throws(createHttpException(400, "{}"))
+        }
+        // WHEN
+        val actualResult = repository.getUserWallet()
+        actualResult.assertThat()
+            .isInstanceOf(StrigaDataLayerResult.Failure::class)
     }
 }

@@ -17,9 +17,9 @@ class StrigaUserWalletsMapper {
         private const val UNLINKED_BANK_ACCOUNT_VALUE = "UNLINKED"
     }
 
-    fun fromNetwork(userId: String, response: StrigaUserWalletsResponse): StrigaUserWallet? {
-        if (response.wallets.isEmpty()) {
-            return null
+    fun fromNetwork(userId: String, response: StrigaUserWalletsResponse): StrigaUserWallet {
+        require(response.wallets.isNotEmpty()) {
+            "Wallets should be not empty: they are created when user $userId is created"
         }
         val activeWallet: StrigaUserWalletDetailsResponse = response.wallets.first()
 
