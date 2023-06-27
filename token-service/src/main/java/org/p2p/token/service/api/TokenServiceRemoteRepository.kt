@@ -19,15 +19,15 @@ class TokenServiceRemoteRepository(
     private val tokenServiceUrl = URI(tokenServiceStringUrl)
 
     override suspend fun <P, T> launch(request: JsonRpc<P, T>): TokenServiceResult<T> {
-        try {
+        return try {
             val requestGson = gson.toJson(request)
             val response = api.launch(tokenServiceUrl, jsonRpc = requestGson)
             val result = request.parseResponse(response, gson)
-            return TokenServiceResult.Success(result)
+            TokenServiceResult.Success(result)
         } catch (e: JsonRpc.ResponseError.RpcError) {
             Timber.tag(TAG).i(e, "failed request for ${request.method}")
             Timber.tag(TAG).i("Error body message ${e.error.message}")
-            return TokenServiceResult.Error(e)
+            TokenServiceResult.Error(e)
         }
     }
 }

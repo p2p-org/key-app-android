@@ -10,12 +10,15 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import timber.log.Timber
+import java.util.logging.Logger
 import kotlinx.coroutines.test.runTest
 import org.p2p.core.R
 import org.p2p.core.crashlytics.CrashLoggerModule
@@ -29,12 +32,15 @@ import org.p2p.token.service.api.request.TokenServiceMetadataRequest
 import org.p2p.token.service.api.request.TokenServicePriceRequest
 import org.p2p.token.service.api.request.TokenServiceQueryRequest
 import org.p2p.token.service.api.response.TokenServiceNetworkResponse
+import org.p2p.token.service.interactor.TokenServiceInteractor
 import org.p2p.token.service.mock.NetworkEnvironmentStorageMock
+import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.repository.price.TokenPriceRepository
 
 @RunWith(JUnit4::class)
 class TokenServiceRepositoryTest : KoinTest {
 
-    private val repository: TokenServiceRepository by inject()
+    private val interactor: TokenServiceInteractor by inject()
 
     @Before
     fun setup() {
@@ -43,7 +49,7 @@ class TokenServiceRepositoryTest : KoinTest {
         val context = mockk<Context>() {
             coEvery { getString(R.string.tokenServiceBaseUrl) } returns "https://token-service.keyapp.org/"
         }
-        val mockPRefs = mockk<SharedPreferences>() {
+        val mockPrefs = mockk<SharedPreferences>() {
             coEvery {
                 getString(
                     "KEY_TOKEN_SERVICE_BASE_URL",
@@ -66,7 +72,7 @@ class TokenServiceRepositoryTest : KoinTest {
                                 networksFromRemoteConfig = NetworkEnvironment.values().toList()
                             )
                         }
-                        single { NetworkServicesUrlStorage(sharedPreferences = mockPRefs) }
+                        single { NetworkServicesUrlStorage(sharedPreferences = mockPrefs) }
                     }
                 )
             )
@@ -75,19 +81,14 @@ class TokenServiceRepositoryTest : KoinTest {
 
     @Test
     fun test() = runTest {
-
-        val marketPriceItemRequest = TokenServiceItemRequest(
-            chainId = TokenServiceNetworkResponse.SOLANA,
-            addresses = listOf(
-                "So11111111111111111111111111111111111111112",
-                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            )
-        )
-        val result = TokenServiceQueryRequest(query = listOf(marketPriceItemRequest))
-        val priceRequest = TokenServicePriceRequest(result)
-        val metadataRequest = TokenServiceMetadataRequest(result)
-
         //Comment this cause request require VPN connection
+//        interactor.loadPriceForTokens(
+//            chain = TokenServiceNetwork.ETHEREUM,
+//            tokenAddresses = listOf(
+//                "So11111111111111111111111111111111111111112",
+//                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+//            )
+//        )
         //val priceResult = repository.launch(priceRequest)
         //val metadataResult = repository.launch(metadataRequest)
     }

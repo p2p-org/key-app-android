@@ -17,6 +17,7 @@ import org.p2p.core.common.di.AppScope
 import org.p2p.core.common.di.ServiceScope
 import org.p2p.core.crashlytics.CrashLoggerModule
 import org.p2p.core.network.NetworkCoreModule
+import org.p2p.token.service.TokenServiceModule
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
@@ -102,7 +103,8 @@ object AppModule {
                 TransactionManagerModule.create(),
                 UserModule.create(),
                 CrashLoggerModule.create(),
-                NetworkCoreModule.create()
+                NetworkCoreModule.create(),
+                TokenServiceModule.create(),
             ) + EthereumKitService.getEthereumKitModules()
         )
     }

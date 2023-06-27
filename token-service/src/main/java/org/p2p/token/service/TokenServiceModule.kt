@@ -45,13 +45,10 @@ object TokenServiceModule : InjectionModule {
             )
         }
 
-        singleOf(::TokenMetadataInMemoryRepository) bind TokenMetadataLocalRepository::class
-        factoryOf(::TokenMetadataRemoteRepository) bind TokenMetadataRepository::class
-
-        singleOf(::TokenPriceInMemoryRepository) bind TokenPriceLocalRepository::class
-        factoryOf(::TokenPriceRemoteRepository) bind TokenPriceRepository::class
-
-        factoryOf(::TokenServiceRemoteRepository) bind TokenServiceRepository::class
+        single<TokenMetadataLocalRepository> { TokenMetadataInMemoryRepository() }
+        factory<TokenMetadataRepository> { TokenMetadataRemoteRepository(get(), get()) }
+        single<TokenPriceLocalRepository> { TokenPriceInMemoryRepository() }
+        factory<TokenPriceRepository> { TokenPriceRemoteRepository(get(), get()) }
 
         factoryOf(::TokenServiceMapper)
         factoryOf(::TokenServiceInteractor)
