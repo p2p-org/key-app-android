@@ -6,7 +6,7 @@ import java.net.URI
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.rpc.JsonRpc
 import org.p2p.core.rpc.RpcApi
-import org.p2p.token.service.model.MarketPriceResult
+import org.p2p.token.service.model.TokenServiceResult
 
 private const val TAG = "BridgeRemoteRepository"
 class TokenServiceApiRepositoryImpl(
@@ -17,12 +17,12 @@ class TokenServiceApiRepositoryImpl(
     private val tokenServiceStringUrl = urlProvider.loadTokenServiceEnvironment().baseServiceUrl
     private val tokenServiceUrl = URI(tokenServiceStringUrl)
 
-    override suspend fun <P, T> launch(request: JsonRpc<P, T>): MarketPriceResult.Success<T> {
+    override suspend fun <P, T> launch(request: JsonRpc<P, T>): TokenServiceResult.Success<T> {
         try {
             val requestGson = gson.toJson(request)
             val response = api.launch(tokenServiceUrl, jsonRpc = requestGson)
             val result = request.parseResponse(response, gson)
-            return MarketPriceResult.Success(result)
+            return TokenServiceResult.Success(result)
         } catch (e: JsonRpc.ResponseError.RpcError) {
             Timber.tag(TAG).i(e, "failed request for ${request.method}")
             Timber.tag(TAG).i("Error body message ${e.error.message}")
