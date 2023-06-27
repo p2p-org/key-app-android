@@ -6,9 +6,11 @@ import org.p2p.wallet.striga.wallet.api.request.StrigaAddWhitelistedAddressReque
 import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaInitiateOnchainWithdrawalRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnchainWithdrawalFeeRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaInitiateOnchainWithdrawalResponse
+import org.p2p.wallet.striga.wallet.api.response.StrigaOnchainWithdrawalFeeResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletsResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressItemResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressesResponse
@@ -35,8 +37,17 @@ interface StrigaWalletApi {
      * So use it for fiat accounts only
      */
     @POST("v1/wallets/account/enrich")
-    suspend fun enrichFiatAccount(@Body body: StrigaEnrichAccountRequest): StrigaEnrichFiatAccountResponse
+    suspend fun enrichFiatAccount(
+        @Body body: StrigaEnrichAccountRequest
+    ): StrigaEnrichFiatAccountResponse
 
     @POST("v1/wallets/get/all")
-    suspend fun getUserWallets(@Body body: StrigaUserWalletsRequest): StrigaUserWalletsResponse
+    suspend fun getUserWallets(
+        @Body body: StrigaUserWalletsRequest
+    ): StrigaUserWalletsResponse
+
+    @POST("v1/wallets/send/initiate/onchain/fee-estimate")
+    suspend fun getOnchainWithdrawalFees(
+        @Body body: StrigaOnchainWithdrawalFeeRequest
+    ): StrigaOnchainWithdrawalFeeResponse
 }
