@@ -17,7 +17,7 @@ import org.p2p.token.service.repository.TokenServiceInMemoryRepository
 import org.p2p.token.service.repository.TokenServiceRemoteRepository
 import org.p2p.token.service.repository.TokenServiceRepository
 
-object MarketPriceModule : InjectionModule {
+object TokenPriceModule : InjectionModule {
     private const val TOKEN_SERVICE_RETROFIT_QUALIFIER = "TOKEN_SERVICE_RETROFIT_QUALIFIER"
 
     override fun create() = module {

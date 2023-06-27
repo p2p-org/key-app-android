@@ -30,7 +30,6 @@ import org.p2p.token.service.api.request.TokenServicePriceRequest
 import org.p2p.token.service.api.request.TokenServiceQueryRequest
 import org.p2p.token.service.api.response.TokenServiceNetworkResponse
 import org.p2p.token.service.mock.NetworkEnvironmentStorageMock
-import org.p2p.token.service.api.TokenServiceApiRepositoryImpl
 
 @RunWith(JUnit4::class)
 class TokenServiceApiTest : KoinTest {
@@ -58,7 +57,7 @@ class TokenServiceApiTest : KoinTest {
                 listOf(
                     NetworkCoreModule.create(),
                     CrashLoggerModule.create(),
-                    MarketPriceModule.create(),
+                    TokenPriceModule.create(),
                     module {
                         single {
                             NetworkEnvironmentManager(
