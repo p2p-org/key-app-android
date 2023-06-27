@@ -5,11 +5,11 @@ import org.p2p.wallet.home.model.HomeScreenBanner
 
 class StrigaKycUiBannerMapper {
 
-    fun mapToBigBanner(status: StrigaKycStatusBanner): HomeBannerItem = status.toHomeBannerItem()
+    fun mapToHomeBigBanner(status: StrigaKycStatusBanner): HomeBannerItem = status.toHomeBannerItem()
 
     fun mapToBanner(status: StrigaKycStatusBanner): HomeScreenBanner = StrigaBanner(status)
 
-    fun onBannerClicked(bannerTitleId: Int): StrigaKycStatusBanner? {
+    fun getKycStatusBannerFromTitle(bannerTitleId: Int): StrigaKycStatusBanner? {
         return StrigaKycStatusBanner.values().firstOrNull {
             it.bannerTitleResId == bannerTitleId || it.bigBannerTitleResId == bannerTitleId
         }
