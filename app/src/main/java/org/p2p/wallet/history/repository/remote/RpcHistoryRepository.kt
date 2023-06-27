@@ -11,7 +11,7 @@ import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 

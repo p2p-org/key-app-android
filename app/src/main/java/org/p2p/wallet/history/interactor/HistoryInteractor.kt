@@ -5,7 +5,7 @@ import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.repository.local.PendingTransactionsLocalRepository
 import org.p2p.wallet.history.repository.remote.HistoryRemoteRepository
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.crypto.Base58String
 
 class HistoryInteractor(

@@ -22,7 +22,7 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem

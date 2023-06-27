@@ -12,7 +12,7 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_BIOMETRIC_HASH
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_HASH

@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 
 class CountryCodeInMemoryRepository(
     private val dispatchers: CoroutineDispatchers,

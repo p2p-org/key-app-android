@@ -2,7 +2,7 @@ package org.p2p.wallet.sdk.facade
 
 import com.google.gson.Gson
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.sdk.SolendSdk

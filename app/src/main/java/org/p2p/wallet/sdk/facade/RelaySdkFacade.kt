@@ -4,7 +4,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.RecentBlockhashResponse
 import org.p2p.core.crypto.Base64String
 import org.p2p.core.utils.encodeToBase58
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.sdk.RelaySdk
 import org.p2p.wallet.sdk.facade.mapper.SdkMethodResultMapper
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
