@@ -3,7 +3,6 @@ package org.p2p.wallet.striga.wallet.repository
 import java.math.BigInteger
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
-import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet

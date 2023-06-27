@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import org.intellij.lang.annotations.Language
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -34,6 +35,7 @@ class StrigaWalletRepositoryEnrichAccountTest {
     @Test
     fun `GIVEN whitelisted addresses response WHEN getWhitelistedAddresses THEN check response parsed correctly`() =
         runTest {
+            @Language("JSON")
             val responseBody = """
             {
                 "addresses":[
@@ -77,6 +79,7 @@ class StrigaWalletRepositoryEnrichAccountTest {
 
     @Test
     fun `GIVEN eth address WHEN add address to striga whitelist THEN check response parsed correctly`() = runTest {
+        @Language("JSON")
         val responseBody = """
             {
                 "id":"5945b161-4534-4ada-bbb5-311e1869fe1b",
@@ -114,6 +117,7 @@ class StrigaWalletRepositoryEnrichAccountTest {
     fun `GIVEN init onchain withdrawal WHEN initiateOnchainWithdrawal THEN check response parsed correctly`() =
         runTest {
             // real response
+            @Language("JSON")
             val responseBody = """
             {
                 "challengeId":"f8e7e49c-3559-4351-a2a4-e70b633744ec",
@@ -189,6 +193,7 @@ class StrigaWalletRepositoryEnrichAccountTest {
     @Test
     fun `GIVEN enrich account response for EUR WHEN getFiatAccountDetails THEN check response is parsed ok`() =
         runTest {
+            @Language("JSON")
             val responseBody = """
                 {
                     "currency":"EUR",

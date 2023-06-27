@@ -6,11 +6,9 @@ import org.p2p.wallet.striga.wallet.api.request.StrigaAddWhitelistedAddressReque
 import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaInitWithdrawalRequest
-import org.p2p.wallet.striga.wallet.api.request.StrigaInitiateOnchainWithdrawalRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaInitWithdrawalResponse
-import org.p2p.wallet.striga.wallet.api.response.StrigaInitiateOnchainWithdrawalResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletsResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressItemResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressesResponse
