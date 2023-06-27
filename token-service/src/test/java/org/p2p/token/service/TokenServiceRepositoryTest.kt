@@ -82,12 +82,12 @@ class TokenServiceRepositoryTest : KoinTest {
     @Test
     fun test() = runTest {
 //        Comment this cause request require VPN connection
-        interactor.loadPriceForTokens(
-            chain = TokenServiceNetwork.SOLANA,
-            tokenAddresses = listOf(
-                "So11111111111111111111111111111111111111112",
-                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            )
-        )
+//        interactor.loadPriceForTokens(
+//            chain = TokenServiceNetwork.SOLANA,
+//            tokenAddresses = listOf(
+//                "So11111111111111111111111111111111111111112",
+//                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+//            )
+//        )
     }
 }
