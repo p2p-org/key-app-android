@@ -6,6 +6,9 @@ import java.net.URI
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.rpc.JsonRpc
 import org.p2p.core.rpc.RpcApi
+import org.p2p.core.rpc.RpcResponse
+import org.p2p.token.service.api.request.TokenServiceMetadataRequest
+import org.p2p.token.service.api.request.TokenServicePriceRequest
 import org.p2p.token.service.model.TokenServiceResult
 
 private const val TAG = "BridgeRemoteRepository"

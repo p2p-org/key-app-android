@@ -1,6 +1,7 @@
 package org.p2p.core.utils
 
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
@@ -9,6 +10,7 @@ import okhttp3.Response
 import okio.Buffer
 import org.koin.ext.getFullName
 import timber.log.Timber
+import java.lang.reflect.Type
 
 typealias MillisSinceEpoch = Long // to replace ambiguous Long in some places connected to dates
 
@@ -57,6 +59,10 @@ inline fun <reified Type> Gson.fromJsonReified(json: String): Type? {
     if (result == null) {
         Timber.e(IllegalArgumentException("Couldn't parse ${Type::class.getFullName()} from json: ${json.take(30)}"))
     }
+    return result
+}
+inline fun <reified T>Gson.fromJsonReified(json: JsonElement, typeToken: Type):  T {
+    val result = fromJson<T>(json,typeToken)
     return result
 }
 

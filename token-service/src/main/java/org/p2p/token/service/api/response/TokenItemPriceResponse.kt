@@ -6,7 +6,7 @@ internal class TokenItemPriceResponse(
     @SerializedName("address")
     val tokenAddress: String,
     @SerializedName("price")
-    val price: TokenServicePriceResponse
+    val price: TokenPriceResponse
 )
 
 

@@ -3,8 +3,10 @@ package org.p2p.core.rpc
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import timber.log.Timber
 import java.lang.reflect.Type
+import org.p2p.core.utils.fromJsonReified
 
 private const val TAG = "JsonRpcParser"
 
