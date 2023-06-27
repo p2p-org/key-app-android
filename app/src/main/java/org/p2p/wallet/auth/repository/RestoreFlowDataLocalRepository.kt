@@ -103,4 +103,11 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     fun isTorusKeyValid(): Boolean {
         return DateTimeUtils.getCurrentTimestampInSeconds() - torusKeyTimestamp < 15.minutes.inWholeSeconds
     }
+
+    fun resetTorusTimestamp() {
+        // if some account is registered on email but this email is not associated with device share
+        // it will still generate non null `torusKey` but it is not usable and we cant use isTorusKeyValid
+        // so we need to reset `torusKeyTimestamp`
+        torusKeyTimestamp = 0
+    }
 }

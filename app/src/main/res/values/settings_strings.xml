@@ -86,7 +86,7 @@
     <string name="recovery_phone_title">Phone</string>
     <string name="recovery_social_title">Google</string>
     <string name="recovery_seed_title">Seed phrase</string>
-    <string name="recovery_footer">Your private key is split into multiple factors. At least, you should have three factors, but you can create more. To log in to different devices, you need at least two factors.</string>
+    <string name="recovery_footer">Key App respects your privacy - it can\'t access your funds or personal data. Your information stays securely stored on your device and in the blockchain.</string>
     <string name="recovery_not_available">Not available for now</string>
     <string name="recovery_manage">Manage</string>
 

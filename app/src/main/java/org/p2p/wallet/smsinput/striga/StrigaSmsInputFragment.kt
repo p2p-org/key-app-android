@@ -10,7 +10,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreFailureState
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
 import org.p2p.wallet.smsinput.SmsInputContract
@@ -50,7 +49,7 @@ class StrigaSmsInputFragment : BaseSmsInputFragment() {
             getString(R.string.striga_sms_input_description, userPhoneNumber.formattedValue)
     }
 
-    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long) = Unit
+    override fun navigateToSmsInputBlocked(timerLeftTime: Long) = Unit
     override fun navigateToGatewayErrorScreen(handledState: GatewayHandledState) = Unit
     override fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) = Unit
 

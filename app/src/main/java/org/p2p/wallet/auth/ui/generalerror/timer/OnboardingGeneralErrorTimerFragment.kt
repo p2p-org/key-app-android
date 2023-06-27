@@ -18,7 +18,6 @@ import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.NavigationStrategy
 import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NAVIGATION_STRATEGY
 import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_CLASS
-import org.p2p.wallet.common.NavigationStrategy.Replace.navigateNext
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
 import org.p2p.wallet.intercom.IntercomService
@@ -29,7 +28,6 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.View as ContractView
 
-private const val ARG_TIMER_ERROR_TYPE = "ARG_TIMER_ERROR_TYPE"
 private const val ARG_TIMER_LEFT_TIME = "ARG_TIMER_LEFT_TIME"
 
 class OnboardingGeneralErrorTimerFragment :
@@ -38,7 +36,6 @@ class OnboardingGeneralErrorTimerFragment :
 
     companion object {
         fun create(
-            error: GeneralErrorTimerScreenError,
             timerLeftTime: Long,
             destinationFragment: Class<out Fragment>? = null,
             navigationStrategy: NavigationStrategy? = null
@@ -47,7 +44,6 @@ class OnboardingGeneralErrorTimerFragment :
             val defaultStrategy = NavigationStrategy.PopAndReplace(null, true)
             val strategy = navigationStrategy ?: defaultStrategy
             return OnboardingGeneralErrorTimerFragment().withArgs(
-                ARG_TIMER_ERROR_TYPE to error,
                 ARG_TIMER_LEFT_TIME to timerLeftTime,
                 ARG_NEXT_DESTINATION_CLASS to destinationClass,
                 ARG_NAVIGATION_STRATEGY to strategy
@@ -55,13 +51,12 @@ class OnboardingGeneralErrorTimerFragment :
         }
     }
 
-    override val presenter: Presenter by inject { parametersOf(error, timerLeftTime) }
+    override val presenter: Presenter by inject { parametersOf(timerLeftTime) }
 
     private val nextDestinationClass: Class<Fragment> by args(ARG_NEXT_DESTINATION_CLASS)
     private val navigationStrategy: NavigationStrategy by args(ARG_NAVIGATION_STRATEGY)
 
     private val binding: FragmentOnboardingGeneralErrorTimerBinding by viewBinding()
-    private val error: GeneralErrorTimerScreenError by args(ARG_TIMER_ERROR_TYPE)
     private val timerLeftTime: Long by args(ARG_TIMER_LEFT_TIME)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

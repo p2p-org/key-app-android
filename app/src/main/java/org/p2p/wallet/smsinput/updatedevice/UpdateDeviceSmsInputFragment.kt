@@ -8,7 +8,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreFailureState
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.NavigationStrategy
 import org.p2p.wallet.home.ui.container.MainContainerFragment
@@ -37,10 +36,9 @@ class UpdateDeviceSmsInputFragment : BaseSmsInputFragment() {
             getString(R.string.onboarding_sms_input_phone_number_title, userPhoneNumber.formattedValue)
     }
 
-    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long) {
+    override fun navigateToSmsInputBlocked(timerLeftTime: Long) {
         replaceFragment(
             OnboardingGeneralErrorTimerFragment.create(
-                error = error,
                 timerLeftTime = timerLeftTime,
                 navigationStrategy = NavigationStrategy.PopBackStackTo(MainContainerFragment::class.java)
             )
