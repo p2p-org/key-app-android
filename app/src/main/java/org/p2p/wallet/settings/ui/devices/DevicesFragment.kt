@@ -13,7 +13,6 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
 import org.p2p.wallet.auth.ui.animationscreen.TimerState
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.NavigationStrategy
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
@@ -121,7 +120,6 @@ class DevicesFragment :
     override fun navigateToAccountBlocked(cooldownTtl: Long) {
         replaceFragment(
             OnboardingGeneralErrorTimerFragment.create(
-                error = GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,
                 timerLeftTime = cooldownTtl,
                 navigationStrategy = NavigationStrategy.PopBackStackTo(MainContainerFragment::class.java)
             )

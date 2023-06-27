@@ -89,16 +89,9 @@
     <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we have frozen\n your account for %s min</string>
 
     <!-- General error timer -->
-    <string name="onboarding_general_error_let_breath_title">So, let\’s breathe</string>
-    <string name="onboarding_general_error_timer_title">It\'s okay to be wrong</string>
-    <string name="onboarding_general_error_timer_enter_phone_subtitle">
-        You used too many numbers. For your safety, we have frozen your account for %1$s min
-    </string>
+    <string name="onboarding_general_error_timer_title">Confirmation Code Limit Hit</string>
     <string name="onboarding_general_error_too_many_wrong_attempts">
-        You used 5 incorrect codes. For your safety, we have frozen your account for %1$s min
-    </string>
-    <string name="onboarding_general_error_retry_button_tries_exceeded">
-        You didn\'t use any of 5 codes. For your safety, we have frozen your account for %1$s min
+        You\'ve used all 5 codes. Try again in  %1$s. For help, contact support.
     </string>
     <string name="onboarding_general_error_terms_title">Key App\'s</string>
     <string name="onboarding_general_error_starting_screen_button_title">Starting screen</string>

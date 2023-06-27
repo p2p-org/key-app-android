@@ -75,7 +75,7 @@ class UpdateDeviceSmsInputPresenter(
                 view?.renderIncorrectSms()
             }
             is GatewayHandledState.TimerBlockError -> {
-                view?.navigateToSmsInputBlocked(gatewayHandledResult.error, gatewayHandledResult.cooldownTtl)
+                view?.navigateToSmsInputBlocked(gatewayHandledResult.cooldownTtl)
                 restoreWalletInteractor.resetUserPhoneNumber()
             }
             is GatewayHandledState.TitleSubtitleError -> {

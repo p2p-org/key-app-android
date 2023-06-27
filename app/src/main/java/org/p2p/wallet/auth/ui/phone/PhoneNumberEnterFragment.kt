@@ -12,7 +12,6 @@ import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
@@ -127,9 +126,7 @@ class PhoneNumberEnterFragment :
 
     override fun navigateToAccountBlocked(cooldownTtl: Long) {
         replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(
-                error = GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER, timerLeftTime = cooldownTtl
-            )
+            OnboardingGeneralErrorTimerFragment.create(timerLeftTime = cooldownTtl)
         )
     }
 
