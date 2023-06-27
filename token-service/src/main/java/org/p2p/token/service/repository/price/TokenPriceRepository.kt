@@ -1,18 +1,14 @@
-package org.p2p.token.service.repository
+package org.p2p.token.service.repository.price
 
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.model.TokenServiceQueryResult
 
-interface TokenServiceRepository {
+interface TokenPriceRepository {
     suspend fun loadTokensPrice(
         chain: TokenServiceNetwork,
         addresses: List<String>
     ): List<TokenServiceQueryResult<TokenServicePrice>>
 
-    suspend fun loadTokensMetadata(
-        chain: TokenServiceNetwork,
-        addresses: List<String>
-    ): List<TokenServiceQueryResult<TokenServiceMetadata>>
 }

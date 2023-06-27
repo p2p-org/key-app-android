@@ -1,5 +1,7 @@
 package org.p2p.token.service.api.mapper
 
+import org.p2p.token.service.api.request.TokenServiceItemRequest
+import org.p2p.token.service.api.request.TokenServiceQueryRequest
 import org.p2p.token.service.api.response.TokenItemMetadataResponse
 import org.p2p.token.service.api.response.TokenItemPriceResponse
 import org.p2p.token.service.api.response.TokenServiceNetworkResponse
@@ -34,9 +36,20 @@ class TokenServiceMapper {
     }
 
     internal fun toNetwork(domain: TokenServiceNetwork): TokenServiceNetworkResponse {
-        return when(domain) {
+        return when (domain) {
             TokenServiceNetwork.SOLANA -> TokenServiceNetworkResponse.SOLANA
             TokenServiceNetwork.ETHEREUM -> TokenServiceNetworkResponse.ETHEREUM
         }
+    }
+
+    internal fun toRequest(chain: TokenServiceNetwork, tokenAddresses: List<String>): TokenServiceQueryRequest {
+        return TokenServiceQueryRequest(
+            tokenAddresses.map {
+                TokenServiceItemRequest(
+                    chainId = toNetwork(chain),
+                    addresses = tokenAddresses
+                )
+            }
+        )
     }
 }

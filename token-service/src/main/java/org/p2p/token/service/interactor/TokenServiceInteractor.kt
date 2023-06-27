@@ -3,18 +3,22 @@ package org.p2p.token.service.interactor
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
-import org.p2p.token.service.repository.TokenServiceLocalRepository
-import org.p2p.token.service.repository.TokenServiceRemoteRepository
+import org.p2p.token.service.repository.metadata.TokenMetadataLocalRepository
+import org.p2p.token.service.repository.metadata.TokenMetadataRemoteRepository
+import org.p2p.token.service.repository.price.TokenPriceLocalRepository
+import org.p2p.token.service.repository.price.TokenPriceRemoteRepository
 
 internal class TokenServiceInteractor(
-    private val remoteRepository: TokenServiceRemoteRepository,
-    private val localRepository: TokenServiceLocalRepository
+    private val priceRemoteRepository: TokenPriceRemoteRepository,
+    private val priceLocalRepository: TokenPriceLocalRepository,
+    private val metadataRemoteRepository: TokenMetadataRemoteRepository,
+    private val metadataLocalRepository: TokenMetadataLocalRepository
 ) {
 
     suspend fun loadPriceForTokens(chain: TokenServiceNetwork, tokenAddresses: List<String>) {
-        val result = remoteRepository.loadTokensPrice(chain = chain, addresses = tokenAddresses)
+        val result = priceRemoteRepository.loadTokensPrice(chain = chain, addresses = tokenAddresses)
         result.forEach { queryResult ->
-            localRepository.setTokensPrice(
+            priceLocalRepository.setTokensPrice(
                 networkChain = queryResult.networkChain,
                 prices = queryResult.items
             )
@@ -22,9 +26,9 @@ internal class TokenServiceInteractor(
     }
 
     suspend fun loadMetadataForTokens(chain: TokenServiceNetwork, tokenAddresses: List<String>) {
-        val result = remoteRepository.loadTokensMetadata(chain = chain, addresses = tokenAddresses)
+        val result = metadataRemoteRepository.loadTokensMetadata(chain = chain, addresses = tokenAddresses)
         result.forEach { queryResult ->
-            localRepository.setTokensMetadata(
+            metadataLocalRepository.setTokensMetadata(
                 networkChain = queryResult.networkChain,
                 metadata = queryResult.items
             )
@@ -32,10 +36,10 @@ internal class TokenServiceInteractor(
     }
 
     fun findTokenPriceByAddress(networkChain: TokenServiceNetwork, tokenAddress: String): TokenServicePrice? {
-        return localRepository.findTokenPriceByAddress(networkChain = networkChain, address = tokenAddress)
+        return priceLocalRepository.findTokenPriceByAddress(networkChain = networkChain, address = tokenAddress)
     }
 
     fun findTokenMetadataByAddress(networkChain: TokenServiceNetwork, tokenAddress: String): TokenServiceMetadata? {
-        return localRepository.findTokenMetadataByAddress(networkChain = networkChain, address = tokenAddress)
+        return metadataLocalRepository.findTokenMetadataByAddress(networkChain = networkChain, address = tokenAddress)
     }
 }

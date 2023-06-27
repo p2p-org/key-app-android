@@ -9,15 +9,16 @@ import org.p2p.core.rpc.RpcApi
 import org.p2p.token.service.model.TokenServiceResult
 
 private const val TAG = "BridgeRemoteRepository"
-class TokenServiceApiRepositoryImpl(
+
+class TokenServiceRemoteRepository(
     private val api: RpcApi,
     private val gson: Gson,
     urlProvider: NetworkServicesUrlProvider,
-) : TokenServiceApiRepository {
+) : TokenServiceRepository {
     private val tokenServiceStringUrl = urlProvider.loadTokenServiceEnvironment().baseServiceUrl
     private val tokenServiceUrl = URI(tokenServiceStringUrl)
 
-    override suspend fun <P, T> launch(request: JsonRpc<P, T>): TokenServiceResult.Success<T> {
+    override suspend fun <P, T> launch(request: JsonRpc<P, T>): TokenServiceResult<T> {
         try {
             val requestGson = gson.toJson(request)
             val response = api.launch(tokenServiceUrl, jsonRpc = requestGson)
@@ -26,8 +27,7 @@ class TokenServiceApiRepositoryImpl(
         } catch (e: JsonRpc.ResponseError.RpcError) {
             Timber.tag(TAG).i(e, "failed request for ${request.method}")
             Timber.tag(TAG).i("Error body message ${e.error.message}")
-            val errorCode = e.error.code
-            throw e
+            return TokenServiceResult.Error(e)
         }
     }
 }

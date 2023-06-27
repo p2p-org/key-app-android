@@ -23,7 +23,7 @@ import org.p2p.core.network.NetworkCoreModule
 import org.p2p.core.network.NetworkServicesUrlStorage
 import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.core.network.environment.NetworkEnvironmentManager
-import org.p2p.token.service.api.TokenServiceApiRepository
+import org.p2p.token.service.api.TokenServiceRepository
 import org.p2p.token.service.api.request.TokenServiceItemRequest
 import org.p2p.token.service.api.request.TokenServiceMetadataRequest
 import org.p2p.token.service.api.request.TokenServicePriceRequest
@@ -32,9 +32,9 @@ import org.p2p.token.service.api.response.TokenServiceNetworkResponse
 import org.p2p.token.service.mock.NetworkEnvironmentStorageMock
 
 @RunWith(JUnit4::class)
-class TokenServiceApiTest : KoinTest {
+class TokenServiceRepositoryTest : KoinTest {
 
-    private val repository: TokenServiceApiRepository by inject()
+    private val repository: TokenServiceRepository by inject()
 
     @Before
     fun setup() {
@@ -57,7 +57,7 @@ class TokenServiceApiTest : KoinTest {
                 listOf(
                     NetworkCoreModule.create(),
                     CrashLoggerModule.create(),
-                    TokenPriceModule.create(),
+                    TokenServiceModule.create(),
                     module {
                         single {
                             NetworkEnvironmentManager(
