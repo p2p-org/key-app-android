@@ -19,7 +19,7 @@ import org.p2p.uikit.utils.drawable.shape.shapeTopRounded
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 
-fun groupedRoundingFinanceBlockDecoration(@Px round: Float = 16f.toPx()) =
+fun groupedRoundingMainCellDecoration(@Px round: Float = 16f.toPx()) =
     GroupedRoundingDecoration(MainCellModel::class, round)
 
 class GroupedRoundingDecoration(

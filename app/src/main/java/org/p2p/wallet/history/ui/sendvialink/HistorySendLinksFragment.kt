@@ -9,7 +9,7 @@ import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.mainCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.recycler.decoration.groupedRoundingFinanceBlockDecoration
+import org.p2p.uikit.utils.recycler.decoration.groupedRoundingMainCellDecoration
 import org.p2p.uikit.utils.setMargins
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
@@ -56,7 +56,7 @@ class HistorySendLinksFragment :
 
         binding.recyclerViewLinks.attachAdapter(adapter)
         binding.recyclerViewLinks.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerViewLinks.addItemDecoration(groupedRoundingFinanceBlockDecoration())
+        binding.recyclerViewLinks.addItemDecoration(groupedRoundingMainCellDecoration())
     }
 
     override fun showUserLinks(userLinksModels: List<AnyCellItem>) {

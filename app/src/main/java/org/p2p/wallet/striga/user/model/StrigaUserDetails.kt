@@ -81,4 +81,13 @@ data class StrigaUserStatusDetails(
     val isEmailVerified: Boolean,
     val isMobileVerified: Boolean,
     val kysStatus: StrigaUserVerificationStatus
-)
+) {
+    val isKycInProgress: Boolean
+        get() = kysStatus in setOf(
+            StrigaUserVerificationStatus.INITIATED,
+            StrigaUserVerificationStatus.PENDING_REVIEW,
+            StrigaUserVerificationStatus.ON_HOLD,
+            StrigaUserVerificationStatus.REJECTED,
+            StrigaUserVerificationStatus.REJECTED_FINAL
+        )
+}

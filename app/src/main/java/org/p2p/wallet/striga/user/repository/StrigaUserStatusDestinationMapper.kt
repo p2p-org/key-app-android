@@ -17,8 +17,11 @@ class StrigaUserStatusDestinationMapper {
             userStatus?.isMobileVerified == false -> {
                 StrigaUserStatusDestination.SMS_VERIFICATION
             }
-            userStatus?.kysStatus != StrigaUserVerificationStatus.UNKNOWN -> {
+            userStatus?.isKycInProgress == true -> {
                 StrigaUserStatusDestination.SUM_SUB_VERIFICATION
+            }
+            userStatus?.kysStatus == StrigaUserVerificationStatus.APPROVED -> {
+                StrigaUserStatusDestination.IBAN_ACCOUNT
             }
             else -> {
                 Timber.d("User status is not defined: cannot navigate to somewhere")
