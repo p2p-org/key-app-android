@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.web3authsdk
 
 import com.google.gson.JsonObject
-import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 
@@ -29,9 +28,7 @@ interface Web3AuthApi {
         encryptedMnemonic: JsonObject
     ): Web3AuthSignInResponse
 
-    suspend fun refreshDeviceShare(
-        metadata: GatewayOnboardingMetadata
-    ): Web3AuthSignUpResponse.ShareDetailsWithMeta
+    suspend fun refreshDeviceShare(): Web3AuthSignUpResponse.ShareDetailsWithMeta
 
     /**
      * @param googleIdJwtToken used to auth user on Web3Auth server-side using google web client id.
