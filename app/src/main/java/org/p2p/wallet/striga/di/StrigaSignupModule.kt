@@ -12,15 +12,12 @@ import retrofit2.create
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
-import org.p2p.wallet.infrastructure.network.interceptor.StrigaHeaderSignatureGenerator
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
-import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputPresenter
-import org.p2p.wallet.striga.StrigaUserIdProvider
 import org.p2p.wallet.striga.finish.StrigaSignupFinishContract
 import org.p2p.wallet.striga.finish.StrigaSignupFinishPresenter
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract
@@ -114,10 +111,7 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaSignupDataDatabaseRepository) bind StrigaSignupDataLocalRepository::class
         factoryOf(::StrigaSignupDataMapper)
 
-        factoryOf(::StrigaUserIdProvider)
         factoryOf(::StrigaItemCellMapper)
-        factoryOf(::StrigaHeaderSignatureGenerator)
-        factoryOf(::StrigaFragmentFactory)
         singleOf(::StrigaUserStatusRepository)
         factoryOf(::StrigaUserStatusDestinationMapper)
     }
