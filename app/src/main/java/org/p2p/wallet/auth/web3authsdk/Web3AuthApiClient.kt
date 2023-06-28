@@ -10,13 +10,12 @@ import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.p2p.core.network.environment.TorusEnvironment
 import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.core.network.environment.TorusEnvironment
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"
@@ -155,19 +154,16 @@ class Web3AuthApiClient(
         }
     }
 
-    override suspend fun refreshDeviceShare(
-        metadata: GatewayOnboardingMetadata
-    ): Web3AuthSignUpResponse.ShareDetailsWithMeta {
+    override suspend fun refreshDeviceShare(): Web3AuthSignUpResponse.ShareDetailsWithMeta {
         return suspendCancellableCoroutine {
             this.continuation = it
 
             Timber.tag(TAG).i("refreshDeviceShare triggered")
 
-            val metadataAsJsObject = gson.toJson(metadata)
             onboardingWebView.evaluateJavascript("console.log(lastFacade)", null)
             onboardingWebView.evaluateJavascript(
                 callToLastFacade(
-                    jsMethodCall = "refreshDeviceShare($metadataAsJsObject)"
+                    jsMethodCall = "refreshDeviceShare()"
                 ),
                 null
             )

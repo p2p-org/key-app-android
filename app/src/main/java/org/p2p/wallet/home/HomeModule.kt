@@ -9,7 +9,7 @@ import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.interactor.RefreshErrorInteractor
-import org.p2p.wallet.home.model.HomeMapper
+import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
@@ -17,7 +17,7 @@ import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.container.MainContainerContract
 import org.p2p.wallet.home.ui.container.MainContainerPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
-import org.p2p.wallet.home.ui.main.HomeElementItemMapper
+import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.main.UserTokensPolling
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsContract
@@ -51,7 +51,6 @@ object HomeModule : InjectionModule {
 
     private fun Module.initDataLayer() {
         factory<HomeLocalRepository> { HomeDatabaseRepository(get()) }
-        factoryOf(::HomeMapper)
         factoryOf(::RefreshErrorInMemoryRepository) bind RefreshErrorRepository::class
     }
 
@@ -79,50 +78,38 @@ object HomeModule : InjectionModule {
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
+        // Cached data exists, therefore creating singleton
         singleOf(::UserTokensPolling)
-        /* Cached data exists, therefore creating singleton */
-        // todo: do something with this dependenices!
-        // todo: to eliminate all this hell, we could just migrate to hilt
+        factoryOf(::HomeInteractor)
+        factoryOf(::HomePresenterMapper)
+        factoryOf(::StrigaKycUiBannerMapper)
         factory<HomeContract.Presenter> {
             val subscribers = listOf(
                 new(::SplTokenProgramSubscriber),
                 new(::SolanaAccountUpdateSubscriber)
             )
+            // todo: do something with this dependenices!
+            // todo: to eliminate all this hell, we could just migrate to hilt
             HomePresenter(
+                homeInteractor = get(),
                 analytics = get(),
-                claimAnalytics = get(),
                 updatesManager = get(),
                 userInteractor = get(),
-                settingsInteractor = get(),
-                usernameInteractor = get(),
                 homeMapper = get(),
                 environmentManager = get(),
                 tokenKeyProvider = get(),
-                homeElementItemMapper = HomeElementItemMapper(get()),
-                resources = get(),
                 newBuyFeatureToggle = get(),
                 networkObserver = get(),
                 tokensPolling = get(),
-                metadataInteractor = get(),
-                sellInteractor = get(),
                 sellEnabledFeatureToggle = get(),
                 intercomDeeplinkManager = get(),
-                ethereumInteractor = get(),
                 seedPhraseProvider = get(),
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
                 updateSubscribers = subscribers,
-                claimUiMapper = get(),
                 bridgeFeatureToggle = get(),
-                strigaUserInteractor = get(),
-                strigaSignupInteractor = get(),
                 context = get(),
-                strigaUiBannerMapper = StrigaKycUiBannerMapper(),
-                sendAnalytics = get(),
-                sellAnalytics = get(),
-                swapAnalytics = get(),
-                buyAnalytics = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

@@ -2,7 +2,6 @@ package org.p2p.wallet.auth.interactor.restore
 
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.UsernameRestoreMethod
-import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreUserResult
@@ -42,9 +41,8 @@ class RestoreWalletInteractor(
     suspend fun tryRestoreUser(restoreFlow: OnboardingFlow.RestoreWallet): RestoreUserResult =
         userRestoreInteractor.tryRestoreUser(restoreFlow)
 
-    suspend fun refreshDeviceShare(
-        metadata: GatewayOnboardingMetadata
-    ): Web3AuthSignUpResponse.ShareDetailsWithMeta = userRestoreInteractor.refreshDeviceShare(metadata)
+    suspend fun refreshDeviceShare(): Web3AuthSignUpResponse.ShareDetailsWithMeta =
+        userRestoreInteractor.refreshDeviceShare()
 
     suspend fun finishAuthFlow() {
         restoreWalletAnalytics.setUserRestoreMethod(UsernameRestoreMethod.WEB3AUTH)

@@ -61,7 +61,7 @@ class DevicesPresenter(
 
     private suspend fun refreshDeviceShare(newMetadata: GatewayOnboardingMetadata) {
         try {
-            restoreWalletInteractor.refreshDeviceShare(newMetadata)
+            restoreWalletInteractor.refreshDeviceShare()
             metadataInteractor.updateMetadata(newMetadata)
         } catch (error: Throwable) {
             view?.showFailDeviceChange()
