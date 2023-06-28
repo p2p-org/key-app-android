@@ -13,6 +13,7 @@ import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
+import org.p2p.wallet.striga.wallet.repository.StrigaUserWalletsMapper
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRemoteRepository
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepositoryMapper
@@ -35,6 +36,7 @@ object StrigaWalletModule : InjectionModule {
             ).create()
         }
 
+        factoryOf(::StrigaUserWalletsMapper)
         factoryOf(::StrigaWalletRepositoryMapper)
         factoryOf(::StrigaWalletRemoteRepository) bind StrigaWalletRepository::class
     }

@@ -11,10 +11,12 @@ import org.p2p.wallet.striga.wallet.api.request.StrigaAddWhitelistedAddressReque
 import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaInitWithdrawalRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnchainWithdrawalFeeRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
+import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
@@ -40,6 +42,28 @@ class StrigaWalletRemoteRepository(
                 amountInUnits = amountInUnits.toString()
             )
             val response = api.initiateOnchainWithdrawal(request)
+            return mapper.fromNetwork(response).toSuccessResult()
+        } catch (error: Throwable) {
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            )
+        }
+    }
+
+    override suspend fun getOnchainWithdrawalFees(
+        sourceAccountId: StrigaAccountId,
+        whitelistedAddressId: StrigaWhitelistedAddressId,
+        amount: BigInteger,
+    ): StrigaDataLayerResult<StrigaOnchainWithdrawalFees> {
+        return try {
+            val request = StrigaOnchainWithdrawalFeeRequest(
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
+                sourceAccountId = sourceAccountId.value,
+                whitelistedAddressId = whitelistedAddressId.value,
+                amountInUnits = amount.toString()
+            )
+            val response = api.getOnchainWithdrawalFees(request)
             return mapper.fromNetwork(response).toSuccessResult()
         } catch (error: Throwable) {
             StrigaDataLayerError.from(

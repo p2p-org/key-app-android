@@ -2,7 +2,6 @@ package org.p2p.wallet.striga.wallet.models
 
 import android.os.Parcelable
 import org.threeten.bp.ZonedDateTime
-import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
@@ -14,7 +13,7 @@ data class StrigaInitWithdrawalDetails(
     val challengeId: StrigaWithdrawalChallengeId,
     val dateExpires: ZonedDateTime,
     val transaction: WithdrawalTransactionDetails,
-    val feeEstimate: WithdrawalFeeEstimateDetails,
+    val feeEstimate: StrigaOnchainWithdrawalFees,
 ) : Parcelable {
 
     /**
@@ -33,16 +32,5 @@ data class StrigaInitWithdrawalDetails(
         val blockchainDestinationAddress: String,
         val blockchainNetwork: StrigaBlockchainNetworkInfo,
         val transactionCurrency: StrigaNetworkCurrency,
-    ) : Parcelable
-
-    @Parcelize
-    class WithdrawalFeeEstimateDetails(
-        val totalFee: BigInteger,
-        val networkFee: BigInteger,
-        val ourFee: BigInteger,
-        val theirFee: BigInteger,
-        val feeCurrency: StrigaNetworkCurrency,
-        val gasLimit: BigInteger,
-        val gasPrice: BigDecimal,
     ) : Parcelable
 }

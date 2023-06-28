@@ -6,15 +6,17 @@ import org.p2p.core.utils.toBigIntegerOrZero
 import org.p2p.wallet.striga.wallet.api.response.StrigaBlockchainNetworkResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaInitWithdrawalResponse
+import org.p2p.wallet.striga.wallet.api.response.StrigaOnchainWithdrawalFeeResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressItemResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaWhitelistedAddressesResponse
-import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
 import org.p2p.wallet.striga.wallet.models.StrigaBlockchainNetworkInfo
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainTxStatus
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainTxType
+import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
@@ -56,6 +58,10 @@ class StrigaWalletRepositoryMapper {
         )
     }
 
+    fun fromNetwork(response: StrigaOnchainWithdrawalFeeResponse): StrigaOnchainWithdrawalFees {
+        return response.toDetailsFeeEstimate()
+    }
+
     fun fromNetwork(item: StrigaWhitelistedAddressItemResponse): StrigaWhitelistedAddressItem {
         return StrigaWhitelistedAddressItem(
             id = StrigaWhitelistedAddressId(item.id),
@@ -74,9 +80,8 @@ class StrigaWalletRepositoryMapper {
         )
     }
 
-    private fun StrigaInitWithdrawalResponse.WithdrawalFeeEstimateResponse.toDetailsFeeEstimate():
-        StrigaInitWithdrawalDetails.WithdrawalFeeEstimateDetails {
-        return StrigaInitWithdrawalDetails.WithdrawalFeeEstimateDetails(
+    private fun StrigaOnchainWithdrawalFeeResponse.toDetailsFeeEstimate(): StrigaOnchainWithdrawalFees {
+        return StrigaOnchainWithdrawalFees(
             totalFee = totalFee.toBigIntegerOrZero(),
             networkFee = networkFee.toBigIntegerOrZero(),
             ourFee = ourFee.toBigIntegerOrZero(),

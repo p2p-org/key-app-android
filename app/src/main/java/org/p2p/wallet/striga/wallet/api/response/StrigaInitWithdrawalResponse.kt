@@ -10,7 +10,7 @@ class StrigaInitWithdrawalResponse(
     @SerializedName("transaction")
     val transaction: WithdrawalTransactionResponse,
     @SerializedName("feeEstimate")
-    val feeEstimate: WithdrawalFeeEstimateResponse,
+    val feeEstimate: StrigaOnchainWithdrawalFeeResponse,
 ) {
     class WithdrawalTransactionResponse(
         @SerializedName("syncedOwnerId")
@@ -33,22 +33,5 @@ class StrigaInitWithdrawalResponse(
         val blockchainNetwork: StrigaBlockchainNetworkResponse,
         @SerializedName("transactionCurrency")
         val transactionCurrency: String,
-    )
-
-    class WithdrawalFeeEstimateResponse(
-        @SerializedName("totalFee")
-        val totalFee: String,
-        @SerializedName("networkFee")
-        val networkFee: String,
-        @SerializedName("ourFee")
-        val ourFee: String,
-        @SerializedName("theirFee")
-        val theirFee: String,
-        @SerializedName("feeCurrency")
-        val feeCurrency: String,
-        @SerializedName("gasLimit")
-        val gasLimit: String,
-        @SerializedName("gasPrice")
-        val gasPrice: String,
     )
 }
