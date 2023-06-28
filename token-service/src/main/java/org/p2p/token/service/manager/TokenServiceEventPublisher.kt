@@ -2,25 +2,22 @@ package org.p2p.token.service.manager
 
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.launch
 import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.core.token.SolAddress
-import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.token.service.interactor.TokenServiceInteractor
 import org.p2p.token.service.model.TokenServiceNetwork
 
-internal class TokenServiceEventPublisher(
+ class TokenServiceEventPublisher(
     private val tokenServiceInteractor: TokenServiceInteractor,
-    private val coroutineDispatcher: CoroutineDispatchers,
-    private val eventManager: TokenServiceEventManager
+    private val eventManager: TokenServiceEventManager,
+    coroutineDispatcher: CoroutineDispatchers
 ) : CoroutineScope {
+
     override val coroutineContext: CoroutineContext = coroutineDispatcher.io
 
     init {
-        launch { attachToTokensPriceFlow(TokenServiceNetwork.SOLANA) }
+        launch { observeTokenPrices(TokenServiceNetwork.SOLANA) }
     }
 
     fun loadTokensPrice(networkChain: TokenServiceNetwork, addresses: List<String>) {
@@ -38,8 +35,9 @@ internal class TokenServiceEventPublisher(
 
     fun loadTokensMetadata(networkChain: TokenServiceNetwork, addresses: List<String>) {
         launch {
+            val eventType = TokenServiceEventType.from(networkChain)
             eventManager.notify(
-                eventType = TokenServiceEventType.from(networkChain),
+                eventType = eventType,
                 event = TokenServiceEvent.Loading
             )
             tokenServiceInteractor.loadMetadataForTokens(
@@ -49,17 +47,19 @@ internal class TokenServiceEventPublisher(
         }
     }
 
-    private suspend fun attachToTokensPriceFlow(networkChain: TokenServiceNetwork) {
-        tokenServiceInteractor.getTokensPriceFlow(networkChain).filterNot { it.isEmpty() }.collect {
-            val eventType = TokenServiceEventType.from(networkChain)
-            eventManager.notify(
-                eventType = eventType,
-                event = TokenServiceEvent.TokensPrice(it)
-            )
-            eventManager.notify(
-                eventType = eventType,
-                event = TokenServiceEvent.Idle
-            )
-        }
+    private suspend fun observeTokenPrices(networkChain: TokenServiceNetwork) {
+        tokenServiceInteractor.getTokensPriceFlow(networkChain)
+            .filterNot { it.isEmpty() }
+            .collect {
+                val eventType = TokenServiceEventType.from(networkChain)
+                eventManager.notify(
+                    eventType = eventType,
+                    event = TokenServiceEvent.TokensPriceLoaded(it)
+                )
+                eventManager.notify(
+                    eventType = eventType,
+                    event = TokenServiceEvent.Idle
+                )
+            }
     }
 }

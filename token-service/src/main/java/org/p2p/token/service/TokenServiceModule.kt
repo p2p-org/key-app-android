@@ -16,6 +16,8 @@ import org.p2p.token.service.repository.price.TokenPriceLocalRepository
 import org.p2p.token.service.api.TokenServiceRemoteRepository
 import org.p2p.token.service.api.mapper.TokenServiceMapper
 import org.p2p.token.service.interactor.TokenServiceInteractor
+import org.p2p.token.service.manager.TokenServiceEventManager
+import org.p2p.token.service.manager.TokenServiceEventPublisher
 import org.p2p.token.service.repository.metadata.TokenMetadataInMemoryRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataLocalRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataRemoteRepository
@@ -52,5 +54,7 @@ object TokenServiceModule : InjectionModule {
 
         factoryOf(::TokenServiceMapper)
         factoryOf(::TokenServiceInteractor)
+        factoryOf(::TokenServiceEventPublisher)
+        singleOf(::TokenServiceEventManager)
     }
 }

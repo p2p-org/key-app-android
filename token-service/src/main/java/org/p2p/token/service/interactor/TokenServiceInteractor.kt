@@ -8,11 +8,11 @@ import org.p2p.token.service.repository.metadata.TokenMetadataRepository
 import org.p2p.token.service.repository.price.TokenPriceLocalRepository
 import org.p2p.token.service.repository.price.TokenPriceRepository
 
-internal class TokenServiceInteractor(
+ class TokenServiceInteractor(
     private val priceRemoteRepository: TokenPriceRepository,
     private val priceLocalRepository: TokenPriceLocalRepository,
     private val metadataRemoteRepository: TokenMetadataRepository,
-    private val metadataLocalRepository: TokenMetadataLocalRepository
+    private val metadataLocalRepository: TokenMetadataLocalRepository,
 ) {
 
     suspend fun loadPriceForTokens(chain: TokenServiceNetwork, tokenAddresses: List<String>) {
