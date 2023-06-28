@@ -74,8 +74,8 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaSignupInteractor)
         factoryOf(::StrigaUserInteractor)
 
-        factory(named(SmsInputFactory.Type.Striga.name)) {
-            StrigaSmsInputPresenter(get())
+        factoryOf(::StrigaSmsInputPresenter) {
+            named(SmsInputFactory.Type.Striga.name)
         } bind SmsInputContract.Presenter::class
 
         singleOf(::SmsInputTimer) {
