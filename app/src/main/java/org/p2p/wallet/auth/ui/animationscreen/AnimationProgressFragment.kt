@@ -1,11 +1,13 @@
 package org.p2p.wallet.auth.ui.animationscreen
 
-import android.os.Bundle
-import android.view.View
+import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
+import android.os.Bundle
+import android.view.View
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
@@ -17,7 +19,6 @@ import org.p2p.wallet.databinding.FragmentAnimationProgressBinding
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import kotlin.time.Duration.Companion.seconds
 
 private const val ARG_TIMER_STATE_LIST = "ARG_TIMER_STATE_LIST"
 
@@ -81,6 +82,9 @@ class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progr
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setLoadingAnimationState(isScreenLoading = true)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            // ignore back pressing on this dialog
+        }
     }
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
