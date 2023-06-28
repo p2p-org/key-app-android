@@ -71,8 +71,7 @@ interface StrigaWalletRepository {
         accountId: StrigaAccountId
     ): StrigaDataLayerResult<StrigaFiatAccountDetails>
 
-    suspend fun getUserWallet()
-        : StrigaDataLayerResult<StrigaUserWallet>
+    suspend fun getUserWallet(): StrigaDataLayerResult<StrigaUserWallet>
 
     suspend fun getOnchainWithdrawalFees(
         sourceAccountId: StrigaAccountId,

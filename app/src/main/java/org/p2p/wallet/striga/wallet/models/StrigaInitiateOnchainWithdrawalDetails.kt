@@ -34,4 +34,3 @@ data class StrigaInitiateOnchainWithdrawalDetails(
         val transactionCurrency: StrigaNetworkCurrency,
     ) : Parcelable
 }
-
