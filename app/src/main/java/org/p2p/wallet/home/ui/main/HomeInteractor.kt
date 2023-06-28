@@ -40,10 +40,6 @@ class HomeInteractor(
         return userInteractor.loadUserTokensAndUpdateLocal(publicKey)
     }
 
-    suspend fun loadUserRates(tokens: List<Token.Active>) {
-        userInteractor.loadUserRates(tokens)
-    }
-
     fun getHiddenTokensVisibility(): Boolean = userInteractor.getHiddenTokensVisibility()
 
     suspend fun getSingleTokenForBuy(): Token? = userInteractor.getSingleTokenForBuy()

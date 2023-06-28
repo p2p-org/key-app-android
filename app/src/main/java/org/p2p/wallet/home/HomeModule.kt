@@ -110,6 +110,7 @@ object HomeModule : InjectionModule {
                 updateSubscribers = subscribers,
                 bridgeFeatureToggle = get(),
                 context = get(),
+                userTokensInteractor = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

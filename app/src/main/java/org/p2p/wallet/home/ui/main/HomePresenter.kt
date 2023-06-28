@@ -63,6 +63,7 @@ import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.updates.SubscriptionUpdatesStateObserver
 import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.worker.PendingTransactionMergeWorker
 import org.p2p.wallet.utils.ellipsizeAddress
@@ -100,6 +101,7 @@ class HomePresenter(
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     // analytics
     private val analytics: HomeAnalytics,
+    private val userTokensInteractor: UserTokensInteractor,
     seedPhraseProvider: SeedPhraseProvider,
     tokenKeyProvider: TokenKeyProvider,
     bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
@@ -337,7 +339,7 @@ class HomePresenter(
             val tokens = homeInteractor.loadUserTokensAndUpdateLocal(userPublicKey.toPublicKey())
             async {
                 try {
-                    homeInteractor.loadUserRates(tokens)
+                    userTokensInteractor.loadUserRates(tokens)
                 } catch (t: Throwable) {
                     Timber.i(t, "Error on loading user rates")
                     view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)

@@ -1,5 +1,6 @@
 package org.p2p.wallet.user.repository
 
+import timber.log.Timber
 import java.math.BigInteger
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +36,7 @@ class UserTokensDatabaseRepository(
     override val coroutineContext: CoroutineContext = coroutineDispatchers.io
 
     init {
+        Timber.tag("______").d("Init")
         tokenServiceEventManager.subscribe(TokenServiceEventSubscriber(::updatePricesForTokens))
     }
 
@@ -95,7 +97,7 @@ class UserTokensDatabaseRepository(
             val oldTokens = getUserTokens()
             val newTokens = oldTokens.map { token ->
                 val tokenRate = prices[token.mintAddress]?.price
-                token.copy(rate = tokenRate)
+                token.copy(rate = tokenRate, totalInUsd = tokenRate?.let { token.total.times(it) })
             }
             updateTokens(newTokens)
         }
@@ -134,6 +136,7 @@ class UserTokensDatabaseRepository(
         TokenServiceEventListener {
 
         override fun onUpdate(eventType: TokenServiceEventType, event: TokenServiceEvent) {
+            Timber.tag("______").d("Event received = $event")
             if (eventType != TokenServiceEventType.SOLANA_CHAIN_EVENT) return
             if (event !is TokenServiceEvent.TokensPriceLoaded) return
             val prices = event.result

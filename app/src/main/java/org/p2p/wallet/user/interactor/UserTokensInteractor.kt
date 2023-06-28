@@ -9,7 +9,7 @@ class UserTokensInteractor(
     private val tokenServiceInteractor: TokenServiceEventPublisher
 ) {
 
-    suspend fun loadUserRates(userTokens: List<Token.Active>) {
+    fun loadUserRates(userTokens: List<Token.Active>) {
         Timber.i("Loading user rates for ${userTokens.size}")
         val tokenAddresses = userTokens.map { it.mintAddress }
         tokenServiceInteractor.loadTokensPrice(

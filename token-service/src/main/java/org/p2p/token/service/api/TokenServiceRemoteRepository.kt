@@ -31,6 +31,10 @@ class TokenServiceRemoteRepository(
             Timber.tag(TAG).i(e, "failed request for ${request.method}")
             Timber.tag(TAG).i("Error body message ${e.error.message}")
             TokenServiceResult.Error(e)
+        } catch (e: Throwable) {
+            Timber.tag(TAG).i(e, "failed request for ${request.method}")
+            Timber.tag(TAG).i("Error body message ${e.message}")
+            TokenServiceResult.Error(e)
         }
     }
 }

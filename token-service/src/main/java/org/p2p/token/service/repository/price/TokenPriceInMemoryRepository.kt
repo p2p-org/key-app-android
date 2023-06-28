@@ -35,7 +35,7 @@ internal class TokenPriceInMemoryRepository : TokenPriceLocalRepository {
                 ethereumTokensPriceFlow.tryEmit(tokensPriceMap[networkChain].orEmpty())
             }
             TokenServiceNetwork.SOLANA -> {
-                ethereumTokensPriceFlow.tryEmit(tokensPriceMap[networkChain].orEmpty())
+                solanaTokensPriceFlow.tryEmit(tokensPriceMap[networkChain].orEmpty())
             }
         }
     }

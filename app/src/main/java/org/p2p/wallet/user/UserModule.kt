@@ -10,6 +10,7 @@ import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.repository.UserAccountRemoteRepository
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.user.repository.UserInMemoryRepository
@@ -35,8 +36,23 @@ object UserModule : InjectionModule {
         singleOf(::UserAccountRemoteRepository) bind UserAccountRepository::class
         singleOf(::UserInMemoryRepository) bind UserLocalRepository::class
 
-        factoryOf(::UserInteractor)
+        factory {
+            UserInteractor(
+                userRepository = get(),
+                userLocalRepository = get(),
+                userTokensRepository = get(),
+                homeLocalRepository = get(),
+                recipientsLocalRepository = get(),
+                rpcRepository = get(),
+                sharedPreferences = get(),
+                externalStorageRepository = get(),
+                tokenPricesRepository = get(),
+                metadataUpdateFeatureToggle = get(),
+                gson = get()
+            )
+        }
 
-        factoryOf(::UserTokensDatabaseRepository) bind UserTokensLocalRepository::class
+        singleOf(::UserTokensDatabaseRepository) bind UserTokensLocalRepository::class
+        factory { UserTokensInteractor(get()) }
     }
 }

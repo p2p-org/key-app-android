@@ -23,6 +23,7 @@ import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.toPublicKey
 
 private val POLLING_ETH_DELAY = 30.toDuration(DurationUnit.SECONDS)
@@ -33,6 +34,7 @@ class UserTokensPolling(
     private val userInteractor: UserInteractor,
     private val ethereumInteractor: EthereumInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val tokenServiceInteractor: UserTokensInteractor,
     private val appScope: AppScope
 ) : CoroutineScope {
     override val coroutineContext: CoroutineContext
@@ -65,7 +67,7 @@ class UserTokensPolling(
             try {
                 isRefreshingFlow.emit(true)
                 val userTokens = fetchSolTokens()
-                userInteractor.loadUserRatesIfEmpty(userTokens)
+                tokenServiceInteractor.loadUserRates(userTokens = userTokens)
                 startPolling()
             } catch (e: CancellationException) {
                 Timber.i("Cancelled tokens remote update")
