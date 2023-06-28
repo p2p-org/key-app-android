@@ -1,6 +1,5 @@
 package org.p2p.wallet.striga.signup.ui
 
-import androidx.core.os.bundleOf
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
@@ -14,7 +13,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaSignUpSecondStepBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.smsinput.SmsInputFactory
-import org.p2p.wallet.smsinput.striga.StrigaSmsInputFragment
 import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
@@ -102,9 +100,6 @@ class StrigaSignUpSecondStepFragment :
         replaceFragment(
             SmsInputFactory.create(
                 type = SmsInputFactory.Type.Striga,
-                args = bundleOf(
-                    StrigaSmsInputFragment.ARG_RESEND_SMS_ON_INIT to false
-                ),
                 destinationFragment = StrigaSignupFinishFragment::class.java,
             )
         )
