@@ -53,6 +53,12 @@ class StrigaSmsInputPresenter(
         }
     }
 
+    private fun resendSmsIfNeeded() {
+        if (interactor.isTimerNotActive) {
+            resendSms()
+        }
+    }
+
     override fun resendSms() {
         launch {
             when (val result = interactor.resendSms()) {
@@ -73,12 +79,6 @@ class StrigaSmsInputPresenter(
             if (it.error is StrigaDataLayerError.ApiServiceError) {
                 handleApiError(it.error)
             }
-        }
-    }
-
-    private fun resendSmsIfNeeded() {
-        if (interactor.isTimerNotActive) {
-            resendSms()
         }
     }
 
