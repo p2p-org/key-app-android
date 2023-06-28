@@ -19,6 +19,7 @@ class StrigaSmsInputPresenter(
     override fun firstAttach() {
         super.firstAttach()
         checkForExceededLimits()
+        resendSmsIfNeeded()
     }
 
     override fun attach(view: SmsInputContract.View) {
@@ -69,10 +70,15 @@ class StrigaSmsInputPresenter(
 
     private fun checkForExceededLimits() {
         interactor.getExceededLimitsErrorIfPresent()?.let {
-            require(it.error is StrigaDataLayerError.ApiServiceError) {
-                "Wrong error type: expected StrigaDataLayerError.ApiServiceError"
+            if (it.error is StrigaDataLayerError.ApiServiceError) {
+                handleApiError(it.error)
             }
-            handleApiError(it.error)
+        }
+    }
+
+    private fun resendSmsIfNeeded() {
+        if (interactor.isTimerNotActive) {
+            resendSms()
         }
     }
 

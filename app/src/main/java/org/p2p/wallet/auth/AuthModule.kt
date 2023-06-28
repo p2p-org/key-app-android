@@ -148,8 +148,8 @@ object AuthModule {
                 durationTracker = get()
             )
         }
-        single(named(SMS_TIMER_ONBOARDING)) {
-            SmsInputTimer(get())
+        singleOf(::SmsInputTimer) {
+            named(SMS_TIMER_ONBOARDING)
         }
         factory {
             CreateWalletInteractor(

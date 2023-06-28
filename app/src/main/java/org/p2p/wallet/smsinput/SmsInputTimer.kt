@@ -20,6 +20,9 @@ class SmsInputTimer(
     var smsResendCount = 0
         private set
 
+    val isTimerActive: Boolean get() = timerJob?.isActive == true
+
+    private val currentTimer = smsTimerStartSeconds.getOrElse(smsResendCount) { smsTimerStartSeconds.first() }
     private var timerJob: Job? = null
     private val sharedTimer = MutableSharedFlow<Int>(
         replay = 1,
@@ -30,9 +33,8 @@ class SmsInputTimer(
         get() = sharedTimer.distinctUntilChanged()
 
     fun startSmsInputTimerFlow() {
-        val timeInSeconds = smsTimerStartSeconds.getOrElse(smsResendCount) { smsTimerStartSeconds.first() }
         timerJob?.cancel()
-        timerJob = createSmsInputTimer(timeInSeconds)
+        timerJob = createSmsInputTimer(currentTimer)
         ++smsResendCount
     }
 

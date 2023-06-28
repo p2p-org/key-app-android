@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.di
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.named
 import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -77,8 +78,8 @@ object StrigaSignupModule : InjectionModule {
             StrigaSmsInputPresenter(get())
         } bind SmsInputContract.Presenter::class
 
-        single(named(SMS_TIMER_STRIGA_REGISTRATION)) {
-            SmsInputTimer(get())
+        singleOf(::SmsInputTimer) {
+            named(SMS_TIMER_STRIGA_REGISTRATION)
         }
         factory {
             StrigaSmsInputInteractor(

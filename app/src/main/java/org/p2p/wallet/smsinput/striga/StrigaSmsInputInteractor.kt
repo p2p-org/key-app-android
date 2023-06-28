@@ -30,6 +30,16 @@ class StrigaSmsInputInteractor(
     private val smsInputTimer: SmsInputTimer,
 ) {
     val timer: Flow<Int> get() = smsInputTimer.smsInputTimerFlow
+    val isTimerNotActive: Boolean get() = !smsInputTimer.isTimerActive
+
+    fun launchInitialTimer() {
+        smsInputTimer.startSmsInputTimerFlow()
+        // The reset function is called to initiate the default 30-second timer.
+        // This is necessary in scenarios where the 'resend-sms' method hasn't been called yet,
+        // but the user has just already been created.
+        // And then we need to display the same 30-second timer again after the first call of 'resend-sms'.
+        smsInputTimer.resetSmsCount()
+    }
 
     suspend fun getUserPhoneCodeToPhoneNumber(): PhoneNumberWithCode {
         val userSignupData = strigaSignupDataRepository.getUserSignupDataAsMap()
@@ -84,9 +94,7 @@ class StrigaSmsInputInteractor(
     }
 
     suspend fun resendSms(): StrigaDataLayerResult<Unit> {
-        val limitsCheckResult = getExceededLimitsErrorIfPresent()
-
-        return limitsCheckResult ?: strigaUserRepository.resendSmsForVerifyPhoneNumber()
+        return getExceededLimitsErrorIfPresent() ?: strigaUserRepository.resendSmsForVerifyPhoneNumber()
             .onTypedFailure<StrigaDataLayerError.ApiServiceError> {
                 when (it.errorCode) {
                     StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS -> {

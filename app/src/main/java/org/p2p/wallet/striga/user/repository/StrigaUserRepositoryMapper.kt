@@ -42,7 +42,7 @@ class StrigaUserRepositoryMapper {
             userId = response.userId,
             isMobileVerified = response.isMobileVerified,
             isEmailVerified = response.isEmailVerified,
-            kysStatus = StrigaUserVerificationStatus.from(response.status)
+            kycStatus = StrigaUserVerificationStatus.from(response.status)
         )
     }
 
@@ -92,6 +92,15 @@ class StrigaUserRepositoryMapper {
             expectedOutgoingTxVolumeYearly = StrigaUserConstants.EXPECTED_OUTGOING_TX_YEARLY,
             isSelfPepDeclaration = StrigaUserConstants.SELF_PEP_DECLARATION,
             purposeOfAccount = StrigaUserConstants.PURPOSE_OF_ACCOUNT
+        )
+    }
+
+    fun mapUserInitialDetailsToStatus(response: StrigaUserInitialDetails): StrigaUserStatusDetails = with(response) {
+        StrigaUserStatusDetails(
+            userId = userId,
+            isEmailVerified = kycStatus.isEmailVerified,
+            isMobileVerified = kycStatus.isMobileVerified,
+            kycStatus = kycStatus.status
         )
     }
 
