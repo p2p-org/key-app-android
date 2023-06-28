@@ -6,7 +6,7 @@ class StrigaAddWhitelistedAddressRequest(
     @SerializedName("userId")
     val userId: String,
     @SerializedName("address")
-    val address: String,
+    val addressToWhitelist: String,
     @SerializedName("currency")
     val currency: String,
     @SerializedName("network")

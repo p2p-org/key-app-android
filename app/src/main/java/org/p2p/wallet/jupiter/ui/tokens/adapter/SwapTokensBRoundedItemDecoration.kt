@@ -16,7 +16,7 @@ import org.p2p.uikit.utils.drawable.shape.shapeOutline
 import org.p2p.uikit.utils.drawable.shape.shapeRectangle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shape.shapeTopRounded
-import org.p2p.uikit.utils.recycler.decoration.groupedRoundingFinanceBlockDecoration
+import org.p2p.uikit.utils.recycler.decoration.groupedRoundingMainCellDecoration
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
@@ -30,7 +30,7 @@ class SwapTokensBRoundedItemDecoration(
     private val shapeRounded: ShapeAppearanceModel = shapeRoundedAll(round)
     private val shapeBottomRounded: ShapeAppearanceModel = shapeBottomRounded(round)
     private val shapeRectangle: ShapeAppearanceModel = shapeRectangle()
-    private val groupedRounding = groupedRoundingFinanceBlockDecoration()
+    private val groupedRounding = groupedRoundingMainCellDecoration()
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         val currentViewHolder = parent.getChildViewHolder(view) as? MainCellViewHolder ?: return

@@ -17,7 +17,7 @@ interface NewOnboardingContract {
     interface Presenter : MvpPresenter<View> {
         fun onSignUpButtonClicked()
         fun onSignInButtonClicked()
-        fun setIdToken(userId: String, googleIdToken: String)
+        fun setIdToken(userId: String, googleIdJwtToken: String)
         fun onTermsClick()
         fun onPolicyClick()
     }

@@ -2,18 +2,17 @@ package org.p2p.wallet.striga.wallet.api.response
 
 import com.google.gson.annotations.SerializedName
 
-class StrigaInitiateOnchainWithdrawalResponse(
+class StrigaInitWithdrawalResponse(
     @SerializedName("challengeId")
     val challengeId: String,
     @SerializedName("dateExpires")
     val dateExpires: String,
     @SerializedName("transaction")
-    val transaction: Transaction,
+    val transaction: WithdrawalTransactionResponse,
     @SerializedName("feeEstimate")
     val feeEstimate: StrigaOnchainWithdrawalFeeResponse,
 ) {
-
-    class Transaction(
+    class WithdrawalTransactionResponse(
         @SerializedName("syncedOwnerId")
         val syncedOwnerId: String,
         @SerializedName("sourceAccountId")
@@ -23,7 +22,7 @@ class StrigaInitiateOnchainWithdrawalResponse(
         @SerializedName("currency")
         val currency: String,
         @SerializedName("amount")
-        val amount: String,
+        val amountInUnits: String,
         @SerializedName("status")
         val status: String,
         @SerializedName("txType")

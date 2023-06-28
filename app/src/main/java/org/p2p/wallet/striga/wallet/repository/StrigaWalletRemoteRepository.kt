@@ -10,11 +10,11 @@ import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.request.StrigaAddWhitelistedAddressRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
-import org.p2p.wallet.striga.wallet.api.request.StrigaInitiateOnchainWithdrawalRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaInitWithdrawalRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnchainWithdrawalFeeRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
-import org.p2p.wallet.striga.wallet.models.StrigaInitiateOnchainWithdrawalDetails
+import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
@@ -30,17 +30,16 @@ class StrigaWalletRemoteRepository(
 ) : StrigaWalletRepository {
 
     override suspend fun initiateOnchainWithdrawal(
-        userId: String,
         sourceAccountId: StrigaAccountId,
         whitelistedAddressId: StrigaWhitelistedAddressId,
-        amount: BigInteger,
-    ): StrigaDataLayerResult<StrigaInitiateOnchainWithdrawalDetails> {
+        amountInUnits: BigInteger,
+    ): StrigaDataLayerResult<StrigaInitWithdrawalDetails> {
         return try {
-            val request = StrigaInitiateOnchainWithdrawalRequest(
-                userId = userId,
+            val request = StrigaInitWithdrawalRequest(
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
                 sourceAccountId = sourceAccountId.value,
                 whitelistedAddressId = whitelistedAddressId.value,
-                amount = amount.toString()
+                amountInUnits = amountInUnits.toString()
             )
             val response = api.initiateOnchainWithdrawal(request)
             return mapper.fromNetwork(response).toSuccessResult()
@@ -74,16 +73,15 @@ class StrigaWalletRemoteRepository(
         }
     }
 
-    override suspend fun addWhitelistedAddress(
-        userId: String,
+    override suspend fun whitelistAddress(
         address: String,
         currency: StrigaNetworkCurrency,
         label: String?
     ): StrigaDataLayerResult<StrigaWhitelistedAddressItem> {
         return try {
             val request = StrigaAddWhitelistedAddressRequest(
-                userId = userId,
-                address = address,
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
+                addressToWhitelist = address,
                 currency = currency.name,
                 network = currency.network.name,
                 label = label
@@ -99,12 +97,11 @@ class StrigaWalletRemoteRepository(
     }
 
     override suspend fun getWhitelistedAddresses(
-        userId: String,
         label: String?
     ): StrigaDataLayerResult<List<StrigaWhitelistedAddressItem>> {
         return try {
             val request = StrigaGetWhitelistedAddressesRequest(
-                userId = userId,
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
                 label = null
             )
             val response = api.getWhitelistedAddresses(request)
@@ -118,12 +115,11 @@ class StrigaWalletRemoteRepository(
     }
 
     override suspend fun getFiatAccountDetails(
-        userId: String,
         accountId: StrigaAccountId
     ): StrigaDataLayerResult<StrigaFiatAccountDetails> {
         return try {
             val request = StrigaEnrichAccountRequest(
-                userId = userId,
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
                 accountId = accountId.value
             )
             val response = api.enrichFiatAccount(request)

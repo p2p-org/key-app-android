@@ -65,9 +65,6 @@ class TopUpWalletPresenter(
                 ensureNeededStrigaDataLoaded()
 
                 val strigaDestination = strigaUserInteractor.getUserDestination()
-                if (strigaDestination == StrigaUserStatusDestination.SMS_VERIFICATION) {
-                    strigaUserInteractor.resendSmsForVerifyPhoneNumber().unwrap()
-                }
                 view?.navigateToBankTransferTarget(strigaDestination)
             } catch (strigaDataLoadFailed: Throwable) {
                 Timber.e(strigaDataLoadFailed, "failed to load needed data for bank transfer")
