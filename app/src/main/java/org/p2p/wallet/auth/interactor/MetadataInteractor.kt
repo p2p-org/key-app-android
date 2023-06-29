@@ -9,11 +9,11 @@ import org.p2p.wallet.auth.model.MetadataLoadStatus
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
+import org.p2p.wallet.infrastructure.account.AccountStorageContract
+import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key.Companion.withCustomKey
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.infrastructure.security.SecureStorageContract
-import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.Companion.withCustomKey
 import org.p2p.wallet.settings.DeviceInfoHelper
 import org.p2p.wallet.utils.toBase58Instance
 
@@ -22,7 +22,7 @@ class MetadataInteractor(
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
     private val seedPhraseProvider: SeedPhraseProvider,
-    private val secureStorageContract: SecureStorageContract,
+    private val accountStorage: AccountStorageContract,
     private val gatewayMetadataMerger: GatewayMetadataMerger,
     private val ethereumInteractor: EthereumInteractor,
     private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
@@ -58,8 +58,8 @@ class MetadataInteractor(
     }
 
     fun hasDifferentDeviceShare(): Boolean {
-        val metadata = secureStorageContract.getObject(
-            SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
+        val metadata = accountStorage.getObject(
+            AccountStorageContract.Key.KEY_ONBOARDING_METADATA,
             GatewayOnboardingMetadata::class
         ) ?: return false
 
@@ -90,8 +90,8 @@ class MetadataInteractor(
     private fun saveMetadataToStorage(metadata: GatewayOnboardingMetadata?) {
         // TODO PWN-8771 - implement database for metadata
         val ethAddress = getEthereumPublicKey().orEmpty()
-        secureStorageContract.saveObject(
-            key = SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
+        accountStorage.saveObject(
+            key = AccountStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
             data = metadata
         )
     }
@@ -102,8 +102,8 @@ class MetadataInteractor(
         }
         // TODO PWN-8771 - implement database for metadata
         val ethAddress = getEthereumPublicKey().orEmpty()
-        return secureStorageContract.getObject(
-            SecureStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
+        return accountStorage.getObject(
+            AccountStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
             GatewayOnboardingMetadata::class
         )
     }
