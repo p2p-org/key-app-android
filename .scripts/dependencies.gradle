@@ -5,6 +5,4 @@ ext {
 
     // https://github.com/shyiko/ktlint
     ktlintVersion = '0.45.2'
-
-    kotlinVersion = '1.7.20'
 }
