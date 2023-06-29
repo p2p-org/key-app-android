@@ -4,7 +4,7 @@ import androidx.core.content.edit
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.p2p.solanaj.utils.crypto.Hex
+import org.p2p.core.crypto.Hex
 import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper

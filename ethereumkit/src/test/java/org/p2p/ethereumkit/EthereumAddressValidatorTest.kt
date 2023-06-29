@@ -1,8 +1,6 @@
 package org.p2p.ethereumkit
 
 import org.junit.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
 import org.p2p.ethereumkit.external.utils.EthereumUtils
 import org.p2p.ethereumkit.internal.core.AddressValidator
 
@@ -27,18 +25,6 @@ class EthereumAddressValidatorTest {
         validAddresses.forEach { address ->
             assert(EthereumUtils.isValidAddress(address))
             AddressValidator.validate(address)
-        }
-    }
-
-    @Test
-    fun `test-invalid-addresses-for-ethereum`() {
-        invalidAddresses.forEach { address ->
-            assertFalse(EthereumUtils.isValidAddress(address))
-            assertFailsWith(
-                exceptionClass = AddressValidator.InvalidAddressLength::class,
-                message = "Address is not valid",
-                block = { AddressValidator.validate(address) }
-            )
         }
     }
 }

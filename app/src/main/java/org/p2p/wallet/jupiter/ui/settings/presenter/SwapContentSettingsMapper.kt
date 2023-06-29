@@ -25,7 +25,7 @@ import org.p2p.wallet.jupiter.repository.model.findTokenByMint
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.emptyString
 
 class SwapContentSettingsMapper(

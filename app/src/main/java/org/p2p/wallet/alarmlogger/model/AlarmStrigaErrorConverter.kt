@@ -1,10 +1,10 @@
 package org.p2p.wallet.alarmlogger.model
 
 import com.google.gson.Gson
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.alarmlogger.api.AlarmErrorStrigaRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsRequest
 import org.p2p.wallet.alarmlogger.api.StrigaErrorRequest
-import org.p2p.wallet.utils.Base58String
 
 class AlarmStrigaErrorConverter(
     private val gson: Gson

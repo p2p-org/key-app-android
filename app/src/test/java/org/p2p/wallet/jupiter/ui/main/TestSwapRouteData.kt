@@ -1,7 +1,7 @@
 package org.p2p.wallet.jupiter.ui.main
 
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import java.math.BigDecimal
 import org.p2p.wallet.swap.model.Slippage
 

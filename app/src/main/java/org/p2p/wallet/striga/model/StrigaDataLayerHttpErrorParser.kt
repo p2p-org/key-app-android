@@ -5,8 +5,8 @@ import retrofit2.HttpException
 import retrofit2.Response
 import timber.log.Timber
 import java.net.HttpURLConnection
+import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.utils.errorBodyOrNull
-import org.p2p.wallet.utils.fromJsonReified
 
 class StrigaDataLayerHttpErrorParser {
     private val gson: Gson = Gson()

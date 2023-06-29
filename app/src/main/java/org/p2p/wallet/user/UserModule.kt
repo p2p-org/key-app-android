@@ -6,10 +6,10 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.home.repository.UserTokensLocalRepository
 import org.p2p.wallet.home.repository.UserTokensRepository
-import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.UserAccountRemoteRepository

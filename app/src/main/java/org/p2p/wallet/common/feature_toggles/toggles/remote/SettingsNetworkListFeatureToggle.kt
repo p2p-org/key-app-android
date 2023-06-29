@@ -3,9 +3,9 @@ package org.p2p.wallet.common.feature_toggles.toggles.remote
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
-import org.p2p.wallet.utils.fromJsonReified
 
 data class SettingsNetworkValue(
     @SerializedName("urlString")

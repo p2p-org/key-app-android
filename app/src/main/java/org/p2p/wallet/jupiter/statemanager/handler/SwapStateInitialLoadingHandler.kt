@@ -2,7 +2,7 @@ package org.p2p.wallet.jupiter.statemanager.handler
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_SLIPPAGE

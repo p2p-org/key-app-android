@@ -2,7 +2,7 @@ package org.p2p.wallet.jupiter.api.request
 
 import com.google.gson.annotations.SerializedName
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMode
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 data class CreateSwapTransactionRequest(
     @SerializedName("route")

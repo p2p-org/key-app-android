@@ -15,10 +15,10 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.cutMiddle
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class HistoryTransactionDetailsPresenter(
     private val resources: Resources,

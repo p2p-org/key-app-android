@@ -19,7 +19,7 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 object JupiterSwapTestHelpers {
     val JUPITER_SOL_TOKEN = JupiterSwapToken(

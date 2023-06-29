@@ -10,7 +10,7 @@ import android.provider.MediaStore
 import androidx.core.content.contentValuesOf
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.R
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import timber.log.Timber
 import java.io.BufferedOutputStream
 import java.io.File

@@ -17,7 +17,7 @@ import org.p2p.uikit.utils.text.badgePadding
 import org.p2p.uikit.utils.text.badgeRounded
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 /**
  * Contains base logic for mapping Swap domain models to Cell UI models

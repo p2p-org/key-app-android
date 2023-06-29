@@ -28,7 +28,7 @@ import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
 import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.bridge.model.toBridgeAmount
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.main.UserTokensPolling
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager

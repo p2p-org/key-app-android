@@ -10,7 +10,7 @@ import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendMarketInfo
 import org.p2p.wallet.solend.model.SolendTokenFee
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import timber.log.Timber
 import java.math.BigInteger
 

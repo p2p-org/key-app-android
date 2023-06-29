@@ -17,13 +17,13 @@ import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.feerelayer.model.FeeRelayerException
 import org.p2p.wallet.feerelayer.model.RelayAccount
-import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.infrastructure.network.data.SimulationException
+import org.p2p.core.network.data.ServerException
+import org.p2p.core.network.data.SimulationException
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendTransactionFailed
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class AlarmSendErrorConverter(
     private val gson: Gson

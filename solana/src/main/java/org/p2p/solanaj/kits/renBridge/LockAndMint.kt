@@ -10,7 +10,7 @@ import org.p2p.core.network.environment.RpcEnvironment
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.solanaj.utils.Hash
 import org.p2p.solanaj.utils.Utils
-import org.p2p.solanaj.utils.crypto.Hex
+import org.p2p.core.crypto.Hex
 import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 

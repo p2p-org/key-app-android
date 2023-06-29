@@ -5,7 +5,7 @@ import kotlin.time.Duration.Companion.seconds
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.orZero
 import org.p2p.ethereumkit.external.model.ERC20Tokens
-import org.p2p.solanaj.utils.crypto.toBase64Instance
+import org.p2p.core.crypto.toBase64Instance
 import org.p2p.wallet.bridge.api.response.BridgeAmountResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleFeesResponse
 import org.p2p.wallet.bridge.api.response.BridgeBundleResponse

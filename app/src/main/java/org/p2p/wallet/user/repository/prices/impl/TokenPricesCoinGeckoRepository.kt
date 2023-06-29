@@ -8,7 +8,7 @@ import org.p2p.core.model.TokenPriceWithMark
 import org.p2p.core.pricecache.PriceCacheRepository
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.home.model.TokenPrice
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.coingecko.CoinGeckoApi
 import org.p2p.wallet.infrastructure.network.coingecko.response.CoinGeckoPriceResponse
 import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId

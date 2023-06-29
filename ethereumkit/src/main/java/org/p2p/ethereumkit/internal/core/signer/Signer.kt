@@ -1,49 +1,20 @@
 package org.p2p.ethereumkit.internal.core.signer
 
-import org.p2p.ethereumkit.internal.core.TransactionBuilder
-import org.p2p.ethereumkit.internal.core.TransactionSigner
 import org.p2p.ethereumkit.internal.core.hexStringToByteArrayOrNull
 import org.p2p.ethereumkit.internal.core.signer.Signer.PrivateKeyValidationError.InvalidDataLength
 import org.p2p.ethereumkit.internal.core.signer.Signer.PrivateKeyValidationError.InvalidDataString
-import org.p2p.ethereumkit.internal.crypto.EIP712Encoder
 import org.p2p.ethereumkit.internal.crypto.TypedData
 import org.p2p.ethereumkit.internal.models.*
-import org.p2p.ethereumkit.internal.spv.core.toBigInteger
 import io.horizontalsystems.hdwalletkit.HDWallet
 import io.horizontalsystems.hdwalletkit.Mnemonic
 import java.math.BigInteger
 import org.p2p.core.wrapper.eth.CryptoUtils
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.core.wrapper.eth.toBigInteger
 
 class Signer(
-    private val transactionBuilder: TransactionBuilder,
-    private val transactionSigner: TransactionSigner,
     private val ethSigner: EthSigner
 ) {
-
-    fun signature(rawTransaction: RawTransaction): Signature {
-        return transactionSigner.signatureLegacy(rawTransaction)
-    }
-
-    fun signedTransaction(
-        address: EthAddress,
-        value: BigInteger,
-        transactionInput: ByteArray,
-        gasPrice: GasPrice,
-        gasLimit: Long,
-        nonce: Long
-    ): ByteArray {
-        val rawTransaction = RawTransaction(
-            gasPrice,
-            gasLimit,
-            address,
-            value,
-            nonce,
-            transactionInput
-        )
-        val signature = transactionSigner.signatureLegacy(rawTransaction)
-        return transactionBuilder.encode(rawTransaction, signature)
-    }
 
     fun signByteArray(message: ByteArray): ByteArray {
         return ethSigner.signByteArray(message)
@@ -62,19 +33,6 @@ class Signer(
     }
 
     companion object {
-        fun getInstance(privateKey: BigInteger, chain: Chain): Signer {
-            val address = address(privateKey)
-
-            val transactionSigner = TransactionSigner(privateKey, chain.id)
-            val transactionBuilder = TransactionBuilder(address, chain.id)
-            val ethSigner = EthSigner(privateKey, CryptoUtils, EIP712Encoder())
-
-            return Signer(transactionBuilder, transactionSigner, ethSigner)
-        }
-
-        fun getInstance(seed: ByteArray, chain: Chain): Signer {
-            return getInstance(privateKey(seed, chain), chain)
-        }
 
         fun address(
             words: List<String>,

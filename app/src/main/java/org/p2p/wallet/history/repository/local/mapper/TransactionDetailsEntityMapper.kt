@@ -21,8 +21,8 @@ import org.p2p.wallet.history.repository.local.db.entities.UnknownTransactionEnt
 import org.p2p.wallet.history.repository.local.db.entities.embedded.CommonTransactionInformationEntity
 import org.p2p.wallet.history.repository.local.db.entities.embedded.TransactionIdentifiersEntity
 import org.p2p.wallet.history.repository.local.db.entities.embedded.TransactionTypeEntity
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.crypto.toBase58Instance
 
 class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatchers) {
     suspend fun fromEntityToDomain(

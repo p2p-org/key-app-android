@@ -3,10 +3,10 @@ package org.p2p.wallet.moonpay.repository.sell
 import org.bitcoinj.crypto.MnemonicCode
 import org.p2p.core.utils.emptyString
 import org.p2p.solanaj.crypto.Bip44CustomDerivation
-import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.solanaj.utils.TweetNaclFast
 
 class MoonpayExternalCustomerIdProvider(private val seedPhraseProvider: SeedPhraseProvider) {
     private class MoonpayCustomerIdGenerationFailed(override val cause: Throwable) :

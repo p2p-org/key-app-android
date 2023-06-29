@@ -27,7 +27,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.DecimalFormatter
 import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
@@ -78,7 +78,7 @@ import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension

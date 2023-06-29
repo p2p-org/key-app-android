@@ -9,7 +9,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.history.api.RpcHistoryServiceApi
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.RpcHistoryTransactionConverter

@@ -1,7 +1,7 @@
 package org.p2p.wallet.moonpay.repository.sell
 
 import okio.IOException
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.core.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import java.net.SocketTimeoutException

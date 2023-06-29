@@ -10,7 +10,8 @@ import com.google.gson.Gson
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import java.nio.charset.Charset
-import org.p2p.solanaj.utils.crypto.toBase64Instance
+import org.p2p.core.utils.fromJsonReified
+import org.p2p.core.crypto.toBase64Instance
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
@@ -21,7 +22,6 @@ import org.p2p.wallet.auth.model.MetadataLoadStatus
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentDebugWeb3Binding
-import org.p2p.wallet.utils.fromJsonReified
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.viewbinding.viewBinding

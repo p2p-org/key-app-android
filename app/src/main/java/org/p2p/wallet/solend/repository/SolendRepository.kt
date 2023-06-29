@@ -4,7 +4,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.sdk.facade.model.solend.SolendFeePayerTokenData
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendTokenFee
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import java.math.BigInteger
 
 interface SolendRepository {

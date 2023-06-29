@@ -8,7 +8,7 @@ import org.p2p.wallet.moonpay.model.SellTransactionMetadata
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 import java.math.BigDecimal
 
 object SellStubs {
