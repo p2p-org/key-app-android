@@ -8,8 +8,10 @@ import timber.log.Timber
 import java.util.Locale
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
-import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
+import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
+import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkInitParams
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkListeners
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
@@ -19,7 +21,10 @@ class StrigaKycPresenter(
     private val strigaUserInteractor: StrigaUserInteractor,
     private val appScope: AppScope,
     private val dispatchers: CoroutineDispatchers,
+    private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<StrigaKycContract.View>(), StrigaKycContract.Presenter {
+
+    private var currentKycSdkState: SNSSDKState? = null
 
     override fun firstAttach() {
         super.firstAttach()
@@ -60,9 +65,11 @@ class StrigaKycPresenter(
 
     private fun onKycError(error: SNSException) {
         Timber.e(error, "KYC SDK returned error")
+        logAlarmError(error)
     }
 
     private fun onKycStateChanged(oldState: SNSSDKState, newState: SNSSDKState) {
+        currentKycSdkState = newState
         Timber.d("KYC SDK state change:\n$oldState->\n$newState")
         updateUserStatus()
     }
@@ -75,6 +82,8 @@ class StrigaKycPresenter(
             }
             is SNSCompletionResult.AbnormalTermination -> {
                 Timber.e(result.exception, "The SDK got closed because of errors, state = $state")
+                currentKycSdkState = state
+                logAlarmError(result.exception ?: Throwable("Abnormal Termination error"))
             }
         }
         view?.navigateBack()
@@ -86,5 +95,14 @@ class StrigaKycPresenter(
             kotlin.runCatching { strigaUserInteractor.loadAndSaveUserStatusData().unwrap() }
                 .onFailure { Timber.e(it, "Unable to load striga user status") }
         }
+    }
+
+    private fun logAlarmError(exception: Throwable) {
+        val alarmError = StrigaAlarmError(
+            source = "KYC SDK",
+            kycSdkState = currentKycSdkState.toString(),
+            error = exception
+        )
+        alarmErrorsLogger.triggerStrigaAlarm(alarmError)
     }
 }
