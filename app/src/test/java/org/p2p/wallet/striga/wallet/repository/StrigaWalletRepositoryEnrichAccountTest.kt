@@ -12,6 +12,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
@@ -23,7 +24,6 @@ import org.p2p.wallet.striga.wallet.models.StrigaOnchainTxType
 import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
-import org.p2p.wallet.utils.fromJsonReified
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrigaWalletRepositoryEnrichAccountTest {

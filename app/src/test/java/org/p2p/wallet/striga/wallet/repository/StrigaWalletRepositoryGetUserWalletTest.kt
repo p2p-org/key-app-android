@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletsResponse
@@ -23,7 +24,6 @@ import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
 import org.p2p.wallet.utils.assertThat
 import org.p2p.wallet.utils.createHttpException
-import org.p2p.wallet.utils.fromJsonReified
 import org.p2p.wallet.utils.stub
 
 @OptIn(ExperimentalCoroutinesApi::class)
