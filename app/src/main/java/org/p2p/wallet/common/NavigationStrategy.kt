@@ -17,17 +17,18 @@ sealed class NavigationStrategy : Parcelable {
         const val ARG_NAVIGATION_STRATEGY = "ARG_NAVIGATION_STRATEGY"
 
         fun createNextDestination(
-            nextDestinationClass: Class<Fragment>,
+            nextDestinationClass: Class<Fragment>?,
             nextDestinationArgs: Bundle? = null
-        ): Fragment {
-            return nextDestinationClass.newInstance().apply {
+        ): Fragment? {
+            return nextDestinationClass?.newInstance()?.apply {
                 arguments = nextDestinationArgs
             }
         }
     }
 
     object Replace : NavigationStrategy() {
-        override fun execute(sourceFragment: Fragment, destinationFragment: Fragment) {
+        override fun execute(sourceFragment: Fragment, destinationFragment: Fragment?) {
+            require(destinationFragment != null) { "Destination fragment must not be null" }
             sourceFragment.replaceFragment(destinationFragment)
         }
     }
@@ -37,7 +38,8 @@ sealed class NavigationStrategy : Parcelable {
         val popTo: Class<out Fragment>? = null,
         val inclusive: Boolean = false
     ) : Parcelable, NavigationStrategy() {
-        override fun execute(sourceFragment: Fragment, destinationFragment: Fragment) {
+        override fun execute(sourceFragment: Fragment, destinationFragment: Fragment?) {
+            require(destinationFragment != null) { "Destination fragment must not be null" }
             sourceFragment.popAndReplaceFragment(
                 target = destinationFragment,
                 popTo = popTo?.kotlin,
@@ -51,7 +53,7 @@ sealed class NavigationStrategy : Parcelable {
         val popTo: Class<out Fragment>,
         val inclusive: Boolean = false
     ) : Parcelable, NavigationStrategy() {
-        override fun execute(sourceFragment: Fragment, destinationFragment: Fragment) {
+        override fun execute(sourceFragment: Fragment, destinationFragment: Fragment?) {
             sourceFragment.popBackStackTo(
                 target = popTo.kotlin,
                 inclusive = inclusive
@@ -59,11 +61,11 @@ sealed class NavigationStrategy : Parcelable {
         }
     }
 
-    abstract fun execute(sourceFragment: Fragment, destinationFragment: Fragment)
+    abstract fun execute(sourceFragment: Fragment, destinationFragment: Fragment?)
 
     fun navigateNext(
         sourceFragment: Fragment,
-        nextDestinationClass: Class<Fragment>,
+        nextDestinationClass: Class<Fragment>?,
         nextDestinationArgs: Bundle? = null
     ) {
         val destination = createNextDestination(nextDestinationClass, nextDestinationArgs)

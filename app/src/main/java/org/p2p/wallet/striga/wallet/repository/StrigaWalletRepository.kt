@@ -10,6 +10,7 @@ import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 
 interface StrigaWalletRepository {
 
@@ -70,4 +71,13 @@ interface StrigaWalletRepository {
         whitelistedAddressId: StrigaWhitelistedAddressId,
         amount: BigInteger
     ): StrigaDataLayerResult<StrigaOnchainWithdrawalFees>
+
+    suspend fun resendSms(
+        challengeId: StrigaWithdrawalChallengeId
+    ): StrigaDataLayerResult<Unit>
+
+    suspend fun verifySms(
+        smsCode: String,
+        challengeId: StrigaWithdrawalChallengeId,
+    ): StrigaDataLayerResult<Unit>
 }

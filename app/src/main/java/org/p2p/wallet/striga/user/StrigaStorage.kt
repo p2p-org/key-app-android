@@ -7,8 +7,14 @@ import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 
 private const val KEY_USER_STATUS = "KEY_USER_STATUS"
-private const val KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS = "KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS"
-private const val KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS = "KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS"
+private const val KEY_SMS_SIGNUP_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS =
+    "KEY_SMS_SIGNUP_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS"
+private const val KEY_SMS_SIGNUP_EXCEEDED_RESEND_ATTEMPTS_MILLIS =
+    "KEY_SMS_SIGNUP_EXCEEDED_RESEND_ATTEMPTS_MILLIS"
+private const val KEY_SMS_ONRAMP_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS =
+    "KEY_SMS_ONRAMP_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS"
+private const val KEY_SMS_ONRAMP_EXCEEDED_RESEND_ATTEMPTS_MILLIS =
+    "KEY_SMS_ONRAMP_EXCEEDED_RESEND_ATTEMPTS_MILLIS"
 
 class StrigaStorage(
     private val sharedPreferences: SharedPreferences,
@@ -27,15 +33,27 @@ class StrigaStorage(
             }
         }
 
-    override var smsExceededVerificationAttemptsMillis: Long
-        get() = sharedPreferences.getLong(KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS, 0L)
+    override var signupSmsExceededVerificationAttemptsMillis: Long
+        get() = sharedPreferences.getLong(KEY_SMS_SIGNUP_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS, 0L)
         set(value) = sharedPreferences.edit(true) {
-            putLong(KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS, value)
+            putLong(KEY_SMS_SIGNUP_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS, value)
         }
 
-    override var smsExceededResendAttemptsMillis: Long
-        get() = sharedPreferences.getLong(KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS, 0L)
+    override var signupSmsExceededResendAttemptsMillis: Long
+        get() = sharedPreferences.getLong(KEY_SMS_SIGNUP_EXCEEDED_RESEND_ATTEMPTS_MILLIS, 0L)
         set(value) = sharedPreferences.edit(true) {
-            putLong(KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS, value)
+            putLong(KEY_SMS_SIGNUP_EXCEEDED_RESEND_ATTEMPTS_MILLIS, value)
+        }
+
+    override var onrampSmsExceededVerificationAttemptsMillis: Long
+        get() = sharedPreferences.getLong(KEY_SMS_ONRAMP_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS, 0L)
+        set(value) = sharedPreferences.edit(true) {
+            putLong(KEY_SMS_ONRAMP_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS, value)
+        }
+
+    override var onrampSmsExceededResendAttemptsMillis: Long
+        get() = sharedPreferences.getLong(KEY_SMS_ONRAMP_EXCEEDED_RESEND_ATTEMPTS_MILLIS, 0L)
+        set(value) = sharedPreferences.edit(true) {
+            putLong(KEY_SMS_ONRAMP_EXCEEDED_RESEND_ATTEMPTS_MILLIS, value)
         }
 }

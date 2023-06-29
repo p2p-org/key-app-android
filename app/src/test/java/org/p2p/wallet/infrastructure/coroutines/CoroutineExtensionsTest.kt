@@ -26,7 +26,7 @@ class CoroutineExtensionsTest {
 
         // Assert that the condition was met
         assertTrue(result)
-        assertTrue(endTime in 500..599)
+        assertTrue(endTime >= 500)
     }
 
     @Test

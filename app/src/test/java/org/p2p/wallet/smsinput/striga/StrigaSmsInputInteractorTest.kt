@@ -22,8 +22,9 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
-import org.p2p.wallet.striga.user.StrigaStorageContract
-import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
+import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
+import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
+import org.p2p.wallet.striga.sms.StrigaSmsStorageContract
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 import org.p2p.wallet.utils.mockInAppFeatureFlag
 
@@ -42,10 +43,9 @@ class StrigaSmsInputInteractorTest {
     @MockK(relaxed = true)
     private lateinit var inAppFeatureFlags: InAppFeatureFlags
 
-    private val strigaStorage: StrigaStorageContract = object : StrigaStorageContract {
-        override var userStatus: StrigaUserStatusDetails? = null
-        override var smsExceededVerificationAttemptsMillis: Long = 0
-        override var smsExceededResendAttemptsMillis: Long = 0
+    private val smsStorage: StrigaSmsStorageContract = object : StrigaSmsStorageContract {
+        override var exceededVerificationAttemptsMillis: Long = 0
+        override var exceededResendAttemptsMillis: Long = 0
     }
 
     @Before
@@ -63,8 +63,8 @@ class StrigaSmsInputInteractorTest {
         val interactor = createInteractor()
         val result = interactor.resendSms()
 
-        assertEquals(0, strigaStorage.smsExceededVerificationAttemptsMillis)
-        assertEquals(0, strigaStorage.smsExceededResendAttemptsMillis)
+        assertEquals(0, smsStorage.exceededVerificationAttemptsMillis)
+        assertEquals(0, smsStorage.exceededResendAttemptsMillis)
         assertEquals(expectedResult, result)
     }
 
@@ -77,9 +77,11 @@ class StrigaSmsInputInteractorTest {
                 details = "EXCEEDED_DAILY_RESEND_SMS_LIMIT"
             )
         ).toFailureResult()
-        coEvery { strigaUserRepository.resendSmsForVerifyPhoneNumber() } returns expectedResult
 
-        val interactor = createInteractor()
+        val apiCaller: StrigaSmsApiCaller = mockk {
+            coEvery { resendSms() } returns expectedResult
+        }
+        val interactor = createInteractor(apiCaller)
         val firstResult = interactor.resendSms()
         val secondResult = interactor.resendSms()
 
@@ -96,10 +98,10 @@ class StrigaSmsInputInteractorTest {
             (secondResult.error as StrigaDataLayerError.ApiServiceError).errorCode
         )
 
-        assertEquals(0, strigaStorage.smsExceededVerificationAttemptsMillis)
-        assertTrue(strigaStorage.smsExceededResendAttemptsMillis != 0L)
+        assertEquals(0, smsStorage.exceededVerificationAttemptsMillis)
+        assertTrue(smsStorage.exceededResendAttemptsMillis != 0L)
 
-        coVerify(exactly = 1) { strigaUserRepository.resendSmsForVerifyPhoneNumber() }
+        coVerify(exactly = 1) { apiCaller.resendSms() }
     }
 
     @Test
@@ -111,9 +113,12 @@ class StrigaSmsInputInteractorTest {
                 details = "EXCEEDED_DAILY_RESEND_SMS_LIMIT"
             )
         ).toFailureResult()
-        coEvery { strigaUserRepository.resendSmsForVerifyPhoneNumber() } returns expectedResult
 
-        val interactor = createInteractor()
+        val apiCaller: StrigaSmsApiCaller = mockk {
+            coEvery { resendSms() } returns expectedResult
+        }
+
+        val interactor = createInteractor(apiCaller)
         val firstResult = interactor.resendSms()
         val secondResult = interactor.resendSms()
 
@@ -130,29 +135,32 @@ class StrigaSmsInputInteractorTest {
             (secondResult.error as StrigaDataLayerError.ApiServiceError).errorCode
         )
 
-        assertEquals(0, strigaStorage.smsExceededVerificationAttemptsMillis)
-        assertTrue(strigaStorage.smsExceededResendAttemptsMillis != 0L)
+        assertEquals(0, smsStorage.exceededVerificationAttemptsMillis)
+        assertTrue(smsStorage.exceededResendAttemptsMillis != 0L)
 
         // simulate time has passed
         // shifting the clock back by one day
-        strigaStorage.smsExceededResendAttemptsMillis = System.currentTimeMillis() - 1.days.inWholeMilliseconds
+        smsStorage.exceededResendAttemptsMillis = System.currentTimeMillis() - 1.days.inWholeMilliseconds
 
         interactor.resendSms()
 
         // checking that the api was twice
         // first - when we hadn't the timer
         // second - when the timer has passed
-        coVerify(exactly = 2) { strigaUserRepository.resendSmsForVerifyPhoneNumber() }
+        coVerify(exactly = 2) { apiCaller.resendSms() }
     }
 
-    private fun createInteractor(): StrigaSmsInputInteractor {
+    private fun createInteractor(apiCaller: StrigaSmsApiCaller? = null): StrigaSmsInputInteractor {
         return StrigaSmsInputInteractor(
-            strigaUserRepository = strigaUserRepository,
             strigaSignupDataRepository = strigaSignupDataRepository,
             phoneCodeRepository = countryCodeRepository,
             inAppFeatureFlags = inAppFeatureFlags,
-            strigaStorage = strigaStorage,
-            smsInputTimer = mockk(relaxed = true)
+            smsInputTimer = mockk(relaxed = true),
+            smsStorage = smsStorage,
+            smsApiCaller = apiCaller ?: mockk {
+                coEvery { resendSms() } returns StrigaDataLayerResult.Success(Unit)
+                coEvery { verifySms(any()) } returns StrigaDataLayerResult.Success(Unit)
+            }
         )
     }
 }

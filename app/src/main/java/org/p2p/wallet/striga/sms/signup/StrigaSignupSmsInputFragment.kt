@@ -1,4 +1,4 @@
-package org.p2p.wallet.smsinput.striga
+package org.p2p.wallet.striga.sms.signup
 
 import android.os.Bundle
 import android.view.View
@@ -12,14 +12,14 @@ import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
 import org.p2p.wallet.smsinput.SmsInputContract
-import org.p2p.wallet.smsinput.SmsInputFactory
-import org.p2p.wallet.striga.sms.StrigaSmsErrorFragment
-import org.p2p.wallet.striga.sms.StrigaSmsErrorViewType
+import org.p2p.wallet.striga.di.StrigaSignupModule
+import org.p2p.wallet.striga.sms.error.StrigaSmsErrorFragment
+import org.p2p.wallet.striga.sms.error.StrigaSmsErrorViewType
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
 
-class StrigaSmsInputFragment : BaseSmsInputFragment() {
-    override val presenter: SmsInputContract.Presenter by inject(named(SmsInputFactory.Type.Striga.name))
+class StrigaSignupSmsInputFragment : BaseSmsInputFragment() {
+    override val presenter: SmsInputContract.Presenter by inject(named(StrigaSignupModule.SMS_QUALIFIER))
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

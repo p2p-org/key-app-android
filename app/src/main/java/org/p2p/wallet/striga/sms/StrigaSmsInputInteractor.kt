@@ -1,4 +1,4 @@
-package org.p2p.wallet.smsinput.striga
+package org.p2p.wallet.striga.sms
 
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.flow.Flow
@@ -14,20 +14,18 @@ import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.user.StrigaStorageContract
-import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 import org.p2p.wallet.utils.DateTimeUtils
 
 private val EXCEEDED_VERIFICATION_ATTEMPTS_TIMEOUT_MILLIS = 1.days.inWholeMilliseconds
 private val EXCEEDED_RESEND_ATTEMPTS_TIMEOUT_MILLIS = 1.days.inWholeMilliseconds
 
 class StrigaSmsInputInteractor(
-    private val strigaUserRepository: StrigaUserRepository,
     private val strigaSignupDataRepository: StrigaSignupDataLocalRepository,
     private val phoneCodeRepository: CountryCodeRepository,
     private val inAppFeatureFlags: InAppFeatureFlags,
-    private val strigaStorage: StrigaStorageContract,
     private val smsInputTimer: SmsInputTimer,
+    private val smsStorage: StrigaSmsStorageContract,
+    private val smsApiCaller: StrigaSmsApiCaller
 ) {
     val timer: Flow<Int> get() = smsInputTimer.smsInputTimerFlow
     val isTimerNotActive: Boolean get() = !smsInputTimer.isTimerActive
@@ -62,7 +60,7 @@ class StrigaSmsInputInteractor(
         return if (inAppFeatureFlags.strigaSmsVerificationMockFlag.featureValue) {
             mockVerifyPhoneNumber(smsCode)
         } else {
-            strigaUserRepository.verifyPhoneNumber(smsCode)
+            smsApiCaller.verifySms(smsCode)
         }
     }
 
@@ -94,7 +92,7 @@ class StrigaSmsInputInteractor(
     }
 
     suspend fun resendSms(): StrigaDataLayerResult<Unit> {
-        return getExceededLimitsErrorIfPresent() ?: strigaUserRepository.resendSmsForVerifyPhoneNumber()
+        return getExceededLimitsErrorIfPresent() ?: smsApiCaller.resendSms()
             .onTypedFailure<StrigaDataLayerError.ApiServiceError> {
                 when (it.errorCode) {
                     StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS -> {
@@ -112,23 +110,23 @@ class StrigaSmsInputInteractor(
     }
 
     private fun setExceededVerificationAttempts() {
-        strigaStorage.smsExceededVerificationAttemptsMillis = System.currentTimeMillis()
+        smsStorage.exceededVerificationAttemptsMillis = System.currentTimeMillis()
     }
 
     private fun setExceededResendAttempts() {
-        strigaStorage.smsExceededResendAttemptsMillis = System.currentTimeMillis()
+        smsStorage.exceededResendAttemptsMillis = System.currentTimeMillis()
     }
 
     private fun isExceededVerificationAttempts(): Boolean {
         return !DateTimeUtils.isTimestampExpired(
-            strigaStorage.smsExceededVerificationAttemptsMillis,
+            smsStorage.exceededVerificationAttemptsMillis,
             EXCEEDED_VERIFICATION_ATTEMPTS_TIMEOUT_MILLIS
         )
     }
 
     private fun isExceededResendAttempts(): Boolean {
         return !DateTimeUtils.isTimestampExpired(
-            strigaStorage.smsExceededResendAttemptsMillis,
+            smsStorage.exceededResendAttemptsMillis,
             EXCEEDED_RESEND_ATTEMPTS_TIMEOUT_MILLIS
         )
     }

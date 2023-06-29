@@ -35,6 +35,10 @@ object Dependencies {
     private const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     private const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
+    // gson
+    private const val gsonVersion = "2.9.0"
+    const val gson = "com.google.code.gson:gson:${gsonVersion}"
+
     // retrofit
     private const val retrofitVersion = "2.9.0"
     private const val retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"
@@ -200,7 +204,8 @@ object Dependencies {
         retrofitGson,
         retrofitScalars,
         okHttp,
-        okHttpLoggingInterceptor
+        okHttpLoggingInterceptor,
+        gson,
     )
 
     val tinderScarletLibraries = listOf(
