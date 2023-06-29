@@ -154,7 +154,12 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                     is TransactionState.ClaimProgress -> handleClaimProgress(state)
                     is TransactionState.BridgeSendSuccess -> handleSendSuccess(state)
                     is TransactionState.Error -> handleError(state)
-                    else -> Unit
+                    is TransactionState.JupiterSwapSuccess -> {
+                        // TODO: WHAT SHOULD BE HERE?
+                    }
+                    is TransactionState.JupiterSwapFailed -> {
+                        // TODO: WHAT SHOULD BE HERE?
+                    }
                 }
             }
         }

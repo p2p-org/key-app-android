@@ -68,7 +68,9 @@ class SelectTokenViewHolder(
             is Token.Other -> {
                 endAmountView.isVisible = false
             }
-            else -> Unit
+            is Token.Eth -> {
+                // do nothing
+            }
         }
     }
 

@@ -59,10 +59,7 @@ class MetadataInteractor(
     }
 
     fun hasDifferentDeviceShare(): Boolean {
-        val metadata = accountStorage.getObject(
-            AccountStorageContract.Key.KEY_ONBOARDING_METADATA,
-            GatewayOnboardingMetadata::class
-        ) ?: return false
+        val metadata = currentMetadata ?: return false
 
         // if device share exist, then we ignore comparing
         if (hasDeviceShare()) {
