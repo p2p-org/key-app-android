@@ -10,6 +10,7 @@ import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError
@@ -23,6 +24,7 @@ import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.model.StrigaUserDetails
+import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.unsafeLazy
 
@@ -35,7 +37,9 @@ class StrigaSignupInteractor(
     private val countryCodeRepository: CountryCodeRepository,
     private val signupDataRepository: StrigaSignupDataLocalRepository,
     private val userInteractor: StrigaUserInteractor,
-    private val metadataInteractor: MetadataInteractor
+    private val metadataInteractor: MetadataInteractor,
+    private val strigaSmsInputInteractor: StrigaSmsInputInteractor,
+    private val strigaUserStatusRepository: StrigaUserStatusRepository,
 ) {
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
         setOf(
@@ -151,6 +155,9 @@ class StrigaSignupInteractor(
         when (val result = userInteractor.createUser(getSignupData())) {
             is StrigaDataLayerResult.Success -> {
                 updateMetadata(result.value.userId)
+                // if user is created successfully, but sms is not verified, status won't be updated
+                strigaUserStatusRepository.updateUserStatus(result.value)
+                strigaSmsInputInteractor.launchInitialTimer()
             }
             is StrigaDataLayerResult.Failure -> {
                 throw result.error

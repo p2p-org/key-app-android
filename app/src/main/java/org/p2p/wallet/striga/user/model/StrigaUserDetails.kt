@@ -80,10 +80,10 @@ data class StrigaUserStatusDetails(
     val userId: String,
     val isEmailVerified: Boolean,
     val isMobileVerified: Boolean,
-    val kysStatus: StrigaUserVerificationStatus
+    val kycStatus: StrigaUserVerificationStatus
 ) {
     val isKycInProgress: Boolean
-        get() = kysStatus in setOf(
+        get() = kycStatus in setOf(
             StrigaUserVerificationStatus.INITIATED,
             StrigaUserVerificationStatus.PENDING_REVIEW,
             StrigaUserVerificationStatus.ON_HOLD,
