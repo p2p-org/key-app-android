@@ -78,6 +78,8 @@ import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.crypto.Base58String
+import org.p2p.token.service.interactor.TokenServiceInteractor
+import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
@@ -113,6 +115,9 @@ open class JupiterSwapPresenterBaseTest {
 
     @MockK
     lateinit var swapRoutesRefreshFeatureToggle: SwapRoutesRefreshFeatureToggle
+
+    @MockK
+    lateinit var tokenServiceInteractor: TokenServiceInteractor
 
     @MockK(relaxed = true)
     lateinit var relaySdkFacade: RelaySdkFacade
@@ -248,7 +253,8 @@ open class JupiterSwapPresenterBaseTest {
 
     private fun initUserLocalRepository(tokens: List<TokenData>) {
         userLocalRepository = UserInMemoryRepository(
-            tokenConverter = TokenConverter
+            tokenConverter = TokenConverter,
+            tokenServiceInteractor = tokenServiceInteractor
         ).apply {
             setTokenData(tokens)
         }
@@ -266,8 +272,8 @@ open class JupiterSwapPresenterBaseTest {
 
     private fun initJupiterSwapTokenRepository(
         allTokens: List<JupiterSwapToken>,
-        tokenRate: (JupiterSwapToken) -> TokenPrice?,
-        tokenRates: (List<JupiterSwapToken>) -> Map<Base58String, TokenPrice>,
+        tokenRate: (JupiterSwapToken) -> TokenServicePrice?,
+        tokenRates: (List<JupiterSwapToken>) -> Map<Base58String, TokenServicePrice>,
     ) {
         coEvery { jupiterSwapTokensRepository.getTokens() } returns allTokens
 
@@ -275,7 +281,7 @@ open class JupiterSwapPresenterBaseTest {
             val token: JupiterSwapToken = arg(0)
             tokenRate(token)
         }
-        coEvery { jupiterSwapTokensRepository.loadTokensRate(any()) } answers {
+        coEvery { tokenServiceInteractor.loadPriceForTokens(any(), any()) } answers {
             val tokens: List<JupiterSwapToken> = arg(0)
             tokenRates(tokens)
         }
@@ -383,6 +389,7 @@ open class JupiterSwapPresenterBaseTest {
                 swapScope = SwapCoroutineScope(dispatchers),
                 userLocalRepository = userLocalRepository,
                 swapTokensRepository = jupiterSwapTokensRepository,
+                tokenServiceInteractor = tokenServiceInteractor,
                 initDispatcher = dispatchers.io
             )
         )
@@ -415,7 +422,7 @@ open class JupiterSwapPresenterBaseTest {
             ),
             dispatchers = dispatchers,
             selectedSwapTokenStorage = jupiterSwapStorage,
-            swapTokensRepository = jupiterSwapTokensRepository,
+            tokenServiceInteractor = tokenServiceInteractor,
             swapValidator = SwapValidator(),
             analytics = analytics,
             homeLocalRepository = homeLocalRepository,

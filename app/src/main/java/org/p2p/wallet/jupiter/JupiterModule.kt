@@ -170,12 +170,11 @@ object JupiterModule : InjectionModule {
                 swapScope = get(),
                 userLocalRepository = get(),
                 swapTokensRepository = get(),
-                tokenServiceInteractor = get(),
-                initDispatcher = get()
+                tokenServiceInteractor = get()
             )
         }
 
-        factory<SwapStateManager> { (initialData: SwapInitialTokensData, stateManagerHolderKey: String) ->
+        factory { (initialData: SwapInitialTokensData, stateManagerHolderKey: String) ->
             val managerHolder: SwapStateManagerHolder = get()
             val handlers: Set<SwapStateHandler> = get(parameters = { parametersOf(initialData) })
             managerHolder.getOrCreate(key = stateManagerHolderKey) {

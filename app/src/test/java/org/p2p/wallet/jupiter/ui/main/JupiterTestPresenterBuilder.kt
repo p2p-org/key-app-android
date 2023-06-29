@@ -14,6 +14,7 @@ import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.crypto.Base58String
+import org.p2p.token.service.model.TokenServicePrice
 
 class JupiterTestPresenterBuilder {
 
@@ -69,14 +70,14 @@ class JupiterTestPresenterBuilder {
      * Mock for
      * @see JupiterSwapTokensRepository.getTokenRate(JupiterSwapToken)
      */
-    var jupiterSwapTokensRepoGetTokenRate: (JupiterSwapToken) -> TokenPrice? = { token ->
+    var jupiterSwapTokensRepoGetTokenRate: (JupiterSwapToken) -> TokenServicePrice? = { token ->
         when (token) {
             JupiterSwapTestHelpers.JUPITER_SOL_TOKEN -> {
-                TokenPrice(token.coingeckoId!!, BigDecimal("100"))
+                TokenServicePrice(token.coingeckoId!!, BigDecimal("100"))
             }
 
             JupiterSwapTestHelpers.JUPITER_USDC_TOKEN -> {
-                TokenPrice(token.coingeckoId!!, BigDecimal("1"))
+                TokenServicePrice(token.coingeckoId!!, BigDecimal("1"))
             }
 
             else -> null
@@ -87,16 +88,16 @@ class JupiterTestPresenterBuilder {
      * Mock for
      * @see JupiterSwapTokensRepository.loadTokensRate(List<JupiterSwapToken>)
      */
-    var jupiterSwapTokensRepoGetTokensRate: (List<JupiterSwapToken>) -> Map<Base58String, TokenPrice> = { tokens ->
+    var jupiterSwapTokensRepoGetTokensRate: (List<JupiterSwapToken>) -> Map<Base58String, TokenServicePrice> = { tokens ->
 
         tokens.mapNotNull { token ->
             when (token) {
                 JupiterSwapTestHelpers.JUPITER_SOL_TOKEN -> {
-                    token.tokenMint to TokenPrice(token.coingeckoId!!, BigDecimal("100"))
+                    token.tokenMint to TokenServicePrice(token.coingeckoId!!, BigDecimal("100"))
                 }
 
                 JupiterSwapTestHelpers.JUPITER_USDC_TOKEN -> {
-                    token.tokenMint to TokenPrice(token.coingeckoId!!, BigDecimal("1"))
+                    token.tokenMint to TokenServicePrice(token.coingeckoId!!, BigDecimal("1"))
                 }
 
                 else -> null
