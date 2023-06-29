@@ -10,6 +10,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.token.service.interactor.TokenServiceInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.home.model.TokenComparator
@@ -22,7 +23,6 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.user.repository.UserTokensLocalRepository
-import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.emptyString
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
@@ -39,14 +39,14 @@ class UserInteractor(
     private val rpcRepository: RpcBalanceRepository,
     private val sharedPreferences: SharedPreferences,
     private val externalStorageRepository: ExternalStorageRepository,
-    private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val metadataUpdateFeatureToggle: TokenMetadataUpdateFeatureToggle,
+    private val tokenServiceInteractor: TokenServiceInteractor,
     private val gson: Gson
 ) {
 
     fun findTokenData(mintAddress: String): Token? {
         val tokenData = userLocalRepository.findTokenData(mintAddress)
-        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.coingeckoId) }
+        val price = tokenData?.let { tokenServiceInteractor.findTokenPriceByAddress(tokenAddress = it.mintAddress) }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
@@ -70,7 +70,6 @@ class UserInteractor(
                 IllegalStateException("No tokens to buy! All tokens: ${userTokens.map(Token.Active::tokenSymbol)}")
             )
         }
-
         return allTokens
     }
 
@@ -172,7 +171,7 @@ class UserInteractor(
 
     private fun findTokenDataBySymbol(symbol: String): Token? {
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
-        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.coingeckoId) }
+        val price = tokenData?.let { tokenServiceInteractor.findTokenPriceByAddress(tokenAddress = it.mintAddress) }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 

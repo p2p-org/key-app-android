@@ -30,13 +30,13 @@ import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.handler.SwapStateHandler
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.core.crypto.Base58String
+import org.p2p.token.service.interactor.TokenServiceInteractor
 
 private const val TAG = "SwapStateManager"
 
@@ -44,7 +44,7 @@ class SwapStateManager(
     private val handlers: Set<SwapStateHandler>,
     private val dispatchers: CoroutineDispatchers,
     private val selectedSwapTokenStorage: JupiterSwapStorageContract,
-    private val swapTokensRepository: JupiterSwapTokensRepository,
+    private val tokenServiceInteractor: TokenServiceInteractor,
     private val swapValidator: SwapValidator,
     private val analytics: JupiterSwapMainScreenAnalytics,
     private val homeLocalRepository: HomeLocalRepository,
@@ -297,7 +297,7 @@ class SwapStateManager(
 
     fun getTokenRate(token: SwapTokenModel): Flow<SwapRateLoaderState> {
         return tokenRatioCache.getOrPut(token.mintAddress) {
-            SwapTokenRateLoader(swapTokensRepository)
+            SwapTokenRateLoader(tokenServiceInteractor)
         }.getRate(token)
     }
 

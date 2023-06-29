@@ -1,17 +1,17 @@
 package org.p2p.wallet.solend.model
 
 import org.p2p.core.token.Token
-import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.sdk.facade.model.solend.SolendMarketInformationResponse
 import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositResponse
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.orZero
+import org.p2p.token.service.model.TokenServicePrice
 
 class SolendDepositMapper {
 
     fun fromNetwork(
         tokenData: TokenData,
-        tokenPrice: TokenPrice?,
+        tokenPrice: TokenServicePrice?,
         userToken: Token.Active?,
         marketInfo: SolendMarketInfo?,
         activeDeposit: SolendUserDeposit?

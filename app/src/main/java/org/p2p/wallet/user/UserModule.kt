@@ -46,7 +46,7 @@ object UserModule : InjectionModule {
                 rpcRepository = get(),
                 sharedPreferences = get(),
                 externalStorageRepository = get(),
-                tokenPricesRepository = get(),
+                tokenServiceInteractor = get(),
                 metadataUpdateFeatureToggle = get(),
                 gson = get()
             )

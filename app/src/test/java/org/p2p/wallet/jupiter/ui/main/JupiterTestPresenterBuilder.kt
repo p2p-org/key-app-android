@@ -3,7 +3,6 @@ package org.p2p.wallet.jupiter.ui.main
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.crypto.Base64String
-import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
@@ -86,7 +85,7 @@ class JupiterTestPresenterBuilder {
 
     /**
      * Mock for
-     * @see JupiterSwapTokensRepository.getTokensRates(List<JupiterSwapToken>)
+     * @see JupiterSwapTokensRepository.loadTokensRate(List<JupiterSwapToken>)
      */
     var jupiterSwapTokensRepoGetTokensRate: (List<JupiterSwapToken>) -> Map<Base58String, TokenPrice> = { tokens ->
 

@@ -8,6 +8,7 @@ import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.solanaj.model.types.Account
+import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.user.local.TokenResponse
 
@@ -31,7 +32,7 @@ object TokenConverter {
         totalLamports: BigInteger,
         accountPublicKey: String,
         tokenData: TokenData,
-        price: TokenPrice?
+        price: TokenServicePrice?
     ): Token.Active {
         val totalInUsd = price?.let {
             totalLamports.fromLamports(tokenData.decimals).times(it.price)
@@ -58,7 +59,7 @@ object TokenConverter {
     fun fromNetwork(
         account: Account,
         tokenData: TokenData,
-        price: TokenPrice?
+        price: TokenServicePrice?
     ): Token.Active {
         val data = account.account.data.parsed.info
         val mintAddress = data.mint
@@ -74,7 +75,7 @@ object TokenConverter {
 
     fun fromNetwork(
         data: TokenData,
-        price: TokenPrice?
+        price: TokenServicePrice?
     ): Token.Other =
         Token.Other(
             tokenName = data.name,

@@ -66,7 +66,8 @@ class UserTokensPolling(
         launch {
             try {
                 isRefreshingFlow.emit(true)
-                val userTokens = fetchSolTokens()
+                val userTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
+
                 tokenServiceInteractor.loadUserRates(userTokens = userTokens)
                 startPolling()
             } catch (e: CancellationException) {
@@ -88,7 +89,7 @@ class UserTokensPolling(
                 try {
                     while (isActive) {
                         delay(POLLING_ETH_DELAY.inWholeMilliseconds)
-                        fetchSolTokens()
+                        userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
                     }
                 } catch (e: CancellationException) {
                     Timber.i("Cancelled tokens remote update")
@@ -102,9 +103,6 @@ class UserTokensPolling(
             }
         }
     }
-
-    private suspend fun fetchSolTokens(): List<Token.Active> =
-        userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
 
     private fun getEthereumTokensFlow(): Flow<List<Token.Eth>> {
         return ethereumInteractor.getTokensFlow()

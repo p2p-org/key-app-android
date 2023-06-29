@@ -13,6 +13,8 @@ import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.core.network.environment.NetworkEnvironmentManager
+import org.p2p.token.service.interactor.TokenServiceInteractor
+import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
@@ -25,7 +27,8 @@ class UserRemoteRepository(
     private val rpcRepository: RpcAccountRepository,
     private val rpcBalanceRepository: RpcBalanceRepository,
     private val environmentManager: NetworkEnvironmentManager,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val tokenServiceInteractor: TokenServiceInteractor
 ) : UserRepository {
 
     override suspend fun loadAllTokens(): List<TokenData> =
@@ -60,8 +63,10 @@ class UserRemoteRepository(
             }
 
             val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
-            val price = userLocalRepository.getPriceByTokenId(token.coingeckoId)
-            TokenConverter.fromNetwork(it, token, price)
+            val solPrice = tokenServiceInteractor.findTokenPriceByAddress(
+                networkChain = TokenServiceNetwork.SOLANA, tokenAddress = token.mintAddress
+            )
+            TokenConverter.fromNetwork(it, token, solPrice)
         }
 
         /*
@@ -69,7 +74,9 @@ class UserRemoteRepository(
          * */
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return tokens
-        val solPrice = userLocalRepository.getPriceByTokenId(tokenData.coingeckoId)
+        val solPrice = tokenServiceInteractor.findTokenPriceByAddress(
+            networkChain = TokenServiceNetwork.SOLANA, tokenAddress = tokenData.mintAddress
+        )
         val solToken = Token.createSOL(
             publicKey = publicKey.toBase58(),
             tokenData = tokenData,
@@ -91,7 +98,10 @@ class UserRemoteRepository(
             userLocalRepository.findTokenDataBySymbol(REN_BTC_SYMBOL)
         } ?: return null
 
-        val btcPrice = userLocalRepository.getPriceByTokenId(btcTokenData.coingeckoId)
+        val btcPrice = tokenServiceInteractor.findTokenPriceByAddress(
+            networkChain = TokenServiceNetwork.SOLANA,
+            tokenAddress = btcTokenData.mintAddress
+        )
         return TokenConverter.fromNetwork(
             account = account,
             tokenData = btcTokenData,

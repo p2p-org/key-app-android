@@ -8,7 +8,7 @@ import org.p2p.token.service.repository.metadata.TokenMetadataRepository
 import org.p2p.token.service.repository.price.TokenPriceLocalRepository
 import org.p2p.token.service.repository.price.TokenPriceRepository
 
- class TokenServiceInteractor(
+class TokenServiceInteractor(
     private val priceRemoteRepository: TokenPriceRepository,
     private val priceLocalRepository: TokenPriceLocalRepository,
     private val metadataRemoteRepository: TokenMetadataRepository,
@@ -37,9 +37,21 @@ import org.p2p.token.service.repository.price.TokenPriceRepository
 
     fun getTokensPriceFlow(networkChain: TokenServiceNetwork) = priceLocalRepository.attachToTokensPrice(networkChain)
 
-    fun findTokenPriceByAddress(networkChain: TokenServiceNetwork, tokenAddress: String): TokenServicePrice? {
+    fun findTokenPriceByAddress(
+        networkChain: TokenServiceNetwork = TokenServiceNetwork.SOLANA,
+        tokenAddress: String
+    ): TokenServicePrice? {
         return priceLocalRepository.findTokenPriceByAddress(networkChain = networkChain, address = tokenAddress)
     }
+
+    suspend fun fetchTokenPriceByAddress(
+        networkChain: TokenServiceNetwork = TokenServiceNetwork.SOLANA,
+        tokenAddress: String
+    ): TokenServicePrice? {
+        loadPriceForTokens(chain = networkChain, tokenAddresses = listOf(tokenAddress))
+        return findTokenPriceByAddress(networkChain = networkChain, tokenAddress = tokenAddress)
+    }
+
 
     fun findTokenMetadataByAddress(networkChain: TokenServiceNetwork, tokenAddress: String): TokenServiceMetadata? {
         return metadataLocalRepository.findTokenMetadataByAddress(networkChain = networkChain, address = tokenAddress)

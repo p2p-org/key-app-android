@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.p2p.core.utils.formatToken
+import org.p2p.token.service.interactor.TokenServiceInteractor
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
@@ -27,6 +28,7 @@ class SwapRateTickerManager(
     swapScope: SwapCoroutineScope,
     private val userLocalRepository: UserLocalRepository,
     private val swapTokensRepository: JupiterSwapTokensRepository,
+    private val tokenServiceInteractor: TokenServiceInteractor,
     private val initDispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 ) : CoroutineScope by (swapScope + initDispatcher) {
 
@@ -118,11 +120,10 @@ class SwapRateTickerManager(
         return SwapRateTickerState.Shown(formatRateString(from.tokenSymbol, newRate, to.tokenSymbol))
     }
 
-    private suspend fun findJupiterTokenRate(to: SwapTokenModel.JupiterToken): BigDecimal? {
-        val tokenData = userLocalRepository.findTokenData(to.mintAddress.base58Value)
-        val coingeckoId = tokenData?.coingeckoId ?: return null
-        val cachedPrice = userLocalRepository.getPriceByTokenId(coingeckoId)
-        return cachedPrice?.price ?: swapTokensRepository.getTokenRate(to.details)?.price
+    private fun findJupiterTokenRate(to: SwapTokenModel.JupiterToken): BigDecimal? {
+        val tokenData = userLocalRepository.findTokenData(to.mintAddress.base58Value) ?: return null
+        val cachedPrice = tokenServiceInteractor.findTokenPriceByAddress(tokenAddress = tokenData.mintAddress)
+        return cachedPrice?.price
     }
 
     private fun formatRateString(tokenASymbol: String, tokenBRate: String, tokenBSymbol: String): String {

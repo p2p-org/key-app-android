@@ -13,12 +13,14 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.crypto.Base58String
 import timber.log.Timber
 import java.math.BigInteger
+import org.p2p.token.service.interactor.TokenServiceInteractor
 
 class SolendDepositsRemoteRepository(
     private val sdkFacade: SolendSdkFacade,
     private val mapper: SolendDepositMapper,
     private val userLocalRepository: UserLocalRepository,
-    private val homeLocalRepository: HomeLocalRepository
+    private val homeLocalRepository: HomeLocalRepository,
+    private val tokenServiceInteractor: TokenServiceInteractor
 ) : SolendRepository {
 
     private val currentSolendPool = SolendPool.MAIN
@@ -50,7 +52,9 @@ class SolendDepositsRemoteRepository(
                 val tokenData =
                     userLocalRepository.findTokenDataBySymbol(deposit.depositTokenSymbol) ?: return@mapNotNull null
                 val tokenPrice =
-                    userLocalRepository.getPriceByTokenId(deposit.depositTokenSymbol) ?: return@mapNotNull null
+                    tokenServiceInteractor.findTokenPriceByAddress(
+                        tokenAddress = tokenData.mintAddress
+                    ) ?: return@mapNotNull null
                 val userToken = userTokens.find { it.tokenSymbol == deposit.depositTokenSymbol }
                 mapper.fromNetwork(
                     tokenData = tokenData,
@@ -63,7 +67,10 @@ class SolendDepositsRemoteRepository(
         } else {
             marketsInfo.mapNotNull { info ->
                 val tokenData = userLocalRepository.findTokenDataBySymbol(info.tokenSymbol) ?: return@mapNotNull null
-                val tokenPrice = userLocalRepository.getPriceByTokenId(info.tokenSymbol) ?: return@mapNotNull null
+                val tokenPrice =
+                    tokenServiceInteractor.findTokenPriceByAddress(
+                        tokenAddress = tokenData.mintAddress
+                    ) ?: return@mapNotNull null
                 val userToken = userTokens.find { it.tokenSymbol == info.tokenSymbol }
                 val activeDeposit = deposits.find { it.depositTokenSymbol == info.tokenSymbol }
                 mapper.fromNetwork(
