@@ -7,6 +7,7 @@ import retrofit2.create
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
+import org.p2p.wallet.alarmlogger.model.AlarmDeviceShareChangeErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
 import org.p2p.wallet.common.di.InjectionModule
@@ -25,5 +26,6 @@ object AlarmErrorsModule : InjectionModule {
         factoryOf(::AlarmErrorsLogger)
         factoryOf(::AlarmSwapErrorConverter)
         factoryOf(::AlarmSendErrorConverter)
+        factoryOf(::AlarmDeviceShareChangeErrorConverter)
     }
 }

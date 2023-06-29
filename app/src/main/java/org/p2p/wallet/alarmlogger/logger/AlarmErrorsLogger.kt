@@ -6,8 +6,10 @@ import kotlinx.coroutines.launch
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
+import org.p2p.wallet.alarmlogger.model.AlarmDeviceShareChangeErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
+import org.p2p.wallet.alarmlogger.model.DeviceShareChangeAlarmError
 import org.p2p.wallet.alarmlogger.model.SwapAlarmError
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.di.AppScope
@@ -25,6 +27,7 @@ class AlarmErrorsLogger(
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapErrorConverter: AlarmSwapErrorConverter,
     private val sendErrorConverter: AlarmSendErrorConverter,
+    private val deviceShareChangeErrorConverter: AlarmDeviceShareChangeErrorConverter,
     private val ethereumInteractor: EthereumInteractor,
     private val appScope: AppScope
 ) {
@@ -217,6 +220,22 @@ class AlarmErrorsLogger(
         appScope.launch {
             try {
                 val request = sendErrorConverter.toWeb3ErrorRequest(web3Error)
+                retryRequest(block = { api.sendAlarm(request) })
+            } catch (error: Throwable) {
+                Timber.e(AlarmErrorsError(error), "Failed to send alarm")
+            }
+        }
+    }
+
+    fun triggerDeviceShareChangeAlarm(deviceShareChangeAlarmError: DeviceShareChangeAlarmError) {
+        if (!isLoggerEnabled) return
+
+        appScope.launch {
+            try {
+                val request = deviceShareChangeErrorConverter.toDeviceShareChangeErrorRequest(
+                    userPublicKey = userPublicKey,
+                    error = deviceShareChangeAlarmError
+                )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")

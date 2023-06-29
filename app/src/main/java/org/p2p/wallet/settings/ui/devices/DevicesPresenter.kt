@@ -4,6 +4,9 @@ import timber.log.Timber
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
+import org.p2p.wallet.alarmlogger.model.DeviceShareChangeAlarmError
+import org.p2p.wallet.alarmlogger.model.DeviceShareChangeAlarmErrorSource
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
 import org.p2p.wallet.auth.interactor.MetadataInteractor
@@ -27,6 +30,7 @@ class DevicesPresenter(
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val gatewayServiceErrorHandler: GatewayServiceErrorHandler,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
+    private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<DevicesContract.View>(), DevicesContract.Presenter {
 
     override fun attach(view: DevicesContract.View) {
@@ -61,6 +65,7 @@ class DevicesPresenter(
             metadataInteractor.updateMetadata(newMetadata)
             view?.showSuccessDeviceChange()
         } catch (error: Throwable) {
+            logAlarmError(error, DeviceShareChangeAlarmErrorSource.TORUS)
             view?.showFailDeviceChange()
             Timber.e(error, "Error on refreshDeviceShare")
         } finally {
@@ -103,8 +108,10 @@ class DevicesPresenter(
             }
         } catch (error: Throwable) {
             if (error is PushServiceError) {
+                logAlarmError(error, DeviceShareChangeAlarmErrorSource.PUSH_SERVICE)
                 handleGatewayServiceError(error)
             } else {
+                logAlarmError(error, DeviceShareChangeAlarmErrorSource.OTHER)
                 Timber.e(error, "Phone number submission failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
@@ -122,7 +129,7 @@ class DevicesPresenter(
                 restoreWalletInteractor.resetUserPhoneNumber()
             }
             is GatewayHandledState.TitleSubtitleError -> {
-                view?.showUiKitSnackBar(gatewayHandledResult.title)
+                view?.showCommonError()
             }
             is GatewayHandledState.ToastError -> {
                 view?.showUiKitSnackBar(gatewayHandledResult.message)
@@ -131,5 +138,13 @@ class DevicesPresenter(
                 // Do nothing
             }
         }
+    }
+
+    private fun logAlarmError(e: Throwable, source: DeviceShareChangeAlarmErrorSource) {
+        val error = DeviceShareChangeAlarmError(
+            source = source.sourceName,
+            error = e
+        )
+        alarmErrorsLogger.triggerDeviceShareChangeAlarm(error)
     }
 }
