@@ -1,4 +1,4 @@
-package org.p2p.token.service.manager
+package org.p2p.token.service.api.events.manager
 
 import timber.log.Timber
 

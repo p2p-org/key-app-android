@@ -6,7 +6,6 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.date.toZonedDateTime
-import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
@@ -14,9 +13,9 @@ import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.crypto.toBase58Instance
-import org.p2p.token.service.interactor.TokenServiceInteractor
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.TokenServiceRepository
 
 internal class JupiterSwapTokensRemoteRepository(
     private val api: SwapJupiterApi,
@@ -24,7 +23,7 @@ internal class JupiterSwapTokensRemoteRepository(
     private val dispatchers: CoroutineDispatchers,
     private val userRepository: UserLocalRepository,
     private val swapStorage: JupiterSwapStorageContract,
-    private val tokenServiceInteractor: TokenServiceInteractor
+    private val tokenServiceInteractor: TokenServiceRepository
 ) : JupiterSwapTokensRepository {
 
     override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.io) {
@@ -81,10 +80,18 @@ internal class JupiterSwapTokensRemoteRepository(
             return emptyMap()
         }
         val isTokenPricesCachedForMints =
-            tokenMints.all { tokenServiceInteractor.findTokenPriceByAddress(tokenAddress = it.base58Value) != null }
+            tokenMints.all {
+                tokenServiceInteractor.findTokenPriceByAddress(
+                    networkChain = TokenServiceNetwork.SOLANA,
+                    tokenAddress = it.base58Value
+                ) != null
+            }
         if (isTokenPricesCachedForMints) {
             return tokenMints.associateWith {
-                tokenServiceInteractor.fetchTokenPriceByAddress(tokenAddress = it.base58Value)!!
+                tokenServiceInteractor.fetchTokenPriceByAddress(
+                    networkChain = TokenServiceNetwork.SOLANA,
+                    tokenAddress = it.base58Value
+                )!!
             }
         }
         return try {
@@ -93,7 +100,10 @@ internal class JupiterSwapTokensRemoteRepository(
                 tokenAddresses = tokenMints.map { it.base58Value }
             )
             tokenMints.associateWith {
-                tokenServiceInteractor.fetchTokenPriceByAddress(tokenAddress = it.base58Value)!!
+                tokenServiceInteractor.fetchTokenPriceByAddress(
+                    networkChain = TokenServiceNetwork.SOLANA,
+                    tokenAddress = it.base58Value
+                )!!
             }
         } catch (error: Throwable) {
             // coingecko can return empty price: []
@@ -103,6 +113,9 @@ internal class JupiterSwapTokensRemoteRepository(
     }
 
     override suspend fun getTokenRate(token: JupiterSwapToken): TokenServicePrice? {
-        return tokenServiceInteractor.fetchTokenPriceByAddress(tokenAddress = token.tokenMint.base58Value)
+        return tokenServiceInteractor.fetchTokenPriceByAddress(
+            networkChain = TokenServiceNetwork.SOLANA,
+            tokenAddress = token.tokenMint.base58Value
+        )
     }
 }

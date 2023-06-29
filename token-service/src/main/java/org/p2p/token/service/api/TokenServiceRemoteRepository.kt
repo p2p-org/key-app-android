@@ -13,7 +13,7 @@ import org.p2p.token.service.model.TokenServiceResult
 
 private const val TAG = "BridgeRemoteRepository"
 
-class TokenServiceRemoteRepository(
+internal class TokenServiceRemoteRepository(
     private val api: RpcApi,
     private val gson: Gson,
     urlProvider: NetworkServicesUrlProvider,

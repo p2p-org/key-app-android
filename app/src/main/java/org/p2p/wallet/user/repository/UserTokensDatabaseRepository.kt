@@ -14,11 +14,11 @@ import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.fromLamports
-import org.p2p.token.service.manager.TokenServiceEvent
-import org.p2p.token.service.manager.TokenServiceEventListener
-import org.p2p.token.service.manager.TokenServiceEventManager
-import org.p2p.token.service.manager.TokenServiceEventPublisher
-import org.p2p.token.service.manager.TokenServiceEventType
+import org.p2p.token.service.api.events.manager.TokenServiceEvent
+import org.p2p.token.service.api.events.manager.TokenServiceEventListener
+import org.p2p.token.service.api.events.manager.TokenServiceEventManager
+import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
+import org.p2p.token.service.api.events.manager.TokenServiceEventType
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.home.db.TokenDao
@@ -36,7 +36,6 @@ class UserTokensDatabaseRepository(
     override val coroutineContext: CoroutineContext = coroutineDispatchers.io
 
     init {
-        Timber.tag("______").d("Init")
         tokenServiceEventManager.subscribe(TokenServiceEventSubscriber(::updatePricesForTokens))
     }
 
@@ -132,11 +131,11 @@ class UserTokensDatabaseRepository(
         )
     }
 
-    inner class TokenServiceEventSubscriber(private val block: (Map<String, TokenServicePrice>) -> Unit) :
+    private inner class TokenServiceEventSubscriber(private val block: (Map<String, TokenServicePrice>) -> Unit) :
         TokenServiceEventListener {
-
+        private val TAG = "TokenServiceEventSubscriber"
         override fun onUpdate(eventType: TokenServiceEventType, event: TokenServiceEvent) {
-            Timber.tag("______").d("Event received = $event")
+            Timber.tag(TAG).d("Event received = $event")
             if (eventType != TokenServiceEventType.SOLANA_CHAIN_EVENT) return
             if (event !is TokenServiceEvent.TokensPriceLoaded) return
             val prices = event.result

@@ -9,8 +9,9 @@ import org.p2p.core.utils.isMoreThan
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.ConfirmationStatus
-import org.p2p.token.service.interactor.TokenServiceInteractor
+import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
@@ -30,7 +31,7 @@ class ReceiveViaLinkInteractor(
     private val rpcBalanceRepository: RpcBalanceRepository,
     private val userLocalRepository: UserLocalRepository,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
-    private val tokenServiceInteractor: TokenServiceInteractor
+    private val tokenServiceRepository: TokenServiceRepository
 ) {
 
     suspend fun parseAccountFromLink(link: SendViaLinkWrapper): TemporaryAccountState {
@@ -98,11 +99,17 @@ class ReceiveViaLinkInteractor(
     }
 
     private suspend fun fetchPriceForToken(mintAddress: String): TokenServicePrice? {
-        val price = tokenServiceInteractor.findTokenPriceByAddress(tokenAddress = mintAddress)
+        val price = tokenServiceRepository.findTokenPriceByAddress(
+            networkChain = TokenServiceNetwork.SOLANA,
+            tokenAddress = mintAddress
+        )
         if (price != null) return price
 
         return kotlin.runCatching {
-            tokenServiceInteractor.fetchTokenPriceByAddress(tokenAddress = mintAddress)
+            tokenServiceRepository.fetchTokenPriceByAddress(
+                networkChain = TokenServiceNetwork.SOLANA,
+                tokenAddress = mintAddress
+            )
         }
             .onFailure { Timber.i(it) }
             .getOrNull() // can be skipped if there error, that's ok

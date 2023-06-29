@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
-import org.p2p.token.service.interactor.TokenServiceInteractor
 import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.receive.list.TokenListData
 
@@ -17,7 +17,7 @@ private const val TAG = "UserInMemoryRepository"
 
 class UserInMemoryRepository(
     private val tokenConverter: TokenConverter,
-    private val tokenServiceInteractor: TokenServiceInteractor
+    private val tokenServiceRepository: TokenServiceRepository
 ) : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
     private val allTokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
@@ -139,7 +139,7 @@ class UserInMemoryRepository(
     override fun findTokenByMint(mintAddress: String): Token? {
         val tokenData: TokenData? = findTokenData(mintAddress)
         return if (tokenData != null) {
-            val price = tokenServiceInteractor.findTokenPriceByAddress(
+            val price = tokenServiceRepository.findTokenPriceByAddress(
                 tokenAddress = tokenData.mintAddress,
                 networkChain = TokenServiceNetwork.SOLANA
             )

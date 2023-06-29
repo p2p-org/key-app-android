@@ -10,7 +10,7 @@ import org.p2p.wallet.user.repository.UserRepository
 
 private const val TAG = "BlockChainTokensInteractor"
 
-class BlockChainTokensInteractor(
+class BlockChainTokensMetadataInteractor(
     private val metadataUpdateFeatureToggle: TokenMetadataUpdateFeatureToggle,
     private val externalStorageRepository: ExternalStorageRepository,
     private val userLocalRepository: UserLocalRepository,

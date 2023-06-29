@@ -1,17 +1,17 @@
-package org.p2p.token.service.manager
+package org.p2p.token.service.api.events.manager
 
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.launch
 import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.token.service.interactor.TokenServiceInteractor
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.token.service.model.TokenServiceNetwork
 
  class TokenServiceEventPublisher(
-    private val tokenServiceInteractor: TokenServiceInteractor,
-    private val eventManager: TokenServiceEventManager,
-    coroutineDispatcher: CoroutineDispatchers
+     private val tokenServiceInteractor: TokenServiceRepository,
+     private val eventManager: TokenServiceEventManager,
+     coroutineDispatcher: CoroutineDispatchers
 ) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext = coroutineDispatcher.io
@@ -48,7 +48,7 @@ import org.p2p.token.service.model.TokenServiceNetwork
     }
 
     private suspend fun observeTokenPrices(networkChain: TokenServiceNetwork) {
-        tokenServiceInteractor.getTokensPriceFlow(networkChain)
+        tokenServiceInteractor.getTokenPricesFlow(networkChain)
             .filterNot { it.isEmpty() }
             .collect {
                 val eventType = TokenServiceEventType.from(networkChain)

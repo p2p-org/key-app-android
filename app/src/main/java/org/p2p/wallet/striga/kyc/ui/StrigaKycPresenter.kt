@@ -12,7 +12,6 @@ import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkInitParams
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkListeners
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
@@ -22,6 +21,7 @@ class StrigaKycPresenter(
     private val strigaUserInteractor: StrigaUserInteractor,
     private val appScope: AppScope,
     private val dispatchers: CoroutineDispatchers,
+    private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<StrigaKycContract.View>(), StrigaKycContract.Presenter {
 
     private var currentKycSdkState: SNSSDKState? = null

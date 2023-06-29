@@ -8,7 +8,7 @@ import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.model.TokenServiceQueryResult
 import org.p2p.token.service.model.successOrNull
 
-class TokenPriceRemoteRepository(
+internal class TokenPriceRemoteRepository(
     private val api: TokenServiceRepository,
     private val mapper: TokenServiceMapper
 ) : TokenPriceRepository {

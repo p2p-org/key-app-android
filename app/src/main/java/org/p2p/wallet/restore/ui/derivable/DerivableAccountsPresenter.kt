@@ -5,8 +5,9 @@ import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.token.service.interactor.TokenServiceInteractor
+import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.UsernameRestoreMethod
@@ -20,7 +21,7 @@ class DerivableAccountsPresenter(
     private val seedPhraseInteractor: SeedPhraseInteractor,
     private val analytics: OnboardingAnalytics,
     private val restoreWalletAnalytics: RestoreWalletAnalytics,
-    private val tokenServiceInteractor: TokenServiceInteractor
+    private val tokenServiceRepository: TokenServiceRepository
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
 
@@ -41,7 +42,10 @@ class DerivableAccountsPresenter(
         launch {
             try {
                 val tokenMint = Constants.SOL_MINT
-                val solRate = tokenServiceInteractor.fetchTokenPriceByAddress(tokenAddress = tokenMint)!!
+                val solRate = tokenServiceRepository.fetchTokenPriceByAddress(
+                    networkChain = TokenServiceNetwork.SOLANA,
+                    tokenAddress = tokenMint
+                )!!
                     .also { solRate = it }
 
                 allAccounts = allAccounts.updateWithTotalInUsd(solRate).toMutableList()

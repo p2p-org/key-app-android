@@ -13,14 +13,15 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.crypto.Base58String
 import timber.log.Timber
 import java.math.BigInteger
-import org.p2p.token.service.interactor.TokenServiceInteractor
+import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.repository.TokenServiceRepository
 
 class SolendDepositsRemoteRepository(
     private val sdkFacade: SolendSdkFacade,
     private val mapper: SolendDepositMapper,
     private val userLocalRepository: UserLocalRepository,
     private val homeLocalRepository: HomeLocalRepository,
-    private val tokenServiceInteractor: TokenServiceInteractor
+    private val tokenServiceRepository: TokenServiceRepository
 ) : SolendRepository {
 
     private val currentSolendPool = SolendPool.MAIN
@@ -52,7 +53,8 @@ class SolendDepositsRemoteRepository(
                 val tokenData =
                     userLocalRepository.findTokenDataBySymbol(deposit.depositTokenSymbol) ?: return@mapNotNull null
                 val tokenPrice =
-                    tokenServiceInteractor.findTokenPriceByAddress(
+                    tokenServiceRepository.findTokenPriceByAddress(
+                        networkChain = TokenServiceNetwork.SOLANA,
                         tokenAddress = tokenData.mintAddress
                     ) ?: return@mapNotNull null
                 val userToken = userTokens.find { it.tokenSymbol == deposit.depositTokenSymbol }
@@ -68,7 +70,8 @@ class SolendDepositsRemoteRepository(
             marketsInfo.mapNotNull { info ->
                 val tokenData = userLocalRepository.findTokenDataBySymbol(info.tokenSymbol) ?: return@mapNotNull null
                 val tokenPrice =
-                    tokenServiceInteractor.findTokenPriceByAddress(
+                    tokenServiceRepository.findTokenPriceByAddress(
+                        networkChain = TokenServiceNetwork.SOLANA,
                         tokenAddress = tokenData.mintAddress
                     ) ?: return@mapNotNull null
                 val userToken = userTokens.find { it.tokenSymbol == info.tokenSymbol }

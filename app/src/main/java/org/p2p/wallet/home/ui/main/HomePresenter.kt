@@ -66,6 +66,7 @@ import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
 
 val POPULAR_TOKENS_SYMBOLS: Set<String> = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
+// TODO add fetching prices for this tokens
 // val POPULAR_TOKENS_COINGECKO_IDS: List<TokenCoinGeckoId> = setOf(
 //    SOL_COINGECKO_ID,
 //    USDT_COINGECKO_ID,

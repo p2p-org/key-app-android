@@ -10,7 +10,8 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.token.service.interactor.TokenServiceInteractor
+import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.home.model.TokenComparator
@@ -40,13 +41,18 @@ class UserInteractor(
     private val sharedPreferences: SharedPreferences,
     private val externalStorageRepository: ExternalStorageRepository,
     private val metadataUpdateFeatureToggle: TokenMetadataUpdateFeatureToggle,
-    private val tokenServiceInteractor: TokenServiceInteractor,
+    private val tokenServiceRepository: TokenServiceRepository,
     private val gson: Gson
 ) {
 
     fun findTokenData(mintAddress: String): Token? {
         val tokenData = userLocalRepository.findTokenData(mintAddress)
-        val price = tokenData?.let { tokenServiceInteractor.findTokenPriceByAddress(tokenAddress = it.mintAddress) }
+        val price = tokenData?.let {
+            tokenServiceRepository.findTokenPriceByAddress(
+                networkChain = TokenServiceNetwork.SOLANA,
+                tokenAddress = it.mintAddress
+            )
+        }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
@@ -171,7 +177,12 @@ class UserInteractor(
 
     private fun findTokenDataBySymbol(symbol: String): Token? {
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
-        val price = tokenData?.let { tokenServiceInteractor.findTokenPriceByAddress(tokenAddress = it.mintAddress) }
+        val price = tokenData?.let {
+            tokenServiceRepository.findTokenPriceByAddress(
+                networkChain = TokenServiceNetwork.SOLANA,
+                tokenAddress = it.mintAddress
+            )
+        }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 

@@ -78,8 +78,8 @@ import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.crypto.Base58String
-import org.p2p.token.service.interactor.TokenServiceInteractor
 import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
@@ -117,7 +117,7 @@ open class JupiterSwapPresenterBaseTest {
     lateinit var swapRoutesRefreshFeatureToggle: SwapRoutesRefreshFeatureToggle
 
     @MockK
-    lateinit var tokenServiceInteractor: TokenServiceInteractor
+    lateinit var tokenServiceRepository: TokenServiceRepository
 
     @MockK(relaxed = true)
     lateinit var relaySdkFacade: RelaySdkFacade
@@ -254,7 +254,7 @@ open class JupiterSwapPresenterBaseTest {
     private fun initUserLocalRepository(tokens: List<TokenData>) {
         userLocalRepository = UserInMemoryRepository(
             tokenConverter = TokenConverter,
-            tokenServiceInteractor = tokenServiceInteractor
+            tokenServiceRepository = tokenServiceRepository
         ).apply {
             setTokenData(tokens)
         }
@@ -281,7 +281,7 @@ open class JupiterSwapPresenterBaseTest {
             val token: JupiterSwapToken = arg(0)
             tokenRate(token)
         }
-        coEvery { tokenServiceInteractor.loadPriceForTokens(any(), any()) } answers {
+        coEvery { tokenServiceRepository.loadPriceForTokens(any(), any()) } answers {
             val tokens: List<JupiterSwapToken> = arg(0)
             tokenRates(tokens)
         }
@@ -388,7 +388,7 @@ open class JupiterSwapPresenterBaseTest {
             SwapRateTickerManager(
                 swapScope = SwapCoroutineScope(dispatchers),
                 userLocalRepository = userLocalRepository,
-                tokenServiceInteractor = tokenServiceInteractor,
+                tokenServiceRepository = tokenServiceRepository,
                 initDispatcher = dispatchers.io
             )
         )
@@ -421,7 +421,7 @@ open class JupiterSwapPresenterBaseTest {
             ),
             dispatchers = dispatchers,
             selectedSwapTokenStorage = jupiterSwapStorage,
-            tokenServiceInteractor = tokenServiceInteractor,
+            tokenServiceRepository = tokenServiceRepository,
             swapValidator = SwapValidator(),
             analytics = analytics,
             homeLocalRepository = homeLocalRepository,
