@@ -171,7 +171,7 @@ class TokenHistoryFragment :
                 replaceFragment(SellPayloadFragment.create())
             }
             else -> {
-                // TODO: WHAT SHOULD BE HERE?
+                // do nothing
             }
         }
     }
