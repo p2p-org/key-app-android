@@ -170,6 +170,9 @@ class TokenHistoryFragment :
                 sellAnalytics.logTokenScreenActionClicked()
                 replaceFragment(SellPayloadFragment.create())
             }
+            else -> {
+                // do nothing
+            }
         }
     }
 
