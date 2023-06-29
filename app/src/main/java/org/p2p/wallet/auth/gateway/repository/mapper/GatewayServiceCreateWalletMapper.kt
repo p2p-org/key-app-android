@@ -120,7 +120,7 @@ class GatewayServiceCreateWalletMapper(
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
-        val epochUnixTimeSeconds = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS).inWholeSeconds
+        val epochUnixTimeSeconds = DateTimeUtils.getCurrentTimestampInSeconds()
         val encryptedMetadata: GatewayOnboardingMetadataCiphered = onboardingMetadataCipher.encryptMetadata(
             mnemonicPhrase = userSeedPhrase,
             onboardingMetadata = GatewayOnboardingMetadata(
