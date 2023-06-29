@@ -7,14 +7,13 @@ import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import org.junit.Test
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.utils.DateTimeUtils
 
 internal class GatewayMetadataMergerTest {
 
     private val metadataMerger = GatewayMetadataMerger()
-    private val oldTimeSeconds = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS).inWholeSeconds
+    private val oldTimeSeconds = DateTimeUtils.getCurrentTimestampInSeconds()
     private val newTimeSeconds = oldTimeSeconds + 100
 
     private val oldMetadataDevice = "testDevice"
