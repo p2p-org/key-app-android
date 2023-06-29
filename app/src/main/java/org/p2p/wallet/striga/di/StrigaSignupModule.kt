@@ -10,10 +10,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.create
-import org.p2p.wallet.R
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
-import org.p2p.wallet.infrastructure.network.interceptor.StrigaHeaderSignatureGenerator
+import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory

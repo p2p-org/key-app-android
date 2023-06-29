@@ -21,6 +21,14 @@ object Dependencies {
     private const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
     private const val biometricKtx = "androidx.biometric:biometric:1.1.0"
     private const val browser = "androidx.browser:browser:1.5.0"
+    const val swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    const val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
+
+    //https://facebook.github.io/shimmer-android/
+    const val shimmer = "com.facebook.shimmer:shimmer:0.5.0"
+
+    // https://mvnrepository.com/artifact/org.bitcoinj/bitcoinj-core
+    const val bitcoinj = "org.bitcoinj:bitcoinj-core:0.15.10"
 
     // coroutines
     private const val coroutinesVersion = "1.6.2"
@@ -32,10 +40,22 @@ object Dependencies {
     private const val retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"
     private const val retrofitGson = "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     private const val retrofitScalars = "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
+    const val retrofitMoshi = "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
 
     private const val okHttpVersion = "4.9.3"
     private const val okHttp = "com.squareup.okhttp3:okhttp:$okHttpVersion"
     private const val okHttpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+
+    // WS
+    const val javaWs = "org.java-websocket:Java-WebSocket:1.5.2"
+
+    // Tinder Scarlet
+    private const val scarletVersion = "0.1.12"
+    private const val tinderScarlet = "com.tinder.scarlet:scarlet:$scarletVersion"
+    private const val tinderScarletWs = "com.tinder.scarlet:websocket-okhttp:$scarletVersion"
+    private const val tinderScarletRxJava2 = "com.tinder.scarlet:stream-adapter-rxjava2:$scarletVersion"
+    private const val tinderScarletGson = "com.tinder.scarlet:message-adapter-gson:$scarletVersion"
+    private const val tinderScarletLifecycle = "com.tinder.scarlet:lifecycle-android:$scarletVersion"
 
     // Room
     private const val roomVersion = "2.4.3"
@@ -43,12 +63,26 @@ object Dependencies {
     const val roomKtx = "androidx.room:room-ktx:$roomVersion"
     const val roomCompiler = "androidx.room:room-compiler:$roomVersion"
 
+    // Koin https://github.com/InsertKoinIO/koin
+    private const val koinVersion = "3.2.0"
+    private const val koinAndroid = "io.insert-koin:koin-android:$koinVersion"
+    private const val koinWorkmanager = "io.insert-koin:koin-androidx-workmanager:$koinVersion"
+
     // firebase
     const val firebaseBom = "com.google.firebase:firebase-bom:32.1.1"
-    private const val firebaseCrashlytics = "com.google.firebase:firebase-crashlytics"
+    const val firebaseCrashlytics = "com.google.firebase:firebase-crashlytics"
     private const val firebaseAnalytics = "com.google.firebase:firebase-analytics-ktx"
     private const val firebaseMessaging = "com.google.firebase:firebase-messaging-ktx"
     private const val firebaseConfig = "com.google.firebase:firebase-config"
+    const val firebaseCrashlyticsBuildTools = "com.google.firebase:firebase-crashlytics-buildtools:2.9.6"
+
+    // Sentry
+    private const val sentryVersion = "6.14.0"
+    private const val sentry = "io.sentry:sentry-android:$sentryVersion"
+    private const val sentryFragment = "io.sentry:sentry-android-fragment:$sentryVersion"
+    private const val sentryCore = "io.sentry:sentry-android-core:$sentryVersion"
+    private const val sentryOkhttp = "io.sentry:sentry-android-okhttp:$sentryVersion"
+    private const val sentryNdk = "io.sentry:sentry-android-ndk:$sentryVersion"
 
     // google play
     private const val googlePlayBase = "com.google.android.gms:play-services-base:18.2.0"
@@ -74,6 +108,9 @@ object Dependencies {
     // Striga
     const val strigaSdk = "com.sumsub.sns:idensic-mobile-sdk:1.25.0"
 
+    // Crypto
+    const val cryptoEdds = "net.i2p.crypto:eddsa:0.3.0"
+
     // Utils
     const val lokalise = "com.lokalise.android:sdk:2.1.1"
     const val libphonenumber = "io.michaelrocks:libphonenumber-android:8.12.52"
@@ -83,6 +120,9 @@ object Dependencies {
     const val lottie = "com.airbnb.android:lottie:4.0.0"
     const val dotsIndicator = "com.tbuonomo:dotsindicator:4.3"
     const val tickerView = "com.robinhood.ticker:ticker:2.0.4"
+
+    // https://mvnrepository.com/artifact/com.github.RedMadRobot/input-mask-android
+    const val inputmask = "com.github.RedMadRobot:input-mask-android:6.1.0"
 
     // https://github.com/dm77/barcodescanner
     const val barcodeScanner = "me.dm7.barcodescanner:zxing:1.9.8"
@@ -105,7 +145,9 @@ object Dependencies {
     private const val mockk = "io.mockk:mockk:1.12.0"
 
     // https://mvnrepository.com/artifact/junit/junit
-    private const val junit = "junit:junit:4.13.2"
+    const val junit = "junit:junit:4.13.2"
+
+    const val assertj = "org.assertj:assertj-core:3.22.0"
 
     // https://github.com/robolectric/robolectric
     private const val roboletric = "org.robolectric:robolectric:4.7.3"
@@ -114,7 +156,6 @@ object Dependencies {
     private const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
     // Koin Test features
-    private const val koinVersion = "3.2.0"
     private const val koinTest = "io.insert-koin:koin-test:$koinVersion"
     private const val koinTestJunit = "io.insert-koin:koin-test-junit4:$koinVersion"
 
@@ -162,11 +203,32 @@ object Dependencies {
         okHttpLoggingInterceptor
     )
 
+    val tinderScarletLibraries = listOf(
+        tinderScarlet,
+        tinderScarletWs,
+        tinderScarletRxJava2,
+        tinderScarletGson,
+        tinderScarletLifecycle
+    )
+
+    val koinLibraries = listOf(
+        koinAndroid,
+        koinWorkmanager
+    )
+
     val firebaseLibraries = listOf(
         firebaseCrashlytics,
         firebaseAnalytics,
         firebaseMessaging,
         firebaseConfig
+    )
+
+    val sentryLibraries = listOf(
+        sentry,
+        sentryFragment,
+        sentryCore,
+        sentryOkhttp,
+        sentryNdk
     )
 
     val googlePlayLibraries = listOf(

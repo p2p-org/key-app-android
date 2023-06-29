@@ -10,8 +10,8 @@ import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.dispatchers.DefaultDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.DefaultDispatchers
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.notification.AppNotificationManager

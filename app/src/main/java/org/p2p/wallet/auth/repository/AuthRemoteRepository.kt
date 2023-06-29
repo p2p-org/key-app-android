@@ -7,7 +7,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.mnemoticgenerator.MnemonicGenerator
 import org.p2p.wallet.utils.mnemoticgenerator.Words

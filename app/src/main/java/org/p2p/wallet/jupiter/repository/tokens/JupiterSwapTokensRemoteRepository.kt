@@ -7,7 +7,7 @@ import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.home.model.TokenPrice
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse

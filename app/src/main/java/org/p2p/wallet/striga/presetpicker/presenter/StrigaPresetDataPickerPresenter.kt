@@ -2,7 +2,7 @@ package org.p2p.wallet.striga.presetpicker.presenter
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataPickerContract
 import org.p2p.wallet.striga.presetpicker.StrigaPresetDataSearcher
 import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataInteractor

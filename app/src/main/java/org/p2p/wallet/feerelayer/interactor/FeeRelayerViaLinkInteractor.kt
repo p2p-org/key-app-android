@@ -6,7 +6,7 @@ import org.p2p.solanaj.model.types.ConfirmationStatus
 import org.p2p.core.crypto.toBase64Instance
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.utils.retryRequest
 

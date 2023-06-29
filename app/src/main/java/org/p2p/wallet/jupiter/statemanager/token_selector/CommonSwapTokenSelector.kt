@@ -7,7 +7,7 @@ import org.p2p.core.token.findSolOrThrow
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken

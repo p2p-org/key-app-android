@@ -24,6 +24,7 @@ import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.settings.DeviceInfoHelper
 import org.p2p.core.crypto.Base58String
+import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.toByteArray
 
 const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"

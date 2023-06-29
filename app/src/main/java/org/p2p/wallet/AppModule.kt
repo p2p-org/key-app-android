@@ -4,7 +4,11 @@ import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.common.di.ServiceScope
+import org.p2p.core.crashlytics.CrashLoggerModule
 import org.p2p.core.network.ConnectionManager
+import org.p2p.core.network.NetworkCoreModule
 import org.p2p.ethereumkit.EthereumKitService
 import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.auth.AuthModule
@@ -13,18 +17,13 @@ import org.p2p.wallet.bridge.claim.ClaimModule
 import org.p2p.wallet.bridge.send.BridgeSendModule
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.analytics.AnalyticsModule
-import org.p2p.core.common.di.AppScope
-import org.p2p.core.common.di.ServiceScope
-import org.p2p.core.crashlytics.CrashLoggerModule
-import org.p2p.core.network.NetworkCoreModule
-import org.p2p.token.service.TokenServiceModule
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
@@ -101,6 +100,9 @@ object AppModule {
                 StrigaModule.create(),
                 SwapModule.create(),
                 TransactionManagerModule.create(),
+                UserModule.create(),
+                CrashLoggerModule.create(),
+                NetworkCoreModule.create(),
                 UserModule.create(),
                 CrashLoggerModule.create(),
                 NetworkCoreModule.create(),

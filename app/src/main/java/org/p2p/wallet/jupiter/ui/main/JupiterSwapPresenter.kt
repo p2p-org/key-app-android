@@ -31,7 +31,7 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.data.ServerException
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics

@@ -25,7 +25,7 @@ import org.p2p.wallet.auth.gateway.repository.model.RestoreWalletPublicKeyError
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.core.common.di.AppScope
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.FlowDurationTimer
