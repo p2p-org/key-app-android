@@ -15,10 +15,11 @@ import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
-import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
@@ -72,6 +73,9 @@ class StrigaSignupSecondStepPresenterTest {
     @MockK(relaxed = true)
     lateinit var inAppFeatureFlags: InAppFeatureFlags
 
+    @MockK(relaxed = true)
+    lateinit var alarmErrorsLogger: AlarmErrorsLogger
+
     lateinit var interactor: StrigaSignupInteractor
 
     private val signupDataValidator = StrigaSignupDataValidator()
@@ -90,6 +94,7 @@ class StrigaSignupSecondStepPresenterTest {
             interactor = interactor,
             onboardingInteractor = onboardingInteractor,
             strigaItemCellMapper = strigaItemCellMapper,
+            alarmErrorsLogger = alarmErrorsLogger,
         )
     }
 
