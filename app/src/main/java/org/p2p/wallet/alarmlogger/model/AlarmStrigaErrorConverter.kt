@@ -6,17 +6,18 @@ import org.p2p.wallet.alarmlogger.api.AlarmErrorsRequest
 import org.p2p.wallet.alarmlogger.api.StrigaErrorRequest
 import org.p2p.wallet.utils.Base58String
 
-class StrigaErrorConverter(
+class AlarmStrigaErrorConverter(
     private val gson: Gson
 ) {
 
     fun toStrigaErrorRequest(userPublicKey: Base58String, error: StrigaAlarmError): AlarmErrorsRequest {
+        val throwable = error.error
         val request = AlarmErrorStrigaRequest(
             userPublicKey = userPublicKey,
             strigaError = StrigaErrorRequest(
                 source = error.source,
                 kycSdkState = error.kycSdkState,
-                error = error.error
+                error = throwable.message ?: throwable.localizedMessage ?: "Unknown error"
             )
         )
         return AlarmErrorsRequest(

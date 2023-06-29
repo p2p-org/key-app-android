@@ -9,7 +9,7 @@ import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
 import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
-import org.p2p.wallet.alarmlogger.model.StrigaErrorConverter
+import org.p2p.wallet.alarmlogger.model.AlarmStrigaErrorConverter
 import org.p2p.wallet.alarmlogger.model.SwapAlarmError
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.di.AppScope
@@ -27,7 +27,7 @@ class AlarmErrorsLogger(
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapErrorConverter: AlarmSwapErrorConverter,
     private val sendErrorConverter: AlarmSendErrorConverter,
-    private val strigaErrorConverter: StrigaErrorConverter,
+    private val strigaErrorConverter: AlarmStrigaErrorConverter,
     private val ethereumInteractor: EthereumInteractor,
     private val appScope: AppScope
 ) {

@@ -24,7 +24,7 @@ class StrigaKycPresenter(
     private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<StrigaKycContract.View>(), StrigaKycContract.Presenter {
 
-    private var kycSdkState: SNSSDKState? = null
+    private var currentKycSdkState: SNSSDKState? = null
 
     override fun firstAttach() {
         super.firstAttach()
@@ -69,7 +69,7 @@ class StrigaKycPresenter(
     }
 
     private fun onKycStateChanged(oldState: SNSSDKState, newState: SNSSDKState) {
-        kycSdkState = newState
+        currentKycSdkState = newState
         Timber.d("KYC SDK state change:\n$oldState->\n$newState")
         updateUserStatus()
     }
@@ -82,7 +82,7 @@ class StrigaKycPresenter(
             }
             is SNSCompletionResult.AbnormalTermination -> {
                 Timber.e(result.exception, "The SDK got closed because of errors, state = $state")
-                kycSdkState = state
+                currentKycSdkState = state
                 logAlarmError(result.exception ?: Throwable("Abnormal Termination error"))
             }
         }
@@ -100,8 +100,8 @@ class StrigaKycPresenter(
     private fun logAlarmError(exception: Throwable) {
         val alarmError = StrigaAlarmError(
             source = "KYC SDK",
-            kycSdkState = kycSdkState.toString(),
-            error = "${exception.javaClass.simpleName}: ${exception.message ?: "Unknown error"}"
+            kycSdkState = currentKycSdkState.toString(),
+            error = exception
         )
         alarmErrorsLogger.triggerStrigaAlarm(alarmError)
     }

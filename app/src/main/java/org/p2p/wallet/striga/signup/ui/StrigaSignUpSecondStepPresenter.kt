@@ -150,7 +150,7 @@ class StrigaSignUpSecondStepPresenter(
         val error = StrigaAlarmError(
             source = "other",
             kycSdkState = SNSSDKState.Initial.toString(),
-            error = e.message ?: e.localizedMessage ?: "Unknown error"
+            error = e
         )
         alarmErrorsLogger.triggerStrigaAlarm(error)
     }
