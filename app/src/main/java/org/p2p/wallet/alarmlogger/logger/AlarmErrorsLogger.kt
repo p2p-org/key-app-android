@@ -8,6 +8,8 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
+import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
+import org.p2p.wallet.alarmlogger.model.AlarmStrigaErrorConverter
 import org.p2p.wallet.alarmlogger.model.SwapAlarmError
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.di.AppScope
@@ -25,6 +27,7 @@ class AlarmErrorsLogger(
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapErrorConverter: AlarmSwapErrorConverter,
     private val sendErrorConverter: AlarmSendErrorConverter,
+    private val strigaErrorConverter: AlarmStrigaErrorConverter,
     private val ethereumInteractor: EthereumInteractor,
     private val appScope: AppScope
 ) {
@@ -217,6 +220,22 @@ class AlarmErrorsLogger(
         appScope.launch {
             try {
                 val request = sendErrorConverter.toWeb3ErrorRequest(web3Error)
+                retryRequest(block = { api.sendAlarm(request) })
+            } catch (error: Throwable) {
+                Timber.e(AlarmErrorsError(error), "Failed to send alarm")
+            }
+        }
+    }
+
+    fun triggerStrigaAlarm(strigaError: StrigaAlarmError) {
+        if (!isLoggerEnabled) return
+
+        appScope.launch {
+            try {
+                val request = strigaErrorConverter.toStrigaErrorRequest(
+                    userPublicKey = userPublicKey,
+                    error = strigaError
+                )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
