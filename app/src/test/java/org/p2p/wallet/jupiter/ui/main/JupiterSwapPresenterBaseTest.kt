@@ -388,7 +388,6 @@ open class JupiterSwapPresenterBaseTest {
             SwapRateTickerManager(
                 swapScope = SwapCoroutineScope(dispatchers),
                 userLocalRepository = userLocalRepository,
-                swapTokensRepository = jupiterSwapTokensRepository,
                 tokenServiceInteractor = tokenServiceInteractor,
                 initDispatcher = dispatchers.io
             )

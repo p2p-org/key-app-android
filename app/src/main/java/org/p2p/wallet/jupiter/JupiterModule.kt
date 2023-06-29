@@ -169,7 +169,6 @@ object JupiterModule : InjectionModule {
             SwapRateTickerManager(
                 swapScope = get(),
                 userLocalRepository = get(),
-                swapTokensRepository = get(),
                 tokenServiceInteractor = get()
             )
         }

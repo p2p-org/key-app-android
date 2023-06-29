@@ -16,7 +16,6 @@ import org.p2p.core.utils.formatToken
 import org.p2p.token.service.interactor.TokenServiceInteractor
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
-import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -27,7 +26,6 @@ private const val TAG = "SwapRateTickerManager"
 class SwapRateTickerManager(
     swapScope: SwapCoroutineScope,
     private val userLocalRepository: UserLocalRepository,
-    private val swapTokensRepository: JupiterSwapTokensRepository,
     private val tokenServiceInteractor: TokenServiceInteractor,
     private val initDispatcher: CoroutineDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 ) : CoroutineScope by (swapScope + initDispatcher) {
