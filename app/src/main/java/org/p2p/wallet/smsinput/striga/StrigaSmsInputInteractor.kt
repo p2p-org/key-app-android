@@ -1,9 +1,11 @@
 package org.p2p.wallet.smsinput.striga
 
 import kotlin.time.Duration.Companion.days
+import kotlinx.coroutines.flow.Flow
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError
@@ -25,7 +27,19 @@ class StrigaSmsInputInteractor(
     private val phoneCodeRepository: CountryCodeRepository,
     private val inAppFeatureFlags: InAppFeatureFlags,
     private val strigaStorage: StrigaStorageContract,
+    private val smsInputTimer: SmsInputTimer,
 ) {
+    val timer: Flow<Int> get() = smsInputTimer.smsInputTimerFlow
+    val isTimerNotActive: Boolean get() = !smsInputTimer.isTimerActive
+
+    fun launchInitialTimer() {
+        smsInputTimer.startSmsInputTimerFlow()
+        // The reset function is called to initiate the default 30-second timer.
+        // This is necessary in scenarios where the 'resend-sms' method hasn't been called yet,
+        // but the user has just already been created.
+        // And then we need to display the same 30-second timer again after the first call of 'resend-sms'.
+        smsInputTimer.resetSmsCount()
+    }
 
     suspend fun getUserPhoneCodeToPhoneNumber(): PhoneNumberWithCode {
         val userSignupData = strigaSignupDataRepository.getUserSignupDataAsMap()
@@ -52,7 +66,7 @@ class StrigaSmsInputInteractor(
         }
     }
 
-    suspend fun resendSms(): StrigaDataLayerResult<Unit> {
+    fun getExceededLimitsErrorIfPresent(): StrigaDataLayerResult.Failure<Unit>? {
         return when {
             // avoid api call to show error immediately
             isExceededVerificationAttempts() -> {
@@ -74,20 +88,27 @@ class StrigaSmsInputInteractor(
                 ).toFailureResult()
             }
             else -> {
-                strigaUserRepository.resendSmsForVerifyPhoneNumber()
-                    .onTypedFailure<StrigaDataLayerError.ApiServiceError> {
-                        when (it.errorCode) {
-                            StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS -> {
-                                setExceededVerificationAttempts()
-                            }
-                            StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT -> {
-                                setExceededResendAttempts()
-                            }
-                            else -> Unit
-                        }
-                    }
+                null
             }
         }
+    }
+
+    suspend fun resendSms(): StrigaDataLayerResult<Unit> {
+        return getExceededLimitsErrorIfPresent() ?: strigaUserRepository.resendSmsForVerifyPhoneNumber()
+            .onTypedFailure<StrigaDataLayerError.ApiServiceError> {
+                when (it.errorCode) {
+                    StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS -> {
+                        setExceededVerificationAttempts()
+                    }
+                    StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT -> {
+                        setExceededResendAttempts()
+                    }
+                    else -> Unit
+                }
+            }
+            .onSuccess {
+                smsInputTimer.startSmsInputTimerFlow()
+            }
     }
 
     private fun setExceededVerificationAttempts() {

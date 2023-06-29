@@ -13,6 +13,7 @@ import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.user.StrigaStorageContract
+import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 
@@ -24,7 +25,8 @@ class StrigaUserStatusRepository(
     private val mapper: StrigaUserStatusDestinationMapper,
     private val strigaUserRepository: StrigaUserRepository,
     private val strigaStorage: StrigaStorageContract,
-    private val inAppFeatureFlags: InAppFeatureFlags
+    private val inAppFeatureFlags: InAppFeatureFlags,
+    private val strigaUserRepositoryMapper: StrigaUserRepositoryMapper,
 ) : CoroutineScope by CoroutineScope(dispatchers.io) {
 
     private var strigaUserDestination: StrigaUserStatusDestination = StrigaUserStatusDestination.NONE
@@ -46,6 +48,11 @@ class StrigaUserStatusRepository(
     fun getUserDestination(): StrigaUserStatusDestination = strigaUserDestination
 
     fun getUserVerificationStatus(): StrigaUserStatusDetails? = strigaStorage.userStatus
+
+    fun updateUserStatus(response: StrigaUserInitialDetails) {
+        strigaStorage.userStatus = strigaUserRepositoryMapper.mapUserInitialDetailsToStatus(response)
+        mapUserStatusToFlows(strigaStorage.userStatus)
+    }
 
     suspend fun loadAndSaveUserKycStatus(): StrigaDataLayerResult<Unit> = withContext(coroutineContext) {
         try {

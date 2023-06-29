@@ -20,7 +20,7 @@ class StrigaUserStatusDestinationMapper {
             userStatus?.isKycInProgress == true -> {
                 StrigaUserStatusDestination.SUM_SUB_VERIFICATION
             }
-            userStatus?.kysStatus == StrigaUserVerificationStatus.APPROVED -> {
+            userStatus?.kycStatus == StrigaUserVerificationStatus.APPROVED -> {
                 StrigaUserStatusDestination.IBAN_ACCOUNT
             }
             else -> {
@@ -32,7 +32,7 @@ class StrigaUserStatusDestinationMapper {
 
     fun mapToStatusBanner(userStatus: StrigaUserStatusDetails?): StrigaKycStatusBanner? {
         if (userStatus == null || !userStatus.isMobileVerified) return null
-        return when (userStatus.kysStatus) {
+        return when (userStatus.kycStatus) {
             StrigaUserVerificationStatus.NOT_STARTED,
             StrigaUserVerificationStatus.INITIATED -> StrigaKycStatusBanner.IDENTIFY
             StrigaUserVerificationStatus.PENDING_REVIEW,

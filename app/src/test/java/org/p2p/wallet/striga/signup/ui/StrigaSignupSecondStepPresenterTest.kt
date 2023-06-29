@@ -115,6 +115,8 @@ class StrigaSignupSecondStepPresenterTest {
                 signupDataRepository = signupDataRepository,
                 userInteractor = userInteractor,
                 metadataInteractor = metadataInteractor,
+                strigaSmsInputInteractor = mockk(relaxed = true),
+                strigaUserStatusRepository = mockk(relaxed = true)
             )
         )
     }

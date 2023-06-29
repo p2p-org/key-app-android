@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -150,7 +151,8 @@ class StrigaSmsInputInteractorTest {
             strigaSignupDataRepository = strigaSignupDataRepository,
             phoneCodeRepository = countryCodeRepository,
             inAppFeatureFlags = inAppFeatureFlags,
-            strigaStorage = strigaStorage
+            strigaStorage = strigaStorage,
+            smsInputTimer = mockk(relaxed = true)
         )
     }
 }

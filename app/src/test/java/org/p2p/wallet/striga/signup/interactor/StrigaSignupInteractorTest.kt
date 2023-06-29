@@ -7,6 +7,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -445,7 +446,9 @@ class StrigaSignupInteractorTest {
             countryCodeRepository = countryRepository,
             signupDataRepository = signupDataRepository,
             userInteractor = userInteractor,
-            metadataInteractor = metadataInteractor
+            metadataInteractor = metadataInteractor,
+            strigaSmsInputInteractor = mockk(relaxed = true),
+            strigaUserStatusRepository = mockk(relaxed = true)
         )
     }
 
