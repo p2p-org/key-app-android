@@ -8,8 +8,10 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.named
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -72,7 +74,6 @@ import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
 import org.p2p.wallet.auth.web3authsdk.Web3AuthDurationTracker
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
-import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.settings.ui.security.seed.UserSeedPhraseContract
 import org.p2p.wallet.settings.ui.security.seed.UserSeedPhrasePresenter
 import org.p2p.wallet.smsinput.SmsInputContract
@@ -81,6 +82,8 @@ import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputPresenter
 import org.p2p.wallet.splash.SplashContract
 import org.p2p.wallet.splash.SplashPresenter
+
+private const val SMS_TIMER_ONBOARDING = "TIMER_ONBOARDING"
 
 object AuthModule {
 
@@ -145,8 +148,40 @@ object AuthModule {
                 durationTracker = get()
             )
         }
+        singleOf(::SmsInputTimer) {
+            named(SMS_TIMER_ONBOARDING)
+        }
+        factory {
+            CreateWalletInteractor(
+                gatewayServiceRepository = get(),
+                signUpFlowDataRepository = get(),
+                userSignUpDetailsStorage = get(),
+                smsInputTimer = get(named(SMS_TIMER_ONBOARDING)),
+                tokenKeyProvider = get(),
+                seedPhraseProvider = get(),
+                crashLogger = get(),
+            )
+        }
+        factory {
+            RestoreWalletInteractor(
+                customShareRestoreInteractor = get(),
+                torusKeyInteractor = get(),
+                userRestoreInteractor = get(),
+                restoreFlowDataLocalRepository = get(),
+                smsInputTimer = get(named(SMS_TIMER_ONBOARDING)),
+                signUpDetailsStorage = get(),
+                restoreWalletAnalytics = get(),
+            )
+        }
+        factory {
+            CustomShareRestoreInteractor(
+                gatewayServiceRepository = get(),
+                restoreFlowDataLocalRepository = get(),
+                smsInputTimer = get(named(SMS_TIMER_ONBOARDING)),
+                gson = get()
+            )
+        }
         singleOf(::SignUpFlowDataLocalRepository)
-        factoryOf(::CreateWalletInteractor)
         factoryOf(::UserSignUpInteractor)
         factoryOf(::FileInteractor)
         singleOf(::OnboardingInteractor)
@@ -165,8 +200,6 @@ object AuthModule {
 
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
         factoryOf(::RestoreErrorScreenPresenter) bind RestoreErrorScreenContract.Presenter::class
-
-        singleOf(::SmsInputTimer)
         factoryOf(::OnboardingSmsInputPresenter) {
             bind<SmsInputContract.Presenter>()
             named(SmsInputFactory.Type.Onboarding.name)
@@ -181,11 +214,10 @@ object AuthModule {
             )
         } bind OnboardingGeneralErrorTimerContract.Presenter::class
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
-        factoryOf(::RestoreWalletInteractor)
+
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
 
         singleOf(::RestoreFlowDataLocalRepository)
-        factoryOf(::CustomShareRestoreInteractor)
         factoryOf(::TorusKeyInteractor)
         factoryOf(::UserRestoreInteractor)
         factoryOf(::GatewayMetadataMerger)

@@ -2,7 +2,6 @@ package org.p2p.wallet.striga.di
 
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.named
 import org.koin.core.module.dsl.new
@@ -18,6 +17,7 @@ import org.p2p.wallet.infrastructure.network.interceptor.StrigaHeaderSignatureGe
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
+import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
 import org.p2p.wallet.smsinput.striga.StrigaSmsInputPresenter
 import org.p2p.wallet.striga.finish.StrigaSignupFinishContract
@@ -47,8 +47,11 @@ import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepositoryMapper
-import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserStatusDestinationMapper
+import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
+
+private const val SMS_TIMER_STRIGA_REGISTRATION = "TIMER_STRIGA_REGISTRATION"
+
 object StrigaSignupModule : InjectionModule {
     override fun create() = module {
         initDataLayer()
@@ -71,13 +74,25 @@ object StrigaSignupModule : InjectionModule {
         factoryOf(::StrigaSignupDataValidator)
         factoryOf(::StrigaSignupInteractor)
         factoryOf(::StrigaUserInteractor)
-        factoryOf(::StrigaSmsInputInteractor)
-        factory(named(SmsInputFactory.Type.Striga.name)) { (resendSmsOnLaunch: Boolean) ->
-            StrigaSmsInputPresenter(
-                resendSmsOnLaunch = resendSmsOnLaunch,
-                interactor = get()
-            )
+
+        factoryOf(::StrigaSmsInputPresenter) {
+            named(SmsInputFactory.Type.Striga.name)
         } bind SmsInputContract.Presenter::class
+
+        singleOf(::SmsInputTimer) {
+            named(SMS_TIMER_STRIGA_REGISTRATION)
+        }
+        factory {
+            StrigaSmsInputInteractor(
+                strigaUserRepository = get(),
+                strigaSignupDataRepository = get(),
+                phoneCodeRepository = get(),
+                inAppFeatureFlags = get(),
+                strigaStorage = get(),
+                smsInputTimer = get(named(SMS_TIMER_STRIGA_REGISTRATION))
+            )
+        }
+
         factoryOf(::StrigaSignupFinishPresenter) bind StrigaSignupFinishContract.Presenter::class
     }
 
