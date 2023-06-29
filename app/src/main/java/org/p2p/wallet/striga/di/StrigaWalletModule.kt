@@ -12,6 +12,7 @@ import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
+import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.repository.StrigaUserWalletsMapper
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRemoteRepository
@@ -23,6 +24,7 @@ object StrigaWalletModule : InjectionModule {
     override fun create(): Module = module {
         initDataLayer()
 
+        factoryOf(::StrigaClaimInteractor)
         factoryOf(::StrigaWalletInteractor)
     }
 

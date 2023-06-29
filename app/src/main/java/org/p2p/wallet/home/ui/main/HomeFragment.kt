@@ -57,6 +57,7 @@ import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
@@ -394,6 +395,10 @@ class HomeFragment :
 
     override fun onBannerCloseClicked(bannerTitleId: Int) {
         presenter.onBannerClicked(bannerTitleId)
+    }
+
+    override fun onStrigaClaimTokenClicked(tokenMint: Base58String) {
+        // TODO: PWN-8900
     }
 
     override fun onToggleClicked() {

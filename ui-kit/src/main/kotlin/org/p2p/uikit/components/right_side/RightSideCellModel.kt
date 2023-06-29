@@ -5,6 +5,7 @@ import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 
+// todo (PWN-9102): add Button state
 sealed interface RightSideCellModel {
 
     data class TwoLineText(

@@ -15,7 +15,9 @@ import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
+import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toPx
 
 class HomePresenterMapper(
@@ -66,19 +68,34 @@ class HomePresenterMapper(
     suspend fun mapToItems(
         tokens: List<Token.Active>,
         ethereumTokens: List<Token.Eth>,
+        strigaClaimableTokens: List<StrigaClaimableToken>,
         visibilityState: VisibilityState,
         isZerosHidden: Boolean
     ): List<HomeElementItem> {
         return withContext(dispatchers.io) {
 
-            val groups: Map<Boolean, List<Token.Active>> = tokens.groupBy { token ->
+            val isHiddenGroupToTokens: Map<Boolean, List<Token.Active>> = tokens.groupBy { token ->
                 token.isDefinitelyHidden(isZerosHidden)
             }
 
-            val hiddenTokens = groups[true].orEmpty()
-            val visibleTokens = groups[false].orEmpty()
+            val hiddenTokens = isHiddenGroupToTokens[true].orEmpty()
+            val visibleTokens = isHiddenGroupToTokens[false].orEmpty()
 
-            val result = mutableListOf<HomeElementItem>(HomeElementItem.Title(R.string.home_tokens))
+            val result = mutableListOf<HomeElementItem>()
+
+            result += HomeElementItem.Title(R.string.home_tokens)
+
+            result += strigaClaimableTokens.map {
+                val mintAddress = it.tokenDetails.mintAddress.toBase58Instance()
+                HomeElementItem.StrigaClaim(
+                    amountAvailable = it.claimableAmount,
+                    tokenName = it.tokenDetails.tokenName,
+                    tokenMintAddress = mintAddress,
+                    tokenSymbol = it.tokenDetails.tokenSymbol,
+                    tokenIcon = it.tokenDetails.iconUrl.orEmpty(),
+                    isClaimInProcess = false
+                )
+            }
 
             result += ethereumTokens.map { token ->
                 HomeElementItem.Claim(
