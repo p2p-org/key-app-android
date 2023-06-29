@@ -1,9 +1,9 @@
 package org.p2p.solanaj.utils;
 
 import org.bitcoinj.core.Bech32;
-import org.p2p.solanaj.utils.crypto.Base58Utils;
-import org.p2p.solanaj.utils.crypto.Base64UrlUtils;
-import org.p2p.solanaj.utils.crypto.Hex;
+import org.p2p.core.utils.Base58Utils;
+import org.p2p.core.crypto.Base64UrlUtils;
+import org.p2p.core.crypto.Hex;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;

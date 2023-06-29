@@ -7,9 +7,9 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.pricecache.PriceCacheRepository
 import org.p2p.wallet.R
-import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.infrastructure.network.NetworkModule.getClient
-import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
+import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.network.NetworkCoreModule.getRetrofit
+import org.p2p.core.network.NetworkCoreModule.getClient
 import org.p2p.wallet.infrastructure.network.coingecko.CoinGeckoApi
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.impl.TokenPricesCoinGeckoRepository

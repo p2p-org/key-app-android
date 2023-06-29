@@ -2,6 +2,7 @@ package org.p2p.wallet.history.interactor.mapper
 
 import com.google.gson.Gson
 import org.p2p.core.utils.Constants.FEE_RELAYER_ACCOUNTS
+import org.p2p.core.utils.fromJsonReified
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.bridge.claim.repository.EthereumBridgeInMemoryRepository
 import org.p2p.wallet.bridge.model.BridgeFee
@@ -18,7 +19,6 @@ import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.UsernameFormatter
-import org.p2p.wallet.utils.fromJsonReified
 
 class RpcHistoryTransactionConverter(
     private val tokenKeyProvider: TokenKeyProvider,

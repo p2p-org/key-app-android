@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.finish
 
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers

@@ -3,7 +3,7 @@ package org.p2p.wallet.sell
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorage
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsContract

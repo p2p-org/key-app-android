@@ -10,21 +10,21 @@ import java.math.BigDecimal
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.home.model.Base58TypeAdapter
-import org.p2p.wallet.home.model.Base64TypeAdapter
-import org.p2p.wallet.home.model.BigDecimalTypeAdapter
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionInstructionErrorParser
+import org.p2p.core.network.gson.Base58TypeAdapter
+import org.p2p.core.network.gson.Base64TypeAdapter
+import org.p2p.core.network.gson.BigDecimalTypeAdapter
+import org.p2p.core.network.data.transactionerrors.RpcTransactionError
+import org.p2p.core.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
+import org.p2p.core.network.data.transactionerrors.RpcTransactionInstructionErrorParser
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.user.api.request.StrigaCreateUserRequest
 import org.p2p.wallet.striga.user.api.response.StrigaCreateUserResponse
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrigaUserRepositoryMapperTest {

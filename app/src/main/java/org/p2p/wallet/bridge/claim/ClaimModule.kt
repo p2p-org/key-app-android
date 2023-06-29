@@ -13,7 +13,7 @@ import org.p2p.wallet.bridge.claim.repository.EthereumClaimRepository
 import org.p2p.wallet.bridge.claim.ui.ClaimContract
 import org.p2p.wallet.bridge.claim.ui.ClaimPresenter
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 
 object ClaimModule : InjectionModule {
 

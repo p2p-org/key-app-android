@@ -8,7 +8,7 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData
 import org.p2p.solanaj.programs.TokenProgram.MintData
 import org.p2p.solanaj.rpc.RpcException
-import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.core.crypto.Base64Utils
 
 object TokenTransaction {
 

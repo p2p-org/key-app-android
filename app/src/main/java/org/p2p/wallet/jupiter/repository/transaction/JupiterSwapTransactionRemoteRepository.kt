@@ -1,12 +1,12 @@
 package org.p2p.wallet.jupiter.repository.transaction
 
 import kotlinx.coroutines.CancellationException
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.SwapFailure
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.utils.retryOnException
 

@@ -15,7 +15,8 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.settings.DeviceInfoHelper
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.solanaj.core.toBase58Instance
 
 class MetadataInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,

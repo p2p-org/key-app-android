@@ -11,8 +11,8 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.solanaj.utils.crypto.toBase64Instance
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.toBase64Instance
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
@@ -24,7 +24,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class BridgeSendInteractor(
     private val ethereumSendRepository: EthereumSendRepository,

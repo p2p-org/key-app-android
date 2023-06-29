@@ -36,7 +36,7 @@ import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 private const val TAG = "SwapStateManager"
 

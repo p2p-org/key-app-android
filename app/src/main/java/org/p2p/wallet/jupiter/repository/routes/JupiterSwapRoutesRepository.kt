@@ -2,7 +2,7 @@ package org.p2p.wallet.jupiter.repository.routes
 
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 interface JupiterSwapRoutesRepository {
     suspend fun getSwapRoutesForSwapPair(

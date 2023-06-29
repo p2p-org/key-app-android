@@ -9,8 +9,7 @@ import org.koin.dsl.module
 import org.p2p.solanaj.utils.BtcAddressValidator
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.infrastructure.network.NetworkModule.httpLoggingInterceptor
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.renbtc.api.RenBTCApi
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
@@ -28,6 +27,7 @@ import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsContract
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsPresenter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import org.p2p.core.network.NetworkCoreModule.httpLoggingInterceptor
 
 object RenBtcModule : InjectionModule {
 

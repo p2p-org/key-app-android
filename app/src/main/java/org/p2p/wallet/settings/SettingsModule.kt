@@ -5,7 +5,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.settings.model.SettingsItemMapper

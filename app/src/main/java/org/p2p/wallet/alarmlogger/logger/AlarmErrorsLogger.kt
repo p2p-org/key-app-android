@@ -10,15 +10,15 @@ import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
 import org.p2p.wallet.alarmlogger.model.SwapAlarmError
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.utils.AppBuildType
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.retryRequest
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class AlarmErrorsLogger(
     private val api: AlarmErrorsServiceApi,

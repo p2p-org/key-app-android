@@ -7,7 +7,7 @@ import com.sumsub.sns.core.data.model.SNSSDKState
 import timber.log.Timber
 import java.util.Locale
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkInitParams

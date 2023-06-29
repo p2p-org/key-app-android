@@ -6,7 +6,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.relay.RelayRemoteRepository
 import org.p2p.wallet.relay.RelayRepository
 import org.p2p.wallet.solend.interactor.SolendDepositInteractor

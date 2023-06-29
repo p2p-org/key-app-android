@@ -4,7 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isTrue
 import org.junit.Test
 import org.p2p.solanaj.utils.TweetNaclFast
-import org.p2p.solanaj.utils.crypto.decodeFromBase64
+import org.p2p.core.crypto.decodeFromBase64
 
 class StrigaHeaderSignatureGeneratorTest {
     private val signatureGenerator = StrigaHeaderSignatureGenerator()

@@ -19,7 +19,7 @@ import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceRestoreWallet
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceUpdateMetadataMapper
 import org.p2p.wallet.auth.gateway.repository.mapper.PushServiceSignatureFieldGenerator
 import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.utils.chacha.ChaCha20Poly1305Decryptor
 import org.p2p.wallet.utils.chacha.ChaCha20Poly1305Encryptor
 import org.p2p.wallet.utils.chacha.ChaCha20Poly1305SymmetricKeyGenerator

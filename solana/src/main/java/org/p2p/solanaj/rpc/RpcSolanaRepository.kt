@@ -7,7 +7,7 @@ import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 
 interface RpcSolanaRepository {
     suspend fun getAccountInfo(stateKey: PublicKey): AccountInfo

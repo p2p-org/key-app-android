@@ -14,7 +14,7 @@ import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.SwapFailure
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.retryOnException
 
 private const val TAG = "JupiterSwapRoutesRemoteRepository"

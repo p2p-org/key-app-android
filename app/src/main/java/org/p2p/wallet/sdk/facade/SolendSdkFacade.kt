@@ -20,7 +20,7 @@ import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositByTokenResponseRe
 import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositResponse
 import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositsResponseResponse
 import org.p2p.wallet.sdk.facade.model.solend.SolendWithdrawTransactionsResponse
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import kotlinx.coroutines.withContext
 
 class SolendSdkFacade(

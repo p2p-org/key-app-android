@@ -5,7 +5,7 @@ import org.p2p.wallet.history.model.moonpay.MoonpayHistoryTransaction
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionFailureReason
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.threeten.bp.ZonedDateTime
 
 sealed class SellTransaction(

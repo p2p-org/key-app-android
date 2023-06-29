@@ -73,15 +73,15 @@
 
 # Our own classes
 -keep public class org.p2p.core.crashlytics.helpers.TimberCrashTree
--keep public class org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
+-keep public class org.p2p.core.crashlytics.helpers.CrashHttpLoggingInterceptor
 -keep class io.sentry.SentryEvent { *; }
 -keep public class * implements org.p2p.wallet.auth.model.OnboardingFlow
 -keep public class org.p2p.wallet.auth.model.RestoreError
 -keep public class * implements org.p2p.wallet.auth.model.RestoreUserResult
 -keep public class * implements org.p2p.wallet.jupiter.statemanager.SwapStateAction
 -keep public class * extends org.p2p.wallet.moonpay.model.MoonpayBuyResult
--keep public class * implements org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
--keep public class * implements org.p2p.wallet.infrastructure.network.data.transactionerrors.TransactionInstructionError
+-keep public class * implements org.p2p.core.network.data.transactionerrors.RpcTransactionError
+-keep public class * implements org.p2p.core.network.data.transactionerrors.TransactionInstructionError
 -keep public class * implements org.p2p.wallet.newsend.model.FeeRelayerStateError
 -keep public class * implements org.p2p.wallet.feerelayer.model.FeeCalculationState
 -keep public class * implements org.p2p.wallet.bridge.model.BridgeResult

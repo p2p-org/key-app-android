@@ -6,14 +6,14 @@ import java.util.Date
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
 import org.p2p.core.rpc.JsonRpc
-import org.p2p.solanaj.utils.crypto.toBase64Instance
+import org.p2p.core.utils.toJsonObject
+import org.p2p.core.crypto.toBase64Instance
 import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
 import org.p2p.wallet.auth.gateway.api.request.UpdateMetadataRpcRequest
 import org.p2p.wallet.auth.gateway.api.response.UpdateMetadataResponse
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.toByteArray
-import org.p2p.wallet.utils.toJsonObject
 
 class GatewayServiceUpdateMetadataMapper(
     private val onboardingMetadataCipher: GatewayServiceOnboardingMetadataCipher,

@@ -1,7 +1,7 @@
 package org.p2p.solanaj.utils
 
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.core.utils.Base58Utils
 
 object PublicKeyValidator {
     private const val REGEX = "[1-9A-HJ-NP-Za-km-z]{32,44}"

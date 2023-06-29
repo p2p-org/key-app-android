@@ -1,7 +1,7 @@
 package org.p2p.wallet.common.crypto.keystore
 
 import android.content.SharedPreferences
-import org.p2p.solanaj.utils.crypto.Hex
+import org.p2p.core.crypto.Hex
 import java.security.KeyStore
 import javax.crypto.Cipher
 

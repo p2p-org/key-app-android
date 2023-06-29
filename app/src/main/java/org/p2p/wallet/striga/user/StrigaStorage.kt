@@ -3,8 +3,8 @@ package org.p2p.wallet.striga.user
 import androidx.core.content.edit
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
-import org.p2p.wallet.utils.fromJsonReified
 
 private const val KEY_USER_STATUS = "KEY_USER_STATUS"
 private const val KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS = "KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS"

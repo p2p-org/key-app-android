@@ -4,7 +4,7 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import org.p2p.wallet.moonpay.model.SellTransaction
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import java.math.BigDecimal
 
 interface SellRepository {

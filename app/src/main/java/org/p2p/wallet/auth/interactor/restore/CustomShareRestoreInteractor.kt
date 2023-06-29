@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import org.p2p.solanaj.utils.crypto.decodeFromBase64
+import org.p2p.core.crypto.decodeFromBase64
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
@@ -11,8 +11,8 @@ import org.p2p.wallet.auth.model.RestoreWalletFailure
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.wallet.utils.fromJsonReified
 import timber.log.Timber
+import org.p2p.core.utils.fromJsonReified
 
 class CustomShareRestoreInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,

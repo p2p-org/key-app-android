@@ -10,10 +10,10 @@ import org.p2p.solanaj.rpc.RpcException
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.solanaj.utils.Hash
 import org.p2p.solanaj.utils.Utils
-import org.p2p.solanaj.utils.crypto.Hex
+import org.p2p.core.crypto.Hex
 import org.p2p.wallet.auth.analytics.RenBtcAnalytics
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.core.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber

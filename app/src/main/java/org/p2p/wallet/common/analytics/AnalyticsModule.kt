@@ -18,7 +18,7 @@ import org.p2p.wallet.bridge.analytics.SendBridgesAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.repository.AnalyticsInMemoryRepository
 import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.analytics.HomeAnalytics

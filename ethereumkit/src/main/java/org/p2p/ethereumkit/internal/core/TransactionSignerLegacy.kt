@@ -1,6 +1,5 @@
 package org.p2p.ethereumkit.internal.core
 
-import org.web3j.crypto.RawTransaction
 import org.web3j.crypto.TransactionDecoder
 import org.web3j.crypto.TransactionEncoder
 import java.math.BigInteger
