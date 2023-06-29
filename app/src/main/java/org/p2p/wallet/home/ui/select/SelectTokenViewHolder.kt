@@ -72,7 +72,6 @@ class SelectTokenViewHolder(
                 // do nothing
             }
             else -> Unit
-
         }
     }
 

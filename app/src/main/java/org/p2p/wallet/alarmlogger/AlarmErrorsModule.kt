@@ -12,8 +12,6 @@ import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmStrigaErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
-import org.p2p.core.common.di.InjectionModule
-import org.p2p.core.network.NetworkCoreModule.getRetrofit
 
 object AlarmErrorsModule : InjectionModule {
     override fun create() = module {

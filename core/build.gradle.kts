@@ -27,23 +27,9 @@ dependencies {
     api(Dependencies.bitcoinj)
     val koinVersion = "3.2.0"
     // https://github.com/InsertKoinIO/koin
-    api("io.insert-koin:koin-android:$koinVersion")
-    implementation("io.insert-koin:koin-core:$koinVersion")
-
-    api("io.insert-koin:koin-androidx-workmanager:$koinVersion")
-
-
-    // https://github.com/JakeWharton/timber
-    val okHttpVersion = "4.9.3"
-    api("com.squareup.okhttp3:okhttp:$okHttpVersion")
-    api("com.squareup.okhttp3:logging-interceptor:$okHttpVersion")
-
-    api("com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion")
-    api("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
-    api("com.google.code.gson:gson:$retrofitVersion")
-
+    api("com.google.code.gson:gson:2.9.0")
+    api(Dependencies.inputmask)
     api(Dependencies.timber)
-
     implementation(Dependencies.glide)
 
     // Firebase
