@@ -106,8 +106,6 @@ dependencies {
     Dependencies.coroutineLibraries.forEach { implementation(it) }
 
     // Room
-    implementation(Dependencies.roomRuntime)
-    implementation(Dependencies.roomKtx)
     kapt(Dependencies.roomCompiler)
 
     // Firebase

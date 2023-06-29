@@ -1,5 +1,6 @@
 package org.p2p.token.service
 
+import org.koin.core.context.loadKoinModules
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -17,6 +18,7 @@ import org.p2p.token.service.api.TokenServiceRemoteRepository
 import org.p2p.token.service.api.mapper.TokenServiceMapper
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
+import org.p2p.token.service.database.TokenServiceDatabaseModule
 import org.p2p.token.service.repository.TokenServiceRepositoryImpl
 import org.p2p.token.service.repository.metadata.TokenMetadataInMemoryRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataLocalRepository
@@ -61,5 +63,7 @@ object TokenServiceModule : InjectionModule {
         )}
         factoryOf(::TokenServiceEventPublisher)
         singleOf(::TokenServiceEventManager)
+
+        loadKoinModules(TokenServiceDatabaseModule.create())
     }
 }
