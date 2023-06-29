@@ -6,8 +6,6 @@ import org.near.borshj.Borsh
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
@@ -23,6 +21,7 @@ import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.settings.DeviceInfoHelper
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.toByteArray
 import org.p2p.wallet.utils.toJsonObject
 
@@ -120,7 +119,7 @@ class GatewayServiceCreateWalletMapper(
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
-        val epochUnixTimeSeconds = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS).inWholeSeconds
+        val epochUnixTimeSeconds = DateTimeUtils.getCurrentTimestampInSeconds()
         val encryptedMetadata: GatewayOnboardingMetadataCiphered = onboardingMetadataCipher.encryptMetadata(
             mnemonicPhrase = userSeedPhrase,
             onboardingMetadata = GatewayOnboardingMetadata(
