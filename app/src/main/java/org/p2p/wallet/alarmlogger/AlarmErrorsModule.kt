@@ -4,13 +4,14 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import retrofit2.create
+import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
+import org.p2p.wallet.alarmlogger.model.AlarmStrigaErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
-import org.p2p.core.common.di.InjectionModule
-import org.p2p.core.network.NetworkCoreModule.getRetrofit
 
 object AlarmErrorsModule : InjectionModule {
     override fun create() = module {
@@ -25,5 +26,6 @@ object AlarmErrorsModule : InjectionModule {
         factoryOf(::AlarmErrorsLogger)
         factoryOf(::AlarmSwapErrorConverter)
         factoryOf(::AlarmSendErrorConverter)
+        factoryOf(::AlarmStrigaErrorConverter)
     }
 }
