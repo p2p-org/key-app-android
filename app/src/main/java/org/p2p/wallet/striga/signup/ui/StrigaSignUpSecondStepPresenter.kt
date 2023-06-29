@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.signup.ui
 
+import com.sumsub.sns.core.data.model.SNSSDKState
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
@@ -148,7 +149,7 @@ class StrigaSignUpSecondStepPresenter(
     private fun logAlarmError(e: Throwable) {
         val error = StrigaAlarmError(
             source = "other",
-            kycSdkState = toString(),
+            kycSdkState = SNSSDKState.Initial.toString(),
             error = e.message ?: e.localizedMessage ?: "Unknown error"
         )
         alarmErrorsLogger.triggerStrigaAlarm(error)
