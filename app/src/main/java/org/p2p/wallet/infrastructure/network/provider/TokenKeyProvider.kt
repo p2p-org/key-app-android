@@ -2,13 +2,13 @@ package org.p2p.wallet.infrastructure.network.provider
 
 import timber.log.Timber
 import kotlinx.coroutines.runBlocking
-import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.core.utils.Base58Utils
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 private const val TAG = "TokenKeyProvider"
 

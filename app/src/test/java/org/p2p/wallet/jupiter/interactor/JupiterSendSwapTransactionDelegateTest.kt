@@ -12,22 +12,22 @@ import org.junit.Test
 import kotlinx.coroutines.runBlocking
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.solanaj.utils.crypto.toBase64Instance
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.TransactionInstructionError
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.toBase64Instance
+import org.p2p.core.network.data.ErrorCode
+import org.p2p.core.network.data.ServerException
+import org.p2p.core.network.data.transactionerrors.RpcTransactionError
+import org.p2p.core.network.data.transactionerrors.TransactionInstructionError
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.assertThat
 import org.p2p.wallet.utils.generateRandomBytes
 import org.p2p.wallet.utils.stub
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class JupiterSendSwapTransactionDelegateTest {
 

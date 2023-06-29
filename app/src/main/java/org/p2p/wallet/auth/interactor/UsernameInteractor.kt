@@ -15,8 +15,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 
 const val KEY_USERNAME = "KEY_USERNAME"
 const val KEY_USERNAME_DOMAIN = "KEY_USERNAME_DOMAIN"

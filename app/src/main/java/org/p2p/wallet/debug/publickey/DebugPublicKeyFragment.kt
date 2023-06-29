@@ -5,18 +5,17 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.core.utils.Base58Utils
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentDebugPublicKeyBinding
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
-import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class DebugPublicKeyFragment : BaseFragment(R.layout.fragment_debug_public_key) {
@@ -88,7 +87,7 @@ class DebugPublicKeyFragment : BaseFragment(R.layout.fragment_debug_public_key) 
     }
 
     private fun getActualPublicKey(): Base58String? {
-        return runCatching { secureStorageContract.getString(Key.KEY_PUBLIC_KEY) }
+        return runCatching { secureStorageContract.getString(SecureStorageContract.Key.KEY_PUBLIC_KEY) }
             .getOrNull()
             ?.takeIf { it.isNotBlank() }
             ?.let { Base58Utils.decodeToString(it) }
@@ -96,7 +95,7 @@ class DebugPublicKeyFragment : BaseFragment(R.layout.fragment_debug_public_key) 
     }
 
     private fun getStubPublicKey(): Base58String? {
-        return runCatching { secureStorageContract.getString(Key.KEY_STUB_PUBLIC_KEY) }
+        return runCatching { secureStorageContract.getString(SecureStorageContract.Key.KEY_STUB_PUBLIC_KEY) }
             .getOrNull()
             ?.takeIf { it.isNotBlank() }
             ?.let { Base58Utils.decodeToString(it) }

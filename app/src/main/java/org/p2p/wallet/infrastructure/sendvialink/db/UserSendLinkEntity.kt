@@ -5,10 +5,10 @@ import androidx.room.Entity
 import java.math.BigDecimal
 import java.util.Calendar
 import java.util.UUID
-import org.p2p.core.utils.Constants
 import org.p2p.core.utils.MillisSinceEpoch
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.utils.Constants
 
 @Entity(
     tableName = "user_send_links",

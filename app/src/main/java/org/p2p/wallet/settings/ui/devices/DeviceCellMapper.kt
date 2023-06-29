@@ -21,7 +21,7 @@ import org.p2p.uikit.utils.text.TextViewSize
 import org.p2p.uikit.utils.text.badgePadding
 import org.p2p.uikit.utils.text.badgeRounded
 import org.p2p.wallet.R
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.toPx
 
 class DeviceCellMapper(

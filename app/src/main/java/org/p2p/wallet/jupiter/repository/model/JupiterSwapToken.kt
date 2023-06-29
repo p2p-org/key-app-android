@@ -1,7 +1,7 @@
 package org.p2p.wallet.jupiter.repository.model
 
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 data class JupiterSwapToken(
     val tokenMint: Base58String,

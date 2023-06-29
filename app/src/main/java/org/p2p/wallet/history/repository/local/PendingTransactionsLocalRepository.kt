@@ -1,7 +1,7 @@
 package org.p2p.wallet.history.repository.local
 
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 interface PendingTransactionsLocalRepository {
     suspend fun removePendingTransaction(txSignature: String)

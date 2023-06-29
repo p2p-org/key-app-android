@@ -7,7 +7,7 @@ import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.SimulateTransactionResponse
 import org.p2p.solanaj.rpc.api.RecentPerformanceSampleResponse
-import org.p2p.wallet.infrastructure.network.data.CommonResponse
+import org.p2p.core.network.data.CommonResponse
 import org.p2p.wallet.utils.emptyString
 
 interface RpcSolanaApi {

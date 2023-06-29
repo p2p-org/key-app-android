@@ -14,7 +14,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.common.storage.ExternalStorageRepository
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.user.interactor.TOKENS_FILE_NAME
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository

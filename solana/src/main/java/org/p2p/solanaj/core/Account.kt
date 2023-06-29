@@ -10,7 +10,7 @@ import org.p2p.core.utils.emptyString
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.solanaj.crypto.SolanaBip44
 import org.p2p.solanaj.utils.TweetNaclFast
-import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.core.utils.Base58Utils
 
 private const val PBKDF2_ROUNDS = 2048
 

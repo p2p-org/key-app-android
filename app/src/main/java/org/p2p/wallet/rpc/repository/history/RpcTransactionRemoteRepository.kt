@@ -5,7 +5,7 @@ import org.p2p.solanaj.model.types.ConfirmationStatus
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.core.crypto.Base64Utils
 import org.p2p.wallet.rpc.api.RpcTransactionApi
 import org.p2p.wallet.utils.emptyString
 

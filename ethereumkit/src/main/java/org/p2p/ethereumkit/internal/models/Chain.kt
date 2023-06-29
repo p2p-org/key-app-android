@@ -1,19 +1,12 @@
 package org.p2p.ethereumkit.internal.models
 
 enum class Chain(
-        val id: Int,
-        val coinType: Int,
-        val syncInterval: Long,
-        val isEIP1559Supported: Boolean
+    val id: Int,
+    val coinType: Int,
+    val syncInterval: Long,
+    val isEIP1559Supported: Boolean
 ) {
-    Ethereum(1, 60, 15, true),
-    BinanceSmartChain(56, 60, 15, false),
-    Polygon(137, 60, 15, true),
-    Optimism(10, 60, 15, false),
-    ArbitrumOne(42161, 60, 15, false),
-    Avalanche(43114, 60, 15, true),
-    Gnosis(100, 60, 15, true),
-    EthereumGoerli(5, 1, 15, true);
+    Ethereum(id = 1, coinType = 60, syncInterval = 15, isEIP1559Supported = true);
 
     val isMainNet = coinType != 1
 }

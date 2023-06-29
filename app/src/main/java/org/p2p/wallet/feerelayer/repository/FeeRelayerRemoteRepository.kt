@@ -3,7 +3,7 @@ package org.p2p.wallet.feerelayer.repository
 import java.math.BigInteger
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest

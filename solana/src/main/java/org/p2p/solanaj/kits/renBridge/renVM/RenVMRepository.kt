@@ -8,7 +8,7 @@ import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
 import org.p2p.solanaj.rpc.RenPoolRepository
 import org.p2p.solanaj.rpc.RpcException
 import org.p2p.solanaj.utils.Utils
-import org.p2p.solanaj.utils.crypto.Base64UrlUtils
+import org.p2p.core.crypto.Base64UrlUtils
 import java.math.BigInteger
 
 const val MINT_TRANSACTION_INPUT =

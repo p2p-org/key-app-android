@@ -12,7 +12,7 @@ import org.p2p.wallet.notification.FcmPushNotificationData
 import org.p2p.wallet.notification.NotificationType
 import timber.log.Timber
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.push_notifications.analytics.PushChannel

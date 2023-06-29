@@ -8,6 +8,10 @@ import com.google.gson.JsonArray
 import com.google.gson.stream.JsonReader
 import org.junit.Test
 import java.io.StringReader
+import org.p2p.core.network.data.transactionerrors.RpcTransactionError
+import org.p2p.core.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
+import org.p2p.core.network.data.transactionerrors.RpcTransactionInstructionErrorParser
+import org.p2p.core.network.data.transactionerrors.TransactionInstructionError
 
 class RpcTransactionErrorParserTest {
     private val gson = Gson()

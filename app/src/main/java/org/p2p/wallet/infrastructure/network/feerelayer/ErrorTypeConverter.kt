@@ -1,8 +1,8 @@
 package org.p2p.wallet.infrastructure.network.feerelayer
 
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.INVALID_TRANSACTION_ERROR_CODE
-import org.p2p.wallet.infrastructure.network.data.TRANSACTION_SIMULATION_FAILED_ERROR_CODE
+import org.p2p.core.network.data.ErrorCode
+import org.p2p.core.network.data.INVALID_TRANSACTION_ERROR_CODE
+import org.p2p.core.network.data.TRANSACTION_SIMULATION_FAILED_ERROR_CODE
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 
 object ErrorTypeConverter {

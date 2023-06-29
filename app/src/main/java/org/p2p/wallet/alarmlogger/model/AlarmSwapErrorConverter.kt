@@ -4,12 +4,12 @@ import com.google.gson.Gson
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsSwapRequest
 import org.p2p.wallet.home.repository.UserTokensRepository
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.core.network.data.ServerException
+import org.p2p.core.utils.toJsonObject
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionMapper
 import org.p2p.wallet.jupiter.statemanager.SwapProfiler
 import org.p2p.wallet.jupiter.statemanager.SwapState
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toJsonObject
+import org.p2p.core.crypto.Base58String
 
 class AlarmSwapErrorConverter(
     private val gson: Gson,

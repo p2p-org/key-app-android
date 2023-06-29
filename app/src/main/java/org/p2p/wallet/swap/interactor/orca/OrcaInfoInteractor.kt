@@ -1,6 +1,6 @@
 package org.p2p.wallet.swap.interactor.orca
 
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.model.orca.OrcaPools
 import org.p2p.wallet.swap.model.orca.OrcaRoute
 import org.p2p.wallet.swap.model.orca.OrcaRoutes

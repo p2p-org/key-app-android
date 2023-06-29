@@ -5,7 +5,7 @@ import org.p2p.core.BuildConfig.moonpayKey
 import org.p2p.core.utils.Constants
 import org.p2p.core.network.environment.MoonpayEnvironment
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 private const val QUERY_API_KEY = "apiKey"
 private const val QUERY_CURRENCY_CODE = "currencyCode"
