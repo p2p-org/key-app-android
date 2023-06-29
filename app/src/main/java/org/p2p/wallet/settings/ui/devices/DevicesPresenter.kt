@@ -38,10 +38,7 @@ class DevicesPresenter(
         val isTorusKeyValid = restoreFlowDataLocalRepository.isTorusKeyValid()
         if (isTorusKeyValid) {
             launch {
-                view?.setLoadingState(isScreenLoading = true)
                 updateDeviceShare()
-                view?.setLoadingState(isScreenLoading = false)
-                view?.showSuccessDeviceChange()
             }
         } else {
             submitUserPhoneNumber()
@@ -58,12 +55,16 @@ class DevicesPresenter(
     }
 
     private suspend fun refreshDeviceShare(newMetadata: GatewayOnboardingMetadata) {
+        view?.setLoadingState(isScreenLoading = true)
         try {
             restoreWalletInteractor.refreshDeviceShare()
             metadataInteractor.updateMetadata(newMetadata)
+            view?.showSuccessDeviceChange()
         } catch (error: Throwable) {
             view?.showFailDeviceChange()
             Timber.e(error, "Error on refreshDeviceShare")
+        } finally {
+            view?.setLoadingState(isScreenLoading = false)
         }
     }
 
