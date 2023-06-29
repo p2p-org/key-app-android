@@ -14,7 +14,6 @@ import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.settings.DeviceInfoHelper
 import org.p2p.wallet.utils.DateTimeUtils
 
@@ -22,7 +21,6 @@ private const val MAX_PHONE_NUMBER_TRIES = 5
 private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
 
 class DevicesPresenter(
-    private val secureStorage: SecureStorageContract,
     private val deviceCellMapper: DeviceCellMapper,
     private val metadataInteractor: MetadataInteractor,
     private val onboardingInteractor: OnboardingInteractor,
@@ -40,10 +38,7 @@ class DevicesPresenter(
         val isTorusKeyValid = restoreFlowDataLocalRepository.isTorusKeyValid()
         if (isTorusKeyValid) {
             launch {
-                view?.setLoadingState(isScreenLoading = true)
                 updateDeviceShare()
-                view?.setLoadingState(isScreenLoading = false)
-                view?.showSuccessDeviceChange()
             }
         } else {
             submitUserPhoneNumber()
@@ -60,21 +55,22 @@ class DevicesPresenter(
     }
 
     private suspend fun refreshDeviceShare(newMetadata: GatewayOnboardingMetadata) {
+        view?.setLoadingState(isScreenLoading = true)
         try {
             restoreWalletInteractor.refreshDeviceShare()
             metadataInteractor.updateMetadata(newMetadata)
+            view?.showSuccessDeviceChange()
         } catch (error: Throwable) {
             view?.showFailDeviceChange()
             Timber.e(error, "Error on refreshDeviceShare")
+        } finally {
+            view?.setLoadingState(isScreenLoading = false)
         }
     }
 
     private fun loadInitialData() {
         launch {
-            val oldDeviceShareName = secureStorage.getObject(
-                SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
-                GatewayOnboardingMetadata::class
-            )?.deviceShareDeviceName.orEmpty()
+            val oldDeviceShareName = metadataInteractor.currentMetadata?.deviceShareDeviceName.orEmpty()
             val items = deviceCellMapper.toCellModels(
                 DeviceInfoHelper.getCurrentDeviceName(),
                 oldDeviceShareName
@@ -86,10 +82,7 @@ class DevicesPresenter(
     private fun submitUserPhoneNumber() {
         launch {
             restoreWalletInteractor.generateRestoreUserKeyPair()
-            val phoneNumber = secureStorage.getObject(
-                SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
-                GatewayOnboardingMetadata::class
-            )?.customSharePhoneNumberE164
+            val phoneNumber = metadataInteractor.currentMetadata?.customSharePhoneNumberE164
                 .orEmpty()
                 .replace(Regex("[^0-9]"), "")
             val userPhoneNumber = PhoneNumber(phoneNumber)

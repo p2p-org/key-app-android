@@ -65,13 +65,13 @@ class SettingsEmailConfirmPresenter(
             deviceNameTimestampSec = DateTimeUtils.getCurrentTimestampInSeconds()
         )
         refreshDeviceShare(newMetadata)
-        view?.showSuccessDeviceChange()
     }
 
     private suspend fun refreshDeviceShare(newMetadata: GatewayOnboardingMetadata) {
         try {
             restoreWalletInteractor.refreshDeviceShare()
             metadataInteractor.updateMetadata(newMetadata)
+            view?.showSuccessDeviceChange()
         } catch (error: Throwable) {
             view?.showFailDeviceChange()
             Timber.e(error, "Error on refreshDeviceShare")
