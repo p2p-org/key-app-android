@@ -10,6 +10,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
+import org.p2p.wallet.alarmlogger.model.AlarmStrigaErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
 
 object AlarmErrorsModule : InjectionModule {
