@@ -4,8 +4,6 @@ import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Single
 
-class RpcHandler(val onSuccess: (RpcResponse) -> Unit, val onError: (Throwable) -> Unit)
-typealias SubscriptionHandler = (RpcSubscriptionResponse) -> Unit
 
 data class RpcResponse(
     @SerializedName("id")

@@ -6,6 +6,7 @@ import org.p2p.solanaj.utils.ByteUtils
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.solanaj.utils.TweetNaclFast
 import java.io.ByteArrayOutputStream
+import org.p2p.core.crypto.Base58String
 
 class PublicKey {
     private var publicKey: ByteArray
@@ -82,3 +83,4 @@ class PublicKey {
         }
     }
 }
+fun PublicKey.toBase58Instance(): Base58String = Base58String(this.toBase58())

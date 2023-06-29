@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.username.api.response
 
 import com.google.gson.annotations.SerializedName
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 
 data class CreateNameResponse(
     @SerializedName("transaction")

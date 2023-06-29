@@ -1,6 +1,6 @@
 package org.p2p.wallet.jupiter.interactor
 
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.core.network.data.ServerException
 
 sealed interface JupiterSwapTokensResult {
     data class Success(val signature: String) : JupiterSwapTokensResult

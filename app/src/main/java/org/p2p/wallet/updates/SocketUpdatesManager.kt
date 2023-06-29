@@ -26,7 +26,7 @@ import org.p2p.solanaj.ws.SubscriptionEventListener
 import org.p2p.solanaj.ws.SubscriptionSocketClient
 import org.p2p.solanaj.ws.SubscriptionSocketClientFactory
 import org.p2p.solanaj.ws.impl.SocketClientException
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SocketSubscriptionsFeatureToggle
 import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.core.network.environment.NetworkEnvironmentManager

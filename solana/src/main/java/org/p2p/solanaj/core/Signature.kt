@@ -1,6 +1,6 @@
 package org.p2p.solanaj.core
 
-import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.core.utils.Base58Utils
 
 data class Signature(
     val publicKey: PublicKey,

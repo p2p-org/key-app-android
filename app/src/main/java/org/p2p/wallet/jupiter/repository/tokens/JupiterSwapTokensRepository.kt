@@ -2,7 +2,7 @@ package org.p2p.wallet.jupiter.repository.tokens
 
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 interface JupiterSwapTokensRepository {
     suspend fun getTokens(): List<JupiterSwapToken>

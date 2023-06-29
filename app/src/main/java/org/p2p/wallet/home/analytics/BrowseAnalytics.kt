@@ -14,7 +14,7 @@ import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_CHOSEN
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SCROLLED
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SEARCHED
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_VIEWED
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import kotlinx.coroutines.launch
 
 class BrowseAnalytics(

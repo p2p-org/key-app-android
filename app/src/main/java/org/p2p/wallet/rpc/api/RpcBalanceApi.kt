@@ -4,7 +4,7 @@ import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcResultTypes
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenSupply
-import org.p2p.wallet.infrastructure.network.data.CommonResponse
+import org.p2p.core.network.data.CommonResponse
 import org.p2p.wallet.utils.emptyString
 import retrofit2.http.Body
 import retrofit2.http.POST

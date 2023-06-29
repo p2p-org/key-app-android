@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.username.repository.mapper
 
 import org.near.borshj.BorshBuffer
-import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.wallet.auth.username.api.request.CreateNameRequest
 import org.p2p.wallet.auth.username.api.request.CreateNameRequestCredentials
 import org.p2p.wallet.auth.username.api.request.GetNameRequest
@@ -12,12 +11,13 @@ import org.p2p.wallet.auth.username.api.request.ResolveNameRequest
 import org.p2p.wallet.auth.username.api.response.RegisterUsernameServiceListResponse
 import org.p2p.wallet.auth.username.api.response.RegisterUsernameServiceResponse
 import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import org.p2p.solanaj.utils.TweetNaclFast
 
 private const val TIMESTAMP_PATTERN_USERNAME_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 

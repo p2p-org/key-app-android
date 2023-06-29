@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.gateway.api.request
 
 import com.google.gson.annotations.SerializedName
-import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.Base58String
 
 data class ConfirmRegisterWalletRequest(
     @SerializedName("solana_pubkey")

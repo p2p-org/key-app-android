@@ -1,13 +1,13 @@
 package org.p2p.wallet.auth.gateway.repository.mapper
 
 import com.google.gson.Gson
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
 import org.p2p.wallet.auth.gateway.api.request.GetOnboardingMetadataRequest
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.Date

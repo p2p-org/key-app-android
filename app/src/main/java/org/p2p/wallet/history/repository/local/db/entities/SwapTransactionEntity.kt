@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.p2p.wallet.history.repository.local.db.entities.embedded.CommonTransactionInformationEntity
 import org.p2p.wallet.history.repository.local.db.entities.embedded.TransactionIdentifiersEntity
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 @Entity(tableName = SwapTransactionEntity.TABLE_NAME)
 class SwapTransactionEntity(

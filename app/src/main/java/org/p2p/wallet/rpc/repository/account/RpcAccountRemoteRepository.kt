@@ -11,7 +11,7 @@ import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.wallet.infrastructure.network.data.EmptyDataException
+import org.p2p.core.network.data.EmptyDataException
 import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcAccountApi
 import timber.log.Timber

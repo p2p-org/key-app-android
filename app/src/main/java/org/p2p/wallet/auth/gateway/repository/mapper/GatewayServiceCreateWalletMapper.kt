@@ -7,7 +7,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import org.p2p.core.utils.Constants
-import org.p2p.solanaj.utils.crypto.toBase64Instance
+import org.p2p.core.utils.toJsonObject
+import org.p2p.core.crypto.toBase64Instance
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
@@ -20,10 +21,9 @@ import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.settings.DeviceInfoHelper
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.toByteArray
-import org.p2p.wallet.utils.toJsonObject
 
 const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 

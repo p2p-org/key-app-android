@@ -1,7 +1,7 @@
 package org.p2p.wallet.jupiter.repository.tokens
 
 import org.p2p.wallet.home.model.TokenPrice
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 class JupiterSwapTokensPricesInMemoryRepository : JupiterSwapTokensPricesLocalRepository {
     private val tokenMintsToPrice = mutableMapOf<Base58String, TokenPrice>()

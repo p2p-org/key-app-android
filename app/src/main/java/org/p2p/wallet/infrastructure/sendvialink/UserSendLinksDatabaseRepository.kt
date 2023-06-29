@@ -6,8 +6,8 @@ import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinkEntity
 import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinksDao
 import org.p2p.wallet.infrastructure.sendvialink.model.UserSendLink
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 
 class UserSendLinksDatabaseRepository(
     private val userSendLinksDao: UserSendLinksDao,

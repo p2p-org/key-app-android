@@ -5,13 +5,13 @@ import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import timber.log.Timber
 import java.math.BigInteger
-import org.p2p.core.utils.Constants
 import org.p2p.solanaj.model.types.RpcNotificationResultResponse
 import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdateHandler
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.utils.Constants
 
 private const val TAG = "BalanceUpdateManager"
 

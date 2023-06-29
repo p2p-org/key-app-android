@@ -9,8 +9,8 @@ import java.math.BigDecimal
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.core.network.data.ErrorCode
+import org.p2p.core.network.data.ServerException
 import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapTestHelpers.attachCallsLog
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData

@@ -2,7 +2,7 @@ package org.p2p.wallet.infrastructure.network.interceptor
 
 import java.util.Date
 import org.p2p.solanaj.utils.TweetNaclFast
-import org.p2p.solanaj.utils.crypto.toBase64Instance
+import org.p2p.core.crypto.toBase64Instance
 
 class StrigaHeaderSignatureGenerator {
     /**

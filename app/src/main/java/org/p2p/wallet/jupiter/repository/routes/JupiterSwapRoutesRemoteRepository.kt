@@ -8,13 +8,13 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.utils.emptyString
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.date.toZonedDateTime
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.SwapFailure
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.retryOnException
 
 private const val TAG = "JupiterSwapRoutesRemoteRepository"

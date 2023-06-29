@@ -9,7 +9,7 @@ import org.p2p.wallet.auth.gateway.api.response.UpdateMetadataResponse
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 interface GatewayServiceRepository {
     suspend fun registerWalletWithSms(

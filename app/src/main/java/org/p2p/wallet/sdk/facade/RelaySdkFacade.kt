@@ -2,14 +2,14 @@ package org.p2p.wallet.sdk.facade
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.RecentBlockhashResponse
-import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.solanaj.utils.crypto.encodeToBase58
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.utils.encodeToBase58
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.sdk.RelaySdk
 import org.p2p.wallet.sdk.facade.mapper.SdkMethodResultMapper
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
 import org.p2p.wallet.sdk.facade.model.relay.RelaySignTransactionResponse
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 class RelaySdkFacade(
     private val relaySdk: RelaySdk,

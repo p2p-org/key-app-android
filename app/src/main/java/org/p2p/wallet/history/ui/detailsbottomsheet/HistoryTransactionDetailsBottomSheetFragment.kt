@@ -24,7 +24,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHistoryTransactionDetailsBinding
 import org.p2p.wallet.history.model.rpc.RpcFee
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.CUT_7_SYMBOLS
 import org.p2p.wallet.utils.UsernameFormatter
 import org.p2p.wallet.utils.appendWhitespace

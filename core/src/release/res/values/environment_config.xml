@@ -10,4 +10,5 @@
     <string name="registerUsernameServiceBaseUrl">https://name-register.key.app/</string>
     <string name="moonpayServerSideProxyBaseUrl">https://moonpay.key.app/</string>
 
+    <string name="tokenServiceBaseUrl">https://token-service.keyapp.org/</string>
 </resources>

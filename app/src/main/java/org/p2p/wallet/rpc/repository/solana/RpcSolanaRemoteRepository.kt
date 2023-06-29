@@ -15,9 +15,9 @@ import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.rpc.TransactionSimulationResult
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
-import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.solanaj.utils.crypto.Base64Utils
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.Base64Utils
+import org.p2p.core.network.data.transactionerrors.RpcTransactionError
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 
 private const val TAG = "RpcSolanaRemoteRepository"

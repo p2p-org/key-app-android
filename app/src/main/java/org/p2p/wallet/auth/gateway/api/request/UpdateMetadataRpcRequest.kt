@@ -2,9 +2,9 @@ package org.p2p.wallet.auth.gateway.api.request
 
 import java.lang.reflect.Type
 import org.p2p.core.rpc.JsonRpc
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.auth.gateway.api.response.UpdateMetadataResponse
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 data class UpdateMetadataRpcRequest(
     @Transient val ethereumAddress: String,

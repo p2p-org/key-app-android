@@ -15,8 +15,8 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.core.network.data.ErrorCode
+import org.p2p.core.network.data.ServerException
 import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import org.p2p.wallet.swap.model.Slippage

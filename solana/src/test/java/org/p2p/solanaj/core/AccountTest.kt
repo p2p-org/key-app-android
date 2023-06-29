@@ -4,7 +4,7 @@ import io.mockk.InternalPlatformDsl.toStr
 import org.junit.Test
 import kotlin.test.assertEquals
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.core.utils.Base58Utils
 
 class AccountTest {
 

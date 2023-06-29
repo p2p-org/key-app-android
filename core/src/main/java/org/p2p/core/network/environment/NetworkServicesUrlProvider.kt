@@ -17,6 +17,7 @@ private const val KEY_TORUS_BASE_SUB_VERIFIER = "KEY_TORUS_BASE_SUB_VERIFIER"
 private const val KEY_MOONPAY_SERVER_SIDE_BASE_URL = "KEY_MOONPAY_SERVER_SIDE_BASE_URL"
 private const val KEY_BRIDGES_SERVICE_BASE_URL = "KEY_BRIDGES_SERVICE_BASE_URL"
 private const val KEY_GATEWAY_BASE_URL = "KEY_GATEWAY_BASE_URL"
+private const val KEY_TOKEN_SERVICE_BASE_URL = "KEY_TOKEN_SERVICE_BASE_URL"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
@@ -182,6 +183,17 @@ class NetworkServicesUrlProvider(
             saveMoonpayEnvironment(context.getString(R.string.moonpayServerSideProxyUrl))
         }
     }
+
+    fun loadTokenServiceEnvironment(): TokenServiceEnvironment {
+        val url = storage.getString(
+            KEY_TOKEN_SERVICE_BASE_URL,
+            context.getString(R.string.tokenServiceBaseUrl)
+        ).orEmpty()
+
+        crashLogger.setCustomKey(KEY_TOKEN_SERVICE_BASE_URL, url)
+        return TokenServiceEnvironment(url)
+    }
+
 
     private fun saveMoonpayEnvironment(newServerSideUrl: String) {
         storage.putString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, newServerSideUrl)
