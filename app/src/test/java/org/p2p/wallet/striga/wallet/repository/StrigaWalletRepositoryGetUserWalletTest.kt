@@ -38,6 +38,9 @@ class StrigaWalletRepositoryGetUserWalletTest {
         walletsMapper = StrigaUserWalletsMapper(),
         strigaUserIdProvider = mockk {
             every { getUserIdOrThrow() }.returns(userId)
+        },
+        ipAddressProvider = mockk {
+            every { getIpAddress() } returns "127.0.0.1"
         }
     )
 
@@ -49,6 +52,9 @@ class StrigaWalletRepositoryGetUserWalletTest {
             walletsMapper = StrigaUserWalletsMapper(),
             strigaUserIdProvider = mockk {
                 every { getUserIdOrThrow() }.returns(userId)
+            },
+            ipAddressProvider = mockk {
+                every { getIpAddress() } returns "127.0.0.1"
             }
         )
     }

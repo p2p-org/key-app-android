@@ -28,7 +28,7 @@ sealed class NavigationStrategy : Parcelable {
 
     object Replace : NavigationStrategy() {
         override fun execute(sourceFragment: Fragment, destinationFragment: Fragment?) {
-            require(destinationFragment != null) { "Destination fragment must not be null" }
+            requireNotNull(destinationFragment) { "Destination fragment must not be null for Replace strategy" }
             sourceFragment.replaceFragment(destinationFragment)
         }
     }
@@ -39,7 +39,7 @@ sealed class NavigationStrategy : Parcelable {
         val inclusive: Boolean = false
     ) : Parcelable, NavigationStrategy() {
         override fun execute(sourceFragment: Fragment, destinationFragment: Fragment?) {
-            require(destinationFragment != null) { "Destination fragment must not be null" }
+            requireNotNull(destinationFragment) { "Destination fragment must not be null for PopAndReplace strategy" }
             sourceFragment.popAndReplaceFragment(
                 target = destinationFragment,
                 popTo = popTo?.kotlin,

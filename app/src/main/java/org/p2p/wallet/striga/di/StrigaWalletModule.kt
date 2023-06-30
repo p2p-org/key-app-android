@@ -19,10 +19,8 @@ import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
 import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
-import org.p2p.wallet.striga.sms.StrigaSmsStorageContract
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsApiCaller
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputPresenter
-import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsStorage
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -60,9 +58,6 @@ object StrigaWalletModule : InjectionModule {
         singleOf(::SmsInputTimer) {
             named(SMS_QUALIFIER)
         }
-        factoryOf(::StrigaOnRampSmsStorage) {
-            named(SMS_QUALIFIER)
-        } bind StrigaSmsStorageContract::class
 
         factory(named(SMS_QUALIFIER)) { (challengeId: StrigaWithdrawalChallengeId) ->
             StrigaOnRampSmsApiCaller(
@@ -77,7 +72,7 @@ object StrigaWalletModule : InjectionModule {
                 phoneCodeRepository = get(),
                 inAppFeatureFlags = get(),
                 smsInputTimer = get(named(SMS_QUALIFIER)),
-                smsStorage = get(named(SMS_QUALIFIER)),
+                strigaStorage = get(),
                 smsApiCaller = get(
                     qualifier = named(SMS_QUALIFIER),
                     parameters = { it }

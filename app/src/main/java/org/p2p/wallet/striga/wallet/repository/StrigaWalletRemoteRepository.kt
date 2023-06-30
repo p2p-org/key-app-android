@@ -1,12 +1,9 @@
 package org.p2p.wallet.striga.wallet.repository
 
-import timber.log.Timber
 import java.math.BigInteger
-import java.net.Inet4Address
-import java.net.NetworkInterface
-import java.net.SocketException
 import java.util.Calendar
 import org.p2p.wallet.striga.StrigaUserIdProvider
+import org.p2p.wallet.striga.common.StrigaIpAddressProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.toSuccessResult
@@ -33,7 +30,8 @@ class StrigaWalletRemoteRepository(
     private val api: StrigaWalletApi,
     private val mapper: StrigaWalletRepositoryMapper,
     private val walletsMapper: StrigaUserWalletsMapper,
-    private val strigaUserIdProvider: StrigaUserIdProvider
+    private val strigaUserIdProvider: StrigaUserIdProvider,
+    private val ipAddressProvider: StrigaIpAddressProvider
 ) : StrigaWalletRepository {
 
     override suspend fun initiateOnchainWithdrawal(
@@ -189,7 +187,7 @@ class StrigaWalletRemoteRepository(
                 userId = strigaUserIdProvider.getUserIdOrThrow(),
                 challengeId = challengeId.value,
                 verificationCode = smsCode,
-                ipAddress = getLocalIpAddress()
+                ipAddress = ipAddressProvider.getIpAddress()
             )
             api.verifySms(request)
             return StrigaDataLayerResult.Success(Unit)
@@ -199,24 +197,5 @@ class StrigaWalletRemoteRepository(
                 default = StrigaDataLayerError.InternalError(error)
             )
         }
-    }
-
-    /**
-     * This is a temporary function, until we have a proper way to get the ip address
-     */
-    private fun getLocalIpAddress(): String {
-        val defaultOne = "127.0.0.1"
-        try {
-            for (networkInterface in NetworkInterface.getNetworkInterfaces()) {
-                for (inetAddress in networkInterface.inetAddresses) {
-                    if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
-                        return inetAddress.getHostAddress() ?: defaultOne
-                    }
-                }
-            }
-        } catch (e: SocketException) {
-            Timber.e(e, "Unable to retreive ip address")
-        }
-        return defaultOne
     }
 }

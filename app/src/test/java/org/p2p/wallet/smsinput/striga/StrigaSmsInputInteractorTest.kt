@@ -13,6 +13,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.utils.MillisSinceEpoch
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
@@ -24,7 +25,8 @@ import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
 import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
-import org.p2p.wallet.striga.sms.StrigaSmsStorageContract
+import org.p2p.wallet.striga.user.StrigaStorageContract
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 import org.p2p.wallet.utils.mockInAppFeatureFlag
 
@@ -43,9 +45,10 @@ class StrigaSmsInputInteractorTest {
     @MockK(relaxed = true)
     private lateinit var inAppFeatureFlags: InAppFeatureFlags
 
-    private val smsStorage: StrigaSmsStorageContract = object : StrigaSmsStorageContract {
-        override var exceededVerificationAttemptsMillis: Long = 0
-        override var exceededResendAttemptsMillis: Long = 0
+    private val strigaStorage: StrigaStorageContract = object : StrigaStorageContract {
+        override var userStatus: StrigaUserStatusDetails? = null
+        override var smsExceededVerificationAttemptsMillis: MillisSinceEpoch = 0
+        override var smsExceededResendAttemptsMillis: MillisSinceEpoch = 0
     }
 
     @Before
@@ -63,8 +66,8 @@ class StrigaSmsInputInteractorTest {
         val interactor = createInteractor()
         val result = interactor.resendSms()
 
-        assertEquals(0, smsStorage.exceededVerificationAttemptsMillis)
-        assertEquals(0, smsStorage.exceededResendAttemptsMillis)
+        assertEquals(0, strigaStorage.smsExceededVerificationAttemptsMillis)
+        assertEquals(0, strigaStorage.smsExceededResendAttemptsMillis)
         assertEquals(expectedResult, result)
     }
 
@@ -98,8 +101,8 @@ class StrigaSmsInputInteractorTest {
             (secondResult.error as StrigaDataLayerError.ApiServiceError).errorCode
         )
 
-        assertEquals(0, smsStorage.exceededVerificationAttemptsMillis)
-        assertTrue(smsStorage.exceededResendAttemptsMillis != 0L)
+        assertEquals(0, strigaStorage.smsExceededVerificationAttemptsMillis)
+        assertTrue(strigaStorage.smsExceededResendAttemptsMillis != 0L)
 
         coVerify(exactly = 1) { apiCaller.resendSms() }
     }
@@ -135,12 +138,12 @@ class StrigaSmsInputInteractorTest {
             (secondResult.error as StrigaDataLayerError.ApiServiceError).errorCode
         )
 
-        assertEquals(0, smsStorage.exceededVerificationAttemptsMillis)
-        assertTrue(smsStorage.exceededResendAttemptsMillis != 0L)
+        assertEquals(0, strigaStorage.smsExceededVerificationAttemptsMillis)
+        assertTrue(strigaStorage.smsExceededResendAttemptsMillis != 0L)
 
         // simulate time has passed
         // shifting the clock back by one day
-        smsStorage.exceededResendAttemptsMillis = System.currentTimeMillis() - 1.days.inWholeMilliseconds
+        strigaStorage.smsExceededResendAttemptsMillis = System.currentTimeMillis() - 1.days.inWholeMilliseconds
 
         interactor.resendSms()
 
@@ -156,7 +159,7 @@ class StrigaSmsInputInteractorTest {
             phoneCodeRepository = countryCodeRepository,
             inAppFeatureFlags = inAppFeatureFlags,
             smsInputTimer = mockk(relaxed = true),
-            smsStorage = smsStorage,
+            strigaStorage = strigaStorage,
             smsApiCaller = apiCaller ?: mockk {
                 coEvery { resendSms() } returns StrigaDataLayerResult.Success(Unit)
                 coEvery { verifySms(any()) } returns StrigaDataLayerResult.Success(Unit)

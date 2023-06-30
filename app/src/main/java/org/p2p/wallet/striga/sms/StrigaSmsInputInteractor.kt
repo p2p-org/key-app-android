@@ -14,6 +14,7 @@ import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.user.StrigaStorageContract
 import org.p2p.wallet.utils.DateTimeUtils
 
 private val EXCEEDED_VERIFICATION_ATTEMPTS_TIMEOUT_MILLIS = 1.days.inWholeMilliseconds
@@ -24,7 +25,7 @@ class StrigaSmsInputInteractor(
     private val phoneCodeRepository: CountryCodeRepository,
     private val inAppFeatureFlags: InAppFeatureFlags,
     private val smsInputTimer: SmsInputTimer,
-    private val smsStorage: StrigaSmsStorageContract,
+    private val strigaStorage: StrigaStorageContract,
     private val smsApiCaller: StrigaSmsApiCaller
 ) {
     val timer: Flow<Int> get() = smsInputTimer.smsInputTimerFlow
@@ -110,23 +111,23 @@ class StrigaSmsInputInteractor(
     }
 
     private fun setExceededVerificationAttempts() {
-        smsStorage.exceededVerificationAttemptsMillis = System.currentTimeMillis()
+        strigaStorage.smsExceededVerificationAttemptsMillis = System.currentTimeMillis()
     }
 
     private fun setExceededResendAttempts() {
-        smsStorage.exceededResendAttemptsMillis = System.currentTimeMillis()
+        strigaStorage.smsExceededResendAttemptsMillis = System.currentTimeMillis()
     }
 
     private fun isExceededVerificationAttempts(): Boolean {
         return !DateTimeUtils.isTimestampExpired(
-            smsStorage.exceededVerificationAttemptsMillis,
+            strigaStorage.smsExceededVerificationAttemptsMillis,
             EXCEEDED_VERIFICATION_ATTEMPTS_TIMEOUT_MILLIS
         )
     }
 
     private fun isExceededResendAttempts(): Boolean {
         return !DateTimeUtils.isTimestampExpired(
-            smsStorage.exceededResendAttemptsMillis,
+            strigaStorage.smsExceededResendAttemptsMillis,
             EXCEEDED_RESEND_ATTEMPTS_TIMEOUT_MILLIS
         )
     }

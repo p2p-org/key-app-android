@@ -41,10 +41,8 @@ import org.p2p.wallet.striga.signup.ui.StrigaSignUpSecondStepPresenter
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
 import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
-import org.p2p.wallet.striga.sms.StrigaSmsStorageContract
 import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsApiCaller
 import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsInputPresenter
-import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsStorage
 import org.p2p.wallet.striga.user.api.StrigaApi
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
@@ -122,10 +120,6 @@ object StrigaSignupModule : InjectionModule {
             named(SMS_QUALIFIER)
         }
 
-        factoryOf(::StrigaSignupSmsStorage) {
-            named(SMS_QUALIFIER)
-        } bind StrigaSmsStorageContract::class
-
         factoryOf(::StrigaSignupSmsApiCaller) {
             named(SMS_QUALIFIER)
         } bind StrigaSmsApiCaller::class
@@ -136,7 +130,7 @@ object StrigaSignupModule : InjectionModule {
                 phoneCodeRepository = get(),
                 inAppFeatureFlags = get(),
                 smsInputTimer = get(named(SMS_QUALIFIER)),
-                smsStorage = get(named(SMS_QUALIFIER)),
+                strigaStorage = get(),
                 smsApiCaller = get(named(SMS_QUALIFIER))
             )
         }
