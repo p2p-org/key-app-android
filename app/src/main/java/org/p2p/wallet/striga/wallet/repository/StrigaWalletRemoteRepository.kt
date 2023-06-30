@@ -13,8 +13,8 @@ import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaInitWithdrawalRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnchainWithdrawalFeeRequest
-import org.p2p.wallet.striga.wallet.api.request.StrigaSmsResendRequest
-import org.p2p.wallet.striga.wallet.api.request.StrigaSmsVerifyRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsResendRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsVerifyRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
@@ -164,7 +164,7 @@ class StrigaWalletRemoteRepository(
         challengeId: StrigaWithdrawalChallengeId
     ): StrigaDataLayerResult<Unit> {
         return try {
-            val request = StrigaSmsResendRequest(
+            val request = StrigaOnRampSmsResendRequest(
                 userId = strigaUserIdProvider.getUserIdOrThrow(),
                 challengeId = challengeId.value
             )
@@ -183,7 +183,7 @@ class StrigaWalletRemoteRepository(
         challengeId: StrigaWithdrawalChallengeId,
     ): StrigaDataLayerResult<Unit> {
         return try {
-            val request = StrigaSmsVerifyRequest(
+            val request = StrigaOnRampSmsVerifyRequest(
                 userId = strigaUserIdProvider.getUserIdOrThrow(),
                 challengeId = challengeId.value,
                 verificationCode = smsCode,

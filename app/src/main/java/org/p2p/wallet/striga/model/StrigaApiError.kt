@@ -1,5 +1,7 @@
 package org.p2p.wallet.striga.model
 
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -11,8 +13,14 @@ data class StrigaApiErrorResponse(
     @SerializedName("errorCode")
     private val internalErrorCode: StrigaApiErrorCode?,
     @SerializedName("errorDetails")
-    val details: String?,
+    val details: JsonElement?,
 ) {
+    constructor(httpStatus: Int, internalErrorCode: StrigaApiErrorCode, details: String?) : this(
+        httpStatus = httpStatus,
+        internalErrorCode = internalErrorCode,
+        details = JsonPrimitive(details)
+    )
+
     val errorCode: StrigaApiErrorCode get() = internalErrorCode ?: StrigaApiErrorCode.UNKNOWN
 }
 
@@ -20,6 +28,9 @@ data class StrigaApiErrorResponse(
  * https://docs.striga.com/reference/error-codes-for-reference-only
  */
 enum class StrigaApiErrorCode(val code: String) {
+    @SerializedName("00002")
+    INVALID_REQUEST_FIELDS("00002"),
+
     @SerializedName("30009")
     KYC_PENDING_REVIEW("30009"),
 

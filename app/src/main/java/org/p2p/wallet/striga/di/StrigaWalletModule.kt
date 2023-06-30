@@ -17,6 +17,7 @@ import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiIntercept
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.smsinput.SmsInputTimer
+import org.p2p.wallet.striga.common.StrigaIpAddressProvider
 import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
 import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsApiCaller
@@ -37,6 +38,7 @@ object StrigaWalletModule : InjectionModule {
         initSms()
 
         factoryOf(::StrigaWalletInteractor)
+        factoryOf(::StrigaIpAddressProvider)
     }
 
     private fun Module.initDataLayer() {

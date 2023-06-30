@@ -1,4 +1,4 @@
-package org.p2p.wallet.smsinput.striga
+package org.p2p.wallet.striga.sms
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -23,8 +23,6 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
-import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
-import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
 import org.p2p.wallet.striga.user.StrigaStorageContract
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository

@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -56,12 +57,14 @@ import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.getSerializableCompat
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -309,11 +312,15 @@ class HomeFragment :
     }
 
     override fun navigateToKycStatus(status: StrigaKycStatusBanner) {
-        if (status == StrigaKycStatusBanner.VERIFICATION_DONE) {
-            StrigaUserIbanDetailsFragment.create()
-        } else {
-            strigaKycFragmentFactory.kycFragment()
-        }.also(::replaceFragment)
+//        if (status == StrigaKycStatusBanner.VERIFICATION_DONE) {
+//            StrigaUserIbanDetailsFragment.create()
+//        } else {
+//            strigaKycFragmentFactory.kycFragment()
+//        }.also(::replaceFragment)
+        val f = strigaKycFragmentFactory.claimOtpFragment("$100", StrigaWithdrawalChallengeId("a"))
+        replaceFragmentForResult(f, "claim_otp", onResult = {_,_->
+            Timber.e("Success")
+        })
     }
 
     override fun showKycPendingDialog() {
