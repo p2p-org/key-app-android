@@ -13,6 +13,8 @@ class DebugHttpLoggingLogger(
     private val logTag: String
 ) : HttpLoggingInterceptor.Logger {
 
+    private val jsonParser = JsonParser()
+
     override fun log(message: String) {
         // ignore SolanaApi logs from network - it's too big to fit in logcat
         if (logTag == "SolanaApi") {
@@ -29,7 +31,7 @@ class DebugHttpLoggingLogger(
             return
         }
         kotlin.runCatching {
-            val parsedJson = JsonParser.parseString(message).let { gson.toJson(it) }
+            val parsedJson = jsonParser.parse(message).let { gson.toJson(it) }
             Timber.tag(logTag + TAG).d(parsedJson)
         }
             .onFailure {

@@ -3,30 +3,33 @@ package org.p2p.wallet.alarmlogger.logger
 import timber.log.Timber
 import java.math.BigInteger
 import kotlinx.coroutines.launch
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
+import org.p2p.wallet.alarmlogger.model.AlarmDeviceShareChangeErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
-import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
-import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
 import org.p2p.wallet.alarmlogger.model.AlarmStrigaErrorConverter
+import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
+import org.p2p.wallet.alarmlogger.model.DeviceShareChangeAlarmError
+import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
 import org.p2p.wallet.alarmlogger.model.SwapAlarmError
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
-import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.utils.AppBuildType
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.retryRequest
-import org.p2p.core.crypto.toBase58Instance
 
 class AlarmErrorsLogger(
     private val api: AlarmErrorsServiceApi,
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapErrorConverter: AlarmSwapErrorConverter,
     private val sendErrorConverter: AlarmSendErrorConverter,
+    private val deviceShareChangeErrorConverter: AlarmDeviceShareChangeErrorConverter,
     private val strigaErrorConverter: AlarmStrigaErrorConverter,
     private val ethereumInteractor: EthereumInteractor,
     private val appScope: AppScope
@@ -235,6 +238,22 @@ class AlarmErrorsLogger(
                 val request = strigaErrorConverter.toStrigaErrorRequest(
                     userPublicKey = userPublicKey,
                     error = strigaError
+                )
+                retryRequest(block = { api.sendAlarm(request) })
+            } catch (error: Throwable) {
+                Timber.e(AlarmErrorsError(error), "Failed to send alarm")
+            }
+        }
+    }
+
+    fun triggerDeviceShareChangeAlarm(deviceShareChangeAlarmError: DeviceShareChangeAlarmError) {
+        if (!isLoggerEnabled) return
+
+        appScope.launch {
+            try {
+                val request = deviceShareChangeErrorConverter.toDeviceShareChangeErrorRequest(
+                    userPublicKey = userPublicKey,
+                    error = deviceShareChangeAlarmError
                 )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
