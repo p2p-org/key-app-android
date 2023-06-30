@@ -108,9 +108,8 @@ class HomeFragment :
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val strigaKycFragmentFactory: StrigaFragmentFactory by inject()
     private val buyFragmentFactory: BuyFragmentFactory by inject()
-    private val layoutManager: LinearLayoutManager by lazy {
-        HomeScreenLayoutManager(requireContext())
-    }
+
+    private lateinit var layoutManager: LinearLayoutManager
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -206,6 +205,7 @@ class HomeFragment :
     }
 
     private fun FragmentHomeBinding.setupView() {
+        layoutManager = HomeScreenLayoutManager(requireContext())
         layoutToolbar.setupToolbar()
 
         homeRecyclerView.adapter = contentAdapter

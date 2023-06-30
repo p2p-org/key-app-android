@@ -1,6 +1,7 @@
 package org.p2p.wallet.jupiter.ui.main
 
 import androidx.activity.addCallback
+import androidx.core.os.bundleOf
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -72,11 +73,9 @@ class JupiterSwapFragment :
 
     companion object {
         fun create(token: Token.Active? = null, source: SwapOpenedFrom): JupiterSwapFragment =
-            JupiterSwapFragment()
-                .withArgs(
-                    EXTRA_TOKEN to token,
-                    EXTRA_OPENED_FROM to source
-                )
+            JupiterSwapFragment().apply {
+                arguments = createBundle(token, source)
+            }
 
         fun create(
             tokenASymbol: String,
@@ -91,6 +90,12 @@ class JupiterSwapFragment :
                     EXTRA_INITIAL_AMOUNT_A to amountA,
                     EXTRA_OPENED_FROM to source
                 )
+
+        fun createBundle(token: Token.Active? = null, source: SwapOpenedFrom): Bundle =
+            bundleOf(
+                EXTRA_TOKEN to token,
+                EXTRA_OPENED_FROM to source
+            )
     }
 
     private val stateManagerHolderKey: String = UUID.randomUUID().toString()

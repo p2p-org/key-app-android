@@ -13,10 +13,10 @@ class BaseFragmentAdapter(
     private val fragmentManager: FragmentManager,
     lifecycle: Lifecycle,
     private val items: List<KClass<out Fragment>>,
-    var args: List<Bundle>? = null
+    var args: List<Bundle?>? = null
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
 
-    private val fragments = SparseArray<Fragment>()
+    val fragments = SparseArray<Fragment>()
 
     override fun getItemCount(): Int = items.size
 
