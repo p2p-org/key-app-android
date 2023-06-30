@@ -24,7 +24,7 @@ class TokenServiceMapper {
     internal fun fromNetwork(response: TokenItemPriceResponse): TokenServicePrice {
         return TokenServicePrice(
             address = response.tokenAddress,
-            price = response.price.usd
+            price = response.price?.usd
         )
     }
 
@@ -44,12 +44,12 @@ class TokenServiceMapper {
 
     internal fun toRequest(chain: TokenServiceNetwork, tokenAddresses: List<String>): TokenServiceQueryRequest {
         return TokenServiceQueryRequest(
-            tokenAddresses.map {
+            query = listOf(
                 TokenServiceItemRequest(
                     chainId = toNetwork(chain),
                     addresses = tokenAddresses
                 )
-            }
+            )
         )
     }
 }

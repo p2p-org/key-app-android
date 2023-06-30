@@ -5,8 +5,8 @@ import org.p2p.core.utils.scaleShort
 
 class TokenServicePrice(
     val address: String,
-    val price: BigDecimal
+    val price: BigDecimal?
 ) {
-    fun getScaledValue(): BigDecimal = price.scaleShort()
+    fun getScaledValue(): BigDecimal? = price?.scaleShort()
 
 }

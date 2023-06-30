@@ -1,17 +1,19 @@
 package org.p2p.token.service.api.events.manager
 
+import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.launch
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.token.service.model.TokenServiceNetwork
 
- class TokenServiceEventPublisher(
-     private val tokenServiceInteractor: TokenServiceRepository,
-     private val eventManager: TokenServiceEventManager,
-     coroutineDispatcher: CoroutineDispatchers
+class TokenServiceEventPublisher(
+    private val tokenServiceInteractor: TokenServiceRepository,
+    private val eventManager: TokenServiceEventManager,
+    coroutineDispatcher: CoroutineDispatchers
 ) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext = coroutineDispatcher.io
@@ -50,6 +52,7 @@ import org.p2p.token.service.model.TokenServiceNetwork
     private suspend fun observeTokenPrices(networkChain: TokenServiceNetwork) {
         tokenServiceInteractor.getTokenPricesFlow(networkChain)
             .filterNot { it.isEmpty() }
+            .distinctUntilChanged()
             .collect {
                 val eventType = TokenServiceEventType.from(networkChain)
                 eventManager.notify(

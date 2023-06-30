@@ -61,7 +61,7 @@ object TokenServiceModule : InjectionModule {
             metadataLocalRepository = get(),
             metadataRemoteRepository = get()
         )}
-        factoryOf(::TokenServiceEventPublisher)
+        singleOf(::TokenServiceEventPublisher)
         singleOf(::TokenServiceEventManager)
 
         loadKoinModules(TokenServiceDatabaseModule.create())

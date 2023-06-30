@@ -61,9 +61,9 @@ class SwapTokenRateLoader(
                 tokenServiceRepository.findTokenPriceByAddress(
                     networkChain = TokenServiceNetwork.SOLANA,
                     tokenAddress = token.details.tokenMint.base58Value
-                )
+                )?.price
             if (tokenPrice != null) {
-                emitAndSaveState(SwapRateLoaderState.Loaded(token = token, rate = tokenPrice.price))
+                emitAndSaveState(SwapRateLoaderState.Loaded(token = token, rate = tokenPrice))
             } else {
                 emitAndSaveState(SwapRateLoaderState.NoRateAvailable(token = token))
             }
