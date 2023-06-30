@@ -54,7 +54,6 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -318,7 +317,7 @@ class HomeFragment :
 //            strigaKycFragmentFactory.kycFragment()
 //        }.also(::replaceFragment)
         val f = strigaKycFragmentFactory.claimOtpFragment("$100", StrigaWithdrawalChallengeId("a"))
-        replaceFragmentForResult(f, "claim_otp", onResult = {_,_->
+        replaceFragmentForResult(f, "claim_otp", onResult = { _, _ ->
             Timber.e("Success")
         })
     }
