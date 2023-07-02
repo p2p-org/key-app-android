@@ -6,7 +6,7 @@ class StrigaUserIdProvider(
     private val metadataInteractor: MetadataInteractor
 ) {
     fun getUserId(): String? {
-        return metadataInteractor.currentMetadata?.strigaMetadata?.userId
+        return "65b1c37c-686a-487b-81f4-8d0ea6dd0e53"
     }
 
     fun getUserIdOrThrow(): String {

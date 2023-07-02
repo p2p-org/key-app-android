@@ -136,10 +136,10 @@ class StrigaSignUpSecondStepFragment :
         }
     }
 
-    override fun setProgressIsVisible(visible: Boolean) {
+    override fun setProgressIsVisible(isVisible: Boolean) {
         with(binding.buttonNext) {
-            isClickable = !visible
-            setLoading(visible)
+            isClickable = !isVisible
+            setLoading(isVisible)
         }
     }
 
