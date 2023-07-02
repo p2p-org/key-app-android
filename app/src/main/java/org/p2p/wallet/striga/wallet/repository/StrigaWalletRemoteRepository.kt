@@ -23,8 +23,8 @@ import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
 
-
 private const val TAG = "StrigaWalletRemoteRepository"
+
 class StrigaWalletRemoteRepository(
     private val api: StrigaWalletApi,
     private val mapper: StrigaWalletRepositoryMapper,

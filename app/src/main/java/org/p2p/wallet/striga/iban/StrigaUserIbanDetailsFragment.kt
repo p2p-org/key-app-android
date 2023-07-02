@@ -5,9 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.mainCellDelegate
 import org.p2p.uikit.databinding.FragmentStrigaIbanAccountBinding
+import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.recycler.decoration.groupedRoundingMainCellDecoration
 import org.p2p.wallet.R
@@ -43,9 +43,7 @@ class StrigaUserIbanDetailsFragment :
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-            toolbar.setOnClickListener {
-                popBackStack()
-            }
+            toolbar.setOnClickListener { navigateBack() }
 
             recyclerViewIbanDetails.attachAdapter(adapter)
             recyclerViewIbanDetails.addItemDecoration(groupedRoundingMainCellDecoration())
@@ -58,12 +56,16 @@ class StrigaUserIbanDetailsFragment :
         }
     }
 
-    override fun showIbanDetails(details: List<MainCellModel>) {
+    override fun showIbanDetails(details: List<AnyCellItem>) {
         adapter.items = details
     }
 
     private fun onCopyIconClicked(value: String) {
         requireContext().copyToClipBoard(value)
         showUiKitSnackBar(messageResId = R.string.general_copied)
+    }
+
+    override fun navigateBack() {
+        popBackStack()
     }
 }

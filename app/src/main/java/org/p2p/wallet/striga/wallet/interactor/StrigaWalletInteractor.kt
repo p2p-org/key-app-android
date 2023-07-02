@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.wallet.interactor
 
 import java.math.BigInteger
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.model.map
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
@@ -14,10 +15,15 @@ class StrigaWalletInteractor(
     private val repository: StrigaWalletRepository
 ) {
 
-    suspend fun getFiatAccountDetails(
-        accountId: StrigaAccountId,
-    ): StrigaDataLayerResult<StrigaFiatAccountDetails> {
-        return repository.getFiatAccountDetails(accountId)
+    private class StrigaEuroAccountNotFound : Throwable()
+
+    @Throws(Throwable::class)
+    suspend fun getFiatAccountDetails(): StrigaFiatAccountDetails {
+        val eurAccountId = repository.getUserWallet()
+            .map { it.eurAccount?.accountId }
+            .unwrap()
+            ?: throw StrigaEuroAccountNotFound()
+        return repository.getFiatAccountDetails(eurAccountId).unwrap()
     }
 
     /**
