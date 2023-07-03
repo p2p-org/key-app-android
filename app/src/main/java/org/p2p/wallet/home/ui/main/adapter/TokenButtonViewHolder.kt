@@ -11,12 +11,12 @@ import org.p2p.wallet.home.model.VisibilityState
 
 class TokenButtonViewHolder(
     private val binding: ItemTokenGroupButtonBinding,
-    private val listener: OnHomeItemsClickListener
+    private val listener: HomeItemsClickListeners
 ) : RecyclerView.ViewHolder(binding.root) {
 
     constructor(
         parent: ViewGroup,
-        listener: OnHomeItemsClickListener
+        listener: HomeItemsClickListeners
     ) : this(
         binding = ItemTokenGroupButtonBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         listener = listener

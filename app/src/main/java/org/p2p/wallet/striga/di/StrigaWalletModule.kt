@@ -23,6 +23,7 @@ import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsApiCaller
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputPresenter
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
+import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.striga.wallet.repository.StrigaUserWalletsMapper
@@ -37,6 +38,7 @@ object StrigaWalletModule : InjectionModule {
         initDataLayer()
         initSms()
 
+        factoryOf(::StrigaClaimInteractor)
         factoryOf(::StrigaWalletInteractor)
         factoryOf(::StrigaIpAddressProvider)
     }
