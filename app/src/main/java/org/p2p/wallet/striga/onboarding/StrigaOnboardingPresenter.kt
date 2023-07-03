@@ -1,15 +1,18 @@
 package org.p2p.wallet.striga.onboarding
 
+import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingContract.View.AvailabilityState
 import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
+
+private const val TAG = "StrigaOnboardingPresenter"
 
 class StrigaOnboardingPresenter(
     dispatchers: CoroutineDispatchers,
@@ -69,4 +72,5 @@ class StrigaOnboardingPresenter(
         } else {
             AvailabilityState.Unavailable
         }
+            .also { Timber.tag(TAG).i("Onboarding striga country changed. is supported: $it") }
 }

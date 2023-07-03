@@ -252,6 +252,9 @@ class StrigaWalletRepositoryEnrichAccountTest {
             strigaUserIdProvider = mockk {
                 every { getUserId() } returns userId
                 every { getUserIdOrThrow() } returns userId
+            },
+            ipAddressProvider = mockk {
+                every { getIpAddress() } returns "127.0.0.1"
             }
         )
     }
