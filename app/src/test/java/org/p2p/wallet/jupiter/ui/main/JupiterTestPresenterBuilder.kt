@@ -97,7 +97,6 @@ class JupiterTestPresenterBuilder {
             when (token) {
                 JupiterSwapTestHelpers.JUPITER_SOL_TOKEN -> {
                     TokenServicePrice(token.coingeckoId!!, TokenRate(BigDecimal.TEN), network = TokenServiceNetwork.SOLANA)
-
                 }
 
                 JupiterSwapTestHelpers.JUPITER_USDC_TOKEN -> {
