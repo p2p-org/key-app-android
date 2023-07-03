@@ -34,10 +34,12 @@ object TokenConverter {
         tokenData: TokenData,
         price: TokenServicePrice?
     ): Token.Active {
-        val tokenRate = price?.getUsdRate()
+        val tokenRate = price?.usdRate
         val totalInUsd = if (tokenRate != null) {
             totalLamports.fromLamports(tokenData.decimals).times(tokenRate)
-        } else null
+        } else {
+            null
+        }
         val total = totalLamports.toBigDecimal().divide(tokenData.decimals.toPowerValue())
         return Token.Active(
             publicKey = accountPublicKey,

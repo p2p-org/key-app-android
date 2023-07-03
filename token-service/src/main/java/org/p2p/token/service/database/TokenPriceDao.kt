@@ -24,12 +24,12 @@ internal interface TokenPriceDao {
     @Query("SELECT * FROM token_price_table")
     fun getAllTokensPricesFlow(): Flow<TokenPriceEntity>
 
-    @Query("SELECT * FROM token_price_table WHERE token_address =:tokenAddress")
+    @Query("SELECT * FROM token_price_table WHERE token_address = :tokenAddress")
     suspend fun getTokenPriceByAddress(tokenAddress: String): TokenPriceEntity?
 
-    @Query("SELECT * FROM token_price_table WHERE token_network_chain =:networkChain")
+    @Query("SELECT * FROM token_price_table WHERE token_network_chain = :networkChain")
     suspend fun getTokensRatesByNetwork(networkChain: String): List<TokenPriceEntity>
 
-    @Query("SELECT * FROM token_price_table WHERE token_network_chain =:networkChain ")
+    @Query("SELECT * FROM token_price_table WHERE token_network_chain = :networkChain ")
     fun getTokensRatesByNetworkFlow(networkChain: String): Flow<List<TokenPriceEntity>>
 }

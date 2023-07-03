@@ -10,7 +10,7 @@ data class TokenRateEntity(
     @PrimaryKey
     val tokenAddress: String,
     @ColumnInfo(name = COLUMN_USD)
-    val usd: BigDecimal
+    val usd: BigDecimal?
 ) {
 
     companion object {

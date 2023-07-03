@@ -1,6 +1,5 @@
 package org.p2p.token.service.api.events.manager
 
-import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -50,7 +49,7 @@ class TokenServiceEventPublisher(
     }
 
     private suspend fun observeTokenPrices(networkChain: TokenServiceNetwork) {
-        tokenServiceInteractor.getTokenPricesFlow(networkChain)
+        tokenServiceInteractor.observeTokenPricesFlow(networkChain)
             .filterNot { it.isEmpty() }
             .distinctUntilChanged()
             .collect {

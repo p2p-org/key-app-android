@@ -10,14 +10,15 @@ internal class TokenServiceDatabaseMapper() {
 
     fun toEntity(item: TokenServicePrice): TokenPriceEntity? {
         val tokenRate = item.rate ?: return null
+        val tokenRateEntity = toEntity(item.address, tokenRate) ?: return null
         return TokenPriceEntity(
             tokenAddress = item.address,
             networkChain = item.network.networkName,
-            tokenRate = toEntity(item.address, tokenRate)
+            tokenRate = tokenRateEntity
         )
     }
 
-    fun toEntity(address: String, tokenRate: TokenRate): TokenRateEntity {
+    fun toEntity(address: String, tokenRate: TokenRate): TokenRateEntity? {
         return TokenRateEntity(
             tokenAddress = address,
             usd = tokenRate.usd

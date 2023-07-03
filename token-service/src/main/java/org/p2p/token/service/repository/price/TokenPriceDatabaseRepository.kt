@@ -18,7 +18,7 @@ internal class TokenPriceDatabaseRepository(
 ) : TokenPriceLocalRepository, CoroutineScope {
 
     override val coroutineContext: CoroutineContext = coroutineDispatchers.io
-    override fun setTokensPrice(prices: List<TokenServicePrice>) {
+    override fun saveTokensPrice(prices: List<TokenServicePrice>) {
         launch {
             val entities = prices.mapNotNull { converter.toEntity(it) }
             tokenPriceDao.insertTokenPrice(entities)
@@ -32,7 +32,7 @@ internal class TokenPriceDatabaseRepository(
         return found?.let { converter.fromEntity(it) }
     }
 
-    override suspend fun attachToTokensPrice(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>> {
+    override suspend fun observeTokenPrices(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>> {
         return tokenPriceDao.getTokensRatesByNetworkFlow(networkChain.networkName)
             .map { it.map(converter::fromEntity) }
     }

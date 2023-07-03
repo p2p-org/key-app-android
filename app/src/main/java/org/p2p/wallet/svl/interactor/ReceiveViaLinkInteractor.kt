@@ -90,7 +90,7 @@ class ReceiveViaLinkInteractor(
             publicKey = temporaryAccount.publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
-            solPrice = solPrice?.getUsdRate()
+            solPrice = solPrice?.usdRate
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,

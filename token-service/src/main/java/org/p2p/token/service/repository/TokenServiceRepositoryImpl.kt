@@ -1,7 +1,6 @@
 package org.p2p.token.service.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
@@ -23,7 +22,7 @@ class TokenServiceRepositoryImpl(
             addresses = tokenAddresses
         )
         result.forEach { queryResult ->
-            priceLocalRepository.setTokensPrice(
+            priceLocalRepository.saveTokensPrice(
                 prices = queryResult.items
             )
         }
@@ -42,8 +41,8 @@ class TokenServiceRepositoryImpl(
         }
     }
 
-    override suspend fun getTokenPricesFlow(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>> =
-        priceLocalRepository.attachToTokensPrice(networkChain)
+    override suspend fun observeTokenPricesFlow(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>> =
+        priceLocalRepository.observeTokenPrices(networkChain)
 
     override suspend fun findTokenPriceByAddress(
         tokenAddress: String

@@ -57,8 +57,7 @@ class TokenServiceMapper {
         )
     }
 
-    internal fun fromNetwork(response: TokenRateResponse): TokenRate? {
-        val usd = response.usd ?: return null
-        return TokenRate(usd = usd)
+    internal fun fromNetwork(response: TokenRateResponse): TokenRate {
+        return TokenRate(usd = response.usd)
     }
 }

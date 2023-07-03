@@ -80,7 +80,7 @@ class UserRemoteRepository(
             publicKey = publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
-            solPrice = solPrice?.getScaledUsdRate()
+            solPrice = solPrice?.usdRate
         )
 
         return listOf(solToken) + tokens

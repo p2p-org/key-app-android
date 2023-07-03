@@ -59,7 +59,7 @@ class SwapTokenRateLoader(
             val tokenPrice =
                 tokenServiceRepository.findTokenPriceByAddress(
                     tokenAddress = token.details.tokenMint.base58Value
-                )?.getUsdRate()
+                )?.usdRate
             if (tokenPrice != null) {
                 emitAndSaveState(SwapRateLoaderState.Loaded(token = token, rate = tokenPrice))
             } else {

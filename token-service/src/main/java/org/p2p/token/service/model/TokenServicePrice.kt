@@ -8,7 +8,9 @@ class TokenServicePrice(
     val rate: TokenRate?,
     val network: TokenServiceNetwork
 ) {
-    fun getScaledUsdRate(): BigDecimal? = rate?.usd?.scaleShort()
+    val scaledUsdRate: BigDecimal?
+        get() = rate?.usd?.scaleShort()
 
-    fun getUsdRate(): BigDecimal? = rate?.usd
+    val usdRate: BigDecimal?
+        get() = rate?.usd
 }
