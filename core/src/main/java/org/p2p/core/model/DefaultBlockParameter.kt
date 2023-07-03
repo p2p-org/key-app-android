@@ -1,7 +1,7 @@
-package org.p2p.ethereumkit.internal.models
+package org.p2p.core.model
 
-import org.p2p.ethereumkit.internal.core.hexStringToLongOrNull
-import org.p2p.ethereumkit.internal.core.toHexString
+import org.p2p.core.wrapper.eth.hexStringToLongOrNull
+import org.p2p.core.wrapper.eth.toHexString
 
 sealed class DefaultBlockParameter {
     class BlockNumber(val value: Long) : DefaultBlockParameter()
