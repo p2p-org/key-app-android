@@ -3,6 +3,9 @@ package org.p2p.wallet.smsinput.updatedevice
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
+import org.p2p.wallet.alarmlogger.model.DeviceShareChangeAlarmError
+import org.p2p.wallet.alarmlogger.model.DeviceShareChangeAlarmErrorSource
 import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
@@ -17,6 +20,7 @@ class UpdateDeviceSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val gatewayServiceErrorHandler: GatewayServiceErrorHandler,
+    private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
 
     override fun attach(view: SmsInputContract.View) {
@@ -67,6 +71,7 @@ class UpdateDeviceSmsInputPresenter(
     }
 
     private fun handleGatewayError(error: PushServiceError) {
+        logAlarmError(error, DeviceShareChangeAlarmErrorSource.PUSH_SERVICE)
         when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(error)) {
             is GatewayHandledState.CriticalError -> {
                 view?.navigateToGatewayErrorScreen(gatewayHandledResult)
@@ -100,6 +105,7 @@ class UpdateDeviceSmsInputPresenter(
             handleGatewayError(gatewayError)
         } catch (error: Throwable) {
             Timber.e(error, "Restoring user or custom share failed")
+            logAlarmError(error, DeviceShareChangeAlarmErrorSource.OTHER)
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         } finally {
             view?.renderButtonLoading(isLoading = false)
@@ -119,6 +125,7 @@ class UpdateDeviceSmsInputPresenter(
                 handleGatewayError(gatewayError)
             } catch (error: Throwable) {
                 Timber.e(error, "Resending sms failed")
+                logAlarmError(error, DeviceShareChangeAlarmErrorSource.OTHER)
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
@@ -126,5 +133,13 @@ class UpdateDeviceSmsInputPresenter(
 
     private fun isSmsCodeFormatValid(smsCode: String): Boolean {
         return smsCode.length == 6
+    }
+
+    private fun logAlarmError(e: Throwable, source: DeviceShareChangeAlarmErrorSource) {
+        val error = DeviceShareChangeAlarmError(
+            source = source.sourceName,
+            error = e
+        )
+        alarmErrorsLogger.triggerDeviceShareChangeAlarm(error)
     }
 }

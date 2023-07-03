@@ -10,6 +10,7 @@ interface SettingsEmailConfirmContract {
         fun showIncorrectAccountScreen(email: String)
         fun showSuccessDeviceChange()
         fun showFailDeviceChange()
+        fun showCommonError()
     }
 
     interface Presenter : MvpPresenter<View> {
