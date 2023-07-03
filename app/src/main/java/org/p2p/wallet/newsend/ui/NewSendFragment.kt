@@ -76,7 +76,7 @@ class NewSendFragment :
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
-    override val presenter: NewSendContract.Presenter by inject { parametersOf(recipient) }
+    override val presenter: NewSendContract.Presenter by inject { parametersOf(recipient, openedFromFlow) }
 
     private var listener: RootListener? = null
 
