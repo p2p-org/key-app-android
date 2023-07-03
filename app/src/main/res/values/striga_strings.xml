@@ -127,5 +127,8 @@
     <string name="striga_iban_account_bic">BIC</string>
     <string name="striga_iban_account_beneficiary">Beneficiary</string>
 
+    <string name="striga_onramp_sms_input_title">Claim %1$s with code from SMS</string>
+    <string name="striga_onramp_sms_input_description">Check the number %s</string>
+
 
 </resources>

@@ -4,6 +4,7 @@ import timber.log.Timber
 import java.math.BigInteger
 import java.util.Calendar
 import org.p2p.wallet.striga.StrigaUserIdProvider
+import org.p2p.wallet.striga.common.StrigaIpAddressProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.toSuccessResult
@@ -13,6 +14,8 @@ import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaInitWithdrawalRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnchainWithdrawalFeeRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsResendRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsVerifyRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
@@ -22,6 +25,7 @@ import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 
 private const val TAG = "StrigaWalletRemoteRepository"
 
@@ -29,7 +33,8 @@ class StrigaWalletRemoteRepository(
     private val api: StrigaWalletApi,
     private val mapper: StrigaWalletRepositoryMapper,
     private val walletsMapper: StrigaUserWalletsMapper,
-    private val strigaUserIdProvider: StrigaUserIdProvider
+    private val strigaUserIdProvider: StrigaUserIdProvider,
+    private val ipAddressProvider: StrigaIpAddressProvider
 ) : StrigaWalletRepository {
 
     private val timber: Timber.Tree = Timber.tag(TAG)
@@ -166,6 +171,45 @@ class StrigaWalletRemoteRepository(
             ).toSuccessResult()
         } catch (error: Throwable) {
             timber.i(error, "getUserWallet failed")
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            )
+        }
+    }
+
+    override suspend fun resendSms(
+        challengeId: StrigaWithdrawalChallengeId
+    ): StrigaDataLayerResult<Unit> {
+        return try {
+            val request = StrigaOnRampSmsResendRequest(
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
+                challengeId = challengeId.value
+            )
+            api.resendSms(request)
+            return StrigaDataLayerResult.Success(Unit)
+        } catch (error: Throwable) {
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            )
+        }
+    }
+
+    override suspend fun verifySms(
+        smsCode: String,
+        challengeId: StrigaWithdrawalChallengeId,
+    ): StrigaDataLayerResult<Unit> {
+        return try {
+            val request = StrigaOnRampSmsVerifyRequest(
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
+                challengeId = challengeId.value,
+                verificationCode = smsCode,
+                ipAddress = ipAddressProvider.getIpAddress()
+            )
+            api.verifySms(request)
+            return StrigaDataLayerResult.Success(Unit)
+        } catch (error: Throwable) {
             StrigaDataLayerError.from(
                 error = error,
                 default = StrigaDataLayerError.InternalError(error)

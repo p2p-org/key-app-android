@@ -25,7 +25,7 @@ abstract class BaseSmsInputFragment :
 
     protected val binding: FragmentSmsInputBinding by viewBinding()
 
-    private val nextDestinationClass: Class<Fragment> by args(ARG_NEXT_DESTINATION_CLASS)
+    private val nextDestinationClass: Class<Fragment>? by args(ARG_NEXT_DESTINATION_CLASS)
     private val nextDestinationArgs: Bundle? by args(ARG_NEXT_DESTINATION_ARGS)
     private val navigationStrategy: NavigationStrategy by args(ARG_NAVIGATION_STRATEGY)
 
@@ -116,8 +116,8 @@ abstract class BaseSmsInputFragment :
         binding.continueButton.setLoading(isLoading)
     }
 
-    private fun createNextDestination(): Fragment {
-        return nextDestinationClass.newInstance().apply {
+    private fun createNextDestination(): Fragment? {
+        return nextDestinationClass?.newInstance()?.apply {
             arguments = nextDestinationArgs
         }
     }
