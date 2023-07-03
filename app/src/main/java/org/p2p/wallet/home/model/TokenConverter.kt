@@ -34,7 +34,7 @@ object TokenConverter {
         tokenData: TokenData,
         price: TokenServicePrice?
     ): Token.Active {
-        val tokenRate = price?.price
+        val tokenRate = price?.rate?.usd
         val totalInUsd = if (tokenRate != null) {
             totalLamports.fromLamports(tokenData.decimals).times(tokenRate)
         } else null
@@ -49,7 +49,7 @@ object TokenConverter {
             coingeckoId = tokenData.coingeckoId,
             totalInUsd = totalInUsd,
             total = total,
-            rate = price?.price,
+            rate = tokenRate,
             visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = tokenData.serumV3Usdc,
             serumV3Usdt = tokenData.serumV3Usdt,
@@ -87,7 +87,7 @@ object TokenConverter {
             serumV3Usdc = data.serumV3Usdc,
             serumV3Usdt = data.serumV3Usdt,
             isWrapped = data.isWrapped,
-            rate = price?.price
+            rate = price?.rate?.usd
         )
 
     fun toDatabase(token: Token.Active): TokenEntity =

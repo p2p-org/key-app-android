@@ -33,5 +33,5 @@ interface UserLocalRepository {
     /**
      * Find [Token] by its symbol
      */
-    fun findTokenByMint(mintAddress: String): Token?
+    suspend fun findTokenByMint(mintAddress: String): Token?
 }

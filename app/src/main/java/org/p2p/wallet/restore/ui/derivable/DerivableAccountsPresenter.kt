@@ -92,7 +92,7 @@ class DerivableAccountsPresenter(
 
     private fun List<DerivableAccount>.updateWithTotalInUsd(solRate: TokenServicePrice): List<DerivableAccount> {
         return map {
-            val totalInUsd = it.totalInSol.multiply(solRate.price)
+            val totalInUsd = it.totalInSol.multiply(solRate.getUsdRate())
             it.copy(totalInUsd = totalInUsd)
         }
     }

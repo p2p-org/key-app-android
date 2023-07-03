@@ -5,5 +5,5 @@ data class TokenServiceMetadata(
     val symbol: String,
     val logoUrl: String,
     val decimals: Int,
-    val price: TokenServicePrice
+    val price: TokenRate?
 )

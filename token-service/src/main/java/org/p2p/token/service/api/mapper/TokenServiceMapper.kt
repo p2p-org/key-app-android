@@ -4,7 +4,9 @@ import org.p2p.token.service.api.request.TokenServiceItemRequest
 import org.p2p.token.service.api.request.TokenServiceQueryRequest
 import org.p2p.token.service.api.response.TokenItemMetadataResponse
 import org.p2p.token.service.api.response.TokenItemPriceResponse
+import org.p2p.token.service.api.response.TokenRateResponse
 import org.p2p.token.service.api.response.TokenServiceNetworkResponse
+import org.p2p.token.service.model.TokenRate
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
@@ -21,10 +23,12 @@ class TokenServiceMapper {
         )
     }
 
-    internal fun fromNetwork(response: TokenItemPriceResponse): TokenServicePrice {
+    internal fun fromNetwork(tokenServiceNetwork: TokenServiceNetwork,response: TokenItemPriceResponse): TokenServicePrice? {
+        val tokenRate = response.price ?: return null
         return TokenServicePrice(
             address = response.tokenAddress,
-            price = response.price?.usd
+            rate = fromNetwork(tokenRate),
+            network = tokenServiceNetwork
         )
     }
 
@@ -51,5 +55,10 @@ class TokenServiceMapper {
                 )
             )
         )
+    }
+
+    internal fun fromNetwork(response: TokenRateResponse): TokenRate? {
+        val usd = response.usd ?: return null
+        return TokenRate(usd = usd)
     }
 }

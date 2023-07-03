@@ -35,6 +35,7 @@ dependencies {
 
     api(Dependencies.roomRuntime)
     api(Dependencies.roomKtx)
+    kapt(Dependencies.roomCompiler)
 
     // Firebase
     implementation(platform(Dependencies.firebaseBom))
