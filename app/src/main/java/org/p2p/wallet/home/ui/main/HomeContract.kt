@@ -7,7 +7,7 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
+import org.p2p.wallet.home.ui.main.adapter.HomeItemsClickListeners
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
@@ -15,7 +15,7 @@ import org.p2p.wallet.transaction.model.NewShowProgress
 
 interface HomeContract {
 
-    interface View : MvpView, OnHomeItemsClickListener {
+    interface View : MvpView, HomeItemsClickListeners {
         fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean)
         fun showTokensForBuy(tokens: List<Token>)
         fun showBalance(cellModel: TextViewCellModel?)

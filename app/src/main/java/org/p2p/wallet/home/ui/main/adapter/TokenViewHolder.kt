@@ -22,7 +22,7 @@ private const val VIEW_ALPHA_MAX_VALUE = 0.8f
 
 class TokenViewHolder(
     private val binding: ItemTokenBinding,
-    private val listener: OnHomeItemsClickListener
+    private val listener: HomeItemsClickListeners
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private lateinit var renderItem: HomeElementItem.Shown
@@ -40,7 +40,7 @@ class TokenViewHolder(
 
     constructor(
         parent: ViewGroup,
-        listener: OnHomeItemsClickListener
+        listener: HomeItemsClickListeners
     ) : this(
         binding = ItemTokenBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         listener = listener
