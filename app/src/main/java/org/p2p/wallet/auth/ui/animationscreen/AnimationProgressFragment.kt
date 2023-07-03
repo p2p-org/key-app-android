@@ -67,7 +67,7 @@ class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progr
             fragmentManager.findFragmentByTag(fragmentTag)?.let { fragment ->
                 fragmentManager.beginTransaction()
                     .remove(fragment)
-                    .commit()
+                    .commitAllowingStateLoss()
                 isAnimating = false
             }
         }
