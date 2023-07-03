@@ -38,7 +38,8 @@ class StrigaWalletRepositoryGetUserWalletTest {
         walletsMapper = StrigaUserWalletsMapper(),
         strigaUserIdProvider = mockk {
             every { getUserIdOrThrow() }.returns(userId)
-        }
+        },
+        cache = StrigaWalletInMemoryRepository()
     )
 
     @Before
@@ -49,7 +50,8 @@ class StrigaWalletRepositoryGetUserWalletTest {
             walletsMapper = StrigaUserWalletsMapper(),
             strigaUserIdProvider = mockk {
                 every { getUserIdOrThrow() }.returns(userId)
-            }
+            },
+            cache = StrigaWalletInMemoryRepository()
         )
     }
 

@@ -252,7 +252,8 @@ class StrigaWalletRepositoryEnrichAccountTest {
             strigaUserIdProvider = mockk {
                 every { getUserId() } returns userId
                 every { getUserIdOrThrow() } returns userId
-            }
+            },
+            cache = StrigaWalletInMemoryRepository()
         )
     }
 }
