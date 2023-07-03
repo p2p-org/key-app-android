@@ -11,6 +11,9 @@ import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
+import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsContract
+import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsPresenter
+import org.p2p.wallet.striga.iban.StrigaUserIbanUiMapper
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
@@ -26,6 +29,9 @@ object StrigaWalletModule : InjectionModule {
 
         factoryOf(::StrigaClaimInteractor)
         factoryOf(::StrigaWalletInteractor)
+
+        factoryOf(::StrigaUserIbanDetailsPresenter) bind StrigaUserIbanDetailsContract.Presenter::class
+        factoryOf(::StrigaUserIbanUiMapper)
     }
 
     private fun Module.initDataLayer() {

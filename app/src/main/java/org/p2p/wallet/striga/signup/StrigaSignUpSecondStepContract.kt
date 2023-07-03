@@ -18,7 +18,7 @@ interface StrigaSignUpSecondStepContract {
         fun clearErrors()
         fun clearError(type: StrigaSignupDataType)
         fun setButtonIsEnabled(isEnabled: Boolean)
-        fun setProgressIsVisible(visible: Boolean)
+        fun setProgressIsVisible(isVisible: Boolean)
         fun scrollToFirstError(type: StrigaSignupDataType)
         fun showSourceOfFundsPicker(selectedItem: StrigaSourceOfFunds?)
         fun showOccupationPicker(selectedItem: StrigaOccupation?)

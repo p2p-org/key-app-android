@@ -2,17 +2,18 @@ package org.p2p.wallet.striga.signup.ui
 
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
+import org.p2p.wallet.utils.emptyString
 
 class StrigaSignUpFirstStepPresenter(
     dispatchers: CoroutineDispatchers,
@@ -47,12 +48,15 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     override fun onFieldChanged(type: StrigaSignupDataType, newValue: String) {
+        Timber.i("field $type changed with new value of size: ${newValue.length}")
         if (type != StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3) {
             setCachedData(type, newValue)
         }
 
+        Timber.i("isSubmittedFirstTime = $isSubmittedFirstTime")
         if (isSubmittedFirstTime) {
             val validationResult = interactor.validateField(type, newValue)
+            Timber.i("validation result for field $type = ${validationResult.isValid}")
             if (validationResult.isValid) {
                 view?.clearError(type)
             } else {
@@ -105,13 +109,13 @@ class StrigaSignUpFirstStepPresenter(
         )
 
         if (changedByUser) {
-            view?.updateSignupField(StrigaSignupDataType.PHONE_NUMBER, "")
+            view?.updateSignupField(StrigaSignupDataType.PHONE_NUMBER, emptyString())
         }
     }
 
     override fun onPhoneNumberChanged(newPhone: String) {
         phoneCountryCode?.let {
-            val phoneWithoutCountryCode = newPhone.replace(it.phoneCodeWithPlusSign, "")
+            val phoneWithoutCountryCode = newPhone.replace(it.phoneCodeWithPlusSign, emptyString())
             onFieldChanged(StrigaSignupDataType.PHONE_NUMBER, phoneWithoutCountryCode)
         }
     }
@@ -130,23 +134,26 @@ class StrigaSignUpFirstStepPresenter(
     }
 
     private suspend fun initialLoadSignupData() {
-        val data = interactor.getSignupDataFirstStep().associateBy { it.type }.toMutableMap()
+        val firstStepData = interactor.getSignupDataFirstStep()
+            .associateBy(StrigaSignupData::type)
+            .toMutableMap()
         metadataInteractor.currentMetadata?.let { metadata ->
-            data[StrigaSignupDataType.EMAIL] = StrigaSignupData(
+            firstStepData[StrigaSignupDataType.EMAIL] = StrigaSignupData(
                 type = StrigaSignupDataType.EMAIL,
                 value = metadata.socialShareOwnerEmail
             )
         }
 
         // fill pre-saved values as-is
-        data.values.forEach {
+        firstStepData.values.forEach {
             setCachedData(it.type, it.value.orEmpty())
             view?.updateSignupField(it.type, it.value.orEmpty())
         }
-        getAndUpdateCountryField(data)
+        getAndUpdateCountryField(firstStepData)
     }
 
     private suspend fun loadPhoneCountryCode() {
+        Timber.i("Setting up phone country code")
         if (phoneCountryCode != null) {
             val selectedPhoneNumber = signupData[StrigaSignupDataType.PHONE_NUMBER]?.value
             view?.setupPhoneCountryCodePicker(
