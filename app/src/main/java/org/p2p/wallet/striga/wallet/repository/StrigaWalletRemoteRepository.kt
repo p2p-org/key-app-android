@@ -29,7 +29,8 @@ class StrigaWalletRemoteRepository(
     private val api: StrigaWalletApi,
     private val mapper: StrigaWalletRepositoryMapper,
     private val walletsMapper: StrigaUserWalletsMapper,
-    private val strigaUserIdProvider: StrigaUserIdProvider
+    private val strigaUserIdProvider: StrigaUserIdProvider,
+    private val cache: StrigaWalletInMemoryRepository
 ) : StrigaWalletRepository {
 
     private val timber: Timber.Tree = Timber.tag(TAG)
@@ -132,12 +133,19 @@ class StrigaWalletRemoteRepository(
     ): StrigaDataLayerResult<StrigaFiatAccountDetails> {
         return try {
             timber.i("getFiatAccountDetails started")
+
+            if (cache.fiatAccountDetails != null) {
+                return cache.fiatAccountDetails!!.toSuccessResult()
+            }
+
             val request = StrigaEnrichAccountRequest(
                 userId = strigaUserIdProvider.getUserIdOrThrow(),
                 accountId = accountId.value
             )
             val response = api.enrichFiatAccount(request)
-            return mapper.fromNetwork(response).toSuccessResult()
+            mapper.fromNetwork(response)
+                .also { cache.fiatAccountDetails = it }
+                .toSuccessResult()
         } catch (error: Throwable) {
             timber.i(error, "getFiatAccountDetails failed")
             StrigaDataLayerError.from(
@@ -149,6 +157,10 @@ class StrigaWalletRemoteRepository(
 
     override suspend fun getUserWallet(): StrigaDataLayerResult<StrigaUserWallet> {
         return try {
+            if (cache.userStrigaWallet != null) {
+                return cache.userStrigaWallet!!.toSuccessResult()
+            }
+
             val hardcodedStartDate = Calendar.getInstance().apply { set(2023, 6, 26) }.timeInMillis
 
             timber.i("getUserWallet started; startDate=$hardcodedStartDate endDate=${System.currentTimeMillis()}")
@@ -163,7 +175,9 @@ class StrigaWalletRemoteRepository(
             walletsMapper.fromNetwork(
                 userId = strigaUserIdProvider.getUserIdOrThrow(),
                 response = response
-            ).toSuccessResult()
+            )
+                .also { cache.userStrigaWallet = it }
+                .toSuccessResult()
         } catch (error: Throwable) {
             timber.i(error, "getUserWallet failed")
             StrigaDataLayerError.from(

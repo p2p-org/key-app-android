@@ -7,8 +7,8 @@ import android.content.SharedPreferences
 import timber.log.Timber
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.core.common.di.AppScope
+import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
@@ -21,6 +21,7 @@ import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
+import org.p2p.wallet.striga.wallet.repository.StrigaWalletInMemoryRepository
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 
 class AuthLogoutInteractor(
@@ -37,6 +38,7 @@ class AuthLogoutInteractor(
     private val transactionManager: RenTransactionManager,
     private val transactionDetailsLocalRepository: TransactionDetailsLocalRepository,
     private val pushNotificationsInteractor: PushNotificationsInteractor,
+    private val strigaWalletInMemoryRepository: StrigaWalletInMemoryRepository,
     private val appScope: AppScope,
     private val analytics: Analytics
 ) {
@@ -59,6 +61,7 @@ class AuthLogoutInteractor(
             renBtcInteractor.clearSession()
             transactionDetailsLocalRepository.deleteAll()
             jupiterSwapStorage.clear()
+            strigaWalletInMemoryRepository.clear()
             IntercomService.logout()
             RenVMService.stopService(context)
 

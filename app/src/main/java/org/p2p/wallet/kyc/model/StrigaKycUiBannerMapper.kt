@@ -5,9 +5,15 @@ import org.p2p.wallet.home.model.HomeScreenBanner
 
 class StrigaKycUiBannerMapper {
 
-    fun mapToHomeBigBanner(status: StrigaKycStatusBanner): HomeBannerItem = status.toHomeBannerItem()
+    fun mapToHomeBigBanner(
+        status: StrigaKycStatusBanner,
+        isLoading: Boolean
+    ): HomeBannerItem = status.toHomeBannerItem(isLoading)
 
-    fun mapToBanner(status: StrigaKycStatusBanner): HomeScreenBanner = StrigaBanner(status)
+    fun mapToBanner(
+        isLoading: Boolean,
+        status: StrigaKycStatusBanner
+    ): HomeScreenBanner = StrigaBanner(isLoading, status)
 
     fun getKycStatusBannerFromTitle(bannerTitleId: Int): StrigaKycStatusBanner? {
         return StrigaKycStatusBanner.values().firstOrNull {
@@ -16,12 +22,13 @@ class StrigaKycUiBannerMapper {
     }
 }
 
-private fun StrigaKycStatusBanner.toHomeBannerItem(): HomeBannerItem {
+private fun StrigaKycStatusBanner.toHomeBannerItem(isLoading: Boolean): HomeBannerItem {
     return HomeBannerItem(
         titleTextId = bigBannerTitleResId,
         subtitleTextId = bigBannerMessageResId,
         buttonTextId = actionTitleResId,
         drawableRes = placeholderResId,
-        backgroundColorRes = backgroundTint
+        backgroundColorRes = backgroundTint,
+        isLoading = isLoading
     )
 }

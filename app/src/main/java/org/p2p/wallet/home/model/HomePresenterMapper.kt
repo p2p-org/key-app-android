@@ -4,6 +4,7 @@ import android.content.res.Resources
 import java.math.BigDecimal
 import kotlinx.coroutines.withContext
 import org.p2p.core.common.TextContainer
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
@@ -12,7 +13,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -55,12 +55,12 @@ class HomePresenterMapper(
         return strigaUiBannerMapper.getKycStatusBannerFromTitle(bannerTitleId)
     }
 
-    fun mapToBigBanner(banner: StrigaKycStatusBanner): HomeBannerItem {
-        return strigaUiBannerMapper.mapToHomeBigBanner(banner)
+    fun mapToBigBanner(banner: StrigaKycStatusBanner, isLoading: Boolean): HomeBannerItem {
+        return strigaUiBannerMapper.mapToHomeBigBanner(banner, isLoading)
     }
 
-    fun mapToHomeBanner(banner: StrigaKycStatusBanner): HomeScreenBanner {
-        return strigaUiBannerMapper.mapToBanner(banner)
+    fun mapToHomeBanner(isLoading: Boolean, banner: StrigaKycStatusBanner): HomeScreenBanner {
+        return strigaUiBannerMapper.mapToBanner(isLoading, banner)
     }
 
     suspend fun mapToItems(

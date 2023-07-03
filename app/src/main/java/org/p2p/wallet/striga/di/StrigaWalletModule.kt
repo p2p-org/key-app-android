@@ -4,6 +4,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.new
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.create
@@ -17,6 +18,7 @@ import org.p2p.wallet.striga.iban.StrigaUserIbanUiMapper
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.repository.StrigaUserWalletsMapper
+import org.p2p.wallet.striga.wallet.repository.StrigaWalletInMemoryRepository
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRemoteRepository
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepositoryMapper
@@ -44,6 +46,7 @@ object StrigaWalletModule : InjectionModule {
 
         factoryOf(::StrigaUserWalletsMapper)
         factoryOf(::StrigaWalletRepositoryMapper)
+        singleOf(::StrigaWalletInMemoryRepository)
         factoryOf(::StrigaWalletRemoteRepository) bind StrigaWalletRepository::class
     }
 }

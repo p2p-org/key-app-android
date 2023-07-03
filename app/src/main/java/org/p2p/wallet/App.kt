@@ -16,13 +16,12 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import timber.log.Timber
-
 import org.p2p.core.crashlytics.CrashLogger
+import org.p2p.core.crashlytics.helpers.TimberCrashTree
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.core.crashlytics.helpers.TimberCrashTree
-import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.lokalise.LokaliseService
@@ -90,7 +89,7 @@ class App : Application(), Configuration.Provider {
             // crashes when using level != Level.Error
             // do NOT use other than ERROR before bumping to Koin 3.1.6
             // FIXME
-            androidLogger(level = Level.DEBUG)
+            androidLogger(level = Level.INFO)
             androidContext(this@App)
             // uncomment in PWN-4197
             // workManagerFactory inside calls WorkManager.initialize that causes IllegalStateException

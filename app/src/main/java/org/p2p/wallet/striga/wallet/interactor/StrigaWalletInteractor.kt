@@ -12,10 +12,14 @@ import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
 
 class StrigaWalletInteractor(
-    private val repository: StrigaWalletRepository
+    private val repository: StrigaWalletRepository,
 ) {
 
     private class StrigaEuroAccountNotFound : Throwable()
+
+    suspend fun loadFiatAccountAndUserWallet(): Result<StrigaFiatAccountDetails> {
+        return kotlin.runCatching { getFiatAccountDetails() }
+    }
 
     @Throws(Throwable::class)
     suspend fun getFiatAccountDetails(): StrigaFiatAccountDetails {

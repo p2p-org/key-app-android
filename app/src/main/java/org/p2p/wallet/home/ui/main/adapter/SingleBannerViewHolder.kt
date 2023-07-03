@@ -1,12 +1,13 @@
 package org.p2p.wallet.home.ui.main.adapter
 
 import androidx.core.view.isVisible
-import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
+import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.getString
 import org.p2p.wallet.databinding.ItemHomeBannerBinding
 import org.p2p.wallet.home.model.HomeScreenBanner
 import org.p2p.wallet.kyc.model.StrigaBanner
-import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class SingleBannerViewHolder(
@@ -37,16 +38,17 @@ class SingleBannerViewHolder(
         val status = item.status
         textViewTitle.setText(status.bannerTitleResId)
 
-        val subtitleText = context.getString(status.bannerMessageResId)
+        val subtitleText = getString(status.bannerMessageResId)
         textViewSubtitle.text = subtitleText
         textViewSubtitle.isVisible = subtitleText.isNotEmpty()
 
         imageViewIcon.setImageResource(status.placeholderResId)
         buttonAction.setText(status.actionTitleResId)
-        root.background.setTint(context.getColor(status.backgroundTint))
+        root.background.setTint(getColor(status.backgroundTint))
 
         buttonClose.isVisible = status.isCloseButtonVisible
 
+        buttonAction.setLoading(item.isLoading)
         buttonAction.setOnClickListener {
             listener.onBannerClicked(status.bannerTitleResId)
         }
