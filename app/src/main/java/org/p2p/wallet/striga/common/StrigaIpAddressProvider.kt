@@ -13,13 +13,11 @@ class StrigaIpAddressProvider {
     fun getIpAddress(): String {
         val defaultOne = "127.0.0.1"
         try {
-            for (networkInterface in NetworkInterface.getNetworkInterfaces()) {
-                for (inetAddress in networkInterface.inetAddresses) {
-                    if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
-                        return inetAddress.getHostAddress() ?: defaultOne
-                    }
-                }
-            }
+            NetworkInterface.getNetworkInterfaces().toList()
+                .flatMap { it.inetAddresses.toList() }
+                .firstOrNull { it is Inet4Address && !it.isLoopbackAddress  }
+                ?.hostAddress
+                ?: defaultOne
         } catch (e: SocketException) {
             Timber.e(e, "Unable to retrieve ip address")
         }
