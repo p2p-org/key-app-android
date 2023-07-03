@@ -9,6 +9,10 @@ private fun Int.toPrinter(): PrintStream = when {
     else -> System.out
 }
 
+fun plantStubTimber() {
+    Timber.plant(object : Timber.DebugTree() {})
+}
+
 fun plantTimberToStdout(
     defaultTag: String,
     excludeMessages: List<String> = emptyList(),
@@ -37,13 +41,13 @@ fun plantTimberToStdout(
                 sb.append(message)
                 printer.println(sb.toString())
             } else {
-                // exclude from message that in exclusion list
-                if (excludeStacktraceForMessages.none {
+                val isMessageNotExcluded = excludeStacktraceForMessages.none {
                     message.startsWith(it) ||
                         t.message?.startsWith(it) == true ||
                         t.cause?.message?.startsWith(it) == true
                 }
-                ) {
+                // exclude from message that in exclusion list
+                if (isMessageNotExcluded) {
                     printer.println("[$priority] $tag: ${t.stackTraceToString()}")
                 } else {
                     // there's case, when we getting exception with message == null but message itself contains full stacktrace

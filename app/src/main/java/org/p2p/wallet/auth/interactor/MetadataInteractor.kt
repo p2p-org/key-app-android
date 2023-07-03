@@ -2,7 +2,9 @@ package org.p2p.wallet.auth.interactor
 
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.toBase58Instance
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.model.MetadataLoadStatus
@@ -15,9 +17,8 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.settings.DeviceInfoHelper
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.solanaj.core.toBase58Instance
 
+private const val TAG = "MetadataInteractor"
 class MetadataInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
@@ -33,6 +34,7 @@ class MetadataInteractor(
     var currentMetadata: GatewayOnboardingMetadata? = null
         get() = getMetadataFromStorage()
         private set(value) {
+            Timber.tag(TAG).i("updating currentMetadata field")
             field = value
             saveMetadataToStorage(value)
         }
@@ -40,6 +42,7 @@ class MetadataInteractor(
     suspend fun tryLoadAndSaveMetadata(): MetadataLoadStatus {
         val ethereumPublicKey = getEthereumPublicKey()
         return if (ethereumPublicKey != null) {
+            Timber.tag(TAG).i("ETH key is found, fetching metadata")
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
             loadAndSaveMetadata(
@@ -55,7 +58,8 @@ class MetadataInteractor(
 
     private fun hasDeviceShare(): Boolean {
         val userDetails = signUpDetailsStorage.getLastSignUpUserDetails()
-        return userDetails?.signUpDetails?.deviceShare != null
+        return (userDetails?.signUpDetails?.deviceShare != null)
+            .also { Timber.tag(TAG).i("hasDeviceShare: $it") }
     }
 
     fun hasDifferentDeviceShare(): Boolean {
@@ -151,6 +155,7 @@ class MetadataInteractor(
     private suspend fun tryToUploadMetadata(metadata: GatewayOnboardingMetadata) {
         val ethereumPublicKey = getEthereumPublicKey()
         if (ethereumPublicKey != null) {
+            Timber.tag(TAG).i("uploading new metadata")
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
             tryToUploadMetadata(
@@ -160,7 +165,7 @@ class MetadataInteractor(
                 newMetadata = metadata
             )
         } else {
-            Timber.i("User doesn't have any Web3Auth sign up data, skipping upload metadata")
+            Timber.tag(TAG).i("User doesn't have any Web3Auth sign up data, skipping upload metadata")
         }
     }
 

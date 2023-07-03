@@ -10,10 +10,14 @@ sealed class StrigaDataLayerResult<out T> {
         is Failure -> throw error
     }
 
-    @Throws(StrigaDataLayerError::class)
     fun successOrNull(): T? = when (this) {
         is Success -> value
         is Failure -> null
+    }
+
+    fun failureOrNull(): StrigaDataLayerError? = when (this) {
+        is Success -> null
+        is Failure -> error
     }
 
     fun onSuccess(action: (T) -> Unit): StrigaDataLayerResult<T> {
