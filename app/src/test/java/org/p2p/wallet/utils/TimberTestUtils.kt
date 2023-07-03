@@ -41,13 +41,13 @@ fun plantTimberToStdout(
                 sb.append(message)
                 printer.println(sb.toString())
             } else {
+                val isMessageNotExcluded = excludeStacktraceForMessages.none {
+                    message.startsWith(it) ||
+                        t.message?.startsWith(it) == true ||
+                        t.cause?.message?.startsWith(it) == true
+                }
                 // exclude from message that in exclusion list
-                if (excludeStacktraceForMessages.none {
-                        message.startsWith(it) ||
-                            t.message?.startsWith(it) == true ||
-                            t.cause?.message?.startsWith(it) == true
-                    }
-                ) {
+                if (isMessageNotExcluded) {
                     printer.println("[$priority] $tag: ${t.stackTraceToString()}")
                 } else {
                     // there's case, when we getting exception with message == null but message itself contains full stacktrace
