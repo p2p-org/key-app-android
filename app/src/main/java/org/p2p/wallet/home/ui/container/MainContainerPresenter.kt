@@ -42,20 +42,17 @@ class MainContainerPresenter(
     }
 
     override fun loadMainNavigation() {
-        val screensConfiguration = getScreenConfiguration()
-        val screensConfigurationMap = screensConfiguration.associate { it.screen to it.kClass }
-        val screensConfigurationArguments = screensConfiguration.map { it.bundle }
-        view?.setMainNavigationConfiguration(screensConfigurationMap, screensConfigurationArguments)
+        view?.setMainNavigationConfiguration(getScreenConfiguration())
     }
 
-    private fun getScreenConfiguration() = buildList {
+    private fun getScreenConfiguration(): List<ScreenConfiguration> = buildList {
         add(ScreenConfiguration(ScreenTab.HOME_SCREEN, HomeFragment::class))
         when {
             sellEnabledFeatureToggle.isFeatureEnabled -> add(
                 ScreenConfiguration(
                     ScreenTab.SWAP_SCREEN,
                     JupiterSwapFragment::class,
-                    JupiterSwapFragment.createBundle(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
+                    JupiterSwapFragment.createArgs(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
                 )
             )
             solendFeatureToggle.isFeatureEnabled -> add(

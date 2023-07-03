@@ -237,16 +237,12 @@ class MainContainerFragment :
         }
     }
 
-    override fun setMainNavigationConfiguration(
-        screensConfigurationMap: Map<ScreenTab, KClass<out Fragment>>,
-        screensConfigurationArguments: List<Bundle?>
-    ) {
-        fragmentsMap = screensConfigurationMap
+    override fun setMainNavigationConfiguration(screensConfiguration: List<ScreenConfiguration>) {
+        fragmentsMap = screensConfiguration.associate { it.screen to it.kClass }
         mainContainerAdapter = BaseFragmentAdapter(
             fragmentManager = childFragmentManager,
             lifecycle = lifecycle,
-            items = screensConfigurationMap.values.toList(),
-            args = screensConfigurationArguments
+            pages = screensConfiguration.map { it.toFragmentPage() }
         )
         with(binding) {
             viewPagerMainFragment.adapter = mainContainerAdapter

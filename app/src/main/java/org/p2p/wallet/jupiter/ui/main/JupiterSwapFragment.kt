@@ -74,7 +74,7 @@ class JupiterSwapFragment :
     companion object {
         fun create(token: Token.Active? = null, source: SwapOpenedFrom): JupiterSwapFragment =
             JupiterSwapFragment().apply {
-                arguments = createBundle(token, source)
+                arguments = createArgs(token, source)
             }
 
         fun create(
@@ -91,7 +91,7 @@ class JupiterSwapFragment :
                     EXTRA_OPENED_FROM to source
                 )
 
-        fun createBundle(token: Token.Active? = null, source: SwapOpenedFrom): Bundle =
+        fun createArgs(token: Token.Active? = null, source: SwapOpenedFrom): Bundle =
             bundleOf(
                 EXTRA_TOKEN to token,
                 EXTRA_OPENED_FROM to source
