@@ -9,6 +9,7 @@ import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
+import org.p2p.wallet.alarmlogger.model.AlarmDeviceShareChangeErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmStrigaErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
@@ -26,6 +27,7 @@ object AlarmErrorsModule : InjectionModule {
         factoryOf(::AlarmErrorsLogger)
         factoryOf(::AlarmSwapErrorConverter)
         factoryOf(::AlarmSendErrorConverter)
+        factoryOf(::AlarmDeviceShareChangeErrorConverter)
         factoryOf(::AlarmStrigaErrorConverter)
     }
 }
