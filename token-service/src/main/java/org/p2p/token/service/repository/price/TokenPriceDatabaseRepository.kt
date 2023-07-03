@@ -18,11 +18,9 @@ internal class TokenPriceDatabaseRepository(
 ) : TokenPriceLocalRepository, CoroutineScope {
 
     override val coroutineContext: CoroutineContext = coroutineDispatchers.io
-    override fun saveTokensPrice(prices: List<TokenServicePrice>) {
-        launch {
+    override suspend fun saveTokensPrice(prices: List<TokenServicePrice>) {
             val entities = prices.mapNotNull { converter.toEntity(it) }
             tokenPriceDao.insertTokenPrice(entities)
-        }
     }
 
     override suspend fun findTokenPriceByAddress(

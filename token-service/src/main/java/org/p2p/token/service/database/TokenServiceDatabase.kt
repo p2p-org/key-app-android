@@ -10,13 +10,12 @@ import org.p2p.token.service.database.entity.TokenRateEntity
 
 @Database(
     entities = [
-        TokenPriceEntity::class,
-        TokenRateEntity::class
+        TokenPriceEntity::class
     ],
     version = DATABASE_VERSION,
     exportSchema = false
 )
-@TypeConverters(RoomConverters::class)
+@TypeConverters(value = arrayOf(RoomConverters::class,))
 internal abstract class TokenServiceDatabase : RoomDatabase() {
 
     companion object {

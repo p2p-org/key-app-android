@@ -41,12 +41,11 @@ class DerivableAccountsPresenter(
     private fun loadSolRate() {
         launch {
             try {
-                val tokenMint = Constants.SOL_MINT
+                val tokenMint = Constants.WRAPPED_SOL_MINT
                 val solRate = tokenServiceRepository.fetchTokenPriceByAddress(
                     networkChain = TokenServiceNetwork.SOLANA,
                     tokenAddress = tokenMint
-                )!!
-                    .also { solRate = it }
+                ).also { solRate = it } ?: return@launch
 
                 allAccounts = allAccounts.updateWithTotalInUsd(solRate).toMutableList()
                 filterAccountsByPathAndShow(path)

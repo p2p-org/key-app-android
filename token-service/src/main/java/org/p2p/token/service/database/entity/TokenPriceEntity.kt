@@ -15,8 +15,8 @@ data class TokenPriceEntity(
     val tokenAddress: String,
     @ColumnInfo(name = COLUMN_NETWORK_CHAIN)
     val networkChain: String,
-    @Embedded
-    val tokenRate: TokenRateEntity
+    @Embedded(prefix = COLUMN_TOKEN_RATES)
+    val tokenRate: TokenRateEntity?
 
 ) {
     companion object {
