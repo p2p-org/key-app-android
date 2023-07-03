@@ -1,5 +1,0 @@
-ext {
-
-    // https://github.com/shyiko/ktlint
-    ktlintVersion = '0.45.2'
-}
