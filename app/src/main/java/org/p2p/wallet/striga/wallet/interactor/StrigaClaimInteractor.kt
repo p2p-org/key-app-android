@@ -19,7 +19,7 @@ class StrigaClaimInteractor(
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle
 ) {
     suspend fun getClaimableTokens(): StrigaDataLayerResult<List<StrigaClaimableToken>> {
-        if (strigaFeatureToggle.isFeatureEnabled){
+        if (strigaFeatureToggle.isFeatureEnabled) {
             return emptyList<StrigaClaimableToken>().toSuccessResult()
         }
 
