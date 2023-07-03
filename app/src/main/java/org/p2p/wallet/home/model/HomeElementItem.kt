@@ -1,8 +1,8 @@
 package org.p2p.wallet.home.model
 
 import java.math.BigDecimal
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
-import org.p2p.wallet.utils.Base58String
 
 sealed class HomeElementItem {
     data class StrigaClaim(

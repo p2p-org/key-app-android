@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -57,7 +58,6 @@ import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat

@@ -4,6 +4,8 @@ import android.content.res.Resources
 import java.math.BigDecimal
 import kotlinx.coroutines.withContext
 import org.p2p.core.common.TextContainer
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
@@ -12,12 +14,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toPx
 
 class HomePresenterMapper(

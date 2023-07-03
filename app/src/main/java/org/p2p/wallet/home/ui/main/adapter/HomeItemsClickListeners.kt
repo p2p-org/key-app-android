@@ -1,7 +1,7 @@
 package org.p2p.wallet.home.ui.main.adapter
 
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
-import org.p2p.wallet.utils.Base58String
 
 interface HomeItemsClickListeners {
     fun onBannerClicked(bannerTitleId: Int)
