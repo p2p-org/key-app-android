@@ -227,7 +227,7 @@ class UserInteractor(
     fun findMultipleTokenDataByAddresses(mintAddresses: List<String>): List<Token> =
         mintAddresses.mapNotNull { findTokenDataByAddress(it) }
 
-    private fun findTokenDataBySymbol(symbol: String): Token? {
+    private fun findTokenDataBySymbol(symbol: String): Token.Other? {
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
         val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.coingeckoId) }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }

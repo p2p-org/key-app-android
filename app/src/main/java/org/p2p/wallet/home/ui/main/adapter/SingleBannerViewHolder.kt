@@ -1,8 +1,8 @@
 package org.p2p.wallet.home.ui.main.adapter
 
 import androidx.core.view.isVisible
-import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
 import org.p2p.wallet.databinding.ItemHomeBannerBinding
 import org.p2p.wallet.home.model.HomeScreenBanner
 import org.p2p.wallet.kyc.model.StrigaBanner
@@ -11,8 +11,9 @@ import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class SingleBannerViewHolder(
     parent: ViewGroup,
-    private val binding: ItemHomeBannerBinding = parent.inflateViewBinding(attachToRoot = false),
-    private val listener: OnHomeItemsClickListener
+
+    private val listener: HomeItemsClickListeners,
+    private val binding: ItemHomeBannerBinding = parent.inflateViewBinding(attachToRoot = false)
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {

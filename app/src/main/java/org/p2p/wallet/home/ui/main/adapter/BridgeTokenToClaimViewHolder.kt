@@ -12,10 +12,10 @@ import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private const val IMAGE_SIZE_DP = 64
 
-class TokenToClaimViewHolder(
+class BridgeTokenToClaimViewHolder(
     parent: ViewGroup,
     private val glideManager: GlideManager,
-    private val listener: OnHomeItemsClickListener,
+    private val listener: HomeItemsClickListeners,
     private val binding: ItemTokenToClaimBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : RecyclerView.ViewHolder(binding.root) {
 
