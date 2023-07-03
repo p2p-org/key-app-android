@@ -34,7 +34,7 @@ object TokenConverter {
         tokenData: TokenData,
         price: TokenServicePrice?
     ): Token.Active {
-        val tokenRate = price?.rate?.usd
+        val tokenRate = price?.getUsdRate()
         val totalInUsd = if (tokenRate != null) {
             totalLamports.fromLamports(tokenData.decimals).times(tokenRate)
         } else null

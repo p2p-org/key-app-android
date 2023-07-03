@@ -33,8 +33,8 @@ dependencies {
     api(Dependencies.timber)
     implementation(Dependencies.glide)
 
-    api(Dependencies.roomRuntime)
-    api(Dependencies.roomKtx)
+    implementation(Dependencies.roomRuntime)
+    implementation(Dependencies.roomKtx)
     kapt(Dependencies.roomCompiler)
 
     // Firebase

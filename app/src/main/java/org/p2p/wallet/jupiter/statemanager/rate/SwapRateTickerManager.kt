@@ -123,7 +123,7 @@ class SwapRateTickerManager(
         val cachedPrice = tokenServiceRepository.findTokenPriceByAddress(
             tokenAddress = tokenData.mintAddress
         )
-        return cachedPrice?.rate?.usd
+        return cachedPrice?.getUsdRate()
     }
 
     private fun formatRateString(tokenASymbol: String, tokenBRate: String, tokenBSymbol: String): String {
