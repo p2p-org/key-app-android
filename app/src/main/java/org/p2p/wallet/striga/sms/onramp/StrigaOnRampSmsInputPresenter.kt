@@ -12,6 +12,8 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
 import org.p2p.wallet.utils.removeWhiteSpaces
 
+private const val SMS_CODE_LENGTH = 6
+
 class StrigaOnRampSmsInputPresenter(
     private val interactor: StrigaSmsInputInteractor
 ) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
@@ -109,7 +111,7 @@ class StrigaOnRampSmsInputPresenter(
         }
     }
 
-    private fun isSmsCodeFormatValid(smsCode: String): Boolean = smsCode.length == 6
+    private fun isSmsCodeFormatValid(smsCode: String): Boolean = smsCode.length == SMS_CODE_LENGTH
 
     private fun handleError(error: StrigaDataLayerError) {
         when (error) {
