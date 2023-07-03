@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
+import org.p2p.wallet.utils.plantStubTimber
 import org.p2p.wallet.utils.stub
 import org.p2p.wallet.utils.verifyNone
 import org.p2p.wallet.utils.verifyOnce
@@ -16,6 +17,10 @@ import org.p2p.wallet.utils.verifyOnce
 class StrigaUserIbanDetailsPresenterTest {
 
     private lateinit var presenter: StrigaUserIbanDetailsContract.Presenter
+
+    init {
+        plantStubTimber()
+    }
 
     private val mapper: StrigaUserIbanUiMapper = mockk()
     private val interactor: StrigaWalletInteractor = mockk()
@@ -54,7 +59,7 @@ class StrigaUserIbanDetailsPresenterTest {
     fun `GIVEN exception for iban response WHEN get iban THEN navigate back and show error`() {
         // GIVEN
         interactor.stub {
-            coEvery { getFiatAccountDetails() }.throws(mockk())
+            coEvery { getFiatAccountDetails() }.throws(mockk(relaxed = true))
         }
 
         // WHEN

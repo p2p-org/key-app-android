@@ -9,6 +9,10 @@ private fun Int.toPrinter(): PrintStream = when {
     else -> System.out
 }
 
+fun plantStubTimber() {
+    Timber.plant(object : Timber.DebugTree() {})
+}
+
 fun plantTimberToStdout(
     defaultTag: String,
     excludeMessages: List<String> = emptyList(),
@@ -39,10 +43,10 @@ fun plantTimberToStdout(
             } else {
                 // exclude from message that in exclusion list
                 if (excludeStacktraceForMessages.none {
-                    message.startsWith(it) ||
-                        t.message?.startsWith(it) == true ||
-                        t.cause?.message?.startsWith(it) == true
-                }
+                        message.startsWith(it) ||
+                            t.message?.startsWith(it) == true ||
+                            t.cause?.message?.startsWith(it) == true
+                    }
                 ) {
                     printer.println("[$priority] $tag: ${t.stackTraceToString()}")
                 } else {
