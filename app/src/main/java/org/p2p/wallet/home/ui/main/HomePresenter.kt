@@ -164,8 +164,10 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
-        if (state.tokens.isNotEmpty() || state.ethTokens.isNotEmpty()) {
-            handleHomeStateChanged(state.tokens, state.ethTokens)
+        launch {
+            if (state.tokens.isNotEmpty() || state.ethTokens.isNotEmpty()) {
+                handleHomeStateChanged(state.tokens, state.ethTokens)
+            }
         }
         observeRefreshingStatus()
         observeInternetConnection()
@@ -460,28 +462,26 @@ class HomePresenter(
         }
     }
 
-    private fun handleHomeStateChanged(
+    private suspend fun handleHomeStateChanged(
         userTokens: List<Token.Active>,
         ethTokens: List<Token.Eth>,
     ) {
-        launch {
-            Timber.d("local tokens change arrived")
-            state = state.copy(
-                tokens = userTokens,
-                ethTokens = ethTokens,
-                username = homeInteractor.getUsername(),
-            )
-            val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
-            when {
-                isAccountEmpty -> {
-                    view?.showEmptyState(isEmpty = true)
-                    handleEmptyAccount()
-                }
+        Timber.d("local tokens change arrived")
+        state = state.copy(
+            tokens = userTokens,
+            ethTokens = ethTokens,
+            username = homeInteractor.getUsername(),
+        )
+        val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
+        when {
+            isAccountEmpty -> {
+                view?.showEmptyState(isEmpty = true)
+                handleEmptyAccount()
+            }
 
-                (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
-                    view?.showEmptyState(isEmpty = false)
-                    showTokensAndBalance()
-                }
+            (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
+                view?.showEmptyState(isEmpty = false)
+                showTokensAndBalance()
             }
         }
     }

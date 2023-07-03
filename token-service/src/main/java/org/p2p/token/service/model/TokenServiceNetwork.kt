@@ -6,7 +6,8 @@ enum class TokenServiceNetwork(val networkName: String) {
 
     companion object {
         fun getValueOf(stringValue: String): TokenServiceNetwork {
-            return TokenServiceNetwork.values().firstOrNull { it.networkName == stringValue }
+            return TokenServiceNetwork.values()
+                .firstOrNull { it.networkName.equals(stringValue, ignoreCase = true) }
                 ?: SOLANA
         }
     }
