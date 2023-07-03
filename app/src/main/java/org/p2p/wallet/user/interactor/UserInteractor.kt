@@ -173,7 +173,7 @@ class UserInteractor(
     suspend fun findMultipleTokenDataByAddresses(mintAddresses: List<String>): List<Token> =
         mintAddresses.mapNotNull { findTokenDataByAddress(it) }
 
-    private suspend fun findTokenDataBySymbol(symbol: String): Token? {
+    private suspend fun findTokenDataBySymbol(symbol: String): Token.Other? {
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
         val price = tokenData?.let {
             tokenServiceRepository.findTokenPriceByAddress(
