@@ -15,7 +15,7 @@ class StrigaIpAddressProvider {
         try {
             NetworkInterface.getNetworkInterfaces().toList()
                 .flatMap { it.inetAddresses.toList() }
-                .firstOrNull { it is Inet4Address && !it.isLoopbackAddress  }
+                .firstOrNull { it is Inet4Address && !it.isLoopbackAddress }
                 ?.hostAddress
                 ?: defaultOne
         } catch (e: SocketException) {
