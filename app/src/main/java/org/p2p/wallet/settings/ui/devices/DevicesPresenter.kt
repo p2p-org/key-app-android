@@ -9,7 +9,7 @@ import org.p2p.wallet.alarmlogger.model.DeviceShareChangeAlarmError
 import org.p2p.wallet.alarmlogger.model.DeviceShareChangeAlarmErrorSource
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
-import org.p2p.wallet.auth.interactor.DeviceNameIosHelper
+import org.p2p.wallet.auth.interactor.DeviceNameIosMapper
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
@@ -76,7 +76,7 @@ class DevicesPresenter(
 
     private fun loadInitialData() {
         launch {
-            val oldDeviceShareName = DeviceNameIosHelper.mapDeviceName(
+            val oldDeviceShareName = DeviceNameIosMapper.mapDeviceName(
                 metadataInteractor.currentMetadata?.deviceShareDeviceName.orEmpty()
             )
             val items = deviceCellMapper.toCellModels(

@@ -1,6 +1,6 @@
 package org.p2p.wallet.auth.interactor
 
-object DeviceNameIosHelper {
+object DeviceNameIosMapper {
     fun mapDeviceName(identifier: String): String {
         return when (identifier) {
             "iPod5,1" -> "iPod touch (5th generation)"
