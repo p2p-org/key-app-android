@@ -12,6 +12,8 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import org.intellij.lang.annotations.Language
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,38 +22,89 @@ import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletsResponse
+import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
+import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletInMemoryRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletRemoteRepository
+import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWalletMapper
 import org.p2p.wallet.utils.assertThat
 import org.p2p.wallet.utils.createHttpException
+import org.p2p.wallet.utils.fromJson
 import org.p2p.wallet.utils.stub
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class StrigaWalletRepositoryGetUserWalletTest {
+class StrigaWalletRemoteRepositoryTest {
+
     private val gson = Gson()
     private val api: StrigaWalletApi = mockk()
     private val userId = "65b1c37c-686a-487b-81f4-8d0ea6dd0e53"
 
-    private var repository = StrigaWalletRemoteRepository(
-        api = api,
-        mapper = StrigaWalletRepositoryMapper(),
-        walletsMapper = StrigaUserWalletsMapper(),
-        strigaUserIdProvider = mockk {
-            every { getUserIdOrThrow() }.returns(userId)
-        }
-    )
+    private lateinit var repository: StrigaWalletRepository
 
     @Before
     fun beforeEach() {
         repository = StrigaWalletRemoteRepository(
             api = api,
-            mapper = StrigaWalletRepositoryMapper(),
-            walletsMapper = StrigaUserWalletsMapper(),
+            mapper = StrigaWalletMapper(),
             strigaUserIdProvider = mockk {
-                every { getUserIdOrThrow() }.returns(userId)
-            }
+                every { getUserId() } returns userId
+                every { getUserIdOrThrow() } returns userId
+            },
+            cache = StrigaWalletInMemoryRepository()
         )
     }
+
+    @Test
+    fun `GIVEN enrich account response for EUR WHEN getFiatAccountDetails THEN check response is parsed ok`() =
+        runTest {
+            @Language("JSON")
+            val responseBody = """
+                {
+                    "currency":"EUR",
+                    "status":"ACTIVE",
+                    "internalAccountId":"EUR09124356875233",
+                    "bankCountry":"GB",
+                    "bankAddress":"The Bower, 207-211 Old Street, London, England, EC1V 9NR",
+                    "iban":"GB30SEOU19870010116943",
+                    "bic":"SEOUGB21",
+                    "accountNumber":"010116943",
+                    "bankName":"Simulator Bank",
+                    "bankAccountHolderName":"LORD VOLDEMORT",
+                    "provider":"SIMULATOR",
+                    "paymentType":null,
+                    "domestic":false,
+                    "routingCodeEntries":[],
+                    "payInReference":null
+                }
+            """.trimIndent()
+
+            coEvery { api.enrichFiatAccount(any()) } returns responseBody.fromJson(gson)
+
+            val result = repository.getFiatAccountDetails(
+                accountId = StrigaAccountId("01c1f4e73d8b2587921c74e98951add0"),
+            )
+
+            assertTrue(result is StrigaDataLayerResult.Success)
+            result as StrigaDataLayerResult.Success<StrigaFiatAccountDetails>
+            assertEquals("EUR", result.value.currency)
+            assertEquals(StrigaFiatAccountStatus.ACTIVE, result.value.status)
+            assertEquals("EUR09124356875233", result.value.internalAccountId)
+            assertEquals("GB", result.value.bankCountry)
+            assertEquals("The Bower, 207-211 Old Street, London, England, EC1V 9NR", result.value.bankAddress)
+            assertEquals("GB30SEOU19870010116943", result.value.iban)
+            assertEquals("SEOUGB21", result.value.bic)
+            assertEquals("010116943", result.value.accountNumber)
+            assertEquals("Simulator Bank", result.value.bankName)
+            assertEquals("LORD VOLDEMORT", result.value.bankAccountHolderName)
+            assertEquals("SIMULATOR", result.value.provider)
+            assertEquals(null, result.value.paymentType)
+            assertEquals(false, result.value.isDomesticAccount)
+            assertEquals(emptyList<String>(), result.value.routingCodeEntries)
+            assertEquals(null, result.value.payInReference)
+        }
 
     @Test
     fun `GIVEN 200 response WHEN get wallets THEN user wallet is gotten`() = runTest {

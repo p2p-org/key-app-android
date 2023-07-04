@@ -21,7 +21,7 @@ import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
-import org.p2p.wallet.striga.wallet.repository.StrigaWalletInMemoryRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletInMemoryRepository
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 
 class AuthLogoutInteractor(
