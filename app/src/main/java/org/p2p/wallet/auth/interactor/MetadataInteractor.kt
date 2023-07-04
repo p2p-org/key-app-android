@@ -2,7 +2,9 @@ package org.p2p.wallet.auth.interactor
 
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.toBase58Instance
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.model.MetadataLoadStatus
@@ -15,8 +17,6 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.settings.DeviceInfoHelper
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.solanaj.core.toBase58Instance
 
 class MetadataInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
@@ -60,14 +60,13 @@ class MetadataInteractor(
 
     fun hasDifferentDeviceShare(): Boolean {
         val metadata = currentMetadata ?: return false
-
         // if device share exist, then we ignore comparing
         if (hasDeviceShare()) {
             return false
         }
 
         // if device share is not empty we are checking with the current system device share
-        return DeviceInfoHelper.getCurrentDeviceName() != metadata.deviceShareDeviceName
+        return !hasDeviceShare() || DeviceInfoHelper.getCurrentDeviceName() != metadata.deviceShareDeviceName
     }
 
     private fun getEthereumPublicKey(): String? {
