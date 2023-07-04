@@ -12,5 +12,5 @@ enum class StrigaNetworkCurrency(val network: StrigaNetworkType) {
     BNB(StrigaNetworkType.BSC),
 
     // TODO: is not ready yet, idk what it would be called
-    // USDC_SOL(StrigaNetworkType.SOL),
+    USDC_SOL(StrigaNetworkType.SOL),
 }

@@ -10,7 +10,6 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError
@@ -22,6 +21,7 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 import org.p2p.wallet.utils.DateTimeUtils

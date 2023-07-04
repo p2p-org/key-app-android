@@ -1,5 +1,7 @@
 package org.p2p.wallet.striga.wallet.repository.mapper
 
+import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
+import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletDetailsResponse
@@ -65,7 +67,7 @@ class StrigaWalletMapper {
             ownerId = accountDetails.ownerId,
             rootFiatCurrency = accountDetails.rootFiatCurrency,
             ownerType = accountDetails.ownerType,
-            availableBalance = accountDetails.availableBalance.amount,
+            availableBalance = accountDetails.availableBalance.amount.fromLamports(STRIGA_FIAT_DECIMALS),
             balanceUnit = accountDetails.availableBalance.currencyUnits,
             linkedBankAccount = mapLinkedBankAccount(accountDetails.linkedBankAccountId)
         )

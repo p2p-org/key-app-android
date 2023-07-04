@@ -53,7 +53,7 @@ class StrigaWalletRemoteRepositoryTest {
                 every { getUserId() } returns userId
                 every { getUserIdOrThrow() } returns userId
             },
-            cache = StrigaWalletInMemoryRepository()
+            cache = StrigaWalletInMemoryRepository(),
         )
     }
 

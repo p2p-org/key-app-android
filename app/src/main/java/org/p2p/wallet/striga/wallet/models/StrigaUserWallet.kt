@@ -13,6 +13,7 @@ data class StrigaUserWallet(
     val userId: String,
     val accounts: List<StrigaUserWalletAccount>
 ) {
+
     val hasAvailableBalance: Boolean
         get() = accounts.any { it.availableBalance.isNotZero() }
 

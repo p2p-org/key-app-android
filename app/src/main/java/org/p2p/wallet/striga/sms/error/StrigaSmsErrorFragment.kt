@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.sms
+package org.p2p.wallet.striga.sms.error
 
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
