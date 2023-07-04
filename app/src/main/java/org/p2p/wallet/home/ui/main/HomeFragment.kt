@@ -219,9 +219,6 @@ class HomeFragment :
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
         viewActionButtons.onButtonClicked = ::onActionButtonClicked
 
-        // hidden. temporary. PWN-4381
-        viewBuyTokenBanner.root.isVisible = false
-
         if (BuildConfig.DEBUG) {
             with(layoutToolbar) {
                 viewDebugShadow.isVisible = true
