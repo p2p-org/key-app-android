@@ -88,6 +88,7 @@ class HomePresenterMapper(
             result += strigaClaimableTokens.map {
                 val mintAddress = it.tokenDetails.mintAddress.toBase58Instance()
                 HomeElementItem.StrigaClaim(
+                    strigaToken = it,
                     amountAvailable = it.claimableAmount,
                     tokenName = it.tokenDetails.tokenName,
                     tokenMintAddress = mintAddress,

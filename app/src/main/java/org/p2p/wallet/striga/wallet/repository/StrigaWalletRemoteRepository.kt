@@ -154,7 +154,7 @@ class StrigaWalletRemoteRepository(
 
     override suspend fun getUserWallet(): StrigaDataLayerResult<StrigaUserWallet> {
         return try {
-            val hardcodedStartDate = Calendar.getInstance().apply { set(2023, 6, 26) }.timeInMillis
+            val hardcodedStartDate = Calendar.getInstance().apply { set(2023, 1, 1) }.timeInMillis
 
             timber.i("getUserWallet started; startDate=$hardcodedStartDate endDate=${System.currentTimeMillis()}")
             val request = StrigaUserWalletsRequest(
