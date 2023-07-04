@@ -17,11 +17,16 @@ import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsPresenter
 import org.p2p.wallet.striga.iban.StrigaUserIbanUiMapper
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
-import org.p2p.wallet.striga.wallet.repository.StrigaUserWalletsMapper
-import org.p2p.wallet.striga.wallet.repository.StrigaWalletInMemoryRepository
-import org.p2p.wallet.striga.wallet.repository.StrigaWalletRemoteRepository
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
-import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepositoryMapper
+import org.p2p.wallet.striga.wallet.repository.StrigaWhitelistAddressesRepository
+import org.p2p.wallet.striga.wallet.repository.StrigaWithdrawalsRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletInMemoryRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletRemoteRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWhitelistAddressesRemoteRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWithdrawalsRemoteRepository
+import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWalletMapper
+import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWhitelistAddressesMapper
+import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWithdrawalsMapper
 
 object StrigaWalletModule : InjectionModule {
 
@@ -44,8 +49,13 @@ object StrigaWalletModule : InjectionModule {
             ).create()
         }
 
-        factoryOf(::StrigaUserWalletsMapper)
-        factoryOf(::StrigaWalletRepositoryMapper)
+        factoryOf(::StrigaWhitelistAddressesMapper)
+        factoryOf(::StrigaWhitelistAddressesRemoteRepository) bind StrigaWhitelistAddressesRepository::class
+
+        factoryOf(::StrigaWithdrawalsMapper)
+        factoryOf(::StrigaWithdrawalsRemoteRepository) bind StrigaWithdrawalsRepository::class
+
+        factoryOf(::StrigaWalletMapper)
         singleOf(::StrigaWalletInMemoryRepository)
         factoryOf(::StrigaWalletRemoteRepository) bind StrigaWalletRepository::class
     }
