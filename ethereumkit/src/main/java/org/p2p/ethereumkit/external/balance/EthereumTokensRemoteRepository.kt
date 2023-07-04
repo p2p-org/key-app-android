@@ -11,7 +11,7 @@ import org.p2p.core.wrapper.eth.EthAddress
 import java.math.BigInteger
 import java.net.URI
 import org.p2p.core.rpc.RpcApi
-import org.p2p.ethereumkit.internal.models.DefaultBlockParameter
+import org.p2p.core.model.DefaultBlockParameter
 
 internal class EthereumTokensRemoteRepository(
     private val alchemyService: RpcApi,
