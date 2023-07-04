@@ -18,12 +18,12 @@ import org.p2p.wallet.utils.withTextOrGone
 
 class TokenHiddenViewHolder(
     private val binding: ItemTokenHiddenBinding,
-    private val listener: OnHomeItemsClickListener
+    private val listener: HomeItemsClickListeners
 ) : RecyclerView.ViewHolder(binding.root) {
 
     constructor(
         parent: ViewGroup,
-        listener: OnHomeItemsClickListener
+        listener: HomeItemsClickListeners
     ) : this(
         binding = ItemTokenHiddenBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         listener = listener

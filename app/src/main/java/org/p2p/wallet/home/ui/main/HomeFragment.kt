@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -218,9 +219,6 @@ class HomeFragment :
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
         viewActionButtons.onButtonClicked = ::onActionButtonClicked
 
-        // hidden. temporary. PWN-4381
-        viewBuyTokenBanner.root.isVisible = false
-
         if (BuildConfig.DEBUG) {
             with(layoutToolbar) {
                 viewDebugShadow.isVisible = true
@@ -394,6 +392,10 @@ class HomeFragment :
 
     override fun onBannerCloseClicked(bannerTitleId: Int) {
         presenter.onBannerClicked(bannerTitleId)
+    }
+
+    override fun onStrigaClaimTokenClicked(tokenMint: Base58String) {
+        // TODO: PWN-8900
     }
 
     override fun onToggleClicked() {

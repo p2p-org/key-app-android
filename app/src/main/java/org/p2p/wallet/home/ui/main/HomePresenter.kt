@@ -138,7 +138,7 @@ class HomePresenter(
         } else {
             Timber.w("ETH is not initialized, no seed phrase or disabled")
         }
-        launch {
+        launchSupervisor {
             awaitAll(
                 async { networkObserver.start() },
                 async { homeInteractor.loadInitialAppData() }
@@ -207,20 +207,24 @@ class HomePresenter(
             }
             .onCompletion { homeStateSubscribed = false }
             .collect { (homeState, strigaBanner) ->
-                run {
-                    val solTokensLog = homeState.solTokens
-                        .joinToString { "${it.tokenSymbol}(${it.total.formatToken()}; ${it.totalInUsd?.formatFiat()})" }
-                    Timber.d("Home state solTokens: $solTokensLog")
-                }
+                logHomeStateChanged(homeState)
+
                 state = state.copy(
                     tokens = homeState.solTokens,
                     ethTokens = homeState.ethTokens,
-                    strigaKycStatusBanner = strigaBanner
+                    strigaKycStatusBanner = strigaBanner,
+                    strigaClaimableTokens = homeState.claimableTokens
                 )
                 initializeActionButtons()
                 handleHomeStateChanged(homeState.solTokens, homeState.ethTokens)
                 showRefreshing(homeState.isRefreshing)
             }
+    }
+
+    private fun logHomeStateChanged(homeState: UserTokensPollState) {
+        val solTokensLog = homeState.solTokens
+            .joinToString { "${it.tokenSymbol}(${it.total.formatToken()}; ${it.totalInUsd?.formatFiat()})" }
+        Timber.d("Home state solTokens: $solTokensLog")
     }
 
     private fun observeActionButtonState() {
@@ -576,7 +580,8 @@ class HomePresenter(
                 tokens = state.tokens,
                 ethereumTokens = state.ethTokens,
                 visibilityState = state.visibilityState,
-                isZerosHidden = areZerosHidden
+                strigaClaimableTokens = state.strigaClaimableTokens,
+                isZerosHidden = areZerosHidden,
             )
 
             analytics.logClaimAvailable(ethTokens = state.ethTokens)
