@@ -3,6 +3,7 @@ package org.p2p.wallet.home.ui.main
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.StateFlow
 import org.p2p.core.token.Token
+import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
 import org.p2p.core.utils.toLamports
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.auth.interactor.MetadataInteractor
@@ -91,6 +92,6 @@ class HomeInteractor(
         amount: BigDecimal,
         token: StrigaClaimableToken
     ): StrigaDataLayerResult<StrigaWithdrawalChallengeId> {
-        return strigaClaimInteractor.claim(amount.toLamports(token.tokenDetails.decimals), token)
+        return strigaClaimInteractor.claim(amount.toLamports(STRIGA_FIAT_DECIMALS), token)
     }
 }
