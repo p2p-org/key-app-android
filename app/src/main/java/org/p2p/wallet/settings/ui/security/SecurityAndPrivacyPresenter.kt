@@ -5,6 +5,7 @@ import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
+import org.p2p.wallet.auth.interactor.DeviceNameIosHelper
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -62,7 +63,10 @@ class SecurityAndPrivacyPresenter(
         val metadata = metadataInteractor.currentMetadata ?: return setUnavailableState()
 
         val isChangeEnabled = metadataInteractor.hasDifferentDeviceShare()
-        view?.showDeviceName(metadata.deviceShareDeviceName, showWarning = isChangeEnabled)
+        view?.showDeviceName(
+            deviceName = DeviceNameIosHelper.mapDeviceName(metadata.deviceShareDeviceName),
+            showWarning = isChangeEnabled
+        )
         view?.showPhoneNumber(metadata.customSharePhoneNumberE164)
         view?.showSocialId(metadata.socialShareOwnerEmail)
 
