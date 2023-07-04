@@ -3,8 +3,6 @@ package org.p2p.wallet.home.ui.main
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.StateFlow
 import org.p2p.core.token.Token
-import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
-import org.p2p.core.utils.toLamports
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -89,9 +87,9 @@ class HomeInteractor(
     fun getUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> = strigaUserInteractor.getUserStatusBannerFlow()
 
     suspend fun claimStrigaToken(
-        amount: BigDecimal,
+        amountLamports: BigDecimal,
         token: StrigaClaimableToken
     ): StrigaDataLayerResult<StrigaWithdrawalChallengeId> {
-        return strigaClaimInteractor.claim(amount.toLamports(STRIGA_FIAT_DECIMALS), token)
+        return strigaClaimInteractor.claim(amountLamports, token)
     }
 }
