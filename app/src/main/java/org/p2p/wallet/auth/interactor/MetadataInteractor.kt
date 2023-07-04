@@ -61,12 +61,12 @@ class MetadataInteractor(
     fun hasDifferentDeviceShare(): Boolean {
         val metadata = currentMetadata ?: return false
         // if device share exist, then we ignore comparing
-        if (hasDeviceShare()) {
-            return false
+        if (!hasDeviceShare()) {
+            return true
         }
 
         // if device share is not empty we are checking with the current system device share
-        return !hasDeviceShare() || DeviceInfoHelper.getCurrentDeviceName() != metadata.deviceShareDeviceName
+        return DeviceInfoHelper.getCurrentDeviceName() != metadata.deviceShareDeviceName
     }
 
     private fun getEthereumPublicKey(): String? {
