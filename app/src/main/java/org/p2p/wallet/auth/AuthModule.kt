@@ -111,7 +111,8 @@ object AuthModule {
                 pushNotificationsInteractor = get(),
                 appScope = get(),
                 analytics = get(),
-                jupiterSwapStorage = get()
+                jupiterSwapStorage = get(),
+                strigaWalletInMemoryRepository = get()
             )
         }
 

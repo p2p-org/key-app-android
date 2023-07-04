@@ -41,6 +41,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
@@ -100,6 +101,7 @@ class HomePresenter(
     // FT
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
+    private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     // analytics
     private val analytics: HomeAnalytics,
     seedPhraseProvider: SeedPhraseProvider,
@@ -205,7 +207,7 @@ class HomePresenter(
         tokensPolling.shareTokenPollFlowIn(this)
             .filterNotNull()
             .combine(homeInteractor.getUserStatusBannerFlow()) { homeState, strigaBanner ->
-                homeState to strigaBanner
+                homeState to strigaBanner.takeIf { strigaFeatureToggle.isFeatureEnabled }
             }
             .onCompletion { homeStateSubscribed = false }
             .collect { (homeState, strigaBanner) ->
@@ -322,7 +324,21 @@ class HomePresenter(
                 view?.showKycPendingDialog()
             }
             statusFromKycBanner != null -> {
-                view?.navigateToKycStatus(statusFromKycBanner)
+                launch {
+                    if (statusFromKycBanner == StrigaKycStatusBanner.VERIFICATION_DONE) {
+                        state = state.copy(isStrigaKycBannerLoading = true)
+                        handleHomeStateChanged(state.tokens, state.ethTokens)
+
+                        homeInteractor.loadStrigaFiatAccountDetails()
+                            .onSuccess { view?.navigateToKycStatus(statusFromKycBanner) }
+                            .onFailure { view?.showUiKitSnackBar(messageResId = R.string.error_general_message) }
+
+                        state = state.copy(isStrigaKycBannerLoading = false)
+                        handleHomeStateChanged(state.tokens, state.ethTokens)
+                    } else {
+                        view?.navigateToKycStatus(statusFromKycBanner)
+                    }
+                }
             }
             else -> {
                 view?.showTopupWalletDialog()
@@ -526,7 +542,7 @@ class HomePresenter(
                 .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
         val strigaBigBanner = state.strigaKycStatusBanner
-            ?.let(homeMapper::mapToBigBanner)
+            ?.let { homeMapper.mapToBigBanner(it, state.isStrigaKycBannerLoading) }
             ?: getDefaultBanner()
 
         val emptyDataList = buildList {
@@ -609,7 +625,8 @@ class HomePresenter(
             )
 
             analytics.logClaimAvailable(ethTokens = state.ethTokens)
-            val strigaBanner = state.strigaKycStatusBanner?.let(homeMapper::mapToHomeBanner)
+            val strigaBanner = state.strigaKycStatusBanner
+                ?.let { homeMapper.mapToHomeBanner(isLoading = state.isStrigaKycBannerLoading, it) }
             val homeToken = buildList {
                 if (strigaBanner != null) {
                     this += HomeElementItem.Banner(strigaBanner)

@@ -15,16 +15,22 @@ import org.p2p.wallet.striga.model.map
 import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
+import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaUserWalletAccount
 import org.p2p.wallet.striga.wallet.models.StrigaWalletAccountCurrency
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
+import org.p2p.wallet.striga.wallet.repository.StrigaWhitelistAddressesRepository
+import org.p2p.wallet.striga.wallet.repository.StrigaWithdrawalsRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 
 class StrigaClaimInteractor(
     private val dispatchers: CoroutineDispatchers,
     private val strigaWalletRepository: StrigaWalletRepository,
+    private val strigaWithdrawalsRepository: StrigaWithdrawalsRepository,
+    private val strigaWhitelistAddressesRepository: StrigaWhitelistAddressesRepository,
     private val tokensRepository: UserLocalRepository,
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val userTokenKeyProvider: TokenKeyProvider
@@ -60,28 +66,33 @@ class StrigaClaimInteractor(
         token: StrigaClaimableToken
     ): StrigaDataLayerResult<StrigaWithdrawalChallengeId> = withContext(dispatchers.io) {
         try {
-            val whitelistedAddressList = strigaWalletRepository.getWhitelistedAddresses().unwrap()
+            val whitelistedAddressList = strigaWhitelistAddressesRepository
+                .getWhitelistedAddresses()
+                .unwrap()
 
             val whitelistedAddressId = whitelistedAddressList
                 .firstOrNull { it.address == userTokenKeyProvider.publicKey }
                 ?.id
-                ?: kotlin.run {
-                    strigaWalletRepository
-                        .whitelistAddress(userTokenKeyProvider.publicKey, StrigaNetworkCurrency.USDC_SOL)
-                        .map { it.id }
-                        .unwrap()
-                }
+                ?: whitelistUserAddress().unwrap()
 
-            strigaWalletRepository.initiateOnchainWithdrawal(
+            strigaWithdrawalsRepository.initiateOnchainWithdrawal(
                 sourceAccountId = token.accountId,
                 whitelistedAddressId = whitelistedAddressId,
                 amountInUnits = amount.toLamports(STRIGA_FIAT_DECIMALS)
-            ).map { it.challengeId }
+            ).map(StrigaInitWithdrawalDetails::challengeId)
         } catch (e: StrigaDataLayerError) {
             e.toFailureResult()
         } catch (e: Throwable) {
             StrigaDataLayerResult.Failure(StrigaDataLayerError.InternalError(e))
         }
+    }
+
+    private suspend fun whitelistUserAddress(): StrigaDataLayerResult<StrigaWhitelistedAddressId> {
+        return strigaWhitelistAddressesRepository.whitelistAddress(
+            address = userTokenKeyProvider.publicKey,
+            currency = StrigaNetworkCurrency.USDC_SOL
+        )
+            .map { it.id }
     }
 
     private fun getClaimableTokenMetadata(tokenSymbol: String): Token? {

@@ -56,6 +56,7 @@ android {
 
     sentry {
         autoInstallation { enabled.set(false) }
+        ignoredBuildTypes.addAll("debug", "feature")
     }
 
     bundle {
