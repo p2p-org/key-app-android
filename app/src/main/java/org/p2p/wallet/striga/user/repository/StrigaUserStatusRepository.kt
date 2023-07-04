@@ -5,8 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
-import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.StrigaUserIdProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerError
@@ -77,6 +77,18 @@ class StrigaUserStatusRepository(
 
     private fun mapUserStatusToFlows(userStatus: StrigaUserStatusDetails?) {
         strigaUserDestination = userStatus.let(mapper::mapToDestination)
-        strigaBannerFlow.value = userStatus.let(mapper::mapToStatusBanner)
+        val banner = userStatus.let(mapper::mapToStatusBanner)?.let {
+            if (strigaStorage.isBannerHidden(it)) {
+                null
+            } else {
+                it
+            }
+        }
+        strigaBannerFlow.value = banner
+    }
+
+    fun hideBanner(banner: StrigaKycStatusBanner) {
+        strigaStorage.hideBanner(banner)
+        strigaBannerFlow.value = null
     }
 }

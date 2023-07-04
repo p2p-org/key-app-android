@@ -4,6 +4,9 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
+/**
+ * @param buttonTextId - if [android.view.View.NO_ID] button will be hidden
+ */
 class HomeBannerItem(
     @StringRes val titleTextId: Int,
     @StringRes val subtitleTextId: Int,

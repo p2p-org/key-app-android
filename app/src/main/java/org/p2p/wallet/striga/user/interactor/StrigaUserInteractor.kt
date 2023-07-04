@@ -43,6 +43,10 @@ class StrigaUserInteractor(
         return userStatusRepository.getBannerFlow()
     }
 
+    fun hideUserStatusBanner(banner: StrigaKycStatusBanner) {
+        userStatusRepository.hideBanner(banner)
+    }
+
     /**
      * Returns user destination based on user status or NONE if unable to detect (no user status)
      */

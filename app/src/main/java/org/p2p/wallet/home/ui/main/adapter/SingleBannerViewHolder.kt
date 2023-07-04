@@ -2,6 +2,7 @@ package org.p2p.wallet.home.ui.main.adapter
 
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.View
 import android.view.ViewGroup
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getString
@@ -44,17 +45,20 @@ class SingleBannerViewHolder(
         textViewSubtitle.isVisible = subtitleText.isNotEmpty()
 
         imageViewIcon.setImageResource(status.placeholderResId)
-        buttonAction.setText(status.actionTitleResId)
-        root.background.setTint(getColor(status.backgroundTint))
 
-        buttonClose.isVisible = status.isCloseButtonVisible
+        buttonAction.isVisible = status.actionTitleResId != View.NO_ID
+        if (buttonAction.isVisible) {
+            buttonAction.setText(status.actionTitleResId)
+        }
+
+        root.background.setTint(getColor(status.backgroundTint))
 
         buttonAction.setLoading(item.isLoading)
         buttonAction.setOnClickListener {
             listener.onBannerClicked(status.bannerTitleResId)
         }
-        buttonClose.setOnClickListener {
-            listener.onBannerCloseClicked(status.bannerTitleResId)
+        binding.root.setOnClickListener {
+            listener.onBannerClicked(status.bannerTitleResId)
         }
     }
 }
