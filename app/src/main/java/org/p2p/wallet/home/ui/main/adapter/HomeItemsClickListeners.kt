@@ -1,7 +1,7 @@
 package org.p2p.wallet.home.ui.main.adapter
 
-import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
+import org.p2p.wallet.home.model.HomeElementItem
 
 interface HomeItemsClickListeners {
     fun onBannerClicked(bannerTitleId: Int)
@@ -10,6 +10,6 @@ interface HomeItemsClickListeners {
     fun onToggleClicked()
     fun onHideClicked(token: Token.Active)
     fun onClaimTokenClicked(canBeClaimed: Boolean, token: Token.Eth)
-    fun onStrigaClaimTokenClicked(tokenMint: Base58String)
+    fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim)
     fun onBannerCloseClicked(bannerTitleId: Int)
 }
