@@ -80,7 +80,21 @@ object HomeModule : InjectionModule {
         }
         // Cached data exists, therefore creating singleton
         singleOf(::UserTokensPolling)
-        factoryOf(::HomeInteractor)
+        factory {
+            HomeInteractor(
+                userInteractor = get(),
+                settingsInteractor = get(),
+                usernameInteractor = get(),
+                sellInteractor = get(),
+                metadataInteractor = get(),
+                ethereumInteractor = get(),
+                strigaUserInteractor = get(),
+                strigaSignupInteractor = get(),
+                strigaClaimInteractor = get(),
+                strigaWalletInteractor = get(),
+                strigaSignupEnabledFeatureToggle = get()
+            )
+        }
         factoryOf(::HomePresenterMapper)
         factoryOf(::StrigaKycUiBannerMapper)
         factory<HomeContract.Presenter> {

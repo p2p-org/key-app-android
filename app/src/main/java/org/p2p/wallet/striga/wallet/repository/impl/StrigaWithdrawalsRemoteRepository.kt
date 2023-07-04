@@ -3,16 +3,20 @@ package org.p2p.wallet.striga.wallet.repository.impl
 import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.wallet.striga.StrigaUserIdProvider
+import org.p2p.wallet.striga.common.StrigaIpAddressProvider
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.request.StrigaInitWithdrawalRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsResendRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsVerifyRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnchainWithdrawalFeeRequest
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.striga.wallet.repository.StrigaWithdrawalsRepository
 import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWithdrawalsMapper
 
@@ -22,6 +26,7 @@ class StrigaWithdrawalsRemoteRepository(
     private val api: StrigaWalletApi,
     private val mapper: StrigaWithdrawalsMapper,
     private val strigaUserIdProvider: StrigaUserIdProvider,
+    private val ipAddressProvider: StrigaIpAddressProvider
 ) : StrigaWithdrawalsRepository {
     private val timber: Timber.Tree = Timber.tag(TAG)
 
@@ -66,6 +71,45 @@ class StrigaWithdrawalsRemoteRepository(
             return mapper.fromNetwork(response).toSuccessResult()
         } catch (error: Throwable) {
             timber.i(error, "getOnchainWithdrawalFees failed")
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            )
+        }
+    }
+
+    override suspend fun resendSms(
+        challengeId: StrigaWithdrawalChallengeId
+    ): StrigaDataLayerResult<Unit> {
+        return try {
+            val request = StrigaOnRampSmsResendRequest(
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
+                challengeId = challengeId.value
+            )
+            api.withdrawalResendSms(request)
+            return StrigaDataLayerResult.Success(Unit)
+        } catch (error: Throwable) {
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            )
+        }
+    }
+
+    override suspend fun verifySms(
+        smsCode: String,
+        challengeId: StrigaWithdrawalChallengeId,
+    ): StrigaDataLayerResult<Unit> {
+        return try {
+            val request = StrigaOnRampSmsVerifyRequest(
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
+                challengeId = challengeId.value,
+                verificationCode = smsCode,
+                ipAddress = ipAddressProvider.getIpAddress()
+            )
+            api.withdrawalVerifySms(request)
+            StrigaDataLayerResult.Success(Unit)
+        } catch (error: Throwable) {
             StrigaDataLayerError.from(
                 error = error,
                 default = StrigaDataLayerError.InternalError(error)

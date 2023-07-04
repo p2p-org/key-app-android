@@ -1,21 +1,23 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.DefaultLifecycleObserver
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
+import org.p2p.wallet.home.ui.main.adapter.HomeItemsClickListeners
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.NewShowProgress
 
 interface HomeContract {
 
-    interface View : MvpView, OnHomeItemsClickListener {
+    interface View : MvpView, HomeItemsClickListeners {
         fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean)
         fun showTokensForBuy(tokens: List<Token>)
         fun showBalance(cellModel: TextViewCellModel?)
@@ -42,8 +44,10 @@ interface HomeContract {
         fun navigateToBuyScreen(token: Token)
         fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?)
         fun navigateToKycStatus(status: StrigaKycStatusBanner)
+        fun navigateToStrigaClaimOtp(usdAmount: String, challengeId: StrigaWithdrawalChallengeId)
         fun showKycPendingDialog()
         fun showTopupWalletDialog()
+        fun showStrigaClaimProgress(isClaimInProgress: Boolean, tokenMint: Base58String)
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
@@ -65,5 +69,6 @@ interface HomeContract {
         fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth)
         fun onBannerClicked(bannerTitleId: Int)
         fun onBannerCloseClicked(bannerTitleId: Int)
+        fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim)
     }
 }

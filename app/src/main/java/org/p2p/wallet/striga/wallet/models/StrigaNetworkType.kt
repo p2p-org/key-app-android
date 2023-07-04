@@ -3,10 +3,10 @@ package org.p2p.wallet.striga.wallet.models
 enum class StrigaNetworkType {
     BTC,
     ETH,
-    BSC;
+    BSC,
 
     // TODO: it doesn't exist for now, should be added when is ready
-    /* SOL */
+    SOL;
 
     companion object {
         fun from(name: String): StrigaNetworkType {

@@ -22,6 +22,8 @@ import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
+import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
 
@@ -32,6 +34,7 @@ class UserTokensPolling(
     private val appFeatureFlags: InAppFeatureFlags,
     private val userInteractor: UserInteractor,
     private val ethereumInteractor: EthereumInteractor,
+    private val strigaClaimInteractor: StrigaClaimInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val appScope: AppScope
 ) : CoroutineScope {
@@ -48,17 +51,22 @@ class UserTokensPolling(
 
     fun shareTokenPollFlowIn(scope: CoroutineScope): StateFlow<UserTokensPollState?> =
         userInteractor.getUserTokensFlow()
-            .combine(getEthereumTokensFlow()) { sol, eth ->
-                homeScreenState = if (homeScreenState.solTokens.isNotEmpty() && sol.isEmpty()) {
-                    homeScreenState.copy(ethTokens = eth)
+            .combine(getEthereumTokensFlow()) { solTokens, ethTokens ->
+                val claimableTokens = strigaClaimInteractor.getClaimableTokens()
+                    .successOrNull()
+                    .orEmpty()
+
+                homeScreenState = if (homeScreenState.solTokens.isNotEmpty() && solTokens.isEmpty()) {
+                    homeScreenState.copy(ethTokens = ethTokens)
                 } else {
-                    homeScreenState.copy(solTokens = sol, ethTokens = eth)
+                    homeScreenState.copy(solTokens = solTokens, ethTokens = ethTokens)
                 }
-                homeScreenState
+                homeScreenState.copy(claimableTokens = claimableTokens)
             }.combine(isRefreshingFlow) { currentState, refreshing ->
                 this.homeScreenState = currentState.copy(isRefreshing = refreshing)
                 homeScreenState
-            }.stateIn(scope, SharingStarted.WhileSubscribed(), null)
+            }
+            .stateIn(scope, SharingStarted.WhileSubscribed(), null)
 
     fun refreshTokens() {
         launch {
@@ -112,5 +120,6 @@ class UserTokensPolling(
 data class UserTokensPollState(
     val solTokens: List<Token.Active> = emptyList(),
     val ethTokens: List<Token.Eth> = emptyList(),
+    val claimableTokens: List<StrigaClaimableToken> = emptyList(),
     val isRefreshing: Boolean = false
 )

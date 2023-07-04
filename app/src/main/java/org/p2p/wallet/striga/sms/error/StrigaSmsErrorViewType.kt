@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.sms
+package org.p2p.wallet.striga.sms.error
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes

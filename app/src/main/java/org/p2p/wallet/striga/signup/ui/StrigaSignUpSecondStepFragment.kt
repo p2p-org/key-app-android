@@ -99,7 +99,7 @@ class StrigaSignUpSecondStepFragment :
     override fun navigateNext() {
         replaceFragment(
             SmsInputFactory.create(
-                type = SmsInputFactory.Type.Striga,
+                type = SmsInputFactory.Type.StrigaSignup,
                 destinationFragment = StrigaSignupFinishFragment::class.java,
             )
         )
