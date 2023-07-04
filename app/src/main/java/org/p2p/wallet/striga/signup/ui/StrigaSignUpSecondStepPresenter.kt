@@ -121,7 +121,7 @@ class StrigaSignUpSecondStepPresenter(
     private fun onOccupationChanged(newValue: StrigaOccupation) {
         selectedOccupation = newValue
         view?.updateSignupField(
-            newValue = strigaItemCellMapper.toUiTitle(newValue.occupationName),
+            newValue = strigaItemCellMapper.toUiTitleWithEmoji(newValue.emoji, newValue.occupationName),
             type = StrigaSignupDataType.OCCUPATION
         )
         setCachedData(StrigaSignupDataType.OCCUPATION, newValue.occupationName)
