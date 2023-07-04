@@ -21,10 +21,9 @@ import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsResendRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsVerifyRequest
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
-import org.p2p.wallet.striga.wallet.repository.StrigaUserWalletsMapper
-import org.p2p.wallet.striga.wallet.repository.StrigaWalletRemoteRepository
-import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
-import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepositoryMapper
+import org.p2p.wallet.striga.wallet.repository.StrigaWithdrawalsRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWithdrawalsRemoteRepository
+import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWithdrawalsMapper
 import org.p2p.wallet.utils.assertThat
 
 private val CHALLENGE_ID = StrigaWithdrawalChallengeId("challenge_id")
@@ -40,11 +39,10 @@ class StrigaOnRampSmsApiCallerTest {
             every { getUserId() } returns userId
         }
         val api = mockk<StrigaWalletApi>()
-        val repository: StrigaWalletRepository = spyk(
-            StrigaWalletRemoteRepository(
+        val repository: StrigaWithdrawalsRepository = spyk(
+            StrigaWithdrawalsRemoteRepository(
                 api = api,
-                mapper = StrigaWalletRepositoryMapper(),
-                walletsMapper = StrigaUserWalletsMapper(),
+                mapper = StrigaWithdrawalsMapper(),
                 strigaUserIdProvider = userIdProvider,
                 ipAddressProvider = mockk {
                     every { getIpAddress() } returns "127.0.0.1"
@@ -76,11 +74,10 @@ class StrigaOnRampSmsApiCallerTest {
         val api = mockk<StrigaWalletApi> {
             coEvery { withdrawalResendSms(any()) } throws IllegalStateException("expected error")
         }
-        val repository: StrigaWalletRepository = spyk(
-            StrigaWalletRemoteRepository(
+        val repository: StrigaWithdrawalsRepository = spyk(
+            StrigaWithdrawalsRemoteRepository(
                 api = api,
-                mapper = StrigaWalletRepositoryMapper(),
-                walletsMapper = StrigaUserWalletsMapper(),
+                mapper = StrigaWithdrawalsMapper(),
                 strigaUserIdProvider = userIdProvider,
                 ipAddressProvider = mockk {
                     every { getIpAddress() } returns "127.0.0.1"
@@ -124,14 +121,13 @@ class StrigaOnRampSmsApiCallerTest {
             every { getUserId() } returns userId
         }
         val api = mockk<StrigaWalletApi>()
-        val repository: StrigaWalletRepository = spyk(
-            StrigaWalletRemoteRepository(
+        val repository: StrigaWithdrawalsRepository = spyk(
+            StrigaWithdrawalsRemoteRepository(
                 api = api,
-                mapper = StrigaWalletRepositoryMapper(),
-                walletsMapper = StrigaUserWalletsMapper(),
+                mapper = StrigaWithdrawalsMapper(),
                 strigaUserIdProvider = userIdProvider,
                 ipAddressProvider = mockk {
-                    every { getIpAddress() } returns ipAddress
+                    every { getIpAddress() } returns "127.0.0.1"
                 }
             )
         )
