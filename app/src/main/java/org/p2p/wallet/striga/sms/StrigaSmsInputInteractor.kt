@@ -93,6 +93,21 @@ class StrigaSmsInputInteractor(
     }
 
     suspend fun resendSms(): StrigaDataLayerResult<Unit> {
+        if (inAppFeatureFlags.strigaSmsVerificationMockFlag.featureValue) {
+            smsInputTimer.startSmsInputTimerFlow()
+            return if (smsInputTimer.smsResendCount > 5) {
+                StrigaDataLayerError.ApiServiceError(
+                    response = StrigaApiErrorResponse(
+                        httpStatus = 400,
+                        internalErrorCode = StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT,
+                        details = "EXCEEDED_DAILY_RESEND_SMS_LIMIT"
+                    )
+                ).toFailureResult()
+            } else {
+                StrigaDataLayerResult.Success(Unit)
+            }
+        }
+
         return getExceededLimitsErrorIfPresent() ?: smsApiCaller.resendSms()
             .onTypedFailure<StrigaDataLayerError.ApiServiceError> {
                 when (it.errorCode) {
