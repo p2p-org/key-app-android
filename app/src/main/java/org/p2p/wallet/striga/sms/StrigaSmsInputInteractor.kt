@@ -2,7 +2,6 @@ package org.p2p.wallet.striga.sms
 
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.flow.Flow
-import org.p2p.core.utils.NoCoverage
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
@@ -133,7 +132,6 @@ class StrigaSmsInputInteractor(
         )
     }
 
-    @NoCoverage
     private fun mockVerifyPhoneNumber(smsCode: String): StrigaDataLayerResult<Unit> {
         return when (smsCode) {
             "123456" -> StrigaDataLayerResult.Success(Unit)
