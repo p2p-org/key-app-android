@@ -51,7 +51,7 @@ object TokenServiceModule : InjectionModule {
 
         single<TokenMetadataLocalRepository> { TokenMetadataInMemoryRepository() }
         factory<TokenMetadataRepository> { TokenMetadataRemoteRepository(get(), get()) }
-        single<TokenPriceLocalRepository> { TokenPriceDatabaseRepository(get(), get(), get()) }
+        single<TokenPriceLocalRepository> { TokenPriceDatabaseRepository(get(), get()) }
         factory<TokenPriceRepository> { TokenPriceRemoteRepository(get(), get()) }
 
         factoryOf(::TokenServiceMapper)

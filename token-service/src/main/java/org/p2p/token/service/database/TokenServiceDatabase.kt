@@ -6,7 +6,6 @@ import androidx.room.TypeConverters
 import org.p2p.core.room.RoomConverters
 import org.p2p.token.service.database.TokenServiceDatabase.Companion.DATABASE_VERSION
 import org.p2p.token.service.database.entity.TokenPriceEntity
-import org.p2p.token.service.database.entity.TokenRateEntity
 
 @Database(
     entities = [

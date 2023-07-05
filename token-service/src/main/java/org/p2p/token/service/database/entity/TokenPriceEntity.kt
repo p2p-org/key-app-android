@@ -15,14 +15,14 @@ data class TokenPriceEntity(
     val tokenAddress: String,
     @ColumnInfo(name = COLUMN_NETWORK_CHAIN)
     val networkChain: String,
-    @Embedded(prefix = COLUMN_TOKEN_RATES)
-    val tokenRate: TokenRateEntity?
+    @ColumnInfo(name = COLUMN_USD_RATE)
+    val usdRate: BigDecimal
 
 ) {
     companion object {
         const val TABLE_NAME = "token_price_table"
         const val COLUMN_TOKEN_ADDRESS = "token_address"
         const val COLUMN_NETWORK_CHAIN = "token_network_chain"
-        const val COLUMN_TOKEN_RATES = "token_rates"
+        const val COLUMN_USD_RATE = "token_usd_rate"
     }
 }
