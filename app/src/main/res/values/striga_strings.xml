@@ -122,5 +122,13 @@
     <string name="striga_dialog_kyc_pending_title">Your KYC verification is pending</string>
     <string name="striga_dialog_kyc_pending_subtitle">We will update the status once it is finished</string>
 
+    <string name="striga_onramp_sms_input_title">Claim %1$s with code from SMS</string>
+    <string name="striga_onramp_sms_input_description">Check the number %s</string>
+
+    <string name="striga_iban_account_iban">IBAN</string>
+    <string name="striga_iban_account_currency">Currency</string>
+    <string name="striga_iban_account_bic">BIC</string>
+    <string name="striga_iban_account_beneficiary">Beneficiary</string>
+
 
 </resources>

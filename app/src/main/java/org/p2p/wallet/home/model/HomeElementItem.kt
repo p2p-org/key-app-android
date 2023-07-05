@@ -3,9 +3,11 @@ package org.p2p.wallet.home.model
 import java.math.BigDecimal
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
+import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 
 sealed class HomeElementItem {
     data class StrigaClaim(
+        val strigaToken: StrigaClaimableToken,
         val amountAvailable: BigDecimal,
         val tokenName: String,
         val tokenMintAddress: Base58String,

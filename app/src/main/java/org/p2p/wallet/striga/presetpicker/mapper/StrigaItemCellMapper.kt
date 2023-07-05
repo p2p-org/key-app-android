@@ -107,6 +107,10 @@ class StrigaItemCellMapper {
             .replaceFirstChar { it.uppercaseChar() }
     }
 
+    fun toUiTitleWithEmoji(emoji: String, value: String): String {
+        return "$emoji ${toUiTitle(value)}"
+    }
+
     fun fromUiTitle(value: String): String {
         return value.split(" ").joinToString(separator = "_", transform = String::uppercase)
     }

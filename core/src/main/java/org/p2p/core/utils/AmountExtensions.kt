@@ -10,6 +10,7 @@ import org.p2p.core.utils.Constants.FIAT_FRACTION_LENGTH
 private const val POWER_VALUE = 10.0
 const val DEFAULT_DECIMAL = 9
 const val MOONPAY_DECIMAL = 2
+const val STRIGA_FIAT_DECIMALS = 2
 
 private const val SCALE_VALUE_SHORT = 2
 private const val SCALE_VALUE_MEDIUM = 6

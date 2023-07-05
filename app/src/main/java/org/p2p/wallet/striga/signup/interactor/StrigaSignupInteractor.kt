@@ -10,7 +10,6 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.smsinput.striga.StrigaSmsInputInteractor
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError
@@ -22,8 +21,8 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
-import org.p2p.wallet.striga.user.model.StrigaUserDetails
 import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.unsafeLazy
@@ -231,17 +230,14 @@ class StrigaSignupInteractor(
         metadataInteractor.updateMetadata(newMetadata)
     }
 
-    private suspend fun loadAndSaveSignupDataFromRemote(): StrigaDataLayerResult<StrigaUserDetails> {
-        return when (val userDetails = userInteractor.getUserDetails()) {
-            is StrigaDataLayerResult.Success<StrigaUserDetails> -> {
-                val signupData = userDetails.value.toSignupData()
-                signupDataRepository.updateSignupData(signupData)
-                userDetails
+    private suspend fun loadAndSaveSignupDataFromRemote(): StrigaDataLayerResult<Unit> {
+        return userInteractor.getUserDetails()
+            .map {
+                signupDataRepository.updateSignupData(it.toSignupData())
+                Unit
             }
-            is StrigaDataLayerResult.Failure -> {
-                Timber.e(userDetails.error, "Unable to load striga user details")
-                userDetails
+            .onFailure {
+                Timber.e(it, "Unable to load striga user details")
             }
-        }
     }
 }
