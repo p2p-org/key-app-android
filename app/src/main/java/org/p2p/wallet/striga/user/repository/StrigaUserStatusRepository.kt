@@ -77,14 +77,8 @@ class StrigaUserStatusRepository(
 
     private fun mapUserStatusToFlows(userStatus: StrigaUserStatusDetails?) {
         strigaUserDestination = userStatus.let(mapper::mapToDestination)
-        val banner = userStatus.let(mapper::mapToStatusBanner)?.let {
-            if (strigaStorage.isBannerHidden(it)) {
-                null
-            } else {
-                it
-            }
-        }
-        strigaBannerFlow.value = banner
+        strigaBannerFlow.value = userStatus.let(mapper::mapToStatusBanner)
+            ?.takeUnless { strigaStorage.isBannerHidden(it) }
     }
 
     fun hideBanner(banner: StrigaKycStatusBanner) {
