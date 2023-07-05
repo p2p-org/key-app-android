@@ -3,7 +3,6 @@ package org.p2p.token.service
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.create
@@ -15,12 +14,16 @@ import org.p2p.token.service.api.TokenServiceRepository
 import org.p2p.token.service.repository.price.TokenPriceLocalRepository
 import org.p2p.token.service.api.TokenServiceRemoteRepository
 import org.p2p.token.service.api.mapper.TokenServiceMapper
-import org.p2p.token.service.interactor.TokenServiceInteractor
+import org.p2p.token.service.api.events.manager.TokenServiceEventManager
+import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
+import org.p2p.token.service.database.TokenServiceDatabaseModule
+import org.p2p.token.service.database.mapper.TokenServiceDatabaseMapper
+import org.p2p.token.service.repository.TokenServiceRepositoryImpl
 import org.p2p.token.service.repository.metadata.TokenMetadataInMemoryRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataLocalRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataRemoteRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataRepository
-import org.p2p.token.service.repository.price.TokenPriceInMemoryRepository
+import org.p2p.token.service.repository.price.TokenPriceDatabaseRepository
 import org.p2p.token.service.repository.price.TokenPriceRemoteRepository
 import org.p2p.token.service.repository.price.TokenPriceRepository
 
@@ -28,6 +31,7 @@ object TokenServiceModule : InjectionModule {
     private const val TOKEN_SERVICE_RETROFIT_QUALIFIER = "TOKEN_SERVICE_RETROFIT_QUALIFIER"
 
     override fun create() = module {
+        includes(TokenServiceDatabaseModule.create())
         single<TokenServiceRepository> {
             TokenServiceRemoteRepository(
                 api = get<Retrofit>(named(TOKEN_SERVICE_RETROFIT_QUALIFIER)).create(),
@@ -47,10 +51,20 @@ object TokenServiceModule : InjectionModule {
 
         single<TokenMetadataLocalRepository> { TokenMetadataInMemoryRepository() }
         factory<TokenMetadataRepository> { TokenMetadataRemoteRepository(get(), get()) }
-        single<TokenPriceLocalRepository> { TokenPriceInMemoryRepository() }
+        single<TokenPriceLocalRepository> { TokenPriceDatabaseRepository(get(), get()) }
         factory<TokenPriceRepository> { TokenPriceRemoteRepository(get(), get()) }
 
         factoryOf(::TokenServiceMapper)
-        factoryOf(::TokenServiceInteractor)
+        factory<org.p2p.token.service.repository.TokenServiceRepository> {
+            TokenServiceRepositoryImpl(
+                priceRemoteRepository = get(),
+                priceLocalRepository = get(),
+                metadataLocalRepository = get(),
+                metadataRemoteRepository = get()
+            )
+        }
+        singleOf(::TokenServiceEventPublisher)
+        singleOf(::TokenServiceEventManager)
+        singleOf(::TokenServiceDatabaseMapper)
     }
 }

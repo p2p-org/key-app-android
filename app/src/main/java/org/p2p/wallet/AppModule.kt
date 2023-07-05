@@ -46,7 +46,6 @@ import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
-import org.p2p.wallet.user.repository.prices.di.CoinGeckoTokenPricesModule
 
 object AppModule {
     fun create(restartAction: () -> Unit) = module {
@@ -83,7 +82,6 @@ object AppModule {
                 BridgeSendModule.create(),
                 BuyModule.create(),
                 ClaimModule.create(),
-                CoinGeckoTokenPricesModule.create(),
                 DebugSettingsModule.create(),
                 HistoryModule.create(),
                 HomeModule.create(),

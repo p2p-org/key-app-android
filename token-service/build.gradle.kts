@@ -1,5 +1,6 @@
 plugins {
     id("org.p2p.wallet.android.library")
+    id("kotlin-kapt")
 }
 
 android {
@@ -40,6 +41,8 @@ dependencies {
     val koinVersion = "3.2.0"
     testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("io.insert-koin:koin-test-junit4:$koinVersion")
-
+    implementation(Dependencies.roomRuntime)
+    implementation(Dependencies.roomKtx)
+    kapt(Dependencies.roomCompiler)
 
 }

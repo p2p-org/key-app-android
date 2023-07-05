@@ -12,5 +12,5 @@ internal data class TokenItemMetadataResponse(
     @SerializedName("decimals")
     val decimals: Int,
     @SerializedName("price")
-    val price: TokenItemPriceResponse
+    val price: TokenRateResponse
 )

@@ -8,6 +8,7 @@ import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.solanaj.model.types.Account
+import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.user.local.TokenResponse
 
@@ -31,10 +32,13 @@ object TokenConverter {
         totalLamports: BigInteger,
         accountPublicKey: String,
         tokenData: TokenData,
-        price: TokenPrice?
+        price: TokenServicePrice?
     ): Token.Active {
-        val totalInUsd = price?.let {
-            totalLamports.fromLamports(tokenData.decimals).times(it.price)
+        val tokenRate = price?.usdRate
+        val totalInUsd = if (tokenRate != null) {
+            totalLamports.fromLamports(tokenData.decimals).times(tokenRate)
+        } else {
+            null
         }
         val total = totalLamports.toBigDecimal().divide(tokenData.decimals.toPowerValue())
         return Token.Active(
@@ -47,7 +51,7 @@ object TokenConverter {
             coingeckoId = tokenData.coingeckoId,
             totalInUsd = totalInUsd,
             total = total,
-            rate = price?.price,
+            rate = tokenRate,
             visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = tokenData.serumV3Usdc,
             serumV3Usdt = tokenData.serumV3Usdt,
@@ -58,7 +62,7 @@ object TokenConverter {
     fun fromNetwork(
         account: Account,
         tokenData: TokenData,
-        price: TokenPrice?
+        price: TokenServicePrice?
     ): Token.Active {
         val data = account.account.data.parsed.info
         val mintAddress = data.mint
@@ -74,7 +78,7 @@ object TokenConverter {
 
     fun fromNetwork(
         data: TokenData,
-        price: TokenPrice?
+        price: TokenServicePrice?
     ): Token.Other =
         Token.Other(
             tokenName = data.name,
@@ -85,7 +89,7 @@ object TokenConverter {
             serumV3Usdc = data.serumV3Usdc,
             serumV3Usdt = data.serumV3Usdt,
             isWrapped = data.isWrapped,
-            rate = price?.price
+            rate = price?.rate?.usd
         )
 
     fun toDatabase(token: Token.Active): TokenEntity =

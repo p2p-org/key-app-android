@@ -8,7 +8,7 @@ import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.model.TokenServiceQueryResult
 import org.p2p.token.service.model.successOrNull
 
-class TokenPriceRemoteRepository(
+internal class TokenPriceRemoteRepository(
     private val api: TokenServiceRepository,
     private val mapper: TokenServiceMapper
 ) : TokenPriceRepository {
@@ -23,7 +23,8 @@ class TokenPriceRemoteRepository(
 
         val tokensPrice = queryResponse.map { response ->
             val tokenServiceChain = mapper.fromNetwork(response.tokenServiceChainResponse)
-            val tokenPrices = response.tokenServiceItemsResponse.map { mapper.fromNetwork(it) }
+            val tokenPrices = response.tokenServiceItemsResponse
+                .mapNotNull { mapper.fromNetwork(tokenServiceChain,it) }
 
             TokenServiceQueryResult(networkChain = tokenServiceChain, items = tokenPrices)
 

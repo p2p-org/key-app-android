@@ -10,15 +10,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
-import org.koin.core.logger.Level
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import timber.log.Timber
-import java.util.logging.Logger
 import kotlinx.coroutines.test.runTest
 import org.p2p.core.R
 import org.p2p.core.crashlytics.CrashLoggerModule
@@ -26,21 +23,14 @@ import org.p2p.core.network.NetworkCoreModule
 import org.p2p.core.network.NetworkServicesUrlStorage
 import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.core.network.environment.NetworkEnvironmentManager
-import org.p2p.token.service.api.TokenServiceRepository
-import org.p2p.token.service.api.request.TokenServiceItemRequest
-import org.p2p.token.service.api.request.TokenServiceMetadataRequest
-import org.p2p.token.service.api.request.TokenServicePriceRequest
-import org.p2p.token.service.api.request.TokenServiceQueryRequest
-import org.p2p.token.service.api.response.TokenServiceNetworkResponse
-import org.p2p.token.service.interactor.TokenServiceInteractor
 import org.p2p.token.service.mock.NetworkEnvironmentStorageMock
-import org.p2p.token.service.model.TokenServiceNetwork
-import org.p2p.token.service.repository.price.TokenPriceRepository
+import org.p2p.token.service.repository.TokenServiceRepository
+import org.p2p.token.service.repository.TokenServiceRepositoryImpl
 
 @RunWith(JUnit4::class)
 class TokenServiceRepositoryTest : KoinTest {
 
-    private val interactor: TokenServiceInteractor by inject()
+    private val interactor: TokenServiceRepository by inject()
 
     @Before
     fun setup() {

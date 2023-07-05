@@ -21,13 +21,9 @@ import org.p2p.core.network.ConnectionManager
 import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
-import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
 import org.p2p.core.utils.Constants.SOL_SYMBOL
-import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
-import org.p2p.core.utils.Constants.WETH_COINGECKO_ID
 import org.p2p.core.utils.Constants.WETH_SYMBOL
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatFiat
@@ -66,19 +62,20 @@ import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.updates.SubscriptionUpdatesStateObserver
 import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.worker.PendingTransactionMergeWorker
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
 
 val POPULAR_TOKENS_SYMBOLS: Set<String> = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
-val POPULAR_TOKENS_COINGECKO_IDS: List<TokenCoinGeckoId> = setOf(
-    SOL_COINGECKO_ID,
-    USDT_COINGECKO_ID,
-    WETH_COINGECKO_ID,
-    USDC_COINGECKO_ID
-).map(::TokenCoinGeckoId)
+
+// TODO add fetching prices for this tokens
+// val POPULAR_TOKENS_COINGECKO_IDS: List<TokenCoinGeckoId> = setOf(
+//    SOL_COINGECKO_ID,
+//    USDT_COINGECKO_ID,
+//    WETH_COINGECKO_ID,
+//    USDC_COINGECKO_ID
+// ).map(::TokenCoinGeckoId)
 val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 class HomePresenter(
@@ -169,8 +166,10 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
-        if (state.tokens.isNotEmpty() || state.ethTokens.isNotEmpty()) {
-            handleHomeStateChanged(state.tokens, state.ethTokens)
+        launch {
+            if (state.tokens.isNotEmpty() || state.ethTokens.isNotEmpty()) {
+                handleHomeStateChanged(state.tokens, state.ethTokens)
+            }
         }
         observeRefreshingStatus()
         observeInternetConnection()
@@ -379,14 +378,7 @@ class HomePresenter(
             // this job also depends on the internet
             homeInteractor.loadAllTokensDataIfEmpty()
             val tokens = homeInteractor.loadUserTokensAndUpdateLocal(userPublicKey.toPublicKey())
-            async {
-                try {
-                    homeInteractor.loadUserRates(tokens)
-                } catch (t: Throwable) {
-                    Timber.i(t, "Error on loading user rates")
-                    view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
-                }
-            }
+            homeInteractor.loadUserRates(tokens)
         } catch (e: CancellationException) {
             Timber.d("Loading sol tokens job cancelled")
         } catch (e: UnknownHostException) {
@@ -512,7 +504,7 @@ class HomePresenter(
         }
     }
 
-    private fun handleHomeStateChanged(
+    private suspend fun handleHomeStateChanged(
         userTokens: List<Token.Active>,
         ethTokens: List<Token.Eth>,
     ) {
@@ -536,7 +528,7 @@ class HomePresenter(
         }
     }
 
-    private fun handleEmptyAccount() {
+    private suspend fun handleEmptyAccount() {
         val tokensForBuy =
             homeInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
                 .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }

@@ -13,7 +13,7 @@ import org.p2p.token.service.model.TokenServiceResult
 
 private const val TAG = "BridgeRemoteRepository"
 
-class TokenServiceRemoteRepository(
+internal class TokenServiceRemoteRepository(
     private val api: RpcApi,
     private val gson: Gson,
     urlProvider: NetworkServicesUrlProvider,
@@ -30,6 +30,10 @@ class TokenServiceRemoteRepository(
         } catch (e: JsonRpc.ResponseError.RpcError) {
             Timber.tag(TAG).i(e, "failed request for ${request.method}")
             Timber.tag(TAG).i("Error body message ${e.error.message}")
+            TokenServiceResult.Error(e)
+        } catch (e: Throwable) {
+            Timber.tag(TAG).i(e, "failed request for ${request.method}")
+            Timber.tag(TAG).i("Error body message ${e.message}")
             TokenServiceResult.Error(e)
         }
     }

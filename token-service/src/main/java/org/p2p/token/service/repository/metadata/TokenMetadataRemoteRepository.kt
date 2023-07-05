@@ -9,7 +9,7 @@ import org.p2p.token.service.model.TokenServiceQueryResult
 import org.p2p.token.service.model.successOrNull
 import org.p2p.token.service.model.unwrap
 
-class TokenMetadataRemoteRepository(
+internal class TokenMetadataRemoteRepository(
     private val api: TokenServiceRepository,
     private val mapper: TokenServiceMapper
 ) : TokenMetadataRepository {
