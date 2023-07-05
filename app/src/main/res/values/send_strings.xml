@@ -81,7 +81,7 @@
     <string name="transaction_progress_submitted">submitted</string>
     <string name="transaction_progress_succeeded">succeeded</string>
     <string name="transaction_progress_failed">failed</string>
-    <string name="transaction_description_progress">It usually takes 5–20 seconds for a transaction to complete</string>
+    <string name="transaction_description_progress">It usually takes few seconds for a transaction to complete</string>
     <string name="transaction_description_succeeded">The transaction has been successfully completed 🤟</string>
     <string name="transaction_description_general_failed">The transaction was rejected by the Solana blockchain</string>
     <string name="transaction_description_svl_failed">The transaction was rejected. Open your link again.</string>
