@@ -20,7 +20,7 @@ import org.p2p.wallet.utils.DateTimeUtils
 private val EXCEEDED_VERIFICATION_ATTEMPTS_TIMEOUT_MILLIS = 1.days.inWholeMilliseconds
 private val EXCEEDED_RESEND_ATTEMPTS_TIMEOUT_MILLIS = 1.days.inWholeMilliseconds
 
-private const val SMS_RESEND_MOCK_LIMIT = 5
+private const val SMS_RESEND_MOCK_LIMIT = 6
 
 private val SMS_ERROR_RESEND_EXCEEDED: StrigaDataLayerResult.Failure<Unit> =
     StrigaDataLayerError.ApiServiceError(
@@ -53,11 +53,6 @@ class StrigaSmsInputInteractor(
 
     fun launchInitialTimer() {
         smsInputTimer.startSmsInputTimerFlow()
-        // The reset function is called to initiate the default 30-second timer.
-        // This is necessary in scenarios where the 'resend-sms' method hasn't been called yet,
-        // but the user has just already been created.
-        // And then we need to display the same 30-second timer again after the first call of 'resend-sms'.
-        smsInputTimer.resetSmsCount()
     }
 
     suspend fun getUserPhoneCodeToPhoneNumber(): PhoneNumberWithCode {
