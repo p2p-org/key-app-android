@@ -3,6 +3,7 @@ package org.p2p.wallet.home.ui.main.adapter
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.utils.formatFiat
 import org.p2p.wallet.databinding.ItemTokenToStrigaClaimBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -18,13 +19,13 @@ class StrigaTokenToClaimViewHolder(
 
     fun onBind(item: HomeElementItem.StrigaClaim) = with(binding) {
         textViewTokenName.text = item.tokenName
-        textViewTokenTotal.text = "${item.amountAvailable} ${item.tokenSymbol}"
+        textViewTokenTotal.text = "${item.amountAvailable.formatFiat()} ${item.tokenSymbol}"
 
         setTokenIconUrl(item.tokenIcon)
         renderClaimButton(item.isClaimInProcess)
 
         buttonClaim.setOnClickListener {
-            listener.onStrigaClaimTokenClicked(item.tokenMintAddress)
+            listener.onStrigaClaimTokenClicked(item)
         }
     }
 

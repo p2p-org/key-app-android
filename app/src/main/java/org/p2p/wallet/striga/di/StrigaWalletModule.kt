@@ -29,10 +29,16 @@ import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
-import org.p2p.wallet.striga.wallet.repository.StrigaUserWalletsMapper
-import org.p2p.wallet.striga.wallet.repository.StrigaWalletRemoteRepository
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
-import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepositoryMapper
+import org.p2p.wallet.striga.wallet.repository.StrigaWhitelistAddressesRepository
+import org.p2p.wallet.striga.wallet.repository.StrigaWithdrawalsRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletInMemoryRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletRemoteRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWhitelistAddressesRemoteRepository
+import org.p2p.wallet.striga.wallet.repository.impl.StrigaWithdrawalsRemoteRepository
+import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWalletMapper
+import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWhitelistAddressesMapper
+import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWithdrawalsMapper
 
 object StrigaWalletModule : InjectionModule {
     val SMS_QUALIFIER = SmsInputFactory.Type.StrigaOnRamp.name
@@ -40,12 +46,11 @@ object StrigaWalletModule : InjectionModule {
     override fun create(): Module = module {
         initDataLayer()
         initSms()
-
-        factoryOf(::StrigaUserIbanDetailsPresenter) bind StrigaUserIbanDetailsContract.Presenter::class
-        factoryOf(::StrigaUserIbanUiMapper)
+        initIban()
 
         factoryOf(::StrigaClaimInteractor)
         factoryOf(::StrigaWalletInteractor)
+
         factoryOf(::StrigaIpAddressProvider)
     }
 
@@ -59,8 +64,14 @@ object StrigaWalletModule : InjectionModule {
             ).create()
         }
 
-        factoryOf(::StrigaUserWalletsMapper)
-        factoryOf(::StrigaWalletRepositoryMapper)
+        factoryOf(::StrigaWhitelistAddressesMapper)
+        factoryOf(::StrigaWhitelistAddressesRemoteRepository) bind StrigaWhitelistAddressesRepository::class
+
+        factoryOf(::StrigaWithdrawalsMapper)
+        factoryOf(::StrigaWithdrawalsRemoteRepository) bind StrigaWithdrawalsRepository::class
+
+        factoryOf(::StrigaWalletMapper)
+        singleOf(::StrigaWalletInMemoryRepository)
         factoryOf(::StrigaWalletRemoteRepository) bind StrigaWalletRepository::class
     }
 
@@ -72,7 +83,7 @@ object StrigaWalletModule : InjectionModule {
         factory(named(SMS_QUALIFIER)) { (challengeId: StrigaWithdrawalChallengeId) ->
             StrigaOnRampSmsApiCaller(
                 challengeId = challengeId,
-                strigaWalletRepository = get()
+                strigaWithdrawalsRepository = get()
             )
         } bind StrigaSmsApiCaller::class
 
@@ -98,5 +109,10 @@ object StrigaWalletModule : InjectionModule {
                 )
             )
         } bind SmsInputContract.Presenter::class
+    }
+
+    private fun Module.initIban() {
+        factoryOf(::StrigaUserIbanDetailsPresenter) bind StrigaUserIbanDetailsContract.Presenter::class
+        factoryOf(::StrigaUserIbanUiMapper)
     }
 }

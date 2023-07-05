@@ -2,6 +2,7 @@ package org.p2p.wallet.utils
 
 import assertk.Assert
 import assertk.assertThat
+import com.google.gson.Gson
 import io.mockk.MockKVerificationScope
 import io.mockk.every
 import io.mockk.mockk
@@ -14,6 +15,7 @@ import retrofit2.Response
 import java.io.InputStream
 import java.net.URL
 import kotlin.random.Random
+import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.InAppFeatureFlag
 
 internal fun Any.getTestRawResourceUrl(name: String): URL = javaClass.classLoader!!.getResource(name)
@@ -29,6 +31,10 @@ inline fun <reified T : InAppFeatureFlag> mockInAppFeatureFlag(returns: Boolean 
     return mockk(relaxed = true) {
         every { featureValue } returns false
     }
+}
+
+inline fun <reified T> String.fromJson(gson: Gson): T {
+    return gson.fromJsonReified<T>(this) ?: error("Can't parse json")
 }
 
 fun generateRandomBytes(length: Int = 32): ByteArray = Random.Default.nextBytes(length)

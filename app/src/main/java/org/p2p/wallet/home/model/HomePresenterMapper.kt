@@ -57,12 +57,12 @@ class HomePresenterMapper(
         return strigaUiBannerMapper.getKycStatusBannerFromTitle(bannerTitleId)
     }
 
-    fun mapToBigBanner(banner: StrigaKycStatusBanner): HomeBannerItem {
-        return strigaUiBannerMapper.mapToHomeBigBanner(banner)
+    fun mapToBigBanner(banner: StrigaKycStatusBanner, isLoading: Boolean): HomeBannerItem {
+        return strigaUiBannerMapper.mapToHomeBigBanner(banner, isLoading)
     }
 
-    fun mapToHomeBanner(banner: StrigaKycStatusBanner): HomeScreenBanner {
-        return strigaUiBannerMapper.mapToBanner(banner)
+    fun mapToHomeBanner(isLoading: Boolean, banner: StrigaKycStatusBanner): HomeScreenBanner {
+        return strigaUiBannerMapper.mapToBanner(isLoading, banner)
     }
 
     suspend fun mapToItems(
@@ -88,6 +88,7 @@ class HomePresenterMapper(
             result += strigaClaimableTokens.map {
                 val mintAddress = it.tokenDetails.mintAddress.toBase58Instance()
                 HomeElementItem.StrigaClaim(
+                    strigaToken = it,
                     amountAvailable = it.claimableAmount,
                     tokenName = it.tokenDetails.tokenName,
                     tokenMintAddress = mintAddress,
