@@ -22,6 +22,7 @@ import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class HomeInteractor(
     private val userInteractor: UserInteractor,
@@ -34,7 +35,8 @@ class HomeInteractor(
     private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaClaimInteractor: StrigaClaimInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
-    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle
+    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
+    private val userTokensInteractor: UserTokensInteractor,
 ) {
     suspend fun loadInitialAppData() {
         metadataInteractor.tryLoadAndSaveMetadata()
@@ -102,5 +104,9 @@ class HomeInteractor(
         token: StrigaClaimableToken
     ): StrigaDataLayerResult<StrigaWithdrawalChallengeId> {
         return strigaClaimInteractor.claim(amountLamports, token)
+    }
+
+    suspend fun loadUserRates(tokens: List<Token.Active>) {
+        userTokensInteractor.loadUserRates(tokens)
     }
 }

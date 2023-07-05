@@ -24,13 +24,13 @@ dependencies {
     Dependencies.tinderScarletLibraries.forEach { implementation(it) }
 
     // bitcoinj
-    api(Dependencies.bitcoinj)
     val koinVersion = "3.2.0"
     // https://github.com/InsertKoinIO/koin
     api("com.google.code.gson:gson:2.9.0")
     api(Dependencies.inputmask)
     api(Dependencies.timber)
     implementation(Dependencies.glide)
+    implementation(Dependencies.bitcoinj)
 
     // Firebase
     implementation(platform(Dependencies.firebaseBom))

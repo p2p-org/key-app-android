@@ -8,7 +8,7 @@ dependencies {
     implementation(project(":core"))
     implementation(Dependencies.cryptoEdds)
     implementation(Dependencies.firebaseCrashlyticsBuildTools)
-
+    implementation(Dependencies.bitcoinj)
 
     implementation(Dependencies.retrofitMoshi)
 

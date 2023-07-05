@@ -152,6 +152,8 @@ dependencies {
     implementation(Dependencies.amplitude)
     implementation(Dependencies.debugDrawer)
     implementation(Dependencies.tickerView)
+    implementation(Dependencies.bitcoinj)
+
 
     // Core testing
     Dependencies.coreTestingLibraries.forEach { testImplementation(it) }

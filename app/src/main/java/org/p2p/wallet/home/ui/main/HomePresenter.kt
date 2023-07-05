@@ -62,7 +62,6 @@ import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.updates.SubscriptionUpdatesStateObserver
 import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.worker.PendingTransactionMergeWorker
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
@@ -101,7 +100,6 @@ class HomePresenter(
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     // analytics
     private val analytics: HomeAnalytics,
-    private val userTokensInteractor: UserTokensInteractor,
     seedPhraseProvider: SeedPhraseProvider,
     tokenKeyProvider: TokenKeyProvider,
     bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
@@ -377,7 +375,7 @@ class HomePresenter(
             // this job also depends on the internet
             homeInteractor.loadAllTokensDataIfEmpty()
             val tokens = homeInteractor.loadUserTokensAndUpdateLocal(userPublicKey.toPublicKey())
-            userTokensInteractor.loadUserRates(tokens)
+            homeInteractor.loadUserRates(tokens)
         } catch (e: CancellationException) {
             Timber.d("Loading sol tokens job cancelled")
         } catch (e: UnknownHostException) {

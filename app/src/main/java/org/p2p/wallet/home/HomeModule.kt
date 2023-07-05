@@ -92,7 +92,8 @@ object HomeModule : InjectionModule {
                 strigaSignupInteractor = get(),
                 strigaClaimInteractor = get(),
                 strigaWalletInteractor = get(),
-                strigaSignupEnabledFeatureToggle = get()
+                strigaSignupEnabledFeatureToggle = get(),
+                userTokensInteractor = get()
             )
         }
         factoryOf(::HomePresenterMapper)
@@ -124,8 +125,7 @@ object HomeModule : InjectionModule {
                 updateSubscribers = subscribers,
                 bridgeFeatureToggle = get(),
                 context = get(),
-                strigaFeatureToggle = get(),
-                userTokensInteractor = get()
+                strigaFeatureToggle = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
