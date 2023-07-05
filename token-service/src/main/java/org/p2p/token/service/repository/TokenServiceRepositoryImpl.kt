@@ -1,6 +1,6 @@
 package org.p2p.token.service.repository
 
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
@@ -22,8 +22,7 @@ class TokenServiceRepositoryImpl(
             addresses = tokenAddresses
         )
         result.forEach { queryResult ->
-            priceLocalRepository.setTokensPrice(
-                networkChain = queryResult.networkChain,
+            priceLocalRepository.saveTokensPrice(
                 prices = queryResult.items
             )
         }
@@ -42,14 +41,13 @@ class TokenServiceRepositoryImpl(
         }
     }
 
-    override fun getTokenPricesFlow(networkChain: TokenServiceNetwork): StateFlow<Map<String, TokenServicePrice>> =
-        priceLocalRepository.attachToTokensPrice(networkChain)
+    override suspend fun observeTokenPricesFlow(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>> =
+        priceLocalRepository.observeTokenPrices(networkChain)
 
-    override fun findTokenPriceByAddress(
-        networkChain: TokenServiceNetwork,
+    override suspend fun findTokenPriceByAddress(
         tokenAddress: String
     ): TokenServicePrice? {
-        return priceLocalRepository.findTokenPriceByAddress(networkChain = networkChain, address = tokenAddress)
+        return priceLocalRepository.findTokenPriceByAddress(address = tokenAddress)
     }
 
     override suspend fun fetchTokenPriceByAddress(
@@ -57,7 +55,7 @@ class TokenServiceRepositoryImpl(
         tokenAddress: String
     ): TokenServicePrice? {
         loadPriceForTokens(chain = networkChain, tokenAddresses = listOf(tokenAddress))
-        return findTokenPriceByAddress(networkChain = networkChain, tokenAddress = tokenAddress)
+        return findTokenPriceByAddress( tokenAddress = tokenAddress)
     }
 
     override fun findTokenMetadataByAddress(

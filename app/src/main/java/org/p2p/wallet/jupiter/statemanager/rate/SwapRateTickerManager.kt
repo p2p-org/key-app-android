@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.p2p.core.utils.formatToken
-import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
@@ -119,13 +118,12 @@ class SwapRateTickerManager(
         return SwapRateTickerState.Shown(formatRateString(from.tokenSymbol, newRate, to.tokenSymbol))
     }
 
-    private fun findJupiterTokenRate(to: SwapTokenModel.JupiterToken): BigDecimal? {
+    private suspend fun findJupiterTokenRate(to: SwapTokenModel.JupiterToken): BigDecimal? {
         val tokenData = userLocalRepository.findTokenData(to.mintAddress.base58Value) ?: return null
         val cachedPrice = tokenServiceRepository.findTokenPriceByAddress(
-            networkChain = TokenServiceNetwork.SOLANA,
             tokenAddress = tokenData.mintAddress
         )
-        return cachedPrice?.price
+        return cachedPrice?.usdRate
     }
 
     private fun formatRateString(tokenASymbol: String, tokenBRate: String, tokenBSymbol: String): String {

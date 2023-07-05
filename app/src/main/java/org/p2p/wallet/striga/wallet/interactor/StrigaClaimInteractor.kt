@@ -95,7 +95,7 @@ class StrigaClaimInteractor(
             .map { it.id }
     }
 
-    private fun getClaimableTokenMetadata(tokenSymbol: String): Token? {
+    private suspend fun getClaimableTokenMetadata(tokenSymbol: String): Token? {
         return tokensRepository.findTokenDataBySymbol(tokenSymbol)
             ?.let { tokensRepository.findTokenByMint(it.mintAddress) }
     }

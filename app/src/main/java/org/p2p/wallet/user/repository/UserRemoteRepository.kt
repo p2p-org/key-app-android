@@ -13,7 +13,6 @@ import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.core.network.environment.NetworkEnvironmentManager
-import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
@@ -64,7 +63,6 @@ class UserRemoteRepository(
 
             val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
             val solPrice = tokenServiceRepository.findTokenPriceByAddress(
-                networkChain = TokenServiceNetwork.SOLANA,
                 tokenAddress = token.mintAddress
             )
             TokenConverter.fromNetwork(it, token, solPrice)
@@ -76,20 +74,19 @@ class UserRemoteRepository(
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return tokens
         val solPrice = tokenServiceRepository.findTokenPriceByAddress(
-            networkChain = TokenServiceNetwork.SOLANA,
             tokenAddress = tokenData.mintAddress
         )
         val solToken = Token.createSOL(
             publicKey = publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
-            solPrice = solPrice?.getScaledValue()
+            solPrice = solPrice?.usdRate
         )
 
         return listOf(solToken) + tokens
     }
 
-    private fun mapDevnetRenBTC(account: Account): Token.Active? {
+    private suspend fun mapDevnetRenBTC(account: Account): Token.Active? {
         if (environmentManager.loadCurrentEnvironment() != NetworkEnvironment.DEVNET) {
             return null
         }
@@ -101,7 +98,6 @@ class UserRemoteRepository(
         } ?: return null
 
         val btcPrice = tokenServiceRepository.findTokenPriceByAddress(
-            networkChain = TokenServiceNetwork.SOLANA,
             tokenAddress = btcTokenData.mintAddress
         )
         return TokenConverter.fromNetwork(

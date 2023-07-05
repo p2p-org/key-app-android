@@ -82,7 +82,6 @@ internal class JupiterSwapTokensRemoteRepository(
         val isTokenPricesCachedForMints =
             tokenMints.all {
                 tokenServiceInteractor.findTokenPriceByAddress(
-                    networkChain = TokenServiceNetwork.SOLANA,
                     tokenAddress = it.base58Value
                 ) != null
             }

@@ -114,9 +114,6 @@ dependencies {
     Dependencies.coroutineLibraries.forEach { implementation(it) }
 
     // Room
-    implementation(Dependencies.roomRuntime)
-    implementation(Dependencies.roomKtx)
-    kapt(Dependencies.roomCompiler)
 
     // Firebase
     implementation(platform(Dependencies.firebaseBom))
@@ -167,4 +164,8 @@ dependencies {
         because("This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.")
     }
     Dependencies.junitRuntimeOnlyLibraries.forEach { testRuntimeOnly(it) }
+
+    implementation(Dependencies.roomRuntime)
+    implementation(Dependencies.roomKtx)
+    kapt(Dependencies.roomCompiler)
 }

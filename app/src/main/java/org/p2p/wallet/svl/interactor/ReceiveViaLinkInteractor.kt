@@ -90,7 +90,7 @@ class ReceiveViaLinkInteractor(
             publicKey = temporaryAccount.publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
-            solPrice = solPrice?.price
+            solPrice = solPrice?.usdRate
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
@@ -100,7 +100,6 @@ class ReceiveViaLinkInteractor(
 
     private suspend fun fetchPriceForToken(mintAddress: String): TokenServicePrice? {
         val price = tokenServiceRepository.findTokenPriceByAddress(
-            networkChain = TokenServiceNetwork.SOLANA,
             tokenAddress = mintAddress
         )
         if (price != null) return price

@@ -14,6 +14,9 @@ import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.token.service.model.TokenRate
+import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 
 class JupiterTestPresenterBuilder {
@@ -73,11 +76,11 @@ class JupiterTestPresenterBuilder {
     var jupiterSwapTokensRepoGetTokenRate: (JupiterSwapToken) -> TokenServicePrice? = { token ->
         when (token) {
             JupiterSwapTestHelpers.JUPITER_SOL_TOKEN -> {
-                TokenServicePrice(token.coingeckoId!!, BigDecimal("100"))
+                TokenServicePrice(token.coingeckoId!!, TokenRate(BigDecimal.TEN), network = TokenServiceNetwork.SOLANA)
             }
 
             JupiterSwapTestHelpers.JUPITER_USDC_TOKEN -> {
-                TokenServicePrice(token.coingeckoId!!, BigDecimal("1"))
+                TokenServicePrice(token.coingeckoId!!, TokenRate(BigDecimal.ONE), network = TokenServiceNetwork.SOLANA)
             }
 
             else -> null
@@ -93,16 +96,16 @@ class JupiterTestPresenterBuilder {
         tokens.mapNotNull { token ->
             when (token) {
                 JupiterSwapTestHelpers.JUPITER_SOL_TOKEN -> {
-                    token.tokenMint to TokenServicePrice(token.coingeckoId!!, BigDecimal("100"))
+                    TokenServicePrice(token.coingeckoId!!, TokenRate(BigDecimal.TEN), network = TokenServiceNetwork.SOLANA)
                 }
 
                 JupiterSwapTestHelpers.JUPITER_USDC_TOKEN -> {
-                    token.tokenMint to TokenServicePrice(token.coingeckoId!!, BigDecimal("1"))
+                    TokenServicePrice(token.coingeckoId!!, TokenRate(BigDecimal.ONE), network = TokenServiceNetwork.SOLANA)
                 }
 
                 else -> null
             }
-        }.toMap()
+        }.associateBy { it.address.toBase58Instance() }
     }
 
     /**
