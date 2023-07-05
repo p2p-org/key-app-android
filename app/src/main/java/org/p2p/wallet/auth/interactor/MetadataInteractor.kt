@@ -8,7 +8,9 @@ import org.p2p.solanaj.core.toBase58Instance
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.model.MetadataLoadStatus
+import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
@@ -19,6 +21,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.settings.DeviceInfoHelper
 
 private const val TAG = "MetadataInteractor"
+
 class MetadataInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
@@ -28,7 +31,9 @@ class MetadataInteractor(
     private val gatewayMetadataMerger: GatewayMetadataMerger,
     private val ethereumInteractor: EthereumInteractor,
     private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
-    private val metadataChangesLogger: MetadataChangesLogger
+    private val metadataChangesLogger: MetadataChangesLogger,
+    private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
+    private val web3AuthApi: Web3AuthApi,
 ) {
 
     var currentMetadata: GatewayOnboardingMetadata? = null
@@ -116,7 +121,7 @@ class MetadataInteractor(
             metadataNew = metadata
         )
         currentMetadata = metadata
-        tryToUploadMetadata(metadata)
+        tryToUploadMetadataOnServer(metadata)
     }
 
     private suspend fun loadAndSaveMetadata(
@@ -131,13 +136,14 @@ class MetadataInteractor(
             if (mnemonicPhraseWords.isEmpty()) {
                 throw MetadataFailed.MetadataNoSeedPhrase()
             }
-            val metadata = gatewayServiceRepository.loadOnboardingMetadata(
+            val serverMetadata = gatewayServiceRepository.loadOnboardingMetadata(
                 solanaPublicKey = userAccount.publicKey.toBase58Instance(),
                 solanaPrivateKey = userAccount.keypair.toBase58Instance(),
                 userSeedPhrase = mnemonicPhraseWords,
                 etheriumAddress = ethereumPublicKey
             )
-            compareMetadataAndSave(metadata)
+            val torusMetadata = getTorusMetadata()
+            compareMetadataAndSave(serverMetadata, torusMetadata)
             MetadataLoadStatus.Success
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
@@ -152,13 +158,35 @@ class MetadataInteractor(
         }
     }
 
-    private suspend fun tryToUploadMetadata(metadata: GatewayOnboardingMetadata) {
+    private suspend fun getTorusMetadata(): GatewayOnboardingMetadata? {
+        if (!restoreFlowDataLocalRepository.isTorusKeyValid()) {
+            return null
+        }
+        return try {
+            web3AuthApi.getUserData()
+        } catch (error: Throwable) {
+            Timber.e(error)
+            null
+        }
+    }
+
+    private suspend fun tryToUploadMetadataOnTorus(metadata: GatewayOnboardingMetadata) {
+        if (restoreFlowDataLocalRepository.isTorusKeyValid()) {
+            try {
+                web3AuthApi.setUserData(metadata)
+            } catch (error: Throwable) {
+                Timber.e(error)
+            }
+        }
+    }
+
+    private suspend fun tryToUploadMetadataOnServer(metadata: GatewayOnboardingMetadata) {
         val ethereumPublicKey = getEthereumPublicKey()
         if (ethereumPublicKey != null) {
             Timber.tag(TAG).i("uploading new metadata")
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-            tryToUploadMetadata(
+            tryToUploadMetadataOnServer(
                 userAccount = userAccount,
                 mnemonicPhraseWords = userSeedPhrase,
                 ethereumPublicKey = ethereumPublicKey,
@@ -169,7 +197,7 @@ class MetadataInteractor(
         }
     }
 
-    private suspend fun tryToUploadMetadata(
+    private suspend fun tryToUploadMetadataOnServer(
         userAccount: Account?,
         mnemonicPhraseWords: List<String>,
         ethereumPublicKey: String,
@@ -198,11 +226,20 @@ class MetadataInteractor(
         }
     }
 
-    private suspend fun compareMetadataAndSave(serverMetadata: GatewayOnboardingMetadata) {
+    private suspend fun compareMetadataAndSave(
+        serverMetadata: GatewayOnboardingMetadata,
+        torusMetadata: GatewayOnboardingMetadata?
+    ) {
         val finalMetadata = currentMetadata?.let { deviceMetadata ->
-            val updatedMetadata = gatewayMetadataMerger.merge(deviceMetadata, serverMetadata)
+            val mergedWithServerMetadata = gatewayMetadataMerger.merge(serverMetadata, deviceMetadata)
+            val updatedMetadata = if (torusMetadata == null) {
+                mergedWithServerMetadata
+            } else {
+                gatewayMetadataMerger.merge(torusMetadata, mergedWithServerMetadata)
+            }
             if (updatedMetadata != serverMetadata) {
-                tryToUploadMetadata(updatedMetadata)
+                tryToUploadMetadataOnServer(updatedMetadata)
+                tryToUploadMetadataOnTorus(updatedMetadata)
             }
             updatedMetadata
         } ?: serverMetadata

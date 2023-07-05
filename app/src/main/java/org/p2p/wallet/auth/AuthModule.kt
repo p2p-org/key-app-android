@@ -221,8 +221,23 @@ object AuthModule {
         factoryOf(::TorusKeyInteractor)
         factoryOf(::UserRestoreInteractor)
         factoryOf(::GatewayMetadataMerger)
-        factoryOf(::MetadataInteractor)
         factoryOf(::MetadataChangesLogger)
         singleOf(::RestoreStateMachine)
+
+        factory {
+            MetadataInteractor(
+                gatewayServiceRepository = get(),
+                signUpDetailsStorage = get(),
+                tokenKeyProvider = get(),
+                seedPhraseProvider = get(),
+                accountStorage = get(),
+                gatewayMetadataMerger = get(),
+                ethereumInteractor = get(),
+                bridgeFeatureToggle = get(),
+                metadataChangesLogger = get(),
+                restoreFlowDataLocalRepository = get(),
+                web3AuthApi = get(),
+            )
+        }
     }
 }
