@@ -2,7 +2,6 @@ package org.p2p.wallet.home.ui.main.adapter
 
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import android.view.View
 import android.view.ViewGroup
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getString
@@ -46,8 +45,8 @@ class SingleBannerViewHolder(
 
         imageViewIcon.setImageResource(status.placeholderResId)
 
-        buttonAction.isVisible = status.actionTitleResId != View.NO_ID
-        if (buttonAction.isVisible) {
+        buttonAction.isVisible = status.actionTitleResId != null
+        status.actionTitleResId?.let {
             buttonAction.setText(status.actionTitleResId)
         }
 

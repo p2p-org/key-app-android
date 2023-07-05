@@ -3,18 +3,17 @@ package org.p2p.wallet.kyc.model
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import android.view.View
 import org.p2p.wallet.R
 
 /**
- * @param actionTitleResId - if [android.view.View.NO_ID] button will be hidden
+ * @param actionTitleResId - if null button will be hidden
  */
 enum class StrigaKycStatusBanner(
     @StringRes val bannerTitleResId: Int,
     @StringRes val bigBannerTitleResId: Int,
     @StringRes val bannerMessageResId: Int,
     @StringRes val bigBannerMessageResId: Int,
-    @StringRes val actionTitleResId: Int,
+    @StringRes val actionTitleResId: Int?,
     @DrawableRes val placeholderResId: Int,
     @ColorRes val backgroundTint: Int,
 ) {
@@ -33,7 +32,7 @@ enum class StrigaKycStatusBanner(
         bigBannerTitleResId = R.string.striga_kyc_signup_big_banner_pending_title,
         bannerMessageResId = R.string.striga_kyc_signup_banner_pending_message,
         bigBannerMessageResId = R.string.striga_kyc_signup_big_banner_pending_message,
-        actionTitleResId = View.NO_ID,
+        actionTitleResId = null,
         placeholderResId = R.drawable.ic_clock,
         backgroundTint = R.color.light_sea
     ),
