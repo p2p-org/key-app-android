@@ -17,9 +17,11 @@
         android:layout_marginEnd="0dp"
         android:gravity="start"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
+        app:layout_constraintBottom_toTopOf="@id/textViewSubtitle"
         app:layout_constraintEnd_toStartOf="@id/imageViewIcon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="Finish identity verification\nto send your money\nworldwide" />
 
     <TextView
@@ -29,11 +31,13 @@
         android:layout_marginTop="4dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/buttonAction"
         app:layout_constraintEnd_toEndOf="@id/textViewTitle"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewTitle"
-        tools:text="Please, check the details and update your data" />
+        tools:text="Please, check the details and update your data"
+        tools:visibility="visible" />
 
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonAction"
@@ -45,6 +49,7 @@
         app:iconGravity="textEnd"
         app:iconPadding="8dp"
         app:iconTint="@color/icons_snow"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewSubtitle"
         tools:text="Continue" />
@@ -56,14 +61,7 @@
         android:layout_marginHorizontal="8dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/onboarding_slide_2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/buttonClose"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_close"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -324,6 +324,9 @@ class HomePresenter(
             }
             statusFromKycBanner != null -> {
                 launch {
+                    // hide banner if necessary
+                    homeInteractor.hideStrigaUserStatusBanner(statusFromKycBanner)
+
                     if (statusFromKycBanner == StrigaKycStatusBanner.VERIFICATION_DONE) {
                         state = state.copy(isStrigaKycBannerLoading = true)
                         handleHomeStateChanged(state.tokens, state.ethTokens)
@@ -344,8 +347,6 @@ class HomePresenter(
             }
         }
     }
-
-    override fun onBannerCloseClicked(bannerTitleId: Int) = Unit
 
     override fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim) {
         launch {
