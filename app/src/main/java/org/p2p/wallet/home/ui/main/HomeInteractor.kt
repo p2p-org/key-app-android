@@ -17,10 +17,10 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
-import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
-import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
+import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.user.interactor.UserInteractor
 
 class HomeInteractor(
@@ -100,6 +100,8 @@ class HomeInteractor(
         ethereumInteractor.getClaimMinAmountForFreeFee()
 
     fun getUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> = strigaUserInteractor.getUserStatusBannerFlow()
+
+    fun hideStrigaUserStatusBanner(banner: StrigaKycStatusBanner) = strigaUserInteractor.hideUserStatusBanner(banner)
 
     suspend fun claimStrigaToken(
         amountLamports: BigDecimal,

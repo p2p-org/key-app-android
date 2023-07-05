@@ -408,10 +408,6 @@ class HomeFragment :
         presenter.onBannerClicked(bannerTitleId)
     }
 
-    override fun onBannerCloseClicked(bannerTitleId: Int) {
-        presenter.onBannerCloseClicked(bannerTitleId)
-    }
-
     override fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim) {
         presenter.onStrigaClaimTokenClicked(item)
     }

@@ -68,7 +68,6 @@ interface HomeContract {
         fun load()
         fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth)
         fun onBannerClicked(bannerTitleId: Int)
-        fun onBannerCloseClicked(bannerTitleId: Int)
         fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim)
     }
 }
