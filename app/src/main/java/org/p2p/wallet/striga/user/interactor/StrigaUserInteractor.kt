@@ -49,4 +49,10 @@ class StrigaUserInteractor(
     fun getUserDestination(): StrigaUserStatusDestination {
         return userStatusRepository.getUserDestination()
     }
+
+    fun isUserPassedKycAndVerified(): Boolean {
+        return userStatusRepository.getUserVerificationStatus()
+            ?.run { isMobileVerified && !isKycInProgress }
+            ?: false
+    }
 }

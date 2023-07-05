@@ -112,7 +112,7 @@ object AuthModule {
                 appScope = get(),
                 analytics = get(),
                 jupiterSwapStorage = get(),
-                strigaWalletInMemoryRepository = get()
+                strigaStorage = get()
             )
         }
 

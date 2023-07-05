@@ -1,9 +1,9 @@
 package org.p2p.wallet.common.crypto.keystore
 
 import android.content.SharedPreferences
-import org.p2p.core.crypto.Hex
 import java.security.KeyStore
 import javax.crypto.Cipher
+import org.p2p.core.crypto.Hex
 
 class KeyStoreWrapper(
     private val encoderDecoder: EncoderDecoder,
@@ -54,14 +54,14 @@ class KeyStoreWrapper(
 
     fun contains(keyAlias: String): Boolean = keyStore.containsAlias(keyAlias)
 
-    fun delete(keyAlias: String) {
+    fun deleteKeyAlias(keyAlias: String) {
         keyStore.deleteEntry(keyAlias)
         encoderDecoder.onKeyDeleted(keyAlias)
     }
 
     fun clear() {
         for (alias in keyStore.aliases()) {
-            delete(alias)
+            deleteKeyAlias(alias)
         }
     }
 }
