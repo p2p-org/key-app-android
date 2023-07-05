@@ -68,6 +68,7 @@ import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
 
 val POPULAR_TOKENS_SYMBOLS: Set<String> = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
+
 // TODO add fetching prices for this tokens
 // val POPULAR_TOKENS_COINGECKO_IDS: List<TokenCoinGeckoId> = setOf(
 //    SOL_COINGECKO_ID,
@@ -165,8 +166,10 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
-        if (state.tokens.isNotEmpty() || state.ethTokens.isNotEmpty()) {
-            handleHomeStateChanged(state.tokens, state.ethTokens)
+        launch {
+            if (state.tokens.isNotEmpty() || state.ethTokens.isNotEmpty()) {
+                handleHomeStateChanged(state.tokens, state.ethTokens)
+            }
         }
         observeRefreshingStatus()
         observeInternetConnection()
@@ -501,7 +504,7 @@ class HomePresenter(
         }
     }
 
-    private fun handleHomeStateChanged(
+    private suspend fun handleHomeStateChanged(
         userTokens: List<Token.Active>,
         ethTokens: List<Token.Eth>,
     ) {
@@ -525,7 +528,7 @@ class HomePresenter(
         }
     }
 
-    private fun handleEmptyAccount() {
+    private suspend fun handleEmptyAccount() {
         val tokensForBuy =
             homeInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
                 .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }

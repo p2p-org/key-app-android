@@ -1,5 +1,6 @@
 plugins {
     id("org.p2p.wallet.android.library")
+    id("kotlin-kapt")
 }
 
 apply {
@@ -31,6 +32,10 @@ dependencies {
     api(Dependencies.timber)
     implementation(Dependencies.glide)
     implementation(Dependencies.bitcoinj)
+
+    implementation(Dependencies.roomRuntime)
+    implementation(Dependencies.roomKtx)
+    kapt(Dependencies.roomCompiler)
 
     // Firebase
     implementation(platform(Dependencies.firebaseBom))

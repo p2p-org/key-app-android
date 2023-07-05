@@ -5,8 +5,12 @@ import org.p2p.core.utils.scaleShort
 
 class TokenServicePrice(
     val address: String,
-    val price: BigDecimal
+    val rate: TokenRate,
+    val network: TokenServiceNetwork
 ) {
-    fun getScaledValue(): BigDecimal = price.scaleShort()
+    val scaledUsdRate: BigDecimal?
+        get() = rate.usd?.scaleShort()
 
+    val usdRate: BigDecimal?
+        get() = rate.usd
 }
