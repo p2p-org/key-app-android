@@ -1,20 +1,20 @@
 package org.p2p.wallet.home.ui.main
 
 import java.math.BigDecimal
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
+import org.p2p.wallet.home.events.UserTokensLoader
+import org.p2p.wallet.home.repository.HomeScreenLocalRepository
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
@@ -29,26 +29,13 @@ class HomeInteractor(
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
     private val sellInteractor: SellInteractor,
-    private val metadataInteractor: MetadataInteractor,
     private val ethereumInteractor: EthereumInteractor,
     private val strigaUserInteractor: StrigaUserInteractor,
-    private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaClaimInteractor: StrigaClaimInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
-    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val userTokensInteractor: UserTokensInteractor,
+    private val homeScreenLocalRepository: HomeScreenLocalRepository
 ) {
-    suspend fun loadInitialAppData() {
-        metadataInteractor.tryLoadAndSaveMetadata()
-
-        if (strigaSignupEnabledFeatureToggle.isFeatureEnabled) {
-            strigaSignupInteractor.loadAndSaveSignupData()
-            strigaUserInteractor.loadAndSaveUserStatusData()
-            if (strigaUserInteractor.isUserCreated()) {
-                loadStrigaFiatAccountDetails()
-            }
-        }
-    }
 
     suspend fun loadStrigaFiatAccountDetails(): Result<StrigaFiatAccountDetails> {
         return strigaWalletInteractor.loadFiatAccountAndUserWallet()
@@ -87,10 +74,6 @@ class HomeInteractor(
 
     suspend fun isSellFeatureAvailable(): Boolean = sellInteractor.isSellAvailable()
 
-    fun setupEthereumKit(userSeedPhrase: List<String>) {
-        ethereumInteractor.setup(userSeedPhrase)
-    }
-
     fun getClaimBundleById(latestActiveBundleId: String): BridgeBundle? =
         ethereumInteractor.getClaimBundleById(latestActiveBundleId)
 
@@ -108,7 +91,22 @@ class HomeInteractor(
         return strigaClaimInteractor.claim(amountLamports, token)
     }
 
-    suspend fun loadUserRates(tokens: List<Token.Active>) {
+    fun loadUserRates(tokens: List<Token.Active>) {
         userTokensInteractor.loadUserRates(tokens)
+    }
+
+    suspend fun updateUserTokensState(newTokensState: UserTokensLoader.UserTokensState) {
+        homeScreenLocalRepository.setUserTokensState(newTokensState)
+    }
+
+    fun observeUserTokensState(): SharedFlow<UserTokensLoader.UserTokensState> =
+        homeScreenLocalRepository.getUserTokensStateFlow()
+
+    suspend fun updateRefreshState(isRefreshing: Boolean) {
+        homeScreenLocalRepository.setRefreshState(isRefreshing)
+    }
+
+    fun observeRefreshState(): SharedFlow<Boolean> {
+        return homeScreenLocalRepository.getHomeScreenRefreshStateFlow()
     }
 }

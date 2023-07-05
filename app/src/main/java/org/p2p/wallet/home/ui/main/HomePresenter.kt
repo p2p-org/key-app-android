@@ -8,8 +8,6 @@ import java.math.BigDecimal
 import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -34,7 +32,6 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
@@ -48,21 +45,18 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
-import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
-import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SocketState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.updates.SubscriptionUpdatesStateObserver
 import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.worker.PendingTransactionMergeWorker
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
@@ -84,7 +78,6 @@ class HomePresenter(
     private val userInteractor: UserInteractor,
     // other
     private val tokensPolling: UserTokensPolling,
-    private val networkObserver: SolanaNetworkObserver,
     // managers
     private val updatesManager: SubscriptionUpdatesManager,
     private val environmentManager: NetworkEnvironmentManager,
@@ -101,9 +94,7 @@ class HomePresenter(
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     // analytics
     private val analytics: HomeAnalytics,
-    seedPhraseProvider: SeedPhraseProvider,
     tokenKeyProvider: TokenKeyProvider,
-    bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
@@ -132,18 +123,7 @@ class HomePresenter(
     }
 
     init {
-        val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-        if (userSeedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled) {
-            homeInteractor.setupEthereumKit(userSeedPhrase = userSeedPhrase)
-            PendingTransactionMergeWorker.scheduleWorker(context)
-        } else {
-            Timber.w("ETH is not initialized, no seed phrase or disabled")
-        }
         launch {
-            awaitAll(
-                async { networkObserver.start() },
-                async { homeInteractor.loadInitialAppData() }
-            )
 
             // save the job to prevent do the same job twice in observeInternetConnection
             loadSolTokensJob = loadSolTokensAndRates()

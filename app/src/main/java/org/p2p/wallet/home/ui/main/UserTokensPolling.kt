@@ -113,7 +113,7 @@ class UserTokensPolling(
     }
 
     private fun getEthereumTokensFlow(): Flow<List<Token.Eth>> {
-        return ethereumInteractor.getTokensFlow()
+        return ethereumInteractor.observeTokensFlow()
     }
 }
 

@@ -37,7 +37,7 @@ class EthereumInteractor(
         }
     }
 
-    fun getTokensFlow(): Flow<List<Token.Eth>> {
+    fun observeTokensFlow(): Flow<List<Token.Eth>> {
         return if (ethAddressEnabledFeatureToggle.isFeatureEnabled) {
             ethereumRepository.getWalletTokensFlow()
         } else {
