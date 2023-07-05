@@ -83,9 +83,8 @@ import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputPresenter
 import org.p2p.wallet.splash.SplashContract
 import org.p2p.wallet.splash.SplashPresenter
 
-private const val SMS_TIMER_ONBOARDING = "TIMER_ONBOARDING"
-
 object AuthModule {
+    val SMS_QUALIFIER = SmsInputFactory.Type.Onboarding.name
 
     fun create() = module {
         single { BiometricManager.from(androidContext()) }
@@ -112,7 +111,8 @@ object AuthModule {
                 pushNotificationsInteractor = get(),
                 appScope = get(),
                 analytics = get(),
-                jupiterSwapStorage = get()
+                jupiterSwapStorage = get(),
+                strigaWalletInMemoryRepository = get()
             )
         }
 
@@ -149,14 +149,14 @@ object AuthModule {
             )
         }
         singleOf(::SmsInputTimer) {
-            named(SMS_TIMER_ONBOARDING)
+            named(SMS_QUALIFIER)
         }
         factory {
             CreateWalletInteractor(
                 gatewayServiceRepository = get(),
                 signUpFlowDataRepository = get(),
                 userSignUpDetailsStorage = get(),
-                smsInputTimer = get(named(SMS_TIMER_ONBOARDING)),
+                smsInputTimer = get(named(SMS_QUALIFIER)),
                 tokenKeyProvider = get(),
                 seedPhraseProvider = get(),
                 crashLogger = get(),
@@ -168,7 +168,7 @@ object AuthModule {
                 torusKeyInteractor = get(),
                 userRestoreInteractor = get(),
                 restoreFlowDataLocalRepository = get(),
-                smsInputTimer = get(named(SMS_TIMER_ONBOARDING)),
+                smsInputTimer = get(named(SMS_QUALIFIER)),
                 signUpDetailsStorage = get(),
                 restoreWalletAnalytics = get(),
             )
@@ -177,7 +177,7 @@ object AuthModule {
             CustomShareRestoreInteractor(
                 gatewayServiceRepository = get(),
                 restoreFlowDataLocalRepository = get(),
-                smsInputTimer = get(named(SMS_TIMER_ONBOARDING)),
+                smsInputTimer = get(named(SMS_QUALIFIER)),
                 gson = get()
             )
         }

@@ -18,8 +18,6 @@ class DebugSettingsInteractor(
         val metadata = metadataInteractor.currentMetadata ?: error("Metadata is not loaded. Unable to proceed.")
 
         metadataInteractor.updateMetadata(metadata.copy(strigaMetadata = null))
-        strigaStorageContract.userStatus = null
-        strigaStorageContract.smsExceededVerificationAttemptsMillis = 0L
-        strigaStorageContract.smsExceededResendAttemptsMillis = 0L
+        strigaStorageContract.clear()
     }
 }

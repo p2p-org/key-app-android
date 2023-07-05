@@ -1,5 +1,6 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.p2p.wallet.android.application")
@@ -56,6 +57,7 @@ android {
 
     sentry {
         autoInstallation { enabled.set(false) }
+        ignoredBuildTypes.addAll("debug", "feature")
     }
 
     bundle {
@@ -81,6 +83,12 @@ android {
             if (requested.group == "org.bouncycastle") {
                 useTarget("org.bouncycastle:bcprov-jdk15to18:1.68")
             }
+        }
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = "11"
         }
     }
 }

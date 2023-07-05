@@ -9,5 +9,6 @@ class HomeBannerItem(
     @StringRes val subtitleTextId: Int,
     @StringRes val buttonTextId: Int,
     @DrawableRes val drawableRes: Int,
-    @ColorRes val backgroundColorRes: Int
+    @ColorRes val backgroundColorRes: Int,
+    val isLoading: Boolean = false
 )

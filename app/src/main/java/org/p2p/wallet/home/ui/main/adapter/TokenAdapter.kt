@@ -30,6 +30,26 @@ class TokenAdapter(
 
     private var isZerosHidden: Boolean = true
 
+    @Suppress("UNCHECKED_CAST")
+    fun <T : HomeElementItem> updateItem(
+        itemFilter: (HomeElementItem) -> Boolean,
+        transform: (T) -> T,
+        animateChanges: Boolean = false
+    ) {
+        val index = data.indexOfFirst(itemFilter)
+        if (index != -1) {
+            val old = data[index] as T
+            val new = transform(old)
+            data[index] = new
+            if (animateChanges) {
+                notifyItemChanged(index)
+            } else {
+                // workaround for disabling animation
+                notifyItemChanged(index, Unit)
+            }
+        }
+    }
+
     fun setItems(new: List<HomeElementItem>, isZerosHidden: Boolean) {
         this.isZerosHidden = isZerosHidden
         val old = data.toMutableList()

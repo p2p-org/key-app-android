@@ -3,6 +3,7 @@ package org.p2p.wallet.smsinput.onboarding
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreFailureState
@@ -11,14 +12,13 @@ import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFrag
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenFragment
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
 import org.p2p.wallet.smsinput.SmsInputContract
-import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 
 class OnboardingSmsInputFragment : BaseSmsInputFragment() {
 
-    override val presenter: SmsInputContract.Presenter by inject(named(SmsInputFactory.Type.Onboarding.name))
+    override val presenter: SmsInputContract.Presenter by inject(named(AuthModule.SMS_QUALIFIER))
 
     override fun onBackPressed() {
         super.onBackPressed()

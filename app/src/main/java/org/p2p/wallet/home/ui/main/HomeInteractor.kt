@@ -9,11 +9,18 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
+import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
+import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
+import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
+import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.user.interactor.UserInteractor
 
 class HomeInteractor(
@@ -25,11 +32,24 @@ class HomeInteractor(
     private val ethereumInteractor: EthereumInteractor,
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
+    private val strigaClaimInteractor: StrigaClaimInteractor,
+    private val strigaWalletInteractor: StrigaWalletInteractor,
+    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle
 ) {
     suspend fun loadInitialAppData() {
         metadataInteractor.tryLoadAndSaveMetadata()
-        strigaSignupInteractor.loadAndSaveSignupData()
-        strigaUserInteractor.loadAndSaveUserStatusData()
+
+        if (strigaSignupEnabledFeatureToggle.isFeatureEnabled) {
+            strigaSignupInteractor.loadAndSaveSignupData()
+            strigaUserInteractor.loadAndSaveUserStatusData()
+            if (strigaUserInteractor.isUserCreated()) {
+                loadStrigaFiatAccountDetails()
+            }
+        }
+    }
+
+    suspend fun loadStrigaFiatAccountDetails(): Result<StrigaFiatAccountDetails> {
+        return strigaWalletInteractor.loadFiatAccountAndUserWallet()
     }
 
     suspend fun loadAllTokensDataIfEmpty() {
@@ -80,4 +100,11 @@ class HomeInteractor(
         ethereumInteractor.getClaimMinAmountForFreeFee()
 
     fun getUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> = strigaUserInteractor.getUserStatusBannerFlow()
+
+    suspend fun claimStrigaToken(
+        amountLamports: BigDecimal,
+        token: StrigaClaimableToken
+    ): StrigaDataLayerResult<StrigaWithdrawalChallengeId> {
+        return strigaClaimInteractor.claim(amountLamports, token)
+    }
 }

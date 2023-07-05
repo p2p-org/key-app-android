@@ -72,16 +72,16 @@
     "emoji": "🏢"
   },
   {
-    "occupation": "INSURANCE_SECURITY_v_RETAIL_WHOLESALE",
+    "occupation": "INSURANCE_SECURITY",
     "emoji": "📊"
+  },
+  {
+    "occupation": "RETAIL_WHOLESALE",
+    "emoji": "🛍"
   },
   {
     "occupation": "TRAVEL_TOURISM",
     "emoji": "🏖"
-  },
-  {
-    "occupation": "TRAVEL_TOURISM",
-    "emoji": "🌡"
   },
   {
     "occupation": "FREELANCER",
@@ -92,19 +92,11 @@
     "emoji": "🎓"
   },
   {
-    "occupation": "RETIRED",
-    "emoji": "🧢"
-  },
-  {
-    "occupation": "SELF_EMPLOYED",
-    "emoji": "😎"
-  },
-  {
-    "occupation": "RETAIL_WHOLESALE",
-    "emoji": "🛍"
-  },
-  {
     "occupation": "UNEMPLOYED",
     "emoji": "😜"
+  },
+  {
+    "occupation": "RETIRED",
+    "emoji": "🧢"
   }
 ]
