@@ -7,6 +7,7 @@ import android.app.Application
 import android.content.Intent
 import android.util.Log.DEBUG
 import android.util.Log.ERROR
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.android.ext.android.inject
@@ -130,6 +131,10 @@ class App : Application(), Configuration.Provider {
     }
 
     private fun setupCrashLoggingService() {
+        FirebaseCrashlytics
+            .getInstance()
+            .setCrashlyticsCollectionEnabled(CoreBuildConfig.CRASHLYTICS_ENABLED)
+
         crashLogger.apply {
             setUserId(userTokenProvider.publicKey)
             setCustomKey("crashlytics_enabled", CoreBuildConfig.CRASHLYTICS_ENABLED)

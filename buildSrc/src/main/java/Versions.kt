@@ -27,5 +27,5 @@ object Versions {
 
     const val kotlinVersion = "1.8.10"
     const val kotlinGradlePluginVersion = "1.8.10"
-    const val buildGradleVersion = "7.3.1"
+    const val buildGradleVersion = "8.0.2"
 }

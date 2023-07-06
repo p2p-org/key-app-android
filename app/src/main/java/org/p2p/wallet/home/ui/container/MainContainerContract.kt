@@ -9,6 +9,7 @@ import org.p2p.wallet.deeplinks.DeeplinkData
 interface MainContainerContract {
 
     interface View : MvpView {
+        fun setMainNavigationConfiguration(screensConfiguration: List<ScreenConfiguration>)
         fun inflateBottomNavigationMenu(@MenuRes menuRes: Int)
         fun showConnectionError(isVisible: Boolean)
         fun showSettingsBadgeVisible(isVisible: Boolean)
@@ -16,6 +17,7 @@ interface MainContainerContract {
     }
 
     interface Presenter : MvpPresenter<View> {
+        fun loadMainNavigation()
         fun loadBottomNavigationMenu()
         fun launchInternetObserver(coroutineScope: CoroutineScope)
         fun initializeDeeplinks()

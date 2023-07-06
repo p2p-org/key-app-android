@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
+import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -12,9 +13,15 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeature
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
+import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.interactor.RefreshErrorInteractor
+import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 
 class MainContainerPresenter(
@@ -32,6 +39,31 @@ class MainContainerPresenter(
     override fun attach(view: MainContainerContract.View) {
         super.attach(view)
         observeRefreshEvent()
+    }
+
+    override fun loadMainNavigation() {
+        view?.setMainNavigationConfiguration(getScreenConfiguration())
+    }
+
+    private fun getScreenConfiguration(): List<ScreenConfiguration> = buildList {
+        add(ScreenConfiguration(ScreenTab.HOME_SCREEN, HomeFragment::class))
+        when {
+            sellEnabledFeatureToggle.isFeatureEnabled -> add(
+                ScreenConfiguration(
+                    ScreenTab.SWAP_SCREEN,
+                    JupiterSwapFragment::class,
+                    JupiterSwapFragment.createArgs(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
+                )
+            )
+            solendFeatureToggle.isFeatureEnabled -> add(
+                ScreenConfiguration(
+                    ScreenTab.EARN_SCREEN,
+                    StubSolendEarnFragment::class
+                )
+            )
+        }
+        add(ScreenConfiguration(ScreenTab.HISTORY_SCREEN, HistoryFragment::class))
+        add(ScreenConfiguration(ScreenTab.SETTINGS_SCREEN, SettingsFragment::class))
     }
 
     override fun loadBottomNavigationMenu() {
