@@ -17,6 +17,7 @@ import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
 import org.p2p.core.utils.launchRestartable
 import org.p2p.uikit.components.ScreenTab
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -24,7 +25,6 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentMainBinding
-import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
@@ -44,8 +44,7 @@ private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 class MainContainerFragment :
     BaseMvpFragment<MainContainerContract.View, MainContainerContract.Presenter>(R.layout.fragment_main),
     MainContainerContract.View,
-    MainTabsSwitcher,
-    CenterActionButtonClickSetter {
+    MainTabsSwitcher {
 
     override val presenter: MainContainerContract.Presenter by inject()
 
@@ -84,6 +83,15 @@ class MainContainerFragment :
                 triggerTokensUpdateIfNeeded()
                 navigate(tab)
                 return@setOnItemSelectedListener true
+            }
+            buttonCenterAction.setOnClickListener {
+                lifecycleScope.launch {
+                    generalAnalytics.logActionButtonClicked(
+                        lastScreenName = analyticsInteractor.getCurrentScreenName(),
+                        isSellEnabled = sellInteractor.isSellAvailable()
+                    )
+                }
+                navigate(ScreenTab.SEND_SCREEN)
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -192,37 +200,50 @@ class MainContainerFragment :
     }
 
     override fun navigate(clickedTab: ScreenTab) {
-        if (clickedTab == ScreenTab.FEEDBACK_SCREEN) {
-            IntercomService.showMessenger()
-            analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
-            with(binding.bottomNavigation) {
-                post { // not working reselection on last item without post
-                    setChecked(lastSelectedItemId)
+        when (clickedTab) {
+            ScreenTab.FEEDBACK_SCREEN -> {
+                IntercomService.showMessenger()
+                analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
+                resetOnLastBottomNavigationItem()
+                return
+            }
+            ScreenTab.SEND_SCREEN -> {
+                toast("Will be implemented after token will be on upper level!")
+                resetOnLastBottomNavigationItem()
+                return
+            }
+            else -> {
+                when (clickedTab) {
+                    ScreenTab.HOME_SCREEN -> presenter.logHomeOpened()
+                    ScreenTab.EARN_SCREEN -> presenter.logEarnOpened()
+                    ScreenTab.HISTORY_SCREEN -> presenter.logHistoryOpened()
+                    ScreenTab.SWAP_SCREEN -> presenter.logSwapOpened()
+                    ScreenTab.SETTINGS_SCREEN -> presenter.logSettingsOpened()
+                    else -> Unit
+                }
+
+                if (clickedTab == ScreenTab.SWAP_SCREEN) {
+                    presenter.logSwapOpened()
+                }
+
+                val itemId = clickedTab.itemId
+
+                binding.viewPagerMainFragment.setCurrentItem(fragmentPositionByItemId(itemId), false)
+
+                if (binding.bottomNavigation.getSelectedItemId() != itemId) {
+                    binding.bottomNavigation.setChecked(itemId)
+                } else {
+                    checkAndDismissLastBottomSheet()
                 }
             }
-            return
         }
-        when (clickedTab) {
-            ScreenTab.HOME_SCREEN -> presenter.logHomeOpened()
-            ScreenTab.EARN_SCREEN -> presenter.logEarnOpened()
-            ScreenTab.HISTORY_SCREEN -> presenter.logHistoryOpened()
-            ScreenTab.SWAP_SCREEN -> presenter.logSwapOpened()
-            ScreenTab.SETTINGS_SCREEN -> presenter.logSettingsOpened()
-            else -> Unit
-        }
+    }
 
-        if (clickedTab == ScreenTab.SWAP_SCREEN) {
-            presenter.logSwapOpened()
-        }
-
-        val itemId = clickedTab.itemId
-
-        binding.viewPagerMainFragment.setCurrentItem(fragmentPositionByItemId(itemId), false)
-
-        if (binding.bottomNavigation.getSelectedItemId() != itemId) {
-            binding.bottomNavigation.setChecked(itemId)
-        } else {
-            checkAndDismissLastBottomSheet()
+    private fun resetOnLastBottomNavigationItem() {
+        with(binding.bottomNavigation) {
+            post { // not working reselection on last item without post
+                setChecked(lastSelectedItemId)
+            }
         }
     }
 
@@ -259,18 +280,6 @@ class MainContainerFragment :
         binding.bottomNavigation.menu.clear()
         binding.bottomNavigation.inflateMenu(menuRes)
         binding.bottomNavigation.menu.findItem(R.id.feedbackItem)?.isCheckable = false
-    }
-
-    override fun setOnCenterActionButtonListener(block: () -> Unit) {
-        binding.buttonCenterAction.setOnClickListener {
-            lifecycleScope.launch {
-                generalAnalytics.logActionButtonClicked(
-                    lastScreenName = analyticsInteractor.getCurrentScreenName(),
-                    isSellEnabled = sellInteractor.isSellAvailable()
-                )
-            }
-            block.invoke()
-        }
     }
 
     // TODO: this is a dirty hack on how to trigger data update

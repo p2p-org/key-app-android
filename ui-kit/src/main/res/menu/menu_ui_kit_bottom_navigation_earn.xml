@@ -11,7 +11,7 @@
         android:title="@string/common_earn" />
     <item
         android:id="@+id/sendItem"
-        android:title="" />
+        android:title="@string/common_send" />
     <item
         android:id="@+id/historyItem"
         android:icon="@drawable/ic_main_history"

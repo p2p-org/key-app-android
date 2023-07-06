@@ -11,7 +11,7 @@
         android:title="@string/common_history" />
     <item
         android:id="@+id/sendItem"
-        android:title="" />
+        android:title="@string/common_send" />
     <item
         android:id="@+id/feedbackItem"
         android:icon="@drawable/ic_main_feedback"
