@@ -17,8 +17,11 @@ class StrigaUserStatusDestinationMapper {
             userStatus?.isMobileVerified == false -> {
                 StrigaUserStatusDestination.SMS_VERIFICATION
             }
-            userStatus?.isKycInProgress == true -> {
+            userStatus?.isKycOpenable == true -> {
                 StrigaUserStatusDestination.SUM_SUB_VERIFICATION
+            }
+            userStatus?.isKycPending == true -> {
+                StrigaUserStatusDestination.KYC_PENDING
             }
             userStatus?.kycStatus == StrigaUserVerificationStatus.APPROVED -> {
                 StrigaUserStatusDestination.IBAN_ACCOUNT
