@@ -143,7 +143,7 @@ dependencies {
     Dependencies.appsFlyerLibraries.forEach { implementation(it) }
 
     // Striga SDK https://developers.sumsub.com/msdk/android/changelog.html
-    implementation(Dependencies.strigaSdk)
+//    implementation(Dependencies.strigaSdk)
 
     // Utils
     implementation(Dependencies.libphonenumber)

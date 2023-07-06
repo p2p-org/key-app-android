@@ -142,7 +142,7 @@ class HomePresenter(
         } else {
             Timber.w("ETH is not initialized, no seed phrase or disabled")
         }
-        launch {
+        launchSupervisor {
             awaitAll(
                 async { networkObserver.start() },
                 async { homeInteractor.loadInitialAppData() }

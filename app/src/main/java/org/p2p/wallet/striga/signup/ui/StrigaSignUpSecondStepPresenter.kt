@@ -1,12 +1,10 @@
 package org.p2p.wallet.striga.signup.ui
 
-import com.sumsub.sns.core.data.model.SNSSDKState
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
-import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.striga.model.StrigaDataLayerError
@@ -173,12 +171,12 @@ class StrigaSignUpSecondStepPresenter(
     }
 
     private fun logAlarmError(e: Throwable) {
-        val error = StrigaAlarmError(
-            source = "other",
-            kycSdkState = SNSSDKState.Initial.toString(),
-            error = e
-        )
-        alarmErrorsLogger.triggerStrigaAlarm(error)
+//        val error = StrigaAlarmError(
+//            source = "other",
+//            kycSdkState = SNSSDKState.Initial.toString(),
+//            error = e
+//        )
+//        alarmErrorsLogger.triggerStrigaAlarm(error)
     }
 
     private fun mapDataForStorage() {

@@ -10,6 +10,7 @@ import com.google.gson.stream.JsonWriter
 import java.lang.reflect.Type
 import java.math.BigInteger
 import java.util.Optional
+import org.p2p.core.model.DefaultBlockParameter
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
@@ -164,6 +165,23 @@ internal class HexStringTypeAdapter : TypeAdapter<HexString?>() {
         }
     }
 }
+
+internal class DefaultBlockParameterTypeAdapter : TypeAdapter<DefaultBlockParameter?>() {
+    override fun write(writer: JsonWriter, value: DefaultBlockParameter?) {
+        value?.let {
+            writer.value(value.raw)
+        } ?: writer.nullValue()
+    }
+
+    override fun read(reader: JsonReader): DefaultBlockParameter? {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull()
+            return null
+        }
+        return DefaultBlockParameter.fromRaw(reader.nextString())
+    }
+}
+
 
 
 internal class OptionalTypeAdapter<T>(
