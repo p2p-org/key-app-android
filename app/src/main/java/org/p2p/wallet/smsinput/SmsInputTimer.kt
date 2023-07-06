@@ -15,14 +15,14 @@ import org.p2p.core.common.di.AppScope
 class SmsInputTimer(
     private val appScope: AppScope
 ) {
-    private var smsTimerStartSeconds = listOf(30, 40, 60, 90, 120)
+    private var smsTimerStartSeconds = listOf(30, 40, 60, 90, 120, 120)
 
     var smsResendCount = 0
         private set
 
     val isTimerActive: Boolean get() = timerJob?.isActive == true
 
-    private val currentTimer = smsTimerStartSeconds.getOrElse(smsResendCount) { smsTimerStartSeconds.first() }
+    private val currentTimer: Int get() = smsTimerStartSeconds[smsResendCount % smsTimerStartSeconds.size]
     private var timerJob: Job? = null
     private val sharedTimer = MutableSharedFlow<Int>(
         replay = 1,

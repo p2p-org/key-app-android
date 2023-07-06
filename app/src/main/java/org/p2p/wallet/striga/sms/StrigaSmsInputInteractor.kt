@@ -20,6 +20,26 @@ import org.p2p.wallet.utils.DateTimeUtils
 private val EXCEEDED_VERIFICATION_ATTEMPTS_TIMEOUT_MILLIS = 1.days.inWholeMilliseconds
 private val EXCEEDED_RESEND_ATTEMPTS_TIMEOUT_MILLIS = 1.days.inWholeMilliseconds
 
+private const val SMS_RESEND_MOCK_LIMIT = 6
+
+private val SMS_ERROR_RESEND_EXCEEDED: StrigaDataLayerResult.Failure<Unit> =
+    StrigaDataLayerError.ApiServiceError(
+        response = StrigaApiErrorResponse(
+            httpStatus = 400,
+            internalErrorCode = StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT,
+            details = "EXCEEDED_DAILY_RESEND_SMS_LIMIT"
+        )
+    ).toFailureResult()
+
+private val SMS_ERROR_VERIFICATIONS_EXCEEDED: StrigaDataLayerResult.Failure<Unit> =
+    StrigaDataLayerError.ApiServiceError(
+        response = StrigaApiErrorResponse(
+            httpStatus = 400,
+            internalErrorCode = StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS,
+            details = "EXCEEDED_VERIFICATION_ATTEMPTS"
+        )
+    ).toFailureResult()
+
 class StrigaSmsInputInteractor(
     private val strigaSignupDataRepository: StrigaSignupDataLocalRepository,
     private val phoneCodeRepository: CountryCodeRepository,
@@ -33,11 +53,6 @@ class StrigaSmsInputInteractor(
 
     fun launchInitialTimer() {
         smsInputTimer.startSmsInputTimerFlow()
-        // The reset function is called to initiate the default 30-second timer.
-        // This is necessary in scenarios where the 'resend-sms' method hasn't been called yet,
-        // but the user has just already been created.
-        // And then we need to display the same 30-second timer again after the first call of 'resend-sms'.
-        smsInputTimer.resetSmsCount()
     }
 
     suspend fun getUserPhoneCodeToPhoneNumber(): PhoneNumberWithCode {
@@ -68,31 +83,22 @@ class StrigaSmsInputInteractor(
     fun getExceededLimitsErrorIfPresent(): StrigaDataLayerResult.Failure<Unit>? {
         return when {
             // avoid api call to show error immediately
-            isExceededVerificationAttempts() -> {
-                StrigaDataLayerError.ApiServiceError(
-                    response = StrigaApiErrorResponse(
-                        httpStatus = 400,
-                        internalErrorCode = StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS,
-                        details = "EXCEEDED_VERIFICATION_ATTEMPTS"
-                    )
-                ).toFailureResult()
-            }
-            isExceededResendAttempts() -> {
-                StrigaDataLayerError.ApiServiceError(
-                    response = StrigaApiErrorResponse(
-                        httpStatus = 400,
-                        internalErrorCode = StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT,
-                        details = "EXCEEDED_DAILY_RESEND_SMS_LIMIT"
-                    )
-                ).toFailureResult()
-            }
-            else -> {
-                null
-            }
+            isExceededVerificationAttempts() -> SMS_ERROR_VERIFICATIONS_EXCEEDED
+            isExceededResendAttempts() -> SMS_ERROR_RESEND_EXCEEDED
+            else -> null
         }
     }
 
     suspend fun resendSms(): StrigaDataLayerResult<Unit> {
+        if (inAppFeatureFlags.strigaSmsVerificationMockFlag.featureValue) {
+            smsInputTimer.startSmsInputTimerFlow()
+            return if (smsInputTimer.smsResendCount > SMS_RESEND_MOCK_LIMIT) {
+                SMS_ERROR_RESEND_EXCEEDED
+            } else {
+                StrigaDataLayerResult.Success(Unit)
+            }
+        }
+
         return getExceededLimitsErrorIfPresent() ?: smsApiCaller.resendSms()
             .onTypedFailure<StrigaDataLayerError.ApiServiceError> {
                 when (it.errorCode) {
@@ -136,22 +142,10 @@ class StrigaSmsInputInteractor(
         return when (smsCode) {
             "123456" -> StrigaDataLayerResult.Success(Unit)
             "000000" -> {
-                StrigaDataLayerError.ApiServiceError(
-                    response = StrigaApiErrorResponse(
-                        httpStatus = 400,
-                        internalErrorCode = StrigaApiErrorCode.EXCEEDED_VERIFICATION_ATTEMPTS,
-                        details = "EXCEEDED_VERIFICATION_ATTEMPTS"
-                    )
-                ).toFailureResult()
+                SMS_ERROR_VERIFICATIONS_EXCEEDED
             }
             "000001" -> {
-                StrigaDataLayerError.ApiServiceError(
-                    response = StrigaApiErrorResponse(
-                        httpStatus = 400,
-                        internalErrorCode = StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT,
-                        details = "EXCEEDED_DAILY_RESEND_SMS_LIMIT"
-                    )
-                ).toFailureResult()
+                SMS_ERROR_RESEND_EXCEEDED
             }
             "000002" -> {
                 StrigaDataLayerError.InternalError(
