@@ -209,7 +209,7 @@ object AuthModule {
         factory { (timerLeftTime: Long) ->
             OnboardingGeneralErrorTimerPresenter(
                 timerLeftTime = timerLeftTime,
-                smsInputTimer = get(named(SMS_TIMER_ONBOARDING)),
+                smsInputTimer = get(named(SMS_QUALIFIER)),
                 fileInteractor = get()
             )
         } bind OnboardingGeneralErrorTimerContract.Presenter::class
