@@ -1,5 +1,4 @@
 apply {
-    from("${project.rootDir}/.scripts/dependencies.gradle")
     from("${project.rootDir}/.scripts/changelog.gradle")
 }
 

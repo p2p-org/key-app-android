@@ -5,18 +5,20 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.core.token.Token
 import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.token.Token
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
+import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.ui.NewSendContract
 import org.p2p.wallet.newsend.ui.NewSendPresenter
+import org.p2p.wallet.newsend.ui.SendOpenedFrom
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
@@ -55,9 +57,10 @@ object SendModule : InjectionModule {
                 selectableTokens = selectableTokens
             )
         } bind NewSelectTokenContract.Presenter::class
-        factory {
+        factory { (recipient: SearchResult, openedFrom: SendOpenedFrom) ->
             NewSendPresenter(
-                recipientAddress = get(),
+                recipientAddress = recipient,
+                openedFrom = openedFrom,
                 userInteractor = get(),
                 sendInteractor = get(),
                 resources = get(),
