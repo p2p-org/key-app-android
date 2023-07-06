@@ -434,7 +434,7 @@ class NewSendPresenter(
     override fun send() {
         val token = requireToken()
 
-        val address = recipientAddress.address
+        val address = recipientAddress.addressState.address
         val currentAmount = calculationMode.getCurrentAmount()
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
         val lamports = calculationMode.getCurrentAmountLamports()
@@ -483,7 +483,7 @@ class NewSendPresenter(
 
     private fun SearchResult.nicknameOrAddress(): String {
         return if (this is SearchResult.UsernameFound) formattedUsername
-        else address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
+        else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
     /**
@@ -528,7 +528,7 @@ class NewSendPresenter(
             type = RpcHistoryTransactionType.SEND,
             senderAddress = tokenKeyProvider.publicKey,
             amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
-            destination = recipientAddress.address,
+            destination = recipientAddress.addressState.address,
             counterPartyUsername = recipientAddress.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,

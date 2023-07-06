@@ -1,19 +1,19 @@
 package org.p2p.wallet.auth.interactor
 
-sealed class MetadataFailed(
+sealed class GetOnboardingMetadataFailed(
     override val message: String,
     override val cause: Throwable? = null
 ) : Throwable() {
-    class OnboardingMetadataRequestFailure(cause: Throwable) : MetadataFailed(
+    class OnboardingMetadataRequestFailure(cause: Throwable) : GetOnboardingMetadataFailed(
         message = "Get onboarding metadata failed to load",
         cause = cause
     )
 
-    class MetadataNoAccount : MetadataFailed(
+    class GetOnboardingMetadataNoAccount : GetOnboardingMetadataFailed(
         message = "!!! Account not found for such request !!!"
     )
 
-    class MetadataNoSeedPhrase : MetadataFailed(
+    class GetOnboardingMetadataNoSeedPhrase : GetOnboardingMetadataFailed(
         message = "User has no seed phrase, trouble of the old versions of the app"
     )
 }

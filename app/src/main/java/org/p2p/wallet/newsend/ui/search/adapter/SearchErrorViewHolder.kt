@@ -23,7 +23,7 @@ class SearchErrorViewHolder(
 
     fun onBind(item: SearchResult) {
         with(binding) {
-            textViewAddress.text = item.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
+            textViewAddress.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
 
             when (item) {
                 is SearchResult.OwnAddressError -> {

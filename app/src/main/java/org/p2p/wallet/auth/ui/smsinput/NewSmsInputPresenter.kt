@@ -1,7 +1,5 @@
-package org.p2p.wallet.smsinput.onboarding
+package org.p2p.wallet.auth.ui.smsinput
 
-import timber.log.Timber
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
@@ -17,12 +15,13 @@ import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.smsinput.SmsInputContract
-import org.p2p.wallet.smsinput.SmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.utils.removeWhiteSpaces
+import timber.log.Timber
+import kotlinx.coroutines.launch
 
-class OnboardingSmsInputPresenter(
+class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
@@ -30,9 +29,9 @@ class OnboardingSmsInputPresenter(
     private val restoreWalletAnalytics: RestoreWalletAnalytics,
     private val restoreUserResultHandler: RestoreUserResultHandler,
     private val gatewayServiceErrorHandler: GatewayServiceErrorHandler
-) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
+) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
 
-    override fun attach(view: SmsInputContract.View) {
+    override fun attach(view: NewSmsInputContract.View) {
         super.attach(view)
         // Determine which flow of onboard is active
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
@@ -122,7 +121,7 @@ class OnboardingSmsInputPresenter(
             createWalletInteractor.finishCreatingWallet(smsCode)
             createWalletAnalytics.logSmsValidationResult(isSmsValid = true)
 
-            view?.navigateNext()
+            view?.navigateToPinCreate()
         } catch (gatewayError: PushServiceError) {
             createWalletAnalytics.logSmsValidationResult(isSmsValid = false)
             handleGatewayError(gatewayError)
@@ -165,7 +164,7 @@ class OnboardingSmsInputPresenter(
             }
             is RestoreSuccessState -> {
                 restoreWalletInteractor.finishAuthFlow()
-                view?.navigateNext()
+                view?.navigateToPinCreate()
             }
             is RestoreFailureState.LogError -> {
                 Timber.i("LogError for ${result::class.simpleName}")

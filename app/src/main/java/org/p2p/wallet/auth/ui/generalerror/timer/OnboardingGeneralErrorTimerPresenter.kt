@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.FileInteractor
-import org.p2p.wallet.smsinput.SmsInputTimer
+import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 import org.p2p.wallet.common.mvp.BasePresenter
 import java.text.SimpleDateFormat
 import java.util.Date

@@ -6,7 +6,9 @@ import androidx.transition.TransitionManager
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import java.text.SimpleDateFormat
@@ -38,7 +40,7 @@ private const val TIME_FORMAT = "HH:mm"
 
 private const val SLIPPAGE_NEEDED_FOR_MANUAL_CHANGE: Double = 0.1
 
-class JupiterTransactionProgressBottomSheet : BaseBottomSheet(R.layout.dialog_jupiter_swap_transaction_progress) {
+class JupiterTransactionProgressBottomSheet : BaseBottomSheet() {
     companion object {
         fun show(
             fm: FragmentManager,
@@ -83,6 +85,9 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet(R.layout.dialog_ju
         super.onAttach(context)
         parentListener = parentFragment as? JupiterTransactionBottomSheetDismissListener
     }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_jupiter_swap_transaction_progress, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
