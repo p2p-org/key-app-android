@@ -10,8 +10,9 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
-import org.p2p.wallet.home.events.HomeScreenTokensLoader
+import org.p2p.wallet.home.events.HomeScreenStateLoader
 import org.p2p.wallet.home.repository.HomeScreenLocalRepository
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -35,7 +36,8 @@ class HomeInteractor(
     private val strigaClaimInteractor: StrigaClaimInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
     private val userTokensInteractor: UserTokensInteractor,
-    private val homeScreenLocalRepository: HomeScreenLocalRepository
+    private val homeScreenLocalRepository: HomeScreenLocalRepository,
+    private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     suspend fun loadStrigaFiatAccountDetails(): Result<StrigaFiatAccountDetails> {
@@ -96,11 +98,11 @@ class HomeInteractor(
         userTokensInteractor.loadUserRates(tokens)
     }
 
-    suspend fun updateUserTokensState(newTokensState: HomeScreenTokensLoader.UserTokensState) {
+    suspend fun updateHomeScreenState(newTokensState: HomeScreenStateLoader.HomeScreenState) {
         homeScreenLocalRepository.setUserTokensState(newTokensState)
     }
 
-    fun observeUserTokensState(): SharedFlow<HomeScreenTokensLoader.UserTokensState> =
+    fun observeHomeScreenState(): SharedFlow<HomeScreenStateLoader.HomeScreenState> =
         homeScreenLocalRepository.getUserTokensStateFlow()
 
     suspend fun updateRefreshState(isRefreshing: Boolean) {
@@ -125,5 +127,25 @@ class HomeInteractor(
 
     suspend fun updateStrigaKycBanner(banner: StrigaKycStatusBanner) {
         homeScreenLocalRepository.setStrigaUserStatusBanner(banner)
+    }
+
+    suspend fun updateUsername(username: String) {
+        homeScreenLocalRepository.setUsername(username)
+    }
+
+    fun observeUsername(): SharedFlow<String> {
+        return homeScreenLocalRepository.getUsernameFlow()
+    }
+
+    suspend fun getUsernameOrPublicAddress(): String {
+        return tokenKeyProvider.publicKey
+    }
+
+    suspend fun updateUserBalance(userBalance: BigDecimal?) {
+        homeScreenLocalRepository.setUserBalance(userBalance)
+    }
+
+    fun observeUserBalance(): SharedFlow<BigDecimal?> {
+        return homeScreenLocalRepository.observeUserBalance()
     }
 }

@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.events
 
+import timber.log.Timber
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
@@ -22,10 +23,9 @@ class StrigaBannersLoader(
             strigaUserInteractor.getUserStatusBannerFlow()
                 .filterNotNull()
                 .collect {
+                    Timber.tag("______").d("7")
                     homeInteractor.updateStrigaKycBanner(it)
                 }
         }
     }
-
-    override suspend fun onRefresh(): Unit = Unit
 }

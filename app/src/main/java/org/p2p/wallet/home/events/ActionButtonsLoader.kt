@@ -1,6 +1,5 @@
 package org.p2p.wallet.home.events
 
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
@@ -10,7 +9,6 @@ class ActionButtonsLoader(
     private val homeInteractor: HomeInteractor,
     private val sellEnabledFeatureToggle: EthAddressEnabledFeatureToggle
 ) : HomeScreenLoader {
-
 
     override suspend fun onLoad() {
         val isRefreshing = homeInteractor.observeRefreshState().firstOrNull() ?: false
@@ -36,5 +34,7 @@ class ActionButtonsLoader(
         homeInteractor.updateHomeActionButtons(buttons)
     }
 
-    override suspend fun onRefresh(): Unit = Unit
+    override suspend fun onRefresh() {
+        onLoad()
+    }
 }

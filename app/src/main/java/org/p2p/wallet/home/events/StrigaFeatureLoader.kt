@@ -23,8 +23,6 @@ class StrigaFeatureLoader(
         }
     }
 
-    override suspend fun onRefresh(): Unit = Unit
-
     suspend fun loadStrigaFiatAccountDetails(): Result<StrigaFiatAccountDetails> {
         return strigaWalletInteractor.loadFiatAccountAndUserWallet()
     }

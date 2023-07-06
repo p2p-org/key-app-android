@@ -12,6 +12,8 @@ import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.home.repository.HomeScreenInMemoryRepository
+import org.p2p.wallet.home.repository.HomeScreenLocalRepository
 import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.container.MainContainerContract
@@ -19,7 +21,6 @@ import org.p2p.wallet.home.ui.container.MainContainerPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.HomePresenter
-import org.p2p.wallet.home.ui.main.UserTokensPolling
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsContract
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
@@ -79,21 +80,19 @@ object HomeModule : InjectionModule {
             SelectTokenPresenter(tokens)
         }
         // Cached data exists, therefore creating singleton
-        singleOf(::UserTokensPolling)
         factory {
             HomeInteractor(
                 userInteractor = get(),
                 settingsInteractor = get(),
                 usernameInteractor = get(),
                 sellInteractor = get(),
-                metadataInteractor = get(),
                 ethereumInteractor = get(),
                 strigaUserInteractor = get(),
-                strigaSignupInteractor = get(),
                 strigaClaimInteractor = get(),
                 strigaWalletInteractor = get(),
-                strigaSignupEnabledFeatureToggle = get(),
-                userTokensInteractor = get()
+                userTokensInteractor = get(),
+                homeScreenLocalRepository = get(),
+                tokenKeyProvider = get()
             )
         }
         factoryOf(::HomePresenterMapper)
@@ -108,24 +107,15 @@ object HomeModule : InjectionModule {
             HomePresenter(
                 homeInteractor = get(),
                 analytics = get(),
-                updatesManager = get(),
                 userInteractor = get(),
                 homeMapper = get(),
-                environmentManager = get(),
-                tokenKeyProvider = get(),
                 newBuyFeatureToggle = get(),
-                networkObserver = get(),
-                tokensPolling = get(),
-                sellEnabledFeatureToggle = get(),
                 intercomDeeplinkManager = get(),
-                seedPhraseProvider = get(),
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
-                updateSubscribers = subscribers,
-                bridgeFeatureToggle = get(),
-                context = get(),
-                strigaFeatureToggle = get()
+                homeScreenLoaders = get(),
+                context = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
@@ -159,5 +149,6 @@ object HomeModule : InjectionModule {
 
         factoryOf(::HomeActionsPresenter) bind HomeActionsContract.Presenter::class
         factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
+        singleOf(::HomeScreenInMemoryRepository) bind HomeScreenLocalRepository::class
     }
 }

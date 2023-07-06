@@ -25,6 +25,7 @@ import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.token.service.TokenServiceModule
+import org.p2p.wallet.home.events.HomeEventsModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
@@ -106,6 +107,7 @@ object AppModule {
                 CrashLoggerModule.create(),
                 NetworkCoreModule.create(),
                 TokenServiceModule.create(),
+                HomeEventsModule.create()
             ) + EthereumKitService.getEthereumKitModules()
         )
     }
