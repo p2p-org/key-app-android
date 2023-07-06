@@ -11,7 +11,6 @@ class ActionButtonsLoader(
     private val sellEnabledFeatureToggle: EthAddressEnabledFeatureToggle
 ) : HomeScreenLoader {
 
-    private val buttonsStateFlow = MutableStateFlow<List<ActionButton>>(emptyList())
 
     override suspend fun onLoad() {
         val isRefreshing = homeInteractor.observeRefreshState().firstOrNull() ?: false
@@ -34,8 +33,7 @@ class ActionButtonsLoader(
         if (!isSellFeatureToggleEnabled) {
             buttons += ActionButton.SWAP_BUTTON
         }
-
-        buttonsStateFlow.emit(buttons)
+        homeInteractor.updateHomeActionButtons(buttons)
     }
 
     override suspend fun onRefresh(): Unit = Unit
