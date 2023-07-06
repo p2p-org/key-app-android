@@ -27,14 +27,11 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
-import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
-import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
-import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
@@ -56,7 +53,6 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
-import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputFragment
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -64,7 +60,6 @@ import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
-import org.p2p.wallet.utils.getSerializableCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.unsafeLazy
@@ -73,9 +68,6 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
-
-private const val KEY_RESULT_ACTION = "KEY_RESULT_ACTION"
-private const val KEY_REQUEST_ACTION = "KEY_REQUEST_ACTION"
 
 private const val KEY_RESULT_TOKEN_INFO = "KEY_RESULT_TOKEN_INFO"
 private const val KEY_REQUEST_TOKEN_INFO = "KEY_REQUEST_TOKEN_INFO"
@@ -128,22 +120,6 @@ class HomeFragment :
 
         childFragmentManager.setFragmentResultListener(
             KEY_REQUEST_TOKEN,
-            viewLifecycleOwner,
-            ::onFragmentResult
-        )
-
-        val centerActionSetter = parentFragment as? CenterActionButtonClickSetter
-
-        centerActionSetter?.setOnCenterActionButtonListener {
-            HomeActionsBottomSheet.show(
-                fm = childFragmentManager,
-                requestKey = KEY_REQUEST_ACTION,
-                resultKey = KEY_RESULT_ACTION
-            )
-        }
-
-        childFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_ACTION,
             viewLifecycleOwner,
             ::onFragmentResult
         )
@@ -271,30 +247,6 @@ class HomeFragment :
             KEY_REQUEST_TOKEN_INFO -> {
                 result.getParcelableCompat<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
             }
-            KEY_REQUEST_ACTION -> {
-                result.getSerializableCompat<HomeAction>(KEY_RESULT_ACTION)?.also(::openScreenByHomeAction)
-            }
-        }
-    }
-
-    private fun openScreenByHomeAction(action: HomeAction) {
-        when (action) {
-            HomeAction.SELL -> {
-                replaceFragment(SellPayloadFragment.create())
-            }
-            HomeAction.TOP_UP -> {
-                buyAnalytics.logTopupActionButtonClicked()
-                showTopup()
-            }
-            HomeAction.RECEIVE -> {
-                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
-            }
-            HomeAction.SWAP -> {
-                showSwap(SwapOpenedFrom.ACTION_PANEL)
-            }
-            HomeAction.SEND -> {
-                presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
-            }
         }
     }
 
@@ -330,7 +282,7 @@ class HomeFragment :
     }
 
     override fun showKycPendingDialog() {
-        StrigaKycPendingBottomSheet.show(parentFragmentManager)
+        strigaKycFragmentFactory.showPendingBottomSheet(parentFragmentManager)
     }
 
     override fun showTopupWalletDialog() {

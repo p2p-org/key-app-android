@@ -67,9 +67,16 @@ class TopUpWalletPresenter(
                 ensureNeededStrigaDataLoaded()
 
                 val strigaDestination = strigaUserInteractor.getUserDestination()
-                if (strigaDestination == StrigaUserStatusDestination.IBAN_ACCOUNT) {
-                    // prefetch account details for IBAN
-                    strigaWalletInteractor.getFiatAccountDetails()
+                when (strigaDestination) {
+                    StrigaUserStatusDestination.IBAN_ACCOUNT -> {
+                        // prefetch account details for IBAN
+                        strigaWalletInteractor.getFiatAccountDetails()
+                    }
+                    StrigaUserStatusDestination.KYC_PENDING -> {
+                        view?.navigateToKycPending()
+                        return@launch
+                    }
+                    else -> Unit
                 }
                 view?.navigateToBankTransferTarget(strigaDestination)
             } catch (strigaDataLoadFailed: Throwable) {

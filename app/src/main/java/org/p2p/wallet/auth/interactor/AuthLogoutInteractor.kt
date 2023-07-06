@@ -21,6 +21,7 @@ import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
+import org.p2p.wallet.striga.user.StrigaStorageContract
 import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletInMemoryRepository
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 
@@ -39,6 +40,7 @@ class AuthLogoutInteractor(
     private val transactionDetailsLocalRepository: TransactionDetailsLocalRepository,
     private val pushNotificationsInteractor: PushNotificationsInteractor,
     private val strigaWalletInMemoryRepository: StrigaWalletInMemoryRepository,
+    private val strigaStorage: StrigaStorageContract,
     private val appScope: AppScope,
     private val analytics: Analytics
 ) {
@@ -62,6 +64,7 @@ class AuthLogoutInteractor(
             transactionDetailsLocalRepository.deleteAll()
             jupiterSwapStorage.clear()
             strigaWalletInMemoryRepository.clear()
+            strigaStorage.clear()
             IntercomService.logout()
             RenVMService.stopService(context)
 
