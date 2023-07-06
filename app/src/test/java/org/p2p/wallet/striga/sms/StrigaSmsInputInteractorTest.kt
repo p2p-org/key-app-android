@@ -50,6 +50,7 @@ class StrigaSmsInputInteractorTest {
         override var smsExceededResendAttemptsMillis: MillisSinceEpoch = 0
         override fun hideBanner(banner: StrigaKycStatusBanner) = Unit
         override fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean = false
+        override fun clear() = Unit
     }
 
     @Before
