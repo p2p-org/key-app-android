@@ -27,7 +27,7 @@ class StrigaWalletRemoteRepository(
     private val timber: Timber.Tree = Timber.tag(TAG)
 
     private val usersFilterStartDate: MillisSinceEpoch = Calendar.getInstance().run {
-        set(2023, 6, 15)
+        set(2023, 5 /*month is zero based*/, 15)
         timeInMillis
     }
 
