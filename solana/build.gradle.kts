@@ -2,6 +2,10 @@ plugins {
     id("org.p2p.wallet.android.library")
 }
 
+android {
+    namespace = "org.p2p.solana"
+}
+
 dependencies {
     Dependencies.baseAndroidLibraries.forEach { implementation(it) }
 

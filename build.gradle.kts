@@ -13,7 +13,7 @@ buildscript {
 
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.buildGradleVersion}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinGradlePluginVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}")
         classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.6")
         classpath("com.google.gms:google-services:4.3.15")
     }

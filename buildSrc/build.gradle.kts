@@ -19,13 +19,13 @@ tasks.test {
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
 dependencies {
     implementation(gradleApi())
-    implementation("com.android.tools.build:gradle:7.3.1")
+    implementation("com.android.tools.build:gradle:8.0.2")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10")
-    implementation("com.google.firebase:firebase-appdistribution-gradle:3.2.0")
+    implementation("com.google.firebase:firebase-appdistribution-gradle:4.0.0")
 }

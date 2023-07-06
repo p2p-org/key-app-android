@@ -8,7 +8,7 @@ apply {
 }
 
 android {
-    buildFeatures.buildConfig = true
+    namespace = "org.p2p.core"
 }
 
 dependencies {
