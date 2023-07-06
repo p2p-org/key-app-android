@@ -29,16 +29,19 @@ import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WETH_COINGECKO_ID
 import org.p2p.core.utils.Constants.WETH_SYMBOL
+import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
@@ -98,6 +101,7 @@ class HomePresenter(
     // FT
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
+    private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     // analytics
     private val analytics: HomeAnalytics,
     seedPhraseProvider: SeedPhraseProvider,
@@ -203,7 +207,7 @@ class HomePresenter(
         tokensPolling.shareTokenPollFlowIn(this)
             .filterNotNull()
             .combine(homeInteractor.getUserStatusBannerFlow()) { homeState, strigaBanner ->
-                homeState to strigaBanner
+                homeState to strigaBanner.takeIf { strigaFeatureToggle.isFeatureEnabled }
             }
             .onCompletion { homeStateSubscribed = false }
             .collect { (homeState, strigaBanner) ->
@@ -320,7 +324,24 @@ class HomePresenter(
                 view?.showKycPendingDialog()
             }
             statusFromKycBanner != null -> {
-                view?.navigateToKycStatus(statusFromKycBanner)
+                launch {
+                    // hide banner if necessary
+                    homeInteractor.hideStrigaUserStatusBanner(statusFromKycBanner)
+
+                    if (statusFromKycBanner == StrigaKycStatusBanner.VERIFICATION_DONE) {
+                        state = state.copy(isStrigaKycBannerLoading = true)
+                        handleHomeStateChanged(state.tokens, state.ethTokens)
+
+                        homeInteractor.loadStrigaFiatAccountDetails()
+                            .onSuccess { view?.navigateToKycStatus(statusFromKycBanner) }
+                            .onFailure { view?.showUiKitSnackBar(messageResId = R.string.error_general_message) }
+
+                        state = state.copy(isStrigaKycBannerLoading = false)
+                        handleHomeStateChanged(state.tokens, state.ethTokens)
+                    } else {
+                        view?.navigateToKycStatus(statusFromKycBanner)
+                    }
+                }
             }
             else -> {
                 view?.showTopupWalletDialog()
@@ -328,7 +349,27 @@ class HomePresenter(
         }
     }
 
-    override fun onBannerCloseClicked(bannerTitleId: Int) = Unit
+    override fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim) {
+        launch {
+            try {
+                view?.showStrigaClaimProgress(isClaimInProgress = true, tokenMint = item.tokenMintAddress)
+                val challengeId = homeInteractor.claimStrigaToken(item.amountAvailable, item.strigaToken).unwrap()
+                view?.navigateToStrigaClaimOtp(
+                    item.amountAvailable.asUsd(),
+                    challengeId
+                )
+            } catch (e: Throwable) {
+                Timber.e(e, "Error on claiming striga token")
+                if (BuildConfig.DEBUG) {
+                    view?.showErrorMessage(IllegalStateException("Striga claiming is not supported yet", e))
+                } else {
+                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+                }
+            } finally {
+                view?.showStrigaClaimProgress(isClaimInProgress = false, tokenMint = item.tokenMintAddress)
+            }
+        }
+    }
 
     /**
      * Don't split this method, as it could lead to one more data race since rates are loading asynchronously
@@ -502,7 +543,7 @@ class HomePresenter(
                 .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
         val strigaBigBanner = state.strigaKycStatusBanner
-            ?.let(homeMapper::mapToBigBanner)
+            ?.let { homeMapper.mapToBigBanner(it, state.isStrigaKycBannerLoading) }
             ?: getDefaultBanner()
 
         val emptyDataList = buildList {
@@ -585,7 +626,8 @@ class HomePresenter(
             )
 
             analytics.logClaimAvailable(ethTokens = state.ethTokens)
-            val strigaBanner = state.strigaKycStatusBanner?.let(homeMapper::mapToHomeBanner)
+            val strigaBanner = state.strigaKycStatusBanner
+                ?.let { homeMapper.mapToHomeBanner(isLoading = state.isStrigaKycBannerLoading, it) }
             val homeToken = buildList {
                 if (strigaBanner != null) {
                     this += HomeElementItem.Banner(strigaBanner)

@@ -41,7 +41,30 @@ class StrigaSignUpSecondStepPresenter(
         }
     }
 
+    private suspend fun initialLoadSignupData() {
+        val data = interactor.getSignupDataSecondStep()
+        data.forEach { (type, value) ->
+            setCachedData(type, value.orEmpty())
+            view?.updateSignupField(type, value.orEmpty())
+        }
+
+        cachedSignupData[StrigaSignupDataType.OCCUPATION]?.value?.let {
+            onboardingInteractor.getOccupationByName(it)
+                ?.also(::onOccupationChanged)
+        }
+        cachedSignupData[StrigaSignupDataType.SOURCE_OF_FUNDS]?.value?.let {
+            onboardingInteractor.getSourcesOfFundsByName(it)
+                ?.also(::onSourceOfFundsChanged)
+        }
+        cachedSignupData[StrigaSignupDataType.COUNTRY_ALPHA_2]?.value?.let {
+            interactor.findCountryByIsoAlpha2(it)
+                ?.also(::onCountryChanged)
+        }
+    }
+
     override fun onFieldChanged(type: StrigaSignupDataType, newValue: String) {
+        Timber.i("field $type changed with new value of size: ${newValue.length}")
+
         val isPresetDataChanged = type in setOf(
             StrigaSignupDataType.COUNTRY_ALPHA_2,
             StrigaSignupDataType.OCCUPATION,
@@ -51,8 +74,10 @@ class StrigaSignUpSecondStepPresenter(
             setCachedData(type, newValue)
         }
 
+        Timber.i("isSubmittedFirstTime = $isSubmittedFirstTime")
         if (isSubmittedFirstTime) {
             val validationResult = interactor.validateField(type, newValue)
+            Timber.i("validation result for field $type = ${validationResult.isValid}")
             if (validationResult.isValid) {
                 view?.clearError(type)
             } else {
@@ -94,7 +119,7 @@ class StrigaSignUpSecondStepPresenter(
     private fun onOccupationChanged(newValue: StrigaOccupation) {
         selectedOccupation = newValue
         view?.updateSignupField(
-            newValue = strigaItemCellMapper.toUiTitle(newValue.occupationName),
+            newValue = strigaItemCellMapper.toUiTitleWithEmoji(newValue.emoji, newValue.occupationName),
             type = StrigaSignupDataType.OCCUPATION
         )
         setCachedData(StrigaSignupDataType.OCCUPATION, newValue.occupationName)
@@ -118,7 +143,7 @@ class StrigaSignUpSecondStepPresenter(
         val (isValid, states) = interactor.validateSecondStep(cachedSignupData)
 
         if (isValid) {
-            view?.setProgressIsVisible(true)
+            view?.setProgressIsVisible(isVisible = true)
             launch {
                 try {
                     mapDataForStorage()
@@ -129,15 +154,16 @@ class StrigaSignUpSecondStepPresenter(
                     view?.navigateToPhoneError()
                 } catch (e: Throwable) {
                     Timber.e(e, "Unable to create striga user")
-                    view?.setProgressIsVisible(false)
                     view?.showUiKitSnackBar(e.message, R.string.error_general_message)
                     logAlarmError(e)
+                } finally {
+                    view?.setProgressIsVisible(isVisible = false)
                 }
             }
         } else {
             view?.setErrors(states)
             // disable button is there are errors
-            view?.setButtonIsEnabled(false)
+            view?.setButtonIsEnabled(isEnabled = false)
             states.firstOrNull { !it.isValid }?.let {
                 view?.scrollToFirstError(it.type)
             }
@@ -172,27 +198,6 @@ class StrigaSignUpSecondStepPresenter(
     override fun saveChanges() {
         mapDataForStorage()
         interactor.saveChanges(cachedSignupData.values)
-    }
-
-    private suspend fun initialLoadSignupData() {
-        val data = interactor.getSignupDataSecondStep()
-        data.forEach { (type, value) ->
-            setCachedData(type, value.orEmpty())
-            view?.updateSignupField(type, value.orEmpty())
-        }
-
-        cachedSignupData[StrigaSignupDataType.OCCUPATION]?.value?.let {
-            onboardingInteractor.getOccupationByName(it)
-                ?.also(::onOccupationChanged)
-        }
-        cachedSignupData[StrigaSignupDataType.SOURCE_OF_FUNDS]?.value?.let {
-            onboardingInteractor.getSourcesOfFundsByName(it)
-                ?.also(::onSourceOfFundsChanged)
-        }
-        cachedSignupData[StrigaSignupDataType.COUNTRY_ALPHA_2]?.value?.let {
-            interactor.findCountryByIsoAlpha2(it)
-                ?.also(::onCountryChanged)
-        }
     }
 
     private fun setCachedData(type: StrigaSignupDataType, value: String) {

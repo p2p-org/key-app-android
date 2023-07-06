@@ -6,6 +6,8 @@ import org.p2p.wallet.striga.wallet.api.request.StrigaAddWhitelistedAddressReque
 import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaInitWithdrawalRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsResendRequest
+import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsVerifyRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnchainWithdrawalFeeRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
@@ -50,4 +52,15 @@ interface StrigaWalletApi {
     suspend fun getOnchainWithdrawalFees(
         @Body body: StrigaOnchainWithdrawalFeeRequest
     ): StrigaOnchainWithdrawalFeeResponse
+
+    // SMS
+    // next 2 api calls actually return some response, but i'm not sure if we need it
+    // read the doc:
+    // https://docs.striga.com/reference/confirm-transaction-with-otp
+    // https://docs.striga.com/reference/resend-otp-for-transaction
+    @POST("v1/wallets/transaction/resend-otp")
+    suspend fun withdrawalResendSms(@Body body: StrigaOnRampSmsResendRequest)
+
+    @POST("v1/wallets/transaction/confirm")
+    suspend fun withdrawalVerifySms(@Body body: StrigaOnRampSmsVerifyRequest)
 }

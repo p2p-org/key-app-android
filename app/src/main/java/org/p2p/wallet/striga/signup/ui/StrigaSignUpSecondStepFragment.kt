@@ -99,7 +99,7 @@ class StrigaSignUpSecondStepFragment :
     override fun navigateNext() {
         replaceFragment(
             SmsInputFactory.create(
-                type = SmsInputFactory.Type.Striga,
+                type = SmsInputFactory.Type.StrigaSignup,
                 destinationFragment = StrigaSignupFinishFragment::class.java,
             )
         )
@@ -136,10 +136,10 @@ class StrigaSignUpSecondStepFragment :
         }
     }
 
-    override fun setProgressIsVisible(visible: Boolean) {
+    override fun setProgressIsVisible(isVisible: Boolean) {
         with(binding.buttonNext) {
-            isClickable = !visible
-            setLoading(visible)
+            isClickable = !isVisible
+            setLoading(isVisible)
         }
     }
 

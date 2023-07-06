@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
@@ -56,13 +57,16 @@ import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
+import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputFragment
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.getSerializableCompat
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -314,6 +318,17 @@ class HomeFragment :
         }.also(::replaceFragment)
     }
 
+    override fun navigateToStrigaClaimOtp(usdAmount: String, challengeId: StrigaWithdrawalChallengeId) {
+        val fragment = strigaKycFragmentFactory.claimOtpFragment(
+            titleAmount = usdAmount,
+            challengeId = challengeId
+        )
+        replaceFragmentForResult(fragment, StrigaOnRampSmsInputFragment.REQUEST_KEY, onResult = { _, _ ->
+            Timber.d("Striga claim OTP: success")
+            // todo: show success claim bottomsheet
+        })
+    }
+
     override fun showKycPendingDialog() {
         StrigaKycPendingBottomSheet.show(parentFragmentManager)
     }
@@ -390,12 +405,19 @@ class HomeFragment :
         presenter.onBannerClicked(bannerTitleId)
     }
 
-    override fun onBannerCloseClicked(bannerTitleId: Int) {
-        presenter.onBannerClicked(bannerTitleId)
+    override fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim) {
+        presenter.onStrigaClaimTokenClicked(item)
     }
 
-    override fun onStrigaClaimTokenClicked(tokenMint: Base58String) {
-        // TODO: PWN-8900
+    override fun showStrigaClaimProgress(isClaimInProgress: Boolean, tokenMint: Base58String) {
+        contentAdapter.updateItem<HomeElementItem.StrigaClaim>(
+            itemFilter = { item ->
+                item is HomeElementItem.StrigaClaim && item.tokenMintAddress == tokenMint
+            },
+            transform = {
+                it.copy(isClaimInProcess = isClaimInProgress)
+            }
+        )
     }
 
     override fun onToggleClicked() {

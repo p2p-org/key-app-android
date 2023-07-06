@@ -14,6 +14,7 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
+import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 
 class TopUpWalletPresenter(
@@ -23,6 +24,7 @@ class TopUpWalletPresenter(
     private val seedPhraseProvider: SeedPhraseProvider,
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
+    private val strigaWalletInteractor: StrigaWalletInteractor,
     private val metadataInteractor: MetadataInteractor,
     private val inAppFeatureFlags: InAppFeatureFlags,
 ) : BasePresenter<TopUpWalletContract.View>(),
@@ -65,6 +67,10 @@ class TopUpWalletPresenter(
                 ensureNeededStrigaDataLoaded()
 
                 val strigaDestination = strigaUserInteractor.getUserDestination()
+                if (strigaDestination == StrigaUserStatusDestination.IBAN_ACCOUNT) {
+                    // prefetch account details for IBAN
+                    strigaWalletInteractor.getFiatAccountDetails()
+                }
                 view?.navigateToBankTransferTarget(strigaDestination)
             } catch (strigaDataLoadFailed: Throwable) {
                 Timber.e(strigaDataLoadFailed, "failed to load needed data for bank transfer")

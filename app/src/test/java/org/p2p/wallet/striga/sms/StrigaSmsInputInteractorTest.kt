@@ -1,4 +1,4 @@
-package org.p2p.wallet.smsinput.striga
+package org.p2p.wallet.striga.sms
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -13,8 +13,10 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.utils.MillisSinceEpoch
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError
@@ -44,8 +46,10 @@ class StrigaSmsInputInteractorTest {
 
     private val strigaStorage: StrigaStorageContract = object : StrigaStorageContract {
         override var userStatus: StrigaUserStatusDetails? = null
-        override var smsExceededVerificationAttemptsMillis: Long = 0
-        override var smsExceededResendAttemptsMillis: Long = 0
+        override var smsExceededVerificationAttemptsMillis: MillisSinceEpoch = 0
+        override var smsExceededResendAttemptsMillis: MillisSinceEpoch = 0
+        override fun hideBanner(banner: StrigaKycStatusBanner) = Unit
+        override fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean = false
     }
 
     @Before
@@ -77,9 +81,11 @@ class StrigaSmsInputInteractorTest {
                 details = "EXCEEDED_DAILY_RESEND_SMS_LIMIT"
             )
         ).toFailureResult()
-        coEvery { strigaUserRepository.resendSmsForVerifyPhoneNumber() } returns expectedResult
 
-        val interactor = createInteractor()
+        val apiCaller: StrigaSmsApiCaller = mockk {
+            coEvery { resendSms() } returns expectedResult
+        }
+        val interactor = createInteractor(apiCaller)
         val firstResult = interactor.resendSms()
         val secondResult = interactor.resendSms()
 
@@ -99,7 +105,7 @@ class StrigaSmsInputInteractorTest {
         assertEquals(0, strigaStorage.smsExceededVerificationAttemptsMillis)
         assertTrue(strigaStorage.smsExceededResendAttemptsMillis != 0L)
 
-        coVerify(exactly = 1) { strigaUserRepository.resendSmsForVerifyPhoneNumber() }
+        coVerify(exactly = 1) { apiCaller.resendSms() }
     }
 
     @Test
@@ -111,9 +117,12 @@ class StrigaSmsInputInteractorTest {
                 details = "EXCEEDED_DAILY_RESEND_SMS_LIMIT"
             )
         ).toFailureResult()
-        coEvery { strigaUserRepository.resendSmsForVerifyPhoneNumber() } returns expectedResult
 
-        val interactor = createInteractor()
+        val apiCaller: StrigaSmsApiCaller = mockk {
+            coEvery { resendSms() } returns expectedResult
+        }
+
+        val interactor = createInteractor(apiCaller)
         val firstResult = interactor.resendSms()
         val secondResult = interactor.resendSms()
 
@@ -142,17 +151,20 @@ class StrigaSmsInputInteractorTest {
         // checking that the api was twice
         // first - when we hadn't the timer
         // second - when the timer has passed
-        coVerify(exactly = 2) { strigaUserRepository.resendSmsForVerifyPhoneNumber() }
+        coVerify(exactly = 2) { apiCaller.resendSms() }
     }
 
-    private fun createInteractor(): StrigaSmsInputInteractor {
+    private fun createInteractor(apiCaller: StrigaSmsApiCaller? = null): StrigaSmsInputInteractor {
         return StrigaSmsInputInteractor(
-            strigaUserRepository = strigaUserRepository,
             strigaSignupDataRepository = strigaSignupDataRepository,
             phoneCodeRepository = countryCodeRepository,
             inAppFeatureFlags = inAppFeatureFlags,
+            smsInputTimer = mockk(relaxed = true),
             strigaStorage = strigaStorage,
-            smsInputTimer = mockk(relaxed = true)
+            smsApiCaller = apiCaller ?: mockk {
+                coEvery { resendSms() } returns StrigaDataLayerResult.Success(Unit)
+                coEvery { verifySms(any()) } returns StrigaDataLayerResult.Success(Unit)
+            }
         )
     }
 }

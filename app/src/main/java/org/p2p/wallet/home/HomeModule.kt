@@ -6,8 +6,8 @@ import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.core.token.Token
 import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
@@ -80,7 +80,21 @@ object HomeModule : InjectionModule {
         }
         // Cached data exists, therefore creating singleton
         singleOf(::UserTokensPolling)
-        factoryOf(::HomeInteractor)
+        factory {
+            HomeInteractor(
+                userInteractor = get(),
+                settingsInteractor = get(),
+                usernameInteractor = get(),
+                sellInteractor = get(),
+                metadataInteractor = get(),
+                ethereumInteractor = get(),
+                strigaUserInteractor = get(),
+                strigaSignupInteractor = get(),
+                strigaClaimInteractor = get(),
+                strigaWalletInteractor = get(),
+                strigaSignupEnabledFeatureToggle = get()
+            )
+        }
         factoryOf(::HomePresenterMapper)
         factoryOf(::StrigaKycUiBannerMapper)
         factory<HomeContract.Presenter> {
@@ -110,6 +124,7 @@ object HomeModule : InjectionModule {
                 updateSubscribers = subscribers,
                 bridgeFeatureToggle = get(),
                 context = get(),
+                strigaFeatureToggle = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

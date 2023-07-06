@@ -7,10 +7,12 @@ import org.p2p.wallet.common.NavigationStrategy
 import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NAVIGATION_STRATEGY
 import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_ARGS
 import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_CLASS
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyFragment
 import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputFragment
-import org.p2p.wallet.smsinput.striga.StrigaSmsInputFragment
+import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsInputFragment
 import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputFragment
+import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputFragment
 
 object SmsInputFactory {
     enum class Type(
@@ -21,7 +23,11 @@ object SmsInputFactory {
             OnboardingSmsInputFragment::class.java,
             NavigationStrategy.PopAndReplace(null, true)
         ),
-        Striga(StrigaSmsInputFragment::class.java, NavigationStrategy.Replace),
+        StrigaSignup(StrigaSignupSmsInputFragment::class.java, NavigationStrategy.Replace),
+        StrigaOnRamp(
+            StrigaOnRampSmsInputFragment::class.java,
+            NavigationStrategy.PopBackStackTo(MainContainerFragment::class.java)
+        ),
         UpdateDevice(
             UpdateDeviceSmsInputFragment::class.java,
             NavigationStrategy.PopAndReplace(SecurityAndPrivacyFragment::class.java, false)
@@ -38,7 +44,7 @@ object SmsInputFactory {
      */
     fun <T : Fragment> create(
         type: Type,
-        destinationFragment: Class<T>,
+        destinationFragment: Class<T>? = null,
         destinationArgs: Bundle? = null,
         navigationStrategy: NavigationStrategy? = null,
         args: Bundle? = null
