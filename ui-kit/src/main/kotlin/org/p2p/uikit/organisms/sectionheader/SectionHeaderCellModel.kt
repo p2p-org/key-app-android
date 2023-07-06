@@ -9,4 +9,4 @@ data class SectionHeaderCellModel(
     val isShevronVisible: Boolean,
     override val payload: CellModelPayload? = null
     // todo: add shevron container
-): CellModelPayload, AnyCellItem
+) : CellModelPayload, AnyCellItem

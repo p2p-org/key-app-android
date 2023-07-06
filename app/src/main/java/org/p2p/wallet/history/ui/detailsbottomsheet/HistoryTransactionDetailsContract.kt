@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.history.model.rpc.RpcFee
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 interface HistoryTransactionDetailsContract {
 

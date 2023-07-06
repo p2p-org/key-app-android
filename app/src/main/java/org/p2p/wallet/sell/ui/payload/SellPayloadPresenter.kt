@@ -37,7 +37,7 @@ import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.sell.ui.payload.SellPayloadContract.ViewState
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
 private const val SELL_QUOTE_NEW_AMOUNT_DELAY = 1_000L

@@ -68,17 +68,12 @@ class HomeActionsBottomSheet :
                 }
             }
             viewActionBuy.apply {
-                setResultClickListener(HomeAction.BUY)
+                setResultClickListener(HomeAction.TOP_UP)
                 imageViewAction.setImageResource(R.drawable.action_buy_icon)
                 textViewActionTitle.setText(R.string.home_actions_buy_title)
                 textViewActionSubtitle.setText(R.string.home_actions_buy_subtitle)
             }
-            viewActionReceive.apply {
-                setResultClickListener(HomeAction.RECEIVE)
-                imageViewAction.setImageResource(R.drawable.action_receive_icon)
-                textViewActionTitle.setText(R.string.home_actions_receive_title)
-                textViewActionSubtitle.setText(R.string.home_actions_receive_subtitle)
-            }
+
             viewActionSwap.apply {
                 setResultClickListener(HomeAction.SWAP)
                 imageViewAction.setImageResource(R.drawable.action_swap_icon)
@@ -117,5 +112,5 @@ class HomeActionsBottomSheet :
 }
 
 enum class HomeAction {
-    BUY, RECEIVE, SWAP, SEND, SELL
+    TOP_UP, RECEIVE, SWAP, SEND, SELL
 }

@@ -1,7 +1,9 @@
 package org.p2p.wallet.android
 
+import AppVersions
+import BuildConfiguration
+import Versions
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-import org.gradle.kotlin.dsl.kotlin
 
 plugins {
     id("com.android.application")
@@ -15,9 +17,7 @@ apply {
     from("${project.rootDir}/.scripts/ktlint.gradle")
     from("${project.rootDir}/.scripts/versioning.gradle")
     from("${project.rootDir}/.scripts/signing.gradle")
-    from("${project.rootDir}/.scripts/config.gradle")
     from("${project.rootDir}/.scripts/analytics.gradle")
-    from("${project.rootDir}/.scripts/torus.gradle")
 }
 
 android {
@@ -36,7 +36,7 @@ android {
             abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
         }
 
-        setProperty("archivesBaseName", Versions.CURRENT_APP_NAME)
+        setProperty("archivesBaseName", Versions.generateReleaseAppName())
     }
 
     buildTypes {
@@ -94,7 +94,7 @@ android {
         outputs
             .map { it as BaseVariantOutputImpl }
             .forEach { output ->
-                output.outputFileName = Versions.CURRENT_APP_NAME + "-${buildType.name}.apk"
+                output.outputFileName = Versions.generateDebugAppName() + ".apk"
             }
     }
 

@@ -26,6 +26,7 @@ import org.p2p.wallet.databinding.FragmentRestoreErrorScreenBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -65,6 +66,7 @@ class RestoreErrorScreenFragment :
         binding.toolbar.inflateMenu(R.menu.menu_onboarding_help)
         binding.toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.helpItem) {
+                IntercomService.signIn(userId = emptyString())
                 IntercomService.showMessenger()
             }
             return@setOnMenuItemClickListener true

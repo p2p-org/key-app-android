@@ -4,9 +4,9 @@ import timber.log.Timber
 import java.math.BigInteger
 import java.util.UUID
 import kotlinx.coroutines.launch
+import org.p2p.core.BuildConfig.svlMemoSend
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
@@ -35,7 +35,7 @@ class SendLinkGenerationPresenter(
                     destinationAddress = recipient.publicKey,
                     token = token,
                     lamports = lamports,
-                    memo = BuildConfig.svlMemoSend,
+                    memo = svlMemoSend,
                     isSimulation = isSimulation
                 )
                 saveLink(recipient, token, lamports)

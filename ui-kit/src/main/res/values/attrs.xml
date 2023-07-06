@@ -2,6 +2,10 @@
 <resources>
 
     <!-- Atoms -->
+    <attr name="editable" format="boolean" />
+    <attr name="labelText" format="string" />
+    <attr name="hintText" format="string" />
+
 
     <declare-styleable name="UiKitStartAmountView">
         <attr name="icon" />
@@ -9,7 +13,7 @@
         <attr name="subtitleColor" format="color" />
         <attr name="subtitle" format="string" />
         <attr name="subSubtitle" format="string" />
-        <attr name="android:textAppearance"/>
+        <attr name="android:textAppearance" />
     </declare-styleable>
 
     <declare-styleable name="UiKitEndAmountView">
@@ -39,9 +43,10 @@
 
     <attr name="sliderIcon" format="reference" />
     <attr name="sliderText" format="string" />
+    <attr name="leftIcon" format="reference" />
 
     <declare-styleable name="UiKitSliderButton">
-        <attr name="android:textColor"/>
+        <attr name="android:textColor" />
         <attr name="sliderIcon" />
         <attr name="sliderText" />
     </declare-styleable>
@@ -63,7 +68,7 @@
     </declare-styleable>
 
     <declare-styleable name="UiKitFourDigitsLargeInput">
-        <attr name="leftIcon" format="reference" />
+        <attr name="leftIcon" />
         <attr name="isChevronVisible" format="boolean" />
         <attr name="rightIcon" format="reference" />
     </declare-styleable>
@@ -74,10 +79,10 @@
     </declare-styleable>
 
     <declare-styleable name="UiKitAmountEditText">
-        <attr name="editable" format="boolean" />
-        <attr name="labelText" format="string" />
-        <attr name="hintText" format="string" />
-        <attr name="hintTextColor" format="color"/>
+        <attr name="editable" />
+        <attr name="labelText" />
+        <attr name="hintText" />
+        <attr name="hintTextColor" format="color" />
         <attr name="android:inputType" />
         <attr name="android:maxLength" />
         <attr name="android:imeOptions" />
@@ -85,7 +90,43 @@
         <attr name="android:text" />
         <attr name="android:drawableEnd" />
         <attr name="android:textAppearance" />
-        <attr name="android:layout_height"/>
+        <attr name="android:layout_height" />
+    </declare-styleable>
+
+
+    <declare-styleable name="UiKitEditText">
+        <attr name="editable" />
+        <attr name="labelText" />
+        <attr name="hintText" />
+        <attr name="android:inputType" />
+        <attr name="android:maxLength" />
+        <attr name="android:imeOptions" />
+        <attr name="android:digits" />
+        <attr name="android:enabled" />
+        <attr name="android:text" />
+        <attr name="android:hint" />
+        <attr name="android:drawableEnd" />
+        <attr name="android:textAppearance" />
+        <attr name="android:backgroundTint" />
+        <attr name="android:textSize" />
+        <attr name="android:nextFocusDown" />
+        <attr name="android:imeActionId" />
+        <attr name="isDropdown" format="boolean" />
+    </declare-styleable>
+
+    <!--    can be extended if there is need -->
+    <!--    you can add icon to title, background tint etc-->
+    <declare-styleable name="UiKitInformerView">
+        <attr name="leftIcon" />
+        <attr name="leftIconTint" format="color" />
+        <attr name="title" format="string" />
+        <attr name="caption" format="string" />
+        <attr name="infoLine" format="string" />
+        <attr name="infoLineColor" format="color" />
+        <attr name="infoLinePosition" format="enum">
+            <enum name="bottom" value="0" />
+            <enum name="captionLine" value="1" />
+        </attr>
     </declare-styleable>
 
 

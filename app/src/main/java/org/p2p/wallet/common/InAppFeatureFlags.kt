@@ -5,10 +5,22 @@ import org.p2p.wallet.common.feature_toggles.toggles.inapp.DebugTogglesFeatureFl
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.DevNetFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.InAppFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.PollingFeatureFlag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaEnableEmailFieldFlag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaKycBannerMockFlag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateMobileAlreadyVerifiedFlag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateUserCreateFlag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSmsVerificationMockFlag
 
 class InAppFeatureFlags(prefs: SharedPreferences) {
     val isPollingEnabled = PollingFeatureFlag(prefs)
     var isDevNetEnabled = DevNetFeatureFlag(prefs)
+    val strigaSimulateWeb3Flag = StrigaSimulateWeb3Flag(prefs)
+    val strigaSimulateUserCreateFlag = StrigaSimulateUserCreateFlag(prefs)
+    val strigaSmsVerificationMockFlag = StrigaSmsVerificationMockFlag(prefs)
+    val strigaKycBannerMockFlag = StrigaKycBannerMockFlag(prefs)
+    val strigaSimulateMobileAlreadyVerifiedFlag = StrigaSimulateMobileAlreadyVerifiedFlag(prefs)
+    val strigaEnableEmailFieldFlag = StrigaEnableEmailFieldFlag(prefs)
 
     /**
      * Allows to override values from FirebaseRemoteConfig
@@ -18,7 +30,13 @@ class InAppFeatureFlags(prefs: SharedPreferences) {
     val allInAppFeatureFlags: List<InAppFeatureFlag> = listOf(
         isPollingEnabled,
         isDevNetEnabled,
-        isDebugRemoteConfigEnabled
+        isDebugRemoteConfigEnabled,
+        strigaSimulateWeb3Flag,
+        strigaSimulateUserCreateFlag,
+        strigaSmsVerificationMockFlag,
+        strigaKycBannerMockFlag,
+        strigaSimulateMobileAlreadyVerifiedFlag,
+        strigaEnableEmailFieldFlag,
     )
 
     fun findFeatureFlagByName(featureName: String): InAppFeatureFlag? {

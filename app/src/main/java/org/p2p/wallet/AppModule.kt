@@ -4,30 +4,27 @@ import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.common.di.ServiceScope
+import org.p2p.core.crashlytics.CrashLoggerModule
 import org.p2p.core.network.ConnectionManager
+import org.p2p.core.network.NetworkCoreModule
 import org.p2p.ethereumkit.EthereumKitService
+import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
 import org.p2p.wallet.bridge.claim.ClaimModule
 import org.p2p.wallet.bridge.send.BridgeSendModule
 import org.p2p.wallet.common.AppRestarter
-import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.analytics.AnalyticsModule
-import org.p2p.wallet.common.crashlogging.CrashLogger
-import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
-import org.p2p.wallet.common.crashlogging.impl.FirebaseCrashlyticsFacade
-import org.p2p.wallet.common.crashlogging.impl.SentryFacade
-import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.NetworkModule
-import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
 import org.p2p.wallet.moonpay.MoonpayModule
@@ -44,6 +41,7 @@ import org.p2p.wallet.sdk.di.AppSdkModule
 import org.p2p.wallet.sell.SellModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.solend.SolendModule
+import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
@@ -53,15 +51,8 @@ object AppModule {
     fun create(restartAction: () -> Unit) = module {
         singleOf(::AppScope)
         single<Resources> { androidContext().resources }
-        singleOf(::InAppFeatureFlags)
         singleOf(::ServiceScope)
         single { AppRestarter { restartAction.invoke() } }
-        single {
-            CrashLogger(
-                crashLoggingFacades = getActiveCrashLoggingFacades(),
-                tokenKeyProvider = get()
-            )
-        }
         single {
             ConnectionManager(
                 context = androidContext(),
@@ -75,51 +66,44 @@ object AppModule {
         includes(
             listOf(
                 // core modules
+                AlarmErrorsModule.create(),
+                AnalyticsModule.create(),
+                AppSdkModule.create(),
+                FeeRelayerModule.create(),
+                FeatureTogglesModule.create(),
+                InfrastructureModule.create(),
+                MoonpayModule.create(),
                 NetworkModule.create(),
                 RpcModule.create(),
-                FeeRelayerModule.create(),
-                InfrastructureModule.create(),
                 TransactionModule.create(),
-                AnalyticsModule.create(),
-                FeatureTogglesModule.create(),
-                AppSdkModule.create(),
-                MoonpayModule.create(),
-                AlarmErrorsModule.create(),
-
                 // feature screens
                 AuthModule.create(),
-                RootModule.create(),
-                PushNotificationsModule.create(),
-                RestoreModule.create(),
-                UserModule.create(),
-                CoinGeckoTokenPricesModule.create(),
-                HomeModule.create(),
-                BuyModule.create(),
-                RenBtcModule.create(),
-                ScanQrModule.create(),
-                HistoryModule.create(),
-                SettingsModule.create(),
-                DebugSettingsModule.create(),
-                SwapModule.create(),
-                SendModule.create(),
-                TransactionManagerModule.create(),
-                SolendModule.create(),
-                SellModule.create(),
-                JupiterModule.create(),
-                ReceiveModule.create(),
+                BridgeModule.create(),
                 BridgeSendModule.create(),
+                BuyModule.create(),
                 ClaimModule.create(),
-                BridgeModule.create()
+                CoinGeckoTokenPricesModule.create(),
+                DebugSettingsModule.create(),
+                HistoryModule.create(),
+                HomeModule.create(),
+                JupiterModule.create(),
+                PushNotificationsModule.create(),
+                ReceiveModule.create(),
+                RenBtcModule.create(),
+                RestoreModule.create(),
+                RootModule.create(),
+                ScanQrModule.create(),
+                SendModule.create(),
+                SellModule.create(),
+                SettingsModule.create(),
+                SolendModule.create(),
+                StrigaModule.create(),
+                SwapModule.create(),
+                TransactionManagerModule.create(),
+                UserModule.create(),
+                CrashLoggerModule.create(),
+                NetworkCoreModule.create(),
             ) + EthereumKitService.getEthereumKitModules()
         )
-    }
-
-    private fun getActiveCrashLoggingFacades(): List<CrashLoggingFacade> = buildList {
-        if (BuildConfig.CRASHLYTICS_ENABLED) {
-            add(FirebaseCrashlyticsFacade())
-        }
-        if (BuildConfig.SENTRY_ENABLED) {
-            add(SentryFacade())
-        }
     }
 }

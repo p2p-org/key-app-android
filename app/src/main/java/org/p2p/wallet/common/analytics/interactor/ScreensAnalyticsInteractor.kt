@@ -1,7 +1,7 @@
 package org.p2p.wallet.common.analytics.interactor
 
 import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.sell.interactor.SellInteractor
 import timber.log.Timber

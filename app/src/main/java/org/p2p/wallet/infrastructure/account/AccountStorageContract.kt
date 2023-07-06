@@ -9,14 +9,15 @@ interface AccountStorageContract {
     ) {
         KEY_LAST_DEVICE_SHARE_ID("KEY_LAST_DEVICE_SHARE_ID"),
         KEY_IN_SIGN_UP_PROCESS("KEY_IN_SIGN_UP_PROCESS"),
-        KEY_SOLEND_ONBOARDING_COMPLETED("KEY_SHOW_SOLEND_ONBOARDING");
+        KEY_SOLEND_ONBOARDING_COMPLETED("KEY_SHOW_SOLEND_ONBOARDING"),
+        KEY_ONBOARDING_METADATA("KEY_ONBOARDING_METADATA");
 
         val prefsValue
             get() = customValue?.let {
                 "${prefsKey}_$customValue"
             } ?: prefsKey
 
-        val customValue
+        private val customValue
             get() = customKey
 
         companion object {

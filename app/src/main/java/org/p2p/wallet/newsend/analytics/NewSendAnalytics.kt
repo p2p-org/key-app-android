@@ -7,24 +7,32 @@ import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 
-private const val NEW_SEND_RECIPIENT_VIEWED = "Sendnew_Recipient_Screen"
-private const val NEW_SEND_RECIPIENT_ADD = "Sendnew_Recipient_Add"
-private const val NEW_SEND_VIEWED = "Sendnew_Input_Screen"
-private const val NEW_SEND_FREE_TRANSACTIONS_CLICK = "Sendnew_Free_Transaction_Click"
-private const val NEW_SEND_TOKEN_SELECTION_CLICK = "Sendnew_Token_Input_Click"
-private const val NEW_SEND_SWITCH_CURRENCY_MODE_CLICK = "Sendnew_Fiat_Input_Click"
-private const val NEW_SEND_CONFIRM_BUTTON_CLICK = "Sendnew_Confirm_Button_Click"
+private const val NEW_SEND_RECIPIENT_VIEWED = "Send_New_Recipient_Screen"
+private const val NEW_SEND_RECIPIENT_ADD = "Send_New_Recipient_Add"
+private const val NEW_SEND_VIEWED = "Send_New_Input_Screen"
+private const val NEW_SEND_FREE_TRANSACTIONS_CLICK = "Send_New_Free_Transaction_Click"
+private const val NEW_SEND_TOKEN_SELECTION_CLICK = "Send_New_Token_Input_Click"
+private const val NEW_SEND_SWITCH_CURRENCY_MODE_CLICK = "Send_New_Fiat_Input_Click"
+private const val NEW_SEND_CONFIRM_BUTTON_CLICK = "Send_New_Confirm_Button_Click"
 private const val NEW_SEND_ACTION_BUTTON = "Action_Button_Send"
+private const val NEW_SEND_HOME_BAR_BUTTON = "Main_Screen_Send_Bar"
 private const val NEW_SEND_SHOWING_DETAILS = "Send_Showing_Details"
 private const val NEW_SEND_QR_GOING_BACK = "Send_QR_Going_Back"
 
 private const val SEND_START_SCREEN_OPEN = "Send_Start_Screen_Open"
+private const val SEND_TOKEN_SCREEN_ACTION_CLICKED = "Token_Screen_Send_Bar"
 
 class NewSendAnalytics(
     private val analytics: Analytics
 ) {
 
     private var isMaxButtonClicked: Boolean = false
+
+    fun logTokenScreenActionClicked(flow: AnalyticsSendFlow) {
+        analytics.logEvent(
+            SEND_TOKEN_SCREEN_ACTION_CLICKED
+        )
+    }
 
     fun logSearchScreenOpened(openedFrom: SearchOpenedFromScreen) {
         analytics.logEvent(
@@ -38,23 +46,39 @@ class NewSendAnalytics(
         )
     }
 
-    fun logNewSendScreenOpened() {
-        analytics.logEvent(event = NEW_SEND_VIEWED)
+    fun logNewSendScreenOpened(flow: AnalyticsSendFlow) {
+        analytics.logEvent(
+            event = NEW_SEND_VIEWED,
+            params = mapOf(
+                "Send_Flow" to flow.title
+            )
+        )
     }
 
-    fun logFreeTransactionsClicked() {
-        analytics.logEvent(event = NEW_SEND_FREE_TRANSACTIONS_CLICK)
+    fun logFreeTransactionsClicked(flow: AnalyticsSendFlow) {
+        analytics.logEvent(
+            event = NEW_SEND_FREE_TRANSACTIONS_CLICK,
+            params = mapOf(
+                "Send_Flow" to flow.title
+            )
+        )
     }
 
-    fun logTokenSelectionClicked() {
-        analytics.logEvent(event = NEW_SEND_TOKEN_SELECTION_CLICK)
+    fun logTokenSelectionClicked(flow: AnalyticsSendFlow) {
+        analytics.logEvent(
+            event = NEW_SEND_TOKEN_SELECTION_CLICK,
+            params = mapOf(
+                "Send_Flow" to flow.title
+            )
+        )
     }
 
-    fun logSwitchCurrencyModeClicked(mode: CurrencyMode) {
+    fun logSwitchCurrencyModeClicked(mode: CurrencyMode, flow: AnalyticsSendFlow) {
         analytics.logEvent(
             event = NEW_SEND_SWITCH_CURRENCY_MODE_CLICK,
             params = mapOf(
-                "Crypto" to (mode is CurrencyMode.Token)
+                "Crypto" to (mode is CurrencyMode.Token),
+                "Send_Flow" to flow.title
             )
         )
     }
@@ -64,7 +88,8 @@ class NewSendAnalytics(
         amountInToken: String,
         amountInUsd: String,
         isFeeFree: Boolean,
-        mode: CurrencyMode
+        mode: CurrencyMode,
+        flow: AnalyticsSendFlow
     ) {
         analytics.logEvent(
             event = NEW_SEND_CONFIRM_BUTTON_CLICK,
@@ -74,7 +99,8 @@ class NewSendAnalytics(
                 "Amount_Token" to amountInToken,
                 "Amount_USD" to amountInUsd,
                 "Fee" to isFeeFree,
-                "Fiat_Input" to (mode is CurrencyMode.Fiat)
+                "Fiat_Input" to (mode is CurrencyMode.Fiat),
+                "Send_Flow" to flow.title
             )
         )
     }
@@ -127,6 +153,10 @@ class NewSendAnalytics(
         analytics.logEvent(NEW_SEND_ACTION_BUTTON)
     }
 
+    fun logSendHomeBarClicked() {
+        analytics.logEvent(NEW_SEND_HOME_BAR_BUTTON)
+    }
+
     fun logSendShowingDetails(
         sendStatus: SendStatus,
         lastScreenName: String,
@@ -157,6 +187,13 @@ class NewSendAnalytics(
         SOLANA("Solana"),
         BITCOIN("Bitcoin"),
         ETHEREUM("Ethereum")
+    }
+
+    enum class AnalyticsSendFlow(val title: String) {
+        SEND("Send"),
+        BRIDGE("Bridge"),
+        SEND_VIA_LINK("Send_Via_Link"),
+        SELL("Sell")
     }
 
     private fun NetworkType.toAnalyticsValue(): AnalyticsSendNetwork = when (this) {

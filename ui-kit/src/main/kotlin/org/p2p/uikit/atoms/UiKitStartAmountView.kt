@@ -1,9 +1,11 @@
 package org.p2p.uikit.atoms
 
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetStartAmountViewBinding
@@ -11,7 +13,7 @@ import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.uikit.utils.withTextOrGone
 
-@Deprecated("use [UiKitFinanceBlockView] without [FinanceBlockCellModel.rightSideCellModel]")
+@Deprecated("use [UiKitFinanceBlockView] without [MainCellModel.rightSideCellModel]")
 class UiKitStartAmountView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -31,7 +33,7 @@ class UiKitStartAmountView @JvmOverloads constructor(
             field = value
         }
 
-    var subtitle: String? = null
+    var subtitle: CharSequence? = null
         set(value) {
             binding.subtitleTextView.withTextOrGone(value)
             field = value
@@ -50,6 +52,19 @@ class UiKitStartAmountView @JvmOverloads constructor(
         @DrawableRes bottom: Int = 0
     ) {
         binding.subtitleTextView.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom)
+    }
+
+    fun setSubtitleDrawable(
+        left: Drawable? = null,
+        top: Drawable? = null,
+        right: Drawable? = null,
+        bottom: Drawable? = null
+    ) {
+        binding.subtitleTextView.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom)
+    }
+
+    fun setSubtitleColor(@ColorInt subtitleTextColor: Int) {
+        binding.subtitleTextView.setTextColor(subtitleTextColor)
     }
 
     private val binding = inflateViewBinding<WidgetStartAmountViewBinding>()

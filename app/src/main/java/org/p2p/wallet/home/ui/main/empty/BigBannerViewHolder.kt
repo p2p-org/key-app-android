@@ -1,14 +1,16 @@
 package org.p2p.wallet.home.ui.main.empty
 
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.view.ViewGroup
-import androidx.annotation.ColorRes
-import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.databinding.ItemBigBannerBinding
 import org.p2p.wallet.home.model.HomeBannerItem
+import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
@@ -20,14 +22,22 @@ class BigBannerViewHolder(
 
     fun onBind(item: HomeBannerItem) = with(binding) {
         textViewBannerTitle.setText(item.titleTextId)
-        textViewBannerSubtitle.setText(item.subtitleTextId)
+
+        val subtitleText = context.getString(item.subtitleTextId)
+        textViewBannerSubtitle.text = subtitleText
+        textViewBannerSubtitle.isVisible = subtitleText.isNotEmpty()
 
         imageViewBanner.setImageResource(item.drawableRes)
 
         button.apply {
-            setText(item.buttonTextId)
-            setOnClickListener { onBannerButtonClicked(item.id) }
+            isVisible = item.buttonTextId != null
+            item.buttonTextId?.let(::setText)
+            if (isVisible) {
+                setOnClickListener { onBannerButtonClicked(item.titleTextId) }
+            }
         }
+        binding.root.setOnClickListener { onBannerButtonClicked(item.titleTextId) }
+
         setBackground(item.backgroundColorRes)
     }
 

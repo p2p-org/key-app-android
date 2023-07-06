@@ -25,6 +25,7 @@ jobs:
           amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
           torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-sub-verifier-feature: ${{ secrets.TORUS_SUB_VERIFIER_FEATURE }}
           torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
           rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-key: ${{ secrets.MOONPAY_KEY }}
@@ -41,10 +42,10 @@ jobs:
           svl-memo-claim: ${{ secrets.SVL_MEMO_CLAIM }}
           salt-prefix: ${{ secrets.SALT_PREFIX }}
       - name: "Generate changelog"
-        run: |
-          touch CHANGELOG.txt
-          echo "daily build \n branch - develop" >> CHANGELOG.txt
-          echo "changelog.txt created"
+        uses: ./.github/actions/setup-changelog
+        with:
+          current-ref-name: "develop"
+          workflow-type: "scheduled"
       - name: "Send start deploy message to slack"
         run: bash bash_scripts/slack_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Generate a unique version build"
@@ -63,6 +64,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "feature"
           artifact-type: "apk"
+          workflow-type: "daily"
       - name: "Upload APK to BrowserStack (Feature)"
         run: |
           credentials=${{ secrets.BROWSER_STACK_CREDENTIALS }}

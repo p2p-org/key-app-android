@@ -1,11 +1,11 @@
 package org.p2p.wallet.utils
 
-import okhttp3.Request
 import okhttp3.Response
-import okio.Buffer
-import org.p2p.wallet.R
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import retrofit2.HttpException
+import timber.log.Timber
 import java.net.UnknownHostException
+import org.p2p.wallet.R
+import org.p2p.core.network.data.ServerException
 
 fun Throwable?.getErrorMessage(resourceDelegate: (res: Int) -> String): String =
     when (this) {
@@ -14,12 +14,12 @@ fun Throwable?.getErrorMessage(resourceDelegate: (res: Int) -> String): String =
         else -> this?.message ?: resourceDelegate(R.string.error_general_message)
     }
 
-fun Request.bodyAsString(): String = kotlin.runCatching {
-    val requestCopy: Request = this.newBuilder().build()
-    val buffer = Buffer()
-    requestCopy.body?.writeTo(buffer)
-    buffer.readUtf8()
+fun retrofit2.Response<*>.errorBodyOrNull(): String? {
+    return kotlin.runCatching { errorBody()?.string() }
+        .onFailure { Timber.i(it) }
+        .getOrNull()
 }
-    .getOrDefault("")
 
-fun Response.bodyAsString(): String = peekBody(Long.MAX_VALUE).string()
+fun HttpException.errorBodyOrNull(): String? {
+    return response()?.errorBodyOrNull()
+}

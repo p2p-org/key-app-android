@@ -6,28 +6,33 @@ import androidx.annotation.StyleRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.core.widget.TextViewCompat
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.TypedValue
+import android.view.Gravity
 import android.widget.TextView
+import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.core.utils.insets.InitialViewPadding
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.R
+import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
+import org.p2p.uikit.utils.setDrawableTint
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.skeleton.SkeletonDrawable
 import org.p2p.uikit.utils.skeleton.bindSkeleton
 import org.p2p.uikit.utils.toPx
 
-sealed interface TextViewCellModel {
+sealed interface TextViewCellModel : AnyCellItem {
 
     data class Raw(
         val text: TextContainer,
@@ -38,7 +43,11 @@ sealed interface TextViewCellModel {
         val badgeBackground: TextViewBackgroundModel? = null,
         val autoSizeConfiguration: TextViewAutoSizeConfiguration? = null,
         val maxLines: Int? = null,
-        val ellipsize: TextUtils.TruncateAt? = null
+        val ellipsize: TextUtils.TruncateAt? = null,
+        val drawable: DrawableContainer.Res? = null,
+        @ColorRes val drawableTint: Int? = null,
+        // android.view.Gravity
+        val drawableGravity: Int = Gravity.RIGHT
     ) : TextViewCellModel
 
     data class Skeleton(
@@ -69,7 +78,7 @@ data class TextViewAutoSizeConfiguration(
 )
 
 data class TextViewBackgroundModel(
-    val background: DrawableCellModel = badgeRounded(),
+    val background: DrawableCellModel = DrawableCellModel(),
     val padding: InitialViewPadding = badgePadding()
 )
 
@@ -80,9 +89,13 @@ fun badgePadding(
     @Px bottom: Int = 3.toPx(),
 ): InitialViewPadding = InitialViewPadding(left, top, right, bottom)
 
+fun equilateralPadding(
+    @Px padding: Int = 8.toPx(),
+): InitialViewPadding = InitialViewPadding(padding, padding, padding, padding)
+
 fun badgeRounded(
     @Px cornerSize: Float = 32f.toPx(),
-    @ColorRes tint: Int = R.color.elements_lime,
+    @ColorRes tint: Int = R.color.bg_snow,
 ): DrawableCellModel = DrawableCellModel(
     drawable = shapeDrawable(shapeRoundedAll(cornerSize)),
     tint = tint,
@@ -108,7 +121,7 @@ fun TextView.bind(model: TextViewCellModel) {
 
 fun TextView.bind(model: TextViewCellModel.Raw) {
     val initialTextStyle = saveAndGetInitialTextStyle()
-    model.textAppearance?.let { setTextAppearance(it) }
+    model.textAppearance?.let { TextViewCompat.setTextAppearance(this, it) }
         ?: kotlin.run {
             typeface = initialTextStyle.typeface
             letterSpacing = initialTextStyle.letterSpacing
@@ -144,6 +157,16 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
             autoSize?.autoSizeStepGranularity ?: initialAutoSize.autoSizeStepGranularity,
             autoSize?.typedValue ?: initialAutoSize.typedValue,
         )
+    }
+
+    model.drawable?.also {
+        setCompoundDrawablesWithIntrinsicBounds(
+            it.drawableRes.takeIf { model.drawableGravity == Gravity.LEFT } ?: 0,
+            it.drawableRes.takeIf { model.drawableGravity == Gravity.TOP } ?: 0,
+            it.drawableRes.takeIf { model.drawableGravity == Gravity.RIGHT } ?: 0,
+            it.drawableRes.takeIf { model.drawableGravity == Gravity.BOTTOM } ?: 0
+        )
+        model.drawableTint?.also(::setDrawableTint)
     }
 
     updatePadding(

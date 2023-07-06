@@ -28,7 +28,8 @@ sealed interface SettingsItem {
         @StringRes val nameRes: Int,
         @DrawableRes val iconRes: Int,
         val additionalText: String? = null,
-        val hasSeparator: Boolean
+        val hasSeparator: Boolean,
+        val isBadgeVisible: Boolean = false
     ) : SettingsItem
 
     object SettingsSpaceSeparatorItem : SettingsItem

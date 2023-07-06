@@ -1,13 +1,12 @@
-package org.p2p.wallet.auth.ui.smsinput
+package org.p2p.wallet.smsinput
 
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreFailureState
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
-interface NewSmsInputContract {
+interface SmsInputContract {
     interface View : MvpView {
         fun initView(userPhoneNumber: PhoneNumber)
 
@@ -18,10 +17,15 @@ interface NewSmsInputContract {
         fun renderSmsTimerState(timerState: Presenter.SmsInputTimerState)
         fun renderButtonLoading(isLoading: Boolean)
 
-        fun navigateToPinCreate()
-        fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long)
+        fun navigateNext()
+
+        // not needed in other fragments, need to remove and create good reusable abstraction
+        fun navigateToSmsInputBlocked(timerLeftTime: Long)
         fun navigateToGatewayErrorScreen(handledState: GatewayHandledState)
         fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError)
+
+        fun navigateToExceededDailyResendSmsLimit()
+        fun navigateToExceededConfirmationAttempts()
     }
 
     interface Presenter : MvpPresenter<View> {

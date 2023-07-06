@@ -1,0 +1,102 @@
+[
+  {
+    "occupation": "ACCOUNTING",
+    "emoji": "🧮"
+  },
+  {
+    "occupation": "AUDIT",
+    "emoji": "🔍"
+  },
+  {
+    "occupation": "FINANCE",
+    "emoji": "💰"
+  },
+  {
+    "occupation": "PUBLIC_SECTOR_ADMINISTRATION",
+    "emoji": "🏛"
+  },
+  {
+    "occupation": "ART_ENTERTAINMENT",
+    "emoji": "🎨"
+  },
+  {
+    "occupation": "AUTO_AVIATION",
+    "emoji": "📐"
+  },
+  {
+    "occupation": "BANKING_LENDING",
+    "emoji": "💵"
+  },
+  {
+    "occupation": "BUSINESS_CONSULTANCY_LEGAL",
+    "emoji": "⚖️"
+  },
+  {
+    "occupation": "CONSTRUCTION_REPAIR",
+    "emoji": "🧱"
+  },
+  {
+    "occupation": "EDUCATION_PROFESSIONAL_SERVICES",
+    "emoji": "📚"
+  },
+  {
+    "occupation": "INFORMATIONAL_TECHNOLOGIES",
+    "emoji": "🖥"
+  },
+  {
+    "occupation": "TOBACCO_ALCOHOL",
+    "emoji": "🍺"
+  },
+  {
+    "occupation": "GAMING_GAMBLING",
+    "emoji": "🕹️"
+  },
+  {
+    "occupation": "MEDICAL_SERVICES",
+    "emoji": "🌡"
+  },
+  {
+    "occupation": "MANUFACTURING",
+    "emoji": "🏭"
+  },
+  {
+    "occupation": "PR_MARKETING",
+    "emoji": "🎉"
+  },
+  {
+    "occupation": "PRECIOUS_GOODS_JEWELRY",
+    "emoji": "💎"
+  },
+  {
+    "occupation": "NON_GOVERNMENTAL_ORGANIZATION",
+    "emoji": "🏢"
+  },
+  {
+    "occupation": "INSURANCE_SECURITY",
+    "emoji": "📊"
+  },
+  {
+    "occupation": "RETAIL_WHOLESALE",
+    "emoji": "🛍"
+  },
+  {
+    "occupation": "TRAVEL_TOURISM",
+    "emoji": "🏖"
+  },
+  {
+    "occupation": "FREELANCER",
+    "emoji": "👾"
+  },
+  {
+    "occupation": "STUDENT",
+    "emoji": "🎓"
+  },
+  {
+    "occupation": "UNEMPLOYED",
+    "emoji": "😜"
+  },
+  {
+    "occupation": "RETIRED",
+    "emoji": "🧢"
+  }
+]

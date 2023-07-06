@@ -5,7 +5,7 @@ import retrofit2.http.POST
 import retrofit2.http.Url
 import org.p2p.solanaj.model.types.RecentBlockhashResponse
 import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.wallet.infrastructure.network.data.CommonResponse
+import org.p2p.core.network.data.CommonResponse
 import org.p2p.wallet.utils.emptyString
 
 interface RpcBlockhashApi {

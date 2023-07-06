@@ -6,7 +6,7 @@ import org.p2p.wallet.jupiter.api.response.SwapJupiterQuoteResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapFees
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class JupiterSwapRoutesMapper {
 

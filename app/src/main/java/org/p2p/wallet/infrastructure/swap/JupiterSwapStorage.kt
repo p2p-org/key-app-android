@@ -5,11 +5,11 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import timber.log.Timber
+import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.routes.JupiterAvailableSwapRoutesMap
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.fromJsonReified
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 
 private const val KEY_TOKEN_A_MINT = "KEY_TOKEN_A_MINT"
 private const val KEY_TOKEN_B_MINT = "KEY_TOKEN_B_MINT"

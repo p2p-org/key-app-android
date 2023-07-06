@@ -27,7 +27,7 @@
                 app:navigationIcon="@drawable/ic_back"
                 app:navigationIconTint="@color/night"
                 app:title="@string/onboarding_country_name"
-                app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+                app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

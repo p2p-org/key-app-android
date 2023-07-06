@@ -11,10 +11,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
@@ -25,40 +29,36 @@ import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WETH_COINGECKO_ID
 import org.p2p.core.utils.Constants.WETH_SYMBOL
+import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.MetadataInteractor
-import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.bridge.analytics.ClaimAnalytics
-import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
-import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
-import org.p2p.wallet.home.model.HomeMapper
+import org.p2p.wallet.home.model.HomeElementItem
+import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
-import org.p2p.wallet.sell.interactor.SellInteractor
-import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SocketState
@@ -72,49 +72,53 @@ import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
 
-val POPULAR_TOKENS_SYMBOLS = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
-val POPULAR_TOKENS_COINGECKO_IDS = setOf(
+val POPULAR_TOKENS_SYMBOLS: Set<String> = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
+val POPULAR_TOKENS_COINGECKO_IDS: List<TokenCoinGeckoId> = setOf(
     SOL_COINGECKO_ID,
     USDT_COINGECKO_ID,
     WETH_COINGECKO_ID,
     USDC_COINGECKO_ID
-).map { TokenCoinGeckoId(it) }
-val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
+).map(::TokenCoinGeckoId)
+val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 class HomePresenter(
-    private val analytics: HomeAnalytics,
-    private val claimAnalytics: ClaimAnalytics,
-    private val updatesManager: SubscriptionUpdatesManager,
+    // interactors
+    private val homeInteractor: HomeInteractor,
     private val userInteractor: UserInteractor,
-    private val settingsInteractor: SettingsInteractor,
-    private val usernameInteractor: UsernameInteractor,
-    private val environmentManager: NetworkEnvironmentManager,
-    tokenKeyProvider: TokenKeyProvider,
-    private val homeElementItemMapper: HomeElementItemMapper,
-    private val resources: Resources,
+    // other
     private val tokensPolling: UserTokensPolling,
-    private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val networkObserver: SolanaNetworkObserver,
-    private val sellInteractor: SellInteractor,
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
-    private val metadataInteractor: MetadataInteractor,
-    private val intercomDeeplinkManager: IntercomDeeplinkManager,
-    private val homeMapper: HomeMapper,
-    private val ethereumInteractor: EthereumInteractor,
-    seedPhraseProvider: SeedPhraseProvider,
+    // managers
+    private val updatesManager: SubscriptionUpdatesManager,
+    private val environmentManager: NetworkEnvironmentManager,
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
     private val transactionManager: TransactionManager,
-    private val claimUiMapper: ClaimUiMapper,
     private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
+    private val intercomDeeplinkManager: IntercomDeeplinkManager,
+    // mappers
+    private val homeMapper: HomePresenterMapper,
+    // FT
+    private val newBuyFeatureToggle: NewBuyFeatureToggle,
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
+    private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
+    // analytics
+    private val analytics: HomeAnalytics,
+    seedPhraseProvider: SeedPhraseProvider,
+    tokenKeyProvider: TokenKeyProvider,
     bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
+    private val resources: Resources = context.resources
+
     private var username: Username? = null
 
-    private var state = HomeScreenViewState(areZerosHidden = settingsInteractor.areZerosHidden())
+    private var state = HomeScreenViewState(areZerosHidden = homeInteractor.areZerosHidden())
     private val buttonsStateFlow = MutableStateFlow<List<ActionButton>>(emptyList())
+
+    // use flow since it's the only way we can show progress before view is attached
+    private val refreshingFlow = MutableStateFlow(true)
 
     private val userPublicKey: String by unsafeLazy { tokenKeyProvider.publicKey }
     private var homeStateSubscribed = false
@@ -133,15 +137,15 @@ class HomePresenter(
     init {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
         if (userSeedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled) {
-            ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+            homeInteractor.setupEthereumKit(userSeedPhrase = userSeedPhrase)
             PendingTransactionMergeWorker.scheduleWorker(context)
         } else {
             Timber.w("ETH is not initialized, no seed phrase or disabled")
         }
-        launch {
+        launchSupervisor {
             awaitAll(
                 async { networkObserver.start() },
-                async { metadataInteractor.tryLoadAndSaveMetadata() }
+                async { homeInteractor.loadInitialAppData() }
             )
 
             // save the job to prevent do the same job twice in observeInternetConnection
@@ -165,6 +169,10 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
+        if (state.tokens.isNotEmpty() || state.ethTokens.isNotEmpty()) {
+            handleHomeStateChanged(state.tokens, state.ethTokens)
+        }
+        observeRefreshingStatus()
         observeInternetConnection()
         observeActionButtonState()
         handleDeeplinks()
@@ -178,7 +186,7 @@ class HomePresenter(
     override fun refreshTokens() {
         launchInternetAware(connectionManager) {
             try {
-                view?.showRefreshing(isRefreshing = true)
+                showRefreshing(isRefreshing = true)
                 tokensPolling.refreshTokens()
                 initializeActionButtons(isRefreshing = true)
             } catch (cancelled: CancellationException) {
@@ -187,7 +195,7 @@ class HomePresenter(
                 Timber.e(error, "Error refreshing user tokens")
                 view?.showErrorMessage(error)
             } finally {
-                view?.showRefreshing(isRefreshing = false)
+                showRefreshing(isRefreshing = false)
             }
         }
     }
@@ -198,18 +206,29 @@ class HomePresenter(
 
         tokensPolling.shareTokenPollFlowIn(this)
             .filterNotNull()
-            .onCompletion { homeStateSubscribed = false }
-            .collect { homeState ->
-                run {
-                    val solTokensLog = homeState.solTokens
-                        .joinToString { "${it.tokenSymbol}(${it.total.formatToken()}; ${it.totalInUsd?.formatFiat()})" }
-                    Timber.d("Home state solTokens: $solTokensLog")
-                }
-                state = state.copy(tokens = homeState.solTokens, ethTokens = homeState.ethTokens)
-                initializeActionButtons()
-                handleUserTokensLoaded(homeState.solTokens, homeState.ethTokens)
-                view?.showRefreshing(homeState.isRefreshing)
+            .combine(homeInteractor.getUserStatusBannerFlow()) { homeState, strigaBanner ->
+                homeState to strigaBanner.takeIf { strigaFeatureToggle.isFeatureEnabled }
             }
+            .onCompletion { homeStateSubscribed = false }
+            .collect { (homeState, strigaBanner) ->
+                logHomeStateChanged(homeState)
+
+                state = state.copy(
+                    tokens = homeState.solTokens,
+                    ethTokens = homeState.ethTokens,
+                    strigaKycStatusBanner = strigaBanner,
+                    strigaClaimableTokens = homeState.claimableTokens
+                )
+                initializeActionButtons()
+                handleHomeStateChanged(homeState.solTokens, homeState.ethTokens)
+                showRefreshing(homeState.isRefreshing)
+            }
+    }
+
+    private fun logHomeStateChanged(homeState: UserTokensPollState) {
+        val solTokensLog = homeState.solTokens
+            .joinToString { "${it.tokenSymbol}(${it.total.formatToken()}; ${it.totalInUsd?.formatFiat()})" }
+        Timber.d("Home state solTokens: $solTokensLog")
     }
 
     private fun observeActionButtonState() {
@@ -218,6 +237,13 @@ class HomePresenter(
                 view?.showActionButtons(buttons)
             }
         }
+    }
+
+    private fun observeRefreshingStatus() {
+        refreshingFlow.onEach {
+            view?.showRefreshing(it)
+        }
+            .launchIn(this)
     }
 
     private fun observeInternetConnection() {
@@ -264,17 +290,17 @@ class HomePresenter(
 
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
         launch {
-            claimAnalytics.logClaimButtonClicked()
+            analytics.logClaimButtonClicked()
             if (canBeClaimed) {
                 view?.showTokenClaim(token)
             } else {
                 val latestActiveBundleId = token.latestActiveBundleId ?: return@launch
-                val bridgeBundle = ethereumInteractor.getClaimBundleById(latestActiveBundleId) ?: return@launch
-                val claimDetails = claimUiMapper.makeClaimDetails(
+                val bridgeBundle = homeInteractor.getClaimBundleById(latestActiveBundleId) ?: return@launch
+                val claimDetails = homeMapper.mapToClaimDetails(
                     bridgeBundle = bridgeBundle,
-                    minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
+                    minAmountForFreeFee = homeInteractor.getClaimMinAmountForFreeFee(),
                 )
-                val progressDetails = claimUiMapper.prepareShowProgress(
+                val progressDetails = homeMapper.mapShowProgressForClaim(
                     amountToClaim = bridgeBundle.resultAmount.amountInToken,
                     iconUrl = token.iconUrl.orEmpty(),
                     claimDetails = claimDetails
@@ -291,17 +317,72 @@ class HomePresenter(
         }
     }
 
+    override fun onBannerClicked(bannerTitleId: Int) {
+        val statusFromKycBanner = homeMapper.getKycStatusBannerFromTitle(bannerTitleId)
+        when {
+            statusFromKycBanner == StrigaKycStatusBanner.PENDING -> {
+                view?.showKycPendingDialog()
+            }
+            statusFromKycBanner != null -> {
+                launch {
+                    // hide banner if necessary
+                    homeInteractor.hideStrigaUserStatusBanner(statusFromKycBanner)
+
+                    if (statusFromKycBanner == StrigaKycStatusBanner.VERIFICATION_DONE) {
+                        state = state.copy(isStrigaKycBannerLoading = true)
+                        handleHomeStateChanged(state.tokens, state.ethTokens)
+
+                        homeInteractor.loadStrigaFiatAccountDetails()
+                            .onSuccess { view?.navigateToKycStatus(statusFromKycBanner) }
+                            .onFailure { view?.showUiKitSnackBar(messageResId = R.string.error_general_message) }
+
+                        state = state.copy(isStrigaKycBannerLoading = false)
+                        handleHomeStateChanged(state.tokens, state.ethTokens)
+                    } else {
+                        view?.navigateToKycStatus(statusFromKycBanner)
+                    }
+                }
+            }
+            else -> {
+                view?.showTopupWalletDialog()
+            }
+        }
+    }
+
+    override fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim) {
+        launch {
+            try {
+                view?.showStrigaClaimProgress(isClaimInProgress = true, tokenMint = item.tokenMintAddress)
+                val challengeId = homeInteractor.claimStrigaToken(item.amountAvailable, item.strigaToken).unwrap()
+                view?.navigateToStrigaClaimOtp(
+                    item.amountAvailable.asUsd(),
+                    challengeId
+                )
+            } catch (e: Throwable) {
+                Timber.e(e, "Error on claiming striga token")
+                if (BuildConfig.DEBUG) {
+                    view?.showErrorMessage(IllegalStateException("Striga claiming is not supported yet", e))
+                } else {
+                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+                }
+            } finally {
+                view?.showStrigaClaimProgress(isClaimInProgress = false, tokenMint = item.tokenMintAddress)
+            }
+        }
+    }
+
     /**
      * Don't split this method, as it could lead to one more data race since rates are loading asynchronously
      */
     private fun loadSolTokensAndRates(): Job = launch {
+        showRefreshing(true)
         try {
             // this job also depends on the internet
-            userInteractor.loadAllTokensDataIfEmpty()
-            val tokens = userInteractor.loadUserTokensAndUpdateLocal(userPublicKey.toPublicKey())
+            homeInteractor.loadAllTokensDataIfEmpty()
+            val tokens = homeInteractor.loadUserTokensAndUpdateLocal(userPublicKey.toPublicKey())
             async {
                 try {
-                    userInteractor.loadUserRates(tokens)
+                    homeInteractor.loadUserRates(tokens)
                 } catch (t: Throwable) {
                     Timber.i(t, "Error on loading user rates")
                     view?.showUiKitSnackBar(messageResId = R.string.error_token_rates)
@@ -313,16 +394,8 @@ class HomePresenter(
             Timber.d("Cannot load sol tokens: no internet")
         } catch (t: Throwable) {
             Timber.e(t, "Error on loading sol tokens")
-        }
-    }
-
-    private fun loadEthTokens() {
-        async {
-            try {
-                ethereumInteractor.loadWalletTokens()
-            } catch (t: Throwable) {
-                Timber.e(t, "Error on loading ethereum Tokens")
-            }
+        } finally {
+            showRefreshing(false)
         }
     }
 
@@ -344,7 +417,7 @@ class HomePresenter(
             return
         }
         val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
-        val isSellAvailable = sellInteractor.isSellAvailable()
+        val isSellAvailable = homeInteractor.isSellFeatureAvailable()
 
         val buttons = mutableListOf(
             ActionButton.BUY_BUTTON,
@@ -363,12 +436,12 @@ class HomePresenter(
     }
 
     private fun showUserAddressAndUsername() {
-        this.username = usernameInteractor.getUsername()
+        this.username = homeInteractor.getUsername()
         val userAddress = username?.fullUsername ?: userPublicKey.ellipsizeAddress()
         view?.showUserAddress(userAddress)
         state = state.copy(
             username = username,
-            visibilityState = VisibilityState.create(userInteractor.getHiddenTokensVisibility())
+            visibilityState = VisibilityState.create(homeInteractor.getHiddenTokensVisibility())
         )
     }
 
@@ -378,16 +451,31 @@ class HomePresenter(
 
     override fun onBuyClicked() {
         launch {
-            val tokensForBuy = userInteractor.getTokensForBuy()
+            val tokensForBuy = homeInteractor.getTokensForBuy()
             if (tokensForBuy.isEmpty()) return@launch
 
             if (newBuyFeatureToggle.isFeatureEnabled) {
                 // this cannot be empty
-                view?.showNewBuyScreen(tokensForBuy.first())
+                view?.navigateToBuyScreen(tokensForBuy.first())
             } else {
                 view?.showTokensForBuy(tokensForBuy)
             }
         }
+    }
+
+    override fun onSellClicked() {
+        analytics.logSellSubmitClicked()
+        view?.showCashOut()
+    }
+
+    override fun onSwapClicked() {
+        analytics.logSwapActionButtonClicked()
+        view?.showSwap()
+    }
+
+    override fun onTopupClicked() {
+        analytics.logTopupHomeBarClicked()
+        view?.showTopup()
     }
 
     override fun onBuyTokenClicked(token: Token) {
@@ -407,23 +495,19 @@ class HomePresenter(
             val tokenToBuy = if (token.isSOL || token.isUSDC) {
                 token
             } else {
-                userInteractor.getSingleTokenForBuy() ?: return@launch
+                homeInteractor.getSingleTokenForBuy() ?: return@launch
             }
-
-            if (newBuyFeatureToggle.isFeatureEnabled) {
-                view?.showNewBuyScreen(tokenToBuy)
-            } else {
-                view?.showOldBuyScreen(tokenToBuy)
-            }
+            view?.navigateToBuyScreen(tokenToBuy)
         }
     }
 
     override fun onSendClicked(clickSource: SearchOpenedFromScreen) {
+        analytics.logSendActionButtonClicked()
         launch {
             val isEmptyAccount = state.tokens.all { it.isZero }
             if (isEmptyAccount) {
                 // this cannot be empty
-                val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
+                val validTokenToBuy = homeInteractor.getSingleTokenForBuy() ?: return@launch
                 view?.showSendNoTokens(validTokenToBuy)
             } else {
                 view?.showNewSendScreen(clickSource)
@@ -431,7 +515,7 @@ class HomePresenter(
         }
     }
 
-    private fun handleUserTokensLoaded(
+    private fun handleHomeStateChanged(
         userTokens: List<Token.Active>,
         ethTokens: List<Token.Eth>,
     ) {
@@ -439,7 +523,7 @@ class HomePresenter(
         state = state.copy(
             tokens = userTokens,
             ethTokens = ethTokens,
-            username = usernameInteractor.getUsername(),
+            username = homeInteractor.getUsername(),
         )
         val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
         when {
@@ -457,24 +541,19 @@ class HomePresenter(
 
     private fun handleEmptyAccount() {
         val tokensForBuy =
-            userInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
+            homeInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
                 .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
 
-        val homeBannerItem = HomeBannerItem(
-            id = R.id.home_banner_top_up,
-            titleTextId = R.string.main_banner_title,
-            subtitleTextId = R.string.main_banner_subtitle,
-            buttonTextId = R.string.main_banner_button,
-            drawableRes = R.drawable.ic_main_banner,
-            backgroundColorRes = R.color.bannerBackgroundColor
-        )
-        view?.showEmptyViewData(
-            listOf(
-                homeBannerItem,
-                resources.getString(R.string.main_popular_tokens_header),
-                *tokensForBuy.toTypedArray()
-            )
-        )
+        val strigaBigBanner = state.strigaKycStatusBanner
+            ?.let { homeMapper.mapToBigBanner(it, state.isStrigaKycBannerLoading) }
+            ?: getDefaultBanner()
+
+        val emptyDataList = buildList {
+            this += strigaBigBanner
+            this += resources.getString(R.string.main_popular_tokens_header)
+            addAll(tokensForBuy)
+        }
+        view?.showEmptyViewData(emptyDataList)
         logBalance(BigDecimal.ZERO)
 
         view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
@@ -483,7 +562,7 @@ class HomePresenter(
     override fun toggleTokenVisibility(token: Token.Active) {
         launch {
             val handleDefaultVisibility = { token: Token.Active ->
-                if (settingsInteractor.areZerosHidden() && token.isZero) {
+                if (homeInteractor.areZerosHidden() && token.isZero) {
                     TokenVisibility.SHOWN
                 } else {
                     TokenVisibility.HIDDEN
@@ -495,25 +574,35 @@ class HomePresenter(
                 TokenVisibility.DEFAULT -> handleDefaultVisibility(token)
             }
 
-            userInteractor.setTokenHidden(
+            homeInteractor.setTokenHidden(
                 mintAddress = token.mintAddress,
                 visibility = newVisibility.stringValue
             )
 
-            val updatedTokens = userInteractor.getUserTokens()
-            handleUserTokensLoaded(updatedTokens, state.ethTokens)
+            val updatedTokens = homeInteractor.getUserTokens()
+            handleHomeStateChanged(updatedTokens, state.ethTokens)
         }
     }
 
     override fun toggleTokenVisibilityState() {
         state = state.run { copy(visibilityState = visibilityState.toggle()) }
-        userInteractor.setHiddenTokensVisibility(state.visibilityState.isVisible)
+        homeInteractor.setHiddenTokensVisibility(state.visibilityState.isVisible)
 
         showTokensAndBalance()
     }
 
     override fun clearTokensCache() {
         state = state.copy(tokens = emptyList())
+    }
+
+    private fun getDefaultBanner(): HomeBannerItem {
+        return HomeBannerItem(
+            titleTextId = R.string.main_banner_title,
+            subtitleTextId = R.string.main_banner_subtitle,
+            buttonTextId = R.string.main_banner_button,
+            drawableRes = R.drawable.ic_main_banner,
+            backgroundColorRes = R.color.bannerBackgroundColor
+        )
     }
 
     private fun showTokensAndBalance() {
@@ -529,17 +618,26 @@ class HomePresenter(
             logBalance(balance)
 
             /* Mapping elements according to visibility settings */
-            val areZerosHidden = settingsInteractor.areZerosHidden()
-            val mappedTokens = homeElementItemMapper.mapToItems(
+            val areZerosHidden = homeInteractor.areZerosHidden()
+            val mappedTokens: List<HomeElementItem> = homeMapper.mapToItems(
                 tokens = state.tokens,
                 ethereumTokens = state.ethTokens,
                 visibilityState = state.visibilityState,
-                isZerosHidden = areZerosHidden
+                strigaClaimableTokens = state.strigaClaimableTokens,
+                isZerosHidden = areZerosHidden,
             )
 
-            claimAnalytics.logClaimAvailable(state.ethTokens.any { !it.isClaiming })
+            analytics.logClaimAvailable(ethTokens = state.ethTokens)
+            val strigaBanner = state.strigaKycStatusBanner
+                ?.let { homeMapper.mapToHomeBanner(isLoading = state.isStrigaKycBannerLoading, it) }
+            val homeToken = buildList {
+                if (strigaBanner != null) {
+                    this += HomeElementItem.Banner(strigaBanner)
+                }
+                addAll(mappedTokens)
+            }
 
-            view?.showTokens(mappedTokens, areZerosHidden)
+            view?.showTokens(homeToken, areZerosHidden)
         }
     }
 
@@ -560,35 +658,8 @@ class HomePresenter(
             .scaleShort()
     }
 
-    private fun getBanners(): List<Banner> {
-        val usernameExists = state.username != null
-
-        val feedbackBanner = Banner(
-            R.string.home_feedback_banner_option,
-            R.string.main_feedback_banner_action,
-            R.drawable.ic_feedback,
-            R.color.backgroundBannerSecondary,
-            isSingle = usernameExists
-        )
-
-        return if (usernameExists) {
-            listOf(feedbackBanner)
-        } else {
-            val usernameBanner = Banner(
-                R.string.home_username_banner_option,
-                R.string.main_username_banner_action,
-                R.drawable.ic_username,
-                R.color.backgroundBanner
-            )
-            listOf(
-                usernameBanner,
-                feedbackBanner
-            )
-        }
-    }
-
     override fun onProfileClick() {
-        if (usernameInteractor.isUsernameExist()) {
+        if (homeInteractor.isUsernameExist()) {
             view?.navigateToProfile()
         } else {
             view?.navigateToReserveUsername()
@@ -596,9 +667,9 @@ class HomePresenter(
     }
 
     override fun updateTokensIfNeeded() {
-        if (state.areZerosHidden != settingsInteractor.areZerosHidden()) {
+        if (state.areZerosHidden != homeInteractor.areZerosHidden()) {
             refreshTokens()
-            state = state.copy(areZerosHidden = settingsInteractor.areZerosHidden())
+            state = state.copy(areZerosHidden = homeInteractor.areZerosHidden())
         }
     }
 
@@ -606,4 +677,6 @@ class HomePresenter(
         environmentManager.removeEnvironmentListener(this::class)
         super.detach()
     }
+
+    private fun showRefreshing(isRefreshing: Boolean) = refreshingFlow.tryEmit(isRefreshing)
 }

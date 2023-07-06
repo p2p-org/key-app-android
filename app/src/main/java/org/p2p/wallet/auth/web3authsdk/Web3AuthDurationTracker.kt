@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.web3authsdk
 
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
+import org.p2p.core.network.environment.TorusEnvironment
 import org.p2p.wallet.utils.DateTimeUtils.PATTERN_HH_MM_SS_SS
 import org.p2p.wallet.utils.DateTimeUtils.getFormattedDate
 import org.p2p.wallet.utils.emptyString
@@ -35,10 +35,10 @@ class Web3AuthDurationTracker(
         Timber.tag(TAG).i(
             buildString {
                 append("--> Web3Auth request: ")
-                append("$methodName;")
-                append("${torusNetwork.verifier};")
-                append("${torusNetwork.subVerifier};")
-                append("${torusNetwork.baseUrl};")
+                append("$methodName; ")
+                append("${torusNetwork.verifier}; ")
+                append("${torusNetwork.subVerifier}; ")
+                append("${torusNetwork.baseUrl}; ")
                 append("date=${getFormattedDate(Date().time, PATTERN_HH_MM_SS_SS)}")
             }
         )

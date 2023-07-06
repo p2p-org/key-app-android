@@ -11,7 +11,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
@@ -21,9 +20,10 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.moonpay.ui.BuySolanaFragment
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.moonpay.analytics.BuyAnalytics
+import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
@@ -32,15 +32,17 @@ import org.p2p.wallet.receive.solana.NewReceiveSolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.tokenselect.dialog.SelectReceiveNetworkBottomSheet
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
-import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.sell.analytics.SellAnalytics
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
+import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -68,8 +70,12 @@ class TokenHistoryFragment :
     private val binding: FragmentTokenHistoryBinding by viewBinding()
 
     private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val buyAnalytics: BuyAnalytics by inject()
+    private val sendAnalytics: NewSendAnalytics by inject()
+    private val swapAnalytics: SwapAnalytics by inject()
+    private val sellAnalytics: SellAnalytics by inject()
+    private val buyFragmentFactory: BuyFragmentFactory by inject()
 
-    private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
     private var listener: RootListener? = null
 
     override fun onAttach(context: Context) {
@@ -144,26 +150,28 @@ class TokenHistoryFragment :
     private fun onActionButtonClicked(clickedButton: ActionButton) {
         when (clickedButton) {
             ActionButton.BUY_BUTTON -> {
-                replaceFragment(
-                    if (newBuyFeatureToggle.value) {
-                        NewBuyFragment.create(tokenForHistory)
-                    } else {
-                        BuySolanaFragment.create(tokenForHistory)
-                    }
-                )
+                buyAnalytics.logTokenScreenActionClicked()
+                replaceFragment(buyFragmentFactory.buyFragment(tokenForHistory))
             }
             ActionButton.RECEIVE_BUTTON -> {
+                receiveAnalytics.logTokenScreenActionClicked()
                 receiveAnalytics.logTokenReceiveViewed(tokenForHistory.tokenName)
                 presenter.onReceiveClicked()
             }
             ActionButton.SEND_BUTTON -> {
+                sendAnalytics.logTokenScreenActionClicked(NewSendAnalytics.AnalyticsSendFlow.SEND)
                 replaceFragment(NewSearchFragment.create(tokenForHistory, SearchOpenedFromScreen.MAIN))
             }
             ActionButton.SWAP_BUTTON -> {
+                swapAnalytics.logTokenScreenActionClicked()
                 replaceFragment(JupiterSwapFragment.create(tokenForHistory, SwapOpenedFrom.TOKEN_SCREEN))
             }
             ActionButton.SELL_BUTTON -> {
+                sellAnalytics.logTokenScreenActionClicked()
                 replaceFragment(SellPayloadFragment.create())
+            }
+            else -> {
+                // do nothing
             }
         }
     }

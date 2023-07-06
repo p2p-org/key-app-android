@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import timber.log.Timber
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -27,7 +29,7 @@ import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
-import org.p2p.wallet.home.analytics.BrowseAnalytics
+import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
@@ -35,10 +37,12 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.moonpay.ui.BuySolanaFragment
+import org.p2p.wallet.kyc.StrigaFragmentFactory
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.moonpay.analytics.BuyAnalytics
+import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
@@ -51,12 +55,18 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
+import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
+import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputFragment
+import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.getSerializableCompat
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -96,10 +106,13 @@ class HomeFragment :
 
     private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
 
-    private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val homeAnalytics: HomeAnalytics by inject()
+    private val buyAnalytics: BuyAnalytics by inject()
 
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
+    private val strigaKycFragmentFactory: StrigaFragmentFactory by inject()
+    private val buyFragmentFactory: BuyFragmentFactory by inject()
     private val layoutManager: LinearLayoutManager by lazy {
         HomeScreenLayoutManager(requireContext())
     }
@@ -189,6 +202,14 @@ class HomeFragment :
         replaceFragment(SellPayloadFragment.create())
     }
 
+    override fun showTopup() {
+        TopUpWalletBottomSheet.show(fm = parentFragmentManager)
+    }
+
+    override fun showSwap() {
+        showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
+    }
+
     private fun FragmentHomeBinding.setupView() {
         layoutToolbar.setupToolbar()
 
@@ -199,11 +220,8 @@ class HomeFragment :
         homeRecyclerView.doOnDetach {
             homeRecyclerView.layoutManager = null
         }
-        swipeRefreshLayout.setOnRefreshListener { presenter.refreshTokens() }
-        viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
-
-        // hidden. temporary. PWN-4381
-        viewBuyTokenBanner.root.isVisible = false
+        swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
+        viewActionButtons.onButtonClicked = ::onActionButtonClicked
 
         if (BuildConfig.DEBUG) {
             with(layoutToolbar) {
@@ -227,24 +245,20 @@ class HomeFragment :
 
     private fun onActionButtonClicked(clickedButton: ActionButton) {
         when (clickedButton) {
-            ActionButton.BUY_BUTTON -> {
-                presenter.onBuyClicked()
-            }
-
-            ActionButton.RECEIVE_BUTTON -> {
-                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
-            }
-
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
             }
-
             ActionButton.SELL_BUTTON -> {
-                replaceFragment(SellPayloadFragment.create())
+                presenter.onSellClicked()
             }
-
             ActionButton.SWAP_BUTTON -> {
-                showSwap(source = SwapOpenedFrom.MAIN_SCREEN)
+                presenter.onSwapClicked()
+            }
+            ActionButton.TOP_UP_BUTTON -> {
+                presenter.onTopupClicked()
+            }
+            else -> {
+                // unsupported on this screen
             }
         }
     }
@@ -252,13 +266,11 @@ class HomeFragment :
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
-                result.getParcelableCompat<Token>(KEY_RESULT_TOKEN)?.also(::showOldBuyScreen)
+                result.getParcelableCompat<Token>(KEY_RESULT_TOKEN)?.also(::navigateToBuyScreen)
             }
-
             KEY_REQUEST_TOKEN_INFO -> {
                 result.getParcelableCompat<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
             }
-
             KEY_REQUEST_ACTION -> {
                 result.getSerializableCompat<HomeAction>(KEY_RESULT_ACTION)?.also(::openScreenByHomeAction)
             }
@@ -267,11 +279,22 @@ class HomeFragment :
 
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
-            HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
-            HomeAction.BUY -> presenter.onBuyClicked()
-            HomeAction.RECEIVE -> replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
-            HomeAction.SWAP -> showSwap(SwapOpenedFrom.ACTION_PANEL)
-            HomeAction.SEND -> presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
+            HomeAction.SELL -> {
+                replaceFragment(SellPayloadFragment.create())
+            }
+            HomeAction.TOP_UP -> {
+                buyAnalytics.logTopupActionButtonClicked()
+                showTopup()
+            }
+            HomeAction.RECEIVE -> {
+                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
+            }
+            HomeAction.SWAP -> {
+                showSwap(SwapOpenedFrom.ACTION_PANEL)
+            }
+            HomeAction.SEND -> {
+                presenter.onSendClicked(clickSource = SearchOpenedFromScreen.ACTION_PANEL)
+            }
         }
     }
 
@@ -279,8 +302,39 @@ class HomeFragment :
         replaceFragment(NewSearchFragment.create(openedFromScreen))
     }
 
-    override fun showOldBuyScreen(token: Token) {
-        replaceFragment(BuySolanaFragment.create(token))
+    override fun navigateToBuyScreen(token: Token) {
+        replaceFragment(buyFragmentFactory.buyFragment(token))
+    }
+
+    override fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?) {
+        replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
+    }
+
+    override fun navigateToKycStatus(status: StrigaKycStatusBanner) {
+        if (status == StrigaKycStatusBanner.VERIFICATION_DONE) {
+            StrigaUserIbanDetailsFragment.create()
+        } else {
+            strigaKycFragmentFactory.kycFragment()
+        }.also(::replaceFragment)
+    }
+
+    override fun navigateToStrigaClaimOtp(usdAmount: String, challengeId: StrigaWithdrawalChallengeId) {
+        val fragment = strigaKycFragmentFactory.claimOtpFragment(
+            titleAmount = usdAmount,
+            challengeId = challengeId
+        )
+        replaceFragmentForResult(fragment, StrigaOnRampSmsInputFragment.REQUEST_KEY, onResult = { _, _ ->
+            Timber.d("Striga claim OTP: success")
+            // todo: show success claim bottomsheet
+        })
+    }
+
+    override fun showKycPendingDialog() {
+        StrigaKycPendingBottomSheet.show(parentFragmentManager)
+    }
+
+    override fun showTopupWalletDialog() {
+        TopUpWalletBottomSheet.show(parentFragmentManager)
     }
 
     override fun showSendNoTokens(fallbackToken: Token) {
@@ -293,10 +347,6 @@ class HomeFragment :
 
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
         listener?.showTransactionProgress(bundleId, progressDetails)
-    }
-
-    override fun showNewBuyScreen(token: Token, fiatToken: String?, fiatAmount: String?) {
-        replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
@@ -351,29 +401,32 @@ class HomeFragment :
         replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
     }
 
-    override fun onBannerClicked(bannerId: Int) {
-        when (bannerId) {
-            R.id.home_banner_top_up -> {
-                replaceFragment(receiveFragmentFactory.receiveFragment(token = null))
-            }
+    override fun onBannerClicked(bannerTitleId: Int) {
+        presenter.onBannerClicked(bannerTitleId)
+    }
 
-            R.string.home_username_banner_option -> {
-                browseAnalytics.logBannerUsernamePressed()
-                replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
-            }
+    override fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim) {
+        presenter.onStrigaClaimTokenClicked(item)
+    }
 
-            R.string.home_feedback_banner_option -> {
-                browseAnalytics.logBannerFeedbackPressed()
-                IntercomService.showMessenger()
+    override fun showStrigaClaimProgress(isClaimInProgress: Boolean, tokenMint: Base58String) {
+        contentAdapter.updateItem<HomeElementItem.StrigaClaim>(
+            itemFilter = { item ->
+                item is HomeElementItem.StrigaClaim && item.tokenMintAddress == tokenMint
+            },
+            transform = {
+                it.copy(isClaimInProcess = isClaimInProgress)
             }
-        }
+        )
     }
 
     override fun onToggleClicked() {
+        homeAnalytics.logHiddenTokensClicked()
         presenter.toggleTokenVisibilityState()
     }
 
     override fun onTokenClicked(token: Token.Active) {
+        homeAnalytics.logMainScreenTokenDetailsOpen(tokenTier = token.tokenSymbol)
         replaceFragment(TokenHistoryFragment.create(token))
     }
 
@@ -382,6 +435,7 @@ class HomeFragment :
     }
 
     override fun onHideClicked(token: Token.Active) {
+        homeAnalytics.logHiddenTokensClicked()
         presenter.toggleTokenVisibility(token)
     }
 

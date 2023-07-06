@@ -9,10 +9,14 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
 import java.security.KeyStore
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFeatureToggleStorage
+import org.p2p.core.network.NetworkServicesUrlStorage
+import org.p2p.core.network.storage.NetworkEnvironmentPreferenceStorage
+import org.p2p.core.network.storage.NetworkEnvironmentStorage
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.infrastructure.account.AccountStorage
@@ -21,14 +25,17 @@ import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorage
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
+import org.p2p.wallet.striga.user.StrigaStorage
+import org.p2p.wallet.striga.user.StrigaStorageContract
 
 private const val PREFS_DEFAULT = "prefs"
 private const val PREFS_ACCOUNT = "account_prefs"
 private const val PREFS_TOGGLE = "toggle_prefs"
 private const val PREFS_SWAP = "swap_prefs"
+private const val PREFS_STRIGA = "striga_prefs"
 
 object StorageModule {
-    private fun Scope.androidPreferences(prefsName: String): SharedPreferences {
+    fun Scope.androidPreferences(prefsName: String): SharedPreferences {
         return with(androidContext()) {
             getSharedPreferences("$packageName.$prefsName", Context.MODE_PRIVATE)
         }
@@ -38,6 +45,11 @@ object StorageModule {
     fun create() = module {
         // TODO PWN-5418 - extract misc data to separate prefs
         single { androidPreferences(PREFS_DEFAULT) }
+
+        factory {
+            val sharedPreferences: SharedPreferences = get()
+            NetworkEnvironmentPreferenceStorage(preferences = sharedPreferences)
+        } bind NetworkEnvironmentStorage::class
 
         // TODO PWN-5418 - extract data to separate prefs from org.p2p.wallet.prefs
         factory {
@@ -66,16 +78,21 @@ object StorageModule {
             )
         } bind AccountStorageContract::class
 
-        single {
-            LocalFeatureToggleStorage(
-                sharedPreferences = androidPreferences(prefsName = PREFS_TOGGLE)
-            )
-        }
+        single { LocalFeatureToggleStorage(androidPreferences(prefsName = PREFS_TOGGLE)) }
+
+        single { InAppFeatureFlags(androidPreferences(prefsName = PREFS_TOGGLE)) }
+
+        single { NetworkServicesUrlStorage(androidPreferences(prefsName = PREFS_TOGGLE)) }
 
         factory {
             val prefs = androidPreferences(PREFS_SWAP)
             JupiterSwapStorage(prefs, gson = get())
         } bind JupiterSwapStorageContract::class
+
+        factory {
+            val prefs = androidPreferences(PREFS_STRIGA)
+            StrigaStorage(prefs, gson = get())
+        } bind StrigaStorageContract::class
 
         single { KeyStore.getInstance("AndroidKeyStore") }
         factoryOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class

@@ -17,12 +17,12 @@ import java.util.Objects
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.hideKeyboard
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.financeBlockCellDelegate
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.mainCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
 import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.recycler.decoration.groupedRoundingFinanceBlockDecoration
+import org.p2p.uikit.utils.recycler.decoration.groupedRoundingMainCellDecoration
 import org.p2p.uikit.utils.recycler.decoration.onePxDividerFinanceBlockDecoration
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
@@ -68,7 +68,7 @@ class ReceiveTokensFragment :
 
     private val adapter = CommonAnyCellAdapter(
         sectionHeaderCellDelegate(),
-        financeBlockCellDelegate(inflateListener = { financeBlock ->
+        mainCellDelegate(inflateListener = { financeBlock ->
             financeBlock.setOnClickAction { _, item -> onTokenClick(item) }
         }),
         diffUtilCallback = TokenDiffCallback()
@@ -90,7 +90,7 @@ class ReceiveTokensFragment :
 
         with(binding.recyclerViewTokens) {
             attachAdapter(this@ReceiveTokensFragment.adapter)
-            addItemDecoration(groupedRoundingFinanceBlockDecoration())
+            addItemDecoration(groupedRoundingMainCellDecoration())
             addItemDecoration(onePxDividerFinanceBlockDecoration(requireContext()))
             doOnAttach {
                 layoutManager = this@ReceiveTokensFragment.layoutManager
@@ -205,7 +205,7 @@ class ReceiveTokensFragment :
         )
     }
 
-    private fun onTokenClick(item: FinanceBlockCellModel) {
+    private fun onTokenClick(item: MainCellModel) {
         val payload = item.typedPayload() as ReceiveTokenPayload
         receiveAnalytics.logTokenClicked(payload.tokenData.symbol)
         presenter.onTokenClicked(payload)
@@ -216,7 +216,7 @@ private class TokenDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
 
     override fun areItemsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {
-            oldItem is FinanceBlockCellModel && newItem is FinanceBlockCellModel -> {
+            oldItem is MainCellModel && newItem is MainCellModel -> {
                 val oldData = oldItem.typedPayload<ReceiveTokenPayload>().tokenData
                 val newData = newItem.typedPayload<ReceiveTokenPayload>().tokenData
                 oldData.name == newData.name && oldData.symbol == newData.symbol
@@ -227,7 +227,7 @@ private class TokenDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
 
     override fun areContentsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {
-            oldItem is FinanceBlockCellModel && newItem is FinanceBlockCellModel -> {
+            oldItem is MainCellModel && newItem is MainCellModel -> {
                 val oldData = oldItem.typedPayload<ReceiveTokenPayload>().tokenData
                 val newData = newItem.typedPayload<ReceiveTokenPayload>().tokenData
                 oldData.name == newData.name && oldData.symbol == newData.symbol

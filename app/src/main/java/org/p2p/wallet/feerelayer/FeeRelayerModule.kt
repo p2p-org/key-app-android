@@ -6,7 +6,8 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
@@ -16,8 +17,7 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRemoteRepository
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
-import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
-import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.feerelayer.FeeRelayerInterceptor
 
 object FeeRelayerModule : InjectionModule {

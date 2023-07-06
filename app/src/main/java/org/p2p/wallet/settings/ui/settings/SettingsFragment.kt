@@ -16,13 +16,14 @@ import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
-import org.p2p.wallet.settings.ui.recovery.RecoveryKitFragment
+import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyFragment
 import org.p2p.wallet.settings.ui.resetpin.main.ResetPinIntroFragment
 import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.requireParcelable
 import org.p2p.wallet.utils.showInfoDialog
+import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -82,25 +83,26 @@ class SettingsFragment :
 
     private fun handleNavigationForComplexItem(settings: SettingsItem.ComplexSettingsItem) {
         when (settings.nameRes) {
-            R.string.settings_item_title_recovery_kit -> {
-                presenter.onRecoveryKitClicked()
+            R.string.settings_item_title_security -> {
+                presenter.onSecurityClicked()
             }
             R.string.settings_item_title_username -> {
                 presenter.onUsernameSettingClicked()
             }
             R.string.settings_item_title_pin -> {
-                replaceFragment(ResetPinIntroFragment.create())
+                presenter.onPinClicked()
             }
             R.string.settings_item_title_networks -> {
-                analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.NETWORK)
-                SettingsNetworkBottomSheet.show(
-                    fm = childFragmentManager,
-                    requestKey = REQUEST_KEY,
-                    resultKey = RESULT_KEY_NEW_NETWORK
-                )
+                presenter.onNetworkClicked()
             }
             R.string.settings_item_title_support -> {
-                IntercomService.showMessenger()
+                presenter.onSupportClicked()
+            }
+            R.string.settings_item_title_twitter -> {
+                presenter.onOpenTwitterClicked()
+            }
+            R.string.settings_item_title_discord -> {
+                presenter.onOpenDiscordClicked()
             }
         }
     }
@@ -140,11 +142,36 @@ class SettingsFragment :
         replaceFragment(ReserveUsernameFragment.create(ReserveUsernameOpenedFrom.SETTINGS))
     }
 
+    override fun openPinScreen() {
+        replaceFragment(ResetPinIntroFragment.create())
+    }
+
+    override fun openNetworkScreen() {
+        SettingsNetworkBottomSheet.show(
+            fm = childFragmentManager,
+            requestKey = REQUEST_KEY,
+            resultKey = RESULT_KEY_NEW_NETWORK
+        )
+    }
+
+    override fun openSupportScreen() {
+        IntercomService.showMessenger()
+    }
+
+    override fun openTwitterScreen() {
+        requireContext().showUrlInCustomTabs("https://twitter.com/KeyApp_")
+    }
+
+    override fun openDiscordScreen() {
+        val discordLink = "https://discord.gg/SpW3GmEYgU"
+        requireContext().showUrlInCustomTabs(discordLink)
+    }
+
     override fun openUsernameScreen() {
         replaceFragment(UsernameFragment.create())
     }
 
-    override fun openRecoveryKitScreen() {
-        replaceFragment(RecoveryKitFragment.create())
+    override fun openSecurityAndPrivacy() {
+        replaceFragment(SecurityAndPrivacyFragment.create())
     }
 }

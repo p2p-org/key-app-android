@@ -15,7 +15,7 @@ import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepos
 import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class SwapStateRoutesRefresher(
     private val tokenKeyProvider: TokenKeyProvider,
@@ -73,7 +73,7 @@ class SwapStateRoutesRefresher(
                 tokenB = tokenB,
                 amountTokenA = amountTokenA,
                 routes = updatedRoutes,
-                activeRoute = activeRouteIndex,
+                activeRouteIndex = activeRouteIndex,
                 amountTokenB = amountTokenB,
                 slippage = slippage,
             )
@@ -85,7 +85,7 @@ class SwapStateRoutesRefresher(
             tokenB = tokenB,
             amountTokenA = amountTokenA,
             routes = updatedRoutes,
-            activeRoute = activeRouteIndex,
+            activeRouteIndex = activeRouteIndex,
             amountTokenB = amountTokenB,
             slippage = slippage,
         )
@@ -102,7 +102,7 @@ class SwapStateRoutesRefresher(
             lamportsTokenA = activeRoute.inAmountInLamports,
             lamportsTokenB = activeRoute.outAmountInLamports,
             routes = updatedRoutes,
-            activeRoute = activeRouteIndex,
+            activeRouteIndex = activeRouteIndex,
             jupiterSwapTransaction = freshSwapTransaction,
             slippage = slippage
         )

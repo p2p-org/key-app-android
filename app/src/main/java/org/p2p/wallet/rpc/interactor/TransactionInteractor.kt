@@ -9,8 +9,8 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.model.types.ConfirmationStatus
-import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository

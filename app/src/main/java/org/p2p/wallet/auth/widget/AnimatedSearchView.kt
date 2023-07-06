@@ -1,5 +1,10 @@
 package org.p2p.wallet.auth.widget
 
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import android.animation.Animator
 import android.content.Context
 import android.text.Editable
@@ -7,18 +12,24 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.ViewAnimationUtils
 import android.widget.RelativeLayout
-import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.core.utils.showKeyboard
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.databinding.WidgetSearchViewBinding
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class AnimatedSearchView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : RelativeLayout(context, attrs) {
+
+    private interface SearchViewAnimatorListener : Animator.AnimatorListener {
+        override fun onAnimationStart(animation: Animator) = Unit
+        override fun onAnimationEnd(animation: Animator) = Unit
+        override fun onAnimationCancel(animation: Animator) = Unit
+        override fun onAnimationRepeat(animation: Animator) = Unit
+    }
 
     private val binding = inflateViewBinding<WidgetSearchViewBinding>()
     private var animator: Animator? = null
@@ -47,15 +58,11 @@ class AnimatedSearchView @JvmOverloads constructor(
             width
                 .toFloat()
         )
-        animator?.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animator: Animator) {}
-            override fun onAnimationEnd(animator: Animator) {
+        animator?.addListener(object : SearchViewAnimatorListener {
+            override fun onAnimationEnd(animation: Animator) {
                 editTextSearch.requestFocus()
                 editTextSearch.showKeyboard()
             }
-
-            override fun onAnimationCancel(animator: Animator) {}
-            override fun onAnimationRepeat(animator: Animator) {}
         })
         animator?.duration = 200
         animator?.start()
@@ -72,17 +79,13 @@ class AnimatedSearchView @JvmOverloads constructor(
         )
         animator?.duration = 200
         animator?.start()
-        animator?.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animator: Animator) {}
-            override fun onAnimationEnd(animator: Animator) {
+        animator?.addListener(object : SearchViewAnimatorListener {
+            override fun onAnimationEnd(animation: Animator) {
                 relativeLayoutSearchContainer.visibility = INVISIBLE
                 editTextSearch.setText("")
-                animator.removeAllListeners()
+                animation.removeAllListeners()
                 if (stateListener != null) stateListener!!.onClosed()
             }
-
-            override fun onAnimationCancel(animator: Animator) {}
-            override fun onAnimationRepeat(animator: Animator) {}
         })
     }
 
@@ -102,6 +105,15 @@ class AnimatedSearchView @JvmOverloads constructor(
         binding.editTextSearch.removeTextChangedListener(textWatcher)
     }
 
+    fun setBgColor(@ColorRes colorRes: Int) {
+        binding.relativeLayoutContainer.setBackgroundColor(getColor(colorRes))
+        binding.relativeLayoutSearchContainer.setBackgroundColor(getColor(colorRes))
+    }
+
+    fun setHint(@StringRes titleResId: Int) {
+        binding.editTextSearch.hint = binding.getString(titleResId)
+    }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         if (animator != null) animator!!.cancel()
@@ -109,7 +121,7 @@ class AnimatedSearchView @JvmOverloads constructor(
 
     fun isBackPressEnabled(): Boolean = binding.relativeLayoutSearchContainer.isVisible
 
-    interface SearchStateListener {
+    fun interface SearchStateListener {
         fun onClosed()
     }
 }

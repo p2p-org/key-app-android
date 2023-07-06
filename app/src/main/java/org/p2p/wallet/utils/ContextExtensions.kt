@@ -5,7 +5,6 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -13,17 +12,16 @@ import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import timber.log.Timber
+import java.io.File
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import timber.log.Timber
-import java.io.File
 
 fun Context.vibrate(duration: Long = 500) {
     val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -83,19 +81,4 @@ fun Context.getDrawableCompat(@DrawableRes drawableId: Int): Drawable? {
 
 fun Context.getColorStateListCompat(@ColorRes colorRes: Int): ColorStateList? {
     return ContextCompat.getColorStateList(this, colorRes)
-}
-
-/**
- * Use this is very rare cases if you don't have an opportunity to get the string resource
- * in a common way like R.string.foo
- * */
-@SuppressLint("DiscouragedApi")
-fun Context.getStringResourceByName(resourceName: String): String {
-    val resId = resources.getIdentifier(resourceName, "string", packageName)
-    return try {
-        getString(resId)
-    } catch (e: Resources.NotFoundException) {
-        if (!BuildConfig.DEBUG) Timber.e(e, "String resource $resourceName is not found")
-        emptyString()
-    }
 }

@@ -1,15 +1,13 @@
 package org.p2p.ethereumkit.internal.core
 
-import android.util.Log
 import org.web3j.crypto.ECKeyPair
-import org.web3j.crypto.RawTransaction
 import org.web3j.crypto.Sign
 import org.web3j.crypto.TransactionDecoder
 import org.web3j.crypto.TransactionEncoder
 import java.math.BigInteger
 import org.p2p.core.wrapper.HexString
+import org.p2p.core.wrapper.eth.toInt
 import org.p2p.ethereumkit.internal.models.Signature
-import org.p2p.ethereumkit.internal.spv.core.toInt
 
 class TransactionSignerEip1559(
     private val privateKey: BigInteger,

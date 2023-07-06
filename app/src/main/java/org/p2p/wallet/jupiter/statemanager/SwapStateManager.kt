@@ -23,9 +23,10 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.orZero
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.coroutines.hasTestScheduler
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
@@ -35,9 +36,7 @@ import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.utils.Base58String
-
-private const val DELAY_IN_MILLIS = 20_000L
+import org.p2p.core.crypto.Base58String
 
 private const val TAG = "SwapStateManager"
 
@@ -50,6 +49,7 @@ class SwapStateManager(
     private val analytics: JupiterSwapMainScreenAnalytics,
     private val homeLocalRepository: HomeLocalRepository,
     private val userTokensChangeHandler: SwapUserTokensChangeHandler,
+    private val swapRoutesRefreshFeatureToggle: SwapRoutesRefreshFeatureToggle
 ) : CoroutineScope {
 
     companion object {
@@ -162,7 +162,7 @@ class SwapStateManager(
         refreshJob = launch {
             try {
                 while (refreshJob?.isActive == true) {
-                    delay(DELAY_IN_MILLIS)
+                    delay(swapRoutesRefreshFeatureToggle.durationInMilliseconds)
                     val action = SwapStateAction.RefreshRoutes
                     lastSwapStateAction = action
                     handleNewAction(action)

@@ -7,11 +7,11 @@ import assertk.assertions.prop
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.utils.Constants
 
 class UsernameParserTest {
 

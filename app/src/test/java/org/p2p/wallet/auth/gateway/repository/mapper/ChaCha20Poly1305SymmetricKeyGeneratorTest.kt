@@ -4,9 +4,9 @@ import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import org.junit.Test
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.chacha.ChaCha20Poly1305SymmetricKeyGenerator
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class ChaCha20Poly1305SymmetricKeyGeneratorTest {
     private val expectedSymmetricKey: Base58String =

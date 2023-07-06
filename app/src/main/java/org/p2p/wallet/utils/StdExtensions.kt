@@ -1,13 +1,9 @@
 package org.p2p.wallet.utils
 
-import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305
-import org.koin.ext.getFullName
-import timber.log.Timber
 import java.math.BigDecimal
 import org.p2p.core.utils.orZero
 
@@ -27,26 +23,8 @@ inline fun <E> List<E>.ifNotEmpty(action: (originalList: List<E>) -> Unit): List
     return this
 }
 
-inline fun <reified Type> Gson.fromJsonReified(json: String): Type? {
-    val result = fromJson<Type>(json, object : TypeToken<Type>() {}.type)
-    if (result == null) {
-        Timber.e(IllegalArgumentException("Couldn't parse ${Type::class.getFullName()} from json: ${json.take(30)}"))
-    }
-    return result
-}
-
-fun Result<*>.invokeAndForget() {
-    getOrNull()
-}
-
 // can be used for debug purposes
 fun ByteArray.toUIntArray(): String = map(Byte::toUByte).joinToString(prefix = "[", postfix = "]")
-
-fun Gson.toJsonObject(obj: Any): JsonObject {
-    val objectAsJsonStr = toJson(obj).takeIf { obj !is String }
-    return fromJsonReified<JsonObject>(objectAsJsonStr ?: obj.toString())
-        ?: error("Failed to convert object $objectAsJsonStr ($obj) to JsonObject")
-}
 
 fun JsonObject.toByteArray(): ByteArray = toString().toByteArray()
 

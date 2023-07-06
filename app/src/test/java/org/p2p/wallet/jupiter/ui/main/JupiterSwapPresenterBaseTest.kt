@@ -27,9 +27,10 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.DecimalFormatter
 import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
@@ -40,6 +41,7 @@ import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageMock
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
+import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
@@ -75,7 +77,7 @@ import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
@@ -108,6 +110,9 @@ open class JupiterSwapPresenterBaseTest {
 
     @MockK
     lateinit var jupiterSwapTokensRepository: JupiterSwapTokensRepository
+
+    @MockK
+    lateinit var swapRoutesRefreshFeatureToggle: SwapRoutesRefreshFeatureToggle
 
     @MockK(relaxed = true)
     lateinit var relaySdkFacade: RelaySdkFacade
@@ -246,18 +251,12 @@ open class JupiterSwapPresenterBaseTest {
     }
 
     private fun initJupiterSwapInteractor(
-        swapper: (Base64String) -> JupiterSwapInteractor.JupiterSwapTokensResult
+        swapper: (Base64String) -> JupiterSwapTokensResult
     ) {
-        jupiterSwapInteractor = spyk(
-            JupiterSwapInteractor(
-                relaySdkFacade = relaySdkFacade,
-                tokenKeyProvider = tokenKeyProvider,
-                rpcSolanaRepository = rpcSolanaRepository
-            )
-        )
+        jupiterSwapInteractor = spyk(JupiterSwapInteractor(mockk(relaxed = true)))
 
-        coEvery { jupiterSwapInteractor.swapTokens(any()) } answers {
-            swapper(arg(0))
+        coEvery { jupiterSwapInteractor.swapTokens(any(), any()) } answers {
+            swapper(arg(1))
         }
     }
 
@@ -419,7 +418,8 @@ open class JupiterSwapPresenterBaseTest {
             userTokensChangeHandler = SwapUserTokensChangeHandler(
                 jupiterSwapInteractor,
                 jupiterSwapTokensRepository
-            )
+            ),
+            swapRoutesRefreshFeatureToggle = swapRoutesRefreshFeatureToggle
         )
     }
 
@@ -478,7 +478,9 @@ open class JupiterSwapPresenterBaseTest {
         )
     }
 
-    protected fun createPresenterAndTokens(builder: JupiterTestPresenterBuilder.() -> Unit = {}): Triple<Token.Active, Token.Active, JupiterSwapContract.Presenter> {
+    protected fun createPresenterAndTokens(
+        builder: JupiterTestPresenterBuilder.() -> Unit = {}
+    ): Triple<Token.Active, Token.Active, JupiterSwapContract.Presenter> {
         val firstToken = JupiterSwapTestHelpers.createUSDCToken(BigDecimal("10.28"))
         val secondToken = JupiterSwapTestHelpers.createSOLToken(
             amount = BigDecimal("26.48"),

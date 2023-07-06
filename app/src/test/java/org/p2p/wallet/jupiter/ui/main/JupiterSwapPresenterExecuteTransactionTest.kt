@@ -1,17 +1,17 @@
 package org.p2p.wallet.jupiter.ui.main
 
+import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.lang.RuntimeException
 import java.math.BigDecimal
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
+import org.p2p.core.network.data.ErrorCode
+import org.p2p.core.network.data.ServerException
+import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapTestHelpers.attachCallsLog
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.utils.CoroutineExtension
@@ -50,7 +50,7 @@ class JupiterSwapPresenterExecuteTransactionTest : JupiterSwapPresenterBaseTest(
             homeRepoAllTokens = mutableListOf(firstToken, secondToken)
             homeRepoUserTokens = homeRepoAllTokens
             jupiterSwapInteractorSwapTokens = { base64String ->
-                JupiterSwapInteractor.JupiterSwapTokensResult.Success(base64String.base64Value)
+                JupiterSwapTokensResult.Success(base64String.base64Value)
             }
         }
         presenter.attach(view)
@@ -77,11 +77,13 @@ class JupiterSwapPresenterExecuteTransactionTest : JupiterSwapPresenterBaseTest(
             rateToUsd = BigDecimal("22.14")
         )
 
+        every { swapRoutesRefreshFeatureToggle.durationInMilliseconds } returns 10000L
+
         val presenter = createPresenter {
             homeRepoAllTokens = mutableListOf(firstToken, secondToken)
             homeRepoUserTokens = homeRepoAllTokens
             jupiterSwapInteractorSwapTokens = { base64String ->
-                JupiterSwapInteractor.JupiterSwapTokensResult.Success(base64String.base64Value)
+                JupiterSwapTokensResult.Success(base64String.base64Value)
             }
         }
         presenter.attach(view)
@@ -111,12 +113,14 @@ class JupiterSwapPresenterExecuteTransactionTest : JupiterSwapPresenterBaseTest(
             rateToUsd = BigDecimal("22.14")
         )
 
+        every { swapRoutesRefreshFeatureToggle.durationInMilliseconds } returns 10000L
+
         val presenter = createPresenter {
             homeRepoAllTokens = mutableListOf(firstToken, secondToken)
             homeRepoUserTokens = homeRepoAllTokens
             jupiterSwapInteractorSwapTokens = { _ ->
-                JupiterSwapInteractor.JupiterSwapTokensResult.Failure(
-                    JupiterSwapInteractor.LowSlippageRpcError(
+                JupiterSwapTokensResult.Failure(
+                    JupiterSwapTokensResult.Failure.LowSlippageRpcError(
                         ServerException(ErrorCode.SLIPPAGE_LIMIT, "Low slippage", null)
                     )
                 )
@@ -150,13 +154,13 @@ class JupiterSwapPresenterExecuteTransactionTest : JupiterSwapPresenterBaseTest(
             rateToUsd = BigDecimal("22.14")
         )
 
+        every { swapRoutesRefreshFeatureToggle.durationInMilliseconds } returns 10000L
+
         val presenter = createPresenter {
             homeRepoAllTokens = mutableListOf(firstToken, secondToken)
             homeRepoUserTokens = homeRepoAllTokens
             jupiterSwapInteractorSwapTokens = { _ ->
-                JupiterSwapInteractor.JupiterSwapTokensResult.Failure(
-                    RuntimeException("Expected error")
-                )
+                JupiterSwapTokensResult.Failure(RuntimeException("Expected error"))
             }
         }
         presenter.attach(view)

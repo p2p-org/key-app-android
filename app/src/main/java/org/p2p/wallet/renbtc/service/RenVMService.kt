@@ -16,6 +16,7 @@ import kotlin.coroutines.CoroutineContext
 
 private const val TAG = "RenVMService"
 
+@Deprecated("RenVM is deprecated, we are not supporting renBTC anymore")
 class RenVMService : Service(), CoroutineScope {
 
     companion object {

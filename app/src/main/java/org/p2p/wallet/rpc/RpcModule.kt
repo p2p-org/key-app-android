@@ -5,13 +5,15 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
 import org.p2p.solanaj.rpc.RenPoolRepository
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.api.RpcAccountApi
 import org.p2p.wallet.rpc.api.RpcAmountApi
 import org.p2p.wallet.rpc.api.RpcBalanceApi
@@ -21,24 +23,22 @@ import org.p2p.wallet.rpc.api.RpcTransactionApi
 import org.p2p.wallet.rpc.interactor.CloseAccountInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
-import org.p2p.wallet.rpc.repository.amount.RpcAmountRemoteRepository
-import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.account.RpcAccountRemoteRepository
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRemoteRepository
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRemoteRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRemoteRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
-import org.p2p.wallet.rpc.repository.signature.RpcSignatureRemoteRepository
-import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.rpc.repository.history.RpcTransactionRemoteRepository
 import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
 import org.p2p.wallet.rpc.repository.ren.RenPoolApi
 import org.p2p.wallet.rpc.repository.ren.RenPoolRemoteRepository
+import org.p2p.wallet.rpc.repository.signature.RpcSignatureRemoteRepository
+import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.rpc.repository.solana.RpcSolanaApi
 import org.p2p.wallet.rpc.repository.solana.RpcSolanaRemoteRepository
-import retrofit2.Retrofit
-import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 
 object RpcModule : InjectionModule {
 
@@ -77,7 +77,7 @@ object RpcModule : InjectionModule {
 
         single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcSolanaApi::class.java)
-            RpcSolanaRemoteRepository(api, get())
+            RpcSolanaRemoteRepository(api, get(), get())
         } bind RpcSolanaRepository::class
 
         factory {

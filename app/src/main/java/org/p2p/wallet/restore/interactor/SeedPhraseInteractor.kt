@@ -15,14 +15,15 @@ import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRepository
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SeedPhraseVerifyResult
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.mnemoticgenerator.English
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.solanaj.core.toBase58Instance
 
 // duck-taped, extract to storage some day
 const val KEY_IS_AUTH_BY_SEED_PHRASE = "KEY_IS_AUTH_BY_SEED_PHRASE"

@@ -6,7 +6,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.moonpay.interactor.BuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.ui.new.NewBuyContract
@@ -17,6 +17,8 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaPresenter
 object BuyModule : InjectionModule {
 
     override fun create() = module {
+        factoryOf(::BuyFragmentFactory)
+
         initDomainLayer()
         initPresentationLayer()
     }

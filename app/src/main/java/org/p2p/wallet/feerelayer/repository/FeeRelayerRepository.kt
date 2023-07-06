@@ -7,7 +7,7 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
 import java.math.BigInteger
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.feerelayer.model.FeeRelayerSignTransaction
 
 interface FeeRelayerRepository {

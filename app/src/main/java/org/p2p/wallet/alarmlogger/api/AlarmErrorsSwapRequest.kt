@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 data class AlarmErrorsSwapRequest(
     @SerializedName("token_a")

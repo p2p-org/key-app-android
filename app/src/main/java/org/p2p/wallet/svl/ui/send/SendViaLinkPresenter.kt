@@ -68,7 +68,7 @@ class SendViaLinkPresenter(
 
     override fun attach(view: SendViaLinkContract.View) {
         super.attach(view)
-        newSendAnalytics.logNewSendScreenOpened()
+        newSendAnalytics.logNewSendScreenOpened(NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK)
         subscribeToSelectedTokenUpdates()
         initialize(view)
     }
@@ -165,7 +165,7 @@ class SendViaLinkPresenter(
     }
 
     override fun onTokenClicked() {
-        newSendAnalytics.logTokenSelectionClicked()
+        newSendAnalytics.logTokenSelectionClicked(NewSendAnalytics.AnalyticsSendFlow.SELL)
         launch {
             val tokens = userInteractor.getUserTokens()
             val result = tokens.filterNot(Token.Active::isZero)
@@ -201,7 +201,7 @@ class SendViaLinkPresenter(
 
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
-        newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
+        newSendAnalytics.logSwitchCurrencyModeClicked(newMode, NewSendAnalytics.AnalyticsSendFlow.SELL)
     }
 
     override fun updateInputAmount(amount: String) {
@@ -211,6 +211,7 @@ class SendViaLinkPresenter(
         updateButton(requireToken())
 
         newSendAnalytics.setMaxButtonClicked(isClicked = false)
+        svlAnalytics.setMaxButtonClicked(isClicked = false)
     }
 
     override fun onMaxButtonClicked() {
@@ -221,6 +222,7 @@ class SendViaLinkPresenter(
         showMaxButtonIfNeeded()
 
         newSendAnalytics.setMaxButtonClicked(isClicked = true)
+        svlAnalytics.setMaxButtonClicked(isClicked = true)
 
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showToast(TextContainer.Raw(message))
@@ -229,7 +231,7 @@ class SendViaLinkPresenter(
     }
 
     override fun onFeeInfoClicked() {
-        newSendAnalytics.logFreeTransactionsClicked()
+        newSendAnalytics.logFreeTransactionsClicked(NewSendAnalytics.AnalyticsSendFlow.SELL)
         view?.showFreeTransactionsInfo()
     }
 
@@ -301,7 +303,7 @@ class SendViaLinkPresenter(
         token ?: error("Source token cannot be empty!")
 
     private fun logSendClicked(token: Token.Active, amountInToken: String, amountInUsd: String) {
-        newSendAnalytics.logSendConfirmButtonClicked(
+        svlAnalytics.logSendConfirmButtonClicked(
             tokenName = token.tokenName,
             amountInToken = amountInToken,
             amountInUsd = amountInUsd,

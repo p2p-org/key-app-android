@@ -35,7 +35,7 @@ class GoogleSignInHelper(
     fun showSignInDialog(context: Context, googleSignInLauncher: ActivityResultLauncher<IntentSenderRequest>) {
         val request = GetSignInIntentRequest.builder()
             .setNonce(UUID.randomUUID().toString())
-            .setServerClientId(context.getString(R.string.googleClientId))
+            .setServerClientId(context.getString(R.string.webClientGoogleId))
             .build()
 
         getSignInClient(context).apply {

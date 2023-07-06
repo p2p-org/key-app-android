@@ -1,14 +1,14 @@
 package org.p2p.wallet.auth.ui.onboarding
 
+import timber.log.Timber
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.FileInteractor
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
-import timber.log.Timber
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.launch
 
 class NewOnboardingPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,
@@ -29,11 +29,11 @@ class NewOnboardingPresenter(
         view?.startGoogleFlow()
     }
 
-    override fun setIdToken(userId: String, idToken: String) {
+    override fun setIdToken(userId: String, googleIdJwtToken: String) {
         launch {
-            Timber.i("Google id token received: idTokenLen=${idToken.length}")
+            Timber.i("Google id token received: idTokenLen=${googleIdJwtToken.length}")
             view?.setButtonLoadingState(isScreenLoading = true)
-            torusKeyRestoreInteractor.getTorusKey(googleSocialToken = idToken, socialShareUserId = userId)
+            torusKeyRestoreInteractor.getTorusKey(googleIdJwtToken = googleIdJwtToken, socialShareUserId = userId)
             when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
                 is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     view?.onSuccessfulSignUp()

@@ -7,7 +7,8 @@ import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
+import org.p2p.wallet.smsinput.SmsInputTimer
 
 class RestoreWalletInteractor(
     private val customShareRestoreInteractor: CustomShareRestoreInteractor,
@@ -40,6 +41,9 @@ class RestoreWalletInteractor(
     suspend fun tryRestoreUser(restoreFlow: OnboardingFlow.RestoreWallet): RestoreUserResult =
         userRestoreInteractor.tryRestoreUser(restoreFlow)
 
+    suspend fun refreshDeviceShare(): Web3AuthSignUpResponse.ShareDetailsWithMeta =
+        userRestoreInteractor.refreshDeviceShare()
+
     suspend fun finishAuthFlow() {
         restoreWalletAnalytics.setUserRestoreMethod(UsernameRestoreMethod.WEB3AUTH)
         userRestoreInteractor.finishAuthFlow()
@@ -64,6 +68,6 @@ class RestoreWalletInteractor(
     }
 
     private fun resetTimer() {
-        smsInputTimer.smsResendCount = 0
+        smsInputTimer.resetSmsCount()
     }
 }

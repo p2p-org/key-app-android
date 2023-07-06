@@ -1,12 +1,12 @@
 package org.p2p.wallet.auth.interactor.restore
 
+import timber.log.Timber
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
-import timber.log.Timber
 
 private const val TAG = "TorusKeyInteractor"
 
@@ -22,11 +22,11 @@ class TorusKeyInteractor(
         override val cause: Throwable?
     ) : Throwable()
 
-    suspend fun getTorusKey(googleSocialToken: String, socialShareUserId: String) {
+    suspend fun getTorusKey(googleIdJwtToken: String, socialShareUserId: String) {
         val currentFlow = onboardingInteractor.currentFlow
         try {
             Timber.tag(TAG).i("getTorusKey with flow: ${currentFlow.javaClass.simpleName}")
-            val fetchedTorusKey = web3AuthApi.obtainTorusKey(googleSocialToken)
+            val fetchedTorusKey = web3AuthApi.obtainTorusKey(googleIdJwtToken)
 
             when (onboardingInteractor.currentFlow) {
                 is OnboardingFlow.CreateWallet -> fillCreateFlowData(fetchedTorusKey, socialShareUserId)

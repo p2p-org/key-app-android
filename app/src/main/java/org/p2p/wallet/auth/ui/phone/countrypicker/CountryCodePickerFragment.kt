@@ -1,11 +1,11 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
@@ -38,11 +38,13 @@ class CountryCodePickerFragment :
             selectedCountry: CountryCode?,
             requestKey: String,
             resultKey: String
-        ) = CountryCodePickerFragment().withArgs(
-            EXTRA_SELECTED_COUNTRY to selectedCountry,
-            EXTRA_KEY to requestKey,
-            EXTRA_RESULT to resultKey
-        )
+        ): CountryCodePickerFragment =
+            CountryCodePickerFragment()
+                .withArgs(
+                    EXTRA_SELECTED_COUNTRY to selectedCountry,
+                    EXTRA_KEY to requestKey,
+                    EXTRA_RESULT to resultKey
+                )
     }
 
     private val selectedCountry: CountryCode? by args(EXTRA_SELECTED_COUNTRY)
@@ -52,46 +54,38 @@ class CountryCodePickerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener {
-                setFragmentResult(requestKey, bundleOf())
-                close()
-            }
-
+            toolbar.setNavigationOnClickListener { closeWithResult(selectedCode = null) }
+            searchView.initSearch()
             recyclerViewCountryCodes.adapter = adapter
-            initSearch()
         }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            setFragmentResult(requestKey, bundleOf())
-            close()
+            closeWithResult(selectedCode = null)
         }
         presenter.load(selectedCountry)
     }
 
-    private fun FragmentCountryPickerBinding.initSearch() = with(searchView) {
-        doAfterTextChanged { searchText ->
-            presenter.search(searchText?.toString() ?: emptyString())
-        }
-
-        setStateListener(object : AnimatedSearchView.SearchStateListener {
-            override fun onClosed() {
-                presenter.search(emptyString())
-            }
-        })
-        searchView.openSearch()
+    private fun AnimatedSearchView.initSearch() {
+        doAfterTextChanged { searchText -> presenter.search(searchText?.toString().orEmpty()) }
+        setStateListener { presenter.search(emptyString()) }
+        openSearch()
+        setBgColor(R.color.bg_snow)
     }
 
     override fun showCountries(items: List<CountryCodeItem>) {
         adapter.setItems(items)
         binding.recyclerViewCountryCodes.isVisible = items.isNotEmpty()
-        binding.textViewError.isVisible = items.isEmpty()
     }
 
     private fun onCountryCodeClicked(code: CountryCode) {
-        setFragmentResult(requestKey, bundleOf(resultKey to code))
-        close()
+        closeWithResult(code)
     }
 
-    private fun close() {
+    private fun closeWithResult(selectedCode: CountryCode?) {
+        val bundle = bundleOf().apply {
+            selectedCode?.let { putParcelable(resultKey, it) }
+        }
+        setFragmentResult(requestKey, bundle)
         popBackStack(hideKeyboard = false)
     }
 }

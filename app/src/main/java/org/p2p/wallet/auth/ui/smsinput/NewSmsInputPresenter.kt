@@ -45,7 +45,7 @@ class NewSmsInputPresenter(
                 restoreWalletInteractor.getUserPhoneNumber()
             }
         }
-        userPhoneNumber?.let { view.initView(it) }
+        userPhoneNumber?.let(view::initView)
         connectToTimer()
     }
 
@@ -100,7 +100,7 @@ class NewSmsInputPresenter(
                 view?.renderIncorrectSms()
             }
             is GatewayHandledState.TimerBlockError -> {
-                view?.navigateToSmsInputBlocked(gatewayHandledResult.error, gatewayHandledResult.cooldownTtl)
+                view?.navigateToSmsInputBlocked(gatewayHandledResult.cooldownTtl)
             }
             is GatewayHandledState.TitleSubtitleError -> {
                 view?.navigateToGatewayErrorScreen(gatewayHandledResult)

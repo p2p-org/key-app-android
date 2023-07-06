@@ -7,7 +7,7 @@ import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.home.model.TokenPrice
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
@@ -15,8 +15,8 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 
 internal class JupiterSwapTokensRemoteRepository(
     private val api: SwapJupiterApi,

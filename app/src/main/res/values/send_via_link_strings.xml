@@ -9,7 +9,7 @@
     <string name="send_via_link_ready">Share your link to send money</string>
     <string name="send_via_link_return_back">If you want to get your money back just open the link by yourself</string>
     <string name="send_via_link_limit_exceeded">You have reached the daily limit of sending free links. Try tomorrow</string>
-    <string name="send_via_link_generation_copied">✅ Copied</string>
+    <string name="general_copied">✅ Copied</string>
     <string name="send_via_link_share_message">Hey, I\'ve sent you %1s! Get it here: \n%2s</string>
     <string name="send_dont_need_the_address">Without account details</string>
 

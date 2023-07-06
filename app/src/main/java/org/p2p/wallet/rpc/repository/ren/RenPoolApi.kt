@@ -5,7 +5,7 @@ import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryConfig
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
 import org.p2p.solanaj.model.types.RpcMapRequest
-import org.p2p.wallet.infrastructure.network.data.CommonResponse
+import org.p2p.core.network.data.CommonResponse
 import org.p2p.wallet.utils.emptyString
 import retrofit2.http.Body
 import retrofit2.http.POST

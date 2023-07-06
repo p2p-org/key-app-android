@@ -16,7 +16,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendFeeTotal
@@ -76,7 +76,7 @@ class NewSendFragment :
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
-    override val presenter: NewSendContract.Presenter by inject { parametersOf(recipient) }
+    override val presenter: NewSendContract.Presenter by inject { parametersOf(recipient, openedFromFlow) }
 
     private var listener: RootListener? = null
 
@@ -270,7 +270,7 @@ class NewSendFragment :
     override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
         listener?.showTransactionProgress(internalTransactionId, data)
         when (openedFromFlow) {
-            SendOpenedFrom.SELL_FLOW -> popBackStackTo(target = MainFragment::class, inclusive = false)
+            SendOpenedFrom.SELL_FLOW -> popBackStackTo(target = MainContainerFragment::class, inclusive = false)
             SendOpenedFrom.MAIN_FLOW -> popBackStackTo(target = NewSearchFragment::class, inclusive = true)
         }
     }

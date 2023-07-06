@@ -1,12 +1,14 @@
 package org.p2p.wallet.infrastructure.network.provider
 
-import org.p2p.solanaj.utils.crypto.Base58Utils
+import timber.log.Timber
+import kotlinx.coroutines.runBlocking
+import org.p2p.core.utils.Base58Utils
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.emptyString
-import timber.log.Timber
-import kotlinx.coroutines.runBlocking
+import org.p2p.core.crypto.toBase58Instance
 
 private const val TAG = "TokenKeyProvider"
 
@@ -31,6 +33,9 @@ class TokenKeyProvider(
             savePublicKeyToStorage(value)
             Timber.tag(TAG).i("updating user public key: $value")
         }
+
+    val publicKeyBase58: Base58String
+        get() = publicKey.toBase58Instance()
 
     private fun getPublicKeyFromStorage(): String = runBlocking {
         try {

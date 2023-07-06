@@ -71,10 +71,7 @@
     <View
         android:id="@+id/viewSeparator"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
+        android:layout_height="2dp"
         android:background="@color/rain"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

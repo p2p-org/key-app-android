@@ -1,16 +1,16 @@
 package org.p2p.wallet.utils
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import org.p2p.uikit.natives.showSnackbarShort
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.R
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import timber.log.Timber
 import java.io.File
 import kotlin.reflect.KClass
+import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.R
 
 fun <T : Fragment> Fragment.instantiate(clazz: KClass<T>): Fragment =
     childFragmentManager.fragmentFactory.instantiate(clazz)

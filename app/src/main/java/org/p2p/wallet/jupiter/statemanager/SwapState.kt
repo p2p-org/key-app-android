@@ -3,7 +3,7 @@ package org.p2p.wallet.jupiter.statemanager
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.utils.fromLamports
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.model.Slippage
@@ -36,7 +36,7 @@ sealed interface SwapState {
         val tokenB: SwapTokenModel,
         val amountTokenA: BigDecimal,
         val routes: List<JupiterSwapRoute>,
-        val activeRoute: Int,
+        val activeRouteIndex: Int,
         val amountTokenB: BigDecimal,
         val slippage: Slippage
     ) : SwapState
@@ -46,7 +46,7 @@ sealed interface SwapState {
         val tokenB: SwapTokenModel,
         val amountTokenA: BigDecimal,
         val routes: List<JupiterSwapRoute>,
-        val activeRoute: Int,
+        val activeRouteIndex: Int,
         val amountTokenB: BigDecimal,
         val slippage: Slippage
     ) : SwapState
@@ -57,7 +57,7 @@ sealed interface SwapState {
         val lamportsTokenA: BigInteger,
         val lamportsTokenB: BigInteger,
         val routes: List<JupiterSwapRoute>,
-        val activeRoute: Int,
+        val activeRouteIndex: Int,
         val jupiterSwapTransaction: Base64String,
         val slippage: Slippage
     ) : SwapState {
@@ -70,7 +70,6 @@ sealed interface SwapState {
     }
 
     sealed interface SwapException : SwapState {
-
         val previousFeatureState: SwapState
 
         data class FeatureExceptionWrapper(
@@ -85,3 +84,48 @@ sealed interface SwapState {
         ) : SwapException
     }
 }
+
+val SwapState.activeRoute: JupiterSwapRoute?
+    get() = when (this) {
+        SwapState.InitialLoading,
+        is SwapState.LoadingRoutes,
+        is SwapState.TokenANotZero,
+        is SwapState.TokenAZero -> null
+
+        is SwapState.SwapException -> previousFeatureState.activeRoute
+
+        is SwapState.LoadingTransaction -> routes.getOrNull(activeRouteIndex)
+        is SwapState.RoutesLoaded -> routes.getOrNull(activeRouteIndex)
+        is SwapState.SwapLoaded -> routes.getOrNull(activeRouteIndex)
+    }
+
+val SwapState.currentSlippage: Slippage?
+    get() = when (this) {
+        SwapState.InitialLoading -> SwapStateManager.DEFAULT_SLIPPAGE
+        is SwapState.LoadingRoutes -> slippage
+        is SwapState.LoadingTransaction -> slippage
+        is SwapState.SwapLoaded -> slippage
+        is SwapState.TokenAZero -> slippage
+        is SwapState.TokenANotZero -> slippage
+        is SwapState.RoutesLoaded -> slippage
+        is SwapState.SwapException -> null
+    }
+
+val SwapState.tokenAAmount: BigDecimal?
+    get() {
+        if (this is SwapState.SwapException && previousFeatureState !is SwapState.SwapException) {
+            return previousFeatureState.tokenAAmount
+        }
+        val tokenA = when (this) {
+            is SwapState.LoadingRoutes -> tokenA
+            is SwapState.LoadingTransaction -> tokenA
+            is SwapState.SwapLoaded -> tokenA
+            is SwapState.TokenAZero -> tokenA
+            is SwapState.TokenANotZero -> tokenA
+            is SwapState.RoutesLoaded -> tokenA
+
+            SwapState.InitialLoading,
+            is SwapState.SwapException -> null
+        }
+        return (tokenA as? SwapTokenModel.UserToken)?.details?.total
+    }

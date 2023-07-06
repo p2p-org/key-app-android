@@ -31,7 +31,7 @@ import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.root.SystemIconsStyle
-import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.OnboardingSpanUtils
 import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -114,7 +114,7 @@ class NewOnboardingFragment :
                 replaceFragment(CommonRestoreFragment.create())
             }
             textViewTermsAndPolicy.apply {
-                text = SpanUtils.buildTermsAndPolicyText(
+                text = OnboardingSpanUtils.buildTermsAndPolicyText(
                     context = requireContext(),
                     onTermsClick = { presenter.onTermsClick() },
                     onPolicyClick = { presenter.onPolicyClick() }

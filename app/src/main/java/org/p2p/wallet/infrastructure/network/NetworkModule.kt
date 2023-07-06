@@ -2,44 +2,33 @@ package org.p2p.wallet.infrastructure.network
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
-import org.koin.core.scope.Scope
 import org.koin.dsl.module
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.math.BigDecimal
-import java.util.concurrent.TimeUnit
-import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
-import org.p2p.solanaj.utils.crypto.Base64String
-import org.p2p.wallet.BuildConfig
+import org.p2p.core.BuildConfig
+import org.p2p.core.rpc.RpcApi
+import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule.REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.bridge.BridgeModule
-import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
-import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.home.model.Base58TypeAdapter
-import org.p2p.wallet.home.model.Base64TypeAdapter
-import org.p2p.wallet.home.model.BigDecimalTypeAdapter
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionError
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
-import org.p2p.wallet.infrastructure.network.data.transactionerrors.RpcTransactionInstructionErrorParser
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
-import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
-import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
-import org.p2p.wallet.infrastructure.network.interceptor.GatewayServiceInterceptor
+import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.network.NetworkCoreModule.getRetrofit
+import org.p2p.core.network.gson.Base58TypeAdapter
+import org.p2p.core.network.gson.Base64TypeAdapter
+import org.p2p.core.network.gson.BigDecimalTypeAdapter
+import org.p2p.core.network.data.transactionerrors.RpcTransactionError
+import org.p2p.core.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
+import org.p2p.core.network.data.transactionerrors.RpcTransactionInstructionErrorParser
+import org.p2p.core.network.environment.NetworkEnvironmentManager
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
+import org.p2p.core.network.interceptor.GatewayServiceInterceptor
+import org.p2p.core.network.interceptor.RpcSolanaInterceptor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayInterceptor
-import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
-import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
@@ -47,12 +36,9 @@ import org.p2p.wallet.jupiter.JupiterModule.JUPITER_RETROFIT_QUALIFIER
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 object NetworkModule : InjectionModule {
-
-    const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 30L
-    const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
 
     enum class MoonpayRetrofitQualifier {
         CLIENT_SIDE_MOONPAY,
@@ -60,8 +46,13 @@ object NetworkModule : InjectionModule {
     }
 
     override fun create() = module {
-        singleOf(::NetworkServicesUrlProvider)
-        singleOf(::NetworkEnvironmentManager)
+        single {
+            NetworkEnvironmentManager(
+                networkEnvironmentStorage = get(),
+                crashLogger = get(),
+                networksFromRemoteConfig = get<SettingsNetworkListFeatureToggle>().getAvailableEnvironments()
+            )
+        }
         singleOf(::TokenKeyProvider)
         singleOf(::SeedPhraseProvider)
         singleOf(::CertificateManager)
@@ -83,14 +74,14 @@ object NetworkModule : InjectionModule {
 
         createMoonpayNetworkModule()
 
-        single(named(RPC_RETROFIT_QUALIFIER)) {
-            val environment = get<NetworkEnvironmentManager>().loadCurrentEnvironment()
-            val rpcApiUrl = environment.endpoint
+        single<RpcApi> {
             getRetrofit(
-                baseUrl = rpcApiUrl,
-                tag = "Rpc",
-                interceptor = RpcInterceptor(get(), get())
+                // no need for baseUrl here, we pass URL inside RpcApi
+                baseUrl = "http://localhost/",
+                tag = "RpcApi",
+                interceptor = null
             )
+                .create(RpcApi::class.java)
         }
         single(named(REN_POOL_RETROFIT_QUALIFIER)) {
             val environment = get<NetworkEnvironmentManager>().loadRpcEnvironment()
@@ -146,65 +137,6 @@ object NetworkModule : InjectionModule {
                 interceptor = null
             )
         }
-    }
-
-    fun Scope.getRetrofit(
-        baseUrl: String,
-        tag: String? = "OkHttpClient",
-        interceptor: Interceptor?
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(get()))
-            .client(getClient(tag = tag, interceptor = interceptor))
-            .build()
-    }
-
-    fun Scope.getRetrofit(
-        baseUrl: String,
-        client: OkHttpClient
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(get()))
-            .client(client)
-            .build()
-    }
-
-    fun Scope.httpLoggingInterceptor(logTag: String): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor(DebugHttpLoggingLogger(gson = get(), logTag = logTag)).apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-    }
-
-    fun Scope.getClient(
-        readTimeoutSec: Long = DEFAULT_READ_TIMEOUT_SECONDS,
-        connectTimeoutSec: Long = DEFAULT_CONNECT_TIMEOUT_SECONDS,
-        tag: String?,
-        interceptor: Interceptor? = null,
-        clientProtocols: List<Protocol>? = null
-    ): OkHttpClient {
-        return OkHttpClient.Builder()
-            .readTimeout(readTimeoutSec, TimeUnit.SECONDS)
-            .connectTimeout(connectTimeoutSec, TimeUnit.SECONDS)
-            .apply {
-                if (interceptor != null) {
-                    addInterceptor(interceptor)
-                }
-                if (clientProtocols != null) {
-                    protocols(clientProtocols)
-                }
-                if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
-                    addInterceptor(httpLoggingInterceptor(tag))
-                }
-                if (BuildConfig.CRASHLYTICS_ENABLED) {
-                    addInterceptor(CrashHttpLoggingInterceptor())
-                }
-            }
-            .addNetworkInterceptor(ContentTypeInterceptor())
-            .build()
     }
 
     private fun Module.createMoonpayNetworkModule() {

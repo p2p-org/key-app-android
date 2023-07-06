@@ -16,8 +16,8 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor

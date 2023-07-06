@@ -22,7 +22,7 @@ import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellLockBinding
-import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.SearchResult
@@ -162,7 +162,7 @@ class SellLockedFragment :
     }
 
     override fun navigateBackToMain() {
-        popBackStackTo(MainFragment::class)
+        popBackStackTo(MainContainerFragment::class)
     }
 
     override fun navigateToSendScreen(

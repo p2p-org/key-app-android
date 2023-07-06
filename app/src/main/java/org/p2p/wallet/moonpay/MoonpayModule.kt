@@ -5,7 +5,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder

@@ -1,6 +1,8 @@
 package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
+import timber.log.Timber
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import org.p2p.wallet.auth.model.RestoreError
@@ -17,8 +19,7 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
+import org.p2p.core.crypto.toBase58Instance
 
 class UserRestoreInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -26,7 +27,8 @@ class UserRestoreInteractor(
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
     private val seedPhraseProvider: SeedPhraseProvider,
-    private val usernameInteractor: UsernameInteractor
+    private val usernameInteractor: UsernameInteractor,
+    private val crashLogger: CrashLogger
 ) {
 
     suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult {
@@ -58,7 +60,7 @@ class UserRestoreInteractor(
             RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound
         } else {
             val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(
-                socialShare = torusKey!!,
+                torusKey = torusKey!!,
                 thirdShare = customShare,
                 encryptedMnemonic = encryptedMnemonic
             )
@@ -160,7 +162,7 @@ class UserRestoreInteractor(
             ?: error("Device+Social restore way failed. Social share ID is null")
 
         val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoCustom(
-            socialShare = torusKey,
+            torusKey = torusKey,
             deviceShare = deviceShare
         )
         signUpDetailsStorage.save(
@@ -253,8 +255,22 @@ class UserRestoreInteractor(
         restoreFlowDataLocalRepository.userActualAccount?.also {
             tokenKeyProvider.keyPair = it.keypair
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
+            crashLogger.setUserId(tokenKeyProvider.publicKey)
         } ?: error("User actual account is null, restoring a user is failed")
 
         usernameInteractor.tryRestoreUsername(tokenKeyProvider.publicKey.toBase58Instance())
+    }
+
+    suspend fun refreshDeviceShare(): Web3AuthSignUpResponse.ShareDetailsWithMeta {
+        val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
+            ?: error("Device+Social restore way failed. Social share ID is null")
+        val deviceShare = web3AuthApi.refreshDeviceShare()
+        val data = signUpDetailsStorage.getLastSignUpUserDetails()!!.signUpDetails.copy(deviceShare = deviceShare)
+        signUpDetailsStorage.save(
+            data = data,
+            userId = socialShareUserId,
+            isCreate = false
+        )
+        return deviceShare
     }
 }

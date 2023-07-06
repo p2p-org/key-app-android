@@ -4,7 +4,7 @@ import androidx.core.view.isVisible
 import android.view.ViewGroup
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
@@ -33,7 +33,7 @@ class HistoryUserSendLinksViewHolder(
         setOnClickListener { onItemClicked(item) }
     }
 
-    private fun HistoryItem.UserSendLinksItem.toFinanceBlock(): FinanceBlockCellModel {
+    private fun HistoryItem.UserSendLinksItem.toFinanceBlock(): MainCellModel {
         val copyLink = ImageViewCellModel(
             icon = DrawableContainer(R.drawable.ic_copy_link),
             iconTint = R.color.bg_night,
@@ -63,7 +63,7 @@ class HistoryUserSendLinksViewHolder(
             tint = R.color.bg_snow
         )
 
-        return FinanceBlockCellModel(
+        return MainCellModel(
             leftSideCellModel = leftSide,
             rightSideCellModel = rightSide,
             background = roundedBackground

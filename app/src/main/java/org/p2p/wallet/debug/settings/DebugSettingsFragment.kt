@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -14,8 +15,16 @@ import org.p2p.wallet.debug.logs.CustomLogDialog
 import org.p2p.wallet.debug.publickey.DebugPublicKeyFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
+import org.p2p.wallet.debug.pushservice.DebugWeb3Fragment
+import org.p2p.wallet.debug.settings.adapter.DebugSettingsRowAdapter
+import org.p2p.wallet.debug.settings.adapter.settingsRowInfoItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowLogoutItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowPopupMenuItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowSectionItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowSwtichItemDelegate
+import org.p2p.wallet.debug.settings.adapter.settingsRowTitleItemDelegate
 import org.p2p.wallet.debug.torus.DebugTorusFragment
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import org.p2p.wallet.debug.uikit.DebugUiKitFragment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.utils.getSerializableOrNull
@@ -31,19 +40,26 @@ class DebugSettingsFragment :
     DebugSettingsContract.View {
 
     companion object {
-
         fun create(): DebugSettingsFragment = DebugSettingsFragment()
     }
 
     override val presenter: DebugSettingsContract.Presenter by inject()
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
-    private val adapter = DebugSettingsAdapter(::onSettingsRowClicked, ::onSettingsSwitchClicked)
+
+    private val adapterDelegate = DebugSettingsRowAdapter(
+        settingsRowTitleItemDelegate(),
+        settingsRowSectionItemDelegate(::onSettingsRowClicked),
+        settingsRowLogoutItemDelegate(::onSettingsRowClicked),
+        settingsRowInfoItemDelegate(::onSettingsRowClicked),
+        settingsRowSwtichItemDelegate(::onSettingsSwitchClicked),
+        settingsRowPopupMenuItemDelegate(presenter::onSettingsPopupMenuClicked)
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            settingsRecyclerView.attachAdapter(adapter)
+            settingsRecyclerView.attachAdapter(adapterDelegate)
             toolbar.setNavigationOnClickListener {
                 popBackStack()
             }
@@ -59,9 +75,9 @@ class DebugSettingsFragment :
         presenter.loadData()
     }
 
-    override fun showSettings(item: List<SettingsRow>) {
+    override fun showSettings(items: List<SettingsRow>) {
         requireView().post {
-            adapter.setData(item)
+            adapterDelegate.items = items
         }
     }
 
@@ -90,6 +106,18 @@ class DebugSettingsFragment :
             }
             R.string.debug_settings_stub_public_key -> {
                 replaceFragment(DebugPublicKeyFragment.create())
+            }
+            R.string.debug_settings_web3 -> {
+                replaceFragment(DebugWeb3Fragment.create())
+            }
+            R.string.debug_settings_kyc_set_rejected_title -> {
+                presenter.onClickSetKycRejected()
+            }
+            R.string.debug_settings_striga_detach_user_id_title -> {
+                presenter.onClickDetachStrigaUser()
+            }
+            R.string.debug_settings_ui_kit -> {
+                replaceFragment(DebugUiKitFragment())
             }
         }
     }

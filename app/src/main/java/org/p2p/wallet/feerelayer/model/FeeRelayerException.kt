@@ -2,7 +2,7 @@ package org.p2p.wallet.feerelayer.model
 
 import android.content.res.Resources
 import java.io.IOException
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
+import org.p2p.core.network.data.ErrorCode
 
 class FeeRelayerException(
     val errorCode: ErrorCode,

@@ -7,15 +7,16 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomeElementItem.Action
-import org.p2p.wallet.home.model.HomeElementItem.Banners
+import org.p2p.wallet.home.model.HomeElementItem.Banner
 import org.p2p.wallet.home.model.HomeElementItem.Claim
 import org.p2p.wallet.home.model.HomeElementItem.Hidden
 import org.p2p.wallet.home.model.HomeElementItem.Shown
+import org.p2p.wallet.home.model.HomeElementItem.StrigaClaim
 import org.p2p.wallet.home.model.HomeElementItem.Title
 
 class TokenAdapter(
     private val glideManager: GlideManager,
-    private val listener: OnHomeItemsClickListener
+    private val listener: HomeItemsClickListeners
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -29,6 +30,26 @@ class TokenAdapter(
 
     private var isZerosHidden: Boolean = true
 
+    @Suppress("UNCHECKED_CAST")
+    fun <T : HomeElementItem> updateItem(
+        itemFilter: (HomeElementItem) -> Boolean,
+        transform: (T) -> T,
+        animateChanges: Boolean = false
+    ) {
+        val index = data.indexOfFirst(itemFilter)
+        if (index != -1) {
+            val old = data[index] as T
+            val new = transform(old)
+            data[index] = new
+            if (animateChanges) {
+                notifyItemChanged(index)
+            } else {
+                // workaround for disabling animation
+                notifyItemChanged(index, Unit)
+            }
+        }
+    }
+
     fun setItems(new: List<HomeElementItem>, isZerosHidden: Boolean) {
         this.isZerosHidden = isZerosHidden
         val old = data.toMutableList()
@@ -41,9 +62,10 @@ class TokenAdapter(
         is Shown -> R.layout.item_token
         is Hidden -> R.layout.item_token_hidden
         is Action -> R.layout.item_token_group_button
-        is Banners -> R.layout.item_banners
+        is Banner -> R.layout.item_home_banner
         is Title -> R.layout.item_main_header
         is Claim -> R.layout.item_token_to_claim
+        is StrigaClaim -> R.layout.item_token_to_striga_claim
     }
 
     override fun getItemCount(): Int = data.size
@@ -52,20 +74,23 @@ class TokenAdapter(
         R.layout.item_token -> TokenViewHolder(parent, listener)
         R.layout.item_token_hidden -> TokenHiddenViewHolder(parent, listener)
         R.layout.item_token_group_button -> TokenButtonViewHolder(parent, listener)
-        R.layout.item_banners -> BannersViewHolder(parent, listener)
         R.layout.item_main_header -> HeaderViewHolder(parent)
-        R.layout.item_token_to_claim -> TokenToClaimViewHolder(parent, glideManager, listener)
-        else -> throw IllegalStateException("Unknown viewType: $viewType")
+        R.layout.item_token_to_claim -> BridgeTokenToClaimViewHolder(parent, glideManager, listener)
+        R.layout.item_home_banner -> SingleBannerViewHolder(parent, listener)
+        R.layout.item_token_to_striga_claim -> StrigaTokenToClaimViewHolder(parent, glideManager, listener)
+        else -> error("Unknown viewType: $viewType")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = data[position]
         when (holder) {
-            is TokenViewHolder -> holder.onBind(data[position] as Shown, isZerosHidden)
-            is TokenHiddenViewHolder -> holder.onBind(data[position] as Hidden, isZerosHidden)
-            is TokenButtonViewHolder -> holder.onBind(data[position] as Action)
-            is BannersViewHolder -> holder.onBind(data[position] as Banners)
-            is HeaderViewHolder -> holder.onBind(data[position] as Title)
-            is TokenToClaimViewHolder -> holder.onBind(data[position] as Claim)
+            is TokenViewHolder -> holder.onBind(item as Shown, isZerosHidden)
+            is TokenHiddenViewHolder -> holder.onBind(item as Hidden, isZerosHidden)
+            is TokenButtonViewHolder -> holder.onBind(item as Action)
+            is SingleBannerViewHolder -> holder.onBind((item as Banner).banner)
+            is HeaderViewHolder -> holder.onBind(item as Title)
+            is BridgeTokenToClaimViewHolder -> holder.onBind(item as Claim)
+            is StrigaTokenToClaimViewHolder -> holder.onBind(item as StrigaClaim)
         }
     }
 

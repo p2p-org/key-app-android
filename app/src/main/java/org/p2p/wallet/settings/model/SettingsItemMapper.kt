@@ -20,6 +20,7 @@ class SettingsItemMapper(
         isBiometricLoginEnabled: Boolean,
         isZeroBalanceTokenHidden: Boolean,
         isBiometricLoginAvailable: Boolean,
+        hasDifferentDeviceShare: Boolean
     ): List<SettingsItem> = buildList {
         this += profileBlock(
             username = username,
@@ -27,9 +28,11 @@ class SettingsItemMapper(
         )
         this += securityBlock(
             isBiometricLoginEnabled = isBiometricLoginEnabled,
-            isBiometricLoginAvailable = isBiometricLoginAvailable
+            isBiometricLoginAvailable = isBiometricLoginAvailable,
+            hasDifferentDeviceShare = hasDifferentDeviceShare
         )
         this += appearanceBlock(isZeroBalanceTokenHidden)
+        this += communityBlock()
         this += appInfoBlock()
     }
 
@@ -68,12 +71,14 @@ class SettingsItemMapper(
     private fun securityBlock(
         isBiometricLoginEnabled: Boolean,
         isBiometricLoginAvailable: Boolean,
+        hasDifferentDeviceShare: Boolean
     ): List<SettingsItem> = listOfNotNull(
         SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_security),
         ComplexSettingsItem(
-            nameRes = R.string.settings_item_title_recovery_kit,
+            nameRes = R.string.settings_item_title_security,
             iconRes = R.drawable.ic_settings_shield,
-            hasSeparator = true
+            hasSeparator = true,
+            isBadgeVisible = hasDifferentDeviceShare
         ),
         ComplexSettingsItem(
             nameRes = R.string.settings_item_title_pin,
@@ -107,6 +112,21 @@ class SettingsItemMapper(
         )
     }
 
+    private fun communityBlock(): List<SettingsItem> = listOfNotNull(
+        SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_community),
+        ComplexSettingsItem(
+            nameRes = R.string.settings_item_title_twitter,
+            iconRes = R.drawable.ic_settings_twitter,
+            hasSeparator = true
+        ),
+        ComplexSettingsItem(
+            nameRes = R.string.settings_item_title_discord,
+            iconRes = R.drawable.ic_settings_discord,
+            hasSeparator = false
+        ),
+        SettingsSpaceSeparatorItem,
+    )
+
     private fun appInfoBlock(): List<SettingsItem> {
         return listOf(
             TextSettingsItem(
@@ -114,7 +134,8 @@ class SettingsItemMapper(
                 iconRes = R.drawable.ic_settings_phone,
                 textValue = BuildConfig.VERSION_NAME,
                 hasSeparator = false
-            )
+            ),
+            SettingsSpaceSeparatorItem,
         )
     }
 }

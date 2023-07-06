@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.components.info_block.InfoBlockCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -31,7 +31,7 @@ import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogSwapInfoBinding
 import org.p2p.wallet.databinding.ItemSwapInfoBannerBinding
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.jupiter.interactor.SwapTokensInteractor
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
@@ -51,7 +51,7 @@ enum class SwapInfoType {
     NETWORK_FEE, ACCOUNT_FEE, LIQUIDITY_FEE, MINIMUM_RECEIVED
 }
 
-private typealias LoadRateBox = Triple<JupiterSwapMarketInformation, FinanceBlockCellModel, SwapRateLoaderState>
+private typealias LoadRateBox = Triple<JupiterSwapMarketInformation, MainCellModel, SwapRateLoaderState>
 
 class SwapInfoBottomSheet : BaseBottomSheet() {
 
@@ -146,8 +146,8 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
             is SwapState.RoutesLoaded,
             is SwapState.SwapLoaded -> {
                 val route: JupiterSwapRoute = when (state) {
-                    is SwapState.RoutesLoaded -> state.routes.getOrNull(state.activeRoute)
-                    is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRoute)
+                    is SwapState.RoutesLoaded -> state.routes.getOrNull(state.activeRouteIndex)
+                    is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRouteIndex)
                     else -> null
                 } ?: return flowOf(mapper.mapEmptyLiquidityFee())
                 flow {
@@ -179,7 +179,7 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
             is SwapState.LoadingTransaction -> flow {
                 val fullUiList = mapper.mapLoadingLiquidityFee(
                     allTokens = tokens,
-                    route = state.routes.getOrNull(state.activeRoute)
+                    route = state.routes.getOrNull(state.activeRouteIndex)
                 )
                 emit(fullUiList)
             }
@@ -189,7 +189,7 @@ class SwapInfoBottomSheet : BaseBottomSheet() {
     private fun getRateLoaderFlow(
         marketInfo: JupiterSwapMarketInformation,
         tokens: List<SwapTokenModel>,
-        loadingCell: FinanceBlockCellModel,
+        loadingCell: MainCellModel,
     ): Flow<LoadRateBox> {
         val lpToken = tokens.find { it.mintAddress == marketInfo.liquidityFee.mint }
         val loadingCellFlow = flowOf(marketInfo to loadingCell)

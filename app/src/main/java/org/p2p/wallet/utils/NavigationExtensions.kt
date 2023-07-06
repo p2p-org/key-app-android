@@ -10,11 +10,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.whenStateAtLeast
+import kotlin.reflect.KClass
+import kotlinx.coroutines.launch
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragmentContract
-import kotlin.reflect.KClass
-import kotlinx.coroutines.launch
 
 inline fun LifecycleOwner.whenStateAtLeast(state: Lifecycle.State, crossinline block: () -> Unit) {
     if (lifecycle.currentState.isAtLeast(state)) {
@@ -41,10 +41,17 @@ fun FragmentActivity.popBackStack() {
     }
 }
 
-fun <T : Fragment> Fragment.popBackStackTo(target: KClass<T>, inclusive: Boolean = false): Boolean =
-    requireActivity().popBackStackTo(target, inclusive)
+fun <T : Fragment> Fragment.popBackStackTo(
+    target: KClass<T>,
+    inclusive: Boolean = false,
+    immediate: Boolean = true
+): Boolean = requireActivity().popBackStackTo(target, inclusive, immediate)
 
-fun <T : Fragment> FragmentActivity.popBackStackTo(target: KClass<T>, inclusive: Boolean = false): Boolean {
+fun <T : Fragment> FragmentActivity.popBackStackTo(
+    target: KClass<T>,
+    inclusive: Boolean = false,
+    immediate: Boolean = true
+): Boolean {
     val flag = if (inclusive) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0
 
     hideKeyboard()
@@ -54,8 +61,11 @@ fun <T : Fragment> FragmentActivity.popBackStackTo(target: KClass<T>, inclusive:
         return if (backStackEntryCount == 0 || getBackStackEntryAt(0).name == tag && inclusive) {
             finish()
             true
-        } else {
+        } else if (immediate) {
             popBackStackImmediate(tag, flag)
+        } else {
+            popBackStack(tag, flag)
+            true
         }
     }
 }

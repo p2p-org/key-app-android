@@ -6,7 +6,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -21,7 +20,8 @@ import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
 import org.p2p.wallet.moonpay.repository.sell.SellRepository
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.utils.Constants
 
 private const val TAG = "SellInteractor"
 private const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_DIALOG_KEY"
@@ -56,9 +56,9 @@ class SellInteractor(
             sellRepository.isSellAllowedForUser()
 
         val debugInfo = buildString {
-            append("isFeatureEnabled=${sellEnabledFeatureToggle.isFeatureEnabled}")
-            append("isUserBalancePositive=${isUserBalancePositive()}")
-            append("isSellAllowedForUser=${sellRepository.isSellAllowedForUser()}")
+            append("isFeatureEnabled=${sellEnabledFeatureToggle.isFeatureEnabled} ")
+            append("isUserBalancePositive=${isUserBalancePositive()} ")
+            append("isSellAllowedForUser=${sellRepository.isSellAllowedForUser()} ")
         }
         Timber.i("Checking if sell is available: $debugInfo")
         return isSellAvailable

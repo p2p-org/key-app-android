@@ -18,5 +18,6 @@ class LocalFirebaseRemoteConfig(
     override fun getBoolean(toggleKey: String): Boolean = storage[toggleKey].toBoolean()
     override fun getString(toggleKey: String): String? = storage[toggleKey]
     override fun getInt(toggleKey: String): Int? = storage[toggleKey]?.toIntOrNull()
+    override fun getLong(toggleKey: String): Long? = storage[toggleKey]?.toLongOrNull()
     override fun getFloat(toggleKey: String): Float? = storage[toggleKey]?.toFloatOrNull()
 }

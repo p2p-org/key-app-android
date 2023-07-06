@@ -10,9 +10,9 @@ import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi

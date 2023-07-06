@@ -3,7 +3,7 @@ package org.p2p.wallet.auth.username.repository
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 /**
  * @see [org.p2p.wallet.auth.username.repository.UsernameParserTest]

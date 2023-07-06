@@ -7,7 +7,7 @@ import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.rpc.RenPoolRepository
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 
 class RenPoolRemoteRepository(
     private val api: RenPoolApi,

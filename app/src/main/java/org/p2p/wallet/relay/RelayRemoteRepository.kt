@@ -2,7 +2,7 @@ package org.p2p.wallet.relay
 
 import org.p2p.solanaj.model.types.RecentBlockhashResponse
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class RelayRemoteRepository(
     private val relaySdkFacade: RelaySdkFacade

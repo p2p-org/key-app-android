@@ -8,6 +8,8 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import org.p2p.wallet.R
 
 object DateTimeUtils {
@@ -17,13 +19,15 @@ object DateTimeUtils {
     const val PATTERN_FULL_DAY = "HH:mm"
     private const val PATTERN_AM_PM = "hh:mm a"
     private const val PATTERN_DATE = "dd.MM.yyyy"
-    private const val PATTERN_MONTH_DATE_SHORT = "MM dd"
+    private const val PATTERN_MONTH_DATE_SHORT = "MMM dd"
     private const val PATTERN_CURRENT_YEAR_DATE = "d MMM"
     private const val PATTERN_CURRENT_YEAR_DATE_FULL = "d MMMM"
     private const val PATTERN_DAY_OF_WEEK_SHORT = "EE"
     private const val PATTERN_DAY_OF_WEEK_FULL = "EEEE"
     private const val PATTERN_DATE_AND_TIME = "dd.MM HH:mm"
     private const val PATTERN_DATEPICKER_DATE = "EE, dd MMM"
+
+    const val PATTERN_DD_MM_YYYY = "dd.MM.yyyy"
     const val PATTERN_HH_MM_SS_SS = "HH:mm:ss:SSSS"
 
     private const val SECOND = 1000
@@ -89,6 +93,10 @@ object DateTimeUtils {
     fun getFormattedDateAndTime(timestamp: Long): String = getFormatter(PATTERN_DATE_AND_TIME)
         .format(timestamp)
 
+    fun getCurrentTimestampInSeconds(): Long {
+        return System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS).inWholeSeconds
+    }
+
     private fun getCalendar(timeInMillis: Long): Calendar {
         val cal = Calendar.getInstance(Locale.getDefault())
         cal.timeInMillis = timeInMillis
@@ -146,6 +154,10 @@ object DateTimeUtils {
         val s = seconds % 60
         val m = seconds / 60
         return String.format(Locale.US, "%02d:%02d", m, s)
+    }
+
+    fun isTimestampExpired(timeMs: Long, expireDurationMs: Long): Boolean {
+        return timeMs == 0L || System.currentTimeMillis() - timeMs >= expireDurationMs
     }
 
     data class FormatterKey(val locale: Locale, val pattern: String)

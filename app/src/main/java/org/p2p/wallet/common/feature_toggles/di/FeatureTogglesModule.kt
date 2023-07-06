@@ -5,7 +5,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.FeatureTogglesValuesSource
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
@@ -24,6 +24,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListF
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SocketSubscriptionsFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesValidationEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
@@ -49,7 +51,9 @@ object FeatureTogglesModule : InjectionModule {
                 get<SellEnabledFeatureToggle>(),
                 get<EthAddressEnabledFeatureToggle>(),
                 get<SocketSubscriptionsFeatureToggle>(),
-                get<SwapRoutesValidationEnabledFeatureToggle>()
+                get<SwapRoutesValidationEnabledFeatureToggle>(),
+                get<StrigaSignupEnabledFeatureToggle>(),
+                get<SwapRoutesRefreshFeatureToggle>(),
             ).toList()
         }
 
@@ -68,7 +72,9 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::RegisterUsernameSkipEnabledFeatureToggle)
         factoryOf(::SellEnabledFeatureToggle)
         factoryOf(::EthAddressEnabledFeatureToggle)
+        factoryOf(::SwapRoutesRefreshFeatureToggle)
         factoryOf(::SocketSubscriptionsFeatureToggle)
         factoryOf(::SwapRoutesValidationEnabledFeatureToggle)
+        factoryOf(::StrigaSignupEnabledFeatureToggle)
     }
 }

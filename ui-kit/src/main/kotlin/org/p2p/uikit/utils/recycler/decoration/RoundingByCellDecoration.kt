@@ -7,7 +7,7 @@ import android.graphics.Canvas
 import android.view.View
 import com.google.android.material.shape.ShapeAppearanceModel
 import kotlin.reflect.KClass
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
 import org.p2p.uikit.utils.drawable.shape.shapeOutline
@@ -15,8 +15,8 @@ import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 
-fun roundingByCellFinanceBlockDecoration(@Px round: Float = 16f.toPx()) =
-    RoundingByCellDecoration(FinanceBlockCellModel::class, round)
+fun roundingByCellMainCellDecoration(@Px round: Float = 16f.toPx()) =
+    RoundingByCellDecoration(MainCellModel::class, round)
 
 class RoundingByCellDecoration(
     private val itemCellType: KClass<out AnyCellItem>,

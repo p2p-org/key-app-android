@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/smoke">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_onboarding_help"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night" />
+
+    <ImageView
+        android:id="@+id/imageViewBox"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/textViewErrorTitle"
+        app:layout_constraintDimensionRatio="2:1.7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:srcCompat="@drawable/ic_timer_error" />
+
+
+    <TextView
+        android:id="@+id/textViewErrorTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:paddingHorizontal="32dp"
+        android:text="@string/onboarding_general_error_critical_error_title"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@+id/textViewErrorSubtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewBox"
+        tools:text="Seems like this number is already used" />
+
+    <TextView
+        android:id="@+id/textViewErrorSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"
+        android:paddingHorizontal="32dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@id/containerBottomButtons"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewErrorTitle"
+        tools:text="With new data you can’t use Striga service for now. Bou you still have Bank card and Crypto options" />
+
+    <LinearLayout
+        android:id="@+id/containerBottomButtons"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_night_top_rounded"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonOpenWalletScreen"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/snow"
+            android:text="@string/striga_button_open_wallet_screen"
+            android:textColor="@color/night"
+            app:iconGravity="textStart"
+            app:iconSize="24dp"
+            app:iconTint="@null" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonWriteToSupport"
+            style="@style/UiKit.Components.Button.Large.Text"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="18dp"
+            android:backgroundTint="@color/bg_night"
+            android:text="@string/striga_button_write_to_support"
+            android:textColor="@color/text_lime"
+            app:strokeColor="@color/text_snow" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

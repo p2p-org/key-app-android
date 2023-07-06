@@ -10,9 +10,10 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.create
-import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
+import org.p2p.wallet.jupiter.interactor.JupiterSwapSendTransactionDelegate
 import org.p2p.wallet.jupiter.interactor.SwapTokensInteractor
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRouteValidator
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesInMemoryRepository
@@ -89,6 +90,7 @@ object JupiterModule : InjectionModule {
         singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
         singleOf(::JupiterSwapTokensPricesInMemoryRepository) bind JupiterSwapTokensPricesLocalRepository::class
 
+        factoryOf(::JupiterSwapSendTransactionDelegate)
         factoryOf(::JupiterSwapInteractor)
         factoryOf(::SwapUserTokensChangeHandler)
         factoryOf(::MinimumSolAmountValidator)
@@ -184,6 +186,7 @@ object JupiterModule : InjectionModule {
                     swapTokensRepository = get(),
                     homeLocalRepository = get(),
                     userTokensChangeHandler = get(),
+                    swapRoutesRefreshFeatureToggle = get(),
                 )
             }
         }

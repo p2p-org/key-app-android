@@ -1,6 +1,8 @@
 package org.p2p.wallet.svl.analytics
 
+import org.p2p.core.model.CurrencyMode
 import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.model.TemporaryAccount
 
 private const val SEND_CLICK_START_CREATE_LINK = "Send_Click_Start_Create_Link"
@@ -19,6 +21,9 @@ class SendViaLinkAnalytics(
     private val tracker: Analytics
 ) {
 
+    private val viaLinkSendFlow = "Send_Flow" to NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK.title
+
+    private var isMaxButtonClicked = false
     fun logStartCreateLink() {
         tracker.logEvent(SEND_CLICK_START_CREATE_LINK)
     }
@@ -30,14 +35,20 @@ class SendViaLinkAnalytics(
     fun logTokenChangeClicked(currentTokenSymbol: String) {
         tracker.logEvent(
             event = SEND_CLICK_CHANGE_TOKEN,
-            params = mapOf("Token_Name" to currentTokenSymbol)
+            params = mapOf(
+                "Token_Name" to currentTokenSymbol,
+                viaLinkSendFlow
+            )
         )
     }
 
     fun logTokenChanged(newTokenSymbol: String) {
         tracker.logEvent(
             event = SEND_CLICK_CHANGE_TOKEN_CHOSEN,
-            params = mapOf("Token_Name" to newTokenSymbol)
+            params = mapOf(
+                "Token_Name" to newTokenSymbol,
+                viaLinkSendFlow
+            )
         )
     }
 
@@ -46,7 +57,8 @@ class SendViaLinkAnalytics(
             event = SEND_CLICK_CHANGE_TOKEN_VALUE,
             params = mapOf(
                 "Token_Name" to tokenSymbol,
-                "Token_Value" to formattedNewAmount
+                "Token_Value" to formattedNewAmount,
+                viaLinkSendFlow
             )
         )
     }
@@ -87,5 +99,29 @@ class SendViaLinkAnalytics(
 
     fun logLinkCopyIconClicked() {
         tracker.logEvent(SEND_CLICK_COPY_LINK)
+    }
+
+    fun setMaxButtonClicked(isClicked: Boolean) {
+        isMaxButtonClicked = isClicked
+    }
+
+    fun logSendConfirmButtonClicked(
+        tokenName: String,
+        amountInToken: String,
+        amountInUsd: String,
+        isFeeFree: Boolean,
+        mode: CurrencyMode
+    ) {
+        tracker.logEvent(
+            event = SEND_CLICK_CREATE_LINK,
+            params = mapOf(
+                "Token" to tokenName,
+                "Max" to isMaxButtonClicked,
+                "Amount_Token" to amountInToken,
+                "Amount_USD" to amountInUsd,
+                "Fee" to isFeeFree,
+                "Fiat_Input" to (mode is CurrencyMode.Fiat)
+            )
+        )
     }
 }

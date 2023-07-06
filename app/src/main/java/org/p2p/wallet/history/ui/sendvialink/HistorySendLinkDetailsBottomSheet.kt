@@ -8,7 +8,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
@@ -99,7 +99,7 @@ class HistorySendLinkDetailsBottomSheet :
             secondLineText = TextViewCellModel.Raw(TextContainer(R.string.transaction_history_send_via_link_info))
         )
         financeBlockLinkValue.bind(
-            FinanceBlockCellModel(
+            MainCellModel(
                 leftSideCellModel = loadingLeftSide,
                 rightSideCellModel = null
             )
@@ -126,7 +126,7 @@ class HistorySendLinkDetailsBottomSheet :
             )
         )
         financeBlockLinkValue.bind(
-            FinanceBlockCellModel(
+            MainCellModel(
                 leftSideCellModel = leftSideLinkValueContent,
                 rightSideCellModel = rightSideCopyIcon
             )
@@ -134,7 +134,7 @@ class HistorySendLinkDetailsBottomSheet :
         financeBlockLinkValue.rightSideView.setOnClickListener {
             historyAnalytics.logUserSendLinkCopyClicked()
             requireContext().copyToClipBoard(state.link)
-            showUiKitSnackBar(messageResId = R.string.send_via_link_generation_copied)
+            showUiKitSnackBar(messageResId = R.string.general_copied)
         }
         buttonShare.setOnClickListener {
             historyAnalytics.logUserSendLinkShareClicked()

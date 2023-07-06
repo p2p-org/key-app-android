@@ -13,9 +13,15 @@
     <string name="debug_settings_torus">Torus Environment</string>
     <string name="debug_settings_notification_service">Notification Service Environment</string>
     <string name="debug_settings_stub_public_key">Public key stubbing 🗡️</string>
+    <string name="debug_settings_web3">Web3 User Data 🤑</string>
     <string name="debug_settings_moonpay_sandbox">Moonpay sandbox</string>
     <string name="debug_settings_title">Settings</string>
     <string name="debug_settings_network">Network</string>
+    <string name="debug_settings_striga_title">Striga</string>
+    <string name="debug_settings_kyc_mock_title">KYC Banner mock</string>
+    <string name="debug_settings_kyc_set_rejected_title">KYC Simulate rejected</string>
+    <string name="debug_settings_striga_detach_user_id_title">Detach striga from web3 user</string>
+    <string name="debug_settings_ui_kit">UiKit examples</string>
 
     <!-- Debug Settings -> Notifications -->
     <string name="debug_notifications_title">Debug Notifications</string>
@@ -39,7 +45,7 @@
     <string name="settings_item_sign_out_button_title">Log out</string>
 
     <string name="settings_item_group_title_security">Security</string>
-    <string name="settings_item_title_recovery_kit">Recovery kit</string>
+    <string name="settings_item_title_security">Security &amp; privacy</string>
     <string name="settings_item_title_pin">Your PIN</string>
     <string name="settings_item_title_networks">Network</string>
     <string name="settings_item_title_touch_id">Touch ID</string>
@@ -47,6 +53,10 @@
     <string name="settings_item_group_title_appearance">Appearance</string>
     <string name="settings_item_title_notifications">Notifications</string>
     <string name="settings_item_title_zero_balances">Hide zero balances</string>
+
+    <string name="settings_item_group_title_community">Community</string>
+    <string name="settings_item_title_twitter">Follow us on Twitter</string>
+    <string name="settings_item_title_discord">Join our Discord</string>
 
     <string name="settings_item_title_app_version">App version</string>
 
@@ -67,16 +77,44 @@
     <string name="settings_item_logout_confirm_title">Are you sure you want to log out?</string>
 
     <!--Recovery Kit-->
-    <string name="recovery_title">Recovery kit</string>
-    <string name="recovery_text">Your recovery kit</string>
-    <string name="recovery_sub_text">If you switch devices, you can easily restore your wallet. No private keys needed.</string>
+    <string name="recovery_title">Security &amp; privacy</string>
+    <string name="recovery_text">Security &amp; privacy</string>
+    <string name="recovery_sub_text_web3">To access your account from another device, you need to use any 2 factors from the list below</string>
+    <string name="recovery_sub_text_seed_phrase">Seed phrase is the only way to access your funds on another device. Key App doesn\'t have access to this information.</string>
     <string name="recovery_multi_factor_header">Multi-factor authentication</string>
     <string name="recovery_device_title">Device</string>
     <string name="recovery_phone_title">Phone</string>
     <string name="recovery_social_title">Google</string>
     <string name="recovery_seed_title">Seed phrase</string>
-    <string name="recovery_footer">Your private key is split into multiple factors. At least, you should have three factors, but you can create more. To log in to different devices, you need at least two factors.</string>
+    <string name="recovery_footer">Key App respects your privacy - it can\'t access your funds or personal data. Your information stays securely stored on your device and in the blockchain.</string>
     <string name="recovery_not_available">Not available for now</string>
+    <string name="recovery_manage">Manage</string>
+
+    <!-- change device share -->
+    <string name="devices_title">Devices</string>
+    <string name="devices_subtitle">We\'ve noticed that you\'re using a new device. \n\nFor security, change your authorization device to restore access if needed.</string>
+    <string name="devices_confirmation_title">Are you sure you want to update your authorization device?</string>
+    <string name="devices_confirmation_subtitle">You will not be able to use the old device for recovery</string>
+    <string name="devices_confirmation_button_title">Update</string>
+    <string name="devices_this_device">THIS DEVICE</string>
+    <string name="devices_authorization_device">AUTHORIZATION DEVICE</string>
+    <string name="devices_set_up">Set up</string>
+    <string name="devices_make_sure_your_device">Make sure this is still your device</string>
+    <string name="devices_footer_message">Attention! If you update your current device, you will not be able to use the old device for recovery.</string>
+
+    <string name="devices_almost_done">Nice!\nAlmost done</string>
+    <string name="devices_almost_done_message">Confirm access to your account</string>
+    <string name="devices_restore_google">Continue with Google</string>
+
+
+    <string name="devices_incorrect_account">Incorrect Google account</string>
+    <string name="devices_account_associated">%s\nPlease log in with the correct Google account.</string>
+    <string name="devices_restore_another">Use another account</string>
+
+
+    <string name="devices_change_sms_input_toolbar_title">Confirm your number</string>
+    <string name="devices_change_update_message">Updating</string>
+    <string name="devices_change_success_message">✌️ The device was successfully changed</string>
 
     <!--Seed Phrase Kit-->
     <string name="seed_phrase_title">Details seed phrase</string>
@@ -84,7 +122,7 @@
     <string name="seed_phrase_info">Make sure you understand the aspects</string>
     <string name="seed_phrase_warn">Your seed phrase must never be shared</string>
     <string name="seed_phrase_hint_1">A seed phrase is like a password — words — that allows you to access and manage your crypto funds</string>
-    <string name="seed_phrase_hint_2">Except you, no one keeps your entire seed tphrase. The parts are distributed decentralized on Torus Network nodes</string>
+    <string name="seed_phrase_hint_2">Except you, no one keeps your entire seed phrase. The parts are distributed decentralized on Torus Network nodes</string>
     <string name="seed_phrase_hint_3">Your seed phrase must never be shared. Keep it private, even from us</string>
     <string name="seed_phrase_show_key_button">Show my private key</string>
     <string name="seed_phrase_copy_key_button">Copy to clipboard</string>

@@ -8,8 +8,8 @@ import org.p2p.core.utils.asUsdSwap
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.orZero
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.FinanceBlockStyle
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
@@ -25,7 +25,7 @@ import org.p2p.wallet.jupiter.repository.model.findTokenByMint
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.emptyString
 
 class SwapContentSettingsMapper(
@@ -57,7 +57,7 @@ class SwapContentSettingsMapper(
     ): List<AnyCellItem> = mapList(
         slippage = state.slippage,
         routes = state.routes,
-        activeRouteIndex = state.activeRoute,
+        activeRouteIndex = state.activeRouteIndex,
         jupiterTokens = jupiterTokens,
         tokenBAmount = null,
         tokenB = state.tokenB,
@@ -121,7 +121,7 @@ class SwapContentSettingsMapper(
     ) {
         val isBestRoute = activeRouteIndex == SwapStateManager.DEFAULT_ACTIVE_ROUTE_ORDINAL
         val activeRoute = routes.getOrNull(activeRouteIndex)
-        this += FinanceBlockCellModel(
+        this += MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_route_title),
@@ -142,7 +142,7 @@ class SwapContentSettingsMapper(
                 )
             ),
             payload = SwapSettingsPayload.ROUTE,
-            styleType = FinanceBlockStyle.BASE_CELL,
+            styleType = MainCellStyle.BASE_CELL,
         )
     }
 
@@ -176,7 +176,7 @@ class SwapContentSettingsMapper(
                 .plus(" ${tokenB.tokenSymbol}")
             TextViewCellModel.Raw(text = TextContainer(minimumReceivedText))
         }
-        this += FinanceBlockCellModel(
+        this += MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_minimum_received_title),
@@ -190,7 +190,7 @@ class SwapContentSettingsMapper(
                 )
             ),
             payload = SwapSettingsPayload.MINIMUM_RECEIVED,
-            styleType = FinanceBlockStyle.BASE_CELL,
+            styleType = MainCellStyle.BASE_CELL,
         )
     }
 
@@ -205,7 +205,7 @@ class SwapContentSettingsMapper(
 
         val feeUsd = accountFee.amountUsd?.asUsdSwap()
 
-        this += FinanceBlockCellModel(
+        this += MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_creation_fee_title),
@@ -222,7 +222,7 @@ class SwapContentSettingsMapper(
                 )
             ),
             payload = SwapSettingsPayload.CREATION_FEE,
-            styleType = FinanceBlockStyle.BASE_CELL,
+            styleType = MainCellStyle.BASE_CELL,
         )
     }
 
@@ -245,7 +245,7 @@ class SwapContentSettingsMapper(
                 .asUsdSwap()
         }
 
-        this += FinanceBlockCellModel(
+        this += MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_liquidity_fee_title),
@@ -264,7 +264,7 @@ class SwapContentSettingsMapper(
                 )
             ),
             payload = SwapSettingsPayload.LIQUIDITY_FEE,
-            styleType = FinanceBlockStyle.BASE_CELL,
+            styleType = MainCellStyle.BASE_CELL,
         )
     }
 
@@ -304,7 +304,7 @@ class SwapContentSettingsMapper(
             .plus(accountFee.amountUsd)
             .asUsdSwap()
 
-        this += FinanceBlockCellModel(
+        this += MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_estimated_fee_title),
@@ -317,7 +317,7 @@ class SwapContentSettingsMapper(
                 },
             ),
             payload = SwapSettingsPayload.ESTIMATED_FEE,
-            styleType = FinanceBlockStyle.BASE_CELL,
+            styleType = MainCellStyle.BASE_CELL,
         )
     }
 

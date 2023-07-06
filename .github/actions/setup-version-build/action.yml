@@ -7,13 +7,11 @@ runs:
     - name: Setup version
       shell: bash
       run: |
-        # Get the current date in milliseconds
-        timestamp=$(date +%s%3N)
+        # Get the number of commits in the repository
+        commit_count=$(git rev-list --count HEAD)
         
-        run_number=${{ github.run_number }}
-        
-        # Combine the timestamp with the GITHUB_RUN_NUMBER
-        version=$((timestamp + run_number))
+        # Assign commit count to a separate value due for future edit
+        version=$commit_count
         
         # Set the version build number using the unique identifier
         ./gradlew setVersionBuild -Pversion=$version

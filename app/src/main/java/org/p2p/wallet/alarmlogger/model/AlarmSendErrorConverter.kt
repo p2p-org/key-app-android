@@ -17,12 +17,13 @@ import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.feerelayer.model.FeeRelayerException
 import org.p2p.wallet.feerelayer.model.RelayAccount
-import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.infrastructure.network.data.SimulationException
+import org.p2p.core.network.data.ServerException
+import org.p2p.core.network.data.SimulationException
 import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.newsend.model.SendTransactionFailed
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.toBase58Instance
 
 class AlarmSendErrorConverter(
     private val gson: Gson
@@ -59,7 +60,7 @@ class AlarmSendErrorConverter(
             fees = fees,
             relayAccountState = relayAccountState,
             userPubkey = userPublicKey,
-            recipientPubkey = recipientAddress.addressState.address.toBase58Instance(),
+            recipientPubkey = recipientAddress.address.toBase58Instance(),
             recipientName = (recipientAddress as? SearchResult.UsernameFound)?.username.orEmpty(),
             simulationError = error.getSimulationError(),
             feeRelayerError = error.getFeeRelayerError(),
@@ -218,8 +219,9 @@ class AlarmSendErrorConverter(
         userPublicKey: Base58String,
         error: Throwable
     ): AlarmErrorsRequest {
-        val errorDescription = when (error) {
+        val errorDescription: String = when (error) {
             is UsernameServiceError -> "${error.javaClass.simpleName}: ${error.errorCode}, ${error.message}"
+            is ServerException -> error.jsonErrorBody?.toString() ?: error.message ?: error.toString()
             else -> error.message ?: error.toString()
         }
         val request = AlarmErrorsUsernameRequest(
@@ -263,5 +265,6 @@ private fun Throwable.getBlockchainError(): String = when (this) {
     is BridgeResult.Error -> "Bridge error: ${this.javaClass.simpleName}"
     is FeeRelayerException -> emptyString()
     is SimulationException -> emptyString()
+    is SendTransactionFailed -> cause.getBlockchainError()
     else -> "Unknown error: ${message ?: localizedMessage}"
 }

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
+import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
@@ -82,7 +82,7 @@ class JupiterSwapSettingsPresenter(
                 currentContentList = contentMapper.mapForSwapLoadedState(
                     slippage = state.slippage,
                     routes = state.routes,
-                    activeRoute = state.activeRoute,
+                    activeRoute = state.activeRouteIndex,
                     jupiterTokens = tokens,
                     tokenBAmount = state.amountTokenB,
                     tokenB = state.tokenB,
@@ -94,7 +94,7 @@ class JupiterSwapSettingsPresenter(
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
                     routes = state.routes,
-                    activeRoute = state.activeRoute,
+                    activeRoute = state.activeRouteIndex,
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
                     solTokenForFee = solToken,
@@ -105,7 +105,7 @@ class JupiterSwapSettingsPresenter(
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
                     routes = state.routes,
-                    activeRoute = state.activeRoute,
+                    activeRoute = state.activeRouteIndex,
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
                     solTokenForFee = solToken,
@@ -125,7 +125,7 @@ class JupiterSwapSettingsPresenter(
         view?.bindSettingsList(currentContentList)
     }
 
-    override fun onSettingItemClick(item: FinanceBlockCellModel) {
+    override fun onSettingItemClick(item: MainCellModel) {
         val payload = item.payload ?: return
         when (payload) {
             SwapSlippagePayload.ZERO_POINT_ONE -> {

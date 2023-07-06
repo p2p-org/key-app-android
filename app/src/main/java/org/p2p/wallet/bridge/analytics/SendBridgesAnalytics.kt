@@ -1,11 +1,12 @@
 package org.p2p.wallet.bridge.analytics
 
 import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 
 private const val SEND_BRIDGES_SCREEN_OPEN = "Send_Bridges_Screen_Open"
 
-private const val NEW_SEND_FREE_TRANSACTIONS_CLICK = "Sendnew_Free_Transaction_Click"
-private const val NEW_SEND_TOKEN_SELECTION_CLICK = "Sendnew_Token_Input_Click"
+private const val NEW_SEND_FREE_TRANSACTIONS_CLICK = "Send_New_Free_Transaction_Click"
+private const val NEW_SEND_TOKEN_SELECTION_CLICK = "Send_New_Token_Input_Click"
 private const val SEND_CLICK_CHANGE_TOKEN_CHOSEN = "Send_Click_Change_Token_Chosen"
 private const val SEND_CLICK_CHANGE_TOKEN_VALUE = "Send_Click_Change_Token_Value"
 private const val SEND_BRIDGES_CONFIRM_BUTTON_CLICK = "Send_Bridges_Confirm_Button_Click"
@@ -14,7 +15,7 @@ class SendBridgesAnalytics(
     private val analytics: Analytics
 ) {
 
-    private val bridgeSendFlow = "Send_Flow" to "Bridge"
+    private val bridgeSendFlow = "Send_Flow" to NewSendAnalytics.AnalyticsSendFlow.BRIDGE.title
     private val bridgesParams = mapOf(bridgeSendFlow)
 
     fun logSendBridgesScreenOpened() {

@@ -95,7 +95,7 @@
 
     </LinearLayout>
 
-    <org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
+    <org.p2p.uikit.components.finance_block.UiKitMainCellView
         android:id="@+id/financeBlockLinkValue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

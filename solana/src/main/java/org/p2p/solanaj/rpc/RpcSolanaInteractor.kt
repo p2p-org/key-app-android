@@ -16,10 +16,11 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.Hash
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.solanaj.utils.Utils
-import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.core.crypto.Base64Utils
 import java.math.BigInteger
 import java.nio.ByteBuffer
 import java.util.Arrays
+import org.p2p.core.network.environment.RpcEnvironment
 
 private const val GatewayRegistryStateKey = "GatewayRegistryState"
 private const val GatewayStateKey = "GatewayStateV0.1.4"

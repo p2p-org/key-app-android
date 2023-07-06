@@ -12,6 +12,7 @@
     <string name="common_close">Close</string>
     <string name="common_reload">Reload</string>
     <string name="common_great">Great!</string>
+    <string name="common_got_it">Got it</string>
     <string name="common_settings">Settings</string>
     <string name="common_copied">Copied to clipboard</string>
     <string name="common_copied_with_emoji">👯‍ Copied to the clipboard</string>
@@ -59,14 +60,12 @@
     <!-- Error messages -->
     <string name="error_title">Failed to get data</string>
     <string name="error_general_title">Unknown error</string>
-    <string name="error_general_message">❌ Something went wrong. Please, try again</string>
     <string name="error_general_message_refresh">Something went wrong</string>
     <string name="error_general_message_refresh_subtitle">Refresh the page to proceed</string>
     <string name="error_network_title">Connection error</string>
     <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
     <string name="error_no_internet_message">🥺 You have no internet connection</string>
     <string name="error_no_internet_message_no_emoji">You have no internet connection</string>
-    <string name="error_invalid_transaction">Invalid transaction, please try again</string>
     <string name="error_amount">Amount error. Please enter valid amount</string>
     <string name="error_fetching_data_about_token">Couldn\'t fetch information for %s</string>
     <string name="error_invalid_address">Invalid address, please enter correct one</string>
@@ -74,9 +73,6 @@
     <string name="error_opening_file">Couldn\'t open the file</string>
     <string name="error_rates_error">Cannot get rates</string>
     <string name="error_take_screenshot">Failed to take a screenshot</string>
-    <string name="error_insufficient_funds">Insufficient funds</string>
-    <string name="error_invalid_blockhash">Invalid blockhash</string>
-    <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
     <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
     <string name="error_country_not_found">Sorry, we don’t know a such country</string>
     <string name="error_wallet_not_found_title">No wallet found</string>

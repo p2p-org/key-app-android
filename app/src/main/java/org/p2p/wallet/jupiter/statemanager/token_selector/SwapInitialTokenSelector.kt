@@ -4,7 +4,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
-import org.p2p.wallet.utils.Base58String
+import org.p2p.core.crypto.Base58String
 
 data class SwapInitialTokensData(
     val token: Token.Active?,

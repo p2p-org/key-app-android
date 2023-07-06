@@ -7,8 +7,8 @@ import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 
 sealed interface SwapTokenModel {
 

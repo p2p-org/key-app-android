@@ -21,8 +21,12 @@ interface BorshSerializable {
 fun BorshBuffer.write(vararg objects: Any): BorshBuffer {
     val validatedObjects: List<Any> = objects.map { if (it is JsonObject) it.toString() else it }
     validatedObjects.forEach {
+        if (it is ByteArray) {
+            this.writeFixedArray(it)
+        } else {
+            this.write(it)
+        }
         Timber.tag("BorshBuffer").d("Written to borsh: $it")
-        this.write(it)
     }
     return this
 }

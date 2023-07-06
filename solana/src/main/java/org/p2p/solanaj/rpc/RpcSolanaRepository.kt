@@ -7,14 +7,14 @@ import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
-import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.core.crypto.Base64String
 
 interface RpcSolanaRepository {
     suspend fun getAccountInfo(stateKey: PublicKey): AccountInfo
     suspend fun getRecentPerformanceSamples(exampleCount: Int): List<RecentPerformanceSample>
     suspend fun sendTransaction(transaction: Transaction, signer: Account, encoding: Encoding = Encoding.BASE64): String
     suspend fun sendTransaction(serializedTransaction: String, encoding: Encoding = Encoding.BASE64): String
-    suspend fun simulateTransaction(serializedTransaction: String, encoding: Encoding = Encoding.BASE64): Boolean
+    suspend fun simulateTransaction(serializedTransaction: String, encoding: Encoding = Encoding.BASE64): TransactionSimulationResult
     suspend fun getConfirmedSignaturesForAddress(
         mintLogAccount: PublicKey,
         limit: Int

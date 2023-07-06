@@ -12,23 +12,25 @@
         android:id="@+id/view_background"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="90dp"
         android:background="@drawable/bg_banner_rounded"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/button"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="@dimen/ui_kit_button_medium_height"
-        android:layout_marginHorizontal="62dp"
-        android:layout_marginBottom="18dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="20dp"
         android:backgroundTint="@color/bg_snow"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="40dp"
         tools:text="@string/main_banner_button" />
 
     <TextView
@@ -37,22 +39,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@id/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_goneMarginBottom="28dp"
         tools:text="@string/main_banner_subtitle" />
 
     <ImageView
         android:id="@+id/image_view_banner"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="24dp"
+        android:layout_height="135dp"
+        android:layout_marginBottom="8dp"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_main_banner"
-        app:layout_constraintBottom_toTopOf="@id/text_view_banner_subtitle"
+        app:layout_constraintBottom_toTopOf="@id/text_view_banner_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

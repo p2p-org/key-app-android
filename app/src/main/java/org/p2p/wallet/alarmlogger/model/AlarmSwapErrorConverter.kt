@@ -3,26 +3,34 @@ package org.p2p.wallet.alarmlogger.model
 import com.google.gson.Gson
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsSwapRequest
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.home.repository.UserTokensRepository
+import org.p2p.core.network.data.ServerException
+import org.p2p.core.utils.toJsonObject
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionMapper
+import org.p2p.wallet.jupiter.statemanager.SwapProfiler
 import org.p2p.wallet.jupiter.statemanager.SwapState
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toJsonObject
+import org.p2p.core.crypto.Base58String
 
 class AlarmSwapErrorConverter(
     private val gson: Gson,
-    private val transactionMapper: JupiterSwapTransactionMapper
+    private val transactionMapper: JupiterSwapTransactionMapper,
+    private val userTokensRepository: UserTokensRepository,
+    private val swapProfiler: SwapProfiler,
 ) {
 
-    fun toSwapError(
+    suspend fun toSwapError(
         userPublicKey: Base58String,
         swapState: SwapState.SwapLoaded,
         swapError: Throwable,
-        type: SwapAlarmError
+        type: SwapAlarmError,
     ): AlarmErrorsRequest =
         swapState.run {
+            // keep the diff variables up here to minimize time between an error and a request
+            val diffRoutesTime = swapProfiler.getRouteFetchedTimeDiffSeconds()
+            val diffTxTime = swapProfiler.getTxCreatedTimeDiffSeconds()
+
             val activeRouteJson: String =
-                routes[activeRoute]
+                routes[activeRouteIndex]
                     .let { transactionMapper.toNetwork(it, userPublicKey) }
                     .route
                     .let(gson::toJsonObject)
@@ -35,22 +43,32 @@ class AlarmSwapErrorConverter(
             } else {
                 swapError.stackTraceToString()
             }
+            val tokenABalance = userTokensRepository.findUserTokenByMint(tokenA.mintAddress)
+                ?.getFormattedTotal()
+                ?: "0"
+            val tokenBBalance = userTokensRepository.findUserTokenByMint(tokenB.mintAddress)
+                ?.getFormattedTotal()
+                ?: "0"
             val request = AlarmErrorsSwapRequest(
                 tokenA = AlarmErrorsSwapRequest.TokenARequest(
                     tokenName = tokenA.tokenName,
                     mint = tokenA.mintAddress,
-                    amount = amountTokenA.toPlainString()
+                    amount = amountTokenA.toPlainString(),
+                    balance = tokenABalance,
                 ),
                 tokenB = AlarmErrorsSwapRequest.TokenBRequest(
                     tokenName = tokenB.tokenName,
                     mint = tokenB.mintAddress,
-                    amount = amountTokenB.toPlainString()
+                    amount = amountTokenB.toPlainString(),
+                    balance = tokenBBalance,
                 ),
                 swapRouteAsJson = activeRouteJson,
                 userPublicKey = userPublicKey,
                 slippage = slippage.percentValue,
                 jupiterTransaction = swapState.jupiterSwapTransaction.base64Value,
-                blockchainError = swapErrorStr
+                blockchainError = swapErrorStr,
+                diffRoutesTime = diffRoutesTime.toString(),
+                diffTxTime = diffTxTime.toString(),
             )
 
             AlarmErrorsRequest(

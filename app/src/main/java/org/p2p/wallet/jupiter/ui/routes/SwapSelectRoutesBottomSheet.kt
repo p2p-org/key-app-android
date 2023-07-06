@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
-import org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.UiKitMainCellView
 import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
@@ -81,14 +81,14 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet() {
         is SwapState.TokenAZero,
         is SwapState.TokenANotZero,
         is SwapState.LoadingRoutes -> mapper.mapLoadingList()
-        is SwapState.LoadingTransaction -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)
-        is SwapState.RoutesLoaded -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)
-        is SwapState.SwapLoaded -> mapper.mapRoutesList(state.routes, state.activeRoute, state.tokenB)
+        is SwapState.LoadingTransaction -> mapper.mapRoutesList(state.routes, state.activeRouteIndex, state.tokenB)
+        is SwapState.RoutesLoaded -> mapper.mapRoutesList(state.routes, state.activeRouteIndex, state.tokenB)
+        is SwapState.SwapLoaded -> mapper.mapRoutesList(state.routes, state.activeRouteIndex, state.tokenB)
 
         is SwapState.SwapException -> getRoutesList(state.previousFeatureState)
     }
 
-    private fun onRouteClick(item: FinanceBlockCellModel, view: UiKitFinanceBlockView) {
+    private fun onRouteClick(item: MainCellModel, view: UiKitMainCellView) {
         val route = (item.payload as? JupiterSwapRoute) ?: return
         analytics.logSwapRouteChanged(route)
 

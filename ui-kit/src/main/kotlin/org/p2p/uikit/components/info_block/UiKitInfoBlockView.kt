@@ -11,6 +11,10 @@ import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.text.bindOrGone
 import org.p2p.uikit.utils.toPx
 
+@Deprecated(
+    "not fully implemented",
+    replaceWith = ReplaceWith("UiKitInformerView")
+)
 class UiKitInfoBlockView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null

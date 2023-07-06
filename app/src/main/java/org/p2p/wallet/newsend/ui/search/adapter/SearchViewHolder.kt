@@ -28,7 +28,7 @@ class SearchViewHolder(
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    val iconPadding = 12.toPx()
+    private val iconPadding = 12.toPx()
 
     fun onBind(item: SearchResult) {
         when (item) {
@@ -83,7 +83,7 @@ class SearchViewHolder(
             textViewTop.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
             textViewBottom.text = description
-            textViewBottom.isVisible = item.networkType == NetworkType.SOLANA
+            textViewBottom.isVisible = item.networkType == NetworkType.SOLANA && !description.isNullOrEmpty()
             Glide.with(root)
                 .load(imageObject)
                 .circleCrop()

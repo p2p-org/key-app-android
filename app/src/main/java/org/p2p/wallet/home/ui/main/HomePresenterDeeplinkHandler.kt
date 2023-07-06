@@ -6,8 +6,8 @@ import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
 import org.p2p.wallet.infrastructure.coroutines.waitForCondition
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
+import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.user.interactor.UserInteractor
 
 /**
@@ -67,7 +67,7 @@ class HomePresenterDeeplinkHandler(
             coroutineScope.launch {
                 val token = userInteractor.getSingleTokenForBuy(listOf(cryptoToken))
                 if (token != null) {
-                    view?.showNewBuyScreen(token, fiatToken, fiatAmount)
+                    view?.navigateToNewBuyScreen(token, fiatToken, fiatAmount)
                 } else {
                     presenter.onBuyClicked()
                 }
