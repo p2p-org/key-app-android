@@ -4,11 +4,12 @@ import kotlinx.coroutines.flow.combine
 import org.p2p.core.token.Token
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.home.ui.main.HomeInteractor
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.user.interactor.UserInteractor
 
-class UserTokensLoader(
+class HomeScreenTokensLoader(
     private val userInteractor: UserInteractor,
     private val ethereumInteractor: EthereumInteractor,
     private val strigaClaimInteractor: StrigaClaimInteractor,
@@ -43,6 +44,7 @@ class UserTokensLoader(
         data class SolTokens(val tokens: List<Token.Active>) : State
         data class EthTokens(val tokens: List<Token.Eth>) : State
         data class StrigaTokens(val tokens: List<StrigaClaimableToken>) : State
+        data class StrigaStatusBanner(val banner: StrigaKycStatusBanner)
     }
 
     data class UserTokensState(val tokenStates: List<State>, val isRefreshing: Boolean = false)

@@ -33,7 +33,6 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
@@ -90,7 +89,6 @@ class HomePresenter(
     private val homeMapper: HomePresenterMapper,
     // FT
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     // analytics
     private val analytics: HomeAnalytics,
@@ -382,27 +380,6 @@ class HomePresenter(
                 )
             ).collect(deeplinkHandler::handle)
         }
-    }
-
-    private suspend fun initializeActionButtons(isRefreshing: Boolean = false) {
-        if (!isRefreshing && buttonsStateFlow.value.isNotEmpty()) {
-            return
-        }
-        val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
-        val isSellAvailable = homeInteractor.isSellFeatureAvailable()
-
-        val buttons = mutableListOf(ActionButton.TOP_UP_BUTTON)
-        if (isSellAvailable) {
-            buttons += ActionButton.SELL_BUTTON
-        }
-
-        buttons += ActionButton.SEND_BUTTON
-
-        if (!isSellFeatureToggleEnabled) {
-            buttons += ActionButton.SWAP_BUTTON
-        }
-
-        buttonsStateFlow.emit(buttons)
     }
 
     private fun showUserAddressAndUsername() {

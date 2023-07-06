@@ -30,7 +30,6 @@ import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.ui.main.UserTokensPolling
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.emptyString
@@ -44,7 +43,6 @@ class ClaimPresenter(
     private val claimUiMapper: ClaimUiMapper,
     private val appScope: AppScope,
     private val claimAnalytics: ClaimAnalytics,
-    private val userTokensPolling: UserTokensPolling,
     private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 

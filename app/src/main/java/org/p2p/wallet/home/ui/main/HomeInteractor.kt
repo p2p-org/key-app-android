@@ -9,7 +9,8 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.home.events.UserTokensLoader
+import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
+import org.p2p.wallet.home.events.HomeScreenTokensLoader
 import org.p2p.wallet.home.repository.HomeScreenLocalRepository
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.sell.interactor.SellInteractor
@@ -95,11 +96,11 @@ class HomeInteractor(
         userTokensInteractor.loadUserRates(tokens)
     }
 
-    suspend fun updateUserTokensState(newTokensState: UserTokensLoader.UserTokensState) {
+    suspend fun updateUserTokensState(newTokensState: HomeScreenTokensLoader.UserTokensState) {
         homeScreenLocalRepository.setUserTokensState(newTokensState)
     }
 
-    fun observeUserTokensState(): SharedFlow<UserTokensLoader.UserTokensState> =
+    fun observeUserTokensState(): SharedFlow<HomeScreenTokensLoader.UserTokensState> =
         homeScreenLocalRepository.getUserTokensStateFlow()
 
     suspend fun updateRefreshState(isRefreshing: Boolean) {
@@ -108,5 +109,21 @@ class HomeInteractor(
 
     fun observeRefreshState(): SharedFlow<Boolean> {
         return homeScreenLocalRepository.getHomeScreenRefreshStateFlow()
+    }
+
+    suspend fun updateHomeActionButtons(newButtons: List<ActionButton>) {
+        homeScreenLocalRepository.setActionButtons(newButtons)
+    }
+
+    fun observeActionButtons(): SharedFlow<List<ActionButton>> {
+        return homeScreenLocalRepository.getHomeScreenActionButtonsFlow()
+    }
+
+    fun observeStrigaKycBanner(): SharedFlow<StrigaKycStatusBanner> {
+        return homeScreenLocalRepository.getStrigaUserStatusBannerFlow()
+    }
+
+    suspend fun updateStrigaKycBanner(banner: StrigaKycStatusBanner) {
+        homeScreenLocalRepository.setStrigaUserStatusBanner(banner)
     }
 }
