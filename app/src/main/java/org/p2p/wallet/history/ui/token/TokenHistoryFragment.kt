@@ -159,7 +159,7 @@ class TokenHistoryFragment :
                 presenter.onReceiveClicked()
             }
             ActionButton.SEND_BUTTON -> {
-                sendAnalytics.logTokenScreenActionClicked()
+                sendAnalytics.logTokenScreenActionClicked(NewSendAnalytics.AnalyticsSendFlow.SEND)
                 replaceFragment(NewSearchFragment.create(tokenForHistory, SearchOpenedFromScreen.MAIN))
             }
             ActionButton.SWAP_BUTTON -> {

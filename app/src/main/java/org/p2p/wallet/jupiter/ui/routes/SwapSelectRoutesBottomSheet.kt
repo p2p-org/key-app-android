@@ -14,7 +14,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogSwapSelectRoutesBinding
-import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.statemanager.SwapState
@@ -35,7 +34,7 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet(R.layout.dialog_swap_select_
             fm: FragmentManager,
             stateManagerKey: String
         ) {
-            val tag = HomeActionsBottomSheet::javaClass.name
+            val tag = SwapSelectRoutesBottomSheet::javaClass.name
             if (fm.findFragmentByTag(tag) != null) return
             SwapSelectRoutesBottomSheet()
                 .withArgs(ARG_STATE_MANAGE_KEY to stateManagerKey)
