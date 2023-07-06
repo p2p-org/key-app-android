@@ -10,6 +10,10 @@ plugins {
 }
 
 android {
+    namespace = "org.p2p.wallet"
+}
+
+android {
     compileSdk = Versions.sdkCompileVersion
 
     defaultConfig {

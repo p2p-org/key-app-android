@@ -2,10 +2,6 @@ plugins {
     id("org.p2p.wallet.android.library")
 }
 
-android {
-    namespace = "org.p2p.ethereumkit"
-}
-
 dependencies {
     implementation(project(":core"))
     implementation("org.bouncycastle:bcpkix-jdk15on:1.68")

@@ -7,10 +7,6 @@ apply {
     from("${project.rootDir}/.scripts/config.gradle")
 }
 
-android {
-    namespace = "org.p2p.core"
-}
-
 dependencies {
     Dependencies.baseAndroidLibraries.forEach { implementation(it) }
 
