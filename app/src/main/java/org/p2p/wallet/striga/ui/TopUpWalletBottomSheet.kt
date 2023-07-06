@@ -76,6 +76,11 @@ class TopUpWalletBottomSheet :
         strigaFragmentFactory.bankTransferFragment(target)?.let(::dismissAndNavigate)
     }
 
+    override fun navigateToKycPending() {
+        dismiss()
+        strigaFragmentFactory.showPendingBottomSheet(requireActivity().supportFragmentManager)
+    }
+
     override fun showBankCardView(tokenToBuy: Token) {
         binding.bankCardView.isVisible = true
         binding.bankCardView.bind(

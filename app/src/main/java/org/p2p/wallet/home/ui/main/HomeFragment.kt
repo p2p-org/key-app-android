@@ -56,7 +56,6 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
-import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputFragment
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -330,7 +329,7 @@ class HomeFragment :
     }
 
     override fun showKycPendingDialog() {
-        StrigaKycPendingBottomSheet.show(parentFragmentManager)
+        strigaKycFragmentFactory.showPendingBottomSheet(parentFragmentManager)
     }
 
     override fun showTopupWalletDialog() {

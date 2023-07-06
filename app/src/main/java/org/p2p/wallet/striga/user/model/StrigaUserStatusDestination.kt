@@ -5,5 +5,6 @@ enum class StrigaUserStatusDestination {
     ONBOARDING,
     SMS_VERIFICATION,
     SUM_SUB_VERIFICATION,
-    IBAN_ACCOUNT
+    IBAN_ACCOUNT,
+    KYC_PENDING
 }
