@@ -94,4 +94,7 @@ data class StrigaUserStatusDetails(
             StrigaUserVerificationStatus.PENDING_REVIEW,
             StrigaUserVerificationStatus.ON_HOLD
         )
+
+    val isKycApproved: Boolean
+        get() = kycStatus == StrigaUserVerificationStatus.APPROVED
 }

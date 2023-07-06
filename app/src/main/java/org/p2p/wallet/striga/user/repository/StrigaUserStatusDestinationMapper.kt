@@ -9,21 +9,21 @@ import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 class StrigaUserStatusDestinationMapper {
 
     fun mapToDestination(userStatus: StrigaUserStatusDetails?): StrigaUserStatusDestination {
-        val isUserNotCreated = userStatus == null
         return when {
-            isUserNotCreated -> {
+            // if user is not created
+            userStatus == null -> {
                 StrigaUserStatusDestination.ONBOARDING
             }
-            userStatus?.isMobileVerified == false -> {
+            !userStatus.isMobileVerified -> {
                 StrigaUserStatusDestination.SMS_VERIFICATION
             }
-            userStatus?.isKycOpenable == true -> {
+            userStatus.isKycOpenable -> {
                 StrigaUserStatusDestination.SUM_SUB_VERIFICATION
             }
-            userStatus?.isKycPending == true -> {
+            userStatus.isKycPending -> {
                 StrigaUserStatusDestination.KYC_PENDING
             }
-            userStatus?.kycStatus == StrigaUserVerificationStatus.APPROVED -> {
+            userStatus.isKycApproved -> {
                 StrigaUserStatusDestination.IBAN_ACCOUNT
             }
             else -> {
