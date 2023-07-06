@@ -1,13 +1,14 @@
 package org.p2p.wallet.solend.ui.aboutearn
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.viewpager2.widget.ViewPager2
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
+import org.p2p.wallet.common.ui.FragmentPageConfiguration
 import org.p2p.wallet.databinding.FragmentSolendAboutEarnBinding
 import org.p2p.wallet.solend.ui.aboutearn.slider.SolendAboutEarnSliderFragment
 import org.p2p.wallet.solend.ui.aboutearn.slider.SolendAboutEarnSliderFragmentArgs
@@ -30,23 +31,31 @@ class SolendAboutEarnFragment :
 
     private var pageSelected = 0
 
-    private val sliderFragments = List(3) { SolendAboutEarnSliderFragment::class }
-    private val sliderFragmentArgs = listOf(
-        SolendAboutEarnSliderFragmentArgs(
-            R.drawable.ic_about_earn_1,
-            R.string.about_earn_slider_title_1,
-            R.string.about_earn_slider_text_1,
-        ).toBundle(),
-        SolendAboutEarnSliderFragmentArgs(
-            R.drawable.ic_about_earn_2,
-            R.string.about_earn_slider_title_2,
-            R.string.about_earn_slider_text_2,
-        ).toBundle(),
-        SolendAboutEarnSliderFragmentArgs(
-            R.drawable.ic_about_earn_3,
-            R.string.about_earn_slider_title_3,
-            R.string.about_earn_slider_text_3,
-        ).toBundle()
+    private val pages = listOf(
+        FragmentPageConfiguration(
+            SolendAboutEarnSliderFragment::class,
+            SolendAboutEarnSliderFragmentArgs(
+                R.drawable.ic_about_earn_1,
+                R.string.about_earn_slider_title_1,
+                R.string.about_earn_slider_text_1,
+            ).toBundle(),
+        ),
+        FragmentPageConfiguration(
+            SolendAboutEarnSliderFragment::class,
+            SolendAboutEarnSliderFragmentArgs(
+                R.drawable.ic_about_earn_2,
+                R.string.about_earn_slider_title_2,
+                R.string.about_earn_slider_text_2,
+            ).toBundle(),
+        ),
+        FragmentPageConfiguration(
+            SolendAboutEarnSliderFragment::class,
+            SolendAboutEarnSliderFragmentArgs(
+                R.drawable.ic_about_earn_3,
+                R.string.about_earn_slider_title_3,
+                R.string.about_earn_slider_text_3,
+            ).toBundle()
+        ),
     )
 
     private val viewPagerSliderChangedCallback = object : ViewPager2.OnPageChangeCallback() {
@@ -54,7 +63,7 @@ class SolendAboutEarnFragment :
             super.onPageSelected(position)
             pageSelected = position
             binding.buttonNext.setText(
-                if (position == sliderFragments.size - 1) {
+                if (position == pages.size - 1) {
                     R.string.about_earn_continue
                 } else {
                     R.string.about_earn_next
@@ -70,8 +79,7 @@ class SolendAboutEarnFragment :
             viewPagerSliderFragments.adapter = BaseFragmentAdapter(
                 fragmentManager = childFragmentManager,
                 lifecycle = lifecycle,
-                items = sliderFragments,
-                args = sliderFragmentArgs
+                pages = pages,
             )
             viewPagerSliderFragments.registerOnPageChangeCallback(viewPagerSliderChangedCallback)
             dotsIndicatorSliderFragments.attachTo(viewPagerSliderFragments)
@@ -81,7 +89,7 @@ class SolendAboutEarnFragment :
             }
 
             buttonNext.setOnClickListener {
-                if (pageSelected == sliderFragments.size - 1) {
+                if (pageSelected == pages.size - 1) {
                     presenter.onContinueButtonClicked()
                 } else {
                     presenter.onNextButtonClicked()

@@ -22,6 +22,7 @@
             app:itemTextColor="@drawable/menu_select_deselect"
             app:labelVisibilityMode="labeled"
             app:layout_constraintBottom_toBottomOf="parent" />
+
     </FrameLayout>
 
 </merge>

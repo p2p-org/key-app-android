@@ -1,12 +1,13 @@
 package org.p2p.wallet.auth.web3authsdk.mapper
 
 import com.google.gson.Gson
+import timber.log.Timber
+import org.p2p.core.utils.fromJsonReified
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSdkInternalError
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import timber.log.Timber
-import org.p2p.core.utils.fromJsonReified
 
 private const val INTERNAL_ERROR_MESSAGE = "Web3Auth mapping failed"
 
@@ -53,6 +54,14 @@ class Web3AuthClientMapper(private val gson: Gson) {
 
     fun fromNetworkRefreshDeviceShare(responseJson: String): Result<Web3AuthSignUpResponse.ShareDetailsWithMeta> = try {
         Result.success(gson.fromJsonReified<Web3AuthSignUpResponse.ShareDetailsWithMeta>(responseJson)!!)
+    } catch (mappingError: Throwable) {
+        Timber.i(mappingError)
+        Timber.i(responseJson)
+        Result.failure(Web3AuthSdkInternalError(INTERNAL_ERROR_MESSAGE, mappingError))
+    }
+
+    fun fromNetworkGetUserData(responseJson: String): Result<GatewayOnboardingMetadata> = try {
+        Result.success(gson.fromJsonReified<GatewayOnboardingMetadata>(responseJson)!!)
     } catch (mappingError: Throwable) {
         Timber.i(mappingError)
         Timber.i(responseJson)

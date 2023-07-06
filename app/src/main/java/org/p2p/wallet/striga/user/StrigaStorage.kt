@@ -54,4 +54,8 @@ class StrigaStorage(
     override fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean {
         return sharedPreferences.getBoolean(KEY_USER_BANNER_IS_HIDDEN_PREFIX + banner.name, false)
     }
+
+    override fun clear() {
+        sharedPreferences.edit { clear() }
+    }
 }

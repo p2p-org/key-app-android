@@ -112,7 +112,8 @@ object AuthModule {
                 appScope = get(),
                 analytics = get(),
                 jupiterSwapStorage = get(),
-                strigaWalletInMemoryRepository = get()
+                strigaWalletInMemoryRepository = get(),
+                strigaStorage = get()
             )
         }
 
@@ -209,7 +210,7 @@ object AuthModule {
         factory { (timerLeftTime: Long) ->
             OnboardingGeneralErrorTimerPresenter(
                 timerLeftTime = timerLeftTime,
-                smsInputTimer = get(),
+                smsInputTimer = get(named(SMS_QUALIFIER)),
                 fileInteractor = get()
             )
         } bind OnboardingGeneralErrorTimerContract.Presenter::class
@@ -221,8 +222,23 @@ object AuthModule {
         factoryOf(::TorusKeyInteractor)
         factoryOf(::UserRestoreInteractor)
         factoryOf(::GatewayMetadataMerger)
-        factoryOf(::MetadataInteractor)
         factoryOf(::MetadataChangesLogger)
         singleOf(::RestoreStateMachine)
+
+        factory {
+            MetadataInteractor(
+                gatewayServiceRepository = get(),
+                signUpDetailsStorage = get(),
+                tokenKeyProvider = get(),
+                seedPhraseProvider = get(),
+                accountStorage = get(),
+                gatewayMetadataMerger = get(),
+                ethereumInteractor = get(),
+                bridgeFeatureToggle = get(),
+                metadataChangesLogger = get(),
+                restoreFlowDataLocalRepository = get(),
+                web3AuthApi = get(),
+            )
+        }
     }
 }
