@@ -12,9 +12,5 @@ interface StrigaStorageContract {
     fun hideBanner(banner: StrigaKycStatusBanner)
     fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean
 
-    fun clear() {
-        userStatus = null
-        smsExceededVerificationAttemptsMillis = 0
-        smsExceededResendAttemptsMillis = 0
-    }
+    fun clear()
 }
