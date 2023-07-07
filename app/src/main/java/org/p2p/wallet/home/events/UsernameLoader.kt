@@ -7,7 +7,7 @@ import org.p2p.wallet.utils.ellipsizeAddress
 class UsernameLoader(
     private val homeInteractor: HomeInteractor,
     private val tokenKeyProvider: TokenKeyProvider
-) : HomeScreenLoader {
+) : AppLoader {
 
     override suspend fun onLoad() {
         val username = homeInteractor.getUsername()

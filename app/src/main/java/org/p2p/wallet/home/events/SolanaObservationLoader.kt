@@ -7,7 +7,7 @@ import org.p2p.wallet.solana.SolanaNetworkObserver
 class SolanaObservationLoader(
     private val networkObserver: SolanaNetworkObserver,
     private val appScope: AppScope,
-) : HomeScreenLoader {
+) : AppLoader {
 
     override suspend fun onLoad() {
         appScope.launch { networkObserver.start() }

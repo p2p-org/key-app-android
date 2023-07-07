@@ -3,7 +3,6 @@ package org.p2p.wallet.home.events
 import timber.log.Timber
 import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.network.ConnectionManager
@@ -17,15 +16,15 @@ class SolanaTokensLoader(
     private val appScope: AppScope,
     private val tokenKeyProvider: TokenKeyProvider,
     private val connectionManager: ConnectionManager,
-    private val environmentManager: NetworkEnvironmentManager
-) : HomeScreenLoader {
+    environmentManager: NetworkEnvironmentManager
+) : AppLoader {
 
-//    init {
-//        observeConnectionStatus()
-//        environmentManager.addEnvironmentListener(this::class) {
-//            loadTokens()
-//        }
-//    }
+    init {
+        observeConnectionStatus()
+        environmentManager.addEnvironmentListener(this::class) {
+            loadTokens()
+        }
+    }
 
     override suspend fun onLoad() {
         loadTokens()
@@ -47,7 +46,6 @@ class SolanaTokensLoader(
 
     private fun loadTokens() {
         appScope.launch {
-            homeInteractor.updateRefreshState(isRefreshing = true)
             try {
                 val tokens = homeInteractor.loadUserTokensAndUpdateLocal(
                     tokenKeyProvider.publicKey.toPublicKey()
@@ -60,7 +58,6 @@ class SolanaTokensLoader(
             } catch (t: Throwable) {
                 Timber.e(t, "Error on loading sol tokens")
             } finally {
-                homeInteractor.updateRefreshState(false)
             }
         }
     }

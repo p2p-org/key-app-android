@@ -1,6 +1,8 @@
 package org.p2p.wallet.home.events
 
 import java.math.BigDecimal
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
@@ -14,24 +16,22 @@ class BalanceLoader(
     private val appScope: AppScope,
     private val analytics: HomeAnalytics,
     private val homeInteractor: HomeInteractor
-) : HomeScreenLoader {
+) : AppLoader {
 
     override suspend fun onLoad() {
         appScope.launch {
-            homeInteractor.observeHomeScreenState().collect { homeState ->
+            homeInteractor.observeHomeScreenState()
+                .filterNotNull()
+                .distinctUntilChanged()
+                .collect { homeState ->
+                    val solTokens = homeState.solanaTokens.tokens
+                    val balance = getUserBalance(solTokens)
+                    val hasPositiveBalance = balance != null && balance.isMoreThan(BigDecimal.ZERO)
 
-                val tokensState = homeState.tokenStates
-                val solTokens = tokensState.firstOrNull {
-                    it is HomeScreenStateLoader.State.SolTokens
-                } ?: return@collect
-
-                val balance = getUserBalance((solTokens as HomeScreenStateLoader.State.SolTokens).tokens)
-                val hasPositiveBalance = balance != null && balance.isMoreThan(BigDecimal.ZERO)
-
-                analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
-                analytics.logUserAggregateBalanceProperty(balance.orZero())
-                homeInteractor.updateUserBalance(balance.orZero())
-            }
+                    analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
+                    analytics.logUserAggregateBalanceProperty(balance.orZero())
+                    homeInteractor.updateUserBalance(balance.orZero())
+                }
         }
     }
 

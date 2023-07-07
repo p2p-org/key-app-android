@@ -1,6 +1,6 @@
 package org.p2p.wallet.home.events
 
-interface HomeScreenLoader {
+interface AppLoader {
     suspend fun onLoad()
     suspend fun onRefresh(): Unit = Unit
 }

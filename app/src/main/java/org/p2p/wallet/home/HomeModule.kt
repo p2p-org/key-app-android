@@ -21,9 +21,6 @@ import org.p2p.wallet.home.ui.container.MainContainerPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.HomePresenter
-import org.p2p.wallet.home.ui.main.UserTokensPolling
-import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsContract
-import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
@@ -115,7 +112,7 @@ object HomeModule : InjectionModule {
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
-                homeScreenLoaders = get(),
+                homeStateLoaders = get(),
                 context = get()
             )
         }
@@ -149,6 +146,6 @@ object HomeModule : InjectionModule {
         factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
 
         factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
-        singleOf(::HomeScreenInMemoryRepository) bind HomeScreenLocalRepository::class
+        single<HomeScreenLocalRepository> { HomeScreenInMemoryRepository() }
     }
 }

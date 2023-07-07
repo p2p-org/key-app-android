@@ -11,7 +11,7 @@ class StrigaFeatureLoader(
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor
-) : HomeScreenLoader {
+) : AppLoader {
 
     override suspend fun onLoad() {
         if (strigaSignupEnabledFeatureToggle.isFeatureEnabled) {

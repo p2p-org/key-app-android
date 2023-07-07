@@ -1,6 +1,5 @@
 package org.p2p.wallet.home.events
 
-import timber.log.Timber
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
@@ -13,7 +12,7 @@ class StrigaBannersLoader(
     private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val appScope: AppScope,
     private val homeInteractor: HomeInteractor
-) : HomeScreenLoader {
+) : AppLoader {
 
     override suspend fun onLoad() {
         if (!strigaSignupEnabledFeatureToggle.isFeatureEnabled) {
@@ -23,7 +22,6 @@ class StrigaBannersLoader(
             strigaUserInteractor.getUserStatusBannerFlow()
                 .filterNotNull()
                 .collect {
-                    Timber.tag("______").d("7")
                     homeInteractor.updateStrigaKycBanner(it)
                 }
         }

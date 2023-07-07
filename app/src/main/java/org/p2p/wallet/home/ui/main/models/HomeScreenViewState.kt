@@ -13,12 +13,6 @@ data class HomeScreenViewState(
     val visibilityState: VisibilityState = VisibilityState.Hidden,
     val username: Username? = null,
     val areZerosHidden: Boolean,
-    val state: LoadingState = LoadingState.INIT_LOADING,
     val strigaKycStatusBanner: StrigaKycStatusBanner? = null,
     val isStrigaKycBannerLoading: Boolean = false
 )
-
-enum class LoadingState {
-    REFRESHING,
-    INIT_LOADING
-}

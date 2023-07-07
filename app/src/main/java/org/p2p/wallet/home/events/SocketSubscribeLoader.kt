@@ -13,7 +13,11 @@ class SocketSubscribeLoader(
     private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
     private val connectionManager: ConnectionManager,
     private val appScope: AppScope
-) : HomeScreenLoader {
+) : AppLoader {
+
+    init {
+        observeConnectionStatus()
+    }
 
     override suspend fun onLoad() {
         updatesManager.addUpdatesStateObserver(object : SubscriptionUpdatesStateObserver {

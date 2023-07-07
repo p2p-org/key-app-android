@@ -1,7 +1,6 @@
 package org.p2p.wallet.home.ui.main
 
 import java.math.BigDecimal
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.PublicKey
@@ -102,14 +101,14 @@ class HomeInteractor(
         homeScreenLocalRepository.setUserTokensState(newTokensState)
     }
 
-    fun observeHomeScreenState(): SharedFlow<HomeScreenStateLoader.HomeScreenState> =
+    fun observeHomeScreenState(): StateFlow<HomeScreenStateLoader.HomeScreenState?> =
         homeScreenLocalRepository.getUserTokensStateFlow()
 
     suspend fun updateRefreshState(isRefreshing: Boolean) {
         homeScreenLocalRepository.setRefreshState(isRefreshing)
     }
 
-    fun observeRefreshState(): SharedFlow<Boolean> {
+    fun observeRefreshState(): StateFlow<Boolean> {
         return homeScreenLocalRepository.getHomeScreenRefreshStateFlow()
     }
 
@@ -117,11 +116,11 @@ class HomeInteractor(
         homeScreenLocalRepository.setActionButtons(newButtons)
     }
 
-    fun observeActionButtons(): SharedFlow<List<ActionButton>> {
+    fun observeActionButtons(): StateFlow<List<ActionButton>> {
         return homeScreenLocalRepository.getHomeScreenActionButtonsFlow()
     }
 
-    fun observeStrigaKycBanner(): SharedFlow<StrigaKycStatusBanner> {
+    fun observeStrigaKycBanner(): StateFlow<StrigaKycStatusBanner?> {
         return homeScreenLocalRepository.getStrigaUserStatusBannerFlow()
     }
 
@@ -133,7 +132,7 @@ class HomeInteractor(
         homeScreenLocalRepository.setUsername(username)
     }
 
-    fun observeUsername(): SharedFlow<String> {
+    fun observeUsername(): StateFlow<String?> {
         return homeScreenLocalRepository.getUsernameFlow()
     }
 
@@ -145,7 +144,7 @@ class HomeInteractor(
         homeScreenLocalRepository.setUserBalance(userBalance)
     }
 
-    fun observeUserBalance(): SharedFlow<BigDecimal?> {
+    fun observeUserBalance(): StateFlow<BigDecimal?> {
         return homeScreenLocalRepository.observeUserBalance()
     }
 }

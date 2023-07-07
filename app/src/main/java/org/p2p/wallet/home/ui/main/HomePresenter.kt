@@ -6,6 +6,9 @@ import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
@@ -22,8 +25,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.home.events.HomeScreenLoader
-import org.p2p.wallet.home.events.HomeScreenStateLoader
+import org.p2p.wallet.home.events.AppLoader
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomePresenterMapper
@@ -59,7 +61,7 @@ class HomePresenter(
     private val homeMapper: HomePresenterMapper,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val analytics: HomeAnalytics,
-    private val homeScreenLoaders: List<HomeScreenLoader>,
+    private val homeStateLoaders: List<AppLoader>,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
@@ -77,10 +79,17 @@ class HomePresenter(
     }
 
     init {
-        launch {
-            homeInteractor.observeHomeScreenState()
-                .collect { homeState ->
+        launchSupervisor {
+            homeStateLoaders.map { async { it.onLoad() } }.joinAll()
+        }
+    }
 
+    override fun attach(view: HomeContract.View) {
+        super.attach(view)
+        handleDeeplinks()
+        launch {
+            homeInteractor.observeHomeScreenState().filterNotNull()
+                .collect { homeState ->
                     val isRefreshing = homeState.isRefreshing
                     view?.showRefreshing(isRefreshing)
 
@@ -90,41 +99,31 @@ class HomePresenter(
                     val userBalance = homeState.userBalance
                     view?.showBalance(userBalance?.let { homeMapper.mapBalance(it) })
 
-                    val homeScreenState = homeState.tokenStates
-                    homeScreenState.forEach { homeScreenState ->
-                        state = when (homeScreenState) {
-                            is HomeScreenStateLoader.State.EthTokens -> {
-                                state.copy(ethTokens = homeScreenState.tokens)
-                            }
-                            is HomeScreenStateLoader.State.SolTokens -> {
-                                state.copy(tokens = homeScreenState.tokens)
-                            }
-                            is HomeScreenStateLoader.State.StrigaTokens -> {
-                                state.copy(strigaClaimableTokens = homeScreenState.tokens)
-                            }
-                            is HomeScreenStateLoader.State.StrigaStatusBanner -> {
-                                state.copy(strigaKycStatusBanner = homeScreenState.banner)
-                            }
-                        }
+                    val strigaTokens = homeState.strigaTokens
+                    state = state.copy(strigaClaimableTokens = strigaTokens.tokens)
+
+                    val strigaKycBanner = homeState.strigaBanner
+                    state = state.copy(strigaKycStatusBanner = strigaKycBanner?.banner)
+                    if (!homeState.solanaTokens.isLoading || !homeState.ethTokens.isLoading) {
+                        val solanaTokens = homeState.solanaTokens
+                        state = state.copy(tokens = solanaTokens.tokens)
+
+                        val ethTokens = homeState.ethTokens
+                        state = state.copy(ethTokens = ethTokens.tokens)
+
+                        handleHomeStateChanged(state)
                     }
-
-                    handleHomeStateChanged(state)
-
                     val actionButtons = homeState.actionButtons
                     view?.showActionButtons(actionButtons)
                 }
         }
     }
 
-    override fun attach(view: HomeContract.View) {
-        super.attach(view)
-        handleDeeplinks()
-    }
-
     override fun refreshTokens() {
         launchInternetAware(connectionManager) {
             try {
                 homeInteractor.updateRefreshState(isRefreshing = true)
+                homeStateLoaders.map { async { it.onRefresh() } }.joinAll()
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {

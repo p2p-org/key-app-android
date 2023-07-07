@@ -15,7 +15,7 @@ class PendingClaimBundlesLoader(
     private val bridgeLocalRepository: EthereumBridgeLocalRepository,
     private val appScope: AppScope,
     private val transactionManager: TransactionManager
-) : HomeScreenLoader {
+) : AppLoader {
 
     override suspend fun onLoad() {
         appScope.launch {

@@ -20,7 +20,7 @@ class EthereumKitLoader(
     private val ethereumInteractor: EthereumInteractor,
     private val appScope: AppScope,
     dispatchers: CoroutineDispatchers,
-) : HomeScreenLoader, CoroutineScope {
+) : AppLoader, CoroutineScope {
 
     override val coroutineContext: CoroutineContext = dispatchers.io
 
@@ -33,8 +33,6 @@ class EthereumKitLoader(
             Timber.w("ETH is not initialized, no seed phrase or disabled")
         }
     }
-
-    override suspend fun onRefresh() = Unit
 
     private fun startTokensPolling() {
         launch(appScope.coroutineContext) {
