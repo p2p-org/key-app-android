@@ -285,7 +285,10 @@ class StrigaSignUpFirstStepFragment :
         if (view is UiKitEditText) {
             view.setText(newValue)
         } else if (view is PhoneNumberInputView) {
-            view.setText(newValue)
+            // helps to handle auto size text correctly
+            view.post {
+                view.setText(newValue)
+            }
         }
     }
 }
