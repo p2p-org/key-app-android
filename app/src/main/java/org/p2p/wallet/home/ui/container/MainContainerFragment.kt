@@ -20,7 +20,6 @@ import org.p2p.uikit.components.ScreenTab
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
-import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
@@ -31,7 +30,6 @@ import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.home.ui.main.RefreshErrorFragment
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
@@ -55,7 +53,7 @@ class MainContainerFragment :
 
     private val sellInteractor: SellInteractor by inject()
 
-    private var lastSelectedItemId = R.id.homeItem
+    private var lastSelectedItemId = R.id.walletItem
 
     private lateinit var mainContainerAdapter: BaseFragmentAdapter
     private lateinit var fragmentsMap: Map<ScreenTab, KClass<out Fragment>>
@@ -170,8 +168,8 @@ class MainContainerFragment :
     }
 
     private fun onActivityBackPressed() {
-        if (binding.bottomNavigation.getSelectedItemId() != R.id.homeItem) {
-            navigate(ScreenTab.HOME_SCREEN)
+        if (binding.bottomNavigation.getSelectedItemId() != R.id.walletItem) {
+            navigate(ScreenTab.WALLET_SCREEN)
         } else {
             requireActivity().finish()
         }
@@ -184,7 +182,7 @@ class MainContainerFragment :
     override fun navigateFromDeeplink(data: DeeplinkData) {
         when (data.target) {
             DeeplinkTarget.HOME -> {
-                navigate(ScreenTab.HOME_SCREEN)
+                navigate(ScreenTab.MY_CRYPTO_SCREEN)
             }
 
             DeeplinkTarget.HISTORY -> {
@@ -201,12 +199,6 @@ class MainContainerFragment :
 
     override fun navigate(clickedTab: ScreenTab) {
         when (clickedTab) {
-            ScreenTab.FEEDBACK_SCREEN -> {
-                IntercomService.showMessenger()
-                analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
-                resetOnLastBottomNavigationItem()
-                return
-            }
             ScreenTab.SEND_SCREEN -> {
                 toast("Will be implemented after token will be on upper level!")
                 resetOnLastBottomNavigationItem()
@@ -214,16 +206,10 @@ class MainContainerFragment :
             }
             else -> {
                 when (clickedTab) {
-                    ScreenTab.HOME_SCREEN -> presenter.logHomeOpened()
-                    ScreenTab.EARN_SCREEN -> presenter.logEarnOpened()
+                    ScreenTab.MY_CRYPTO_SCREEN -> presenter.logHomeOpened()
                     ScreenTab.HISTORY_SCREEN -> presenter.logHistoryOpened()
-                    ScreenTab.SWAP_SCREEN -> presenter.logSwapOpened()
                     ScreenTab.SETTINGS_SCREEN -> presenter.logSettingsOpened()
                     else -> Unit
-                }
-
-                if (clickedTab == ScreenTab.SWAP_SCREEN) {
-                    presenter.logSwapOpened()
                 }
 
                 val itemId = clickedTab.itemId
@@ -279,13 +265,13 @@ class MainContainerFragment :
     override fun inflateBottomNavigationMenu(menuRes: Int) {
         binding.bottomNavigation.menu.clear()
         binding.bottomNavigation.inflateMenu(menuRes)
-        binding.bottomNavigation.menu.findItem(R.id.feedbackItem)?.isCheckable = false
+        binding.bottomNavigation.menu.findItem(R.id.sendItem)?.isCheckable = false
     }
 
     // TODO: this is a dirty hack on how to trigger data update
     // Find a good solution for tracking the KEY_HIDDEN_ZERO_BALANCE value in SP
     private fun triggerTokensUpdateIfNeeded() {
-        val homeItemId = ScreenTab.HOME_SCREEN.itemId
+        val homeItemId = ScreenTab.MY_CRYPTO_SCREEN.itemId
         val foundFragment = mainContainerAdapter.fragments[fragmentPositionByItemId(homeItemId)]
         val fragment = foundFragment as? HomeFragment ?: return
         fragment.updateTokensIfNeeded()

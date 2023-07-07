@@ -6,4 +6,8 @@
     <item name="seed_phrase_watcher_tag_id" type="id" />
     <item name="initial_text_style_tag_id" type="id" />
     <item name="preview_text_cell_model_tag_id" type="id" />
+
+    <!--for deeplinks-->
+    <item name="feedbackItem" type="id" />
+    <item name="swapItem" type="id" />
 </resources>

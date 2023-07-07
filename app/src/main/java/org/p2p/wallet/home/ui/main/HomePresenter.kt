@@ -436,15 +436,10 @@ class HomePresenter(
     private fun showUserAddressAndUsername() {
         this.username = homeInteractor.getUsername()
         val userAddress = username?.fullUsername ?: userPublicKey.ellipsizeAddress()
-        view?.showUserAddress(userAddress)
         state = state.copy(
             username = username,
             visibilityState = VisibilityState.create(homeInteractor.getHiddenTokensVisibility())
         )
-    }
-
-    override fun onAddressClicked() {
-        view?.showAddressCopied(username?.fullUsername ?: userPublicKey)
     }
 
     override fun onBuyClicked() {

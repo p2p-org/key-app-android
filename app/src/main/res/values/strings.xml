@@ -50,6 +50,7 @@
     <string name="common_burn">Burn</string>
     <string name="common_mint">Mint</string>
     <string name="common_refresh">Refresh</string>
+    <string name="common_my_crypto">My crypto</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
