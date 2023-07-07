@@ -15,7 +15,7 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.map
 import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.model.toSuccessResult
-import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
@@ -36,12 +36,11 @@ class StrigaClaimInteractor(
     private val tokensRepository: UserLocalRepository,
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val userTokenKeyProvider: TokenKeyProvider,
-    private val userStatusRepository: StrigaUserStatusRepository,
+    private val userInteractor: StrigaUserInteractor,
 ) {
     private val isClaimDisabled: Boolean
         get() {
-            return !strigaFeatureToggle.isFeatureEnabled ||
-                userStatusRepository.getUserVerificationStatus()?.isKycApproved != true
+            return !strigaFeatureToggle.isFeatureEnabled || !userInteractor.isKycApproved
         }
 
     suspend fun getClaimableTokens(): StrigaDataLayerResult<List<StrigaClaimableToken>> {
