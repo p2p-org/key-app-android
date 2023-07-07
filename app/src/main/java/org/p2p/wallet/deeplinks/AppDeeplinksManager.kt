@@ -143,7 +143,7 @@ class AppDeeplinksManager(
     private fun Intent.addDeeplinkDataToIntent(notificationType: NotificationType) {
         val navigationId = when (notificationType) {
             NotificationType.RECEIVE -> R.id.historyItem
-            NotificationType.DEFAULT -> R.id.myCryptoItem
+            NotificationType.DEFAULT -> R.id.walletItem
         }
 
         putExtra(EXTRA_TAB_SCREEN, navigationId)
