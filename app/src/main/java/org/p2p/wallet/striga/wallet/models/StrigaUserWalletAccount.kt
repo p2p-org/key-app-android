@@ -1,6 +1,7 @@
 package org.p2p.wallet.striga.wallet.models
 
 import java.math.BigDecimal
+import java.math.BigInteger
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 
 class StrigaUserWalletAccount(
@@ -12,6 +13,7 @@ class StrigaUserWalletAccount(
     val ownerId: String,
     val rootFiatCurrency: String,
     val ownerType: String,
+    val availableBalanceLamports: BigInteger,
     val availableBalance: BigDecimal,
     val balanceUnit: String,
     val linkedBankAccount: StrigaWalletAccountBankLink,
