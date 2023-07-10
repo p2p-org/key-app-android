@@ -10,19 +10,21 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.home.ui.main.POPULAR_TOKENS_COINGECKO_IDS
 import org.p2p.wallet.home.ui.main.TOKEN_SYMBOLS_VALID_FOR_BUY
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
-import org.p2p.wallet.user.repository.UserTokensLocalRepository
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.emptyString
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
@@ -33,29 +35,24 @@ const val TOKENS_FILE_NAME = "tokens.json"
 class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
-    private val userTokensRepository: UserTokensLocalRepository,
     private val homeLocalRepository: HomeLocalRepository,
     private val recipientsLocalRepository: RecipientsLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val sharedPreferences: SharedPreferences,
     private val externalStorageRepository: ExternalStorageRepository,
+    private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val metadataUpdateFeatureToggle: TokenMetadataUpdateFeatureToggle,
-    private val tokenServiceRepository: TokenServiceRepository,
     private val gson: Gson
 ) {
 
-    suspend fun findTokenData(mintAddress: String): Token? {
+    fun findTokenData(mintAddress: String): Token? {
         val tokenData = userLocalRepository.findTokenData(mintAddress)
-        val price = tokenData?.let {
-            tokenServiceRepository.findTokenPriceByAddress(
-                tokenAddress = it.mintAddress
-            )
-        }
+        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.coingeckoId) }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
     fun getUserTokensFlow(): Flow<List<Token.Active>> =
-        userTokensRepository.observeUserTokens()
+        homeLocalRepository.getTokensFlow()
 
     suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY): Token? =
         getTokensForBuy(availableTokensSymbols).firstOrNull()
@@ -74,6 +71,7 @@ class UserInteractor(
                 IllegalStateException("No tokens to buy! All tokens: ${userTokens.map(Token.Active::tokenSymbol)}")
             )
         }
+
         return allTokens
     }
 
@@ -124,10 +122,66 @@ class UserInteractor(
         }
     }
 
+    suspend fun loadUserRatesIfEmpty(userTokens: List<Token.Active>) {
+        when {
+            // if prices are not loaded at all, load them
+            !userLocalRepository.arePricesLoaded() -> {
+                try {
+                    loadUserRates(userTokens)
+                } catch (t: Throwable) {
+                    // info level because it's not critical
+                    Timber.i(t, "Error on loading user rates")
+                }
+            }
+
+            // if prices are loaded, but user tokens are not updated, update them
+            userTokens.filterNotSol().count { it.totalInUsd == null } != 0 -> {
+                updateUserTokenRates(userLocalRepository.getCachedTokenPrices())
+            }
+        }
+    }
+
+    suspend fun loadUserRates(userTokens: List<Token.Active>) {
+        Timber.i("Loading user rates for ${userTokens.size}")
+        val tokenIds = userTokens.mapNotNull { token ->
+            val coingeckoId = userLocalRepository.findTokenData(token.mintAddress)?.coingeckoId
+            coingeckoId?.let { TokenCoinGeckoId(id = it) }
+        }
+
+        val allTokenIds = (tokenIds + POPULAR_TOKENS_COINGECKO_IDS).distinct()
+
+        val prices = tokenPricesRepository.getTokenPriceByIds(
+            tokenIds = allTokenIds,
+            targetCurrency = Constants.USD_READABLE_SYMBOL
+        )
+
+        userLocalRepository.setTokenPrices(prices)
+
+        updateUserTokenRates(prices)
+    }
+
     suspend fun loadUserTokensAndUpdateLocal(publicKey: PublicKey): List<Token.Active> {
         val newTokens = userRepository.loadUserTokens(publicKey)
-        val cachedTokens = userTokensRepository.getUserTokens()
+        val cachedTokens = homeLocalRepository.getUserTokens()
         return updateLocalTokens(cachedTokens, newTokens)
+    }
+
+    private suspend fun updateUserTokenRates(prices: List<TokenPrice>) {
+        val cachedTokens = homeLocalRepository.getUserTokens()
+
+        val newTokens = cachedTokens.map { token ->
+            val price = prices.find { it.tokenId == token.coingeckoId }
+
+            val newTotalInUsd = price?.price?.let { token.total.times(it) }
+            val oldTotalInUsd = token.totalInUsd
+
+            val tokenRate = token.rate ?: price?.price
+            val totalInUsd = oldTotalInUsd ?: newTotalInUsd
+            token.copy(rate = tokenRate, totalInUsd = totalInUsd)
+        }.sortedWith(TokenComparator())
+
+        homeLocalRepository.clear()
+        homeLocalRepository.updateTokens(newTokens)
     }
 
     private suspend fun updateLocalTokens(
@@ -141,23 +195,23 @@ class UserInteractor(
                 newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
             }
             .sortedWith(TokenComparator())
-        userTokensRepository.clear()
-        userTokensRepository.updateTokens(newTokensToCache)
+        homeLocalRepository.clear()
+        homeLocalRepository.updateTokens(newTokensToCache)
         return newTokensToCache
     }
 
     suspend fun getUserTokens(): List<Token.Active> =
-        userTokensRepository.getUserTokens()
+        homeLocalRepository.getUserTokens()
 
     suspend fun getNonZeroUserTokens(): List<Token.Active> =
-        userTokensRepository.getUserTokens()
+        homeLocalRepository.getUserTokens()
             .filterNot { it.isZero }
 
     suspend fun getUserSolToken(): Token.Active? =
-        userTokensRepository.getUserTokens().find { it.isSOL }
+        homeLocalRepository.getUserTokens().find { it.isSOL }
 
     suspend fun findUserToken(mintAddress: String): Token.Active? =
-        userTokensRepository.getUserTokens().find { it.mintAddress == mintAddress }
+        homeLocalRepository.getUserTokens().find { it.mintAddress == mintAddress }
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         homeLocalRepository.setTokenHidden(mintAddress, visibility)
@@ -167,23 +221,19 @@ class UserInteractor(
         return userTokens.any { it.publicKey == address }
     }
 
-    suspend fun findMultipleTokenData(tokenSymbols: List<String>): List<Token> =
+    fun findMultipleTokenData(tokenSymbols: List<String>): List<Token> =
         tokenSymbols.mapNotNull { findTokenDataBySymbol(it) }
 
-    suspend fun findMultipleTokenDataByAddresses(mintAddresses: List<String>): List<Token> =
+    fun findMultipleTokenDataByAddresses(mintAddresses: List<String>): List<Token> =
         mintAddresses.mapNotNull { findTokenDataByAddress(it) }
 
-    private suspend fun findTokenDataBySymbol(symbol: String): Token.Other? {
+    private fun findTokenDataBySymbol(symbol: String): Token.Other? {
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
-        val price = tokenData?.let {
-            tokenServiceRepository.findTokenPriceByAddress(
-                tokenAddress = it.mintAddress
-            )
-        }
+        val price = tokenData?.let { userLocalRepository.getPriceByTokenId(it.coingeckoId) }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
-    suspend fun findTokenDataByAddress(mintAddress: String): Token? = userLocalRepository.findTokenByMint(mintAddress)
+    fun findTokenDataByAddress(mintAddress: String): Token? = userLocalRepository.findTokenByMint(mintAddress)
 
     suspend fun addRecipient(searchResult: SearchResult, date: Date) {
         recipientsLocalRepository.addRecipient(searchResult, date)

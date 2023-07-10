@@ -6,11 +6,11 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
-import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 
 class SwapTokenRateLoader(
-    private val tokenServiceRepository: TokenServiceRepository
+    private val swapTokensRepository: JupiterSwapTokensRepository,
 ) {
     private val state = AtomicReference<SwapRateLoaderState>(SwapRateLoaderState.Empty)
 
@@ -56,12 +56,9 @@ class SwapTokenRateLoader(
     ) {
         emitAndSaveState(SwapRateLoaderState.Loading)
         try {
-            val tokenPrice =
-                tokenServiceRepository.findTokenPriceByAddress(
-                    tokenAddress = token.details.tokenMint.base58Value
-                )?.usdRate
+            val tokenPrice = swapTokensRepository.getTokenRate(token.details)
             if (tokenPrice != null) {
-                emitAndSaveState(SwapRateLoaderState.Loaded(token = token, rate = tokenPrice))
+                emitAndSaveState(SwapRateLoaderState.Loaded(token = token, rate = tokenPrice.price))
             } else {
                 emitAndSaveState(SwapRateLoaderState.NoRateAvailable(token = token))
             }

@@ -25,7 +25,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.toPublicKey
 
 private val POLLING_ETH_DELAY = 30.toDuration(DurationUnit.SECONDS)
@@ -37,7 +36,6 @@ class UserTokensPolling(
     private val ethereumInteractor: EthereumInteractor,
     private val strigaClaimInteractor: StrigaClaimInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val tokenServiceInteractor: UserTokensInteractor,
     private val appScope: AppScope
 ) : CoroutineScope {
     override val coroutineContext: CoroutineContext
@@ -74,9 +72,8 @@ class UserTokensPolling(
         launch {
             try {
                 isRefreshingFlow.emit(true)
-                val userTokens = userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
-
-                tokenServiceInteractor.loadUserRates(userTokens = userTokens)
+                val userTokens = fetchSolTokens()
+                userInteractor.loadUserRatesIfEmpty(userTokens)
                 startPolling()
             } catch (e: CancellationException) {
                 Timber.i("Cancelled tokens remote update")
@@ -97,7 +94,7 @@ class UserTokensPolling(
                 try {
                     while (isActive) {
                         delay(POLLING_ETH_DELAY.inWholeMilliseconds)
-                        userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
+                        fetchSolTokens()
                     }
                 } catch (e: CancellationException) {
                     Timber.i("Cancelled tokens remote update")
@@ -111,6 +108,9 @@ class UserTokensPolling(
             }
         }
     }
+
+    private suspend fun fetchSolTokens(): List<Token.Active> =
+        userInteractor.loadUserTokensAndUpdateLocal(tokenKeyProvider.publicKey.toPublicKey())
 
     private fun getEthereumTokensFlow(): Flow<List<Token.Eth>> {
         return ethereumInteractor.getTokensFlow()

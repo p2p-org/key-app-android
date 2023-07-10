@@ -23,6 +23,8 @@ import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRemoteRepositor
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensInMemoryRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensLocalRepository
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensPricesInMemoryRepository
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensPricesLocalRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRemoteRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionMapper
@@ -89,6 +91,7 @@ object JupiterModule : InjectionModule {
 
         factoryOf(::JupiterSwapTokensRemoteRepository) bind JupiterSwapTokensRepository::class
         singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
+        singleOf(::JupiterSwapTokensPricesInMemoryRepository) bind JupiterSwapTokensPricesLocalRepository::class
 
         factoryOf(::JupiterSwapSendTransactionDelegate)
         factoryOf(::JupiterSwapInteractor)
@@ -169,11 +172,11 @@ object JupiterModule : InjectionModule {
             SwapRateTickerManager(
                 swapScope = get(),
                 userLocalRepository = get(),
-                tokenServiceRepository = get()
+                swapTokensRepository = get()
             )
         }
 
-        factory { (initialData: SwapInitialTokensData, stateManagerHolderKey: String) ->
+        factory<SwapStateManager> { (initialData: SwapInitialTokensData, stateManagerHolderKey: String) ->
             val managerHolder: SwapStateManagerHolder = get()
             val handlers: Set<SwapStateHandler> = get(parameters = { parametersOf(initialData) })
             managerHolder.getOrCreate(key = stateManagerHolderKey) {
@@ -183,7 +186,7 @@ object JupiterModule : InjectionModule {
                     selectedSwapTokenStorage = get(),
                     swapValidator = get(),
                     analytics = get(),
-                    tokenServiceRepository = get(),
+                    swapTokensRepository = get(),
                     homeLocalRepository = get(),
                     userTokensChangeHandler = get(),
                     swapRoutesRefreshFeatureToggle = get(),

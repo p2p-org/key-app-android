@@ -92,8 +92,7 @@ object HomeModule : InjectionModule {
                 strigaSignupInteractor = get(),
                 strigaClaimInteractor = get(),
                 strigaWalletInteractor = get(),
-                strigaSignupEnabledFeatureToggle = get(),
-                userTokensInteractor = get()
+                strigaSignupEnabledFeatureToggle = get()
             )
         }
         factoryOf(::HomePresenterMapper)

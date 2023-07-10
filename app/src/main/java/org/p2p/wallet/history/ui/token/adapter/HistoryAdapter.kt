@@ -75,7 +75,9 @@ class HistoryAdapter(
                     is HistoryItem.BridgeSendItem -> {
                         holder.onBind(item)
                     }
-                    else -> Unit
+                    else -> {
+                        // TODO: WHAT SHOULD BE HERE?
+                    }
                 }
             }
         }
