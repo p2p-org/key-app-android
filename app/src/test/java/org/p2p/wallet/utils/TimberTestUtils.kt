@@ -10,11 +10,11 @@ private fun Int.toPrinter(): PrintStream = when {
     else -> System.out
 }
 
-//companion object {
+// companion object {
 //    @ClassRule
 //    @JvmField
 //    val timber = TimberUnitTestInstance("Swap:BackPress")
-//}
+// }
 /**
  * ^ example of usage ^
  * should be PUBLIC, JVMFIELD and STATIC

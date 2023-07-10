@@ -25,12 +25,12 @@ import org.p2p.wallet.utils.mutableListQueueOf
 
 @ExperimentalCoroutinesApi
 @ExtendWith(SpyOnInjectMockKsExtension::class, CoroutineExtension::class)
-class JupiterSwapPresenterInitialStateTest : JupiterSwapPresenterBaseTest()  {
+class JupiterSwapPresenterInitialStateTest : JupiterSwapPresenterBaseTest() {
 
     companion object {
         @ClassRule
         @JvmField
-        val timber = TimberUnitTestInstance(defaultTag = "Swap:InitialState",)
+        val timber = TimberUnitTestInstance(defaultTag = "Swap:InitialState")
     }
 
     @Test
