@@ -46,10 +46,7 @@ class WalletFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.setupView()
-
-        lifecycle.addObserver(presenter)
     }
 
     override fun showAddressCopied(addressOrUsername: String) {
@@ -69,11 +66,11 @@ class WalletFragment :
         layoutManager = HomeScreenLayoutManager(requireContext())
         layoutToolbar.setupToolbar()
 
-        homeRecyclerView.doOnAttach {
-            homeRecyclerView.layoutManager = layoutManager
+        recyclerViewHome.doOnAttach {
+            recyclerViewHome.layoutManager = layoutManager
         }
-        homeRecyclerView.doOnDetach {
-            homeRecyclerView.layoutManager = null
+        recyclerViewHome.doOnDetach {
+            recyclerViewHome.layoutManager = null
         }
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
         viewActionButtons.onButtonClicked = ::onActionButtonClicked

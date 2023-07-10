@@ -1,6 +1,5 @@
 package org.p2p.wallet.home.ui.wallet
 
-import androidx.lifecycle.DefaultLifecycleObserver
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -21,7 +20,7 @@ interface WalletContract {
         fun showAddressCopied(addressOrUsername: String)
     }
 
-    interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
+    interface Presenter : MvpPresenter<View> {
         fun refreshTokens()
         fun onBuyClicked()
         fun onSellClicked()
