@@ -10,11 +10,16 @@ private fun Int.toPrinter(): PrintStream = when {
     else -> System.out
 }
 
-// usage example:
 //companion object {
 //    @ClassRule
-//    val timber = TimberUnitTestInstance("CountryCodeXmlParserTest")
+//    @JvmField
+//    val timber = TimberUnitTestInstance("Swap:BackPress")
 //}
+/**
+ * ^ example of usage ^
+ * should be PUBLIC, JVMFIELD and STATIC
+ * plants and removes printing to STDOUT and STDERR
+ */
 class TimberUnitTestInstance(
     private val defaultTag: String,
     private val excludeMessages: List<String> = emptyList(),
@@ -28,7 +33,7 @@ fun plantStubTimber() {
     Timber.plant(object : Timber.DebugTree() {})
 }
 
-fun plantTimberToStdout(
+private fun plantTimberToStdout(
     defaultTag: String,
     excludeMessages: List<String> = emptyList(),
     excludeStacktraceForMessages: List<String> = emptyList()
