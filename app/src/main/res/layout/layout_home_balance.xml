@@ -21,14 +21,16 @@
         android:id="@+id/text_view_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:autoSizeMaxTextSize="64sp"
+        android:autoSizeMinTextSize="16sp"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
         android:textColor="@color/text_night"
+        android:textSize="64sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="$ 1 000.97"
+        tools:text="$1 000.97"
         tools:visibility="visible" />
 
     <org.p2p.uikit.atoms.UiKitSkeletonRectangle

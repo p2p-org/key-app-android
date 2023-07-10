@@ -3,13 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_smoke">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_layout"
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bg_smoke"
@@ -21,8 +20,7 @@
             android:layout_height="wrap_content"
             android:elevation="0dp"
             app:expandedTitleGravity="top"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:titleEnabled="false">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <LinearLayout
                 android:id="@+id/containerHeader"
@@ -33,7 +31,7 @@
                 app:layout_collapseMode="none">
 
                 <include
-                    android:id="@+id/view_balance"
+                    android:id="@+id/viewBalance"
                     layout="@layout/layout_home_balance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -48,29 +46,25 @@
 
             </LinearLayout>
 
-            <org.p2p.uikit.organisms.UiKitToolbar
-                android:id="@+id/toolbar"
+            <include
+                android:id="@+id/layoutToolbar"
+                layout="@layout/layout_home_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:title="@string/common_my_crypto"
-                app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
-                app:titleTextColor="@color/text_night" />
+                app:layout_collapseMode="pin" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh_layout"
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/home_recycler_view"
+            android:id="@+id/recyclerViewHome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"

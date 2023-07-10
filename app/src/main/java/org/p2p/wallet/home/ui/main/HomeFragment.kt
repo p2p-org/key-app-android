@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import org.p2p.core.crypto.Base58String
@@ -15,7 +14,6 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindOrGone
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
@@ -25,8 +23,6 @@ import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.new.requestPermissionNotification
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentHomeBinding
-import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
-import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
@@ -38,7 +34,6 @@ import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
-import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
@@ -46,9 +41,6 @@ import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
-import org.p2p.wallet.receive.ReceiveFragmentFactory
-import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
@@ -58,7 +50,6 @@ import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
-import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.replaceFragmentForResult
@@ -98,11 +89,8 @@ class HomeFragment :
 
     private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
 
-    private val receiveAnalytics: ReceiveAnalytics by inject()
     private val homeAnalytics: HomeAnalytics by inject()
-    private val buyAnalytics: BuyAnalytics by inject()
 
-    private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val strigaKycFragmentFactory: StrigaFragmentFactory by inject()
     private val buyFragmentFactory: BuyFragmentFactory by inject()
 
@@ -139,15 +127,6 @@ class HomeFragment :
                 AppNotificationManager.createNotificationChannels(requireContext())
             }
         }
-    }
-
-    override fun showAddressCopied(addressOrUsername: String) {
-        requireContext().copyToClipBoard(addressOrUsername)
-        showUiKitSnackBar(
-            message = getString(R.string.home_address_snackbar_text),
-            actionButtonResId = R.string.common_ok,
-            actionBlock = Snackbar::dismiss
-        )
     }
 
     override fun showBuyInfoScreen(token: Token) {
@@ -187,7 +166,6 @@ class HomeFragment :
 
     private fun FragmentHomeBinding.setupView() {
         layoutManager = HomeScreenLayoutManager(requireContext())
-        layoutToolbar.setupToolbar()
 
         homeRecyclerView.adapter = contentAdapter
         homeRecyclerView.doOnAttach {
@@ -198,25 +176,6 @@ class HomeFragment :
         }
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
         viewActionButtons.onButtonClicked = ::onActionButtonClicked
-
-        if (BuildConfig.DEBUG) {
-            with(layoutToolbar) {
-                viewDebugShadow.isVisible = true
-                imageViewDebug.isVisible = true
-                imageViewDebug.setOnClickListener {
-                    replaceFragment(DebugSettingsFragment.create())
-                }
-            }
-        }
-    }
-
-    private fun LayoutHomeToolbarBinding.setupToolbar() {
-        textViewAddress.setOnClickListener {
-            receiveAnalytics.logAddressOnMainClicked()
-            presenter.onAddressClicked()
-        }
-        imageViewProfile.setOnClickListener { presenter.onProfileClick() }
-        imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
     private fun onActionButtonClicked(clickedButton: ActionButton) {
@@ -299,10 +258,6 @@ class HomeFragment :
 
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
         listener?.showTransactionProgress(bundleId, progressDetails)
-    }
-
-    override fun showUserAddress(ellipsizedAddress: String) {
-        binding.layoutToolbar.textViewAddress.text = ellipsizedAddress
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean) {
