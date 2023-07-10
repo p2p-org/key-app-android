@@ -105,9 +105,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
                     is TransactionState.JupiterSwapFailed -> {
                         // TODO: WHAT SHOULD BE HERE?
                     }
-                    else -> {
-                        // TODO: WHAT SHOULD BE HERE?
-                    }
+                    else -> Unit
                 }
             }
         }

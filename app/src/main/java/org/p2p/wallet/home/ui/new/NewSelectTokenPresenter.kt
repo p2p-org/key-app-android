@@ -14,10 +14,10 @@ import org.p2p.wallet.home.model.SelectableTokenRoundedState.BOTTOM_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.NOT_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.TOP_ROUNDED
-import org.p2p.wallet.home.repository.UserTokensRepository
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 class NewSelectTokenPresenter(
-    private val userTokensRepository: UserTokensRepository,
+    private val userTokensRepository: UserTokensLocalRepository,
     private val selectedTokenMintAddress: String?,
     private val selectableTokens: List<Token.Active>?
 ) : BasePresenter<NewSelectTokenContract.View>(), NewSelectTokenContract.Presenter {

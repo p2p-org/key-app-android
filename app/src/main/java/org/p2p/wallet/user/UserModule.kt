@@ -8,16 +8,17 @@ import org.koin.dsl.module
 import org.p2p.wallet.R
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
-import org.p2p.wallet.home.repository.UserTokensLocalRepository
-import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.repository.UserAccountRemoteRepository
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRemoteRepository
 import org.p2p.wallet.user.repository.UserRepository
+import org.p2p.wallet.user.repository.UserTokensDatabaseRepository
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 object UserModule : InjectionModule {
 
@@ -35,7 +36,23 @@ object UserModule : InjectionModule {
         singleOf(::UserAccountRemoteRepository) bind UserAccountRepository::class
         singleOf(::UserInMemoryRepository) bind UserLocalRepository::class
 
-        factoryOf(::UserInteractor)
-        factoryOf(::UserTokensLocalRepository) bind UserTokensRepository::class
+        factory {
+            UserInteractor(
+                userRepository = get(),
+                userLocalRepository = get(),
+                userTokensRepository = get(),
+                homeLocalRepository = get(),
+                recipientsLocalRepository = get(),
+                rpcRepository = get(),
+                sharedPreferences = get(),
+                externalStorageRepository = get(),
+                tokenServiceRepository = get(),
+                metadataUpdateFeatureToggle = get(),
+                gson = get()
+            )
+        }
+
+        singleOf(::UserTokensDatabaseRepository) bind UserTokensLocalRepository::class
+        factory { UserTokensInteractor(get()) }
     }
 }
