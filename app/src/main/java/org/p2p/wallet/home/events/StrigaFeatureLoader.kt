@@ -14,16 +14,18 @@ class StrigaFeatureLoader(
 ) : AppLoader {
 
     override suspend fun onLoad() {
-        if (strigaSignupEnabledFeatureToggle.isFeatureEnabled) {
-            strigaSignupInteractor.loadAndSaveSignupData()
-            strigaUserInteractor.loadAndSaveUserStatusData()
-            if (strigaUserInteractor.isUserCreated()) {
-                loadStrigaFiatAccountDetails()
-            }
+        strigaSignupInteractor.loadAndSaveSignupData()
+        strigaUserInteractor.loadAndSaveUserStatusData()
+        if (strigaUserInteractor.isUserCreated()) {
+            loadStrigaFiatAccountDetails()
         }
     }
 
     suspend fun loadStrigaFiatAccountDetails(): Result<StrigaFiatAccountDetails> {
         return strigaWalletInteractor.loadFiatAccountAndUserWallet()
+    }
+
+    override suspend fun isEnabled(): Boolean {
+        return strigaSignupEnabledFeatureToggle.isFeatureEnabled
     }
 }

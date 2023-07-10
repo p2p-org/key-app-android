@@ -15,9 +15,6 @@ class StrigaBannersLoader(
 ) : AppLoader {
 
     override suspend fun onLoad() {
-        if (!strigaSignupEnabledFeatureToggle.isFeatureEnabled) {
-            return
-        }
         appScope.launch {
             strigaUserInteractor.getUserStatusBannerFlow()
                 .filterNotNull()
@@ -25,5 +22,9 @@ class StrigaBannersLoader(
                     homeInteractor.updateStrigaKycBanner(it)
                 }
         }
+    }
+
+    override suspend fun isEnabled(): Boolean {
+        return strigaSignupEnabledFeatureToggle.isFeatureEnabled
     }
 }

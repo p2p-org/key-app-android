@@ -1,34 +1,36 @@
 package org.p2p.wallet.home.repository
 
 import java.math.BigDecimal
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import org.p2p.core.utils.emptyString
+import kotlinx.coroutines.flow.SharedFlow
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
-import org.p2p.wallet.home.events.HomeScreenStateLoader
+import org.p2p.wallet.home.state.HomeScreenState
+import org.p2p.wallet.home.state.HomeScreenStateObserver
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 
 class HomeScreenInMemoryRepository : HomeScreenLocalRepository {
-    private val userTokensState = MutableStateFlow<HomeScreenStateLoader.HomeScreenState?>(null)
-    private val refreshState = MutableStateFlow<Boolean>(false)
-    private val actionButtonState = MutableStateFlow<List<ActionButton>>(emptyList())
-    private val strigaUserStatusState = MutableStateFlow<StrigaKycStatusBanner?>(null)
-    private val userBalanceState = MutableStateFlow<BigDecimal?>(null)
-    private val usernameState = MutableStateFlow<String>(emptyString())
+    private val homeScreenState = MutableStateFlow<HomeScreenState?>(null)
 
-    override fun getUserTokensStateFlow(): StateFlow<HomeScreenStateLoader.HomeScreenState?> {
-        return userTokensState
+    private val refreshState = MutableSharedFlow<Boolean>()
+    private val actionButtonState = MutableSharedFlow<List<ActionButton>>()
+    private val strigaUserStatusState = MutableSharedFlow<StrigaKycStatusBanner>()
+    private val userBalanceState = MutableSharedFlow<BigDecimal?>()
+    private val usernameState = MutableSharedFlow<String?>()
+
+    override fun getHomeScreenSharedFlow(): SharedFlow<HomeScreenState?> {
+        return homeScreenState
     }
 
-    override suspend fun setUserTokensState(value: HomeScreenStateLoader.HomeScreenState) {
-        userTokensState.emit(value)
+    override suspend fun setHomeScreenState(value: HomeScreenState) {
+        homeScreenState.emit(value)
     }
 
     override suspend fun setRefreshState(isRefreshing: Boolean) {
         refreshState.emit(isRefreshing)
     }
 
-    override fun getHomeScreenRefreshStateFlow(): StateFlow<Boolean> {
+    override fun getHomeScreenRefreshSharedFlow(): SharedFlow<Boolean> {
         return refreshState
     }
 
@@ -36,11 +38,11 @@ class HomeScreenInMemoryRepository : HomeScreenLocalRepository {
         actionButtonState.emit(actionButtons)
     }
 
-    override fun getHomeScreenActionButtonsFlow(): StateFlow<List<ActionButton>> {
+    override fun getHomeScreenActionButtonsFlow(): SharedFlow<List<ActionButton>> {
         return actionButtonState
     }
 
-    override fun getStrigaUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> {
+    override fun getStrigaUserStatusBannerFlow(): SharedFlow<StrigaKycStatusBanner> {
         return strigaUserStatusState
     }
 
@@ -52,11 +54,11 @@ class HomeScreenInMemoryRepository : HomeScreenLocalRepository {
         usernameState.emit(username)
     }
 
-    override fun getUsernameFlow(): StateFlow<String?> {
+    override fun getUsernameFlow(): SharedFlow<String?> {
         return usernameState
     }
 
-    override fun observeUserBalance(): StateFlow<BigDecimal?> {
+    override fun observeUserBalance(): SharedFlow<BigDecimal?> {
         return userBalanceState
     }
 

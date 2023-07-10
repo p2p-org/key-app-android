@@ -14,7 +14,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.fromLamports
 import org.p2p.token.service.api.events.manager.TokenServiceEvent
-import org.p2p.token.service.api.events.manager.TokenServiceEventListener
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
 import org.p2p.token.service.api.events.manager.TokenServiceEventType
@@ -25,18 +24,11 @@ import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 
 class UserTokensDatabaseRepository(
-    private val tokenServiceEventManager: TokenServiceEventManager,
     private val userLocalRepository: UserLocalRepository,
     private val tokensDao: TokenDao,
     private val tokenConverter: TokenConverter,
-    private val coroutineDispatchers: CoroutineDispatchers,
     private val tokenServiceEventPublisher: TokenServiceEventPublisher
-) : UserTokensLocalRepository, CoroutineScope {
-    override val coroutineContext: CoroutineContext = coroutineDispatchers.io
-
-    init {
-        tokenServiceEventManager.subscribe(TokenServiceEventSubscriber(::updatePricesForTokens))
-    }
+) : UserTokensLocalRepository {
 
     override suspend fun updateTokens(tokens: List<Token.Active>) {
         tokensDao.insertOrUpdate(tokens.map(tokenConverter::toDatabase))
@@ -90,15 +82,13 @@ class UserTokensDatabaseRepository(
         tokensDao.clearAll()
     }
 
-    private fun updatePricesForTokens(prices: List<TokenServicePrice>) {
-        launch {
-            val oldTokens = getUserTokens()
-            val newTokens = oldTokens.map { token ->
-                val tokenRate = prices.firstOrNull { token.mintAddress == it.address }?.usdRate
-                token.copy(rate = tokenRate, totalInUsd = tokenRate?.let { token.total.times(it) })
-            }
-            updateTokens(newTokens)
+     override suspend fun saveRatesForTokens(prices: List<TokenServicePrice>) {
+        val oldTokens = getUserTokens()
+        val newTokens = oldTokens.map { token ->
+            val tokenRate = prices.firstOrNull { token.mintAddress == it.address }?.usdRate
+            token.copy(rate = tokenRate, totalInUsd = tokenRate?.let { token.total.times(it) })
         }
+        updateTokens(newTokens)
     }
 
     private fun createUpdatedToken(tokenToUpdate: Token.Active, newBalance: BigInteger): Token.Active {
@@ -110,7 +100,7 @@ class UserTokensDatabaseRepository(
         )
     }
 
-    private fun createNewToken(
+    private suspend fun createNewToken(
         tokenMint: Base58String,
         newBalanceLamports: BigInteger,
         accountPublicKey: Base58String
@@ -128,15 +118,5 @@ class UserTokensDatabaseRepository(
             tokenData = tokenData,
             price = null
         )
-    }
-
-    private inner class TokenServiceEventSubscriber(private val block: (List<TokenServicePrice>) -> Unit) :
-        TokenServiceEventListener {
-        override fun onUpdate(eventType: TokenServiceEventType, event: TokenServiceEvent) {
-            if (eventType != TokenServiceEventType.SOLANA_CHAIN_EVENT) return
-            if (event !is TokenServiceEvent.TokensPriceLoaded) return
-            val prices = event.result
-            block(prices)
-        }
     }
 }

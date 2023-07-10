@@ -24,10 +24,15 @@ class ActionButtonsLoader(
         if (!isSellFeatureToggleEnabled) {
             buttons += ActionButton.SWAP_BUTTON
         }
+
         homeInteractor.updateHomeActionButtons(buttons)
     }
 
     override suspend fun onRefresh() {
         onLoad()
+    }
+
+    override suspend fun isEnabled(): Boolean {
+        return true
     }
 }

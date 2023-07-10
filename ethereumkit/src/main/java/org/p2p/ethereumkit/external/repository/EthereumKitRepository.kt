@@ -3,18 +3,15 @@ package org.p2p.ethereumkit.external.repository
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalanceResponse
-import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.model.EthTokenConverter
@@ -22,7 +19,8 @@ import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
-import org.p2p.ethereumkit.external.price.PriceRepository
+import org.p2p.ethereumkit.external.token.EthereumTokenLocalRepository
+import org.p2p.ethereumkit.external.token.EthereumTokenRepository
 import org.p2p.ethereumkit.internal.core.TransactionSignerEip1559
 import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
@@ -32,13 +30,13 @@ import org.p2p.ethereumkit.internal.models.Signature
 private val MINIMAL_DUST = BigDecimal("5")
 
 internal class EthereumKitRepository(
-    private val tokensRepository: EthereumTokensRepository,
-    private val priceRepository: PriceRepository,
-    private val dispatchers: CoroutineDispatchers
+    private val tokensRepository: EthereumTokenRepository,
+    private val tokensLocalRepository: EthereumTokenLocalRepository,
+    private val dispatchers: CoroutineDispatchers,
+    private val converter: EthTokenConverter
 ) : EthereumRepository {
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
-    private var ethereumTokensFlow = MutableStateFlow<List<Token.Eth>>(emptyList())
 
     override fun init(seedPhrase: List<String>) {
         tokenKeyProvider = EthTokenKeyProvider(
@@ -66,64 +64,56 @@ internal class EthereumKitRepository(
         return signer.signatureLegacy(transaction)
     }
 
-    override suspend fun getPriceForToken(tokenAddress: String): BigDecimal {
-        return priceRepository.getPriceForToken(tokenAddress)
-    }
-
     override suspend fun getBalance(): BigInteger {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
         return tokensRepository.getWalletBalance(publicKey)
     }
 
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>) {
-        val walletTokens = withContext(dispatchers.io) {
-            try {
-                val tokensMetadata = loadTokensMetadata()
-                getPriceForTokens(tokensMetadata.map { it.contractAddress.hex })
-                    .onEach { (address, price) ->
-                        tokensMetadata.find { it.contractAddress.hex == address }?.price = price
+        try {
+            val walletTokens = buildList {
+                add(getEthToken())
+                addAll(loadTokensMetadata())
+            }.map { tokenMetadata ->
+
+                var isClaiming = false
+                var latestBundleId: String? = null
+                var tokenAmount: BigDecimal? = null
+                var fiatAmount: BigDecimal? = null
+
+                claimingTokens.filter { claimToken -> isTokenClaiming(tokenMetadata, claimToken) }
+                    .onEach { claimToken ->
+                        isClaiming = true
+                        latestBundleId = claimToken.bundleId
+                        tokenAmount = claimToken.tokenAmount
+                        fiatAmount = claimToken.fiatAmount
                     }
 
-                (listOf(getEthToken()) + tokensMetadata).map { metadata ->
-                    var isClaiming = false
-                    var latestBundleId: String? = null
-                    var tokenAmount: BigDecimal? = null
-                    var fiatAmount: BigDecimal? = null
-                    claimingTokens.forEach {
-                        if (metadata.contractAddress == it.contractAddress && it.isClaiming) {
-                            isClaiming = true
-                            latestBundleId = it.bundleId
-                            tokenAmount = it.tokenAmount
-                            fiatAmount = it.fiatAmount
-                        }
-                    }
-                    EthTokenConverter.ethMetadataToToken(
-                        metadata = metadata,
-                        isClaiming = isClaiming,
-                        bundleId = latestBundleId,
-                        tokenAmount = tokenAmount,
-                        fiatAmount = fiatAmount
-                    )
-                }.filter { token ->
-                    val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
-                    val tokenFiatAmount = token.totalInUsd.orZero()
-                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
-                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
-                }
-            } catch (cancellation: CancellationException) {
-                Timber.i(cancellation)
-                emptyList()
-            } catch (e: Throwable) {
-                Timber.e(e, "Error on loading ethereumTokens")
-                emptyList()
+                converter.ethMetadataToToken(
+                    metadata = tokenMetadata,
+                    bundleId = latestBundleId,
+                    isClaiming = isClaiming,
+                    tokenAmount = tokenAmount,
+                    fiatAmount = fiatAmount
+                )
+            }.filter { token ->
+                val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
+                val tokenFiatAmount = token.totalInUsd.orZero()
+                val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
+                tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
             }
+            tokensLocalRepository.cacheTokens(walletTokens)
+        } catch (e: Throwable) {
+            Timber.e(e, "Error on loading ethereumTokens")
         }
-        ethereumTokensFlow.emit(walletTokens)
+    }
+
+    private fun isTokenClaiming(tokenMetadata: EthTokenMetadata, claimToken: EthereumClaimToken): Boolean {
+        return tokenMetadata.contractAddress == claimToken.contractAddress && claimToken.isClaiming
     }
 
     private suspend fun getEthToken(): EthTokenMetadata {
         val ethContractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
-        val tokenPrice = getPriceForToken(ERC20Tokens.ETH.contractAddress)
         return EthTokenMetadata(
             contractAddress = ethContractAddress,
             mintAddress = ERC20Tokens.ETH.mintAddress,
@@ -132,17 +122,11 @@ internal class EthereumKitRepository(
             logoUrl = ERC20Tokens.ETH.tokenIconUrl,
             tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
             symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
-            price = tokenPrice,
         )
     }
 
     override fun getAddress(): EthAddress {
         return tokenKeyProvider?.publicKey ?: throwInitError()
-    }
-
-    private suspend fun getPriceForTokens(tokenAddresses: List<String>): Map<String, BigDecimal> {
-        return kotlin.runCatching { priceRepository.getPriceForTokens(tokenAddresses) }
-            .getOrDefault(emptyMap())
     }
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
@@ -174,7 +158,7 @@ internal class EthereumKitRepository(
         }
 
     override fun getWalletTokensFlow(): Flow<List<Token.Eth>> {
-        return ethereumTokensFlow
+        return tokensLocalRepository.getTokensFlow()
     }
 
     private fun throwInitError(): Nothing =

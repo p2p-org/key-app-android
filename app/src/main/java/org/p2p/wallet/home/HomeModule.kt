@@ -112,8 +112,9 @@ object HomeModule : InjectionModule {
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
-                homeStateLoaders = get(),
-                context = get()
+                appLoader = get(),
+                context = get(),
+                homeScreenStateObserver = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

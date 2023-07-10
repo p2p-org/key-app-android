@@ -14,4 +14,8 @@ class UsernameLoader(
         val userAddress = username?.fullUsername ?: tokenKeyProvider.publicKey.ellipsizeAddress()
         homeInteractor.updateUsername(userAddress)
     }
+
+    override suspend fun isEnabled(): Boolean {
+        return true
+    }
 }

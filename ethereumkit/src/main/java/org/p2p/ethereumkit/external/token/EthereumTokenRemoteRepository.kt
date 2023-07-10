@@ -1,4 +1,4 @@
-package org.p2p.ethereumkit.external.balance
+package org.p2p.ethereumkit.external.token
 
 import com.google.gson.Gson
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
@@ -13,11 +13,11 @@ import java.net.URI
 import org.p2p.core.rpc.RpcApi
 import org.p2p.core.model.DefaultBlockParameter
 
-internal class EthereumTokensRemoteRepository(
+internal class EthereumTokenRemoteRepository(
     private val alchemyService: RpcApi,
     private val networkEnvironment: EthereumNetworkEnvironment,
     private val gson: Gson
-) : EthereumTokensRepository {
+) : EthereumTokenRepository {
 
     override suspend fun getWalletBalance(address: EthAddress): BigInteger {
         val request = GetBalanceJsonRpc(

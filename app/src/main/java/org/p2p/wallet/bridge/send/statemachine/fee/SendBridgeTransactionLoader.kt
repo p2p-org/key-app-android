@@ -33,7 +33,6 @@ class SendBridgeTransactionLoader constructor(
     private val validator: SendBridgeValidator,
     private val bridgeSendInteractor: BridgeSendInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
-    private val repository: EthereumSendRepository,
     private val tokenKeyProvider: TokenKeyProvider,
 ) {
 
@@ -118,7 +117,7 @@ class SendBridgeTransactionLoader constructor(
         val relayAccount = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = SolAddress(relayAccount.feePayerAddress.toBase58())
 
-        return repository.transferFromSolana(
+        return bridgeSendInteractor.transferFromSolana(
             userWallet = userWallet,
             feePayer = feePayer,
             source = SolAddress(token.publicKey),

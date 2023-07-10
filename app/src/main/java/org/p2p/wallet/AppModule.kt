@@ -9,7 +9,6 @@ import org.p2p.core.common.di.ServiceScope
 import org.p2p.core.crashlytics.CrashLoggerModule
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.network.NetworkCoreModule
-import org.p2p.ethereumkit.EthereumKitService
 import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
@@ -24,6 +23,7 @@ import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.ethereumkit.external.EthereumModule
 import org.p2p.token.service.TokenServiceModule
 import org.p2p.wallet.home.events.HomeEventsModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
@@ -107,8 +107,9 @@ object AppModule {
                 CrashLoggerModule.create(),
                 NetworkCoreModule.create(),
                 TokenServiceModule.create(),
-                HomeEventsModule.create()
-            ) + EthereumKitService.getEthereumKitModules()
+                HomeEventsModule.create(),
+                EthereumModule.create()
+            )
         )
     }
 }

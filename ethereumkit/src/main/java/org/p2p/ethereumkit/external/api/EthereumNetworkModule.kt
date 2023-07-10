@@ -32,20 +32,14 @@ internal object EthereumNetworkModule {
     }
 
     private fun getOkHttpClient(): OkHttpClient {
-        val headersInterceptor = Interceptor { chain ->
-            val requestBuilder = chain.request().newBuilder()
-            chain.proceed(requestBuilder.build())
-        }
-
         val httpClient = OkHttpClient.Builder()
             .addInterceptor(EthereumApiLoggingInterceptor())
-            .addInterceptor(headersInterceptor)
         return httpClient.build()
     }
 
-    fun getRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
+    private fun getRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(EthereumNetworkEnvironment.ALCHEMY_DEMO.baseUrl)
+            .baseUrl(EthereumNetworkEnvironment.ALCHEMY.baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(httpClient)

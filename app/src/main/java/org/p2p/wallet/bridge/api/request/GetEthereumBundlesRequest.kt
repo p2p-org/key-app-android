@@ -6,7 +6,7 @@ import org.p2p.core.rpc.JsonRpc
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.wallet.bridge.api.response.BridgeBundleResponse
 
-data class GetListOfEthereumBundleStatusesRpcRequest(
+data class GetEthereumBundlesRequest(
     @Transient val ethAddress: EthAddress
 ) : JsonRpc<Map<String, Any>, List<BridgeBundleResponse>>(
     method = "list_ethereum_bundles",

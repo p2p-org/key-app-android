@@ -2,7 +2,7 @@ package org.p2p.token.service.api.events.manager
 
 import org.p2p.token.service.model.TokenServiceNetwork
 
-interface TokenServiceEventListener {
+interface TokenServiceEventSubscriber {
     fun onUpdate(eventType: TokenServiceEventType, event: TokenServiceEvent)
 }
 

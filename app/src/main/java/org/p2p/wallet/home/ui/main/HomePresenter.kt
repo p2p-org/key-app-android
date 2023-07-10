@@ -6,9 +6,8 @@ import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
@@ -30,6 +29,7 @@ import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.model.VisibilityState
+import org.p2p.wallet.home.state.HomeScreenStateObserver
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
@@ -61,7 +61,8 @@ class HomePresenter(
     private val homeMapper: HomePresenterMapper,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val analytics: HomeAnalytics,
-    private val homeStateLoaders: List<AppLoader>,
+    private val appLoader: AppLoader,
+    private val homeScreenStateObserver: HomeScreenStateObserver,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
@@ -78,17 +79,18 @@ class HomePresenter(
         )
     }
 
+
     init {
-        launchSupervisor {
-            homeStateLoaders.map { async { it.onLoad() } }.joinAll()
-        }
+        homeScreenStateObserver.start()
     }
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         handleDeeplinks()
         launch {
-            homeInteractor.observeHomeScreenState().filterNotNull()
+            homeInteractor.observeHomeScreenState()
+                .filterNotNull()
+                .distinctUntilChanged()
                 .collect { homeState ->
                     val isRefreshing = homeState.isRefreshing
                     view?.showRefreshing(isRefreshing)
@@ -117,13 +119,14 @@ class HomePresenter(
                     view?.showActionButtons(actionButtons)
                 }
         }
+        launchSupervisor { appLoader.onLoad() }
     }
 
     override fun refreshTokens() {
         launchInternetAware(connectionManager) {
             try {
                 homeInteractor.updateRefreshState(isRefreshing = true)
-                homeStateLoaders.map { async { it.onRefresh() } }.joinAll()
+                appLoader.onRefresh()
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {

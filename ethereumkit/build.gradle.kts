@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":token-service"))
     implementation(project(":core"))
     implementation("org.bouncycastle:bcpkix-jdk15on:1.68")
 

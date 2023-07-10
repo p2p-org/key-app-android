@@ -1,16 +1,15 @@
 package org.p2p.wallet.home.ui.main
 
 import java.math.BigDecimal
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import org.p2p.core.token.Token
-import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
-import org.p2p.wallet.home.events.HomeScreenStateLoader
 import org.p2p.wallet.home.repository.HomeScreenLocalRepository
+import org.p2p.wallet.home.state.HomeScreenState
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.sell.interactor.SellInteractor
@@ -41,14 +40,6 @@ class HomeInteractor(
 
     suspend fun loadStrigaFiatAccountDetails(): Result<StrigaFiatAccountDetails> {
         return strigaWalletInteractor.loadFiatAccountAndUserWallet()
-    }
-
-    suspend fun loadAllTokensDataIfEmpty() {
-        userInteractor.loadAllTokensDataIfEmpty()
-    }
-
-    suspend fun loadUserTokensAndUpdateLocal(publicKey: PublicKey): List<Token.Active> {
-        return userInteractor.loadUserTokensAndUpdateLocal(publicKey)
     }
 
     fun getHiddenTokensVisibility(): Boolean = userInteractor.getHiddenTokensVisibility()
@@ -82,7 +73,7 @@ class HomeInteractor(
     suspend fun getClaimMinAmountForFreeFee(): BigDecimal =
         ethereumInteractor.getClaimMinAmountForFreeFee()
 
-    fun getUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> = strigaUserInteractor.getUserStatusBannerFlow()
+    fun getUserStatusBannerFlow(): SharedFlow<StrigaKycStatusBanner?> = strigaUserInteractor.getUserStatusBannerFlow()
 
     fun hideStrigaUserStatusBanner(banner: StrigaKycStatusBanner) = strigaUserInteractor.hideUserStatusBanner(banner)
 
@@ -93,34 +84,30 @@ class HomeInteractor(
         return strigaClaimInteractor.claim(amountLamports, token)
     }
 
-    fun loadUserRates(tokens: List<Token.Active>) {
-        userTokensInteractor.loadUserRates(tokens)
+    suspend fun updateHomeScreenState(newTokensState: HomeScreenState) {
+        homeScreenLocalRepository.setHomeScreenState(newTokensState)
     }
 
-    suspend fun updateHomeScreenState(newTokensState: HomeScreenStateLoader.HomeScreenState) {
-        homeScreenLocalRepository.setUserTokensState(newTokensState)
-    }
-
-    fun observeHomeScreenState(): StateFlow<HomeScreenStateLoader.HomeScreenState?> =
-        homeScreenLocalRepository.getUserTokensStateFlow()
+    fun observeHomeScreenState(): SharedFlow<HomeScreenState?> =
+        homeScreenLocalRepository.getHomeScreenSharedFlow()
 
     suspend fun updateRefreshState(isRefreshing: Boolean) {
         homeScreenLocalRepository.setRefreshState(isRefreshing)
     }
 
-    fun observeRefreshState(): StateFlow<Boolean> {
-        return homeScreenLocalRepository.getHomeScreenRefreshStateFlow()
+    fun observeRefreshState(): SharedFlow<Boolean> {
+        return homeScreenLocalRepository.getHomeScreenRefreshSharedFlow()
     }
 
     suspend fun updateHomeActionButtons(newButtons: List<ActionButton>) {
         homeScreenLocalRepository.setActionButtons(newButtons)
     }
 
-    fun observeActionButtons(): StateFlow<List<ActionButton>> {
+    fun observeActionButtons(): SharedFlow<List<ActionButton>> {
         return homeScreenLocalRepository.getHomeScreenActionButtonsFlow()
     }
 
-    fun observeStrigaKycBanner(): StateFlow<StrigaKycStatusBanner?> {
+    fun observeStrigaKycBanner(): SharedFlow<StrigaKycStatusBanner> {
         return homeScreenLocalRepository.getStrigaUserStatusBannerFlow()
     }
 
@@ -132,7 +119,7 @@ class HomeInteractor(
         homeScreenLocalRepository.setUsername(username)
     }
 
-    fun observeUsername(): StateFlow<String?> {
+    fun observeUsername(): SharedFlow<String?> {
         return homeScreenLocalRepository.getUsernameFlow()
     }
 
@@ -144,7 +131,7 @@ class HomeInteractor(
         homeScreenLocalRepository.setUserBalance(userBalance)
     }
 
-    fun observeUserBalance(): StateFlow<BigDecimal?> {
+    fun observeUserBalance(): SharedFlow<BigDecimal?> {
         return homeScreenLocalRepository.observeUserBalance()
     }
 }

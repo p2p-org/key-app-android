@@ -79,34 +79,6 @@ class UserInteractor(
 
     suspend fun getBalance(address: PublicKey): Long = rpcRepository.getBalance(address)
 
-    suspend fun loadAllTokensDataIfEmpty() {
-        if (!userLocalRepository.areInitialTokensLoaded()) {
-            loadAllTokensData()
-        }
-    }
-
-    suspend fun loadAllTokensData() {
-        val file = externalStorageRepository.readJsonFile(TOKENS_FILE_NAME)
-
-        if (!metadataUpdateFeatureToggle.isFeatureEnabled && file != null) {
-            Timber.tag(TAG).i("Tokens data file was found. Trying to parse it...")
-            val tokens = gson.fromJson(file.data, Array<TokenData>::class.java)?.toList()
-            if (tokens != null) {
-                Timber.tag(TAG).i("Tokens data were successfully parsed from file.")
-                userLocalRepository.setTokenData(tokens)
-                return
-            }
-        }
-
-        Timber.tag(TAG).i("Tokens data file was not found. Loading from remote")
-        // If the file is not found or empty, load from network
-        val data = userRepository.loadAllTokens()
-        userLocalRepository.setTokenData(data)
-
-        // Save tokens to the file
-        externalStorageRepository.saveJson(json = gson.toJson(data), fileName = TOKENS_FILE_NAME)
-        return
-    }
 
     fun fetchTokens(searchText: String = emptyString(), count: Int, refresh: Boolean) {
         userLocalRepository.fetchTokens(searchText, count, refresh)
@@ -124,27 +96,6 @@ class UserInteractor(
         }
     }
 
-    suspend fun loadUserTokensAndUpdateLocal(publicKey: PublicKey): List<Token.Active> {
-        val newTokens = userRepository.loadUserTokens(publicKey)
-        val cachedTokens = userTokensRepository.getUserTokens()
-        return updateLocalTokens(cachedTokens, newTokens)
-    }
-
-    private suspend fun updateLocalTokens(
-        cachedTokens: List<Token.Active>,
-        newTokens: List<Token.Active>
-    ): List<Token.Active> {
-        Timber.i("Updating local tokens: old=${cachedTokens.size};new=${newTokens.size}")
-        val newTokensToCache = newTokens
-            .map { newToken ->
-                val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }
-                newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
-            }
-            .sortedWith(TokenComparator())
-        userTokensRepository.clear()
-        userTokensRepository.updateTokens(newTokensToCache)
-        return newTokensToCache
-    }
 
     suspend fun getUserTokens(): List<Token.Active> =
         userTokensRepository.getUserTokens()

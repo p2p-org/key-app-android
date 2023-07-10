@@ -1,11 +1,11 @@
-package org.p2p.ethereumkit.external.balance
+package org.p2p.ethereumkit.external.token
 
 import java.math.BigInteger
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalancesResponse
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenMetadataResponse
-import org.p2p.core.wrapper.eth.EthAddress
 
-internal interface EthereumTokensRepository {
+internal interface EthereumTokenRepository {
     suspend fun getWalletBalance(address: EthAddress): BigInteger
     suspend fun getTokenBalances(
         address: EthAddress,

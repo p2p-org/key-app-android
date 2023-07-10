@@ -11,7 +11,7 @@ import org.p2p.wallet.bridge.api.request.GetEthereumBundleRpcRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumBundleStatusRpcRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumFeesRpcRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumFreeFeeLimitRequest
-import org.p2p.wallet.bridge.api.request.GetListOfEthereumBundleStatusesRpcRequest
+import org.p2p.wallet.bridge.api.request.GetEthereumBundlesRequest
 import org.p2p.wallet.bridge.api.request.SendEthereumBundleRpcRequest
 import org.p2p.wallet.bridge.api.response.BridgeBundleResponse
 import org.p2p.wallet.bridge.model.BridgeBundle
@@ -29,6 +29,7 @@ class EthereumClaimRemoteRepository(
         tokenAddress: EthAddress?,
         amountAsString: String,
     ): BridgeBundleFees {
+
         val rpcRequest = GetEthereumFeesRpcRequest(
             ethAddress = ethereumAddress,
             recipientAddress = recipient,
@@ -70,18 +71,10 @@ class EthereumClaimRemoteRepository(
         return result.data
     }
 
-    override suspend fun getEthereumBundleStatus(bundleId: String): BridgeBundle {
-        val rpcRequest = GetEthereumBundleStatusRpcRequest(
-            bundleId = bundleId
-        )
-        val result = bridgeRepository.launch(rpcRequest)
-        return mapper.fromNetwork(result.data)
-    }
-
-    override suspend fun getListOfEthereumBundleStatuses(
+    override suspend fun getEthereumBundles(
         ethAddress: EthAddress,
     ): List<BridgeBundle> {
-        val rpcRequest = GetListOfEthereumBundleStatusesRpcRequest(
+        val rpcRequest = GetEthereumBundlesRequest(
             ethAddress = ethAddress
         )
         val result = bridgeRepository.launch(rpcRequest)
