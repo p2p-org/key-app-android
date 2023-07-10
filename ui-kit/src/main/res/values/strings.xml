@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="common_wallet">Wallet</string>
+    <string name="common_crypto">Crypto</string>
     <string name="common_history">History</string>
     <string name="common_send">Send</string>
     <string name="common_buy">Buy</string>

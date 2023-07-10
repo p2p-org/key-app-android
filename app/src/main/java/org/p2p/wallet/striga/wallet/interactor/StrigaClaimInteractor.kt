@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.wallet.interactor
 
+import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
@@ -14,6 +15,7 @@ import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.map
 import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.model.toSuccessResult
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
@@ -33,10 +35,17 @@ class StrigaClaimInteractor(
     private val strigaWhitelistAddressesRepository: StrigaWhitelistAddressesRepository,
     private val tokensRepository: UserLocalRepository,
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
-    private val userTokenKeyProvider: TokenKeyProvider
+    private val userTokenKeyProvider: TokenKeyProvider,
+    private val userInteractor: StrigaUserInteractor,
 ) {
+    private val isClaimDisabled: Boolean
+        get() {
+            return !strigaFeatureToggle.isFeatureEnabled || !userInteractor.isKycApproved
+        }
+
     suspend fun getClaimableTokens(): StrigaDataLayerResult<List<StrigaClaimableToken>> {
-        if (!strigaFeatureToggle.isFeatureEnabled) {
+        if (isClaimDisabled) {
+            Timber.d("Striga user cannot get claimable tokens because of feature toggle or KYC status")
             return emptyList<StrigaClaimableToken>().toSuccessResult()
         }
 
@@ -95,7 +104,7 @@ class StrigaClaimInteractor(
             .map { it.id }
     }
 
-    private fun getClaimableTokenMetadata(tokenSymbol: String): Token? {
+    private suspend fun getClaimableTokenMetadata(tokenSymbol: String): Token? {
         return tokensRepository.findTokenDataBySymbol(tokenSymbol)
             ?.let { tokensRepository.findTokenByMint(it.mintAddress) }
     }

@@ -21,7 +21,8 @@
             android:layout_height="wrap_content"
             android:elevation="0dp"
             app:expandedTitleGravity="top"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false">
 
             <LinearLayout
                 android:id="@+id/containerHeader"
@@ -47,12 +48,16 @@
 
             </LinearLayout>
 
-            <include
-                android:id="@+id/layout_toolbar"
-                layout="@layout/layout_home_toolbar"
+            <org.p2p.uikit.organisms.UiKitToolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_collapseMode="pin" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:title="@string/common_my_crypto"
+                app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+                app:titleTextColor="@color/text_night" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 

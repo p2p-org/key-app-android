@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.ClassRule
 import org.junit.Test
 import java.math.BigDecimal
 import org.p2p.core.BuildConfig
@@ -20,13 +21,15 @@ import org.p2p.core.network.gson.Base64TypeAdapter
 import org.p2p.core.network.gson.BigDecimalTypeAdapter
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
+import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.assertThat
-import org.p2p.wallet.utils.plantTimberToStdout
 
 class StrigaStorageTest {
 
-    init {
-        plantTimberToStdout("StrigaStorageTest")
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance("StrigaStorageTest")
     }
 
     private val gson: Gson

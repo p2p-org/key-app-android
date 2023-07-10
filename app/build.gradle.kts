@@ -8,6 +8,7 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("io.sentry.android.gradle") version "3.2.0"
     id("org.jetbrains.kotlinx.kover") version "0.7.2"
+    id("kotlin-kapt")
 }
 
 koverReport {
@@ -102,6 +103,7 @@ dependencies {
     implementation(project(":ui-kit"))
     implementation(project(":core"))
     implementation(project(":ethereumkit"))
+    implementation(project(":token-service"))
 
     implementation(files("libs/borshj-0.0.0.jar"))
 
@@ -117,9 +119,6 @@ dependencies {
     Dependencies.coroutineLibraries.forEach { implementation(it) }
 
     // Room
-    implementation(Dependencies.roomRuntime)
-    implementation(Dependencies.roomKtx)
-    kapt(Dependencies.roomCompiler)
 
     // Firebase
     implementation(platform(Dependencies.firebaseBom))
@@ -143,7 +142,7 @@ dependencies {
     Dependencies.appsFlyerLibraries.forEach { implementation(it) }
 
     // Striga SDK https://developers.sumsub.com/msdk/android/changelog.html
-//    implementation(Dependencies.strigaSdk)
+    implementation(Dependencies.strigaSdk)
 
     // Utils
     implementation(Dependencies.libphonenumber)
@@ -155,6 +154,8 @@ dependencies {
     implementation(Dependencies.amplitude)
     implementation(Dependencies.debugDrawer)
     implementation(Dependencies.tickerView)
+    implementation(Dependencies.bitcoinj)
+
 
     // Core testing
     Dependencies.coreTestingLibraries.forEach { testImplementation(it) }
@@ -170,4 +171,8 @@ dependencies {
         because("This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.")
     }
     Dependencies.junitRuntimeOnlyLibraries.forEach { testRuntimeOnly(it) }
+
+    implementation(Dependencies.roomRuntime)
+    implementation(Dependencies.roomKtx)
+    kapt(Dependencies.roomCompiler)
 }

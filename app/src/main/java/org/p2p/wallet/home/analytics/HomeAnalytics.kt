@@ -13,7 +13,6 @@ import org.p2p.wallet.swap.analytics.SwapAnalytics
 
 private const val TOKEN_DETAILS_CLICKED = "Main_Screen_Token_Details_Open"
 private const val HOME_MAIN_WALLET = "Main_Wallet"
-private const val HOME_MAIN_EARN = "Main_Earn"
 private const val HOME_MAIN_HISTORY = "Main_History"
 private const val HOME_MAIN_SETTINGS = "Main_Settings"
 private const val HOME_HIDDEN_TOKENS_CLICKED = "Main_Screen_Hidden_Tokens"
@@ -52,10 +51,6 @@ class HomeAnalytics(
 
     fun logBottomNavigationHomeClicked() {
         tracker.logEvent(event = HOME_MAIN_WALLET)
-    }
-
-    fun logBottomNavigationEarnClicked() {
-        tracker.logEvent(event = HOME_MAIN_EARN)
     }
 
     fun logBottomNavigationHistoryClicked() {
