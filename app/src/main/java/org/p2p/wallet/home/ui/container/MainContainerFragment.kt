@@ -181,7 +181,7 @@ class MainContainerFragment :
 
     override fun navigateFromDeeplink(data: DeeplinkData) {
         when (data.target) {
-            DeeplinkTarget.HOME -> {
+            DeeplinkTarget.MY_CRYPTO -> {
                 navigate(ScreenTab.MY_CRYPTO_SCREEN)
             }
 

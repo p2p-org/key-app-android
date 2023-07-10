@@ -6,7 +6,7 @@ import org.p2p.uikit.components.ScreenTab
  * Pre-defined deeplink targets associated with screen names
  */
 enum class DeeplinkTarget(val screenName: String, val tab: ScreenTab? = null) {
-    HOME("home", ScreenTab.MY_CRYPTO_SCREEN),
+    MY_CRYPTO("home", ScreenTab.MY_CRYPTO_SCREEN),
     HISTORY("history", ScreenTab.HISTORY_SCREEN),
     SWAP("swap", ScreenTab.SWAP_SCREEN),
     SETTINGS("settings", ScreenTab.SETTINGS_SCREEN),

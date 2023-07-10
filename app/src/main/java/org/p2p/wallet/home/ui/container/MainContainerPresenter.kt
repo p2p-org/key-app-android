@@ -57,7 +57,7 @@ class MainContainerPresenter(
 
     override fun initializeDeeplinks() {
         val supportedTargets = setOf(
-            DeeplinkTarget.HOME,
+            DeeplinkTarget.MY_CRYPTO,
             DeeplinkTarget.HISTORY,
             DeeplinkTarget.SETTINGS,
         )
