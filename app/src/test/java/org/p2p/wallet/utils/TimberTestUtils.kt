@@ -1,12 +1,27 @@
 package org.p2p.wallet.utils
 
 import android.util.Log
+import org.junit.rules.ExternalResource
 import timber.log.Timber
 import java.io.PrintStream
 
 private fun Int.toPrinter(): PrintStream = when {
     this == Log.WARN || this == Log.ERROR || this == Log.ASSERT -> System.err
     else -> System.out
+}
+
+// usage example:
+//companion object {
+//    @ClassRule
+//    val timber = TimberUnitTestInstance("CountryCodeXmlParserTest")
+//}
+class TimberUnitTestInstance(
+    private val defaultTag: String,
+    private val excludeMessages: List<String> = emptyList(),
+    private val excludeStacktraceForMessages: List<String> = emptyList()
+) : ExternalResource() {
+    override fun before() = plantTimberToStdout(defaultTag, excludeMessages, excludeStacktraceForMessages)
+    override fun after() = Timber.uprootAll()
 }
 
 fun plantStubTimber() {

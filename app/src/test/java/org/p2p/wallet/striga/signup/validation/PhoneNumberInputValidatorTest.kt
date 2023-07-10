@@ -11,6 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Test
 import java.io.File
 import java.io.InputStream
@@ -22,12 +23,14 @@ import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.utils.TestCoroutineDispatchers
-import org.p2p.wallet.utils.plantTimberToStdout
+import org.p2p.wallet.utils.TimberUnitTestInstance
 
 class PhoneNumberInputValidatorTest {
 
-    init {
-        plantTimberToStdout("PhoneNumberInputValidatorTest")
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance("PhoneNumberInputValidatorTest")
     }
 
     @Before
