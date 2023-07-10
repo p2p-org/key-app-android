@@ -145,6 +145,7 @@ class StrigaSignupInteractor(
         }
         if (inAppFeatureFlags.strigaSimulateUserCreateFlag.featureValue) {
             delay(1000)
+            strigaSmsInputInteractor.launchInitialTimer()
             return
         }
         // firstly, check if metadata is available

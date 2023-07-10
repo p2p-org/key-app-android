@@ -42,7 +42,7 @@ class HomeInteractor(
         if (strigaSignupEnabledFeatureToggle.isFeatureEnabled) {
             strigaSignupInteractor.loadAndSaveSignupData()
             strigaUserInteractor.loadAndSaveUserStatusData()
-            if (strigaUserInteractor.isUserCreated() && strigaUserInteractor.isUserPassedKycAndVerified()) {
+            if (strigaUserInteractor.isUserCreated() && strigaUserInteractor.isKycApproved) {
                 loadStrigaFiatAccountDetails()
             }
         }
@@ -100,6 +100,8 @@ class HomeInteractor(
         ethereumInteractor.getClaimMinAmountForFreeFee()
 
     fun getUserStatusBannerFlow(): StateFlow<StrigaKycStatusBanner?> = strigaUserInteractor.getUserStatusBannerFlow()
+
+    fun hideStrigaUserStatusBanner(banner: StrigaKycStatusBanner) = strigaUserInteractor.hideUserStatusBanner(banner)
 
     suspend fun claimStrigaToken(
         amountLamports: BigDecimal,

@@ -5,15 +5,18 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.R
 
+/**
+ * @param actionTitleResId - if null button will be hidden
+ */
 enum class StrigaKycStatusBanner(
     @StringRes val bannerTitleResId: Int,
     @StringRes val bigBannerTitleResId: Int,
     @StringRes val bannerMessageResId: Int,
     @StringRes val bigBannerMessageResId: Int,
-    @StringRes val actionTitleResId: Int,
+    @StringRes val actionTitleResId: Int?,
     @DrawableRes val placeholderResId: Int,
     @ColorRes val backgroundTint: Int,
-    val isCloseButtonVisible: Boolean = false
+    val bannerId: Int
 ) {
 
     IDENTIFY(
@@ -22,17 +25,19 @@ enum class StrigaKycStatusBanner(
         bannerMessageResId = R.string.striga_kyc_signup_banner_identify_subtitle,
         bigBannerMessageResId = R.string.striga_kyc_signup_banner_identify_subtitle,
         actionTitleResId = R.string.striga_kyc_signup_banner_identify_action,
-        placeholderResId = R.drawable.onboarding_slide_2,
-        backgroundTint = R.color.light_sea
+        placeholderResId = R.drawable.ic_striga_kyc_identify,
+        backgroundTint = R.color.light_sea,
+        bannerId = 1
     ),
     PENDING(
         bannerTitleResId = R.string.striga_kyc_signup_banner_pending_title,
         bigBannerTitleResId = R.string.striga_kyc_signup_big_banner_pending_title,
         bannerMessageResId = R.string.striga_kyc_signup_banner_pending_message,
         bigBannerMessageResId = R.string.striga_kyc_signup_big_banner_pending_message,
-        actionTitleResId = R.string.striga_kyc_signup_banner_pending_action,
+        actionTitleResId = null,
         placeholderResId = R.drawable.ic_clock,
-        backgroundTint = R.color.light_sea
+        backgroundTint = R.color.light_sea,
+        bannerId = 2
     ),
     VERIFICATION_DONE(
         bannerTitleResId = R.string.striga_kyc_signup_banner_finish_title,
@@ -40,8 +45,9 @@ enum class StrigaKycStatusBanner(
         bannerMessageResId = R.string.striga_kyc_signup_banner_finish_message,
         bigBannerMessageResId = R.string.striga_kyc_signup_big_banner_finish_message,
         actionTitleResId = R.string.striga_kyc_signup_banner_finish_action,
-        placeholderResId = R.drawable.ic_send_no_token_placeholder,
-        backgroundTint = R.color.light_grass
+        placeholderResId = R.drawable.ic_striga_kyc_approved,
+        backgroundTint = R.color.light_grass,
+        bannerId = 3
     ),
     ACTION_REQUIRED(
         bannerTitleResId = R.string.striga_kyc_signup_banner_action_required_title,
@@ -50,7 +56,8 @@ enum class StrigaKycStatusBanner(
         bigBannerMessageResId = R.string.striga_kyc_signup_banner_action_required_message,
         actionTitleResId = R.string.striga_kyc_signup_banner_action_required_action,
         placeholderResId = R.drawable.ic_shield_eye,
-        backgroundTint = R.color.light_sun
+        backgroundTint = R.color.light_sun,
+        bannerId = 4
     ),
     REJECTED(
         bannerTitleResId = R.string.striga_kyc_signup_banner_rejected_title,
@@ -59,6 +66,7 @@ enum class StrigaKycStatusBanner(
         bigBannerMessageResId = R.string.striga_kyc_signup_banner_rejected_message,
         actionTitleResId = R.string.striga_kyc_signup_banner_rejected_action,
         placeholderResId = R.drawable.ic_low_speed,
-        backgroundTint = R.color.light_rose
+        backgroundTint = R.color.light_rose,
+        bannerId = 5
     )
 }

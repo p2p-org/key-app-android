@@ -4,6 +4,7 @@ import org.p2p.core.utils.MillisSinceEpoch
 import org.p2p.wallet.common.EncryptedSharedPreferences
 import org.p2p.wallet.common.LongPreference
 import org.p2p.wallet.common.ObjectEncryptedPreference
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
@@ -18,41 +19,62 @@ private const val KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS =
     "KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS"
 private const val KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS =
     "KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS"
+private const val KEY_USER_BANNER_IS_HIDDEN =
+    "KEY_USER_BANNER_IS_HIDDEN"
 
 class StrigaStorage(
-    encryptedPrefs: EncryptedSharedPreferences,
+    private val encryptedPrefs: EncryptedSharedPreferences,
 ) : StrigaStorageContract {
 
     override var userStatus: StrigaUserStatusDetails? by ObjectEncryptedPreference(
         preferences = encryptedPrefs,
-        key = KEY_USER_STATUS,
+        keyProvider = { KEY_USER_STATUS },
         type = StrigaUserStatusDetails::class,
         nullIfMappingFailed = true
     )
 
     override var userWallet: StrigaUserWallet? by ObjectEncryptedPreference(
         preferences = encryptedPrefs,
-        key = KEY_USER_WALLET,
+        keyProvider = { KEY_USER_WALLET },
         type = StrigaUserWallet::class,
         nullIfMappingFailed = true
     )
 
     override var fiatAccount: StrigaFiatAccountDetails? by ObjectEncryptedPreference(
         preferences = encryptedPrefs,
-        key = KEY_FIAT_ACCOUNT_DETAILS,
+        keyProvider = { KEY_FIAT_ACCOUNT_DETAILS },
         type = StrigaFiatAccountDetails::class,
         nullIfMappingFailed = true
     )
 
     override var smsExceededVerificationAttemptsMillis: MillisSinceEpoch by LongPreference(
         preferences = encryptedPrefs,
-        key = KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS,
+        keyProvider = { KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS },
         defaultValue = 0
     )
 
     override var smsExceededResendAttemptsMillis: MillisSinceEpoch by LongPreference(
         preferences = encryptedPrefs,
-        key = KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS,
+        keyProvider = { KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS },
         defaultValue = 0
     )
+
+    override fun hideBanner(banner: StrigaKycStatusBanner) {
+        val hiddenBanners = encryptedPrefs.getStringSet(KEY_USER_BANNER_IS_HIDDEN)
+        encryptedPrefs.putStringSet(KEY_USER_BANNER_IS_HIDDEN, hiddenBanners + banner.bannerId.toString())
+    }
+
+    override fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean {
+        return banner.toString() in encryptedPrefs.getStringSet(KEY_USER_BANNER_IS_HIDDEN)
+    }
+
+    override fun clear() {
+        userStatus = null
+        userWallet = null
+        fiatAccount = null
+        smsExceededVerificationAttemptsMillis = 0
+        smsExceededResendAttemptsMillis = 0
+
+        encryptedPrefs.remove(KEY_USER_BANNER_IS_HIDDEN)
+    }
 }

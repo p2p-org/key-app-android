@@ -18,6 +18,8 @@ class StrigaUserInteractor(
     private val userStatusRepository: StrigaUserStatusRepository,
     private val strigaSignupDataRepository: StrigaSignupDataLocalRepository
 ) {
+    val isKycApproved: Boolean
+        get() = userStatusRepository.getUserVerificationStatus()?.isKycApproved == true
 
     suspend fun createUser(data: List<StrigaSignupData>): StrigaDataLayerResult<StrigaUserInitialDetails> {
         return userRepository.createUser(data)
@@ -43,16 +45,14 @@ class StrigaUserInteractor(
         return userStatusRepository.getBannerFlow()
     }
 
+    fun hideUserStatusBanner(banner: StrigaKycStatusBanner) {
+        userStatusRepository.hideBanner(banner)
+    }
+
     /**
      * Returns user destination based on user status or NONE if unable to detect (no user status)
      */
     fun getUserDestination(): StrigaUserStatusDestination {
         return userStatusRepository.getUserDestination()
-    }
-
-    fun isUserPassedKycAndVerified(): Boolean {
-        return userStatusRepository.getUserVerificationStatus()
-            ?.run { isMobileVerified && !isKycInProgress }
-            ?: false
     }
 }

@@ -142,7 +142,7 @@ class HomePresenter(
         } else {
             Timber.w("ETH is not initialized, no seed phrase or disabled")
         }
-        launch {
+        launchSupervisor {
             awaitAll(
                 async { networkObserver.start() },
                 async { homeInteractor.loadInitialAppData() }
@@ -325,6 +325,9 @@ class HomePresenter(
             }
             statusFromKycBanner != null -> {
                 launch {
+                    // hide banner if necessary
+                    homeInteractor.hideStrigaUserStatusBanner(statusFromKycBanner)
+
                     if (statusFromKycBanner == StrigaKycStatusBanner.VERIFICATION_DONE) {
                         state = state.copy(isStrigaKycBannerLoading = true)
                         handleHomeStateChanged(state.tokens, state.ethTokens)
@@ -345,8 +348,6 @@ class HomePresenter(
             }
         }
     }
-
-    override fun onBannerCloseClicked(bannerTitleId: Int) = Unit
 
     override fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim) {
         launch {

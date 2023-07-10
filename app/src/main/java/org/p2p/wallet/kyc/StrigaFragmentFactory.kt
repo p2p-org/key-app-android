@@ -2,10 +2,12 @@ package org.p2p.wallet.kyc
 
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycFragment
+import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputFragment
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
@@ -57,9 +59,14 @@ class StrigaFragmentFactory {
             StrigaUserStatusDestination.IBAN_ACCOUNT -> {
                 StrigaUserIbanDetailsFragment.create()
             }
+            StrigaUserStatusDestination.KYC_PENDING,
             StrigaUserStatusDestination.NONE -> {
                 null
             }
         }
+    }
+
+    fun showPendingBottomSheet(fragmentManager: FragmentManager) {
+        StrigaKycPendingBottomSheet.show(fragmentManager)
     }
 }

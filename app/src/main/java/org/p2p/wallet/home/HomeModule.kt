@@ -20,8 +20,6 @@ import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.main.UserTokensPolling
-import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsContract
-import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
@@ -156,7 +154,6 @@ object HomeModule : InjectionModule {
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
         factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
 
-        factoryOf(::HomeActionsPresenter) bind HomeActionsContract.Presenter::class
         factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
     }
 }

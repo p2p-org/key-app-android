@@ -71,7 +71,10 @@ class UiKitButton @JvmOverloads constructor(
             icon = circularProgressDrawable
             icon.callback = progressDrawableCallback
             circularProgressDrawable.setTintList(iconTint)
-            circularProgressDrawable.setTint(iconTint.defaultColor)
+            // icon tint could be a null in some cases, so we need to check it before use
+            iconTint?.let {
+                circularProgressDrawable.setTint(iconTint.defaultColor)
+            }
             circularProgressDrawable.start()
         } else {
             icon = buttonIcon

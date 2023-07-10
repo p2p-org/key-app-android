@@ -83,7 +83,7 @@ class SearchViewHolder(
             textViewTop.text = item.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
             textViewBottom.text = description
-            textViewBottom.isVisible = item.networkType == NetworkType.SOLANA
+            textViewBottom.isVisible = item.networkType == NetworkType.SOLANA && !description.isNullOrEmpty()
             Glide.with(root)
                 .load(imageObject)
                 .circleCrop()

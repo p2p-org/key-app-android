@@ -120,6 +120,25 @@ class EncryptedSharedPreferences(
         }
     }
 
+    /**
+     * Encodes each element inside the set and saves it to the shared preferences.
+     * Set is unique by definition, so when elements are encoded - they are unique too.
+     */
+    fun putStringSet(key: String, value: Set<String>) {
+        tryWithLog(key) {
+            val encryptedSet = value.map { keyStoreWrapper.encode(key, it) }.toSet()
+            sharedPreferences.edit { putStringSet(key, encryptedSet) }
+        }
+    }
+
+    fun getStringSet(key: String, defaultValue: Set<String> = emptySet()): Set<String> {
+        return tryWithLog(key) {
+            sharedPreferences.getStringSet(key, defaultValue) ?: defaultValue
+                .map { keyStoreWrapper.decode(key, it) }
+                .toSet()
+        }
+    }
+
     fun getEncodeCipher(key: String): EncodeCipher {
         return tryWithLog(key) {
             keyStoreWrapper.getEncodeCipher(key)
@@ -173,11 +192,14 @@ class StringEncryptedPreference(
 
 class ObjectEncryptedPreference<Value : Any>(
     private val preferences: EncryptedSharedPreferences,
-    private val key: String,
+    private val keyProvider: () -> String,
     private val type: KClass<Value>,
     private val defaultValue: Value? = null,
     private val nullIfMappingFailed: Boolean = false
 ) : ReadWriteProperty<Any, Value?> {
+    private val key: String
+        get() = keyProvider.invoke()
+
     override fun getValue(thisRef: Any, property: KProperty<*>): Value? {
         return kotlin.runCatching { preferences.getObject(key, type) ?: defaultValue }
             .let { if (nullIfMappingFailed) it.getOrNull() else it.getOrThrow() }
@@ -190,14 +212,34 @@ class ObjectEncryptedPreference<Value : Any>(
 
 class LongPreference(
     private val preferences: EncryptedSharedPreferences,
-    private val key: String,
-    private val defaultValue: Long
+    private val keyProvider: () -> String,
+    private val defaultValue: Long,
 ) : ReadWriteProperty<Any, Long> {
+    private val key: String
+        get() = keyProvider.invoke()
+
     override fun getValue(thisRef: Any, property: KProperty<*>): Long {
         return preferences.getLong(key, defaultValue)
     }
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Long) {
         preferences.putLong(key, value)
+    }
+}
+
+class BooleanEncryptedPreference(
+    private val preferences: EncryptedSharedPreferences,
+    private val keyProvider: () -> String,
+    private val defaultValue: Boolean
+) : ReadWriteProperty<Any, Boolean> {
+    private val key: String
+        get() = keyProvider.invoke()
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): Boolean {
+        return preferences.getBoolean(key, defaultValue)
+    }
+
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: Boolean) {
+        preferences.putBoolean(key, value)
     }
 }

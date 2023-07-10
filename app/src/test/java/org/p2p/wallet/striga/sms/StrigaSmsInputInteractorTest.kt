@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import org.p2p.core.utils.MillisSinceEpoch
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.model.StrigaDataLayerError
@@ -51,6 +52,9 @@ class StrigaSmsInputInteractorTest {
         override var fiatAccount: StrigaFiatAccountDetails? = null
         override var smsExceededVerificationAttemptsMillis: MillisSinceEpoch = 0
         override var smsExceededResendAttemptsMillis: MillisSinceEpoch = 0
+        override fun hideBanner(banner: StrigaKycStatusBanner) = Unit
+        override fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean = false
+        override fun clear() = Unit
     }
 
     @Before

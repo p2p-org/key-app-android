@@ -44,17 +44,20 @@ class SingleBannerViewHolder(
         textViewSubtitle.isVisible = subtitleText.isNotEmpty()
 
         imageViewIcon.setImageResource(status.placeholderResId)
-        buttonAction.setText(status.actionTitleResId)
-        root.background.setTint(getColor(status.backgroundTint))
 
-        buttonClose.isVisible = status.isCloseButtonVisible
+        buttonAction.isVisible = status.actionTitleResId != null
+        status.actionTitleResId?.let {
+            buttonAction.setText(status.actionTitleResId)
+        }
+
+        root.background.setTint(getColor(status.backgroundTint))
 
         buttonAction.setLoading(item.isLoading)
         buttonAction.setOnClickListener {
             listener.onBannerClicked(status.bannerTitleResId)
         }
-        buttonClose.setOnClickListener {
-            listener.onBannerCloseClicked(status.bannerTitleResId)
+        binding.root.setOnClickListener {
+            listener.onBannerClicked(status.bannerTitleResId)
         }
     }
 }

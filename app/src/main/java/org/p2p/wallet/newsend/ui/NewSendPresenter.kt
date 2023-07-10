@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
@@ -25,7 +27,6 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.common.date.dateMilli
-import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
@@ -59,7 +60,6 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
-import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.utils.toPublicKey
 
 private const val ACCEPTABLE_RATE_DIFF = 0.02
@@ -68,6 +68,7 @@ private const val TAG = "NewSendPresenter"
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
+    private val openedFrom: SendOpenedFrom,
     private val userInteractor: UserInteractor,
     private val sendInteractor: SendInteractor,
     private val resources: Resources,
@@ -80,6 +81,12 @@ class NewSendPresenter(
     sendModeProvider: SendModeProvider,
     private val historyInteractor: HistoryInteractor
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
+
+    private val flow: NewSendAnalytics.AnalyticsSendFlow = if (openedFrom == SendOpenedFrom.SELL_FLOW) {
+        NewSendAnalytics.AnalyticsSendFlow.SELL
+    } else {
+        NewSendAnalytics.AnalyticsSendFlow.SEND
+    }
 
     private var token: Token.Active? by observable(null) { _, _, newToken ->
         if (newToken != null) {
@@ -101,7 +108,7 @@ class NewSendPresenter(
 
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
-        newSendAnalytics.logNewSendScreenOpened()
+        newSendAnalytics.logNewSendScreenOpened(flow)
         initialize(view)
         subscribeToSelectedTokenUpdates()
     }
@@ -280,7 +287,7 @@ class NewSendPresenter(
     }
 
     override fun onTokenClicked() {
-        newSendAnalytics.logTokenSelectionClicked()
+        newSendAnalytics.logTokenSelectionClicked(flow)
         view?.showTokenSelection(selectedToken = token)
     }
 
@@ -322,7 +329,7 @@ class NewSendPresenter(
 
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
-        newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
+        newSendAnalytics.logSwitchCurrencyModeClicked(newMode, flow)
         view?.showFeeViewVisible(isVisible = true)
         /*
          * Trigger recalculation for USD input
@@ -400,7 +407,7 @@ class NewSendPresenter(
 
         val solanaFee = currentState.solanaFee
         if (calculationMode.isCurrentInputEmpty() && solanaFee == null) {
-            newSendAnalytics.logFreeTransactionsClicked()
+            newSendAnalytics.logFreeTransactionsClicked(flow)
             view?.showFreeTransactionsInfo()
         } else {
             val total = feeRelayerManager.buildTotalFee(
@@ -574,7 +581,8 @@ class NewSendPresenter(
             amountInToken = amountInToken,
             amountInUsd = amountInUsd,
             isFeeFree = solanaFee?.isTransactionFree ?: false,
-            mode = calculationMode.getCurrencyMode()
+            mode = calculationMode.getCurrencyMode(),
+            flow = flow
         )
     }
 

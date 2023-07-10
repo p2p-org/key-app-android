@@ -63,7 +63,7 @@
             app:layout_constraintStart_toEndOf="@+id/imageViewProgressIcon"
             app:layout_constraintTop_toTopOf="@+id/imageViewProgressIcon"
             app:layout_constraintVertical_chainStyle="packed"
-            tools:text="It usually takes 5-20 seconds for a transaction to complete" />
+            tools:text="It usually takes few seconds for a transaction to complete" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

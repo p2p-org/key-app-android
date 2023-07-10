@@ -1,6 +1,5 @@
 package org.p2p.wallet.striga.kyc.ui
 
-import com.google.firebase.encoders.json.BuildConfig
 import com.sumsub.sns.core.data.model.SNSCompletionResult
 import com.sumsub.sns.core.data.model.SNSException
 import com.sumsub.sns.core.data.model.SNSSDKState
@@ -9,6 +8,7 @@ import java.util.Locale
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
 import org.p2p.wallet.common.mvp.BasePresenter
