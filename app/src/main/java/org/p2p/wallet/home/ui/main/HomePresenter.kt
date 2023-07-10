@@ -2,7 +2,6 @@ package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.LifecycleOwner
 import android.content.Context
-import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
 import java.net.UnknownHostException
@@ -26,9 +25,7 @@ import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
-import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WETH_COINGECKO_ID
-import org.p2p.core.utils.Constants.WETH_SYMBOL
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
@@ -40,17 +37,14 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomePresenterMapper
-import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -68,11 +62,9 @@ import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
 import org.p2p.wallet.user.worker.PendingTransactionMergeWorker
-import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.unsafeLazy
 
-val POPULAR_TOKENS_SYMBOLS: Set<String> = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
 val POPULAR_TOKENS_COINGECKO_IDS: List<TokenCoinGeckoId> = setOf(
     SOL_COINGECKO_ID,
     USDT_COINGECKO_ID,
@@ -100,7 +92,6 @@ class HomePresenter(
     private val homeMapper: HomePresenterMapper,
     // FT
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     // analytics
     private val analytics: HomeAnalytics,
@@ -109,8 +100,6 @@ class HomePresenter(
     bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
-
-    private val resources: Resources = context.resources
 
     private var username: Username? = null
 
@@ -278,8 +267,6 @@ class HomePresenter(
     }
 
     override fun load() {
-        showUserAddressAndUsername()
-
         updatesManager.start()
 
         val userId = username?.value ?: userPublicKey
@@ -416,30 +403,9 @@ class HomePresenter(
         if (!isRefreshing && buttonsStateFlow.value.isNotEmpty()) {
             return
         }
-        val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
-        val isSellAvailable = homeInteractor.isSellFeatureAvailable()
 
-        val buttons = mutableListOf(ActionButton.TOP_UP_BUTTON)
-        if (isSellAvailable) {
-            buttons += ActionButton.SELL_BUTTON
-        }
-
-        buttons += ActionButton.SEND_BUTTON
-
-        if (!isSellFeatureToggleEnabled) {
-            buttons += ActionButton.SWAP_BUTTON
-        }
-
+        val buttons = mutableListOf(ActionButton.RECEIVE_BUTTON, ActionButton.SWAP_BUTTON)
         buttonsStateFlow.emit(buttons)
-    }
-
-    private fun showUserAddressAndUsername() {
-        this.username = homeInteractor.getUsername()
-        val userAddress = username?.fullUsername ?: userPublicKey.ellipsizeAddress()
-        state = state.copy(
-            username = username,
-            visibilityState = VisibilityState.create(homeInteractor.getHiddenTokensVisibility())
-        )
     }
 
     override fun onBuyClicked() {
@@ -454,6 +420,10 @@ class HomePresenter(
                 view?.showTokensForBuy(tokensForBuy)
             }
         }
+    }
+
+    override fun onReceiveClicked() {
+        view?.showReceive()
     }
 
     override fun onSellClicked() {
@@ -516,7 +486,6 @@ class HomePresenter(
         state = state.copy(
             tokens = userTokens,
             ethTokens = ethTokens,
-            username = homeInteractor.getUsername(),
         )
         val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
         when {
@@ -533,22 +502,7 @@ class HomePresenter(
     }
 
     private fun handleEmptyAccount() {
-        val tokensForBuy =
-            homeInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
-                .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
-
-        val strigaBigBanner = state.strigaKycStatusBanner
-            ?.let { homeMapper.mapToBigBanner(it, state.isStrigaKycBannerLoading) }
-            ?: getDefaultBanner()
-
-        val emptyDataList = buildList {
-            this += strigaBigBanner
-            this += resources.getString(R.string.main_popular_tokens_header)
-            addAll(tokensForBuy)
-        }
-        view?.showEmptyViewData(emptyDataList)
         logBalance(BigDecimal.ZERO)
-
         view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
     }
 
@@ -586,16 +540,6 @@ class HomePresenter(
 
     override fun clearTokensCache() {
         state = state.copy(tokens = emptyList())
-    }
-
-    private fun getDefaultBanner(): HomeBannerItem {
-        return HomeBannerItem(
-            titleTextId = R.string.main_banner_title,
-            subtitleTextId = R.string.main_banner_subtitle,
-            buttonTextId = R.string.main_banner_button,
-            drawableRes = R.drawable.ic_main_banner,
-            backgroundColorRes = R.color.bannerBackgroundColor
-        )
     }
 
     private fun showTokensAndBalance() {

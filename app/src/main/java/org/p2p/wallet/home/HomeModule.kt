@@ -115,7 +115,6 @@ object HomeModule : InjectionModule {
                 newBuyFeatureToggle = get(),
                 networkObserver = get(),
                 tokensPolling = get(),
-                sellEnabledFeatureToggle = get(),
                 intercomDeeplinkManager = get(),
                 seedPhraseProvider = get(),
                 deeplinksManager = get(),

@@ -22,8 +22,8 @@ interface HomeContract {
         fun showTokensForBuy(tokens: List<Token>)
         fun showBalance(cellModel: TextViewCellModel?)
         fun showRefreshing(isRefreshing: Boolean)
-        fun showEmptyViewData(data: List<Any>)
         fun showEmptyState(isEmpty: Boolean)
+        fun showReceive()
         fun showNewSendScreen(openedFromScreen: SearchOpenedFromScreen)
         fun showActionButtons(buttons: List<ActionButton>)
         fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom)
@@ -50,6 +50,7 @@ interface HomeContract {
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun onBuyClicked()
+        fun onReceiveClicked()
         fun onSellClicked()
         fun onSwapClicked()
         fun onTopupClicked()

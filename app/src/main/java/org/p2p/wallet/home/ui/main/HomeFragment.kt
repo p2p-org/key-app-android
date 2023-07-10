@@ -28,7 +28,6 @@ import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
-import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
@@ -41,6 +40,7 @@ import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
+import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
@@ -54,7 +54,6 @@ import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.unsafeLazy
-import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
@@ -75,6 +74,7 @@ class HomeFragment :
 
     private val binding: FragmentHomeBinding by viewBinding()
 
+    private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val glideManager: GlideManager by inject()
     private val analytics: AnalyticsPushChannel by inject()
 
@@ -86,8 +86,6 @@ class HomeFragment :
             listener = this
         )
     }
-
-    private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
 
     private val homeAnalytics: HomeAnalytics by inject()
 
@@ -167,19 +165,23 @@ class HomeFragment :
     private fun FragmentHomeBinding.setupView() {
         layoutManager = HomeScreenLayoutManager(requireContext())
 
-        homeRecyclerView.adapter = contentAdapter
-        homeRecyclerView.doOnAttach {
-            homeRecyclerView.layoutManager = layoutManager
+        recyclerViewHome.adapter = contentAdapter
+        recyclerViewHome.doOnAttach {
+            recyclerViewHome.layoutManager = layoutManager
         }
-        homeRecyclerView.doOnDetach {
-            homeRecyclerView.layoutManager = null
+        recyclerViewHome.doOnDetach {
+            recyclerViewHome.layoutManager = null
         }
+        recyclerViewHome.adapter = contentAdapter
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
         viewActionButtons.onButtonClicked = ::onActionButtonClicked
     }
 
     private fun onActionButtonClicked(clickedButton: ActionButton) {
         when (clickedButton) {
+            ActionButton.RECEIVE_BUTTON -> {
+                presenter.onReceiveClicked()
+            }
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
             }
@@ -261,7 +263,7 @@ class HomeFragment :
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean) {
-        binding.homeRecyclerView.post {
+        binding.recyclerViewHome.post {
             contentAdapter.setItems(tokens, isZerosHidden)
         }
     }
@@ -283,21 +285,15 @@ class HomeFragment :
         binding.swipeRefreshLayout.isRefreshing = isRefreshing
     }
 
-    override fun showEmptyViewData(data: List<Any>) {
-        emptyAdapter.setItems(data)
-    }
-
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            viewActionButtons.isVisible = !isEmpty
-            viewBalance.root.isVisible = !isEmpty
-
-            val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
-            if (homeRecyclerView.adapter != updatedAdapter) {
-                homeRecyclerView.adapter = updatedAdapter
-            }
-            homeRecyclerView.setBackgroundColor(getColor(if (isEmpty) R.color.bg_smoke else R.color.bg_snow))
+            textViewEmpty.isVisible = isEmpty
+            recyclerViewHome.isVisible = !isEmpty
         }
+    }
+
+    override fun showReceive() {
+        replaceFragment(receiveFragmentFactory.receiveFragment())
     }
 
     override fun navigateToProfile() {
