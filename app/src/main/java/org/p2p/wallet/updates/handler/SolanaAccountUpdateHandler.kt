@@ -6,18 +6,18 @@ import com.google.gson.annotations.SerializedName
 import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.solanaj.model.types.RpcNotificationResultResponse
+import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdateHandler
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 private const val TAG = "BalanceUpdateManager"
 
 class SolanaAccountUpdateHandler(
     private val gson: Gson,
-    private val tokensRepository: UserTokensLocalRepository,
+    private val tokensRepository: UserTokensRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) : SubscriptionUpdateHandler {
 
@@ -32,8 +32,8 @@ class SolanaAccountUpdateHandler(
 
         tokensRepository.updateUserToken(
             newBalanceLamports = response.lamports,
-            mintAddress = Constants.WRAPPED_SOL_MINT.toBase58Instance(),
-            publicKey = tokenKeyProvider.publicKey.toBase58Instance()
+            tokenMint = Constants.WRAPPED_SOL_MINT.toBase58Instance(),
+            accountPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
         )
         Timber.tag(TAG).d("New SOL balance received, amountInLamports=${response.lamports}, data = $data")
     }

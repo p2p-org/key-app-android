@@ -8,16 +8,16 @@ import java.math.BigInteger
 import org.p2p.solanaj.model.types.RpcNotificationResultResponse
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.core.crypto.toBase64Instance
+import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdateHandler
 import org.p2p.core.crypto.toBase58Instance
-import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 private const val TAG = "TokensBalanceUpdateManager"
 
 class SplTokenProgramUpdateHandler(
     private val gson: Gson,
-    private val tokensRepository: UserTokensLocalRepository
+    private val tokensRepository: UserTokensRepository
 ) : SubscriptionUpdateHandler {
 
     override suspend fun initialize() = Unit
@@ -31,8 +31,8 @@ class SplTokenProgramUpdateHandler(
         val updatedTokenData = TokenProgram.AccountInfoData.decode(programData.decodeToBytes())
         tokensRepository.updateUserToken(
             newBalanceLamports = updatedTokenData.amount,
-            mintAddress = updatedTokenData.mint.toBase58().toBase58Instance(),
-            publicKey = response.accountPublicKey.toBase58Instance()
+            tokenMint = updatedTokenData.mint.toBase58().toBase58Instance(),
+            accountPublicKey = response.accountPublicKey.toBase58Instance()
         )
         Timber.tag(TAG).d(
             "SPL Token data received, " +

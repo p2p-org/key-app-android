@@ -24,7 +24,6 @@ import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.token.service.TokenServiceModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
@@ -46,6 +45,7 @@ import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import org.p2p.wallet.user.repository.prices.di.CoinGeckoTokenPricesModule
 
 object AppModule {
     fun create(restartAction: () -> Unit) = module {
@@ -82,6 +82,7 @@ object AppModule {
                 BridgeSendModule.create(),
                 BuyModule.create(),
                 ClaimModule.create(),
+                CoinGeckoTokenPricesModule.create(),
                 DebugSettingsModule.create(),
                 HistoryModule.create(),
                 HomeModule.create(),
@@ -102,10 +103,6 @@ object AppModule {
                 UserModule.create(),
                 CrashLoggerModule.create(),
                 NetworkCoreModule.create(),
-                UserModule.create(),
-                CrashLoggerModule.create(),
-                NetworkCoreModule.create(),
-                TokenServiceModule.create(),
             ) + EthereumKitService.getEthereumKitModules()
         )
     }

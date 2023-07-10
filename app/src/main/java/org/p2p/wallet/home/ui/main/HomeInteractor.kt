@@ -22,7 +22,6 @@ import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class HomeInteractor(
     private val userInteractor: UserInteractor,
@@ -35,8 +34,7 @@ class HomeInteractor(
     private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaClaimInteractor: StrigaClaimInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
-    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
-    private val userTokensInteractor: UserTokensInteractor,
+    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle
 ) {
     suspend fun loadInitialAppData() {
         metadataInteractor.tryLoadAndSaveMetadata()
@@ -62,13 +60,17 @@ class HomeInteractor(
         return userInteractor.loadUserTokensAndUpdateLocal(publicKey)
     }
 
+    suspend fun loadUserRates(tokens: List<Token.Active>) {
+        userInteractor.loadUserRates(tokens)
+    }
+
     fun getHiddenTokensVisibility(): Boolean = userInteractor.getHiddenTokensVisibility()
 
     suspend fun getSingleTokenForBuy(): Token? = userInteractor.getSingleTokenForBuy()
 
     suspend fun getTokensForBuy(): List<Token> = userInteractor.getTokensForBuy()
 
-    suspend fun findMultipleTokenData(tokenSymbols: List<String>): List<Token> =
+    fun findMultipleTokenData(tokenSymbols: List<String>): List<Token> =
         userInteractor.findMultipleTokenData(tokenSymbols)
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) {
@@ -106,9 +108,5 @@ class HomeInteractor(
         token: StrigaClaimableToken
     ): StrigaDataLayerResult<StrigaWithdrawalChallengeId> {
         return strigaClaimInteractor.claim(amountLamports, token)
-    }
-
-    suspend fun loadUserRates(tokens: List<Token.Active>) {
-        userTokensInteractor.loadUserRates(tokens)
     }
 }

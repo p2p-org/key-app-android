@@ -3,27 +3,29 @@ package org.p2p.wallet.jupiter.repository.tokens
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.withContext
-import org.p2p.core.crypto.Base58String
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.date.toZonedDateTime
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
-import org.p2p.token.service.model.TokenServiceNetwork
-import org.p2p.token.service.model.TokenServicePrice
-import org.p2p.token.service.repository.TokenServiceRepository
 
 internal class JupiterSwapTokensRemoteRepository(
     private val api: SwapJupiterApi,
     private val localRepository: JupiterSwapTokensLocalRepository,
     private val dispatchers: CoroutineDispatchers,
     private val userRepository: UserLocalRepository,
+    private val pricesRepository: TokenPricesRemoteRepository,
     private val swapStorage: JupiterSwapStorageContract,
-    private val tokenServiceInteractor: TokenServiceRepository
+    private val pricesCache: JupiterSwapTokensPricesLocalRepository
 ) : JupiterSwapTokensRepository {
 
     override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.io) {
@@ -73,37 +75,24 @@ internal class JupiterSwapTokensRemoteRepository(
         return (now - fetchTokensDate) <= TimeUnit.DAYS.toMillis(1) // check day has passed
     }
 
-    override suspend fun getTokensRates(tokens: List<JupiterSwapToken>): Map<Base58String, TokenServicePrice> {
+    override suspend fun getTokensRates(tokens: List<JupiterSwapToken>): Map<Base58String, TokenPrice> {
         val tokenMints = tokens.map(JupiterSwapToken::tokenMint)
+        val tokensCoingeckoIds = tokens.mapNotNull { it.coingeckoId?.let(::TokenCoinGeckoId) }
 
-        if (tokenMints.isEmpty()) {
+        if (tokensCoingeckoIds.isEmpty()) {
             return emptyMap()
         }
-        val isTokenPricesCachedForMints =
-            tokenMints.all {
-                tokenServiceInteractor.findTokenPriceByAddress(
-                    tokenAddress = it.base58Value
-                ) != null
-            }
+        val isTokenPricesCachedForMints = tokenMints.all { it in pricesCache }
         if (isTokenPricesCachedForMints) {
-            return tokenMints.associateWith {
-                tokenServiceInteractor.fetchTokenPriceByAddress(
-                    networkChain = TokenServiceNetwork.SOLANA,
-                    tokenAddress = it.base58Value
-                )!!
-            }
+            return tokenMints.associateWith(pricesCache::requirePriceByMint)
         }
         return try {
-            tokenServiceInteractor.loadPriceForTokens(
-                chain = TokenServiceNetwork.SOLANA,
-                tokenAddresses = tokenMints.map { it.base58Value }
+            pricesRepository.getTokenPricesByIdsMap(
+                tokenIds = tokensCoingeckoIds,
+                targetCurrency = USD_READABLE_SYMBOL
             )
-            tokenMints.associateWith {
-                tokenServiceInteractor.fetchTokenPriceByAddress(
-                    networkChain = TokenServiceNetwork.SOLANA,
-                    tokenAddress = it.base58Value
-                )!!
-            }
+                .mapKeys { (tokenId) -> tokens.first { it.coingeckoId == tokenId.id }.tokenMint }
+                .also(pricesCache::update)
         } catch (error: Throwable) {
             // coingecko can return empty price: []
             Timber.i(error)
@@ -111,10 +100,7 @@ internal class JupiterSwapTokensRemoteRepository(
         }
     }
 
-    override suspend fun getTokenRate(token: JupiterSwapToken): TokenServicePrice? {
-        return tokenServiceInteractor.fetchTokenPriceByAddress(
-            networkChain = TokenServiceNetwork.SOLANA,
-            tokenAddress = token.tokenMint.base58Value
-        )
+    override suspend fun getTokenRate(token: JupiterSwapToken): TokenPrice? {
+        return getTokensRates(listOf(token))[token.tokenMint]
     }
 }

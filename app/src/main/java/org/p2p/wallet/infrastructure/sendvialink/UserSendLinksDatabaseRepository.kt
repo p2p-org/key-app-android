@@ -42,7 +42,7 @@ class UserSendLinksDatabaseRepository(
             linkOwnerAddress = userAddress
         )
 
-    private suspend fun UserSendLinkEntity.toDomain(): UserSendLink? {
+    private fun UserSendLinkEntity.toDomain(): UserSendLink? {
         val tokenDetails = userRepository.findTokenByMint(tokenMint.base58Value)
         if (tokenDetails == null) {
             Timber.i("Can't find any token data for saved send-via-link token: ${tokenMint.base58Value}")

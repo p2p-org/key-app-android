@@ -3,25 +3,26 @@ package org.p2p.wallet.restore.ui.derivable
 import timber.log.Timber
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.launch
-import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.token.service.model.TokenServiceNetwork
-import org.p2p.token.service.model.TokenServicePrice
-import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.UsernameRestoreMethod
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
+import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
+import org.p2p.wallet.user.repository.prices.impl.TokenPricesCoinGeckoRepository
 
 class DerivableAccountsPresenter(
     private val secretKeys: List<String>,
     private val seedPhraseInteractor: SeedPhraseInteractor,
     private val analytics: OnboardingAnalytics,
     private val restoreWalletAnalytics: RestoreWalletAnalytics,
-    private val tokenServiceRepository: TokenServiceRepository
+    private val tokenPricesCoinGeckoRepository: TokenPricesCoinGeckoRepository
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
 
@@ -31,7 +32,7 @@ class DerivableAccountsPresenter(
 
     private var allAccounts = mutableListOf<DerivableAccount>()
 
-    private var solRate: TokenServicePrice? = null
+    private var solRate: TokenPrice? = null
 
     override fun attach(view: DerivableAccountsContract.View) {
         super.attach(view)
@@ -41,11 +42,9 @@ class DerivableAccountsPresenter(
     private fun loadSolRate() {
         launch {
             try {
-                val tokenMint = Constants.WRAPPED_SOL_MINT
-                val solRate = tokenServiceRepository.fetchTokenPriceByAddress(
-                    networkChain = TokenServiceNetwork.SOLANA,
-                    tokenAddress = tokenMint
-                ).also { solRate = it } ?: return@launch
+                val tokenId = TokenCoinGeckoId(SOL_COINGECKO_ID)
+                val solRate = tokenPricesCoinGeckoRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL)
+                    .also { solRate = it }
 
                 allAccounts = allAccounts.updateWithTotalInUsd(solRate).toMutableList()
                 filterAccountsByPathAndShow(path)
@@ -89,9 +88,9 @@ class DerivableAccountsPresenter(
         }
     }
 
-    private fun List<DerivableAccount>.updateWithTotalInUsd(solRate: TokenServicePrice): List<DerivableAccount> {
+    private fun List<DerivableAccount>.updateWithTotalInUsd(solRate: TokenPrice): List<DerivableAccount> {
         return map {
-            val totalInUsd = it.totalInSol.multiply(solRate.usdRate)
+            val totalInUsd = it.totalInSol.multiply(solRate.price)
             it.copy(totalInUsd = totalInUsd)
         }
     }

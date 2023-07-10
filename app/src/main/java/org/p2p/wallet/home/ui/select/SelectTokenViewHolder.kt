@@ -71,7 +71,6 @@ class SelectTokenViewHolder(
             is Token.Eth -> {
                 // do nothing
             }
-            else -> Unit
         }
     }
 

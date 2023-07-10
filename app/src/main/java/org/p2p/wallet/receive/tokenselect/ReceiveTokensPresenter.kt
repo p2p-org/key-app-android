@@ -60,7 +60,7 @@ class ReceiveTokensPresenter(
         }
     }
 
-    private suspend fun preparePinedWormholeTokens(): List<TokenData> {
+    private fun preparePinedWormholeTokens(): List<TokenData> {
         return ERC20Tokens.values()
             .mapNotNull { erc20Token ->
                 interactor.findTokenDataByAddress(erc20Token.mintAddress)?.let { token ->
