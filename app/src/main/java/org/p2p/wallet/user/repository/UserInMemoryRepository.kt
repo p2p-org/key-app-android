@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.receive.list.TokenListData
 
 private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
@@ -15,10 +15,10 @@ private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
 private const val TAG = "UserInMemoryRepository"
 
 class UserInMemoryRepository(
-    private val tokenConverter: TokenConverter
+    private val tokenConverter: TokenConverter,
+    private val tokenServiceRepository: TokenServiceRepository
 ) : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
-    private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
     private val allTokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
 
     private val tokensSearchResultFlow = MutableStateFlow(TokenListData())
@@ -26,22 +26,6 @@ class UserInMemoryRepository(
 
     override fun areInitialTokensLoaded(): Boolean {
         return allTokensFlow.value.isNotEmpty()
-    }
-
-    override fun arePricesLoaded(): Boolean {
-        return pricesFlow.value.isNotEmpty()
-    }
-
-    override fun setTokenPrices(prices: List<TokenPrice>) {
-        pricesFlow.value = prices
-    }
-
-    override fun getTokenPrices(): Flow<List<TokenPrice>> = pricesFlow
-
-    override fun getCachedTokenPrices(): List<TokenPrice> = pricesFlow.value
-
-    override fun getPriceByTokenId(tokenId: String?): TokenPrice? {
-        return pricesFlow.value.firstOrNull { it.tokenId == tokenId }
     }
 
     override fun setTokenData(data: List<TokenData>) {
@@ -151,10 +135,12 @@ class UserInMemoryRepository(
         return popularTokens
     }
 
-    override fun findTokenByMint(mintAddress: String): Token? {
+    override suspend fun findTokenByMint(mintAddress: String): Token? {
         val tokenData: TokenData? = findTokenData(mintAddress)
         return if (tokenData != null) {
-            val price = getPriceByTokenId(tokenData.coingeckoId)
+            val price = tokenServiceRepository.findTokenPriceByAddress(
+                tokenAddress = tokenData.mintAddress,
+            )
             tokenConverter.fromNetwork(tokenData, price)
         } else {
             null
