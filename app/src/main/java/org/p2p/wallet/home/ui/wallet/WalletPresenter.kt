@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.model.HomePresenterMapper
@@ -15,18 +14,15 @@ import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.unsafeLazy
 
 class WalletPresenter(
     // interactors
     private val homeInteractor: HomeInteractor,
-    private val userInteractor: UserInteractor,
     private val connectionManager: ConnectionManager,
     // mappers
     private val homeMapper: HomePresenterMapper,
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     tokenKeyProvider: TokenKeyProvider,
 ) : BasePresenter<WalletContract.View>(), WalletContract.Presenter {
 
@@ -60,7 +56,7 @@ class WalletPresenter(
             .launchIn(this)
     }
 
-    fun loadInitialData() {
+    private fun loadInitialData() {
         launch {
             initializeActionButtons()
             showUserAddressAndUsername()
@@ -77,20 +73,8 @@ class WalletPresenter(
         if (!isRefreshing && buttonsStateFlow.value.isNotEmpty()) {
             return
         }
-        val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
-        val isSellAvailable = homeInteractor.isSellFeatureAvailable()
 
-        val buttons = mutableListOf(ActionButton.TOP_UP_BUTTON)
-        if (isSellAvailable) {
-            buttons += ActionButton.SELL_BUTTON
-        }
-
-        buttons += ActionButton.SEND_BUTTON
-
-        if (!isSellFeatureToggleEnabled) {
-            buttons += ActionButton.SWAP_BUTTON
-        }
-
+        val buttons = mutableListOf(ActionButton.BUY_BUTTON, ActionButton.SELL_BUTTON)
         buttonsStateFlow.emit(buttons)
     }
 

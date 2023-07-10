@@ -246,7 +246,6 @@
     <string name="main_transfer_fee">Transfer fee</string>
     <string name="main_correct_address_question">Is this address correct? It doesn\’t have funds.</string>
     <string name="main_correct_address">I’m sure, It’s correct</string>
-    <string name="home_buy">Buy</string>
     <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter amount</string>
     <string name="main_enter_incorrect_amount">Incorrect amount</string>
@@ -264,7 +263,8 @@
     <string name="home_send">Send</string>
     <string name="home_feedback">Feedback</string>
     <string name="home_settings">Settings</string>
-    <string name="home_sell">Cash out</string>
+    <string name="home_buy">Add money</string>
+    <string name="home_sell">Withdraw</string>
     <string name="home_debug">Debug Settings</string>
     <string name="home_support_new_messages_count">you have %d new messages from support</string>
     <string name="home_tokens">Tokens</string>
