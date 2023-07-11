@@ -6,6 +6,7 @@ import org.p2p.wallet.common.LongPreference
 import org.p2p.wallet.common.ObjectEncryptedPreference
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
+import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 
@@ -15,6 +16,8 @@ private const val KEY_USER_WALLET =
     "KEY_USER_STATUS"
 private const val KEY_FIAT_ACCOUNT_DETAILS =
     "KEY_FIAT_ACCOUNT_DETAILS"
+private const val KEY_CRYPTO_ACCOUNT_DETAILS =
+    "KEY_CRYPTO_ACCOUNT_DETAILS"
 private const val KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS =
     "KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS"
 private const val KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS =
@@ -44,6 +47,13 @@ class StrigaStorage(
         preferences = encryptedPrefs,
         keyProvider = { KEY_FIAT_ACCOUNT_DETAILS },
         type = StrigaFiatAccountDetails::class,
+        nullIfMappingFailed = true
+    )
+
+    override var cryptoAccount: StrigaCryptoAccountDetails? by ObjectEncryptedPreference(
+        preferences = encryptedPrefs,
+        keyProvider = { KEY_CRYPTO_ACCOUNT_DETAILS },
+        type = StrigaCryptoAccountDetails::class,
         nullIfMappingFailed = true
     )
 

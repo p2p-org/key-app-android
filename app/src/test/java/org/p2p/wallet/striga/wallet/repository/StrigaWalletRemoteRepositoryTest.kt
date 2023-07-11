@@ -58,8 +58,10 @@ class StrigaWalletRemoteRepositoryTest {
             cache = mockk {
                 every { userWallet }.returns(null)
                 every { fiatAccountDetails }.returns(null)
+                every { cryptoAccountDetails }.returns(null)
                 every { userWallet = any() }.returns(Unit)
                 every { fiatAccountDetails = any() }.returns(Unit)
+                every { cryptoAccountDetails = any() }.returns(Unit)
             },
         )
     }
