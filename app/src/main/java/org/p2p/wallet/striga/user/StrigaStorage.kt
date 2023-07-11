@@ -13,7 +13,7 @@ import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 private const val KEY_USER_STATUS =
     "KEY_USER_STATUS"
 private const val KEY_USER_WALLET =
-    "KEY_USER_STATUS"
+    "KEY_USER_WALLET"
 private const val KEY_FIAT_ACCOUNT_DETAILS =
     "KEY_FIAT_ACCOUNT_DETAILS"
 private const val KEY_CRYPTO_ACCOUNT_DETAILS =
@@ -33,7 +33,7 @@ class StrigaStorage(
         preferences = encryptedPrefs,
         keyProvider = { KEY_USER_STATUS },
         type = StrigaUserStatusDetails::class,
-        nullIfMappingFailed = true
+        nullIfMappingFailed = false
     )
 
     override var userWallet: StrigaUserWallet? by ObjectEncryptedPreference(

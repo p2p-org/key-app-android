@@ -1,13 +1,13 @@
 package org.p2p.wallet.home.events
 
 import timber.log.Timber
-import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 
 class StrigaFeatureLoader(
-    private val strigaSignupEnabledFeatureToggle: TokenMetadataUpdateFeatureToggle,
+    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor
@@ -15,9 +15,12 @@ class StrigaFeatureLoader(
 
     override suspend fun onLoad() {
         strigaSignupInteractor.loadAndSaveSignupData()
+        Timber.d("Striga signup data loaded")
         strigaUserInteractor.loadAndSaveUserStatusData()
+        Timber.d("Striga user status loaded (is KYC approved? ${strigaUserInteractor.isKycApproved})")
         if (strigaUserInteractor.canLoadAccounts) {
             loadDetailsForStrigaAccounts()
+            Timber.d("Striga accounts details loaded")
         }
     }
 
