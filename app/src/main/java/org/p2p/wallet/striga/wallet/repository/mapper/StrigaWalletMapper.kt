@@ -67,6 +67,7 @@ class StrigaWalletMapper {
             ownerId = accountDetails.ownerId,
             rootFiatCurrency = accountDetails.rootFiatCurrency,
             ownerType = accountDetails.ownerType,
+            availableBalanceLamports = accountDetails.availableBalance.amount,
             availableBalance = accountDetails.availableBalance.amount.fromLamports(STRIGA_FIAT_DECIMALS),
             balanceUnit = accountDetails.availableBalance.currencyUnits,
             linkedBankAccount = mapLinkedBankAccount(accountDetails.linkedBankAccountId)
