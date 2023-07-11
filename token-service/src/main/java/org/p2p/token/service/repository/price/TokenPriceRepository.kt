@@ -1,6 +1,5 @@
 package org.p2p.token.service.repository.price
 
-import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.model.TokenServiceQueryResult

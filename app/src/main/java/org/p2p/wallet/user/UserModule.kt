@@ -9,6 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.user.api.SolanaApi
+import org.p2p.wallet.user.interactor.BlockChainTokensMetadataInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.repository.UserAccountRemoteRepository
@@ -19,11 +20,13 @@ import org.p2p.wallet.user.repository.UserRemoteRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.user.repository.UserTokensDatabaseRepository
 import org.p2p.wallet.user.repository.UserTokensLocalRepository
+import org.p2p.wallet.user.repository.UserTokensRemoteRepository
+import org.p2p.wallet.user.repository.UserTokensRepository
 
 object UserModule : InjectionModule {
 
     override fun create() = module {
-        single<SolanaApi> {
+        single {
             getRetrofit(
                 baseUrl = androidContext().getString(R.string.solanaTokensBaseUrl),
                 tag = "SolanaApi",
@@ -38,21 +41,19 @@ object UserModule : InjectionModule {
 
         factory {
             UserInteractor(
-                userRepository = get(),
                 userLocalRepository = get(),
                 userTokensRepository = get(),
                 homeLocalRepository = get(),
                 recipientsLocalRepository = get(),
                 rpcRepository = get(),
                 sharedPreferences = get(),
-                externalStorageRepository = get(),
-                tokenServiceRepository = get(),
-                metadataUpdateFeatureToggle = get(),
-                gson = get()
+                tokenServiceRepository = get()
             )
         }
 
         singleOf(::UserTokensDatabaseRepository) bind UserTokensLocalRepository::class
-        factory { UserTokensInteractor(get()) }
+        factory { UserTokensInteractor(get(), get(), get(), get()) }
+        singleOf(::UserTokensRemoteRepository) bind UserTokensRepository::class
+        singleOf(::BlockChainTokensMetadataInteractor)
     }
 }

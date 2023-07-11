@@ -62,7 +62,6 @@ object BridgeSendModule : InjectionModule {
                 validator = get(),
                 bridgeSendInteractor = get(),
                 feeRelayerAccountInteractor = get(),
-                repository = get(),
                 tokenKeyProvider = get(),
             )
             val handlers = mutableSetOf<SendActionHandler>().apply {

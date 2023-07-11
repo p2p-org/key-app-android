@@ -3,6 +3,8 @@ package org.p2p.wallet.restore.ui.derivable
 import timber.log.Timber
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.p2p.core.common.di.AppScope
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.token.service.model.TokenServiceNetwork
@@ -13,15 +15,20 @@ import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.UsernameRestoreMethod
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.events.AppLoader
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
 class DerivableAccountsPresenter(
     private val secretKeys: List<String>,
     private val seedPhraseInteractor: SeedPhraseInteractor,
     private val analytics: OnboardingAnalytics,
     private val restoreWalletAnalytics: RestoreWalletAnalytics,
-    private val tokenServiceRepository: TokenServiceRepository
+    private val tokenServiceRepository: TokenServiceRepository,
+    private val appLoader: AppLoader,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
+    private val appScope: AppScope
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
 
@@ -103,7 +110,7 @@ class DerivableAccountsPresenter(
                 seedPhraseInteractor.createAndSaveAccount(path, secretKeys, walletIndex)
                 analytics.logWalletRestored(ScreenNames.OnBoarding.IMPORT_MANUAL)
                 restoreWalletAnalytics.setUserRestoreMethod(UsernameRestoreMethod.SEED_PHRASE)
-
+                launchAppLoaders()
                 view?.navigateToCreatePin()
             } catch (e: Throwable) {
                 Timber.e(e, "Error while creating account and checking username")
@@ -116,5 +123,10 @@ class DerivableAccountsPresenter(
 
     private fun filterAccountsByPathAndShow(path: DerivationPath) {
         view?.showAccounts(allAccounts.filter { it.path == path })
+    }
+
+    private suspend fun launchAppLoaders() = withContext(appScope.coroutineContext) {
+        tokenServiceCoordinator.start()
+        appLoader.onLoad()
     }
 }

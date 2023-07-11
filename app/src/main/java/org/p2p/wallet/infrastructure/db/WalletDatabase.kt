@@ -22,15 +22,12 @@ import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinkEntity
 import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinksDao
 import org.p2p.wallet.newsend.db.RecipientEntity
 import org.p2p.wallet.newsend.db.RecipientsDao
-import org.p2p.wallet.renbtc.db.SessionDao
-import org.p2p.wallet.renbtc.db.SessionEntity
 import org.p2p.wallet.striga.signup.dao.StrigaSignupDataDao
 import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
 
 @Database(
     entities = [
         TokenEntity::class,
-        SessionEntity::class,
 
         CreateAccountTransactionEntity::class,
         CloseAccountTransactionEntity::class,
@@ -52,12 +49,11 @@ import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
 abstract class WalletDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 12
+        const val DATABASE_VERSION = 13
         const val DATABASE_NAME = "p2p.wallet"
     }
 
     abstract fun tokenDao(): TokenDao
-    abstract fun sessionDao(): SessionDao
 
     abstract fun createAccountTransactionsDao(): CreateAccountTransactionsDao
     abstract fun closeAccountTransactionsDao(): CloseAccountTransactionsDao

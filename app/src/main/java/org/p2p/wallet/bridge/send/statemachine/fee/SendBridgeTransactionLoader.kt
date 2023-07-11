@@ -12,7 +12,6 @@ import org.p2p.core.utils.toLamports
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.model.getFeeList
-import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
@@ -33,7 +32,6 @@ class SendBridgeTransactionLoader constructor(
     private val validator: SendBridgeValidator,
     private val bridgeSendInteractor: BridgeSendInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
-    private val repository: EthereumSendRepository,
     private val tokenKeyProvider: TokenKeyProvider,
 ) {
 
@@ -118,12 +116,12 @@ class SendBridgeTransactionLoader constructor(
         val relayAccount = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = SolAddress(relayAccount.feePayerAddress.toBase58())
 
-        return repository.transferFromSolana(
+        return bridgeSendInteractor.transferFromSolana(
             userWallet = userWallet,
             feePayer = feePayer,
             source = SolAddress(token.publicKey),
             recipient = initialData.recipient,
-            mint = SolAddress(tokenMint),
+            tokenMint = SolAddress(tokenMint),
             amount = amountInLamports.toString()
         )
     }

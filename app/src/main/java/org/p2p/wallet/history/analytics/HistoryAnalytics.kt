@@ -69,39 +69,6 @@ class HistoryAnalytics(
         )
     }
 
-    fun logTransferTransactionClicked(
-        transaction: RpcHistoryTransaction.Transfer,
-        isRenBtcSessionActive: Boolean
-    ) {
-        if (transaction.isSend) {
-            val sendNetwork = if (isRenBtcSessionActive) {
-                NewSendAnalytics.AnalyticsSendNetwork.BITCOIN
-            } else {
-                NewSendAnalytics.AnalyticsSendNetwork.SOLANA
-            }
-            sendAnalytics.logSendShowingDetails(
-                sendStatus = NewSendAnalytics.SendStatus.SUCCESS,
-                lastScreenName = analyticsInteractor.getPreviousScreenName(),
-                tokenName = transaction.symbol,
-                sendNetwork = sendNetwork,
-                sendSum = transaction.amount.total,
-                sendUSD = transaction.amount.totalInUsd.orZero()
-            )
-        } else {
-            val analyticsReceiveNetwork = if (isRenBtcSessionActive) {
-                ReceiveAnalytics.AnalyticsReceiveNetwork.BITCOIN
-            } else {
-                ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA
-            }
-            receiveAnalytics.logReceiveShowingDetails(
-                receiveSum = transaction.amount.total,
-                receiveUSD = transaction.amount.totalInUsd.orZero(),
-                tokenName = transaction.symbol,
-                analyticsReceiveNetwork = analyticsReceiveNetwork
-            )
-        }
-    }
-
     fun logSellTransactionClicked(transaction: SellTransactionViewDetails) {
         tracker.logEvent(
             event = HISTORY_SEND_CLICKED,

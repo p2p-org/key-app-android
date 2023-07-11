@@ -24,7 +24,8 @@ internal class TokenMetadataRemoteRepository(
 
         val tokensMetadata = queryResponse.map { response ->
             val tokenServiceChain = mapper.fromNetwork(response.tokenServiceChainResponse)
-            val tokenPrices = response.tokenServiceItemsResponse.map { mapper.fromNetwork(it) }
+            val tokenPrices = response.tokenServiceItemsResponse
+                .map { mapper.fromNetwork(it) }
 
             TokenServiceQueryResult(networkChain = tokenServiceChain, items = tokenPrices)
         }

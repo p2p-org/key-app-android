@@ -12,16 +12,16 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.qr.interactor.QrCodeInteractor
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import java.util.concurrent.CancellationException
 import kotlin.properties.Delegates
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 private const val DELAY_IN_MILLIS = 200L
 
 class ReceiveSolanaPresenter(
     private val defaultToken: Token.Active?,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: UserTokensInteractor,
     private val qrCodeInteractor: QrCodeInteractor,
     private val usernameInteractor: UsernameInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -72,11 +72,6 @@ class ReceiveSolanaPresenter(
                 view?.showErrorMessage(e)
             }
         }
-    }
-
-    override fun onNetworkClicked() {
-        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.AnalyticsReceiveNetwork.SOLANA)
-        view?.showNetwork()
     }
 
     override fun onBrowserClicked(publicKey: String) {

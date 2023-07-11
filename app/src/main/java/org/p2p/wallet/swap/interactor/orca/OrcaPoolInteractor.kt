@@ -10,11 +10,13 @@ import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaToken
 import org.p2p.wallet.user.interactor.UserInteractor
 import java.math.BigInteger
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class OrcaPoolInteractor(
     private val orcaRouteInteractor: OrcaRouteInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val userInteractor: UserInteractor,
+    private val userTokensInteractor: UserTokensInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -168,7 +170,7 @@ class OrcaPoolInteractor(
     }
 
     private suspend fun mapTokensForDestination(orcaTokens: List<OrcaToken>): List<Token> {
-        val userTokens = userInteractor.getUserTokens()
+        val userTokens = userTokensInteractor.getUserTokens()
         val publicKey = tokenKeyProvider.publicKey
         val allTokens = orcaTokens
             .mapNotNull { orcaToken ->
