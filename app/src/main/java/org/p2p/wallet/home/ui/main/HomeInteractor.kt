@@ -52,7 +52,6 @@ class HomeInteractor(
     suspend fun loadDetailsForStrigaAccounts(): Result<Unit> = kotlin.runCatching {
         strigaWalletInteractor.getFiatAccountDetails()
         strigaWalletInteractor.getCryptoAccountDetails()
-        Unit
     }
 
     suspend fun loadAllTokensDataIfEmpty() {

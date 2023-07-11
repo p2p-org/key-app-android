@@ -22,23 +22,23 @@ class StrigaWalletInteractor(
 ) {
 
     private class StrigaEuroAccountNotFound : Throwable()
-    private class StrigaUSDCAccountNotFound : Throwable()
+    private class StrigaUsdcAccountNotFound : Throwable()
 
     @Throws(StrigaEuroAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
     suspend fun getFiatAccountDetails(): StrigaFiatAccountDetails {
         val eurAccountId = walletRepository.getUserWallet()
             .map { it.eurAccount?.accountId }
-            .unwrap()
+            .successOrNull()
             ?: throw StrigaEuroAccountNotFound()
         return walletRepository.getFiatAccountDetails(eurAccountId).unwrap()
     }
 
-    @Throws(StrigaUSDCAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
+    @Throws(StrigaUsdcAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
     suspend fun getCryptoAccountDetails(): StrigaCryptoAccountDetails {
         val usdcAccountId = walletRepository.getUserWallet()
             .map { it.usdcAccount?.accountId }
-            .unwrap()
-            ?: throw StrigaUSDCAccountNotFound()
+            .successOrNull()
+            ?: throw StrigaUsdcAccountNotFound()
         return walletRepository.getCryptoAccountDetails(usdcAccountId).unwrap()
     }
 
