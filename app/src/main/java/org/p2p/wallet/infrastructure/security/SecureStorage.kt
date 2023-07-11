@@ -57,7 +57,7 @@ class SecureStorage(
     }
 
     override fun putBoolean(key: Key, value: Boolean) {
-        encryptedPrefs.putBoolean(key.prefsValue, value)
+        encryptedPrefs.saveBoolean(key.prefsValue, value)
     }
 
     override fun getBoolean(key: Key, defaultValue: Boolean): Boolean {

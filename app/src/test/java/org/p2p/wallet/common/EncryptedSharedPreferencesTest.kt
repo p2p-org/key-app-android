@@ -47,13 +47,13 @@ class EncryptedSharedPreferencesTest {
         encryptedSharedPreferences.saveString(expectedString.first, expectedString.second)
         val actualString = encryptedSharedPreferences.getString(expectedString.first)
 
-        encryptedSharedPreferences.putStringSet(expectedStringSet.first, expectedStringSet.second)
+        encryptedSharedPreferences.saveStringSet(expectedStringSet.first, expectedStringSet.second)
         val actualStringSet = encryptedSharedPreferences.getStringSet(expectedStringSet.first)
 
-        encryptedSharedPreferences.putLong(expectedLong.first, expectedLong.second)
+        encryptedSharedPreferences.saveLong(expectedLong.first, expectedLong.second)
         val actualLong = encryptedSharedPreferences.getLong(expectedLong.first, -1)
 
-        encryptedSharedPreferences.putBoolean(expectedBoolean.first, expectedBoolean.second)
+        encryptedSharedPreferences.saveBoolean(expectedBoolean.first, expectedBoolean.second)
         val actualBoolean = encryptedSharedPreferences.getBoolean(expectedBoolean.first, false)
 
         encryptedSharedPreferences.saveBytes(expectedBytes.first, expectedBytes.second)

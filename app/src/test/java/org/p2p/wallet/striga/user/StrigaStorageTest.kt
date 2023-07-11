@@ -14,16 +14,19 @@ import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
 import org.p2p.wallet.utils.InMemorySharedPreferences
-import org.p2p.wallet.utils.MockedKeyStoreWrapper
 import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.assertThat
+import org.p2p.wallet.utils.crypto.MockedKeyStoreWrapper
 
 class StrigaStorageTest {
 
     companion object {
         @ClassRule
         @JvmField
-        val timber = TimberUnitTestInstance("StrigaStorageTest")
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "StrigaStorageTest"
+        )
     }
 
     private val prefs = EncryptedSharedPreferences(

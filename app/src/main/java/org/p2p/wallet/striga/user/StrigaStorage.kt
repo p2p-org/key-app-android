@@ -59,13 +59,20 @@ class StrigaStorage(
         defaultValue = 0
     )
 
+    private val hiddenBannersIds: List<Int>
+        get() = encryptedPrefs.getStringSet(KEY_USER_BANNER_IS_HIDDEN)
+            .map(String::toInt)
+
     override fun hideBanner(banner: StrigaKycStatusBanner) {
-        val hiddenBanners = encryptedPrefs.getStringSet(KEY_USER_BANNER_IS_HIDDEN)
-        encryptedPrefs.putStringSet(KEY_USER_BANNER_IS_HIDDEN, hiddenBanners + banner.bannerId.toString())
+        val updatedHiddenBanners = hiddenBannersIds
+            .plus(banner.bannerId)
+            .map { it.toString() }
+            .toSet()
+        encryptedPrefs.saveStringSet(KEY_USER_BANNER_IS_HIDDEN, updatedHiddenBanners)
     }
 
     override fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean {
-        return banner.toString() in encryptedPrefs.getStringSet(KEY_USER_BANNER_IS_HIDDEN)
+        return banner.bannerId in hiddenBannersIds
     }
 
     override fun clear() {

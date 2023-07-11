@@ -1,7 +1,8 @@
-package org.p2p.wallet.utils
+package org.p2p.wallet.utils.crypto
 
 import io.mockk.every
 import io.mockk.mockk
+import org.p2p.core.wrapper.HexString
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 
 /**
@@ -11,10 +12,10 @@ import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 object MockedKeyStoreWrapper {
     fun get(): KeyStoreWrapper = mockk {
         every { encode(any<String>(), any()) }.answers {
-            secondArg()
+            HexString(secondArg())
         }
         every { decode(any<String>(), any()) }.answers {
-            secondArg()
+            secondArg<HexString>().rawValue
         }
         every { deleteKeyAlias(any()) }.returns(Unit)
     }

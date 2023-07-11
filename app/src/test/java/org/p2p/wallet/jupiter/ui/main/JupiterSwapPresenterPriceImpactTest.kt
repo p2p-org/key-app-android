@@ -26,6 +26,7 @@ class JupiterSwapPresenterPriceImpactTest : JupiterSwapPresenterBaseTest() {
         @ClassRule
         @JvmField
         val timber = TimberUnitTestInstance(
+            isEnabled = false,
             defaultTag = "Swap:PriceImpact",
             excludeMessages = listOf(
                 "kotlinx.coroutines.JobCancellationException"

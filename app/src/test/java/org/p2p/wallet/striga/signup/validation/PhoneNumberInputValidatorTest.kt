@@ -30,7 +30,10 @@ class PhoneNumberInputValidatorTest {
     companion object {
         @ClassRule
         @JvmField
-        val timber = TimberUnitTestInstance("PhoneNumberInputValidatorTest")
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "PhoneNumberInputValidatorTest"
+        )
     }
 
     @Before

@@ -5,10 +5,9 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import timber.log.Timber
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 import org.p2p.core.crypto.Hex
+import org.p2p.core.wrapper.HexString
 import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
@@ -18,41 +17,46 @@ class EncryptedSharedPreferences(
     private val sharedPreferences: SharedPreferences,
     private val gson: Gson
 ) {
+    /**
+     * Pass your own loggingTag if needed:
+     *
+     * `prefs.loggingTag = "Your tag"`
+     */
     var loggingTag: String = "EncryptedSharedPreferences"
 
     fun saveString(key: String, data: String) {
-        tryWithLog(key) {
-            val encodedData = keyStoreWrapper.encode(key, data)
-            sharedPreferences.edit { putString(key, encodedData) }
+        logOnExceptionAndReThrow(key) {
+            val encodedData: HexString = keyStoreWrapper.encode(key, data)
+            sharedPreferences.edit { putString(key, encodedData.rawValue) }
         }
     }
 
     fun saveString(key: String, data: String, cipher: EncodeCipher) {
-        tryWithLog(key) {
-            val encodedData = keyStoreWrapper.encode(cipher, data)
-            sharedPreferences.edit { putString(key, encodedData) }
+        logOnExceptionAndReThrow(key) {
+            val encodedData: HexString = keyStoreWrapper.encode(cipher, data)
+            sharedPreferences.edit { putString(key, encodedData.rawValue) }
         }
     }
 
     fun getString(key: String): String? {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
             val encodedData = sharedPreferences.getString(key, null)
-            encodedData?.let { keyStoreWrapper.decode(key, it) }
+            encodedData?.let { keyStoreWrapper.decode(key, HexString(it)) }
         }
     }
 
     fun getString(key: String, cipher: DecodeCipher): String? {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
             val encodedData = sharedPreferences.getString(key, null)
-            encodedData?.let { keyStoreWrapper.decode(cipher, it) }
+            encodedData?.let { keyStoreWrapper.decode(cipher, HexString(it)) }
         }
     }
 
     fun <T> saveObject(key: String, data: T) {
-        tryWithLog(key) {
+        logOnExceptionAndReThrow(key) {
             val objectAsJson = gson.toJson(data)
-            val encodedData = keyStoreWrapper.encode(key, objectAsJson)
-            sharedPreferences.edit { putString(key, encodedData) }
+            val encodedData: HexString = keyStoreWrapper.encode(key, objectAsJson)
+            sharedPreferences.edit { putString(key, encodedData.rawValue) }
         }
     }
 
@@ -67,9 +71,9 @@ class EncryptedSharedPreferences(
 
     @Throws(IllegalArgumentException::class)
     fun <T : Any> getObject(key: String, type: KClass<T>): T? {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
             sharedPreferences.getString(key, null)
-                ?.let { keyStoreWrapper.decode(key, it) }
+                ?.let { keyStoreWrapper.decode(key, HexString(it)) }
                 ?.let { gson.fromJson(it, type.java) }
         }
     }
@@ -80,52 +84,54 @@ class EncryptedSharedPreferences(
      */
     @Deprecated(message = "DOESN'T WORK, use only with primitive types like String")
     fun <T : Any> getObjectList(key: String): List<T> {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
             sharedPreferences.getString(key, null)
-                ?.let { keyStoreWrapper.decode(key, it) }
+                ?.let { keyStoreWrapper.decode(key, HexString(it)) }
                 ?.let { gson.fromJson(it, object : TypeToken<List<T>>() {}.type) }
                 ?: emptyList()
         }
     }
 
     fun saveBytes(key: String, data: ByteArray) {
-        tryWithLog(key) {
-            val string = Hex.encode(data)
-            val encodedData = keyStoreWrapper.encode(key, string)
-            sharedPreferences.edit { putString(key, encodedData) }
+        logOnExceptionAndReThrow(key) {
+            // crazy, double hex encoding
+            val string = HexString(Hex.encode(data))
+            val encodedData: HexString = keyStoreWrapper.encode(key, string.rawValue)
+            sharedPreferences.edit { putString(key, encodedData.rawValue) }
         }
     }
 
     fun getBytes(key: String): ByteArray? {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
+            // crazy, double hex encoding
             sharedPreferences.getString(key, null)
-                ?.let { keyStoreWrapper.decode(key, it) }
-                ?.let { Hex.decode(it) }
+                ?.let { HexString(keyStoreWrapper.decode(key, HexString(it))) }
+                ?.let { Hex.decode(it.rawValue) }
         }
     }
 
-    fun putBoolean(key: String, value: Boolean) {
-        tryWithLog(key) {
+    fun saveBoolean(key: String, value: Boolean) {
+        logOnExceptionAndReThrow(key) {
             // no need to encode boolean values
             sharedPreferences.edit { putBoolean(key, value) }
         }
     }
 
     fun getBoolean(key: String, defaultValue: Boolean): Boolean {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
             sharedPreferences.getBoolean(key, defaultValue)
         }
     }
 
-    fun putLong(key: String, value: Long) {
-        tryWithLog(key) {
+    fun saveLong(key: String, value: Long) {
+        logOnExceptionAndReThrow(key) {
             // no need to encode boolean values
             sharedPreferences.edit { putLong(key, value) }
         }
     }
 
     fun getLong(key: String, defaultValue: Long): Long {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
             sharedPreferences.getLong(key, defaultValue)
         }
     }
@@ -134,29 +140,31 @@ class EncryptedSharedPreferences(
      * Encodes each element inside the set and saves it to the shared preferences.
      * Set is unique by definition, so when elements are encoded - they are unique too.
      */
-    fun putStringSet(key: String, value: Set<String>) {
-        tryWithLog(key) {
-            val encryptedSet = value.map { keyStoreWrapper.encode(key, it) }.toSet()
+    fun saveStringSet(key: String, value: Set<String>) {
+        logOnExceptionAndReThrow(key) {
+            val encryptedSet = value.map { keyStoreWrapper.encode(key, it).rawValue }.toSet()
             sharedPreferences.edit { putStringSet(key, encryptedSet) }
         }
     }
 
     fun getStringSet(key: String, defaultValue: Set<String> = emptySet()): Set<String> {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
+            // The consistency of the stored data is not guaranteed if you return original Set,
+            // nor is your ability to modify the instance at all.
             (sharedPreferences.getStringSet(key, defaultValue) ?: defaultValue)
-                .map { keyStoreWrapper.decode(key, it) }
+                .map { keyStoreWrapper.decode(key, HexString(it)) }
                 .toSet()
         }
     }
 
     fun getEncodeCipher(key: String): EncodeCipher {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
             keyStoreWrapper.getEncodeCipher(key)
         }
     }
 
     fun getDecodeCipher(key: String): DecodeCipher {
-        return tryWithLog(key) {
+        return logOnExceptionAndReThrow(key) {
             keyStoreWrapper.getDecodeCipher(key)
         }
     }
@@ -164,7 +172,7 @@ class EncryptedSharedPreferences(
     fun contains(key: String): Boolean = sharedPreferences.contains(key)
 
     fun remove(key: String) {
-        tryWithLog(key) {
+        logOnExceptionAndReThrow(key) {
             sharedPreferences.edit { remove(key) }
             keyStoreWrapper.deleteKeyAlias(key)
         }
@@ -177,79 +185,11 @@ class EncryptedSharedPreferences(
         sharedPreferences.edit { clear() }
     }
 
-    private fun <T> tryWithLog(key: String, block: () -> T): T = try {
+    private fun <T> logOnExceptionAndReThrow(key: String, block: () -> T): T = try {
         block()
     } catch (e: Throwable) {
         Timber.tag(loggingTag).i("Failed working with the $key")
         Timber.tag(loggingTag).i(sharedPreferences.all.keys.toString())
         throw e
-    }
-}
-
-class StringEncryptedPreference(
-    private val preferences: EncryptedSharedPreferences,
-    private val key: String,
-    private val defaultValue: String? = null
-) : ReadWriteProperty<Any, String?> {
-    override fun getValue(thisRef: Any, property: KProperty<*>): String? {
-        return preferences.getString(key) ?: defaultValue
-    }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: String?) {
-        value?.let { preferences.saveString(key, it) } ?: preferences.remove(key)
-    }
-}
-
-class ObjectEncryptedPreference<Value : Any>(
-    private val preferences: EncryptedSharedPreferences,
-    private val keyProvider: () -> String,
-    private val type: KClass<Value>,
-    private val defaultValue: Value? = null,
-    private val nullIfMappingFailed: Boolean = false
-) : ReadWriteProperty<Any, Value?> {
-    private val key: String
-        get() = keyProvider.invoke()
-
-    override fun getValue(thisRef: Any, property: KProperty<*>): Value? {
-        return kotlin.runCatching { preferences.getObject(key, type) ?: defaultValue }
-            .let { if (nullIfMappingFailed) it.getOrNull() else it.getOrThrow() }
-    }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: Value?) {
-        value?.let { preferences.saveObject(key, it) } ?: preferences.remove(key)
-    }
-}
-
-class LongPreference(
-    private val preferences: EncryptedSharedPreferences,
-    private val keyProvider: () -> String,
-    private val defaultValue: Long,
-) : ReadWriteProperty<Any, Long> {
-    private val key: String
-        get() = keyProvider.invoke()
-
-    override fun getValue(thisRef: Any, property: KProperty<*>): Long {
-        return preferences.getLong(key, defaultValue)
-    }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: Long) {
-        preferences.putLong(key, value)
-    }
-}
-
-class BooleanEncryptedPreference(
-    private val preferences: EncryptedSharedPreferences,
-    private val keyProvider: () -> String,
-    private val defaultValue: Boolean
-) : ReadWriteProperty<Any, Boolean> {
-    private val key: String
-        get() = keyProvider.invoke()
-
-    override fun getValue(thisRef: Any, property: KProperty<*>): Boolean {
-        return preferences.getBoolean(key, defaultValue)
-    }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: Boolean) {
-        preferences.putBoolean(key, value)
     }
 }
