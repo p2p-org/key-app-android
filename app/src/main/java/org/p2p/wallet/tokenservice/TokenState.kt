@@ -7,7 +7,7 @@ sealed interface TokenState {
     object Refreshing : TokenState
     data class Loaded(val solTokens: List<Token.Active>, val ethTokens: List<Token.Eth>) : TokenState
     data class Error(val cause: Throwable) : TokenState
-    object Idle: TokenState
+    object Idle : TokenState
 
     fun isLoading(): Boolean {
         return this is Loading || this is Refreshing

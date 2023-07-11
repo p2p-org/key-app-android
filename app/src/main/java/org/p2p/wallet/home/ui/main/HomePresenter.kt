@@ -8,8 +8,6 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.network.environment.NetworkEnvironmentManager
