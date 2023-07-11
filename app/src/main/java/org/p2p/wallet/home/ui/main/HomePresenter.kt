@@ -45,7 +45,6 @@ import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.interactor.UserTokensInteractor
-import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.unsafeLazy
 
 val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(USDC_SYMBOL, SOL_SYMBOL)
@@ -137,11 +136,11 @@ class HomePresenter(
             }
             is UserTokenState.Empty -> {
                 view?.showEmptyState(isEmpty = true)
-                handleEmptyAccount(newState.emptyStateTokens)
+                handleEmptyAccount()
             }
             is UserTokenState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
-                initializeActionButtons(isSellAvailable = newState.isSellAvailable)
+                initializeActionButtons()
                 state = state.copy(
                     tokens = newState.solTokens,
                     ethTokens = newState.ethTokens
@@ -392,17 +391,7 @@ class HomePresenter(
         }
     }
 
-    private fun handleEmptyAccount(tokensForBuy: List<Token.Other>) {
-        val strigaBigBanner = state.strigaKycStatusBanner
-            ?.let { homeMapper.mapToBigBanner(it, state.isStrigaKycBannerLoading) }
-            ?: getDefaultBanner()
-
-        val emptyDataList = buildList {
-            this += strigaBigBanner
-            this += resources.getString(R.string.main_popular_tokens_header)
-            addAll(tokensForBuy)
-        }
-        view?.showEmptyViewData(emptyDataList)
+    private fun handleEmptyAccount() {
         logBalance(BigDecimal.ZERO)
         view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
     }

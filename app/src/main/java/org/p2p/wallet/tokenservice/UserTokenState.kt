@@ -7,13 +7,10 @@ sealed interface UserTokenState {
     object Refreshing : UserTokenState
     data class Loaded(
         val solTokens: List<Token.Active>,
-        val ethTokens: List<Token.Eth>,
-
-        @Deprecated("workaround, we need to move this logic further")
-        val isSellAvailable: Boolean
+        val ethTokens: List<Token.Eth>
     ) : UserTokenState
 
-    data class Empty(val emptyStateTokens: List<Token.Other>) : UserTokenState
+    object Empty : UserTokenState
     data class Error(val cause: Throwable) : UserTokenState
     object Idle : UserTokenState
 

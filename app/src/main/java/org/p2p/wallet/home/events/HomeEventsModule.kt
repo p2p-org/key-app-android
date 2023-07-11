@@ -73,7 +73,6 @@ object HomeEventsModule : InjectionModule {
             TokenServiceCoordinator(
                 solanaTokensLoader = solTokensLoader,
                 ethereumTokensLoader = ethTokensLoader,
-                homeInteractor = get(),
                 appScope = get()
             )
         }

@@ -14,7 +14,6 @@ import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WETH_SYMBOL
 import org.p2p.wallet.home.events.EthereumTokensLoader
 import org.p2p.wallet.home.events.SolanaTokensLoader
-import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.tokenservice.model.EthTokenLoadState
 import org.p2p.wallet.tokenservice.model.SolanaTokenLoadState
 
@@ -28,7 +27,6 @@ private val POPULAR_TOKENS_SYMBOLS: Set<String> = setOf(USDC_SYMBOL, SOL_SYMBOL,
 class TokenServiceCoordinator(
     private val solanaTokensLoader: SolanaTokensLoader,
     private val ethereumTokensLoader: EthereumTokensLoader,
-    private val homeInteractor: HomeInteractor,
     private val appScope: AppScope
 ) {
 
@@ -62,7 +60,7 @@ class TokenServiceCoordinator(
         }
     }
 
-    private suspend fun mapTokenState(solState: SolanaTokenLoadState, ethState: EthTokenLoadState): UserTokenState =
+    private fun mapTokenState(solState: SolanaTokenLoadState, ethState: EthTokenLoadState): UserTokenState =
         when (solState) {
             is SolanaTokenLoadState.Idle -> UserTokenState.Idle
             is SolanaTokenLoadState.Loading -> UserTokenState.Loading
@@ -71,7 +69,7 @@ class TokenServiceCoordinator(
             is SolanaTokenLoadState.Loaded -> handleLoadedState(solState, ethState)
         }
 
-    private suspend fun handleLoadedState(
+    private fun handleLoadedState(
         solState: SolanaTokenLoadState.Loaded,
         ethState: EthTokenLoadState
     ): UserTokenState {
@@ -79,17 +77,9 @@ class TokenServiceCoordinator(
         val ethTokens = if (ethState is EthTokenLoadState.Loaded) ethState.tokens else emptyList()
 
         if (solTokens.all(Token.Active::isZero) && ethTokens.isEmpty()) {
-            val tokens = loadTokensForEmptyState()
-            return UserTokenState.Empty(tokens)
+            return UserTokenState.Empty
         }
 
-        val isSellAvailable = homeInteractor.isSellFeatureAvailable()
-        return UserTokenState.Loaded(solTokens, ethTokens, isSellAvailable)
+        return UserTokenState.Loaded(solTokens, ethTokens)
     }
-
-    private suspend fun loadTokensForEmptyState(): List<Token.Other> =
-        homeInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
-            .sortedBy { tokenToBuy ->
-                POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol)
-            }
 }
