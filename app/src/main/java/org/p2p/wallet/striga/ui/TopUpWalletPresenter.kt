@@ -64,20 +64,15 @@ class TopUpWalletPresenter(
             try {
                 strigaBankTransferProgress.emit(true)
 
-                ensureNeededStrigaDataLoaded()
-
                 val strigaDestination = strigaUserInteractor.getUserDestination()
-                when (strigaDestination) {
-                    StrigaUserStatusDestination.IBAN_ACCOUNT -> {
-                        // prefetch account details for IBAN
-                        strigaWalletInteractor.getFiatAccountDetails()
-                    }
-                    StrigaUserStatusDestination.KYC_PENDING -> {
-                        view?.navigateToKycPending()
-                        return@launch
-                    }
-                    else -> Unit
+
+                ensureNeededStrigaDataLoaded(strigaDestination)
+
+                if (strigaDestination == StrigaUserStatusDestination.KYC_PENDING) {
+                    view?.navigateToKycPending()
+                    return@launch
                 }
+
                 view?.navigateToBankTransferTarget(strigaDestination)
             } catch (strigaDataLoadFailed: Throwable) {
                 Timber.e(strigaDataLoadFailed, "failed to load needed data for bank transfer")
@@ -88,7 +83,7 @@ class TopUpWalletPresenter(
         }
     }
 
-    private suspend fun ensureNeededStrigaDataLoaded() {
+    private suspend fun ensureNeededStrigaDataLoaded(destination: StrigaUserStatusDestination) {
         if (metadataInteractor.currentMetadata == null) {
             Timber.i("Metadata is not fetched. Trying again...")
             loadUserMetadata()
@@ -103,6 +98,13 @@ class TopUpWalletPresenter(
                 Timber.i("Striga user signup data is not fetched. Trying again...")
                 loadStrigaUserDetails()
             }
+        }
+
+        if (destination == StrigaUserStatusDestination.IBAN_ACCOUNT && strigaUserInteractor.isKycApproved) {
+            // prefetch account details for IBAN
+            strigaWalletInteractor.getFiatAccountDetails()
+            // prefetch crypto account details for future use
+            strigaWalletInteractor.getCryptoAccountDetails()
         }
     }
 

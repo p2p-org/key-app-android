@@ -19,7 +19,6 @@ import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
-import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.interactor.UserTokensInteractor
@@ -44,14 +43,16 @@ class HomeInteractor(
         if (strigaSignupEnabledFeatureToggle.isFeatureEnabled) {
             strigaSignupInteractor.loadAndSaveSignupData()
             strigaUserInteractor.loadAndSaveUserStatusData()
-            if (strigaUserInteractor.isUserCreated()) {
-                loadStrigaFiatAccountDetails()
+            if (strigaUserInteractor.canLoadAccounts) {
+                loadDetailsForStrigaAccounts()
             }
         }
     }
 
-    suspend fun loadStrigaFiatAccountDetails(): Result<StrigaFiatAccountDetails> {
-        return strigaWalletInteractor.loadFiatAccountAndUserWallet()
+    suspend fun loadDetailsForStrigaAccounts(): Result<Unit> = kotlin.runCatching {
+        strigaWalletInteractor.getFiatAccountDetails()
+        strigaWalletInteractor.getCryptoAccountDetails()
+        Unit
     }
 
     suspend fun loadAllTokensDataIfEmpty() {

@@ -1,8 +1,10 @@
 package org.p2p.wallet.striga.wallet.interactor
 
 import java.math.BigInteger
+import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.map
+import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
@@ -20,18 +22,24 @@ class StrigaWalletInteractor(
 ) {
 
     private class StrigaEuroAccountNotFound : Throwable()
+    private class StrigaUSDCAccountNotFound : Throwable()
 
-    suspend fun loadFiatAccountAndUserWallet(): Result<StrigaFiatAccountDetails> {
-        return kotlin.runCatching { getFiatAccountDetails() }
-    }
-
-    @Throws(Throwable::class)
+    @Throws(StrigaEuroAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
     suspend fun getFiatAccountDetails(): StrigaFiatAccountDetails {
         val eurAccountId = walletRepository.getUserWallet()
             .map { it.eurAccount?.accountId }
             .unwrap()
             ?: throw StrigaEuroAccountNotFound()
         return walletRepository.getFiatAccountDetails(eurAccountId).unwrap()
+    }
+
+    @Throws(StrigaUSDCAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
+    suspend fun getCryptoAccountDetails(): StrigaCryptoAccountDetails {
+        val usdcAccountId = walletRepository.getUserWallet()
+            .map { it.usdcAccount?.accountId }
+            .unwrap()
+            ?: throw StrigaUSDCAccountNotFound()
+        return walletRepository.getCryptoAccountDetails(usdcAccountId).unwrap()
     }
 
     /**

@@ -21,6 +21,9 @@ class StrigaUserInteractor(
     val isKycApproved: Boolean
         get() = userStatusRepository.getUserVerificationStatus()?.isKycApproved == true
 
+    val canLoadAccounts: Boolean
+        get() = isUserCreated() && isKycApproved
+
     suspend fun createUser(data: List<StrigaSignupData>): StrigaDataLayerResult<StrigaUserInitialDetails> {
         return userRepository.createUser(data)
     }

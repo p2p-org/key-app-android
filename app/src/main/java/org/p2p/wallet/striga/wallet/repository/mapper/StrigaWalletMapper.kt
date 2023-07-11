@@ -2,12 +2,16 @@ package org.p2p.wallet.striga.wallet.repository.mapper
 
 import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
 import org.p2p.core.utils.fromLamports
+import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichCryptoAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletDetailsResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletsResponse
+import org.p2p.wallet.striga.wallet.models.StrigaBlockchainNetworkInfo
+import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
+import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.StrigaUserWalletAccount
 import org.p2p.wallet.striga.wallet.models.StrigaWalletAccountBankLink
@@ -40,6 +44,19 @@ class StrigaWalletMapper {
             isDomesticAccount = isDomesticAccount,
             routingCodeEntries = routingCodeEntries,
             payInReference = payInReference,
+        )
+    }
+
+    fun fromNetwork(response: StrigaEnrichCryptoAccountResponse): StrigaCryptoAccountDetails = with(response) {
+        StrigaCryptoAccountDetails(
+            accountId = StrigaAccountId(accountId),
+            currency = StrigaNetworkCurrency.valueOf(currency),
+            depositAddress = depositAddress,
+            network = StrigaBlockchainNetworkInfo(
+                name = network.name,
+                contractAddress = network.contractAddress,
+                type = network.type,
+            )
         )
     }
 
