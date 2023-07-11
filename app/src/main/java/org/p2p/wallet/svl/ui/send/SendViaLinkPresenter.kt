@@ -31,12 +31,14 @@ import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.unsafeLazy
 
 private const val ACCEPTABLE_RATE_DIFF = 0.02
 
 class SendViaLinkPresenter(
     private val userInteractor: UserInteractor,
+    private val userTokensInteractor: UserTokensInteractor,
     private val sendInteractor: SendInteractor,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
     private val resources: Resources,
@@ -74,7 +76,7 @@ class SendViaLinkPresenter(
     }
 
     private fun subscribeToSelectedTokenUpdates() {
-        userInteractor.getUserTokensFlow()
+        userTokensInteractor.observeUserTokens()
             .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
             .filterNotNull()
             .onEach { token = it }
@@ -145,7 +147,7 @@ class SendViaLinkPresenter(
 
             checkTokenRatesAndSetSwitchAmountState(initialToken)
 
-            val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
+            val solToken = if (initialToken.isSOL) initialToken else userTokensInteractor.getUserSolToken()
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
@@ -167,7 +169,7 @@ class SendViaLinkPresenter(
     override fun onTokenClicked() {
         newSendAnalytics.logTokenSelectionClicked(NewSendAnalytics.AnalyticsSendFlow.SELL)
         launch {
-            val tokens = userInteractor.getUserTokens()
+            val tokens = userTokensInteractor.getUserTokens()
             val result = tokens.filterNot(Token.Active::isZero)
             svlAnalytics.logTokenChangeClicked(token?.tokenSymbol.orEmpty())
             view?.showTokenSelection(tokens = result, selectedToken = token)

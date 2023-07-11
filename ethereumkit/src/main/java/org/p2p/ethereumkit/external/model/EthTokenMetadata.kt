@@ -14,7 +14,7 @@ data class EthTokenMetadata(
     val logoUrl: String,
     val tokenName: String,
     val symbol: String,
-    var price: BigDecimal = BigDecimal.ZERO
+    var price: BigDecimal? = null
 )
 
 internal fun mapToTokenMetadata(

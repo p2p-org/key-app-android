@@ -4,14 +4,14 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
 import org.p2p.wallet.sell.interactor.SellInteractor
-import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class SellLockedPresenter(
     private val currentTransaction: SellTransactionViewDetails,
     private val sellInteractor: SellInteractor,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserTokensInteractor
 ) : BasePresenter<SellLockedContract.View>(),
     SellLockedContract.Presenter {
 

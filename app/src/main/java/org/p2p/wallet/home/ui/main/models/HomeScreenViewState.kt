@@ -11,12 +11,6 @@ data class HomeScreenViewState(
     val strigaClaimableTokens: List<StrigaClaimableToken> = emptyList(),
     val visibilityState: VisibilityState = VisibilityState.Hidden,
     val areZerosHidden: Boolean,
-    val state: LoadingState = LoadingState.INIT_LOADING,
     val strigaKycStatusBanner: StrigaKycStatusBanner? = null,
     val isStrigaKycBannerLoading: Boolean = false
 )
-
-enum class LoadingState {
-    REFRESHING,
-    INIT_LOADING
-}

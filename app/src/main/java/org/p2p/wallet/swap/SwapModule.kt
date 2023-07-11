@@ -31,7 +31,7 @@ object SwapModule : InjectionModule {
 
         single { OrcaInfoInteractor(get(), get()) }
         single { OrcaRouteInteractor(get(), get()) }
-        factory { OrcaPoolInteractor(get(), get(), get(), get()) }
+        factory { OrcaPoolInteractor(get(), get(), get(), get(), get()) }
 
         factory { TransactionAddressInteractor(get(), get()) }
 

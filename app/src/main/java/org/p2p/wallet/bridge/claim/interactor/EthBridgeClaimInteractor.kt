@@ -20,7 +20,7 @@ class EthBridgeClaimInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val mapper: EthereumBundleMapper,
 ) {
-    suspend fun getEthereumBundle(
+    suspend fun getEthereumClaimableToken(
         erc20Token: EthAddress?,
         amount: String,
         ethereumAddress: EthAddress,
@@ -40,8 +40,8 @@ class EthBridgeClaimInteractor(
         return ethereumClaimRepository.sendEthereumBundle(signatures)
     }
 
-    suspend fun getListOfEthereumBundleStatuses(ethereumAddress: EthAddress): List<EthereumClaimToken> {
-        val bundles = ethereumClaimRepository.getListOfEthereumBundleStatuses(ethereumAddress)
+    suspend fun getEthereumClaimTokens(ethereumAddress: EthAddress): List<EthereumClaimToken> {
+        val bundles = ethereumClaimRepository.getEthereumBundles(ethereumAddress)
         ethereumClaimLocalRepository.saveClaimBundles(bundles)
         return bundles.map { mapper.mapBundle(it) }
     }

@@ -37,8 +37,6 @@ object Constants {
         FEE_RELAYER_ACCOUNT,
         SWAP_FEE_RELAYER_ACCOUNT
     )
-    const val REN_BTC_DEVNET_MINT = "FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD"
-    const val REN_BTC_DEVNET_MINT_ALTERNATE = "CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5"
 
     // Arbitrary mint to represent SOL (not wrapped SOL).
     const val SOL_MINT = "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ"

@@ -7,32 +7,35 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.create
-import org.p2p.core.pricecache.PriceCacheRepository
 import org.p2p.core.rpc.RPC_JSON_QUALIFIER
+import org.p2p.ethereumkit.external.api.EthereumNetworkModule
 import org.p2p.ethereumkit.external.api.QUALIFIER_ETH_RETROFIT
-import org.p2p.ethereumkit.external.balance.EthereumTokensRemoteRepository
-import org.p2p.ethereumkit.external.balance.EthereumTokensRepository
+import org.p2p.ethereumkit.external.token.EthereumTokenRemoteRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.core.DefaultDispatchers
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
-import org.p2p.ethereumkit.external.price.EthereumPriceRepository
-import org.p2p.ethereumkit.external.price.PriceRepository
+import org.p2p.ethereumkit.external.model.EthTokenConverter
 import org.p2p.ethereumkit.external.repository.EthereumKitRepository
 import org.p2p.ethereumkit.external.repository.EthereumRepository
+import org.p2p.ethereumkit.external.token.EthereumTokensInMemoryRepository
+import org.p2p.ethereumkit.external.token.EthereumTokensLocalRepository
+import org.p2p.ethereumkit.external.token.EthereumTokenRepository
 
 object EthereumModule {
 
     fun create(): Module = module {
         singleOf(::EthereumKitRepository) bind EthereumRepository::class
-        singleOf(::EthereumPriceRepository) bind PriceRepository::class
         singleOf(::DefaultDispatchers) bind CoroutineDispatchers::class
-        single<EthereumTokensRepository> {
-            EthereumTokensRemoteRepository(
+        single<EthereumTokenRepository> {
+            EthereumTokenRemoteRepository(
                 alchemyService = get<Retrofit>(named(QUALIFIER_ETH_RETROFIT)).create(),
                 networkEnvironment = EthereumNetworkEnvironment.ALCHEMY,
                 gson = get(named(RPC_JSON_QUALIFIER))
             )
         }
-        single { PriceCacheRepository() }
+        singleOf(::EthereumTokensInMemoryRepository) bind EthereumTokensLocalRepository::class
+
+        includes(EthereumNetworkModule.create())
+        factory { EthTokenConverter }
     }
 }

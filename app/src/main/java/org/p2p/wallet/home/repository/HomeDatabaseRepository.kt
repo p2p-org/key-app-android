@@ -1,13 +1,10 @@
 package org.p2p.wallet.home.repository
 
 import timber.log.Timber
-import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.db.TokenDao
 import org.p2p.wallet.home.model.TokenConverter
@@ -17,18 +14,6 @@ private const val TAG = "HomeDatabaseRepository"
 class HomeDatabaseRepository(
     private val tokenDao: TokenDao
 ) : HomeLocalRepository {
-
-    override fun observeUserBalance(): Flow<BigDecimal> =
-        getTokensFlow()
-            .map(::calculateUserBalance)
-            .catch { Timber.i(it) }
-
-    override suspend fun getUserBalance(): BigDecimal = calculateUserBalance(getUserTokens())
-
-    private fun calculateUserBalance(tokens: List<Token.Active>): BigDecimal =
-        tokens.mapNotNull(Token.Active::totalInUsd)
-            .fold(BigDecimal.ZERO, BigDecimal::add)
-            .scaleShort()
 
     override suspend fun updateTokens(tokens: List<Token.Active>) {
         if (BuildConfig.DEBUG) printUpdateTokensDiff(tokens)
