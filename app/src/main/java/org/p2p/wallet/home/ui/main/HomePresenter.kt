@@ -88,9 +88,6 @@ class HomePresenter(
     private var state = HomeScreenViewState(areZerosHidden = homeInteractor.areZerosHidden())
     private val buttonsStateFlow = MutableStateFlow<List<ActionButton>>(emptyList())
 
-    // use flow since it's the only way we can show progress before view is attached
-    private val refreshingFlow = MutableStateFlow(true)
-
     private val userPublicKey: String by unsafeLazy { tokenKeyProvider.publicKey }
 
     private val deeplinkHandler by unsafeLazy {
@@ -110,7 +107,6 @@ class HomePresenter(
                 handleHomeStateChanged(state.tokens, state.ethTokens)
             }
         }
-        observeRefreshingStatus()
         observeActionButtonState()
         handleDeeplinks()
         attachToPollingTokens()
@@ -119,7 +115,6 @@ class HomePresenter(
     override fun refreshTokens() {
         launchInternetAware(connectionManager) {
             try {
-                showRefreshing(isRefreshing = true)
                 tokenService.onRefresh()
                 initializeActionButtons(isRefreshing = true)
             } catch (cancelled: CancellationException) {
@@ -127,8 +122,6 @@ class HomePresenter(
             } catch (error: Throwable) {
                 Timber.e(error, "Error refreshing user tokens")
                 view?.showErrorMessage(error)
-            } finally {
-                showRefreshing(isRefreshing = false)
             }
         }
     }
@@ -141,12 +134,8 @@ class HomePresenter(
                 tokenState to banner.takeIf { strigaFeatureToggle.isFeatureEnabled }
             }
                 .collect { (tokenState, banner) ->
-
-                    val isLoading = tokenState is TokenState.Loading
-                    val isRefreshing = tokenState is TokenState.Refreshing
-
-                    view?.showInitialLoading(isLoading)
-                    showRefreshing(isRefreshing)
+                    val isLoading = tokenState.isLoading()
+                    view?.showRefreshing(isLoading)
 
                     when (tokenState) {
                         is TokenState.Loaded -> {
@@ -175,13 +164,6 @@ class HomePresenter(
         }
     }
 
-    private fun observeRefreshingStatus() {
-        refreshingFlow.onEach {
-            view?.showRefreshing(it)
-        }
-            .launchIn(this)
-    }
-
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
         intercomDeeplinkManager.proceedDeeplinkIfExists()
@@ -194,8 +176,6 @@ class HomePresenter(
 
         val userId = username?.value ?: userPublicKey
         IntercomService.signIn(userId)
-
-        environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
     }
 
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
@@ -552,6 +532,4 @@ class HomePresenter(
         environmentManager.removeEnvironmentListener(this::class)
         super.detach()
     }
-
-    private fun showRefreshing(isRefreshing: Boolean) = refreshingFlow.tryEmit(isRefreshing)
 }

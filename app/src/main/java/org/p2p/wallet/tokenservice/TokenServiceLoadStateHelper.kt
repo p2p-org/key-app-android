@@ -6,7 +6,7 @@ object TokenServiceLoadStateHelper {
         return when {
             solTokensState == TokenLoadState.LOADING && ethTokensState == TokenLoadState.IDLE -> true
             solTokensState == TokenLoadState.LOADING && ethTokensState == TokenLoadState.LOADING -> true
-            solTokensState == TokenLoadState.LOADING || ethTokensState == TokenLoadState.LOADING -> true
+            solTokensState == TokenLoadState.LOADING -> true
             else -> false
         }
     }
@@ -15,7 +15,7 @@ object TokenServiceLoadStateHelper {
         return when {
             solTokensState == TokenLoadState.REFRESHING && ethTokensState == TokenLoadState.IDLE -> true
             solTokensState == TokenLoadState.REFRESHING && ethTokensState == TokenLoadState.REFRESHING -> true
-            solTokensState == TokenLoadState.REFRESHING || ethTokensState == TokenLoadState.REFRESHING -> true
+            solTokensState == TokenLoadState.REFRESHING -> true
             else -> false
         }
     }

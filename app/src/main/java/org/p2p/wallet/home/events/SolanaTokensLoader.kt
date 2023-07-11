@@ -32,7 +32,6 @@ class SolanaTokensLoader(
         try {
             tokenServiceEventManager.subscribe(SolanaTokensRatesEventSubscriber(::saveTokensRates))
             loadState.compareAndSet(TokenLoadState.IDLE, TokenLoadState.LOADING)
-
             val tokens = userTokensInteractor.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
 
             userTokensInteractor.saveUserTokens(tokens)

@@ -51,16 +51,17 @@ class EthereumTokensLoader(
                 networkChain = TokenServiceNetwork.ETHEREUM,
                 addresses = ethTokens.map { it.publicKey }
             )
-            loadState.compareAndSet(TokenLoadState.LOADING, TokenLoadState.LOADED)
             ethereumTokensPollingService.start()
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e, "Error while loading ethereum tokens")
+        } finally {
+            loadState.compareAndSet(TokenLoadState.LOADING, TokenLoadState.LOADED)
         }
     }
 
     suspend fun onRefresh() {
         try {
-            loadState.compareAndSet(TokenLoadState.LOADED, TokenLoadState.LOADING)
+            loadState.compareAndSet(TokenLoadState.LOADED, TokenLoadState.REFRESHING)
             val claimTokens = ethereumInteractor.loadClaimTokens()
 
             ethereumInteractor.loadSendTransactionDetails()

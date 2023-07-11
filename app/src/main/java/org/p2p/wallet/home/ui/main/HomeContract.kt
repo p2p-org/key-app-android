@@ -46,7 +46,6 @@ interface HomeContract {
         fun showKycPendingDialog()
         fun showTopupWalletDialog()
         fun showStrigaClaimProgress(isClaimInProgress: Boolean, tokenMint: Base58String)
-        fun showInitialLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {

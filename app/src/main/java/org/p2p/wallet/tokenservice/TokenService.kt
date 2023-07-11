@@ -1,8 +1,13 @@
 package org.p2p.wallet.tokenservice
 
+import timber.log.Timber
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
@@ -20,14 +25,15 @@ class TokenService(
     private val loadStateHelper: TokenServiceLoadStateHelper
 ) {
 
-    private val tokensState = MutableStateFlow<TokenState>(TokenState.Loading)
+    private val tokensState = MutableStateFlow<TokenState>(TokenState.Idle)
 
     init {
         appScope.launch {
-            userTokensInteractor.getUserTokensFlow()
-                .combine(ethereumInteractor.observeTokensFlow()) { solTokens, ethTokens ->
-                    mapToTokenState(solTokens, ethTokens)
-                }.collect(tokensState)
+            userTokensInteractor.getUserTokensFlow().combine(
+                ethereumInteractor.observeTokensFlow()
+            ) { solTokens, ethTokens ->
+                mapToTokenState(solTokens, ethTokens)
+            }.collect(tokensState)
         }
     }
 
