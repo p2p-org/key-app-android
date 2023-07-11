@@ -8,9 +8,7 @@ dependencies {
     implementation(project(":core"))
     implementation(Dependencies.cryptoEdds)
     implementation(Dependencies.firebaseCrashlyticsBuildTools)
-
-    // Coroutines
-    Dependencies.coroutineLibraries.forEach { implementation(it) }
+    implementation(Dependencies.bitcoinj)
 
     implementation(Dependencies.retrofitMoshi)
 
