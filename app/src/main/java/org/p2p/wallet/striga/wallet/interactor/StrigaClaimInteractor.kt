@@ -19,6 +19,7 @@ import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
+import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.StrigaUserWalletAccount
 import org.p2p.wallet.striga.wallet.models.StrigaWalletAccountCurrency
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
@@ -56,13 +57,14 @@ class StrigaClaimInteractor(
         return userWallet.accounts
             .filter(::isTokenClaimable)
             .mapNotNull { tokenAccount ->
-                val tokenMetadata = getClaimableTokenMetadata(tokenAccount.accountCurrency.currencyName)
-                    ?: return@mapNotNull null
+                val tokenMetadata = getClaimableTokenMetadata(tokenAccount) ?: return@mapNotNull null
+                val fees = getFeesForClaimableToken(tokenAccount) ?: return@mapNotNull null
                 StrigaClaimableToken(
-                    claimableAmount = tokenAccount.availableBalance,
+                    totalAmount = tokenAccount.availableBalanceLamports,
                     tokenDetails = tokenMetadata,
                     walletId = userWallet.walletId,
-                    accountId = tokenAccount.accountId
+                    accountId = tokenAccount.accountId,
+                    fees = fees
                 )
             }
             .toSuccessResult()
@@ -102,8 +104,8 @@ class StrigaClaimInteractor(
             .map { it.id }
     }
 
-    private suspend fun getClaimableTokenMetadata(tokenSymbol: String): Token? {
-        return tokensRepository.findTokenDataBySymbol(tokenSymbol)
+    private suspend fun getClaimableTokenMetadata(tokenAccount: StrigaUserWalletAccount): Token? {
+        return tokensRepository.findTokenDataBySymbol(tokenAccount.accountCurrency.currencyName)
             ?.let { tokensRepository.findTokenByMint(it.mintAddress) }
     }
 
@@ -111,5 +113,15 @@ class StrigaClaimInteractor(
         return tokenAccount.run {
             accountCurrency == StrigaWalletAccountCurrency.USDC && availableBalance.isNotZero()
         }
+    }
+
+    private suspend fun getFeesForClaimableToken(tokenAccount: StrigaUserWalletAccount): StrigaOnchainWithdrawalFees? {
+        return strigaWithdrawalsRepository.getOnchainWithdrawalFees(
+            sourceAccountId = tokenAccount.accountId,
+            whitelistedAddressId = StrigaWhitelistedAddressId(userTokenKeyProvider.publicKey),
+            amount = tokenAccount.availableBalanceLamports
+        )
+            .onFailure { Timber.e(it) }
+            .successOrNull()
     }
 }
