@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.events
 
+import timber.log.Timber
 import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
-import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 
 class StrigaFeatureLoader(
     private val strigaSignupEnabledFeatureToggle: TokenMetadataUpdateFeatureToggle,
@@ -16,13 +16,16 @@ class StrigaFeatureLoader(
     override suspend fun onLoad() {
         strigaSignupInteractor.loadAndSaveSignupData()
         strigaUserInteractor.loadAndSaveUserStatusData()
-        if (strigaUserInteractor.isUserCreated()) {
-            loadStrigaFiatAccountDetails()
+        if (strigaUserInteractor.canLoadAccounts) {
+            loadDetailsForStrigaAccounts()
         }
     }
 
-    suspend fun loadStrigaFiatAccountDetails(): Result<StrigaFiatAccountDetails> {
-        return strigaWalletInteractor.loadFiatAccountAndUserWallet()
+    private suspend fun loadDetailsForStrigaAccounts() = try {
+        strigaWalletInteractor.getFiatAccountDetails()
+        strigaWalletInteractor.getCryptoAccountDetails()
+    } catch (e: Throwable) {
+        Timber.e(e, "Unable to load striga accounts (fiat and crypto) details")
     }
 
     override suspend fun isEnabled(): Boolean {
