@@ -96,6 +96,6 @@ class SearchInteractor(
     }
 
     private suspend fun isOwnEthAddress(publicKey: String): Boolean {
-        return publicKey == ethereumInteractor.getEthAddress().hex
+        return publicKey == ethereumInteractor.getEthUserAddress().hex
     }
 }

@@ -17,8 +17,8 @@ import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
 import org.p2p.ethereumkit.external.model.EthTokenConverter
 import org.p2p.ethereumkit.external.repository.EthereumKitRepository
 import org.p2p.ethereumkit.external.repository.EthereumRepository
-import org.p2p.ethereumkit.external.token.EthereumTokenInMemoryRepository
-import org.p2p.ethereumkit.external.token.EthereumTokenLocalRepository
+import org.p2p.ethereumkit.external.token.EthereumTokensInMemoryRepository
+import org.p2p.ethereumkit.external.token.EthereumTokensLocalRepository
 import org.p2p.ethereumkit.external.token.EthereumTokenRepository
 
 object EthereumModule {
@@ -33,7 +33,7 @@ object EthereumModule {
                 gson = get(named(RPC_JSON_QUALIFIER))
             )
         }
-        singleOf(::EthereumTokenInMemoryRepository) bind EthereumTokenLocalRepository::class
+        singleOf(::EthereumTokensInMemoryRepository) bind EthereumTokensLocalRepository::class
 
         includes(EthereumNetworkModule.create())
         factory { EthTokenConverter }

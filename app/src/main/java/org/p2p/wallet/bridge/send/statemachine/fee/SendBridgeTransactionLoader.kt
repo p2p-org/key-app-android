@@ -121,7 +121,7 @@ class SendBridgeTransactionLoader constructor(
             feePayer = feePayer,
             source = SolAddress(token.publicKey),
             recipient = initialData.recipient,
-            mint = SolAddress(tokenMint),
+            tokenMint = SolAddress(tokenMint),
             amount = amountInLamports.toString()
         )
     }

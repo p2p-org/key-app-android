@@ -19,7 +19,7 @@ import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.external.model.mapToTokenMetadata
-import org.p2p.ethereumkit.external.token.EthereumTokenLocalRepository
+import org.p2p.ethereumkit.external.token.EthereumTokensLocalRepository
 import org.p2p.ethereumkit.external.token.EthereumTokenRepository
 import org.p2p.ethereumkit.internal.core.TransactionSignerEip1559
 import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
@@ -32,7 +32,7 @@ private val MINIMAL_DUST = BigDecimal("5")
 
 internal class EthereumKitRepository(
     private val tokensRepository: EthereumTokenRepository,
-    private val tokensLocalRepository: EthereumTokenLocalRepository,
+    private val tokensLocalRepository: EthereumTokensLocalRepository,
     private val dispatchers: CoroutineDispatchers,
     private val converter: EthTokenConverter
 ) : EthereumRepository {
@@ -72,9 +72,9 @@ internal class EthereumKitRepository(
 
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> {
         return try {
-            val walletTokens = buildList {
-                add(getEthToken())
-                addAll(loadTokensMetadata())
+            val walletTokens = buildList<EthTokenMetadata> {
+                this += getEthToken()
+                this += loadTokensMetadata()
             }.map { tokenMetadata ->
 
                 var isClaiming = false
@@ -97,13 +97,14 @@ internal class EthereumKitRepository(
                     tokenAmount = tokenAmount,
                     fiatAmount = fiatAmount
                 )
-            }.filter { token ->
-                val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
-                val tokenFiatAmount = token.totalInUsd.orZero()
-                val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
-                tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
             }
-            return walletTokens
+                .filter { token ->
+                    val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
+                    val tokenFiatAmount = token.totalInUsd.orZero()
+                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
+                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
+                }
+            walletTokens
         } catch (e: Throwable) {
             Timber.e(e, "Error on loading ethereumTokens")
             emptyList()

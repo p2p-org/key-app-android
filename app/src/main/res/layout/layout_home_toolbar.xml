@@ -7,7 +7,6 @@
     android:layout_height="wrap_content"
     android:background="@color/bg_smoke"
     android:minHeight="?attr/actionBarSize"
-    android:visibility="gone"
     app:contentInsetStart="0dp">
 
     <!-- Should have Toolbar as root view to work with AppBarLayout -->

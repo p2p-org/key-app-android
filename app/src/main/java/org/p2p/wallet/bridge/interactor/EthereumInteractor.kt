@@ -42,7 +42,7 @@ class EthereumInteractor(
     }
 
     suspend fun loadClaimTokens(): List<EthereumClaimToken> {
-        return claimInteractor.getEthereumClaimTokens(getEthAddress())
+        return claimInteractor.getEthereumClaimTokens(getEthUserAddress())
     }
 
     suspend fun loadSendTransactionDetails() {
@@ -53,7 +53,7 @@ class EthereumInteractor(
         return ethereumRepository.getWalletTokensFlow()
     }
 
-    fun getEthAddress(): EthAddress = ethereumRepository.getAddress()
+    fun getEthUserAddress(): EthAddress = ethereumRepository.getAddress()
 
     suspend fun getEthereumBundle(erc20Token: EthAddress?, amount: String): BridgeBundle {
         val ethereumAddress: EthAddress = ethereumRepository.getAddress()

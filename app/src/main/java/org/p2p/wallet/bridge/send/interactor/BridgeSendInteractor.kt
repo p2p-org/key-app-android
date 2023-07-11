@@ -100,7 +100,7 @@ class BridgeSendInteractor(
         feePayer: SolAddress,
         source: SolAddress,
         recipient: EthAddress,
-        mint: SolAddress?,
+        tokenMint: SolAddress?,
         amount: String
     ): BridgeSendTransaction {
         return ethereumSendRepository.transferFromSolana(
@@ -108,7 +108,7 @@ class BridgeSendInteractor(
             feePayer = feePayer,
             source = source,
             recipient = recipient,
-            mint = mint,
+            mint = tokenMint,
             amount = amount
         )
     }

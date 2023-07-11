@@ -157,7 +157,7 @@ class AlarmErrorsLogger(
             try {
                 val request = sendErrorConverter.toBridgeClaimErrorRequest(
                     userPublicKey = userPublicKey,
-                    userEthAddress = ethereumInteractor.getEthAddress().hex,
+                    userEthAddress = ethereumInteractor.getEthUserAddress().hex,
                     token = tokenToClaim,
                     claimAmount = claimAmount,
                     error = error
