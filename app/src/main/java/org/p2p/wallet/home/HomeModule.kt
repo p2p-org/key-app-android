@@ -19,7 +19,6 @@ import org.p2p.wallet.home.ui.container.MainContainerPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.HomePresenter
-import org.p2p.wallet.home.ui.main.UserTokensPolling
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.home.ui.wallet.WalletContract
@@ -27,15 +26,8 @@ import org.p2p.wallet.home.ui.wallet.WalletPresenter
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.interactor.SendInteractor
-import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
-import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
-import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
-import org.p2p.wallet.receive.renbtc.ReceiveRenBtcContract
-import org.p2p.wallet.receive.renbtc.ReceiveRenBtcPresenter
-import org.p2p.wallet.receive.token.ReceiveTokenContract
-import org.p2p.wallet.receive.token.ReceiveTokenPresenter
 import org.p2p.wallet.striga.ui.TopUpWalletContract
 import org.p2p.wallet.striga.ui.TopUpWalletPresenter
 import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
@@ -79,21 +71,17 @@ object HomeModule : InjectionModule {
             SelectTokenPresenter(tokens)
         }
         // Cached data exists, therefore creating singleton
-        singleOf(::UserTokensPolling)
         factory {
             HomeInteractor(
                 userInteractor = get(),
                 settingsInteractor = get(),
                 usernameInteractor = get(),
                 sellInteractor = get(),
-                metadataInteractor = get(),
                 ethereumInteractor = get(),
                 strigaUserInteractor = get(),
-                strigaSignupInteractor = get(),
                 strigaClaimInteractor = get(),
                 strigaWalletInteractor = get(),
-                strigaSignupEnabledFeatureToggle = get(),
-                userTokensInteractor = get()
+                tokenKeyProvider = get()
             )
         }
         factoryOf(::HomePresenterMapper)
@@ -108,54 +96,26 @@ object HomeModule : InjectionModule {
             HomePresenter(
                 homeInteractor = get(),
                 analytics = get(),
-                updatesManager = get(),
                 userInteractor = get(),
                 homeMapper = get(),
-                environmentManager = get(),
-                tokenKeyProvider = get(),
                 newBuyFeatureToggle = get(),
-                networkObserver = get(),
-                tokensPolling = get(),
                 intercomDeeplinkManager = get(),
-                seedPhraseProvider = get(),
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
-                updateSubscribers = subscribers,
-                bridgeFeatureToggle = get(),
                 context = get(),
-                strigaFeatureToggle = get()
+                userTokensInteractor = get(),
+                updatesManager = get(),
+                environmentManager = get(),
+                strigaFeatureToggle = get(),
+                tokenKeyProvider = get(),
+                tokenServiceCoordinator = get(),
+                strigaInteractor = get()
             )
         }
         factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
-        factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
-            ReceiveNetworkTypePresenter(
-                renBtcInteractor = get(),
-                userInteractor = get(),
-                transactionAmountRepository = get(),
-                tokenKeyProvider = get(),
-                tokenInteractor = get(),
-                receiveAnalytics = get(),
-                environmentManager = get(),
-                newBuyFeatureToggle = get(),
-                networkType = type,
-                userSignUpDetailsStorage = get(),
-                renBtcAnalytics = get()
-            )
-        }
-
-        factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
-            ReceiveTokenPresenter(
-                defaultToken = token,
-                qrCodeInteractor = get(),
-                usernameInteractor = get(),
-                tokenKeyProvider = get(),
-                receiveAnalytics = get()
-            )
-        }
 
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
-        factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
 
         factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
     }

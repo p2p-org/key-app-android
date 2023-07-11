@@ -18,7 +18,7 @@ class ReceiveEthereumPresenter(
             try {
                 view?.showLoading(isLoading = true)
                 view?.setMinAmountForFreeFee(ethereumInteractor.getClaimMinAmountForFreeFee())
-                val tokenAddressInHexString = ethereumInteractor.getEthAddress().hex
+                val tokenAddressInHexString = ethereumInteractor.getEthUserAddress().hex
                 val qr = qrCodeInteractor.generateQrCode(tokenAddressInHexString)
                 view?.showQrAndAddress(qr, tokenAddressInHexString)
             } catch (e: CancellationException) {

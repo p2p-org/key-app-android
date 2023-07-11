@@ -4,16 +4,9 @@ import androidx.lifecycle.LifecycleOwner
 import android.content.Context
 import timber.log.Timber
 import java.math.BigDecimal
-import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
@@ -23,15 +16,12 @@ import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.asUsd
-import org.p2p.core.utils.formatFiat
-import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -42,59 +32,42 @@ import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
-import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
-import org.p2p.wallet.solana.SolanaNetworkObserver
+import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.tokenservice.UserTokenState
 import org.p2p.wallet.transaction.model.TransactionState
-import org.p2p.wallet.updates.SocketState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
-import org.p2p.wallet.updates.SubscriptionUpdatesStateObserver
-import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.worker.PendingTransactionMergeWorker
-import org.p2p.wallet.utils.toPublicKey
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.unsafeLazy
 
-// TODO add fetching prices for this tokens
-// val POPULAR_TOKENS_COINGECKO_IDS: List<TokenCoinGeckoId> = setOf(
-//    SOL_COINGECKO_ID,
-//    USDT_COINGECKO_ID,
-//    WETH_COINGECKO_ID,
-//    USDC_COINGECKO_ID
-// ).map(::TokenCoinGeckoId)
 val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 class HomePresenter(
     // interactors
     private val homeInteractor: HomeInteractor,
     private val userInteractor: UserInteractor,
-    // other
-    private val tokensPolling: UserTokensPolling,
-    private val networkObserver: SolanaNetworkObserver,
-    // managers
     private val updatesManager: SubscriptionUpdatesManager,
     private val environmentManager: NetworkEnvironmentManager,
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
     private val transactionManager: TransactionManager,
-    private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
-    // mappers
     private val homeMapper: HomePresenterMapper,
-    // FT
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
-    // analytics
+    private val userTokensInteractor: UserTokensInteractor,
+    private val strigaInteractor: StrigaClaimInteractor,
     private val analytics: HomeAnalytics,
-    seedPhraseProvider: SeedPhraseProvider,
     tokenKeyProvider: TokenKeyProvider,
-    bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
-    context: Context
+    context: Context,
+    private val tokenServiceCoordinator: TokenServiceCoordinator
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -102,12 +75,7 @@ class HomePresenter(
     private var state = HomeScreenViewState(areZerosHidden = homeInteractor.areZerosHidden())
     private val buttonsStateFlow = MutableStateFlow<List<ActionButton>>(emptyList())
 
-    // use flow since it's the only way we can show progress before view is attached
-    private val refreshingFlow = MutableStateFlow(true)
-
     private val userPublicKey: String by unsafeLazy { tokenKeyProvider.publicKey }
-    private var homeStateSubscribed = false
-    private var loadSolTokensJob: Job? = null
 
     private val deeplinkHandler by unsafeLazy {
         HomePresenterDeeplinkHandler(
@@ -119,39 +87,6 @@ class HomePresenter(
         )
     }
 
-    init {
-        val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-        if (userSeedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled) {
-            homeInteractor.setupEthereumKit(userSeedPhrase = userSeedPhrase)
-            PendingTransactionMergeWorker.scheduleWorker(context)
-        } else {
-            Timber.w("ETH is not initialized, no seed phrase or disabled")
-        }
-        launchSupervisor {
-            awaitAll(
-                async { networkObserver.start() },
-                async { homeInteractor.loadInitialAppData() }
-            )
-
-            // save the job to prevent do the same job twice in observeInternetConnection
-            loadSolTokensJob = loadSolTokensAndRates()
-            loadSolTokensJob?.join()
-            loadSolTokensJob = null
-
-            attachToPollingTokens()
-        }
-
-        updatesManager.addUpdatesStateObserver(object : SubscriptionUpdatesStateObserver {
-            override fun onUpdatesStateChanged(state: SocketState) {
-                if (state == SocketState.CONNECTED) {
-                    updateSubscribers.forEach {
-                        it.subscribe()
-                    }
-                }
-            }
-        })
-    }
-
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         launch {
@@ -159,63 +94,73 @@ class HomePresenter(
                 handleHomeStateChanged(state.tokens, state.ethTokens)
             }
         }
-        observeRefreshingStatus()
-        observeInternetConnection()
         observeActionButtonState()
         handleDeeplinks()
-        launch {
-            if (loadSolTokensJob == null) {
-                attachToPollingTokens()
-            }
-        }
+        observeKycBanners()
+        observeState()
+
+        loadStrigaClaimableTokens()
     }
 
     override fun refreshTokens() {
         launchInternetAware(connectionManager) {
             try {
-                showRefreshing(isRefreshing = true)
-                tokensPolling.refreshTokens()
+                tokenServiceCoordinator.refresh()
                 initializeActionButtons(isRefreshing = true)
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
                 Timber.e(error, "Error refreshing user tokens")
                 view?.showErrorMessage(error)
-            } finally {
-                showRefreshing(isRefreshing = false)
             }
         }
     }
 
-    private suspend fun attachToPollingTokens() {
-        if (homeStateSubscribed) return
-        homeStateSubscribed = true
-
-        tokensPolling.shareTokenPollFlowIn(this)
-            .filterNotNull()
-            .combine(homeInteractor.getUserStatusBannerFlow()) { homeState, strigaBanner ->
-                homeState to strigaBanner.takeIf { strigaFeatureToggle.isFeatureEnabled }
+    private fun observeState() {
+        tokenServiceCoordinator.observeUserTokens()
+            .onEach { tokenState ->
+                handleTokenState(tokenState)
             }
-            .onCompletion { homeStateSubscribed = false }
-            .collect { (homeState, strigaBanner) ->
-                logHomeStateChanged(homeState)
-
-                state = state.copy(
-                    tokens = homeState.solTokens,
-                    ethTokens = homeState.ethTokens,
-                    strigaKycStatusBanner = strigaBanner,
-                    strigaClaimableTokens = homeState.claimableTokens
-                )
-                initializeActionButtons()
-                handleHomeStateChanged(homeState.solTokens, homeState.ethTokens)
-                showRefreshing(homeState.isRefreshing)
-            }
+            .launchIn(this)
     }
 
-    private fun logHomeStateChanged(homeState: UserTokensPollState) {
-        val solTokensLog = homeState.solTokens
-            .joinToString { "${it.tokenSymbol}(${it.total.formatToken()}; ${it.totalInUsd?.formatFiat()})" }
-        Timber.d("Home state solTokens: $solTokensLog")
+    private fun handleTokenState(newState: UserTokenState) {
+        view?.showRefreshing(isRefreshing = newState.isLoading())
+
+        when (newState) {
+            is UserTokenState.Idle -> Unit
+            is UserTokenState.Loading -> Unit
+            is UserTokenState.Refreshing -> Unit
+            is UserTokenState.Error -> {
+                view?.showErrorMessage(newState.cause)
+            }
+            is UserTokenState.Empty -> {
+                view?.showEmptyState(isEmpty = true)
+                handleEmptyAccount()
+            }
+            is UserTokenState.Loaded -> {
+                view?.showEmptyState(isEmpty = false)
+                initializeActionButtons()
+                state = state.copy(
+                    tokens = newState.solTokens,
+                    ethTokens = newState.ethTokens
+                )
+            }
+        }
+    }
+
+    private fun observeKycBanners() {
+        if (!strigaFeatureToggle.isFeatureEnabled) {
+            return
+        }
+
+        homeInteractor.getUserStatusBannerFlow()
+            .onEach { banner ->
+                state = state.copy(
+                    strigaKycStatusBanner = banner
+                )
+            }
+            .launchIn(this)
     }
 
     private fun observeActionButtonState() {
@@ -226,36 +171,12 @@ class HomePresenter(
         }
     }
 
-    private fun observeRefreshingStatus() {
-        refreshingFlow.onEach {
-            view?.showRefreshing(it)
-        }
-            .launchIn(this)
-    }
-
-    private fun observeInternetConnection() {
+    private fun loadStrigaClaimableTokens() {
         launch {
-            connectionManager.connectionStatus.collect { hasConnection ->
-                if (hasConnection) {
-                    if (!updatesManager.isStarted()) {
-                        updatesManager.restart()
-                    }
-
-                    // we should reload tokens if we have reconnected internet
-                    // but don't load if this job is already running in constructor
-                    if (loadSolTokensJob == null) {
-                        loadSolTokensJob = loadSolTokensAndRates()
-                        // join and set null to be able to relaunch this job after next reconnections
-                        loadSolTokensJob?.join()
-                        loadSolTokensJob = null
-                        attachToPollingTokens()
-                    }
-                } else {
-                    if (updatesManager.isStarted()) {
-                        updatesManager.stop()
-                    }
-                }
-            }
+            val claimTokens = strigaInteractor.getClaimableTokens().successOrNull().orEmpty()
+            state = state.copy(
+                strigaClaimableTokens = claimTokens
+            )
         }
     }
 
@@ -269,8 +190,6 @@ class HomePresenter(
 
         val userId = username?.value ?: userPublicKey
         IntercomService.signIn(userId)
-
-        environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
     }
 
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
@@ -356,27 +275,6 @@ class HomePresenter(
         }
     }
 
-    /**
-     * Don't split this method, as it could lead to one more data race since rates are loading asynchronously
-     */
-    private fun loadSolTokensAndRates(): Job = launch {
-        showRefreshing(true)
-        try {
-            // this job also depends on the internet
-            homeInteractor.loadAllTokensDataIfEmpty()
-            val tokens = homeInteractor.loadUserTokensAndUpdateLocal(userPublicKey.toPublicKey())
-            homeInteractor.loadUserRates(tokens)
-        } catch (e: CancellationException) {
-            Timber.d("Loading sol tokens job cancelled")
-        } catch (e: UnknownHostException) {
-            Timber.d("Cannot load sol tokens: no internet")
-        } catch (t: Throwable) {
-            Timber.e(t, "Error on loading sol tokens")
-        } finally {
-            showRefreshing(false)
-        }
-    }
-
     private fun handleDeeplinks() {
         launchSupervisor {
             deeplinksManager.subscribeOnDeeplinks(
@@ -390,13 +288,13 @@ class HomePresenter(
         }
     }
 
-    private suspend fun initializeActionButtons(isRefreshing: Boolean = false) {
+    private fun initializeActionButtons(isRefreshing: Boolean = false) {
         if (!isRefreshing && buttonsStateFlow.value.isNotEmpty()) {
             return
         }
 
         val buttons = mutableListOf(ActionButton.RECEIVE_BUTTON, ActionButton.SWAP_BUTTON)
-        buttonsStateFlow.emit(buttons)
+        buttonsStateFlow.value = buttons
     }
 
     override fun onBuyClicked() {
@@ -469,7 +367,7 @@ class HomePresenter(
         }
     }
 
-    private suspend fun handleHomeStateChanged(
+    private fun handleHomeStateChanged(
         userTokens: List<Token.Active>,
         ethTokens: List<Token.Eth>,
     ) {
@@ -481,8 +379,9 @@ class HomePresenter(
         val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
         when {
             isAccountEmpty -> {
-                view?.showEmptyState(isEmpty = true)
-                handleEmptyAccount()
+                // fixme: fixed in line 145, this should be removed
+//                view?.showEmptyState(isEmpty = true)
+//                handleEmptyAccount()
             }
 
             (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
@@ -517,7 +416,7 @@ class HomePresenter(
                 visibility = newVisibility.stringValue
             )
 
-            val updatedTokens = homeInteractor.getUserTokens()
+            val updatedTokens = userTokensInteractor.getUserTokens()
             handleHomeStateChanged(updatedTokens, state.ethTokens)
         }
     }
@@ -566,6 +465,15 @@ class HomePresenter(
             }
 
             view?.showTokens(homeToken, areZerosHidden)
+
+            // TODO move this to CryptoScreen!
+            /*val mappedItems: List<AnyCellItem> = homeMapper.mapToCellItems(
+                tokens = state.tokens,
+                ethereumTokens = state.ethTokens,
+                visibilityState = state.visibilityState,
+                isZerosHidden = areZerosHidden,
+            )
+            view?.showItems(mappedItems)*/
         }
     }
 
@@ -605,6 +513,4 @@ class HomePresenter(
         environmentManager.removeEnvironmentListener(this::class)
         super.detach()
     }
-
-    private fun showRefreshing(isRefreshing: Boolean) = refreshingFlow.tryEmit(isRefreshing)
 }

@@ -6,14 +6,14 @@ private const val TAG = "TokenServiceEventManager"
 
 class TokenServiceEventManager {
 
-    private val listeners = mutableSetOf<TokenServiceEventListener>()
+    private val listeners = mutableSetOf<TokenServiceEventSubscriber>()
 
-    fun subscribe(listener: TokenServiceEventListener) {
+    fun subscribe(listener: TokenServiceEventSubscriber) {
         Timber.tag(TAG).d("New subscriber added = $listener")
         listeners.add(listener)
     }
 
-    fun unsubscribe(listener: TokenServiceEventListener) {
+    fun unsubscribe(listener: TokenServiceEventSubscriber) {
         listeners.remove(listener)
     }
 

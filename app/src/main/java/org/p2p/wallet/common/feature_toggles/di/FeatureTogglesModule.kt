@@ -22,7 +22,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureTo
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SocketSubscriptionsFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
@@ -44,7 +43,6 @@ object FeatureTogglesModule : InjectionModule {
                 get<SettingsNetworkListFeatureToggle>(),
                 get<NetworkObservationFeatureToggle>(),
                 get<SendViaLinkFeatureToggle>(),
-                get<SolendEnabledFeatureToggle>(),
                 get<UsernameDomainFeatureToggle>(),
                 get<RegisterUsernameEnabledFeatureToggle>(),
                 get<RegisterUsernameSkipEnabledFeatureToggle>(),
@@ -60,7 +58,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::SslPinningFeatureToggle)
         factoryOf(::NewBuyFeatureToggle)
         factoryOf(::SettingsNetworkListFeatureToggle)
-        factoryOf(::SolendEnabledFeatureToggle)
         factoryOf(::NetworkObservationFeatureToggle)
         factoryOf(::SendViaLinkFeatureToggle)
         factoryOf(::TokenMetadataUpdateFeatureToggle)

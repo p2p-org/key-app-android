@@ -9,7 +9,6 @@ import org.p2p.core.common.di.ServiceScope
 import org.p2p.core.crashlytics.CrashLoggerModule
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.network.NetworkCoreModule
-import org.p2p.ethereumkit.EthereumKitService
 import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
@@ -24,7 +23,9 @@ import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.ethereumkit.external.EthereumModule
 import org.p2p.token.service.TokenServiceModule
+import org.p2p.wallet.home.events.HomeEventsModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
@@ -34,14 +35,12 @@ import org.p2p.wallet.newsend.SendModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.ReceiveModule
-import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.sdk.di.AppSdkModule
 import org.p2p.wallet.sell.SellModule
 import org.p2p.wallet.settings.SettingsModule
-import org.p2p.wallet.solend.SolendModule
 import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
@@ -88,14 +87,12 @@ object AppModule {
                 JupiterModule.create(),
                 PushNotificationsModule.create(),
                 ReceiveModule.create(),
-                RenBtcModule.create(),
                 RestoreModule.create(),
                 RootModule.create(),
                 ScanQrModule.create(),
                 SendModule.create(),
                 SellModule.create(),
                 SettingsModule.create(),
-                SolendModule.create(),
                 StrigaModule.create(),
                 SwapModule.create(),
                 TransactionManagerModule.create(),
@@ -106,7 +103,9 @@ object AppModule {
                 CrashLoggerModule.create(),
                 NetworkCoreModule.create(),
                 TokenServiceModule.create(),
-            ) + EthereumKitService.getEthereumKitModules()
+                HomeEventsModule.create(),
+                EthereumModule.create()
+            )
         )
     }
 }

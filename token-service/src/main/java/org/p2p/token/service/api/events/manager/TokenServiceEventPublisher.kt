@@ -19,33 +19,30 @@ class TokenServiceEventPublisher(
 
     init {
         launch { observeTokenPrices(TokenServiceNetwork.SOLANA) }
+        launch { observeTokenPrices(TokenServiceNetwork.ETHEREUM) }
     }
 
-    fun loadTokensPrice(networkChain: TokenServiceNetwork, addresses: List<String>) {
-        launch {
-            eventManager.notify(
-                eventType = TokenServiceEventType.from(networkChain),
-                event = TokenServiceEvent.Loading
-            )
-            tokenServiceInteractor.loadPriceForTokens(
-                chain = networkChain,
-                tokenAddresses = addresses
-            )
-        }
+    suspend fun loadTokensPrice(networkChain: TokenServiceNetwork, addresses: List<String>) {
+        eventManager.notify(
+            eventType = TokenServiceEventType.from(networkChain),
+            event = TokenServiceEvent.Loading
+        )
+        tokenServiceInteractor.loadPriceForTokens(
+            chain = networkChain,
+            tokenAddresses = addresses
+        )
     }
 
-    fun loadTokensMetadata(networkChain: TokenServiceNetwork, addresses: List<String>) {
-        launch {
-            val eventType = TokenServiceEventType.from(networkChain)
-            eventManager.notify(
-                eventType = eventType,
-                event = TokenServiceEvent.Loading
-            )
-            tokenServiceInteractor.loadMetadataForTokens(
-                chain = networkChain,
-                tokenAddresses = addresses
-            )
-        }
+    suspend fun loadTokensMetadata(networkChain: TokenServiceNetwork, addresses: List<String>) {
+        val eventType = TokenServiceEventType.from(networkChain)
+        eventManager.notify(
+            eventType = eventType,
+            event = TokenServiceEvent.Loading
+        )
+        tokenServiceInteractor.loadMetadataForTokens(
+            chain = networkChain,
+            tokenAddresses = addresses
+        )
     }
 
     private suspend fun observeTokenPrices(networkChain: TokenServiceNetwork) {

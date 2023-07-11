@@ -27,6 +27,7 @@ class EthereumSendRemoteRepository(
         mint: SolAddress?,
         amount: String
     ): BridgeSendTransaction {
+
         val request = TransferFromSolanaRpcRequest(
             userWallet = userWallet,
             feePayer = feePayer,
@@ -35,6 +36,7 @@ class EthereumSendRemoteRepository(
             mint = mint,
             amount = amount
         )
+
         val result = bridgeRepository.launch(request)
         return mapper.fromNetwork(result.data)
     }
@@ -48,9 +50,9 @@ class EthereumSendRemoteRepository(
     override suspend fun getSendTransactionsDetail(userWallet: SolAddress): List<BridgeSendTransactionDetails> {
         val request = SolanaTransferStatusesRpcRequest(userWallet)
         val result = bridgeRepository.launch(request)
-        return result.data.map { mapper.fromNetwork(it) }.also {
-            bridgeLocalRepository.saveSendDetails(it)
-        }
+        return result.data
+            .map { mapper.fromNetwork(it) }
+            .also { bridgeLocalRepository.saveSendDetails(it) }
     }
 
     override suspend fun getSendFee(

@@ -12,7 +12,6 @@ import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.unsafeLazy
@@ -25,6 +24,7 @@ import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 
 private const val DATE_FORMAT = "MMMM dd, yyyy"
@@ -32,7 +32,7 @@ private const val TIME_FORMAT = "HH:mm"
 
 class SellTransactionDetailsPresenter(
     private val sellInteractor: SellInteractor,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: UserTokensInteractor,
     private val historyInteractor: HistoryInteractor,
     private val mapper: HistoryItemMapper,
     private val resources: Resources,

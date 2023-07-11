@@ -21,7 +21,10 @@ object RestoreModule : InjectionModule {
                 seedPhraseInteractor = get(),
                 analytics = get(),
                 restoreWalletAnalytics = get(),
-                tokenServiceRepository = get()
+                tokenServiceRepository = get(),
+                appLoader = get(),
+                tokenServiceCoordinator = get(),
+                appScope = get()
             )
         }
     }
