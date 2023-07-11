@@ -26,16 +26,15 @@ class SolanaTokensLoader(
 ) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext = appScope.coroutineContext
-    private val loadState = AtomicReference<TokenLoadState>(TokenLoadState.IDLE)
+    private val loadState = AtomicReference(TokenLoadState.IDLE)
 
     suspend fun onStart() {
         try {
-            // Subscribe for solana tokens rate updates
             tokenServiceEventManager.subscribe(SolanaTokensRatesEventSubscriber(::saveTokensRates))
-            // First step, upload solana tokens from server
-            loadState.compareAndSet(null, TokenLoadState.LOADING)
+            loadState.compareAndSet(TokenLoadState.IDLE, TokenLoadState.LOADING)
 
             val tokens = userTokensInteractor.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
+
             userTokensInteractor.saveUserTokens(tokens)
             userTokensInteractor.loadUserRates(tokens)
 

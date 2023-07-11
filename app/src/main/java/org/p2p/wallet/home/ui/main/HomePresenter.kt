@@ -137,7 +137,9 @@ class HomePresenter(
         launch {
             tokenService.observeUserTokens().combine(
                 homeInteractor.getUserStatusBannerFlow()
-            ) { tokenState, banner -> tokenState to banner.takeIf { strigaFeatureToggle.isFeatureEnabled } }
+            ) { tokenState, banner ->
+                tokenState to banner.takeIf { strigaFeatureToggle.isFeatureEnabled }
+            }
                 .collect { (tokenState, banner) ->
 
                     val isLoading = tokenState is TokenState.Loading
@@ -145,10 +147,8 @@ class HomePresenter(
 
                     view?.showInitialLoading(isLoading)
                     showRefreshing(isRefreshing)
+
                     when (tokenState) {
-                        is TokenState.Loading, TokenState.Refreshing -> {
-                            showRefreshing(true)
-                        }
                         is TokenState.Loaded -> {
                             initializeActionButtons()
                             val claimTokens = strigaInteractor.getClaimableTokens()
@@ -161,7 +161,7 @@ class HomePresenter(
                             )
                             handleHomeStateChanged(tokenState.solTokens, tokenState.ethTokens)
                         }
-                        is TokenState.Error -> {}
+                        else -> Unit
                     }
                 }
         }

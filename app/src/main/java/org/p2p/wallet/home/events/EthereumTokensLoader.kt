@@ -33,14 +33,14 @@ class EthereumTokensLoader(
 
     override val coroutineContext: CoroutineContext = appScope.coroutineContext
     private val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
+    private val loadState = AtomicReference(TokenLoadState.IDLE)
 
-    private val loadState = AtomicReference<TokenLoadState>(TokenLoadState.IDLE)
     suspend fun onStart() {
         try {
             ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
             tokenServiceEventManager.subscribe(EthereumTokensRatesEventSubscriber(::saveTokensRates))
 
-            loadState.compareAndSet(null, TokenLoadState.LOADING)
+            loadState.compareAndSet(TokenLoadState.IDLE, TokenLoadState.LOADING)
             val claimTokens = ethereumInteractor.loadClaimTokens()
             ethereumInteractor.loadSendTransactionDetails()
 
@@ -62,8 +62,10 @@ class EthereumTokensLoader(
         try {
             loadState.compareAndSet(TokenLoadState.LOADED, TokenLoadState.LOADING)
             val claimTokens = ethereumInteractor.loadClaimTokens()
+
             ethereumInteractor.loadSendTransactionDetails()
             val ethTokens = ethereumInteractor.loadWalletTokens(claimTokens)
+
             ethereumInteractor.cacheWalletTokens(ethTokens)
             loadState.compareAndSet(TokenLoadState.REFRESHING, TokenLoadState.LOADED)
         } catch (e: Throwable) {

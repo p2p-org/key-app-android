@@ -31,9 +31,7 @@ object HomeEventsModule : InjectionModule {
                 ),
                 SocketSubscribeLoader(
                     updatesManager = get(),
-                    updateSubscribers = subscribers,
-                    connectionManager = get(),
-                    appScope = get()
+                    updateSubscribers = subscribers
                 ),
                 SolanaObservationLoader(
                     networkObserver = get(),
@@ -47,7 +45,6 @@ object HomeEventsModule : InjectionModule {
                 )
 
             )
-
             AppLoaderFacade(appLoaders, appScope = get())
         }
         single {

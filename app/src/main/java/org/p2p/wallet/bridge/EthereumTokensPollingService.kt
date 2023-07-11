@@ -12,6 +12,7 @@ import org.p2p.wallet.bridge.interactor.EthereumInteractor
 
 private const val DELAY_IN_MILLISECONDS = 10_000L
 private const val TAG = "EthereumTokensPollingService"
+
 class EthereumTokensPollingService(
     private val ethereumInteractor: EthereumInteractor,
     appScope: AppScope
