@@ -331,8 +331,6 @@ class HomeFragment :
         binding.appBarLayout.isVisible = !isLoading
         binding.homeRecyclerView.isVisible = !isLoading
         binding.swipeRefreshLayout.isVisible = !isLoading
-        binding.layoutToolbar.root.isVisible = !isLoading
-
         binding.shimmerView.root.isVisible = isLoading
     }
 

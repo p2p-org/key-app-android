@@ -110,9 +110,14 @@ object HomeModule : InjectionModule {
                 deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
-                appLoader = get(),
                 context = get(),
-                userTokensInteractor = get()
+                userTokensInteractor = get(),
+                updatesManager = get(),
+                environmentManager = get(),
+                sellEnabledFeatureToggle = get(),
+                strigaFeatureToggle = get(),
+                tokenKeyProvider = get(),
+                tokenService = get()
             )
         }
         factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
