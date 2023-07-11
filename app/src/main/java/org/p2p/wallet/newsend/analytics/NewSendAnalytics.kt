@@ -184,7 +184,6 @@ class NewSendAnalytics(
 
     enum class AnalyticsSendNetwork(val title: String) {
         SOLANA("Solana"),
-        BITCOIN("Bitcoin"),
         ETHEREUM("Ethereum")
     }
 
