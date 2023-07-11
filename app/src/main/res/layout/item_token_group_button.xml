@@ -19,11 +19,10 @@
         android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-        android:textColor="@color/text_mountain"
         android:layout_marginHorizontal="8dp"
-        tools:text="@string/main_hidden_tokens" />
-
+        android:gravity="center_vertical"
+        android:text="@string/main_hidden_tokens"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+        android:textColor="@color/text_mountain" />
 
 </LinearLayout>
