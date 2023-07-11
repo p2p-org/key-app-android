@@ -23,7 +23,7 @@ object RestoreModule : InjectionModule {
                 restoreWalletAnalytics = get(),
                 tokenServiceRepository = get(),
                 appLoader = get(),
-                tokenService = get(),
+                tokenServiceCoordinator = get(),
                 appScope = get()
             )
         }

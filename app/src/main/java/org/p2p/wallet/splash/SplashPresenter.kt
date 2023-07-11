@@ -8,7 +8,7 @@ import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.events.AppLoader
-import org.p2p.wallet.tokenservice.TokenService
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.user.interactor.BlockChainTokensMetadataInteractor
 
 class SplashPresenter(
@@ -16,7 +16,7 @@ class SplashPresenter(
     private val onboardingAnalytics: OnboardingAnalytics,
     private val blockchainTokensInteractor: BlockChainTokensMetadataInteractor,
     private val appLoader: AppLoader,
-    private val tokenService: TokenService,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val appScope: AppScope
 ) : BasePresenter<SplashContract.View>(), SplashContract.Presenter {
 
@@ -53,7 +53,7 @@ class SplashPresenter(
     }
 
     private suspend fun launchAppLoaders() = withContext(appScope.coroutineContext) {
-        tokenService.onStart()
+        tokenServiceCoordinator.start()
         appLoader.onLoad()
     }
 }

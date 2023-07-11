@@ -116,7 +116,7 @@ class NewSendPresenter(
     }
 
     private fun subscribeToSelectedTokenUpdates() {
-        userTokensInteractor.getUserTokensFlow()
+        userTokensInteractor.observeUserTokens()
             .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
             .filterNotNull()
             .onEach { token = it }

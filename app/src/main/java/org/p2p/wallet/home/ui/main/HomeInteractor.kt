@@ -42,7 +42,7 @@ class HomeInteractor(
 
     suspend fun getTokensForBuy(): List<Token> = userInteractor.getTokensForBuy()
 
-    suspend fun findMultipleTokenData(tokenSymbols: List<String>): List<Token> =
+    suspend fun findMultipleTokenData(tokenSymbols: List<String>): List<Token.Other> =
         userInteractor.findMultipleTokenData(tokenSymbols)
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) {

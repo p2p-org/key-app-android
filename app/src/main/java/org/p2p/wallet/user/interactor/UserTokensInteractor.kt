@@ -51,7 +51,7 @@ class UserTokensInteractor(
         return userTokensLocalRepository.getUserTokens()
     }
 
-    fun getUserTokensFlow(): Flow<List<Token.Active>> {
+    fun observeUserTokens(): Flow<List<Token.Active>> {
         return userTokensLocalRepository.observeUserTokens()
     }
 

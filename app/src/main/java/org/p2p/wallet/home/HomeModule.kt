@@ -117,7 +117,7 @@ object HomeModule : InjectionModule {
                 sellEnabledFeatureToggle = get(),
                 strigaFeatureToggle = get(),
                 tokenKeyProvider = get(),
-                tokenService = get(),
+                tokenServiceCoordinator = get(),
                 strigaInteractor = get()
             )
         }

@@ -5,8 +5,7 @@ import org.koin.core.module.dsl.new
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.bridge.EthereumTokensPollingService
-import org.p2p.wallet.tokenservice.TokenService
-import org.p2p.wallet.tokenservice.TokenServiceLoadStateHelper
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
 import org.p2p.wallet.updates.subscribe.SplTokenProgramSubscriber
 
@@ -71,13 +70,11 @@ object HomeEventsModule : InjectionModule {
                 appScope = get()
             )
 
-            TokenService(
-                userTokensInteractor = get(),
-                ethereumInteractor = get(),
+            TokenServiceCoordinator(
                 solanaTokensLoader = solTokensLoader,
                 ethereumTokensLoader = ethTokensLoader,
-                appScope = get(),
-                loadStateHelper = TokenServiceLoadStateHelper
+                homeInteractor = get(),
+                appScope = get()
             )
         }
     }

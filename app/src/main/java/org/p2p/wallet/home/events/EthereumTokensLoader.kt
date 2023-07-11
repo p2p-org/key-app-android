@@ -1,9 +1,11 @@
 package org.p2p.wallet.home.events
 
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.token.service.api.events.manager.TokenServiceEvent
@@ -17,12 +19,12 @@ import org.p2p.wallet.bridge.EthereumTokensPollingService
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
-import org.p2p.wallet.tokenservice.TokenLoadState
+import org.p2p.wallet.tokenservice.model.EthTokenLoadState
 
 private const val TAG = "EthereumTokensLoader"
 
 class EthereumTokensLoader(
-    private val seedPhraseProvider: SeedPhraseProvider,
+    seedPhraseProvider: SeedPhraseProvider,
     private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     private val ethereumInteractor: EthereumInteractor,
     private val ethereumTokensPollingService: EthereumTokensPollingService,
@@ -33,14 +35,19 @@ class EthereumTokensLoader(
 
     override val coroutineContext: CoroutineContext = appScope.coroutineContext
     private val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-    private val loadState = AtomicReference(TokenLoadState.IDLE)
 
-    suspend fun onStart() {
+    private val state: MutableStateFlow<EthTokenLoadState> = MutableStateFlow(EthTokenLoadState.Idle)
+
+    fun observeState(): Flow<EthTokenLoadState> = state.asStateFlow()
+
+    suspend fun loadIfEnabled() {
+        if (!isEnabled()) return
+
         try {
+            updateState(EthTokenLoadState.Loading)
             ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
             tokenServiceEventManager.subscribe(EthereumTokensRatesEventSubscriber(::saveTokensRates))
 
-            loadState.compareAndSet(TokenLoadState.IDLE, TokenLoadState.LOADING)
             val claimTokens = ethereumInteractor.loadClaimTokens()
             ethereumInteractor.loadSendTransactionDetails()
 
@@ -54,31 +61,28 @@ class EthereumTokensLoader(
             ethereumTokensPollingService.start()
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e, "Error while loading ethereum tokens")
-        } finally {
-            loadState.compareAndSet(TokenLoadState.LOADING, TokenLoadState.LOADED)
+            updateState(EthTokenLoadState.Error(e))
         }
     }
 
-    suspend fun onRefresh() {
+    suspend fun refreshIfEnabled() {
+        if (!isEnabled()) return
+
         try {
-            loadState.compareAndSet(TokenLoadState.LOADED, TokenLoadState.REFRESHING)
+            updateState(EthTokenLoadState.Refreshing)
             val claimTokens = ethereumInteractor.loadClaimTokens()
 
             ethereumInteractor.loadSendTransactionDetails()
             val ethTokens = ethereumInteractor.loadWalletTokens(claimTokens)
 
             ethereumInteractor.cacheWalletTokens(ethTokens)
-            loadState.compareAndSet(TokenLoadState.REFRESHING, TokenLoadState.LOADED)
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e, "Error while refreshing ethereum tokens")
+            updateState(EthTokenLoadState.Error(e))
         }
     }
 
-    fun getCurrentLoadState(): TokenLoadState {
-        return loadState.get()
-    }
-
-    fun isEnabled(): Boolean {
+    private fun isEnabled(): Boolean {
         return userSeedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled
     }
 
@@ -88,11 +92,13 @@ class EthereumTokensLoader(
         }
     }
 
-    private inner class EthereumTokensRatesEventSubscriber(private val block: (List<TokenServicePrice>) -> Unit) :
-        TokenServiceEventSubscriber {
+    private inner class EthereumTokensRatesEventSubscriber(
+        private val block: (List<TokenServicePrice>) -> Unit
+    ) : TokenServiceEventSubscriber {
 
         override fun onUpdate(eventType: TokenServiceEventType, event: TokenServiceEvent) {
-            if (eventType != TokenServiceEventType.SOLANA_CHAIN_EVENT) return
+            if (eventType != TokenServiceEventType.ETHEREUM_CHAIN_EVENT) return
+
             when (event) {
                 is TokenServiceEvent.Loading -> Unit
                 is TokenServiceEvent.TokensPriceLoaded -> block(event.result)
@@ -100,5 +106,9 @@ class EthereumTokensLoader(
                 else -> Unit
             }
         }
+    }
+
+    private fun updateState(newState: EthTokenLoadState) {
+        state.value = newState
     }
 }

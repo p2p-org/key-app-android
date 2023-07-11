@@ -18,7 +18,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.events.AppLoader
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.wallet.tokenservice.TokenService
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
 class DerivableAccountsPresenter(
     private val secretKeys: List<String>,
@@ -27,7 +27,7 @@ class DerivableAccountsPresenter(
     private val restoreWalletAnalytics: RestoreWalletAnalytics,
     private val tokenServiceRepository: TokenServiceRepository,
     private val appLoader: AppLoader,
-    private val tokenService: TokenService,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val appScope: AppScope
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
@@ -126,7 +126,7 @@ class DerivableAccountsPresenter(
     }
 
     private suspend fun launchAppLoaders() = withContext(appScope.coroutineContext) {
-        tokenService.onStart()
+        tokenServiceCoordinator.start()
         appLoader.onLoad()
     }
 }

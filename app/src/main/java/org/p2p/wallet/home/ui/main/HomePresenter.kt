@@ -7,7 +7,8 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.network.environment.NetworkEnvironmentManager
@@ -15,8 +16,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.core.utils.Constants.USDT_SYMBOL
-import org.p2p.core.utils.Constants.WETH_SYMBOL
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
@@ -44,16 +43,14 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
-import org.p2p.wallet.tokenservice.TokenService
-import org.p2p.wallet.tokenservice.TokenState
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.tokenservice.UserTokenState
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.unsafeLazy
-
-val POPULAR_TOKENS_SYMBOLS: Set<String> = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
 
 val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
@@ -76,7 +73,7 @@ class HomePresenter(
     private val analytics: HomeAnalytics,
     tokenKeyProvider: TokenKeyProvider,
     context: Context,
-    private val tokenService: TokenService
+    private val tokenServiceCoordinator: TokenServiceCoordinator
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private val resources: Resources = context.resources
@@ -107,13 +104,16 @@ class HomePresenter(
         }
         observeActionButtonState()
         handleDeeplinks()
-        attachToPollingTokens()
+        observeKycBanners()
+        observeState()
+
+        loadStrigaClaimableTokens()
     }
 
     override fun refreshTokens() {
         launchInternetAware(connectionManager) {
             try {
-                tokenService.onRefresh()
+                tokenServiceCoordinator.refresh()
                 initializeActionButtons(isRefreshing = true)
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
@@ -124,34 +124,51 @@ class HomePresenter(
         }
     }
 
-    private fun attachToPollingTokens() {
-        launch {
-            tokenService.observeUserTokens().combine(
-                homeInteractor.getUserStatusBannerFlow()
-            ) { tokenState, banner ->
-                tokenState to banner.takeIf { strigaFeatureToggle.isFeatureEnabled }
+    private fun observeState() {
+        tokenServiceCoordinator.observeUserTokens()
+            .onEach { tokenState ->
+                handleTokenState(tokenState)
             }
-                .collect { (tokenState, banner) ->
-                    val isLoading = tokenState.isLoading()
-                    view?.showRefreshing(isLoading)
+            .launchIn(this)
+    }
 
-                    when (tokenState) {
-                        is TokenState.Loaded -> {
-                            initializeActionButtons()
-                            val claimTokens = strigaInteractor.getClaimableTokens()
-                                .successOrNull().orEmpty()
-                            state = state.copy(
-                                tokens = tokenState.solTokens,
-                                ethTokens = tokenState.ethTokens,
-                                strigaKycStatusBanner = banner,
-                                strigaClaimableTokens = claimTokens
-                            )
-                            handleHomeStateChanged(tokenState.solTokens, tokenState.ethTokens)
-                        }
-                        else -> Unit
-                    }
-                }
+    private fun handleTokenState(newState: UserTokenState) {
+        view?.showRefreshing(isRefreshing = newState.isLoading())
+
+        when (newState) {
+            is UserTokenState.Idle -> Unit
+            is UserTokenState.Loading -> Unit
+            is UserTokenState.Refreshing -> Unit
+            is UserTokenState.Error -> {
+                view?.showErrorMessage(newState.cause)
+            }
+            is UserTokenState.Empty -> {
+                view?.showEmptyState(isEmpty = true)
+                handleEmptyAccount(newState.emptyStateTokens)
+            }
+            is UserTokenState.Loaded -> {
+                view?.showEmptyState(isEmpty = false)
+                initializeActionButtons(isSellAvailable = newState.isSellAvailable)
+                state = state.copy(
+                    tokens = newState.solTokens,
+                    ethTokens = newState.ethTokens
+                )
+            }
         }
+    }
+
+    private fun observeKycBanners() {
+        if (!strigaFeatureToggle.isFeatureEnabled) {
+            return
+        }
+
+        homeInteractor.getUserStatusBannerFlow()
+            .onEach { banner ->
+                state = state.copy(
+                    strigaKycStatusBanner = banner
+                )
+            }
+            .launchIn(this)
     }
 
     private fun observeActionButtonState() {
@@ -159,6 +176,15 @@ class HomePresenter(
             buttonsStateFlow.collect { buttons ->
                 view?.showActionButtons(buttons)
             }
+        }
+    }
+
+    private fun loadStrigaClaimableTokens() {
+        launch {
+            val claimTokens = strigaInteractor.getClaimableTokens().successOrNull().orEmpty()
+            state = state.copy(
+                strigaClaimableTokens = claimTokens
+            )
         }
     }
 
@@ -272,12 +298,11 @@ class HomePresenter(
         }
     }
 
-    private suspend fun initializeActionButtons(isRefreshing: Boolean = false) {
+    private fun initializeActionButtons(isRefreshing: Boolean = false, isSellAvailable: Boolean = true) {
         if (!isRefreshing && buttonsStateFlow.value.isNotEmpty()) {
             return
         }
         val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
-        val isSellAvailable = homeInteractor.isSellFeatureAvailable()
 
         val buttons = mutableListOf(ActionButton.TOP_UP_BUTTON)
         if (isSellAvailable) {
@@ -290,7 +315,7 @@ class HomePresenter(
             buttons += ActionButton.SWAP_BUTTON
         }
 
-        buttonsStateFlow.emit(buttons)
+        buttonsStateFlow.value = buttons
     }
 
     private fun showUserAddressAndUsername() {
@@ -368,7 +393,7 @@ class HomePresenter(
         }
     }
 
-    private suspend fun handleHomeStateChanged(
+    private fun handleHomeStateChanged(
         userTokens: List<Token.Active>,
         ethTokens: List<Token.Eth>,
     ) {
@@ -381,8 +406,9 @@ class HomePresenter(
         val isAccountEmpty = userTokens.all(Token.Active::isZero) && ethTokens.isEmpty()
         when {
             isAccountEmpty -> {
-                view?.showEmptyState(isEmpty = true)
-                handleEmptyAccount()
+                // fixme: fixed in line 145, this should be removed
+//                view?.showEmptyState(isEmpty = true)
+//                handleEmptyAccount()
             }
 
             (userTokens.isNotEmpty() || ethTokens.isNotEmpty()) -> {
@@ -392,11 +418,7 @@ class HomePresenter(
         }
     }
 
-    private suspend fun handleEmptyAccount() {
-        val tokensForBuy =
-            homeInteractor.findMultipleTokenData(POPULAR_TOKENS_SYMBOLS.toList())
-                .sortedBy { tokenToBuy -> POPULAR_TOKENS_SYMBOLS.indexOf(tokenToBuy.tokenSymbol) }
-
+    private fun handleEmptyAccount(tokensForBuy: List<Token.Other>) {
         val strigaBigBanner = state.strigaKycStatusBanner
             ?.let { homeMapper.mapToBigBanner(it, state.isStrigaKycBannerLoading) }
             ?: getDefaultBanner()

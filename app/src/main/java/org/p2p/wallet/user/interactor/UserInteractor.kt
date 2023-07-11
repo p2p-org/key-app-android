@@ -93,7 +93,7 @@ class UserInteractor(
         return userTokens.any { it.publicKey == address }
     }
 
-    suspend fun findMultipleTokenData(tokenSymbols: List<String>): List<Token> =
+    suspend fun findMultipleTokenData(tokenSymbols: List<String>): List<Token.Other> =
         tokenSymbols.mapNotNull { findTokenDataBySymbol(it) }
 
     private suspend fun findTokenDataBySymbol(symbol: String): Token.Other? {
