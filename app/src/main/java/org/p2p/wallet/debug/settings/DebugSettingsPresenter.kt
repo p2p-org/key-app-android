@@ -14,7 +14,6 @@ import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
 import org.p2p.core.BuildConfig as CoreBuildConfig
@@ -47,7 +46,6 @@ class DebugSettingsPresenter(
             try {
                 environmentManager.chooseEnvironment(newNetworkEnvironment)
                 homeLocalRepository.clear()
-                RenVMService.stopService(context)
             } catch (error: Throwable) {
                 Timber.e(error, "Network changing failed")
             }

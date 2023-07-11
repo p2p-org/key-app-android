@@ -10,7 +10,6 @@ import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.auth.analytics.RenBtcAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.UsernameAnalytics
 import org.p2p.wallet.bridge.analytics.ClaimAnalytics
@@ -56,7 +55,6 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::BrowseAnalytics)
         factoryOf(::HomeAnalytics)
         factoryOf(::UsernameAnalytics)
-        factoryOf(::RenBtcAnalytics)
         factoryOf(::CreateWalletAnalytics)
         factoryOf(::RestoreWalletAnalytics)
         factoryOf(::NewSendAnalytics)

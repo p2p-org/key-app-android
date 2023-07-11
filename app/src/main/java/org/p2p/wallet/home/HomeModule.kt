@@ -26,15 +26,8 @@ import org.p2p.wallet.home.ui.wallet.WalletPresenter
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.interactor.SendInteractor
-import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
-import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
-import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
-import org.p2p.wallet.receive.renbtc.ReceiveRenBtcContract
-import org.p2p.wallet.receive.renbtc.ReceiveRenBtcPresenter
-import org.p2p.wallet.receive.token.ReceiveTokenContract
-import org.p2p.wallet.receive.token.ReceiveTokenPresenter
 import org.p2p.wallet.striga.ui.TopUpWalletContract
 import org.p2p.wallet.striga.ui.TopUpWalletPresenter
 import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
@@ -121,35 +114,8 @@ object HomeModule : InjectionModule {
             )
         }
         factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
-        factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
-            ReceiveNetworkTypePresenter(
-                renBtcInteractor = get(),
-                userInteractor = get(),
-                transactionAmountRepository = get(),
-                tokenKeyProvider = get(),
-                tokenInteractor = get(),
-                receiveAnalytics = get(),
-                environmentManager = get(),
-                newBuyFeatureToggle = get(),
-                networkType = type,
-                userSignUpDetailsStorage = get(),
-                userTokensInteractor = get(),
-                renBtcAnalytics = get()
-            )
-        }
-
-        factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
-            ReceiveTokenPresenter(
-                defaultToken = token,
-                qrCodeInteractor = get(),
-                usernameInteractor = get(),
-                tokenKeyProvider = get(),
-                receiveAnalytics = get()
-            )
-        }
 
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
-        factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
 
         factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
     }

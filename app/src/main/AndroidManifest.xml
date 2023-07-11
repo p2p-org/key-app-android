@@ -131,8 +131,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".renbtc.service.RenVMService" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
