@@ -12,10 +12,4 @@ class SolanaObservationLoader(
     override suspend fun onLoad() {
         appScope.launch { networkObserver.start() }
     }
-
-    override suspend fun onRefresh(): Unit = Unit
-
-    override suspend fun isEnabled(): Boolean {
-        return true
-    }
 }

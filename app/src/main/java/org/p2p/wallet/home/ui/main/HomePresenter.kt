@@ -7,6 +7,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -44,8 +45,9 @@ import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
-import org.p2p.wallet.solana.SolanaNetworkObserver
+import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.tokenservice.TokenService
+import org.p2p.wallet.tokenservice.TokenState
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -72,6 +74,7 @@ class HomePresenter(
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val userTokensInteractor: UserTokensInteractor,
+    private val strigaInteractor: StrigaClaimInteractor,
     private val analytics: HomeAnalytics,
     tokenKeyProvider: TokenKeyProvider,
     context: Context,
@@ -100,12 +103,6 @@ class HomePresenter(
         )
     }
 
-    init {
-        launchSupervisor {
-            attachToPollingTokens()
-        }
-    }
-
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         launch {
@@ -116,7 +113,7 @@ class HomePresenter(
         observeRefreshingStatus()
         observeActionButtonState()
         handleDeeplinks()
-
+        attachToPollingTokens()
     }
 
     override fun refreshTokens() {
@@ -136,35 +133,39 @@ class HomePresenter(
         }
     }
 
-    private suspend fun attachToPollingTokens() {
-//
-//        initializeActionButtons()
-//        handleHomeStateChanged(homeState.solTokens, homeState.ethTokens)
-//        showRefreshing(homeState.isRefreshing)
-//        tokensPolling.shareTokenPollFlowIn(this)
-//            .filterNotNull()
-//            .combine(homeInteractor.getUserStatusBannerFlow()) { homeState, strigaBanner ->
-//                homeState to strigaBanner.takeIf { strigaFeatureToggle.isFeatureEnabled }
-//            }
-//            .onCompletion { homeStateSubscribed = false }
-//            .collect { (homeState, strigaBanner) ->
-//                logHomeStateChanged(homeState)
-//
-//                state = state.copy(
-//                    tokens = homeState.solTokens,
-//                    ethTokens = homeState.ethTokens,
-//                    strigaKycStatusBanner = strigaBanner,
-//                    strigaClaimableTokens = homeState.claimableTokens
-//                )
-//
-//            }
-    }
+    private fun attachToPollingTokens() {
+        launch {
+            tokenService.observeUserTokens().combine(
+                homeInteractor.getUserStatusBannerFlow()
+            ) { tokenState, banner -> tokenState to banner.takeIf { strigaFeatureToggle.isFeatureEnabled } }
+                .collect { (tokenState, banner) ->
 
-//    private fun logHomeStateChanged(homeState: UserTokensPollState) {
-//        val solTokensLog = homeState.solTokens
-//            .joinToString { "${it.tokenSymbol}(${it.total.formatToken()}; ${it.totalInUsd?.formatFiat()})" }
-//        Timber.d("Home state solTokens: $solTokensLog")
-//    }
+                    val isLoading = tokenState is TokenState.Loading
+                    val isRefreshing = tokenState is TokenState.Refreshing
+
+                    view?.showInitialLoading(isLoading)
+                    showRefreshing(isRefreshing)
+                    when (tokenState) {
+                        is TokenState.Loading, TokenState.Refreshing -> {
+                            showRefreshing(true)
+                        }
+                        is TokenState.Loaded -> {
+                            initializeActionButtons()
+                            val claimTokens = strigaInteractor.getClaimableTokens()
+                                .successOrNull().orEmpty()
+                            state = state.copy(
+                                tokens = tokenState.solTokens,
+                                ethTokens = tokenState.ethTokens,
+                                strigaKycStatusBanner = banner,
+                                strigaClaimableTokens = claimTokens
+                            )
+                            handleHomeStateChanged(tokenState.solTokens, tokenState.ethTokens)
+                        }
+                        is TokenState.Error -> {}
+                    }
+                }
+        }
+    }
 
     private fun observeActionButtonState() {
         launch {

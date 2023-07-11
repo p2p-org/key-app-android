@@ -33,10 +33,6 @@ class SocketSubscribeLoader(
         updatesManager.start()
     }
 
-    override suspend fun isEnabled(): Boolean {
-        return true
-    }
-
     private fun observeConnectionStatus() = appScope.launch {
         connectionManager.connectionStatus.collect { hasConnection ->
             if (hasConnection) {

@@ -117,7 +117,8 @@ object HomeModule : InjectionModule {
                 sellEnabledFeatureToggle = get(),
                 strigaFeatureToggle = get(),
                 tokenKeyProvider = get(),
-                tokenService = get()
+                tokenService = get(),
+                strigaInteractor = get()
             )
         }
         factoryOf(::WalletPresenter) bind WalletContract.Presenter::class

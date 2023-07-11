@@ -15,8 +15,6 @@ class AppLoaderFacade(
             .awaitAll()
     }
 
-    override suspend fun isEnabled(): Boolean = true
-
     override suspend fun onRefresh() {
         appLoaders.filter { it.isEnabled() }
             .map { appScope.async { it.onRefresh() } }

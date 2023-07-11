@@ -34,7 +34,7 @@ class EthereumTokensLoader(
     override val coroutineContext: CoroutineContext = appScope.coroutineContext
     private val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
 
-    private val loadState = AtomicReference<TokenLoadState>()
+    private val loadState = AtomicReference<TokenLoadState>(TokenLoadState.IDLE)
     suspend fun onStart() {
         try {
             ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)

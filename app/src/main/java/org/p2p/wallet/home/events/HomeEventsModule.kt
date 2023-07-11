@@ -19,10 +19,6 @@ object HomeEventsModule : InjectionModule {
                 new(::SolanaAccountUpdateSubscriber)
             )
             val appLoaders = listOf(
-                ActionButtonsLoader(
-                    homeInteractor = get(),
-                    sellEnabledFeatureToggle = get()
-                ),
                 OnboardingMetadataLoader(
                     metadataInteractor = get()
                 ),
@@ -43,22 +39,13 @@ object HomeEventsModule : InjectionModule {
                     networkObserver = get(),
                     appScope = get()
                 ),
-                StrigaBannersLoader(
-                    strigaUserInteractor = get(),
-                    strigaSignupEnabledFeatureToggle = get(),
-                    appScope = get(),
-                    homeInteractor = get()
-                ),
                 StrigaFeatureLoader(
                     strigaSignupEnabledFeatureToggle = get(),
                     strigaUserInteractor = get(),
                     strigaSignupInteractor = get(),
                     strigaWalletInteractor = get()
-                ),
-                UsernameLoader(
-                    homeInteractor = get(),
-                    tokenKeyProvider = get()
                 )
+
             )
 
             AppLoaderFacade(appLoaders, appScope = get())

@@ -26,7 +26,7 @@ class SolanaTokensLoader(
 ) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext = appScope.coroutineContext
-    private val loadState = AtomicReference<TokenLoadState>()
+    private val loadState = AtomicReference<TokenLoadState>(TokenLoadState.IDLE)
 
     suspend fun onStart() {
         try {
