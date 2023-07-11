@@ -19,16 +19,9 @@ class StrigaFeatureLoader(
         strigaUserInteractor.loadAndSaveUserStatusData()
         Timber.d("Striga user status loaded (is KYC approved? ${strigaUserInteractor.isKycApproved})")
         if (strigaUserInteractor.canLoadAccounts) {
-            loadDetailsForStrigaAccounts()
+            strigaWalletInteractor.loadDetailsForStrigaAccounts()
             Timber.d("Striga accounts details loaded")
         }
-    }
-
-    private suspend fun loadDetailsForStrigaAccounts() = try {
-        strigaWalletInteractor.getFiatAccountDetails()
-        strigaWalletInteractor.getCryptoAccountDetails()
-    } catch (e: Throwable) {
-        Timber.e(e, "Unable to load striga accounts (fiat and crypto) details")
     }
 
     override suspend fun isEnabled(): Boolean {

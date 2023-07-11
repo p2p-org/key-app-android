@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.wallet.interactor
 
+import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
@@ -23,6 +24,14 @@ class StrigaWalletInteractor(
 
     private class StrigaEuroAccountNotFound : Throwable()
     private class StrigaUsdcAccountNotFound : Throwable()
+
+    suspend fun loadDetailsForStrigaAccounts(): Result<Unit> = kotlin.runCatching {
+        getFiatAccountDetails()
+        getCryptoAccountDetails()
+        Unit
+    }.onFailure {
+        Timber.e(it, "Unable to load striga accounts (fiat and crypto) details")
+    }
 
     @Throws(StrigaEuroAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
     suspend fun getFiatAccountDetails(): StrigaFiatAccountDetails {

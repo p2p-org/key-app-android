@@ -31,10 +31,8 @@ class HomeInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
-    suspend fun loadDetailsForStrigaAccounts(): Result<Unit> = kotlin.runCatching {
-        strigaWalletInteractor.getFiatAccountDetails()
-        strigaWalletInteractor.getCryptoAccountDetails()
-    }
+    suspend fun loadDetailsForStrigaAccounts(): Result<Unit> =
+        strigaWalletInteractor.loadDetailsForStrigaAccounts()
 
     fun getHiddenTokensVisibility(): Boolean = userInteractor.getHiddenTokensVisibility()
 
