@@ -465,6 +465,15 @@ class HomePresenter(
             }
 
             view?.showTokens(homeToken, areZerosHidden)
+
+            // TODO move this to CryptoScreen!
+            /*val mappedItems: List<AnyCellItem> = homeMapper.mapToCellItems(
+                tokens = state.tokens,
+                ethereumTokens = state.ethTokens,
+                visibilityState = state.visibilityState,
+                isZerosHidden = areZerosHidden,
+            )
+            view?.showItems(mappedItems)*/
         }
     }
 
