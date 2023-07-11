@@ -76,7 +76,7 @@ private fun AdapterDelegateViewBindingViewHolder<TokenCellModel, ItemTokenBindin
         }
 
         override fun onSlide(view: SwipeRevealLayout?, slideOffset: Float) {
-            viewAlpha.alpha = if (slideOffset > VIEW_ALPHA_MAX_VALUE) VIEW_ALPHA_MAX_VALUE else slideOffset
+            viewAlpha.alpha = slideOffset.coerceAtMost(VIEW_ALPHA_MAX_VALUE)
         }
     })
 }

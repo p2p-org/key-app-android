@@ -125,39 +125,35 @@ class HomePresenterMapper(
         }
     }
 
-    suspend fun mapToCellItems(
+    fun mapToCellItems(
         tokens: List<Token.Active>,
         ethereumTokens: List<Token.Eth>,
-        strigaClaimableTokens: List<StrigaClaimableToken>,
         visibilityState: VisibilityState,
         isZerosHidden: Boolean
     ): List<AnyCellItem> {
-        return withContext(dispatchers.io) {
-
-            val isHiddenGroupToTokens: Map<Boolean, List<Token.Active>> = tokens.groupBy { token ->
-                token.isDefinitelyHidden(isZerosHidden)
-            }
-
-            val hiddenTokens = isHiddenGroupToTokens[true].orEmpty()
-            val visibleTokens = isHiddenGroupToTokens[false].orEmpty()
-
-            val result = mutableListOf<AnyCellItem>()
-
-            result += ethereumTokens.map { it.mapToCellModel() }
-            result += visibleTokens.map { it.mapToCellModel(isZerosHidden) }
-
-            if (hiddenTokens.isNotEmpty()) {
-                val isHidden = visibilityState is VisibilityState.Hidden
-                val iconResId = if (isHidden) R.drawable.ic_token_expose else R.drawable.ic_token_hide
-                result += TokenButtonCellModel(visibilityIcon = iconResId, payload = visibilityState)
-            }
-
-            if (visibilityState.isVisible) {
-                result += hiddenTokens.map { it.mapToCellModel(!isZerosHidden) }
-            }
-
-            result.toList()
+        val isHiddenGroupToTokens: Map<Boolean, List<Token.Active>> = tokens.groupBy { token ->
+            token.isDefinitelyHidden(isZerosHidden)
         }
+
+        val hiddenTokens = isHiddenGroupToTokens[true].orEmpty()
+        val visibleTokens = isHiddenGroupToTokens[false].orEmpty()
+
+        val result = mutableListOf<AnyCellItem>()
+
+        result += ethereumTokens.map { it.mapToCellModel() }
+        result += visibleTokens.map { it.mapToCellModel(isZerosHidden) }
+
+        if (hiddenTokens.isNotEmpty()) {
+            val isHidden = visibilityState is VisibilityState.Hidden
+            val iconResId = if (isHidden) R.drawable.ic_token_expose else R.drawable.ic_token_hide
+            result += TokenButtonCellModel(visibilityIcon = iconResId, payload = visibilityState)
+        }
+
+        if (visibilityState.isVisible) {
+            result += hiddenTokens.map { it.mapToCellModel(!isZerosHidden) }
+        }
+
+        return result.toList()
     }
 
     private fun Token.Active.mapToCellModel(isZerosHidden: Boolean): TokenCellModel {

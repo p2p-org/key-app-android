@@ -572,7 +572,6 @@ class HomePresenter(
                 tokens = state.tokens,
                 ethereumTokens = state.ethTokens,
                 visibilityState = state.visibilityState,
-                strigaClaimableTokens = state.strigaClaimableTokens,
                 isZerosHidden = areZerosHidden,
             )
             view?.showItems(mappedItems)*/
