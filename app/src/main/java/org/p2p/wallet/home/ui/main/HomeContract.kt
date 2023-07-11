@@ -22,9 +22,8 @@ interface HomeContract {
         fun showTokensForBuy(tokens: List<Token>)
         fun showBalance(cellModel: TextViewCellModel?)
         fun showRefreshing(isRefreshing: Boolean)
-        fun showEmptyViewData(data: List<Any>)
         fun showEmptyState(isEmpty: Boolean)
-        fun showUserAddress(ellipsizedAddress: String)
+        fun showReceive()
         fun showNewSendScreen(openedFromScreen: SearchOpenedFromScreen)
         fun showActionButtons(buttons: List<ActionButton>)
         fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom)
@@ -34,7 +33,6 @@ interface HomeContract {
         fun showTopup()
         fun navigateToProfile()
         fun navigateToReserveUsername()
-        fun showAddressCopied(addressOrUsername: String)
         fun showBuyInfoScreen(token: Token)
 
         fun showSendNoTokens(fallbackToken: Token)
@@ -52,6 +50,7 @@ interface HomeContract {
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun onBuyClicked()
+        fun onReceiveClicked()
         fun onSellClicked()
         fun onSwapClicked()
         fun onTopupClicked()
@@ -63,7 +62,6 @@ interface HomeContract {
         fun toggleTokenVisibilityState()
         fun clearTokensCache()
         fun onProfileClick()
-        fun onAddressClicked()
         fun updateTokensIfNeeded()
         fun load()
         fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth)

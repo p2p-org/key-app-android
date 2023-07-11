@@ -9,7 +9,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
@@ -22,6 +21,7 @@ import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 private const val TAG = "SellInteractor"
 private const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_DIALOG_KEY"
@@ -32,7 +32,7 @@ class SellInteractor(
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val userInteractor: UserInteractor,
-    private val userTokensRepository: UserTokensRepository,
+    private val userTokensRepository: UserTokensLocalRepository,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val sharedPreferences: SharedPreferences,

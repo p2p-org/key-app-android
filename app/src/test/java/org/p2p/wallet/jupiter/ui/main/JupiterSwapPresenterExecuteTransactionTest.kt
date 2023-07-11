@@ -3,6 +3,7 @@ package org.p2p.wallet.jupiter.ui.main
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
+import org.junit.ClassRule
 import org.junit.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
@@ -16,16 +17,18 @@ import org.p2p.wallet.jupiter.ui.main.JupiterSwapTestHelpers.attachCallsLog
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
+import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.back
 import org.p2p.wallet.utils.mutableListQueueOf
-import org.p2p.wallet.utils.plantTimberToStdout
 
 @ExperimentalCoroutinesApi
 @ExtendWith(SpyOnInjectMockKsExtension::class, CoroutineExtension::class)
 class JupiterSwapPresenterExecuteTransactionTest : JupiterSwapPresenterBaseTest() {
 
-    init {
-        plantTimberToStdout(
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance(
             defaultTag = "Swap:ExecuteTransaction",
             excludeMessages = listOf(
                 "kotlinx.coroutines.JobCancellationException"

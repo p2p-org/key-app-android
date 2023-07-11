@@ -106,7 +106,7 @@ class StrigaClaimInteractor(
             .map { it.id }
     }
 
-    private fun getClaimableTokenMetadata(tokenAccount: StrigaUserWalletAccount): Token? {
+    private suspend fun getClaimableTokenMetadata(tokenAccount: StrigaUserWalletAccount): Token? {
         return tokensRepository.findTokenDataBySymbol(tokenAccount.accountCurrency.currencyName)
             ?.let { tokensRepository.findTokenByMint(it.mintAddress) }
     }
