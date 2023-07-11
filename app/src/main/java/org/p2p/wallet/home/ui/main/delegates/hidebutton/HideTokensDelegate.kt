@@ -6,11 +6,12 @@ import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.databinding.ItemTokenGroupButtonBinding
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private typealias BindListener = ((binding: ItemTokenGroupButtonBinding, item: TokenButtonCellModel) -> Unit)
 
 private val inflateViewBinding = { inflater: LayoutInflater, parent: ViewGroup ->
-    ItemTokenGroupButtonBinding.inflate(inflater, parent, false)
+    inflater.inflateViewBinding<ItemTokenGroupButtonBinding>(root = parent, attachToRoot = false)
 }
 
 fun tokenButtonDelegate(

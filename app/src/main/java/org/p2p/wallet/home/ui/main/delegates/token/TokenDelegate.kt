@@ -11,6 +11,7 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.ui.recycler.swipe.SwipeRevealLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
 private const val VIEW_ALPHA_MAX_VALUE = 0.8f
@@ -18,7 +19,7 @@ private const val VIEW_ALPHA_MAX_VALUE = 0.8f
 private typealias BindListener = ((binding: ItemTokenBinding, item: TokenCellModel) -> Unit)
 
 private val inflateViewBinding = { inflater: LayoutInflater, parent: ViewGroup ->
-    ItemTokenBinding.inflate(inflater, parent, false)
+    inflater.inflateViewBinding<ItemTokenBinding>(root = parent, attachToRoot = false)
 }
 
 fun tokenDelegate(
@@ -30,12 +31,12 @@ fun tokenDelegate(
     ) {
         bind { payloads ->
             @Suppress("UNCHECKED_CAST")
-            val fields = payloads.firstOrNull() as? Set<String>
+            val diffFields = payloads.firstOrNull() as? Set<String>
 
-            if (fields.isNullOrEmpty()) {
+            if (diffFields.isNullOrEmpty()) {
                 onBind(glideManager)
             } else {
-                fields.forEach { field ->
+                diffFields.forEach { field ->
                     when (field) {
                         TokenAdapter.DIFF_FIELD_TOKEN_BALANCE -> bindBalance()
                     }

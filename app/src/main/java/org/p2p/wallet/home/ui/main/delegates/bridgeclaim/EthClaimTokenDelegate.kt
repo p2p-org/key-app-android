@@ -10,20 +10,21 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.databinding.ItemTokenToClaimBinding
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private const val IMAGE_SIZE_DP = 64
 
-private typealias BindListener = ((binding: ItemTokenToClaimBinding, item: ClaimTokenCellModel) -> Unit)
+private typealias BindListener = ((binding: ItemTokenToClaimBinding, item: EthClaimTokenCellModel) -> Unit)
 
 private val inflateViewBinding = { inflater: LayoutInflater, parent: ViewGroup ->
-    ItemTokenToClaimBinding.inflate(inflater, parent, false)
+    inflater.inflateViewBinding<ItemTokenToClaimBinding>(root = parent, attachToRoot = false)
 }
 
-fun claimTokenDelegate(
+fun ethClaimTokenDelegate(
     glideManager: GlideManager,
     onBindListener: BindListener? = null,
 ): AdapterDelegate<List<AnyCellItem>> =
-    adapterDelegateViewBinding<ClaimTokenCellModel, AnyCellItem, ItemTokenToClaimBinding>(
+    adapterDelegateViewBinding<EthClaimTokenCellModel, AnyCellItem, ItemTokenToClaimBinding>(
         viewBinding = inflateViewBinding
     ) {
         bind {
@@ -32,7 +33,7 @@ fun claimTokenDelegate(
         }
     }
 
-fun AdapterDelegateViewBindingViewHolder<ClaimTokenCellModel, ItemTokenToClaimBinding>.onBind(
+fun AdapterDelegateViewBindingViewHolder<EthClaimTokenCellModel, ItemTokenToClaimBinding>.onBind(
     glideManager: GlideManager
 ) = with(binding) {
     textViewTokenName.text = item.tokenName
@@ -46,7 +47,7 @@ fun AdapterDelegateViewBindingViewHolder<ClaimTokenCellModel, ItemTokenToClaimBi
     setClaimButtonEnabled(isEnabled = item.isClaimEnabled)
 }
 
-private fun AdapterDelegateViewBindingViewHolder<ClaimTokenCellModel, ItemTokenToClaimBinding>.setClaimButtonEnabled(
+private fun AdapterDelegateViewBindingViewHolder<EthClaimTokenCellModel, ItemTokenToClaimBinding>.setClaimButtonEnabled(
     isEnabled: Boolean
 ) {
     binding.buttonClaim.isEnabled = isEnabled

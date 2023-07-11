@@ -1,9 +1,6 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.doOnAttach
-import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -13,8 +10,9 @@ import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.recycler.decoration.GroupedRoundingDecoration
-import org.p2p.uikit.utils.recycler.decoration.offsetDifferentClassDecoration
+import org.p2p.uikit.utils.recycler.decoration.topOffsetDifferentClassDecoration
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindOrGone
 import org.p2p.uikit.utils.toPx
@@ -33,8 +31,8 @@ import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
-import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.ClaimTokenCellModel
-import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.claimTokenDelegate
+import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
+import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.ethClaimTokenDelegate
 import org.p2p.wallet.home.ui.main.delegates.hidebutton.tokenButtonDelegate
 import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.tokenDelegate
@@ -108,11 +106,9 @@ class HomeFragment :
             }
         },
         tokenButtonDelegate() { binding, _ ->
-            with(binding) {
-                root.setOnClickListener { onToggleClicked() }
-            }
+            binding.root.setOnClickListener { onToggleClicked() }
         },
-        claimTokenDelegate(glideManager) { binding, item ->
+        ethClaimTokenDelegate(glideManager) { binding, item ->
             with(binding) {
                 contentView.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
                 buttonClaim.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
@@ -124,8 +120,6 @@ class HomeFragment :
 
     private val strigaKycFragmentFactory: StrigaFragmentFactory by inject()
     private val buyFragmentFactory: BuyFragmentFactory by inject()
-
-    private lateinit var recyclerLayoutManager: LinearLayoutManager
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -196,18 +190,12 @@ class HomeFragment :
     }
 
     private fun FragmentHomeBinding.setupView() {
-        recyclerLayoutManager = HomeScreenLayoutManager(requireContext())
         recyclerViewHome.apply {
-            recyclerViewHome.adapter = contentAdapter
-            doOnAttach {
-                layoutManager = recyclerLayoutManager
-            }
-            doOnDetach {
-                layoutManager = null
-            }
+            layoutManager = HomeScreenLayoutManager(requireContext())
+            attachAdapter(contentAdapter)
             addItemDecoration(GroupedRoundingDecoration(TokenCellModel::class, 16f.toPx()))
-            addItemDecoration(offsetDifferentClassDecoration())
-            addItemDecoration(GroupedRoundingDecoration(ClaimTokenCellModel::class, 16f.toPx()))
+            addItemDecoration(topOffsetDifferentClassDecoration())
+            addItemDecoration(GroupedRoundingDecoration(EthClaimTokenCellModel::class, 16f.toPx()))
         }
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
         viewActionButtons.onButtonClicked = ::onActionButtonClicked

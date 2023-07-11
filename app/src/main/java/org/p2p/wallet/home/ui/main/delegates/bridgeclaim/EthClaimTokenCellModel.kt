@@ -5,7 +5,7 @@ import org.p2p.core.token.Token
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.model.CellModelPayload
 
-data class ClaimTokenCellModel(
+data class EthClaimTokenCellModel(
     val iconUrl: String?,
     val tokenName: String,
     val formattedTotal: String?,

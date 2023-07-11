@@ -8,9 +8,9 @@ import android.view.View
 import org.p2p.uikit.utils.recycler.getItems
 import org.p2p.uikit.utils.toPx
 
-fun offsetDifferentClassDecoration(offset: Int = 8.toPx()) = OffsetDifferentClassDecoration(offset)
+fun topOffsetDifferentClassDecoration(offset: Int = 8.toPx()) = TopOffsetDifferentClassDecoration(offset)
 
-class OffsetDifferentClassDecoration(
+class TopOffsetDifferentClassDecoration(
     @Px private val offset: Int = 8.toPx(),
 ) : ItemDecoration() {
 

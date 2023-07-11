@@ -16,7 +16,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
 import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.ClaimTokenCellModel
+import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.hidebutton.TokenButtonCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
@@ -172,7 +172,7 @@ class HomePresenterMapper(
         )
     }
 
-    private fun Token.Eth.mapToCellModel(): ClaimTokenCellModel {
+    private fun Token.Eth.mapToCellModel(): EthClaimTokenCellModel {
         val isClaimEnabled = !isClaiming
         val buttonText: String
         @ColorRes val buttonTextColor: Int
@@ -186,10 +186,10 @@ class HomePresenterMapper(
             buttonTextColor = R.color.text_mountain
             buttonBackgroundColor = R.color.bg_rain
         }
-        return ClaimTokenCellModel(
-            iconUrl,
-            tokenName,
-            getFormattedTotal(includeSymbol = true),
+        return EthClaimTokenCellModel(
+            iconUrl = iconUrl,
+            tokenName = tokenName,
+            formattedTotal = getFormattedTotal(includeSymbol = true),
             buttonText = buttonText,
             buttonTextColor = buttonTextColor,
             buttonBackgroundColor = buttonBackgroundColor,
