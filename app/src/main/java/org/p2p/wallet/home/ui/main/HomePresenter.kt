@@ -22,8 +22,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.core.utils.Constants.USDT_SYMBOL
-import org.p2p.core.utils.Constants.WETH_SYMBOL
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
