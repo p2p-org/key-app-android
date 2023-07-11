@@ -14,7 +14,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 const val DEFAULT_ERC20_TOKEN_SLIPPAGE = 15
 
-class ClaimInteractor(
+class EthBridgeClaimInteractor(
     private val ethereumClaimRepository: EthereumClaimRepository,
     private val ethereumClaimLocalRepository: EthereumBridgeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,

@@ -11,7 +11,7 @@ import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.internal.core.EthereumKit
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.token.service.model.TokenServicePrice
-import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
+import org.p2p.wallet.bridge.claim.interactor.EthBridgeClaimInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
@@ -19,7 +19,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class EthereumInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val claimInteractor: ClaimInteractor,
+    private val claimInteractor: EthBridgeClaimInteractor,
     private val ethereumRepository: EthereumRepository,
     private val bridgeSendInteractor: BridgeSendInteractor
 ) {
