@@ -4,14 +4,15 @@ import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.BuildConfig.svlMemoClaim
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isMoreThan
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.ConfirmationStatus
+import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
@@ -19,8 +20,6 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.user.repository.prices.TokenCoinGeckoId
-import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
 class ReceiveViaLinkError(
     override val message: String,
@@ -32,7 +31,7 @@ class ReceiveViaLinkInteractor(
     private val rpcBalanceRepository: RpcBalanceRepository,
     private val userLocalRepository: UserLocalRepository,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
-    private val tokenPricesRemoteRepository: TokenPricesRemoteRepository
+    private val tokenServiceRepository: TokenServiceRepository
 ) {
 
     suspend fun parseAccountFromLink(link: SendViaLinkWrapper): TemporaryAccountState {
@@ -85,13 +84,13 @@ class ReceiveViaLinkInteractor(
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT)
             ?: return TemporaryAccountState.ParsingFailed
 
-        val solPrice = tokenData.coingeckoId?.let { fetchPriceForToken(it) }
+        val solPrice = fetchPriceForToken(tokenData.mintAddress)
 
         val token = Token.createSOL(
             publicKey = temporaryAccount.publicKey.toBase58(),
             tokenData = tokenData,
             amount = solBalance,
-            solPrice = solPrice?.price
+            solPrice = solPrice?.usdRate
         )
         return TemporaryAccountState.Active(
             account = temporaryAccount,
@@ -99,14 +98,16 @@ class ReceiveViaLinkInteractor(
         )
     }
 
-    private suspend fun fetchPriceForToken(coingeckoId: String): TokenPrice? {
-        val price = userLocalRepository.getPriceByTokenId(coingeckoId)
+    private suspend fun fetchPriceForToken(mintAddress: String): TokenServicePrice? {
+        val price = tokenServiceRepository.findTokenPriceByAddress(
+            tokenAddress = mintAddress
+        )
         if (price != null) return price
 
         return kotlin.runCatching {
-            tokenPricesRemoteRepository.getTokenPriceById(
-                tokenId = TokenCoinGeckoId(coingeckoId),
-                targetCurrency = USD_READABLE_SYMBOL
+            tokenServiceRepository.fetchTokenPriceByAddress(
+                networkChain = TokenServiceNetwork.SOLANA,
+                tokenAddress = mintAddress
             )
         }
             .onFailure { Timber.i(it) }

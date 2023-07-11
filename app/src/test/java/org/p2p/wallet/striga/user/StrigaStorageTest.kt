@@ -4,6 +4,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.google.gson.Gson
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Test
 import org.p2p.wallet.common.EncryptedSharedPreferences
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
@@ -14,13 +15,15 @@ import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
 import org.p2p.wallet.utils.InMemorySharedPreferences
 import org.p2p.wallet.utils.MockedKeyStoreWrapper
+import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.assertThat
-import org.p2p.wallet.utils.plantStubTimber
 
 class StrigaStorageTest {
 
-    init {
-        plantStubTimber()
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance("StrigaStorageTest")
     }
 
     private val prefs = EncryptedSharedPreferences(

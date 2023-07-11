@@ -16,12 +16,12 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFea
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.analytics.HistoryAnalytics
-import org.p2p.wallet.home.repository.UserTokensRepository
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 class TokenHistoryPresenter(
     // has old data inside, use userTokensRepository to get fresh one
@@ -33,7 +33,7 @@ class TokenHistoryPresenter(
     private val userRepository: UserLocalRepository,
     private val bridgeSendUiMapper: BridgeSendUiMapper,
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
-    private val userTokensRepository: UserTokensRepository,
+    private val userTokensRepository: UserTokensLocalRepository,
     private val historyAnalytics: HistoryAnalytics
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 

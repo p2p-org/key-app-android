@@ -160,6 +160,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
                     is TransactionState.JupiterSwapFailed -> {
                         // TODO: WHAT SHOULD BE HERE?
                     }
+                    else -> Unit
                 }
             }
         }
