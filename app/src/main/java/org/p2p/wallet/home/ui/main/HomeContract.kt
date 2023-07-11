@@ -3,6 +3,7 @@ package org.p2p.wallet.home.ui.main
 import androidx.lifecycle.DefaultLifecycleObserver
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
+import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -19,6 +20,7 @@ interface HomeContract {
 
     interface View : MvpView, HomeItemsClickListeners {
         fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean)
+        fun showItems(items: List<AnyCellItem>)
         fun showTokensForBuy(tokens: List<Token>)
         fun showBalance(cellModel: TextViewCellModel?)
         fun showRefreshing(isRefreshing: Boolean)
