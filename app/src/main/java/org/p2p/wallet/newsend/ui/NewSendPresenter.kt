@@ -57,6 +57,7 @@ import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
@@ -70,6 +71,7 @@ class NewSendPresenter(
     private val recipientAddress: SearchResult,
     private val openedFrom: SendOpenedFrom,
     private val userInteractor: UserInteractor,
+    private val userTokensInteractor: UserTokensInteractor,
     private val sendInteractor: SendInteractor,
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -114,7 +116,7 @@ class NewSendPresenter(
     }
 
     private fun subscribeToSelectedTokenUpdates() {
-        userInteractor.getUserTokensFlow()
+        userTokensInteractor.getUserTokensFlow()
             .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
             .filterNotNull()
             .onEach { token = it }
@@ -185,7 +187,7 @@ class NewSendPresenter(
 
             checkTokenRatesAndSetSwitchAmountState(initialToken)
 
-            val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
+            val solToken = if (initialToken.isSOL) initialToken else userTokensInteractor.getUserSolToken()
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))

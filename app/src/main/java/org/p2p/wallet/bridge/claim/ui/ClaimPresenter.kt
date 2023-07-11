@@ -187,7 +187,6 @@ class ClaimPresenter(
                     transactionId = latestBundleId,
                     state = transactionState
                 )
-                ethereumInteractor.loadWalletTokens()
             } catch (e: BridgeResult.Error) {
                 Timber.e(e, "Failed to send signed bundle: ${e.message}")
                 logClaimErrorAlarm(e)

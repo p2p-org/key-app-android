@@ -6,8 +6,6 @@ import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.user.interactor.BlockChainTokensMetadataInteractor
-import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class SplashPresenter(
     private val authInteractor: AuthInteractor,

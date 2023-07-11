@@ -12,6 +12,7 @@ import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.UsernameFormatter
 
@@ -19,6 +20,7 @@ class SearchInteractor(
     private val usernameRepository: UsernameRepository,
     private val usernameFormatter: UsernameFormatter,
     private val userInteractor: UserInteractor,
+    private val userTokensInteractor: UserTokensInteractor,
     private val transactionAddressInteractor: TransactionAddressInteractor,
     private val userLocalRepository: UserLocalRepository,
     private val ethereumInteractor: EthereumInteractor,
@@ -60,7 +62,7 @@ class SearchInteractor(
         val balance = userInteractor.getBalance(wrappedAddress)
         return SearchResult.AddressFound(
             address = address,
-            sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
+            sourceToken = tokenData?.let { userTokensInteractor.findUserToken(it.mintAddress) },
             balance = balance
         )
     }
@@ -75,13 +77,13 @@ class SearchInteractor(
 
         return SearchResult.AddressFound(
             address = address,
-            sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
+            sourceToken = tokenData?.let { userTokensInteractor.findUserToken(it.mintAddress) },
             networkType = NetworkType.ETHEREUM
         )
     }
 
     private suspend fun isInvalidAddress(tokenData: TokenData?, sourceToken: Token.Active?): Boolean {
-        val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
+        val userToken = tokenData?.let { userTokensInteractor.findUserToken(it.mintAddress) }
         val hasNoTokensToSend = tokenData != null && userToken == null
         val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
         return hasNoTokensToSend || sendToOtherDirectToken

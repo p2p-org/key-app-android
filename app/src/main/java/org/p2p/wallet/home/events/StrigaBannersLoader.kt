@@ -19,7 +19,6 @@ class StrigaBannersLoader(
             strigaUserInteractor.getUserStatusBannerFlow()
                 .filterNotNull()
                 .collect {
-                    homeInteractor.updateStrigaKycBanner(it)
                 }
         }
     }

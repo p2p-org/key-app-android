@@ -7,9 +7,6 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
-import org.p2p.wallet.home.repository.HomeScreenLocalRepository
-import org.p2p.wallet.home.state.HomeScreenState
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.sell.interactor.SellInteractor
@@ -22,7 +19,6 @@ import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class HomeInteractor(
     private val userInteractor: UserInteractor,
@@ -33,8 +29,6 @@ class HomeInteractor(
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaClaimInteractor: StrigaClaimInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
-    private val userTokensInteractor: UserTokensInteractor,
-    private val homeScreenLocalRepository: HomeScreenLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -54,8 +48,6 @@ class HomeInteractor(
     suspend fun setTokenHidden(mintAddress: String, visibility: String) {
         userInteractor.setTokenHidden(mintAddress, visibility)
     }
-
-    suspend fun getUserTokens(): List<Token.Active> = userInteractor.getUserTokens()
 
     fun setHiddenTokensVisibility(isVisible: Boolean) = userInteractor.setHiddenTokensVisibility(isVisible)
 
@@ -82,56 +74,5 @@ class HomeInteractor(
         token: StrigaClaimableToken
     ): StrigaDataLayerResult<StrigaWithdrawalChallengeId> {
         return strigaClaimInteractor.claim(amountLamports, token)
-    }
-
-    suspend fun updateHomeScreenState(newTokensState: HomeScreenState) {
-        homeScreenLocalRepository.setHomeScreenState(newTokensState)
-    }
-
-    fun observeHomeScreenState(): SharedFlow<HomeScreenState?> =
-        homeScreenLocalRepository.getHomeScreenSharedFlow()
-
-    suspend fun updateRefreshState(isRefreshing: Boolean) {
-        homeScreenLocalRepository.setRefreshState(isRefreshing)
-    }
-
-    fun observeRefreshState(): SharedFlow<Boolean> {
-        return homeScreenLocalRepository.getHomeScreenRefreshSharedFlow()
-    }
-
-    suspend fun updateHomeActionButtons(newButtons: List<ActionButton>) {
-        homeScreenLocalRepository.setActionButtons(newButtons)
-    }
-
-    fun observeActionButtons(): SharedFlow<List<ActionButton>> {
-        return homeScreenLocalRepository.getHomeScreenActionButtonsFlow()
-    }
-
-    fun observeStrigaKycBanner(): SharedFlow<StrigaKycStatusBanner> {
-        return homeScreenLocalRepository.getStrigaUserStatusBannerFlow()
-    }
-
-    suspend fun updateStrigaKycBanner(banner: StrigaKycStatusBanner) {
-        homeScreenLocalRepository.setStrigaUserStatusBanner(banner)
-    }
-
-    suspend fun updateUsername(username: String) {
-        homeScreenLocalRepository.setUsername(username)
-    }
-
-    fun observeUsername(): SharedFlow<String?> {
-        return homeScreenLocalRepository.getUsernameFlow()
-    }
-
-    suspend fun getUsernameOrPublicAddress(): String {
-        return tokenKeyProvider.publicKey
-    }
-
-    suspend fun updateUserBalance(userBalance: BigDecimal?) {
-        homeScreenLocalRepository.setUserBalance(userBalance)
-    }
-
-    fun observeUserBalance(): SharedFlow<BigDecimal?> {
-        return homeScreenLocalRepository.observeUserBalance()
     }
 }

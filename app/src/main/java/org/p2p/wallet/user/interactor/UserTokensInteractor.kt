@@ -1,5 +1,7 @@
 package org.p2p.wallet.user.interactor
 
+import java.math.BigDecimal
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
@@ -43,5 +45,27 @@ class UserTokensInteractor(
 
     suspend fun saveUserTokensRates(tokensRates: List<TokenServicePrice>) = withContext(dispatchers.io) {
         userTokensLocalRepository.saveRatesForTokens(tokensRates)
+    }
+
+    suspend fun getUserTokens(): List<Token.Active> {
+        return userTokensLocalRepository.getUserTokens()
+    }
+
+    fun getUserTokensFlow(): Flow<List<Token.Active>> {
+        return userTokensLocalRepository.observeUserTokens()
+    }
+
+    suspend fun getUserSolToken(): Token.Active? =
+        userTokensLocalRepository.getUserTokens().find { it.isSOL }
+
+    suspend fun findUserToken(mintAddress: String): Token.Active? =
+        userTokensLocalRepository.getUserTokens().find { it.mintAddress == mintAddress }
+
+    fun observeUserBalance(): Flow<BigDecimal> {
+        return userTokensLocalRepository.observeUserBalance()
+    }
+
+    suspend fun getUserBalance(): BigDecimal {
+        return userTokensLocalRepository.getUserBalance()
     }
 }

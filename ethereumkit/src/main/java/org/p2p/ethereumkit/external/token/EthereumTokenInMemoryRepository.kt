@@ -3,13 +3,11 @@ package org.p2p.ethereumkit.external.token
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenLoadState
 import org.p2p.token.service.model.TokenServicePrice
 
 class EthereumTokenInMemoryRepository : EthereumTokenLocalRepository {
 
     private val cachedTokens = MutableStateFlow<List<Token.Eth>>(emptyList())
-    private val tokensState = MutableStateFlow<TokenLoadState>(TokenLoadState.Idle)
 
     override suspend fun cacheTokens(tokens: List<Token.Eth>) {
         cachedTokens.value = tokens

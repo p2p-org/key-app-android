@@ -24,10 +24,12 @@ import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class ReceiveNetworkTypePresenter(
     private val renBtcInteractor: RenBtcInteractor,
     private val userInteractor: UserInteractor,
+    private val userTokensInteractor: UserTokensInteractor,
     private val transactionAmountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val tokenInteractor: TokenInteractor,
@@ -120,7 +122,7 @@ class ReceiveNetworkTypePresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val userTokens = userInteractor.getUserTokens()
+                val userTokens = userTokensInteractor.getUserTokens()
                 val renBtcWallet = userTokens.firstOrNull { it.isRenBTC }
 
                 if (renBtcWallet == null) {

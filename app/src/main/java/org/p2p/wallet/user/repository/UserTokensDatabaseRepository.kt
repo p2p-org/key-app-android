@@ -1,22 +1,19 @@
 package org.p2p.wallet.user.repository
 
+import timber.log.Timber
+import java.math.BigDecimal
 import java.math.BigInteger
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.p2p.core.crypto.Base58String
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.fromLamports
-import org.p2p.token.service.api.events.manager.TokenServiceEvent
-import org.p2p.token.service.api.events.manager.TokenServiceEventManager
+import org.p2p.core.utils.scaleShort
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
-import org.p2p.token.service.api.events.manager.TokenServiceEventType
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.home.db.TokenDao
@@ -73,6 +70,18 @@ class UserTokensDatabaseRepository(
             .filterNotNull()
     }
 
+    override fun observeUserBalance(): Flow<BigDecimal> =
+        observeUserTokens()
+            .map(::calculateUserBalance)
+            .catch { Timber.i(it) }
+
+    override suspend fun getUserBalance(): BigDecimal = calculateUserBalance(getUserTokens())
+
+    private fun calculateUserBalance(tokens: List<Token.Active>): BigDecimal =
+        tokens.mapNotNull(Token.Active::totalInUsd)
+            .fold(BigDecimal.ZERO, BigDecimal::add)
+            .scaleShort()
+
     override suspend fun getUserTokens(): List<Token.Active> {
         return tokensDao.getTokens()
             .map(tokenConverter::fromDatabase)
@@ -82,7 +91,7 @@ class UserTokensDatabaseRepository(
         tokensDao.clearAll()
     }
 
-     override suspend fun saveRatesForTokens(prices: List<TokenServicePrice>) {
+    override suspend fun saveRatesForTokens(prices: List<TokenServicePrice>) {
         val oldTokens = getUserTokens()
         val newTokens = oldTokens.map { token ->
             val tokenRate = prices.firstOrNull { token.mintAddress == it.address }?.usdRate

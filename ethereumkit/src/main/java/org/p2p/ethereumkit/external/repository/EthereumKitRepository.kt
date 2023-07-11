@@ -26,6 +26,7 @@ import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.Signature
+import org.p2p.token.service.model.TokenServicePrice
 
 private val MINIMAL_DUST = BigDecimal("5")
 
@@ -69,8 +70,8 @@ internal class EthereumKitRepository(
         return tokensRepository.getWalletBalance(publicKey)
     }
 
-    override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>) {
-        try {
+    override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> {
+        return try {
             val walletTokens = buildList {
                 add(getEthToken())
                 addAll(loadTokensMetadata())
@@ -102,10 +103,19 @@ internal class EthereumKitRepository(
                 val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
                 tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
             }
-            tokensLocalRepository.cacheTokens(walletTokens)
+            return walletTokens
         } catch (e: Throwable) {
             Timber.e(e, "Error on loading ethereumTokens")
+            emptyList()
         }
+    }
+
+    override suspend fun cacheWalletTokens(tokens: List<Token.Eth>) {
+        tokensLocalRepository.cacheTokens(tokens)
+    }
+
+    override suspend fun updateTokensRates(rates: List<TokenServicePrice>) {
+        tokensLocalRepository.updateTokensRate(rates)
     }
 
     private fun isTokenClaiming(tokenMetadata: EthTokenMetadata, claimToken: EthereumClaimToken): Boolean {

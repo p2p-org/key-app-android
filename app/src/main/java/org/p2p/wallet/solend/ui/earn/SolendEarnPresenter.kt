@@ -11,7 +11,6 @@ import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key.Companio
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.solend.interactor.SolendDepositInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
@@ -24,11 +23,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class SolendEarnPresenter(
     private val resources: Resources,
     private val solendDepositsInteractor: SolendDepositInteractor,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: UserTokensInteractor,
     private val depositTickerStorage: DepositTickerStorage,
     private val tokenKeyProvider: TokenKeyProvider,
     private val accountStorage: AccountStorage

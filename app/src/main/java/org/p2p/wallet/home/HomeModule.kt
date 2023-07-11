@@ -12,8 +12,6 @@ import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.home.repository.HomeScreenInMemoryRepository
-import org.p2p.wallet.home.repository.HomeScreenLocalRepository
 import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.container.MainContainerContract
@@ -88,8 +86,6 @@ object HomeModule : InjectionModule {
                 strigaUserInteractor = get(),
                 strigaClaimInteractor = get(),
                 strigaWalletInteractor = get(),
-                userTokensInteractor = get(),
-                homeScreenLocalRepository = get(),
                 tokenKeyProvider = get()
             )
         }
@@ -114,7 +110,7 @@ object HomeModule : InjectionModule {
                 transactionManager = get(),
                 appLoader = get(),
                 context = get(),
-                homeScreenStateObserver = get()
+                userTokensInteractor = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
@@ -129,6 +125,7 @@ object HomeModule : InjectionModule {
                 newBuyFeatureToggle = get(),
                 networkType = type,
                 userSignUpDetailsStorage = get(),
+                userTokensInteractor = get(),
                 renBtcAnalytics = get()
             )
         }
@@ -147,6 +144,5 @@ object HomeModule : InjectionModule {
         factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
 
         factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
-        single<HomeScreenLocalRepository> { HomeScreenInMemoryRepository() }
     }
 }

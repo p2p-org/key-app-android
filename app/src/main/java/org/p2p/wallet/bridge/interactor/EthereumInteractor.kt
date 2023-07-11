@@ -10,11 +10,11 @@ import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.internal.core.EthereumKit
 import org.p2p.ethereumkit.internal.models.Signature
+import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
-import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class EthereumInteractor(
@@ -29,15 +29,23 @@ class EthereumInteractor(
         ethereumRepository.init(userSeedPhrase)
     }
 
-    suspend fun loadWalletTokens(claimTokens: List<EthereumClaimToken>) {
-        ethereumRepository.loadWalletTokens(claimTokens)
+    suspend fun loadWalletTokens(claimTokens: List<EthereumClaimToken>): List<Token.Eth> {
+        return ethereumRepository.loadWalletTokens(claimTokens)
     }
 
-    suspend fun loadEthereumClaimTokens(): List<EthereumClaimToken> {
+    suspend fun cacheWalletTokens(tokens: List<Token.Eth>) {
+        ethereumRepository.cacheWalletTokens(tokens)
+    }
+
+    suspend fun updateTokensRates(tokensRates: List<TokenServicePrice>) {
+        ethereumRepository.updateTokensRates(tokensRates)
+    }
+
+    suspend fun loadClaimTokens(): List<EthereumClaimToken> {
         return claimInteractor.getEthereumClaimTokens(getEthAddress())
     }
 
-    suspend fun loadEthereumSendTransactionDetails() {
+    suspend fun loadSendTransactionDetails() {
         bridgeSendInteractor.getSendTransactionDetails(SolAddress(tokenKeyProvider.publicKey))
     }
 

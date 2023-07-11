@@ -6,8 +6,6 @@ import android.content.res.Resources
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
@@ -29,15 +27,14 @@ import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.home.state.HomeScreenStateObserver
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.unsafeLazy
 
 val POPULAR_TOKENS_SYMBOLS: Set<String> = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
@@ -62,7 +59,7 @@ class HomePresenter(
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val analytics: HomeAnalytics,
     private val appLoader: AppLoader,
-    private val homeScreenStateObserver: HomeScreenStateObserver,
+    private val userTokensInteractor: UserTokensInteractor,
     context: Context
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
@@ -79,61 +76,54 @@ class HomePresenter(
         )
     }
 
-
-    init {
-        homeScreenStateObserver.start()
-    }
-
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         handleDeeplinks()
-        launch {
-            homeInteractor.observeHomeScreenState()
-                .filterNotNull()
-                .distinctUntilChanged()
-                .collect { homeState ->
-                    val isRefreshing = homeState.isRefreshing
-                    view?.showRefreshing(isRefreshing)
-
-                    val username = homeState.username
-                    view?.showUserAddress(username)
-
-                    val userBalance = homeState.userBalance
-                    view?.showBalance(userBalance?.let { homeMapper.mapBalance(it) })
-
-                    val strigaTokens = homeState.strigaTokens
-                    state = state.copy(strigaClaimableTokens = strigaTokens.tokens)
-
-                    val strigaKycBanner = homeState.strigaBanner
-                    state = state.copy(strigaKycStatusBanner = strigaKycBanner?.banner)
-                    if (!homeState.solanaTokens.isLoading || !homeState.ethTokens.isLoading) {
-                        val solanaTokens = homeState.solanaTokens
-                        state = state.copy(tokens = solanaTokens.tokens)
-
-                        val ethTokens = homeState.ethTokens
-                        state = state.copy(ethTokens = ethTokens.tokens)
-
-                        handleHomeStateChanged(state)
-                    }
-                    val actionButtons = homeState.actionButtons
-                    view?.showActionButtons(actionButtons)
-                }
-        }
+//        launch {
+//            homeInteractor.observeHomeScreenState()
+//                .filterNotNull()
+//                .distinctUntilChanged()
+//                .collect { homeState ->
+//                    val isLoading = homeState.isLoading
+//                    view?.showInitialLoading(isLoading)
+//                    val isRefreshing = homeState.isRefreshing
+//                    view?.showRefreshing(isRefreshing)
+//
+//                    val username = homeState.username
+//                    view?.showUserAddress(username)
+//
+//                    val userBalance = homeState.userBalance
+//                    view?.showBalance(userBalance?.let { homeMapper.mapBalance(it) })
+//
+//                    val strigaTokens = homeState.strigaTokens
+//                    state = state.copy(strigaClaimableTokens = strigaTokens.tokens)
+//
+//                    val strigaKycBanner = homeState.strigaBanner
+//                    state = state.copy(strigaKycStatusBanner = strigaKycBanner?.banner)
+//
+//                    val solanaTokens = homeState.solanaTokens
+//                    state = state.copy(tokens = solanaTokens.tokens)
+//
+//                    val ethTokens = homeState.ethTokens
+//                    state = state.copy(ethTokens = ethTokens.tokens)
+//
+//                    handleHomeStateChanged(state)
+//                    val actionButtons = homeState.actionButtons
+//                    view?.showActionButtons(actionButtons)
+//                }
+//        }
         launchSupervisor { appLoader.onLoad() }
     }
 
     override fun refreshTokens() {
         launchInternetAware(connectionManager) {
             try {
-                homeInteractor.updateRefreshState(isRefreshing = true)
                 appLoader.onRefresh()
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
                 Timber.e(error, "Error refreshing user tokens")
                 view?.showErrorMessage(error)
-            } finally {
-                homeInteractor.updateRefreshState(isRefreshing = false)
             }
         }
     }
@@ -146,8 +136,8 @@ class HomePresenter(
     override fun load() {
         launch {
             state = state.copy(visibilityState = VisibilityState.create(homeInteractor.getHiddenTokensVisibility()))
-            val userId = homeInteractor.getUsernameOrPublicAddress()
-            IntercomService.signIn(userId)
+//            val userId = homeInteractor.getUsernameOrPublicAddress()
+//            IntercomService.signIn(userId)
         }
     }
 
@@ -249,7 +239,7 @@ class HomePresenter(
 
     override fun onAddressClicked() {
         launch {
-            view?.showAddressCopied(homeInteractor.getUsernameOrPublicAddress())
+            // view?.showAddressCopied(homeInteractor.getUsernameOrPublicAddress())
         }
     }
 
@@ -373,7 +363,7 @@ class HomePresenter(
                 visibility = newVisibility.stringValue
             )
 
-            val updatedTokens = homeInteractor.getUserTokens()
+            val updatedTokens = userTokensInteractor.getUserTokens()
             state = state.copy(tokens = updatedTokens)
             handleHomeStateChanged(state)
         }

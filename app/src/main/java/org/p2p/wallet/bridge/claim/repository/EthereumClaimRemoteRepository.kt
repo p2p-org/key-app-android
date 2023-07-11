@@ -8,7 +8,6 @@ import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.wallet.bridge.api.mapper.BridgeMapper
 import org.p2p.wallet.bridge.api.request.GetEthereumBundleRpcRequest
-import org.p2p.wallet.bridge.api.request.GetEthereumBundleStatusRpcRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumFeesRpcRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumFreeFeeLimitRequest
 import org.p2p.wallet.bridge.api.request.GetEthereumBundlesRequest

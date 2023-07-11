@@ -5,7 +5,8 @@ import org.koin.core.module.dsl.new
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.bridge.EthereumTokensPollingService
-import org.p2p.wallet.home.state.HomeScreenStateObserver
+import org.p2p.wallet.tokenservice.TokenService
+import org.p2p.wallet.tokenservice.TokenServiceLoadStateHelper
 import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
 import org.p2p.wallet.updates.subscribe.SplTokenProgramSubscriber
 
@@ -21,12 +22,6 @@ object HomeEventsModule : InjectionModule {
                 ActionButtonsLoader(
                     homeInteractor = get(),
                     sellEnabledFeatureToggle = get()
-                ),
-                EthereumTokensLoader(
-                    seedPhraseProvider = get(),
-                    bridgeFeatureToggle = get(),
-                    ethereumInteractor = get(),
-                    ethereumTokensPollingService = get()
                 ),
                 OnboardingMetadataLoader(
                     metadataInteractor = get()
@@ -48,12 +43,6 @@ object HomeEventsModule : InjectionModule {
                     networkObserver = get(),
                     appScope = get()
                 ),
-                SolanaTokensLoader(
-                    userTokensInteractor = get(),
-                    tokenKeyProvider = get(),
-                    tokenServiceEventManager = get(),
-                    dispatchers = get()
-                ),
                 StrigaBannersLoader(
                     strigaUserInteractor = get(),
                     strigaSignupEnabledFeatureToggle = get(),
@@ -74,21 +63,37 @@ object HomeEventsModule : InjectionModule {
 
             AppLoaderFacade(appLoaders, appScope = get())
         }
-
-        single {
-            HomeScreenStateObserver(
-                userInteractor = get(),
-                ethereumInteractor = get(),
-                strigaClaimInteractor = get(),
-                homeInteractor = get(),
-                appScope = get(),
-                analytics = get()
-            )
-        }
         single {
             EthereumTokensPollingService(
                 ethereumInteractor = get(),
                 appScope = get()
+            )
+        }
+
+        single {
+            val solTokensLoader = SolanaTokensLoader(
+                userTokensInteractor = get(),
+                tokenKeyProvider = get(),
+                tokenServiceEventManager = get(),
+                appScope = get()
+            )
+            val ethTokensLoader = EthereumTokensLoader(
+                seedPhraseProvider = get(),
+                bridgeFeatureToggle = get(),
+                ethereumInteractor = get(),
+                ethereumTokensPollingService = get(),
+                tokenServiceEventManager = get(),
+                tokenServiceEventPublisher = get(),
+                appScope = get()
+            )
+
+            TokenService(
+                userTokensInteractor = get(),
+                ethereumInteractor = get(),
+                solanaTokensLoader = solTokensLoader,
+                ethereumTokensLoader = ethTokensLoader,
+                appScope = get(),
+                loadStateHelper = TokenServiceLoadStateHelper
             )
         }
     }

@@ -19,6 +19,7 @@ class TokenServiceEventPublisher(
 
     init {
         launch { observeTokenPrices(TokenServiceNetwork.SOLANA) }
+        launch { observeTokenPrices(TokenServiceNetwork.ETHEREUM) }
     }
 
     suspend fun loadTokensPrice(networkChain: TokenServiceNetwork, addresses: List<String>) {

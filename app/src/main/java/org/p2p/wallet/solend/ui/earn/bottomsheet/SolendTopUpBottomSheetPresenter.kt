@@ -5,10 +5,12 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.core.token.Token
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class SolendTopUpBottomSheetPresenter(
     private val deposit: SolendDepositToken,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
+    private val userTokensInteractor: UserTokensInteractor
 ) : BasePresenter<SolendTopUpBottomSheetContract.View>(),
     SolendTopUpBottomSheetContract.Presenter {
 
@@ -19,7 +21,7 @@ class SolendTopUpBottomSheetPresenter(
         super.attach(view)
         launch {
             currentToken = userInteractor.getTokensForBuy(listOf(deposit.tokenSymbol)).firstOrNull()
-            solToken = userInteractor.getUserSolToken()
+            solToken = userTokensInteractor.getUserSolToken()
         }
     }
 

@@ -14,6 +14,7 @@ import org.p2p.ethereumkit.external.token.EthereumTokenRemoteRepository
 import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.core.DefaultDispatchers
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
+import org.p2p.ethereumkit.external.model.EthTokenConverter
 import org.p2p.ethereumkit.external.repository.EthereumKitRepository
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.external.token.EthereumTokenInMemoryRepository
@@ -35,5 +36,6 @@ object EthereumModule {
         singleOf(::EthereumTokenInMemoryRepository) bind EthereumTokenLocalRepository::class
 
         includes(EthereumNetworkModule.create())
+        factory { EthTokenConverter }
     }
 }

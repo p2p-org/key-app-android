@@ -17,9 +17,9 @@ import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendFee
 import org.p2p.wallet.solend.model.SolendTokenFee
 import org.p2p.wallet.solend.repository.SolendRepository
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.solanaj.core.toBase58Instance
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class SolendWithdrawInteractor(
     private val rpcSolanaRepository: RpcSolanaRepository,
@@ -28,7 +28,7 @@ class SolendWithdrawInteractor(
     private val relayRepository: RelayRepository,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: UserTokensInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 

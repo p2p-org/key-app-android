@@ -41,17 +41,13 @@ object UserModule : InjectionModule {
 
         factory {
             UserInteractor(
-                userRepository = get(),
                 userLocalRepository = get(),
                 userTokensRepository = get(),
                 homeLocalRepository = get(),
                 recipientsLocalRepository = get(),
                 rpcRepository = get(),
                 sharedPreferences = get(),
-                externalStorageRepository = get(),
-                tokenServiceRepository = get(),
-                metadataUpdateFeatureToggle = get(),
-                gson = get()
+                tokenServiceRepository = get()
             )
         }
 
