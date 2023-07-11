@@ -44,7 +44,7 @@ class HomeInteractor(
         if (strigaSignupEnabledFeatureToggle.isFeatureEnabled) {
             strigaSignupInteractor.loadAndSaveSignupData()
             strigaUserInteractor.loadAndSaveUserStatusData()
-            if (strigaUserInteractor.isUserCreated()) {
+            if (strigaUserInteractor.isUserCreated() && strigaUserInteractor.isKycApproved) {
                 loadStrigaFiatAccountDetails()
             }
         }

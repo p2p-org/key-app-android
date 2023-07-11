@@ -19,13 +19,20 @@ private fun Int.toPrinter(): PrintStream = when {
  * ^ example of usage ^
  * should be PUBLIC, JVMFIELD and STATIC
  * plants and removes printing to STDOUT and STDERR
+ *
+ * @param isEnabled - plant tree or not, used for filtering only that logs that you need
  */
 class TimberUnitTestInstance(
+    private val isEnabled: Boolean,
     private val defaultTag: String,
     private val excludeMessages: List<String> = emptyList(),
     private val excludeStacktraceForMessages: List<String> = emptyList()
 ) : ExternalResource() {
-    override fun before() = plantTimberToStdout(defaultTag, excludeMessages, excludeStacktraceForMessages)
+    override fun before() {
+        if (isEnabled) {
+            plantTimberToStdout(defaultTag, excludeMessages, excludeStacktraceForMessages)
+        }
+    }
     override fun after() = Timber.uprootAll()
 }
 
@@ -55,7 +62,12 @@ private fun plantTimberToStdout(
                 Log.ERROR -> sb.append("E")
                 Log.ASSERT -> sb.append("A")
             }
-            sb.append("[${(tag ?: defaultTag)}] ")
+            sb.append(" [$defaultTag")
+
+            if (tag != null) {
+                sb.append(" : $tag")
+            }
+            sb.append("] ")
 
             if (t == null) {
                 sb.append(message)

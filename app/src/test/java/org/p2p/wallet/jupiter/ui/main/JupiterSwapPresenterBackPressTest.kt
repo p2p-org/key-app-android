@@ -18,7 +18,10 @@ class JupiterSwapPresenterBackPressTest : JupiterSwapPresenterBaseTest() {
     companion object {
         @ClassRule
         @JvmField
-        val timber = TimberUnitTestInstance("Swap:BackPress")
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "Swap:BackPress"
+        )
     }
 
     @Test
