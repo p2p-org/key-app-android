@@ -30,7 +30,10 @@ class JupiterSwapPresenterInitialStateTest : JupiterSwapPresenterBaseTest() {
     companion object {
         @ClassRule
         @JvmField
-        val timber = TimberUnitTestInstance(defaultTag = "Swap:InitialState")
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "Swap:InitialState"
+        )
     }
 
     @Test

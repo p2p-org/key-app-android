@@ -31,6 +31,7 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
         @ClassRule
         @JvmField
         val timber = TimberUnitTestInstance(
+            isEnabled = false,
             defaultTag = "Swap:TokenAmountChange",
             excludeMessages = listOf(
                 "kotlinx.coroutines.JobCancellationException"

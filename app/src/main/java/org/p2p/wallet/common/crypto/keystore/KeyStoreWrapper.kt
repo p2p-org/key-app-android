@@ -1,9 +1,10 @@
 package org.p2p.wallet.common.crypto.keystore
 
 import android.content.SharedPreferences
-import org.p2p.core.crypto.Hex
 import java.security.KeyStore
 import javax.crypto.Cipher
+import org.p2p.core.crypto.Hex
+import org.p2p.core.wrapper.HexString
 
 class KeyStoreWrapper(
     private val encoderDecoder: EncoderDecoder,
@@ -21,23 +22,23 @@ class KeyStoreWrapper(
         )
     }
 
-    fun encode(keyAlias: String, data: String): String {
+    fun encode(keyAlias: String, data: String): HexString {
         val bytes = encoderDecoder.encode(keyAlias, data.toByteArray())
-        return Hex.encode(bytes)
+        return HexString(Hex.encode(bytes))
     }
 
-    fun encode(cipher: EncodeCipher, data: String): String {
+    fun encode(cipher: EncodeCipher, data: String): HexString {
         val bytes = cipher.value.doFinal(data.toByteArray())
-        return Hex.encode(bytes)
+        return HexString(Hex.encode(bytes))
     }
 
     @Throws(IllegalArgumentException::class)
-    fun decode(keyAlias: String, encoded: String): String {
+    fun decode(keyAlias: String, encoded: HexString): String {
         val bytes = encoderDecoder.decode(keyAlias, Hex.decode(encoded))
         return String(bytes)
     }
 
-    fun decode(cipher: DecodeCipher, encoded: String): String {
+    fun decode(cipher: DecodeCipher, encoded: HexString): String {
         val bytes = cipher.value.doFinal(Hex.decode(encoded))
         return String(bytes)
     }
@@ -54,14 +55,14 @@ class KeyStoreWrapper(
 
     fun contains(keyAlias: String): Boolean = keyStore.containsAlias(keyAlias)
 
-    fun delete(keyAlias: String) {
+    fun deleteKeyAlias(keyAlias: String) {
         keyStore.deleteEntry(keyAlias)
         encoderDecoder.onKeyDeleted(keyAlias)
     }
 
     fun clear() {
         for (alias in keyStore.aliases()) {
-            delete(alias)
+            deleteKeyAlias(alias)
         }
     }
 }

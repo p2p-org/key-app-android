@@ -40,9 +40,7 @@ class StrigaClaimInteractor(
     private val userInteractor: StrigaUserInteractor,
 ) {
     private val isClaimDisabled: Boolean
-        get() {
-            return !strigaFeatureToggle.isFeatureEnabled || !userInteractor.isKycApproved
-        }
+        get() = !strigaFeatureToggle.isFeatureEnabled || !userInteractor.isKycApproved
 
     suspend fun getClaimableTokens(): StrigaDataLayerResult<List<StrigaClaimableToken>> {
         if (isClaimDisabled) {
