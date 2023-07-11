@@ -5,13 +5,13 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.SendSolanaFee
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.getErrorMessage
 import timber.log.Timber
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class NewSendDetailsPresenter(
     private val sendInteractor: SendInteractor,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: UserTokensInteractor,
     private val resources: Resources
 ) : BasePresenter<NewSendDetailsContract.View>(), NewSendDetailsContract.Presenter {
 

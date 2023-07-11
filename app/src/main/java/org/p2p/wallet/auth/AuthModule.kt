@@ -99,20 +99,17 @@ object AuthModule {
             AuthLogoutInteractor(
                 context = get(),
                 secureStorage = get(),
-                renBtcInteractor = get(),
                 sharedPreferences = get(),
                 tokenKeyProvider = get(),
                 sendModeProvider = get(),
                 mainLocalRepository = get(),
                 recipientsLocalRepository = get(),
                 updatesManager = get(),
-                transactionManager = get(),
                 transactionDetailsLocalRepository = get(),
                 pushNotificationsInteractor = get(),
                 appScope = get(),
                 analytics = get(),
                 jupiterSwapStorage = get(),
-                strigaWalletInMemoryRepository = get(),
                 strigaStorage = get()
             )
         }

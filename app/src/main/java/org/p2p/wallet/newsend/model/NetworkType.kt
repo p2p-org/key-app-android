@@ -6,6 +6,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 enum class NetworkType(val stringValue: String) : Parcelable {
     SOLANA("Solana"),
-    ETHEREUM("Ethereum"),
-    BITCOIN("Bitcoin");
+    ETHEREUM("Ethereum");
 }

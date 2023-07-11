@@ -18,9 +18,9 @@ import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
 import org.p2p.wallet.moonpay.repository.sell.SellRepository
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 private const val TAG = "SellInteractor"
@@ -31,7 +31,7 @@ class SellInteractor(
     private val currencyRepository: MoonpayCurrenciesRepository,
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: UserTokensInteractor,
     private val userTokensRepository: UserTokensLocalRepository,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,

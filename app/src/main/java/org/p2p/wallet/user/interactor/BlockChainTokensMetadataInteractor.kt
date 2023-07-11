@@ -18,6 +18,12 @@ class BlockChainTokensMetadataInteractor(
     private val gson: Gson
 ) {
 
+    suspend fun loadAllTokensDataIfEmpty() {
+        if (!userLocalRepository.areInitialTokensLoaded()) {
+            loadAllTokensData()
+        }
+    }
+
     suspend fun loadAllTokensData() {
         val file = externalStorageRepository.readJsonFile(TOKENS_FILE_NAME)
 

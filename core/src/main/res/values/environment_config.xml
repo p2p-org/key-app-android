@@ -21,8 +21,6 @@
     <string name="moonpayBaseDomain">buy-staging.moonpay.com</string>
     <string name="moonpayClientSideBaseUrl">https://api.moonpay.com/</string>
 
-    <string name="blockstreamUrl">https://blockstream.info/</string>
-
     <string name="orcaApiBaseUrl">https://orca.key.app/</string>
 
     <string name="jupiterQuoteBaseUrl">https://swap.key.app/</string>

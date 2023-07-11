@@ -87,7 +87,7 @@ class MetadataInteractor(
 
     private fun tryToGetEthAddress(): String? {
         return if (bridgeFeatureToggle.isFeatureEnabled) {
-            ethereumInteractor.getEthAddress().hex
+            ethereumInteractor.getEthUserAddress().hex
         } else {
             null
         }

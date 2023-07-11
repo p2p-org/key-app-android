@@ -12,18 +12,26 @@ object EthTokenConverter {
         bundleId: String?,
         tokenAmount: BigDecimal?,
         fiatAmount: BigDecimal?,
-    ): Token.Eth =
-        Token.Eth(
+    ): Token.Eth {
+
+        val tokenRate = metadata.price
+        val total = tokenAmount ?: metadata.balance.fromLamports(metadata.decimals)
+        val totalInUsd = fiatAmount ?: tokenRate?.let { metadata.balance
+            .fromLamports(metadata.decimals)
+            .times(it)
+        }
+        return Token.Eth(
             publicKey = metadata.contractAddress.hex,
             tokenSymbol = metadata.symbol,
             decimals = metadata.decimals,
             mintAddress = metadata.mintAddress,
             tokenName = metadata.tokenName,
             iconUrl = metadata.logoUrl,
-            totalInUsd = fiatAmount ?: metadata.balance.fromLamports(metadata.decimals).times(metadata.price),
-            total = tokenAmount ?: metadata.balance.fromLamports(metadata.decimals),
+            totalInUsd = totalInUsd,
+            total = total,
             rate = metadata.price,
             isClaiming = isClaiming,
             latestActiveBundleId = bundleId
         )
+    }
 }

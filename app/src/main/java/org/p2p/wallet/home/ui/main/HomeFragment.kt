@@ -1,9 +1,6 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.doOnAttach
-import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -12,12 +9,18 @@ import timber.log.Timber
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
+import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.recycler.decoration.GroupedRoundingDecoration
+import org.p2p.uikit.utils.recycler.decoration.topOffsetDifferentClassDecoration
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindOrGone
+import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.bridge.claim.ui.ClaimFragment
+import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.new.requestPermissionNotification
@@ -28,7 +31,11 @@ import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
-import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
+import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
+import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.ethClaimTokenDelegate
+import org.p2p.wallet.home.ui.main.delegates.hidebutton.tokenButtonDelegate
+import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
+import org.p2p.wallet.home.ui.main.delegates.token.tokenDelegate
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
@@ -41,6 +48,7 @@ import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
+import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
@@ -54,7 +62,6 @@ import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.unsafeLazy
-import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
@@ -75,6 +82,7 @@ class HomeFragment :
 
     private val binding: FragmentHomeBinding by viewBinding()
 
+    private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val glideManager: GlideManager by inject()
     private val analytics: AnalyticsPushChannel by inject()
 
@@ -87,14 +95,31 @@ class HomeFragment :
         )
     }
 
-    private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
+    private val cellAdapter = CommonAnyCellAdapter(
+        tokenDelegate(glideManager) { binding, item ->
+            with(binding) {
+                imageViewHideToken.setOnClickListener {
+                    onHideClicked(item.payload)
+                    binding.root.close(animation = true)
+                }
+                contentView.setOnClickListener { onTokenClicked(item.payload) }
+            }
+        },
+        tokenButtonDelegate() { binding, _ ->
+            binding.root.setOnClickListener { onToggleClicked() }
+        },
+        ethClaimTokenDelegate(glideManager) { binding, item ->
+            with(binding) {
+                contentView.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
+                buttonClaim.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
+            }
+        }
+    )
 
     private val homeAnalytics: HomeAnalytics by inject()
 
     private val strigaKycFragmentFactory: StrigaFragmentFactory by inject()
     private val buyFragmentFactory: BuyFragmentFactory by inject()
-
-    private lateinit var layoutManager: LinearLayoutManager
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -165,14 +190,12 @@ class HomeFragment :
     }
 
     private fun FragmentHomeBinding.setupView() {
-        layoutManager = HomeScreenLayoutManager(requireContext())
-
-        homeRecyclerView.adapter = contentAdapter
-        homeRecyclerView.doOnAttach {
-            homeRecyclerView.layoutManager = layoutManager
-        }
-        homeRecyclerView.doOnDetach {
-            homeRecyclerView.layoutManager = null
+        recyclerViewHome.apply {
+            layoutManager = HomeScreenLayoutManager(requireContext())
+            attachAdapter(contentAdapter)
+            addItemDecoration(GroupedRoundingDecoration(TokenCellModel::class, 16f.toPx()))
+            addItemDecoration(topOffsetDifferentClassDecoration())
+            addItemDecoration(GroupedRoundingDecoration(EthClaimTokenCellModel::class, 16f.toPx()))
         }
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
         viewActionButtons.onButtonClicked = ::onActionButtonClicked
@@ -180,6 +203,9 @@ class HomeFragment :
 
     private fun onActionButtonClicked(clickedButton: ActionButton) {
         when (clickedButton) {
+            ActionButton.RECEIVE_BUTTON -> {
+                presenter.onReceiveClicked()
+            }
             ActionButton.SEND_BUTTON -> {
                 presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
             }
@@ -261,8 +287,14 @@ class HomeFragment :
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean) {
-        binding.homeRecyclerView.post {
+        binding.recyclerViewHome.post {
             contentAdapter.setItems(tokens, isZerosHidden)
+        }
+    }
+
+    override fun showItems(items: List<AnyCellItem>) {
+        cellAdapter.setItems(items) {
+            binding.recyclerViewHome.invalidateItemDecorations()
         }
     }
 
@@ -283,21 +315,15 @@ class HomeFragment :
         binding.swipeRefreshLayout.isRefreshing = isRefreshing
     }
 
-    override fun showEmptyViewData(data: List<Any>) {
-        emptyAdapter.setItems(data)
-    }
-
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            viewActionButtons.isVisible = !isEmpty
-            viewBalance.root.isVisible = !isEmpty
-
-            val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
-            if (homeRecyclerView.adapter != updatedAdapter) {
-                homeRecyclerView.adapter = updatedAdapter
-            }
-            homeRecyclerView.setBackgroundColor(getColor(if (isEmpty) R.color.bg_smoke else R.color.bg_snow))
+            textViewEmpty.isVisible = isEmpty
+            recyclerViewHome.isVisible = !isEmpty
         }
+    }
+
+    override fun showReceive() {
+        replaceFragment(receiveFragmentFactory.receiveFragment())
     }
 
     override fun navigateToProfile() {
