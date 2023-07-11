@@ -2,20 +2,20 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/homeItem"
+        android:id="@+id/walletItem"
         android:icon="@drawable/ic_main_wallet"
         android:title="@string/common_wallet" />
     <item
-        android:id="@+id/historyItem"
-        android:icon="@drawable/ic_main_history"
-        android:title="@string/common_history" />
+        android:id="@+id/myCryptoItem"
+        android:icon="@drawable/ic_earn"
+        android:title="@string/common_crypto" />
     <item
         android:id="@+id/sendItem"
         android:title="@string/common_send" />
     <item
-        android:id="@+id/feedbackItem"
-        android:icon="@drawable/ic_main_feedback"
-        android:title="@string/common_feedback" />
+        android:id="@+id/historyItem"
+        android:icon="@drawable/ic_main_history"
+        android:title="@string/common_history" />
     <item
         android:id="@+id/settingsItem"
         android:icon="@drawable/ic_main_settings"

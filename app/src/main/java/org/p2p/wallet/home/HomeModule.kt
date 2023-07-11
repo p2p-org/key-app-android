@@ -21,6 +21,8 @@ import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
+import org.p2p.wallet.home.ui.wallet.WalletContract
+import org.p2p.wallet.home.ui.wallet.WalletPresenter
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.interactor.SendInteractor
@@ -113,6 +115,7 @@ object HomeModule : InjectionModule {
                 userTokensInteractor = get()
             )
         }
+        factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
             ReceiveNetworkTypePresenter(
                 renBtcInteractor = get(),

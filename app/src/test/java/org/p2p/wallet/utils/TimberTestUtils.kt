@@ -1,6 +1,7 @@
 package org.p2p.wallet.utils
 
 import android.util.Log
+import org.junit.rules.ExternalResource
 import timber.log.Timber
 import java.io.PrintStream
 
@@ -9,11 +10,30 @@ private fun Int.toPrinter(): PrintStream = when {
     else -> System.out
 }
 
+// companion object {
+//    @ClassRule
+//    @JvmField
+//    val timber = TimberUnitTestInstance("Swap:BackPress")
+// }
+/**
+ * ^ example of usage ^
+ * should be PUBLIC, JVMFIELD and STATIC
+ * plants and removes printing to STDOUT and STDERR
+ */
+class TimberUnitTestInstance(
+    private val defaultTag: String,
+    private val excludeMessages: List<String> = emptyList(),
+    private val excludeStacktraceForMessages: List<String> = emptyList()
+) : ExternalResource() {
+    override fun before() = plantTimberToStdout(defaultTag, excludeMessages, excludeStacktraceForMessages)
+    override fun after() = Timber.uprootAll()
+}
+
 fun plantStubTimber() {
     Timber.plant(object : Timber.DebugTree() {})
 }
 
-fun plantTimberToStdout(
+private fun plantTimberToStdout(
     defaultTag: String,
     excludeMessages: List<String> = emptyList(),
     excludeStacktraceForMessages: List<String> = emptyList()

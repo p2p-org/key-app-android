@@ -24,7 +24,7 @@ enum class StrigaKycStatusBanner(
         bannerMessageResId = R.string.striga_kyc_signup_banner_identify_subtitle,
         bigBannerMessageResId = R.string.striga_kyc_signup_banner_identify_subtitle,
         actionTitleResId = R.string.striga_kyc_signup_banner_identify_action,
-        placeholderResId = R.drawable.onboarding_slide_2,
+        placeholderResId = R.drawable.ic_striga_kyc_identify,
         backgroundTint = R.color.light_sea
     ),
     PENDING(
@@ -42,7 +42,7 @@ enum class StrigaKycStatusBanner(
         bannerMessageResId = R.string.striga_kyc_signup_banner_finish_message,
         bigBannerMessageResId = R.string.striga_kyc_signup_big_banner_finish_message,
         actionTitleResId = R.string.striga_kyc_signup_banner_finish_action,
-        placeholderResId = R.drawable.ic_send_no_token_placeholder,
+        placeholderResId = R.drawable.ic_striga_kyc_approved,
         backgroundTint = R.color.light_grass
     ),
     ACTION_REQUIRED(
