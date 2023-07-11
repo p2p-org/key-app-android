@@ -56,6 +56,11 @@ class EncryptedSharedPreferences(
         }
     }
 
+    /**
+     * !!! WARNING !!!
+     * DOESN'T WORK WITH CLASSES
+     */
+    @Deprecated(message = "DOESN'T WORK, use only with primitive types like String")
     fun <T> saveObjectList(key: String, data: List<T>) {
         saveObject(key, data)
     }
@@ -69,6 +74,11 @@ class EncryptedSharedPreferences(
         }
     }
 
+    /**
+     * !!! WARNING !!!
+     * DOESN'T WORK WITH CLASSES
+     */
+    @Deprecated(message = "DOESN'T WORK, use only with primitive types like String")
     fun <T : Any> getObjectList(key: String): List<T> {
         return tryWithLog(key) {
             sharedPreferences.getString(key, null)
@@ -133,7 +143,7 @@ class EncryptedSharedPreferences(
 
     fun getStringSet(key: String, defaultValue: Set<String> = emptySet()): Set<String> {
         return tryWithLog(key) {
-            sharedPreferences.getStringSet(key, defaultValue) ?: defaultValue
+            (sharedPreferences.getStringSet(key, defaultValue) ?: defaultValue)
                 .map { keyStoreWrapper.decode(key, it) }
                 .toSet()
         }
