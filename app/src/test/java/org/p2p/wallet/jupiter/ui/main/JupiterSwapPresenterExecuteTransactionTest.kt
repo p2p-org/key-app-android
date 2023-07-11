@@ -29,6 +29,7 @@ class JupiterSwapPresenterExecuteTransactionTest : JupiterSwapPresenterBaseTest(
         @ClassRule
         @JvmField
         val timber = TimberUnitTestInstance(
+            isEnabled = false,
             defaultTag = "Swap:ExecuteTransaction",
             excludeMessages = listOf(
                 "kotlinx.coroutines.JobCancellationException"

@@ -104,7 +104,10 @@ class StrigaSignupFirstStepPresenterTest {
     companion object {
         @ClassRule
         @JvmField
-        val timber = TimberUnitTestInstance("StrigaSignupFirstStepPresenterTest")
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "StrigaSignupFirstStepPresenterTest"
+        )
     }
 
     private fun createPresenter(): StrigaSignUpFirstStepPresenter {

@@ -41,6 +41,8 @@ fun generateRandomBytes(length: Int = 32): ByteArray = Random.Default.nextBytes(
 
 fun <T> T.assertThat(): Assert<T> = assertThat(this)
 
+fun <T> Collection<T>.assertThat(): Assert<Collection<T>> = assertThat(this)
+
 fun <T> T.stub(body: T.() -> Unit) = body.invoke(this)
 
 fun verifyNone(block: MockKVerificationScope.() -> Unit) {

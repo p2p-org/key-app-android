@@ -1,61 +1,87 @@
 package org.p2p.wallet.striga.user
 
-import androidx.core.content.edit
-import android.content.SharedPreferences
-import com.google.gson.Gson
 import org.p2p.core.utils.MillisSinceEpoch
-import org.p2p.core.utils.fromJsonReified
+import org.p2p.wallet.common.EncryptedSharedPreferences
+import org.p2p.wallet.common.LongPreference
+import org.p2p.wallet.common.ObjectEncryptedPreference
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
+import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 
-private const val KEY_USER_STATUS = "KEY_USER_STATUS"
+private const val KEY_USER_STATUS =
+    "KEY_USER_STATUS"
+private const val KEY_USER_WALLET =
+    "KEY_USER_STATUS"
+private const val KEY_FIAT_ACCOUNT_DETAILS =
+    "KEY_FIAT_ACCOUNT_DETAILS"
 private const val KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS =
     "KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS"
 private const val KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS =
     "KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS"
-
-private const val KEY_USER_BANNER_IS_HIDDEN_PREFIX = "KEY_USER_BANNER_IS_HIDDEN_PREFIX_"
+private const val KEY_USER_BANNER_IS_HIDDEN =
+    "KEY_USER_BANNER_IS_HIDDEN"
 
 class StrigaStorage(
-    private val sharedPreferences: SharedPreferences,
-    private val gson: Gson
+    private val encryptedPrefs: EncryptedSharedPreferences,
 ) : StrigaStorageContract {
 
-    override var userStatus: StrigaUserStatusDetails?
-        get() = sharedPreferences.getString(KEY_USER_STATUS, null)?.let(gson::fromJsonReified)
-        set(value) {
-            sharedPreferences.edit {
-                if (value == null) {
-                    remove(KEY_USER_STATUS)
-                } else {
-                    putString(KEY_USER_STATUS, gson.toJson(value))
-                }
-            }
-        }
+    override var userStatus: StrigaUserStatusDetails? by ObjectEncryptedPreference(
+        preferences = encryptedPrefs,
+        keyProvider = { KEY_USER_STATUS },
+        type = StrigaUserStatusDetails::class,
+        nullIfMappingFailed = true
+    )
 
-    override var smsExceededVerificationAttemptsMillis: MillisSinceEpoch
-        get() = sharedPreferences.getLong(KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS, 0L)
-        set(value) = sharedPreferences.edit(true) {
-            putLong(KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS, value)
-        }
+    override var userWallet: StrigaUserWallet? by ObjectEncryptedPreference(
+        preferences = encryptedPrefs,
+        keyProvider = { KEY_USER_WALLET },
+        type = StrigaUserWallet::class,
+        nullIfMappingFailed = true
+    )
 
-    override var smsExceededResendAttemptsMillis: MillisSinceEpoch
-        get() = sharedPreferences.getLong(KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS, 0L)
-        set(value) = sharedPreferences.edit(true) {
-            putLong(KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS, value)
-        }
+    override var fiatAccount: StrigaFiatAccountDetails? by ObjectEncryptedPreference(
+        preferences = encryptedPrefs,
+        keyProvider = { KEY_FIAT_ACCOUNT_DETAILS },
+        type = StrigaFiatAccountDetails::class,
+        nullIfMappingFailed = true
+    )
+
+    override var smsExceededVerificationAttemptsMillis: MillisSinceEpoch by LongPreference(
+        preferences = encryptedPrefs,
+        keyProvider = { KEY_SMS_EXCEEDED_VERIFICATION_ATTEMPTS_MILLIS },
+        defaultValue = 0
+    )
+
+    override var smsExceededResendAttemptsMillis: MillisSinceEpoch by LongPreference(
+        preferences = encryptedPrefs,
+        keyProvider = { KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS },
+        defaultValue = 0
+    )
+
+    private val hiddenBannersIds: List<Int>
+        get() = encryptedPrefs.getStringSet(KEY_USER_BANNER_IS_HIDDEN)
+            .map(String::toInt)
 
     override fun hideBanner(banner: StrigaKycStatusBanner) {
-        sharedPreferences.edit(true) {
-            putBoolean(KEY_USER_BANNER_IS_HIDDEN_PREFIX + banner.name, true)
-        }
+        val updatedHiddenBanners = hiddenBannersIds
+            .plus(banner.bannerId)
+            .map { it.toString() }
+            .toSet()
+        encryptedPrefs.saveStringSet(KEY_USER_BANNER_IS_HIDDEN, updatedHiddenBanners)
     }
 
     override fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean {
-        return sharedPreferences.getBoolean(KEY_USER_BANNER_IS_HIDDEN_PREFIX + banner.name, false)
+        return banner.bannerId in hiddenBannersIds
     }
 
     override fun clear() {
-        sharedPreferences.edit { clear() }
+        userStatus = null
+        userWallet = null
+        fiatAccount = null
+        smsExceededVerificationAttemptsMillis = 0
+        smsExceededResendAttemptsMillis = 0
+
+        encryptedPrefs.remove(KEY_USER_BANNER_IS_HIDDEN)
     }
 }

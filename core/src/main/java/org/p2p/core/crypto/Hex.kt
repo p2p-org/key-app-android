@@ -1,5 +1,7 @@
 package org.p2p.core.crypto
 
+import org.p2p.core.wrapper.HexString
+
 private const val HEX_ARRAY = "0123456789abcdef"
 
 @Suppress("MagicNumber")
@@ -31,4 +33,6 @@ object Hex {
 
         return bytes
     }
+
+    fun decode(hexString: HexString): ByteArray = decode(hexString.rawValue)
 }
