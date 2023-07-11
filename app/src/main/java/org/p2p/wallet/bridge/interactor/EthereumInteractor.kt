@@ -10,7 +10,7 @@ import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.ethereumkit.internal.models.Signature
-import org.p2p.wallet.bridge.claim.interactor.ClaimInteractor
+import org.p2p.wallet.bridge.claim.interactor.EthBridgeClaimInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
@@ -19,7 +19,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class EthereumInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val claimInteractor: ClaimInteractor,
+    private val claimInteractor: EthBridgeClaimInteractor,
     private val ethereumRepository: EthereumRepository,
     private val ethereumSendRepository: EthereumSendRepository,
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,

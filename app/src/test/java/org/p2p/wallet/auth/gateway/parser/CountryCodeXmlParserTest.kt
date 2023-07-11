@@ -23,7 +23,10 @@ class CountryCodeXmlParserTest {
     companion object {
         @ClassRule
         @JvmField
-        val timber = TimberUnitTestInstance("CountryCodeXmlParserTest")
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "CountryCodeXmlParserTest"
+        )
     }
 
     private val currentWorkingDir = Paths.get("").toAbsolutePath().toString()

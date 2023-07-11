@@ -30,7 +30,6 @@ import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
-import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletInMemoryRepository
 import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletRemoteRepository
 import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWalletMapper
 import org.p2p.wallet.utils.assertThat
@@ -56,7 +55,12 @@ class StrigaWalletRemoteRepositoryTest {
                 every { getUserId() } returns userId
                 every { getUserIdOrThrow() } returns userId
             },
-            cache = StrigaWalletInMemoryRepository(),
+            cache = mockk {
+                every { userWallet }.returns(null)
+                every { fiatAccountDetails }.returns(null)
+                every { userWallet = any() }.returns(Unit)
+                every { fiatAccountDetails = any() }.returns(Unit)
+            },
         )
     }
 

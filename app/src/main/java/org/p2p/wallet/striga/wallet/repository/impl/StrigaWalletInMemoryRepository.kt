@@ -1,17 +1,28 @@
 package org.p2p.wallet.striga.wallet.repository.impl
 
-import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
+import org.p2p.wallet.striga.user.StrigaStorageContract
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 
-class StrigaWalletInMemoryRepository {
-    var fiatAccountDetails: StrigaFiatAccountDetails? = null
-    var cryptoAccountDetails: StrigaCryptoAccountDetails? = null
-    var userWallet: StrigaUserWallet? = null
+class StrigaWalletInMemoryRepository(
+    private val strigaStorage: StrigaStorageContract
+) {
+    var fiatAccountDetails: StrigaFiatAccountDetails?
+        get() = strigaStorage.fiatAccount
+        set(value) {
+            strigaStorage.fiatAccount = value
+        }
 
-    fun clear() {
-        fiatAccountDetails = null
-        cryptoAccountDetails = null
-        userWallet = null
-    }
+    var cryptoAccountDetails: StrigaCryptoAccountDetails?
+        get() = strigaStorage.cryptoAccount
+        set(value) {
+            strigaStorage.cryptoAccount = value
+        }
+
+    var userWallet: StrigaUserWallet?
+        get() = strigaStorage.userWallet
+        set(value) {
+            strigaStorage.userWallet = value
+        }
 }
