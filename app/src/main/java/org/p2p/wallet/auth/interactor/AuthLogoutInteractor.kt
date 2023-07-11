@@ -18,9 +18,6 @@ import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
-import org.p2p.wallet.renbtc.RenTransactionManager
-import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
-import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.striga.user.StrigaStorageContract
 import org.p2p.wallet.striga.wallet.repository.impl.StrigaWalletInMemoryRepository
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
@@ -28,7 +25,6 @@ import org.p2p.wallet.updates.SubscriptionUpdatesManager
 class AuthLogoutInteractor(
     private val context: Context,
     private val secureStorage: SecureStorageContract,
-    private val renBtcInteractor: RenBtcInteractor,
     private val sharedPreferences: SharedPreferences,
     private val jupiterSwapStorage: JupiterSwapStorageContract,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -36,7 +32,6 @@ class AuthLogoutInteractor(
     private val mainLocalRepository: HomeLocalRepository,
     private val recipientsLocalRepository: RecipientsLocalRepository,
     private val updatesManager: SubscriptionUpdatesManager,
-    private val transactionManager: RenTransactionManager,
     private val transactionDetailsLocalRepository: TransactionDetailsLocalRepository,
     private val pushNotificationsInteractor: PushNotificationsInteractor,
     private val strigaWalletInMemoryRepository: StrigaWalletInMemoryRepository,
@@ -57,16 +52,13 @@ class AuthLogoutInteractor(
             tokenKeyProvider.clear()
             sendModeProvider.clear()
             secureStorage.clear()
-            transactionManager.stop()
             mainLocalRepository.clear()
             recipientsLocalRepository.clear()
-            renBtcInteractor.clearSession()
             transactionDetailsLocalRepository.deleteAll()
             jupiterSwapStorage.clear()
             strigaWalletInMemoryRepository.clear()
             strigaStorage.clear()
             IntercomService.logout()
-            RenVMService.stopService(context)
 
             pushNotificationsInteractor.deleteDeviceToken(publicKey)
         }.invokeOnCompletion {

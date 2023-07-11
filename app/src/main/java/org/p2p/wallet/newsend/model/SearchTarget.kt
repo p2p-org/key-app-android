@@ -3,7 +3,6 @@ package org.p2p.wallet.newsend.model
 import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.ethereumkit.external.utils.EthereumUtils
 import org.p2p.solanaj.utils.PublicKeyValidator
-import org.p2p.wallet.renbtc.utils.BitcoinAddressValidator
 
 data class SearchTarget(
     val value: String,

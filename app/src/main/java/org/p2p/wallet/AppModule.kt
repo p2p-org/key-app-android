@@ -35,14 +35,12 @@ import org.p2p.wallet.newsend.SendModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.ReceiveModule
-import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.sdk.di.AppSdkModule
 import org.p2p.wallet.sell.SellModule
 import org.p2p.wallet.settings.SettingsModule
-import org.p2p.wallet.solend.SolendModule
 import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
@@ -89,14 +87,12 @@ object AppModule {
                 JupiterModule.create(),
                 PushNotificationsModule.create(),
                 ReceiveModule.create(),
-                RenBtcModule.create(),
                 RestoreModule.create(),
                 RootModule.create(),
                 ScanQrModule.create(),
                 SendModule.create(),
                 SellModule.create(),
                 SettingsModule.create(),
-                SolendModule.create(),
                 StrigaModule.create(),
                 SwapModule.create(),
                 TransactionManagerModule.create(),

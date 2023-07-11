@@ -3,7 +3,6 @@ package org.p2p.wallet.newsend.analytics
 import java.math.BigDecimal
 import org.p2p.core.model.CurrencyMode
 import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 
@@ -194,12 +193,6 @@ class NewSendAnalytics(
         BRIDGE("Bridge"),
         SEND_VIA_LINK("Send_Via_Link"),
         SELL("Sell")
-    }
-
-    private fun NetworkType.toAnalyticsValue(): AnalyticsSendNetwork = when (this) {
-        NetworkType.SOLANA -> AnalyticsSendNetwork.SOLANA
-        NetworkType.BITCOIN -> AnalyticsSendNetwork.BITCOIN
-        NetworkType.ETHEREUM -> AnalyticsSendNetwork.ETHEREUM
     }
 
     enum class SendStatus(val title: String) {

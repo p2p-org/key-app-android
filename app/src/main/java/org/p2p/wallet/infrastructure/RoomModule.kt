@@ -24,7 +24,6 @@ object RoomModule {
         }
 
         single { get<WalletDatabase>().tokenDao() }
-        single { get<WalletDatabase>().sessionDao() }
         single { get<WalletDatabase>().closeAccountTransactionsDao() }
         single { get<WalletDatabase>().createAccountTransactionsDao() }
         single { get<WalletDatabase>().swapTransactionsDao() }
