@@ -17,42 +17,47 @@ private const val PARAMS_PROGRAM_ID = "program_id"
 
 class SplTokenProgramSubscriber(
     private val updatesManager: SubscriptionUpdatesManager,
-    tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider
 ) : SubscriptionUpdateSubscriber {
 
-    private val request = RpcRequest(
-        method = SUBSCRIBE_METHOD_NAME,
-        params = listOf(
-            SystemProgram.SPL_TOKEN_PROGRAM_ID.toBase58(),
-            mapOf(
-                "commitment" to ConfirmationStatus.CONFIRMED.value,
-                "encoding" to Encoding.BASE64.encoding,
-                "filters" to listOf(
-                    mapOf("dataSize" to TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH),
-                    mapOf(
-                        "memcmp" to mapOf(
-                            "offset" to 32,
-                            "bytes" to tokenKeyProvider.publicKey
+    private var request: RpcRequest? = null
+
+    private fun createRequest(): RpcRequest {
+        return RpcRequest(
+            method = SUBSCRIBE_METHOD_NAME,
+            params = listOf(
+                SystemProgram.SPL_TOKEN_PROGRAM_ID.toBase58(),
+                mapOf(
+                    "commitment" to ConfirmationStatus.CONFIRMED.value,
+                    "encoding" to Encoding.BASE64.encoding,
+                    "filters" to listOf(
+                        mapOf("dataSize" to TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH),
+                        mapOf(
+                            "memcmp" to mapOf(
+                                "offset" to 32,
+                                "bytes" to tokenKeyProvider.publicKey
+                            )
                         )
                     )
                 )
             )
         )
-    )
-
-    private val cancelRequest = RpcMapRequest(
-        method = UNSUBSCRIBE_METHOD_NAME,
-        params = mapOf(PARAMS_NUMBER to request.id)
-    )
+    }
 
     override fun subscribe() {
+        request = createRequest()
         updatesManager.addSubscription(
-            request = request,
+            request = request ?: return,
             updateType = SocketSubscriptionUpdateType.SPL_TOKEN_PROGRAM_UPDATED
         )
     }
 
     override fun unSubscribe() {
+        val id = request?.id ?: return
+        val cancelRequest = RpcMapRequest(
+            method = UNSUBSCRIBE_METHOD_NAME,
+            params = mapOf(PARAMS_NUMBER to id)
+        )
         updatesManager.removeSubscription(cancelRequest)
     }
 }
