@@ -11,8 +11,6 @@ interface WalletContract {
     interface View : MvpView {
         fun showBalance(cellModel: TextViewCellModel?)
         fun showRefreshing(isRefreshing: Boolean)
-        fun showEmptyViewData(data: List<Any>)
-        fun showEmptyState(isEmpty: Boolean)
         fun showUserAddress(ellipsizedAddress: String)
         fun showActionButtons(buttons: List<ActionButton>)
         fun navigateToProfile()

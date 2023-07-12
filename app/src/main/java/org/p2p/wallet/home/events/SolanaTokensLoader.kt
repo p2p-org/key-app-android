@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
-import org.p2p.token.service.api.events.manager.TokenServiceEvent
+import org.p2p.token.service.api.events.manager.TokenServiceUpdate
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventSubscriber
 import org.p2p.token.service.api.events.manager.TokenServiceEventType
@@ -42,7 +42,6 @@ class SolanaTokensLoader(
 
             tokenServiceEventManager.subscribe(SolanaTokensRatesEventSubscriber(::saveTokensRates))
             val tokens = userTokensInteractor.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
-
             userTokensInteractor.saveUserTokens(tokens)
             userTokensInteractor.loadUserRates(tokens)
         } catch (e: CancellationException) {
@@ -82,13 +81,13 @@ class SolanaTokensLoader(
         private val block: (List<TokenServicePrice>) -> Unit
     ) : TokenServiceEventSubscriber {
 
-        override fun onUpdate(eventType: TokenServiceEventType, event: TokenServiceEvent) {
+        override fun onUpdate(eventType: TokenServiceEventType, data: TokenServiceUpdate) {
             if (eventType != TokenServiceEventType.SOLANA_CHAIN_EVENT) return
 
-            when (event) {
-                is TokenServiceEvent.Loading -> Unit
-                is TokenServiceEvent.TokensPriceLoaded -> block(event.result)
-                is TokenServiceEvent.Idle -> Unit
+            when (data) {
+                is TokenServiceUpdate.Loading -> Unit
+                is TokenServiceUpdate.TokensPriceLoaded -> block(data.result)
+                is TokenServiceUpdate.Idle -> Unit
                 else -> Unit
             }
         }

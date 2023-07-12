@@ -17,8 +17,8 @@ class TokenServiceEventManager {
         listeners.remove(listener)
     }
 
-    fun notify(eventType: TokenServiceEventType, event: TokenServiceEvent) {
-        Timber.tag(TAG).d("Event received = $eventType, event = $event")
-        listeners.forEach { it.onUpdate(eventType, event) }
+    fun notify(eventType: TokenServiceEventType, data: TokenServiceUpdate) {
+        Timber.tag(TAG).d("Event received = $eventType, data = $data")
+        listeners.forEach { it.onUpdate(eventType, data) }
     }
 }
