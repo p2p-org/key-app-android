@@ -16,9 +16,9 @@ interface MyCryptoContract {
         fun showActionButtons(buttons: List<ActionButton>)
         fun showItems(items: List<AnyCellItem>)
         fun showEmptyState(isEmpty: Boolean)
-        fun showReceive()
-        fun showSwap()
-        fun showTokenClaim(token: Token.Eth)
+        fun navigateToReceive()
+        fun navigateToSwap()
+        fun navigateToTokenClaim(token: Token.Eth)
         fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress)
     }
 

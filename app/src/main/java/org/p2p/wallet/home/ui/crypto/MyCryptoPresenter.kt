@@ -37,7 +37,7 @@ class MyCryptoPresenter(
 
     override fun attach(view: MyCryptoContract.View) {
         super.attach(view)
-        initializeActionButtons()
+        prepareAndShowActionButtons()
         observeCryptoTokens()
     }
 
@@ -78,7 +78,6 @@ class MyCryptoPresenter(
             }
             is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
-                initializeActionButtons()
                 showTokensAndBalance(
                     solTokens = newState.solTokens,
                     ethTokens = newState.ethTokens
@@ -150,25 +149,25 @@ class MyCryptoPresenter(
         analytics.logUserAggregateBalanceProperty(balance.orZero())
     }
 
-    private fun initializeActionButtons() {
+    private fun prepareAndShowActionButtons() {
         val buttons = listOf(ActionButton.RECEIVE_BUTTON, ActionButton.SWAP_BUTTON)
         view?.showActionButtons(buttons)
     }
 
     override fun onReceiveClicked() {
-        view?.showReceive()
+        view?.navigateToReceive()
     }
 
     override fun onSwapClicked() {
         analytics.logSwapActionButtonClicked()
-        view?.showSwap()
+        view?.navigateToSwap()
     }
 
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
         launch {
             analytics.logClaimButtonClicked()
             if (canBeClaimed) {
-                view?.showTokenClaim(token)
+                view?.navigateToTokenClaim(token)
             } else {
                 val latestActiveBundleId = token.latestActiveBundleId ?: return@launch
                 val bridgeBundle = homeInteractor.getClaimBundleById(latestActiveBundleId) ?: return@launch

@@ -30,7 +30,6 @@ import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.tokenDelegate
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -52,7 +51,6 @@ class MyCryptoFragment :
 
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val glideManager: GlideManager by inject()
-    private val analytics: AnalyticsPushChannel by inject()
     private val homeAnalytics: HomeAnalytics by inject()
 
     private var listener: RootListener? = null
@@ -68,7 +66,7 @@ class MyCryptoFragment :
             }
         },
         tokenButtonDelegate() { binding, _ ->
-            binding.root.setOnClickListener { onToggleClicked() }
+            binding.root.setOnClickListener { onVisibilityToggleClicked() }
         },
         ethClaimTokenDelegate(glideManager) { binding, item ->
             with(binding) {
@@ -137,15 +135,15 @@ class MyCryptoFragment :
         }
     }
 
-    override fun showReceive() {
+    override fun navigateToReceive() {
         replaceFragment(receiveFragmentFactory.receiveFragment())
     }
 
-    override fun showSwap() {
+    override fun navigateToSwap() {
         replaceFragment(JupiterSwapFragment.create(source = SwapOpenedFrom.MAIN_SCREEN))
     }
 
-    private fun onToggleClicked() {
+    private fun onVisibilityToggleClicked() {
         homeAnalytics.logHiddenTokensClicked()
         presenter.toggleTokenVisibilityState()
     }
@@ -164,7 +162,7 @@ class MyCryptoFragment :
         presenter.onClaimClicked(canBeClaimed, token)
     }
 
-    override fun showTokenClaim(token: Token.Eth) {
+    override fun navigateToTokenClaim(token: Token.Eth) {
         replaceFragment(ClaimFragment.create(ethereumToken = token))
     }
 
