@@ -9,12 +9,12 @@ import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.events.AppLoader
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
-import org.p2p.wallet.user.interactor.BlockChainTokensMetadataInteractor
+import org.p2p.wallet.user.interactor.TokenMetadataInteractor
 
 class SplashPresenter(
     private val authInteractor: AuthInteractor,
     private val onboardingAnalytics: OnboardingAnalytics,
-    private val blockchainTokensInteractor: BlockChainTokensMetadataInteractor,
+    private val blockchainTokensInteractor: TokenMetadataInteractor,
     private val appLoader: AppLoader,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val appScope: AppScope

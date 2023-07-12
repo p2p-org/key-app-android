@@ -1,6 +1,5 @@
 package org.p2p.wallet.user.interactor
 
-import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -45,7 +44,6 @@ class UserTokensInteractor(
     }
 
     suspend fun saveUserTokensRates(tokensRates: List<TokenServicePrice>) = withContext(dispatchers.io) {
-        Timber.d("### TokenServiceCoordinator prices are loaded: ${tokensRates.size}")
         userTokensLocalRepository.saveRatesForTokens(tokensRates)
     }
 

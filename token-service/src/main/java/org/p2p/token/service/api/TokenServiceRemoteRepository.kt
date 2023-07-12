@@ -6,9 +6,6 @@ import java.net.URI
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.rpc.JsonRpc
 import org.p2p.core.rpc.RpcApi
-import org.p2p.core.rpc.RpcResponse
-import org.p2p.token.service.api.request.TokenServiceMetadataRequest
-import org.p2p.token.service.api.request.TokenServicePriceRequest
 import org.p2p.token.service.model.TokenServiceResult
 
 private const val TAG = "BridgeRemoteRepository"
@@ -29,11 +26,9 @@ internal class TokenServiceRemoteRepository(
             TokenServiceResult.Success(result)
         } catch (e: JsonRpc.ResponseError.RpcError) {
             Timber.tag(TAG).i(e, "failed request for ${request.method}")
-            Timber.tag(TAG).i("Error body message ${e.error.message}")
             TokenServiceResult.Error(e)
         } catch (e: Throwable) {
             Timber.tag(TAG).i(e, "failed request for ${request.method}")
-            Timber.tag(TAG).i("Error body message ${e.message}")
             TokenServiceResult.Error(e)
         }
     }

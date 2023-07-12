@@ -26,7 +26,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureTog
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesValidationEnabledFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 
 object FeatureTogglesModule : InjectionModule {
@@ -60,7 +59,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::SettingsNetworkListFeatureToggle)
         factoryOf(::NetworkObservationFeatureToggle)
         factoryOf(::SendViaLinkFeatureToggle)
-        factoryOf(::TokenMetadataUpdateFeatureToggle)
         factoryOf(::NetworkObservationPercentFeatureToggle)
         factoryOf(::NetworkObservationFrequencyFeatureToggle)
         factoryOf(::NetworkObservationDebounceFeatureToggle)

@@ -5,14 +5,12 @@ import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.repository.metadata.TokenMetadataLocalRepository
-import org.p2p.token.service.repository.metadata.TokenMetadataRepository
 import org.p2p.token.service.repository.price.TokenPriceLocalRepository
 import org.p2p.token.service.repository.price.TokenPriceRepository
 
 class TokenServiceRepositoryImpl(
     private val priceRemoteRepository: TokenPriceRepository,
     private val priceLocalRepository: TokenPriceLocalRepository,
-    private val metadataRemoteRepository: TokenMetadataRepository,
     private val metadataLocalRepository: TokenMetadataLocalRepository,
 ) : TokenServiceRepository {
 
@@ -24,19 +22,6 @@ class TokenServiceRepositoryImpl(
         result.forEach { queryResult ->
             priceLocalRepository.saveTokensPrice(
                 prices = queryResult.items
-            )
-        }
-    }
-
-    override suspend fun loadMetadataForTokens(chain: TokenServiceNetwork, tokenAddresses: List<String>) {
-        val result = metadataRemoteRepository.loadTokensMetadata(
-            chain = chain,
-            addresses = tokenAddresses
-        )
-        result.forEach { queryResult ->
-            metadataLocalRepository.setTokensMetadata(
-                networkChain = queryResult.networkChain,
-                metadata = queryResult.items
             )
         }
     }
@@ -55,7 +40,7 @@ class TokenServiceRepositoryImpl(
         tokenAddress: String
     ): TokenServicePrice? {
         loadPriceForTokens(chain = networkChain, tokenAddresses = listOf(tokenAddress))
-        return findTokenPriceByAddress( tokenAddress = tokenAddress)
+        return findTokenPriceByAddress(tokenAddress = tokenAddress)
     }
 
     override fun findTokenMetadataByAddress(
