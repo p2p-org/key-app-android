@@ -2,7 +2,7 @@ package org.p2p.wallet.home.model
 
 import java.math.BigInteger
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -14,54 +14,48 @@ import org.p2p.wallet.user.local.TokenResponse
 
 object TokenConverter {
 
-    fun fromNetwork(response: TokenResponse): TokenData =
-        TokenData(
+    fun fromNetwork(response: TokenResponse): TokenMetadata =
+        TokenMetadata(
             mintAddress = response.address,
             name = response.name,
             symbol = response.symbol,
             iconUrl = response.logoUrl,
             decimals = response.decimals,
-            isWrapped = response.isWrapped(),
-            serumV3Usdc = response.extensions?.serumV3Usdc,
-            serumV3Usdt = response.extensions?.serumV3Usdt,
-            coingeckoId = response.extensions?.coingeckoId
+            isWrapped = response.isWrapped()
         )
 
     fun fromNetwork(
         mintAddress: String,
         totalLamports: BigInteger,
         accountPublicKey: String,
-        tokenData: TokenData,
+        tokenMetadata: TokenMetadata,
         price: TokenServicePrice?
     ): Token.Active {
         val tokenRate = price?.usdRate
         val totalInUsd = if (tokenRate != null) {
-            totalLamports.fromLamports(tokenData.decimals).times(tokenRate)
+            totalLamports.fromLamports(tokenMetadata.decimals).times(tokenRate)
         } else {
             null
         }
-        val total = totalLamports.toBigDecimal().divide(tokenData.decimals.toPowerValue())
+        val total = totalLamports.toBigDecimal().divide(tokenMetadata.decimals.toPowerValue())
         return Token.Active(
             publicKey = accountPublicKey,
-            tokenSymbol = tokenData.symbol,
-            decimals = tokenData.decimals,
+            tokenSymbol = tokenMetadata.symbol,
+            decimals = tokenMetadata.decimals,
             mintAddress = mintAddress,
-            tokenName = tokenData.name,
-            iconUrl = tokenData.iconUrl,
-            coingeckoId = tokenData.coingeckoId,
+            tokenName = tokenMetadata.name,
+            iconUrl = tokenMetadata.iconUrl,
             totalInUsd = totalInUsd,
             total = total,
             rate = tokenRate,
             visibility = TokenVisibility.DEFAULT,
-            serumV3Usdc = tokenData.serumV3Usdc,
-            serumV3Usdt = tokenData.serumV3Usdt,
-            isWrapped = tokenData.isWrapped
+            isWrapped = tokenMetadata.isWrapped
         )
     }
 
     fun fromNetwork(
         account: Account,
-        tokenData: TokenData,
+        tokenMetadata: TokenMetadata,
         price: TokenServicePrice?
     ): Token.Active {
         val data = account.account.data.parsed.info
@@ -71,13 +65,13 @@ object TokenConverter {
             mintAddress = mintAddress,
             totalLamports = total,
             accountPublicKey = account.pubkey,
-            tokenData = tokenData,
+            tokenMetadata = tokenMetadata,
             price = price
         )
     }
 
     fun fromNetwork(
-        data: TokenData,
+        data: TokenMetadata,
         price: TokenServicePrice?
     ): Token.Other =
         Token.Other(
@@ -86,8 +80,6 @@ object TokenConverter {
             decimals = data.decimals,
             mintAddress = data.mintAddress,
             iconUrl = data.iconUrl,
-            serumV3Usdc = data.serumV3Usdc,
-            serumV3Usdt = data.serumV3Usdt,
             isWrapped = data.isWrapped,
             rate = price?.rate?.usd
         )
@@ -102,11 +94,8 @@ object TokenConverter {
             iconUrl = token.iconUrl,
             totalInUsd = token.totalInUsd,
             total = token.total,
-            coingeckoId = token.coingeckoId,
             exchangeRate = token.rate?.toString(),
             visibility = token.visibility.stringValue,
-            serumV3Usdc = token.serumV3Usdc,
-            serumV3Usdt = token.serumV3Usdt,
             isWrapped = token.isWrapped
         )
 
@@ -119,25 +108,9 @@ object TokenConverter {
             tokenName = entity.tokenName,
             iconUrl = entity.iconUrl,
             totalInUsd = entity.totalInUsd,
-            coingeckoId = entity.coingeckoId,
             total = entity.total,
             rate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
-            serumV3Usdc = entity.serumV3Usdc,
-            serumV3Usdt = entity.serumV3Usdt,
             isWrapped = entity.isWrapped
-        )
-
-    fun toTokenData(token: Token): TokenData =
-        TokenData(
-            mintAddress = token.mintAddress,
-            name = token.tokenName,
-            symbol = token.tokenSymbol,
-            iconUrl = token.iconUrl,
-            decimals = token.decimals,
-            isWrapped = token.isWrapped,
-            serumV3Usdc = token.serumV3Usdc,
-            serumV3Usdt = token.serumV3Usdt,
-            coingeckoId = null
         )
 }

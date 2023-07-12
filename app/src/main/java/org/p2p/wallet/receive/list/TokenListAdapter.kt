@@ -6,14 +6,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.p2p.wallet.databinding.ItemTokenListBinding
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.Constants.SOL_NAME
 
 class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
 
-    private val data = mutableListOf<TokenData>()
+    private val data = mutableListOf<TokenMetadata>()
 
-    fun setItems(new: List<TokenData>) {
+    fun setItems(new: List<TokenMetadata>) {
         val old = ArrayList(data)
         data.clear()
         data.addAll(new)
@@ -38,7 +38,7 @@ class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
         private val textView = binding.textView
         private val symbolTextView = binding.symbolTextView
 
-        fun bind(value: TokenData) {
+        fun bind(value: TokenMetadata) {
             // TODO temporary solution
             if (value.symbol == "SOL") {
                 textView.text = SOL_NAME
@@ -51,8 +51,8 @@ class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
     }
 
     private fun getDiffCallback(
-        oldList: List<TokenData>,
-        newList: List<TokenData>
+        oldList: List<TokenMetadata>,
+        newList: List<TokenMetadata>
     ) = object : DiffUtil.Callback() {
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

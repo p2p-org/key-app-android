@@ -24,7 +24,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.DecimalFormatter
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.core.crypto.Base64String
@@ -251,7 +251,7 @@ open class JupiterSwapPresenterBaseTest {
         )
     }
 
-    private fun initUserLocalRepository(tokens: List<TokenData>) {
+    private fun initUserLocalRepository(tokens: List<TokenMetadata>) {
         userLocalRepository = UserInMemoryRepository(
             tokenConverter = TokenConverter,
             tokenServiceRepository = tokenServiceRepository

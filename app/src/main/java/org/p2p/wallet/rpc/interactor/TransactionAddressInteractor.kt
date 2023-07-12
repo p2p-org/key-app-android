@@ -2,7 +2,7 @@ package org.p2p.wallet.rpc.interactor
 
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
@@ -83,7 +83,7 @@ class TransactionAddressInteractor(
         throw IllegalStateException("Wallet address is not valid")
     }
 
-    suspend fun getDirectTokenData(address: String, useCache: Boolean = true): TokenData? {
+    suspend fun getDirectTokenData(address: String, useCache: Boolean = true): TokenMetadata? {
         val accountInfo = userAccountRepository.getAccountInfo(address, useCache)
 
         // detect if it is a direct token address

@@ -1,6 +1,6 @@
 package org.p2p.token.service.api.mapper
 
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.token.service.api.request.TokenServiceItemRequest
 import org.p2p.token.service.api.request.TokenServiceQueryRequest
 import org.p2p.token.service.api.response.TokenItemPriceResponse
@@ -13,17 +13,14 @@ import org.p2p.token.service.model.TokenServicePrice
 
 class TokenServiceMapper {
 
-    internal fun fromNetwork(response: TokenResponse): TokenData =
-        TokenData(
+    internal fun fromNetwork(response: TokenResponse): TokenMetadata =
+        TokenMetadata(
             mintAddress = response.address,
             name = response.name,
             symbol = response.symbol,
             iconUrl = response.logoUrl,
             decimals = response.decimals,
-            isWrapped = response.isWrapped(),
-            serumV3Usdc = response.extensions?.serumV3Usdc,
-            serumV3Usdt = response.extensions?.serumV3Usdt,
-            coingeckoId = response.extensions?.coingeckoId
+            isWrapped = response.isWrapped()
         )
 
     internal fun fromNetwork(
