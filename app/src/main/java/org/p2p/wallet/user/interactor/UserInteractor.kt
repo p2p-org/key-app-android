@@ -20,9 +20,6 @@ import org.p2p.wallet.utils.emptyString
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
-private const val TAG = "UserInteractor"
-const val TOKENS_FILE_NAME = "tokens.json"
-
 class UserInteractor(
     private val userLocalRepository: UserLocalRepository,
     private val userTokensRepository: UserTokensLocalRepository,

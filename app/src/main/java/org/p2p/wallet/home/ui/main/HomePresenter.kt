@@ -239,7 +239,7 @@ class HomePresenter(
                         state = state.copy(isStrigaKycBannerLoading = true)
                         handleHomeStateChanged(state.tokens, state.ethTokens)
 
-                        homeInteractor.loadStrigaFiatAccountDetails()
+                        homeInteractor.loadDetailsForStrigaAccounts()
                             .onSuccess { view?.navigateToKycStatus(statusFromKycBanner) }
                             .onFailure { view?.showUiKitSnackBar(messageResId = R.string.error_general_message) }
 

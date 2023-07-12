@@ -10,6 +10,7 @@ import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsResendRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsVerifyRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnchainWithdrawalFeeRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
+import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichCryptoAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaInitWithdrawalResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaOnchainWithdrawalFeeResponse
@@ -42,6 +43,11 @@ interface StrigaWalletApi {
     suspend fun enrichFiatAccount(
         @Body body: StrigaEnrichAccountRequest
     ): StrigaEnrichFiatAccountResponse
+
+    @POST("v1/wallets/account/enrich")
+    suspend fun enrichCryptoAccount(
+        @Body body: StrigaEnrichAccountRequest
+    ): StrigaEnrichCryptoAccountResponse
 
     @POST("v1/wallets/get/all")
     suspend fun getUserWallets(

@@ -1,29 +1,35 @@
 package org.p2p.token.service.api.mapper
 
+import org.p2p.core.token.TokenData
 import org.p2p.token.service.api.request.TokenServiceItemRequest
 import org.p2p.token.service.api.request.TokenServiceQueryRequest
-import org.p2p.token.service.api.response.TokenItemMetadataResponse
 import org.p2p.token.service.api.response.TokenItemPriceResponse
 import org.p2p.token.service.api.response.TokenRateResponse
+import org.p2p.token.service.api.response.TokenResponse
 import org.p2p.token.service.api.response.TokenServiceNetworkResponse
 import org.p2p.token.service.model.TokenRate
-import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 
 class TokenServiceMapper {
 
-    internal fun fromNetwork(response: TokenItemMetadataResponse): TokenServiceMetadata {
-        return TokenServiceMetadata(
-            address = response.address,
+    internal fun fromNetwork(response: TokenResponse): TokenData =
+        TokenData(
+            mintAddress = response.address,
+            name = response.name,
             symbol = response.symbol,
-            logoUrl = response.logoUrl,
+            iconUrl = response.logoUrl,
             decimals = response.decimals,
-            price = fromNetwork(response.price)
+            isWrapped = response.isWrapped(),
+            serumV3Usdc = response.extensions?.serumV3Usdc,
+            serumV3Usdt = response.extensions?.serumV3Usdt,
+            coingeckoId = response.extensions?.coingeckoId
         )
-    }
 
-    internal fun fromNetwork(tokenServiceNetwork: TokenServiceNetwork,response: TokenItemPriceResponse): TokenServicePrice? {
+    internal fun fromNetwork(
+        tokenServiceNetwork: TokenServiceNetwork,
+        response: TokenItemPriceResponse
+    ): TokenServicePrice? {
         val tokenRate = response.price ?: return null
         return TokenServicePrice(
             address = response.tokenAddress,

@@ -1,13 +1,13 @@
 package org.p2p.wallet.home.events
 
-import org.p2p.wallet.common.feature_toggles.toggles.remote.TokenMetadataUpdateFeatureToggle
+import timber.log.Timber
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
-import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 
 class StrigaFeatureLoader(
-    private val strigaSignupEnabledFeatureToggle: TokenMetadataUpdateFeatureToggle,
+    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor
@@ -15,14 +15,13 @@ class StrigaFeatureLoader(
 
     override suspend fun onLoad() {
         strigaSignupInteractor.loadAndSaveSignupData()
+        Timber.d("Striga signup data loaded")
         strigaUserInteractor.loadAndSaveUserStatusData()
-        if (strigaUserInteractor.isUserCreated()) {
-            loadStrigaFiatAccountDetails()
+        Timber.d("Striga user status loaded (is KYC approved? ${strigaUserInteractor.isKycApproved})")
+        if (strigaUserInteractor.canLoadAccounts) {
+            strigaWalletInteractor.loadDetailsForStrigaAccounts()
+            Timber.d("Striga accounts details loaded")
         }
-    }
-
-    suspend fun loadStrigaFiatAccountDetails(): Result<StrigaFiatAccountDetails> {
-        return strigaWalletInteractor.loadFiatAccountAndUserWallet()
     }
 
     override suspend fun isEnabled(): Boolean {

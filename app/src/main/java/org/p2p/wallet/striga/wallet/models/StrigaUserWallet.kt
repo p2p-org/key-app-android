@@ -19,4 +19,7 @@ data class StrigaUserWallet(
 
     val eurAccount: StrigaUserWalletAccount?
         get() = accounts.firstOrNull { it.accountCurrency == StrigaWalletAccountCurrency.EUR }
+
+    val usdcAccount: StrigaUserWalletAccount?
+        get() = accounts.firstOrNull { it.accountCurrency == StrigaWalletAccountCurrency.USDC }
 }
