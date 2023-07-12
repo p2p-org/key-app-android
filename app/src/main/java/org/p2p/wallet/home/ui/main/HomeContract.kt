@@ -44,10 +44,10 @@ interface HomeContract {
         fun navigateToBuyScreen(token: Token)
         fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?)
         fun navigateToKycStatus(status: StrigaKycStatusBanner)
-        fun navigateToStrigaClaimOtp(usdAmount: String, challengeId: StrigaWithdrawalChallengeId)
         fun showKycPendingDialog()
         fun showTopupWalletDialog()
         fun showStrigaClaimProgress(isClaimInProgress: Boolean, tokenMint: Base58String)
+        fun navigateToStrigaClaimOtp(challengeId: StrigaWithdrawalChallengeId, token: HomeElementItem.StrigaClaim)
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
@@ -69,5 +69,6 @@ interface HomeContract {
         fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth)
         fun onBannerClicked(bannerTitleId: Int)
         fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim)
+        fun onClaimConfirmed(challengeId: StrigaWithdrawalChallengeId, token: HomeElementItem.StrigaClaim)
     }
 }

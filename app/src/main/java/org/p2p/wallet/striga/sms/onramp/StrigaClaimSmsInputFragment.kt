@@ -4,7 +4,6 @@ import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.GatewayHandledState
@@ -21,20 +20,18 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 
-class StrigaOnRampSmsInputFragment : BaseSmsInputFragment() {
+class StrigaClaimSmsInputFragment : BaseSmsInputFragment() {
 
     companion object {
         const val ARG_TITLE_AMOUNT = "ARG_TITLE_AMOUNT"
         const val ARG_CHALLENGE_ID = "ARG_CHALLENGE_ID"
-        val REQUEST_KEY: String = StrigaOnRampSmsInputFragment::class.java.name
+        val REQUEST_KEY: String = StrigaClaimSmsInputFragment::class.java.name
     }
 
     private val titleAmount: String by args(ARG_TITLE_AMOUNT)
     private val challengeId: StrigaWithdrawalChallengeId by args(ARG_CHALLENGE_ID)
 
-    override val presenter: SmsInputContract.Presenter by inject(named(StrigaWalletModule.SMS_QUALIFIER)) {
-        parametersOf(challengeId)
-    }
+    override val presenter: SmsInputContract.Presenter by inject(named(StrigaWalletModule.SMS_QUALIFIER))
 
     override fun onBackPressed() {
         popBackStack()

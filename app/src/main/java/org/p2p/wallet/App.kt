@@ -29,6 +29,7 @@ import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.utils.SolanajTimberLogger
+import org.p2p.wallet.utils.emptyString
 import org.p2p.core.BuildConfig as CoreBuildConfig
 import org.p2p.wallet.BuildConfig as AppBuildConfig
 
@@ -136,7 +137,7 @@ class App : Application(), Configuration.Provider {
             .setCrashlyticsCollectionEnabled(CoreBuildConfig.CRASHLYTICS_ENABLED)
 
         crashLogger.apply {
-            setUserId(userTokenProvider.publicKey)
+            setUserId(runCatching { userTokenProvider.publicKey }.getOrDefault(emptyString()))
             setCustomKey("crashlytics_enabled", CoreBuildConfig.CRASHLYTICS_ENABLED)
             setCustomKey("verifier", networkServicesUrlProvider.loadTorusEnvironment().verifier)
             setCustomKey("sub_verifier", networkServicesUrlProvider.loadTorusEnvironment().subVerifier.orEmpty())

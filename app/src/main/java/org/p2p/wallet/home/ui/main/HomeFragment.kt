@@ -5,10 +5,10 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
+import org.p2p.core.utils.asUsd
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.recycler.decoration.GroupedRoundingDecoration
@@ -53,7 +53,7 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
-import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputFragment
+import org.p2p.wallet.striga.sms.onramp.StrigaClaimSmsInputFragment
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -255,15 +255,20 @@ class HomeFragment :
         }.also(::replaceFragment)
     }
 
-    override fun navigateToStrigaClaimOtp(usdAmount: String, challengeId: StrigaWithdrawalChallengeId) {
+    override fun navigateToStrigaClaimOtp(
+        challengeId: StrigaWithdrawalChallengeId,
+        token: HomeElementItem.StrigaClaim
+    ) {
         val fragment = strigaKycFragmentFactory.claimOtpFragment(
-            titleAmount = usdAmount,
-            challengeId = challengeId
+            titleAmount = token.amountAvailable.asUsd(),
+            challengeId = challengeId,
         )
-        replaceFragmentForResult(fragment, StrigaOnRampSmsInputFragment.REQUEST_KEY, onResult = { _, _ ->
-            Timber.d("Striga claim OTP: success")
-            // todo: show success claim bottomsheet
-        })
+
+        replaceFragmentForResult(
+            target = fragment,
+            requestKey = StrigaClaimSmsInputFragment.REQUEST_KEY,
+            onResult = { _, bundle -> if (bundle.isEmpty) presenter.onClaimConfirmed(challengeId, token) }
+        )
     }
 
     override fun showKycPendingDialog() {

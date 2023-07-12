@@ -191,6 +191,10 @@ sealed class RpcHistoryTransaction(
         val counterPartyUsername: String?,
         val fees: List<RpcFee>?,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
+        companion object {
+            const val STRIGA_CLAIM_TX_ID: String = ""
+            const val STRIGA_CLAIM_SENDER_ADDRESS: String = ""
+        }
 
         @IgnoredOnParcel
         val isSend: Boolean

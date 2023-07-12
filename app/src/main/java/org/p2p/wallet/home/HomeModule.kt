@@ -19,6 +19,7 @@ import org.p2p.wallet.home.ui.container.MainContainerPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.HomePresenter
+import org.p2p.wallet.home.ui.main.striga.StrigaClaimConfirmedHandler
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.home.ui.wallet.WalletContract
@@ -86,6 +87,7 @@ object HomeModule : InjectionModule {
         }
         factoryOf(::HomePresenterMapper)
         factoryOf(::StrigaKycUiBannerMapper)
+        factoryOf(::StrigaClaimConfirmedHandler)
         factory<HomeContract.Presenter> {
             val subscribers = listOf(
                 new(::SplTokenProgramSubscriber),
@@ -110,7 +112,8 @@ object HomeModule : InjectionModule {
                 strigaFeatureToggle = get(),
                 tokenKeyProvider = get(),
                 tokenServiceCoordinator = get(),
-                strigaInteractor = get()
+                strigaInteractor = get(),
+                claimConfirmedHandler = get()
             )
         }
         factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
