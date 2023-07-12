@@ -10,6 +10,7 @@ import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 
 private const val TAG = "TokenMetadataInteractor"
+private const val TOKENS_FILE_NAME = "tokens.json"
 
 class TokenMetadataInteractor(
     private val externalStorageRepository: ExternalStorageRepository,
@@ -45,7 +46,7 @@ class TokenMetadataInteractor(
         // Save tokens to the file
         externalStorageRepository.saveJson(
             json = gson.toJson(tokensMetadata),
-            fileName = "$TOKENS_FILE_NAME-${tokensMetadata.timestamp}.json"
+            fileName = TOKENS_FILE_NAME
         )
     }
 
