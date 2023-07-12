@@ -22,8 +22,11 @@ import org.p2p.core.utils.fromJsonReified
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.response.StrigaUserWalletsResponse
+import org.p2p.wallet.striga.wallet.models.StrigaBlockchainNetworkInfo
+import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
+import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
@@ -55,8 +58,10 @@ class StrigaWalletRemoteRepositoryTest {
             cache = mockk {
                 every { userWallet }.returns(null)
                 every { fiatAccountDetails }.returns(null)
+                every { cryptoAccountDetails }.returns(null)
                 every { userWallet = any() }.returns(Unit)
                 every { fiatAccountDetails = any() }.returns(Unit)
+                every { cryptoAccountDetails = any() }.returns(Unit)
             },
         )
     }
@@ -108,6 +113,52 @@ class StrigaWalletRemoteRepositoryTest {
             assertEquals(false, result.value.isDomesticAccount)
             assertEquals(emptyList<String>(), result.value.routingCodeEntries)
             assertEquals(null, result.value.payInReference)
+        }
+
+    @Test
+    fun `GIVEN enrich account response for USDC WHEN getCryptoAccountDetails THEN check response is parsed ok`() =
+        runTest {
+            @Language("JSON")
+            val responseBody = """
+                {
+                  "accountId": "01c1f4e73d8b2587921c74e98951add0",
+                  "currency": "USDC",
+                  "blockchainDepositAddress": "0x08E54EEE2EEFF2a4BF071746Fc1468BaC060Eb2a",
+                  "blockchainNetwork": {
+                    "name": "USD Coin Test (Goerli)",
+                    "type": "ERC20",
+                    "contractAddress": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F"
+                  }
+                }
+            """.trimIndent()
+
+            coEvery { api.enrichCryptoAccount(any()) } returns responseBody.fromJson(gson)
+
+            val result = repository.getCryptoAccountDetails(
+                accountId = StrigaAccountId("01c1f4e73d8b2587921c74e98951add0"),
+            )
+
+            result.assertThat()
+                .isInstanceOf(StrigaDataLayerResult.Success::class.java)
+
+            result as StrigaDataLayerResult.Success<StrigaCryptoAccountDetails>
+            result.value.assertThat()
+                .all {
+                    prop(StrigaCryptoAccountDetails::accountId)
+                        .isEqualTo(StrigaAccountId("01c1f4e73d8b2587921c74e98951add0"))
+                    prop(StrigaCryptoAccountDetails::currency)
+                        .isEqualTo(StrigaNetworkCurrency.USDC)
+                    prop(StrigaCryptoAccountDetails::depositAddress)
+                        .isEqualTo("0x08E54EEE2EEFF2a4BF071746Fc1468BaC060Eb2a")
+                    prop(StrigaCryptoAccountDetails::network).all {
+                        prop(StrigaBlockchainNetworkInfo::name)
+                            .isEqualTo("USD Coin Test (Goerli)")
+                        prop(StrigaBlockchainNetworkInfo::type)
+                            .isEqualTo("ERC20")
+                        prop(StrigaBlockchainNetworkInfo::contractAddress)
+                            .isEqualTo("0x07865c6E87B9F70255377e024ace6630C1Eaa37F")
+                    }
+                }
         }
 
     @Test

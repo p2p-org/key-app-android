@@ -1,8 +1,11 @@
 package org.p2p.wallet.striga.wallet.interactor
 
+import timber.log.Timber
 import java.math.BigInteger
+import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.model.map
+import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
@@ -20,18 +23,32 @@ class StrigaWalletInteractor(
 ) {
 
     private class StrigaEuroAccountNotFound : Throwable()
+    private class StrigaUsdcAccountNotFound : Throwable()
 
-    suspend fun loadFiatAccountAndUserWallet(): Result<StrigaFiatAccountDetails> {
-        return kotlin.runCatching { getFiatAccountDetails() }
+    suspend fun loadDetailsForStrigaAccounts(): Result<Unit> = kotlin.runCatching {
+        getFiatAccountDetails()
+        getCryptoAccountDetails()
+        Unit
+    }.onFailure {
+        Timber.e(it, "Unable to load striga accounts (fiat and crypto) details")
     }
 
-    @Throws(Throwable::class)
+    @Throws(StrigaEuroAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
     suspend fun getFiatAccountDetails(): StrigaFiatAccountDetails {
         val eurAccountId = walletRepository.getUserWallet()
             .map { it.eurAccount?.accountId }
-            .unwrap()
+            .successOrNull()
             ?: throw StrigaEuroAccountNotFound()
         return walletRepository.getFiatAccountDetails(eurAccountId).unwrap()
+    }
+
+    @Throws(StrigaUsdcAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
+    suspend fun getCryptoAccountDetails(): StrigaCryptoAccountDetails {
+        val usdcAccountId = walletRepository.getUserWallet()
+            .map { it.usdcAccount?.accountId }
+            .successOrNull()
+            ?: throw StrigaUsdcAccountNotFound()
+        return walletRepository.getCryptoAccountDetails(usdcAccountId).unwrap()
     }
 
     /**

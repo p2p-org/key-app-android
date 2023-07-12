@@ -67,17 +67,21 @@ class TopUpWalletPresenter(
                 ensureNeededStrigaDataLoaded()
 
                 val strigaDestination = strigaUserInteractor.getUserDestination()
-                when (strigaDestination) {
-                    StrigaUserStatusDestination.IBAN_ACCOUNT -> {
+
+                when {
+                    strigaDestination == StrigaUserStatusDestination.IBAN_ACCOUNT &&
+                        strigaUserInteractor.isKycApproved -> {
                         // prefetch account details for IBAN
                         strigaWalletInteractor.getFiatAccountDetails()
+                        // prefetch crypto account details for future use
+                        strigaWalletInteractor.getCryptoAccountDetails()
                     }
-                    StrigaUserStatusDestination.KYC_PENDING -> {
+                    strigaDestination == StrigaUserStatusDestination.KYC_PENDING -> {
                         view?.navigateToKycPending()
                         return@launch
                     }
-                    else -> Unit
                 }
+
                 view?.navigateToBankTransferTarget(strigaDestination)
             } catch (strigaDataLoadFailed: Throwable) {
                 Timber.e(strigaDataLoadFailed, "failed to load needed data for bank transfer")
