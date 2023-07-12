@@ -10,6 +10,7 @@ import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
+import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
@@ -51,6 +52,33 @@ class StrigaWalletRemoteRepository(
                 .toSuccessResult()
         } catch (error: Throwable) {
             timber.i(error, "getFiatAccountDetails failed")
+            StrigaDataLayerError.from(
+                error = error,
+                default = StrigaDataLayerError.InternalError(error)
+            )
+        }
+    }
+
+    override suspend fun getCryptoAccountDetails(
+        accountId: StrigaAccountId
+    ): StrigaDataLayerResult<StrigaCryptoAccountDetails> {
+        return try {
+            timber.i("getCryptoAccountDetails started")
+
+            if (cache.cryptoAccountDetails != null) {
+                return cache.cryptoAccountDetails!!.toSuccessResult()
+            }
+
+            val request = StrigaEnrichAccountRequest(
+                userId = strigaUserIdProvider.getUserIdOrThrow(),
+                accountId = accountId.value
+            )
+            val response = api.enrichCryptoAccount(request)
+            mapper.fromNetwork(response)
+                .also { cache.cryptoAccountDetails = it }
+                .toSuccessResult()
+        } catch (error: Throwable) {
+            timber.i(error, "getCryptoAccountDetails failed")
             StrigaDataLayerError.from(
                 error = error,
                 default = StrigaDataLayerError.InternalError(error)
