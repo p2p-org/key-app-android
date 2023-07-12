@@ -10,7 +10,7 @@ import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 
 private const val TAG = "TokenMetadataInteractor"
-private const val TOKENS_FILE_NAME = "tokens.json"
+private const val TOKENS_FILE_NAME = "tokens"
 
 class TokenMetadataInteractor(
     private val externalStorageRepository: ExternalStorageRepository,
