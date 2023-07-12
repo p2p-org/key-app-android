@@ -5,12 +5,14 @@ import com.google.gson.annotations.SerializedName
 internal data class TokenItemMetadataResponse(
     @SerializedName("address")
     val address: String,
+    @SerializedName("name")
+    val name: String,
     @SerializedName("symbol")
     val symbol: String,
-    @SerializedName("logo_url")
-    val logoUrl: String,
+    @SerializedName("logoURI")
+    val logoUrl: String?,
     @SerializedName("decimals")
     val decimals: Int,
-    @SerializedName("price")
-    val price: TokenRateResponse
+    @SerializedName("chainId")
+    val chainId: Int
 )

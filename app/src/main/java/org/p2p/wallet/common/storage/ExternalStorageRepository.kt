@@ -18,20 +18,26 @@ class ExternalStorageRepository(
         }
     }
 
-    fun readJsonFile(fileName: String): ExternalFile? {
-        val file = File(context.filesDir, fileName)
-        if (!file.exists()) {
-            Timber.e("Error reading json file: $fileName - file does not exist")
+    fun readJsonFile(filePrefix: String): ExternalFile? {
+        val directory = context.filesDir
+        val file = directory
+            .listFiles { file ->
+                file.name.startsWith(filePrefix)
+            }
+            ?.firstOrNull()
+
+        if (file == null || !file.exists()) {
+            Timber.e("Error reading json file: $filePrefix - file does not exist")
             return null
         }
 
         return try {
-            context.openFileInput(fileName).bufferedReader().useLines { lines ->
-                val lastModified = File(context.filesDir, fileName).lastModified()
-                ExternalFile(lines.joinToString(""), lastModified)
+            context.openFileInput(file.name).bufferedReader().useLines { lines ->
+                val lastModified = File(context.filesDir, filePrefix).lastModified()
+                ExternalFile(lines.joinToString(""), filePrefix)
             }
         } catch (e: Throwable) {
-            Timber.e(e, "Error reading json file: $fileName")
+            Timber.e(e, "Error reading json file: $filePrefix")
             null
         }
     }
