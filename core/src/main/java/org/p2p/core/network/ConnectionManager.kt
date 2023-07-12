@@ -59,6 +59,14 @@ class ConnectionManager(
     }
 
     /**
+     * This function instantly checks the internet and returns the result.
+     * Attention: this function DOES NOT notify [connectionStatus] and its subscribers.
+     */
+    suspend fun checkNow(): Boolean = withContext(checkInetDispatcher) {
+        checkAnyTransportIsAvailable() && checkRealConnection()
+    }
+
+    /**
      * Check if there exists any network transport.
      */
     private fun checkAnyTransportIsAvailable(): Boolean {
@@ -73,19 +81,6 @@ class ConnectionManager(
         }
     }
 
-    /**
-     * Check if there is a real connection to the internet (checking google dns).
-     */
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun checkRealConnection(): Boolean = withContext(checkInetDispatcher) {
-        try {
-            val inetAddress = InetAddress.getByName(checkInetHost)
-            inetAddress.isReachable(checkInetTimeoutMs)
-        } catch (e: IOException) {
-            false
-        }
-    }
-
     private fun notifyHasConnection() {
         listener?.onConnectionChange()
 
@@ -95,7 +90,7 @@ class ConnectionManager(
                 var retries = 0
                 var hasVerified: Boolean
                 do {
-                    hasVerified = checkAnyTransportIsAvailable() && checkRealConnection()
+                    hasVerified = checkNow()
 
                     if (hasVerified) break
 
@@ -109,6 +104,19 @@ class ConnectionManager(
             } catch (_: CancellationException) {
                 // ignore
             }
+        }
+    }
+
+    /**
+     * Check if there is a real connection to the internet (checking google dns).
+     */
+    @Suppress("BlockingMethodInNonBlockingContext")
+    private suspend fun checkRealConnection(): Boolean = withContext(checkInetDispatcher) {
+        try {
+            val inetAddress = InetAddress.getByName(checkInetHost)
+            inetAddress.isReachable(checkInetTimeoutMs)
+        } catch (e: IOException) {
+            false
         }
     }
 

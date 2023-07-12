@@ -4,7 +4,6 @@ import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
 import android.view.View
@@ -15,7 +14,6 @@ import kotlinx.coroutines.launch
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
-import org.p2p.core.utils.launchRestartable
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
@@ -29,11 +27,9 @@ import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
-import org.p2p.wallet.home.ui.main.RefreshErrorFragment
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
-import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -57,10 +53,6 @@ class MainContainerFragment :
 
     private lateinit var mainContainerAdapter: BaseFragmentAdapter
     private lateinit var fragmentsMap: Map<ScreenTab, KClass<out Fragment>>
-
-    private val refreshErrorFragment: RefreshErrorFragment by unsafeLazy {
-        RefreshErrorFragment()
-    }
 
     companion object {
         fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainContainerFragment =
@@ -103,17 +95,6 @@ class MainContainerFragment :
             onCreateActions = arrayListOf()
         }
 
-        parentFragmentManager.commit {
-            if (!refreshErrorFragment.isAdded) {
-                add(R.id.rootContainer, refreshErrorFragment)
-            }
-            hide(refreshErrorFragment)
-        }
-
-        lifecycle.launchRestartable {
-            presenter.launchInternetObserver(this)
-        }
-
         presenter.initializeDeeplinks()
     }
 
@@ -135,18 +116,6 @@ class MainContainerFragment :
                 systemBars.right,
                 systemBars.bottom + bottomConsume,
             )
-        }
-    }
-
-    override fun showConnectionError(isVisible: Boolean) {
-        parentFragmentManager.commit {
-            if (isVisible) {
-                show(refreshErrorFragment)
-                hide(this@MainContainerFragment)
-            } else {
-                show(this@MainContainerFragment)
-                hide(refreshErrorFragment)
-            }
         }
     }
 
