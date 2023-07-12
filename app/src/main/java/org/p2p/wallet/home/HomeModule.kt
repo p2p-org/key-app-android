@@ -2,7 +2,6 @@ package org.p2p.wallet.home
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -32,8 +31,6 @@ import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.striga.ui.TopUpWalletContract
 import org.p2p.wallet.striga.ui.TopUpWalletPresenter
-import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
-import org.p2p.wallet.updates.subscribe.SplTokenProgramSubscriber
 
 object HomeModule : InjectionModule {
 
@@ -89,10 +86,6 @@ object HomeModule : InjectionModule {
         factoryOf(::HomePresenterMapper)
         factoryOf(::StrigaKycUiBannerMapper)
         factory<HomeContract.Presenter> {
-            val subscribers = listOf(
-                new(::SplTokenProgramSubscriber),
-                new(::SolanaAccountUpdateSubscriber)
-            )
             // todo: do something with this dependenices!
             // todo: to eliminate all this hell, we could just migrate to hilt
             HomePresenter(

@@ -9,7 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.user.api.SolanaApi
-import org.p2p.wallet.user.interactor.BlockChainTokensMetadataInteractor
+import org.p2p.wallet.user.interactor.TokenMetadataInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.repository.UserAccountRemoteRepository
@@ -54,6 +54,6 @@ object UserModule : InjectionModule {
         singleOf(::UserTokensDatabaseRepository) bind UserTokensLocalRepository::class
         factory { UserTokensInteractor(get(), get(), get(), get()) }
         singleOf(::UserTokensRemoteRepository) bind UserTokensRepository::class
-        singleOf(::BlockChainTokensMetadataInteractor)
+        singleOf(::TokenMetadataInteractor)
     }
 }

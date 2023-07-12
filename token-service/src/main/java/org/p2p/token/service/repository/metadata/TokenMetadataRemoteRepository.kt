@@ -1,34 +1,49 @@
 package org.p2p.token.service.repository.metadata
 
-import org.p2p.token.service.api.TokenServiceRepository
+import com.google.gson.Gson
+import retrofit2.HttpException
+import java.net.HttpURLConnection
+import java.net.URI
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
+import org.p2p.core.rpc.RpcApi
+import org.p2p.core.token.TokenMetadata
 import org.p2p.token.service.api.mapper.TokenServiceMapper
-import org.p2p.token.service.api.request.TokenServiceMetadataRequest
-import org.p2p.token.service.model.TokenServiceMetadata
-import org.p2p.token.service.model.TokenServiceNetwork
-import org.p2p.token.service.model.TokenServiceQueryResult
-import org.p2p.token.service.model.successOrNull
-import org.p2p.token.service.model.unwrap
+import org.p2p.token.service.api.response.TokenListResponse
+import org.p2p.token.service.model.TokenMetadataResult
+
+private const val ALL_TOKENS_MAP_CHUNKED_COUNT = 50
 
 internal class TokenMetadataRemoteRepository(
-    private val api: TokenServiceRepository,
-    private val mapper: TokenServiceMapper
+    private val api: RpcApi,
+    private val mapper: TokenServiceMapper,
+    private val gson: Gson,
+    urlProvider: NetworkServicesUrlProvider
 ) : TokenMetadataRepository {
-    override suspend fun loadTokensMetadata(
-        chain: TokenServiceNetwork,
-        addresses: List<String>
-    ): List<TokenServiceQueryResult<TokenServiceMetadata>> {
 
-        val queryRequest =
-            mapper.toRequest(chain, addresses).let(::TokenServiceMetadataRequest)
-        val queryResponse = api.launch(queryRequest).successOrNull().orEmpty()
+    private val tokenServiceStringUrl = urlProvider.loadTokenServiceEnvironment().baseServiceUrl
+    private val tokenServiceUrl = URI(tokenServiceStringUrl)
 
-        val tokensMetadata = queryResponse.map { response ->
-            val tokenServiceChain = mapper.fromNetwork(response.tokenServiceChainResponse)
-            val tokenPrices = response.tokenServiceItemsResponse
-                .map { mapper.fromNetwork(it) }
-
-            TokenServiceQueryResult(networkChain = tokenServiceChain, items = tokenPrices)
+    override suspend fun loadTokensMetadata(lastModified: String?): TokenMetadataResult {
+        val response = try {
+            api.getZipFile("${tokenServiceUrl}get_all_tokens_info", lastModified)
+        } catch (e: HttpException) {
+            return if (e.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+                TokenMetadataResult.NoUpdate
+            } else {
+                TokenMetadataResult.Error(e)
+            }
         }
-        return tokensMetadata
+
+        val jsonResponse = gson.fromJson(response, TokenListResponse::class.java)
+
+        val tokens = jsonResponse.tokens
+            .chunked(ALL_TOKENS_MAP_CHUNKED_COUNT)
+            .flatMap { chunkedList -> chunkedList.map { mapper.fromNetwork(it) } }
+
+        val metadata = TokenMetadata(
+            timestamp = jsonResponse.timestamp,
+            data = tokens
+        )
+        return TokenMetadataResult.NewMetadata(tokensMetadata = metadata)
     }
 }

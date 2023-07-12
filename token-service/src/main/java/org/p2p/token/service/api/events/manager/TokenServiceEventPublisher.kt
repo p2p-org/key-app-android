@@ -33,18 +33,6 @@ class TokenServiceEventPublisher(
         )
     }
 
-    suspend fun loadTokensMetadata(networkChain: TokenServiceNetwork, addresses: List<String>) {
-        val eventType = TokenServiceEventType.from(networkChain)
-        eventManager.notify(
-            eventType = eventType,
-            data = TokenServiceUpdate.Loading
-        )
-        tokenServiceInteractor.loadMetadataForTokens(
-            chain = networkChain,
-            tokenAddresses = addresses
-        )
-    }
-
     private suspend fun observeTokenPrices(networkChain: TokenServiceNetwork) {
         tokenServiceInteractor.observeTokenPricesFlow(networkChain)
             .filterNot { it.isEmpty() }
