@@ -15,6 +15,8 @@ import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.container.MainContainerContract
 import org.p2p.wallet.home.ui.container.MainContainerPresenter
+import org.p2p.wallet.home.ui.crypto.MyCryptoContract
+import org.p2p.wallet.home.ui.crypto.MyCryptoPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.HomePresenter
@@ -107,6 +109,7 @@ object HomeModule : InjectionModule {
             )
         }
         factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
+        factoryOf(::MyCryptoPresenter) bind MyCryptoContract.Presenter::class
 
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
 

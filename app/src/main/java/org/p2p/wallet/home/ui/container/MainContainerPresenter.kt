@@ -37,6 +37,8 @@ class MainContainerPresenter(
     private fun getScreenConfiguration(): List<ScreenConfiguration> = buildList {
         add(ScreenConfiguration(ScreenTab.WALLET_SCREEN, WalletFragment::class))
         add(ScreenConfiguration(ScreenTab.MY_CRYPTO_SCREEN, HomeFragment::class))
+        // add(ScreenConfiguration(ScreenTab.MY_CRYPTO_SCREEN, MyCryptoFragment::class))
+        // TODO PWN-9151 migrate on crypto fragment after striga move to Wallet Screen
         add(ScreenConfiguration(ScreenTab.HISTORY_SCREEN, HistoryFragment::class))
         add(ScreenConfiguration(ScreenTab.SETTINGS_SCREEN, SettingsFragment::class))
     }
