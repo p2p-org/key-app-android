@@ -29,6 +29,7 @@ class TokenKeyProvider(
     var publicKey: String = emptyString()
         get() = getPublicKeyFromStorage()
         set(value) {
+            Timber.tag("_____").d("save public key = $value")
             field = value
             savePublicKeyToStorage(value)
             Timber.tag(TAG).i("updating user public key: $value")
