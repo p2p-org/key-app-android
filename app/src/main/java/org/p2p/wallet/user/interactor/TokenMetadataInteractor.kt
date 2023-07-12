@@ -37,7 +37,7 @@ class TokenMetadataInteractor(
     }
 
     private fun updateMemoryCacheAndLocalFile(result: TokenMetadataResult.NewMetadata) {
-        Timber.tag(TAG).i("Received an updated tokens metadata, saving file in local storage")
+        Timber.tag(TAG).i("Received an updated tokens metadata, updating file in local storage")
 
         val tokensMetadata = result.tokensMetadata
         userLocalRepository.setTokenData(tokensMetadata.data)
@@ -52,13 +52,15 @@ class TokenMetadataInteractor(
     private fun updateMemoryCache(file: ExternalFile?) {
         Timber.tag(TAG).i("Metadata is up-to-date. Using local file")
 
-        if (file != null) {
-            Timber.tag(TAG).i("Tokens data file was found. Trying to parse it...")
-            val tokensMetadata = gson.fromJson(file.data, TokenMetadata::class.java)
-            if (tokensMetadata != null) {
-                Timber.tag(TAG).i("Tokens data were successfully parsed from file.")
-                userLocalRepository.setTokenData(tokensMetadata.data)
-            }
+        if (file == null) {
+            Timber.tag(TAG).e("Local file not found!")
+            return
+        }
+
+        val tokensMetadata = gson.fromJson(file.data, TokenMetadata::class.java)
+        if (tokensMetadata != null) {
+            Timber.tag(TAG).i("Tokens data were successfully parsed from file.")
+            userLocalRepository.setTokenData(tokensMetadata.data)
         }
     }
 }

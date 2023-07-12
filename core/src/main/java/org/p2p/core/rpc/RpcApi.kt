@@ -19,5 +19,5 @@ interface RpcApi {
 
     @GET
     @Headers("Content-Type: application/json", "Accept: application/json")
-    suspend fun getZipFile(@Url uri: String, @Header("Last-Modified") lastModified: String?): JsonObject
+    suspend fun getZipFile(@Url uri: String, @Header("last-modified") lastModified: String?): JsonObject
 }

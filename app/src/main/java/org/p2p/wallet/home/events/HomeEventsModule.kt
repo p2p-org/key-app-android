@@ -28,10 +28,10 @@ object HomeEventsModule : InjectionModule {
                     seedPhraseProvider = get(),
                     bridgeFeatureToggle = get()
                 ),
-//                SocketSubscribeLoader(
-//                    updatesManager = get(),
-//                    updateSubscribers = subscribers
-//                ),
+                SocketSubscribeLoader(
+                    updatesManager = get(),
+                    updateSubscribers = subscribers
+                ),
                 SolanaObservationLoader(
                     networkObserver = get(),
                     appScope = get()
