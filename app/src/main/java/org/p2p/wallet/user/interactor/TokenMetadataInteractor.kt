@@ -2,10 +2,10 @@ package org.p2p.wallet.user.interactor
 
 import com.google.gson.Gson
 import timber.log.Timber
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokensMetadataInfo
 import org.p2p.token.service.model.UpdateTokenMetadataResult
 import org.p2p.token.service.repository.metadata.TokenMetadataRepository
-import org.p2p.wallet.common.storage.ExternalFile
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 
@@ -22,17 +22,18 @@ class TokenMetadataInteractor(
     suspend fun loadAllTokensData() {
         val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
 
-        val lastModified = if (file != null) {
-            gson.fromJson(file.data, TokensMetadataInfo::class.java).timestamp
+        val metadata = if (file != null) {
+            gson.fromJson(file.data, TokensMetadataInfo::class.java)
         } else {
             null
         }
 
+        val lastModified = metadata?.timestamp
         Timber.tag(TAG).i("Checking if metadata is modified since: $lastModified")
 
         when (val result = metadataRepository.loadTokensMetadata(lastModified = lastModified)) {
             is UpdateTokenMetadataResult.NewMetadata -> updateMemoryCacheAndLocalFile(result)
-            is UpdateTokenMetadataResult.NoUpdate -> updateMemoryCache(file)
+            is UpdateTokenMetadataResult.NoUpdate -> updateMemoryCache(metadata?.tokens)
             is UpdateTokenMetadataResult.Error -> Timber.tag(TAG).e(result.throwable, "Error loading metadata")
         }
     }
@@ -50,18 +51,14 @@ class TokenMetadataInteractor(
         )
     }
 
-    private fun updateMemoryCache(file: ExternalFile?) {
+    private fun updateMemoryCache(tokensMetadata: List<TokenMetadata>?) {
         Timber.tag(TAG).i("Metadata is up-to-date. Using local file")
 
-        if (file == null) {
+        if (tokensMetadata == null) {
             Timber.tag(TAG).e("Local file not found!")
             return
         }
 
-        val tokensMetadataInfo = gson.fromJson(file.data, TokensMetadataInfo::class.java)
-        if (tokensMetadataInfo != null) {
-            Timber.tag(TAG).i("Tokens data were successfully parsed from file.")
-            userLocalRepository.setTokenData(tokensMetadataInfo.tokens)
-        }
+        userLocalRepository.setTokenData(tokensMetadata)
     }
 }
