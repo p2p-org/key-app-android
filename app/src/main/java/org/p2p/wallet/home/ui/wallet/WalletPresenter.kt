@@ -1,11 +1,10 @@
 package org.p2p.wallet.home.ui.wallet
 
+import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.p2p.core.network.ConnectionManager
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.BUY_BUTTON
@@ -21,10 +20,7 @@ import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.unsafeLazy
 
 class WalletPresenter(
-    // interactors
     private val homeInteractor: HomeInteractor,
-    private val connectionManager: ConnectionManager,
-    // mappers
     private val homeMapper: HomePresenterMapper,
     tokenKeyProvider: TokenKeyProvider,
     private val tokenServiceCoordinator: TokenServiceCoordinator
@@ -39,9 +35,7 @@ class WalletPresenter(
     override fun attach(view: WalletContract.View) {
         super.attach(view)
         observeRefreshingStatus()
-
         loadInitialData()
-
         observeUsdc()
     }
 
@@ -54,7 +48,6 @@ class WalletPresenter(
 
     private fun handleTokenState(newState: UserTokensState) {
         view?.showRefreshing(isRefreshing = newState.isLoading())
-
         when (newState) {
             is UserTokensState.Idle -> Unit
             is UserTokensState.Loading -> Unit
@@ -63,11 +56,8 @@ class WalletPresenter(
             is UserTokensState.Empty -> view?.showBalance(null)
             is UserTokensState.Loaded -> {
                 val usdc = newState.solTokens.find { it.isUSDC }
-                if (usdc != null) {
-                    view?.showBalance(homeMapper.mapBalance(usdc.total))
-                } else {
-                    view?.showBalance(null)
-                }
+                val balance = usdc?.total ?: BigDecimal.ZERO
+                view?.showBalance(homeMapper.mapBalance(balance))
             }
         }
     }
