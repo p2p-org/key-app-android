@@ -40,7 +40,7 @@ import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
-import org.p2p.wallet.tokenservice.UserTokenState
+import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -124,27 +124,28 @@ class HomePresenter(
             .launchIn(this)
     }
 
-    private fun handleTokenState(newState: UserTokenState) {
+    private fun handleTokenState(newState: UserTokensState) {
         view?.showRefreshing(isRefreshing = newState.isLoading())
 
         when (newState) {
-            is UserTokenState.Idle -> Unit
-            is UserTokenState.Loading -> Unit
-            is UserTokenState.Refreshing -> Unit
-            is UserTokenState.Error -> {
+            is UserTokensState.Idle -> Unit
+            is UserTokensState.Loading -> Unit
+            is UserTokensState.Refreshing -> Unit
+            is UserTokensState.Error -> {
                 view?.showErrorMessage(newState.cause)
             }
-            is UserTokenState.Empty -> {
+            is UserTokensState.Empty -> {
                 view?.showEmptyState(isEmpty = true)
                 handleEmptyAccount()
             }
-            is UserTokenState.Loaded -> {
+            is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
                 initializeActionButtons()
                 state = state.copy(
                     tokens = newState.solTokens,
                     ethTokens = newState.ethTokens
                 )
+                showTokensAndBalance()
             }
         }
     }

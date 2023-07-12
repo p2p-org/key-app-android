@@ -127,12 +127,6 @@ class WalletFragment :
         binding.swipeRefreshLayout.isRefreshing = isRefreshing
     }
 
-    override fun showEmptyViewData(data: List<Any>) {
-    }
-
-    override fun showEmptyState(isEmpty: Boolean) {
-    }
-
     override fun navigateToProfile() {
         replaceFragment(SettingsFragment.create())
     }

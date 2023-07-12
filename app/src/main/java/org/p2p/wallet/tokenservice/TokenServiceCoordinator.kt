@@ -1,5 +1,6 @@
 package org.p2p.wallet.tokenservice
 
+import timber.log.Timber
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -8,10 +9,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants.SOL_SYMBOL
-import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.core.utils.Constants.USDT_SYMBOL
-import org.p2p.core.utils.Constants.WETH_SYMBOL
 import org.p2p.wallet.home.events.EthereumTokensLoader
 import org.p2p.wallet.home.events.SolanaTokensLoader
 import org.p2p.wallet.tokenservice.model.EthTokenLoadState
@@ -22,7 +19,7 @@ import org.p2p.wallet.tokenservice.model.SolanaTokenLoadState
  * Each feature Presenter which needs user tokens should use this class to get/observe them
  * */
 
-private val POPULAR_TOKENS_SYMBOLS: Set<String> = setOf(USDC_SYMBOL, SOL_SYMBOL, WETH_SYMBOL, USDT_SYMBOL)
+private const val TAG = "TokenServiceCoordinator"
 
 class TokenServiceCoordinator(
     private val solanaTokensLoader: SolanaTokensLoader,
@@ -34,19 +31,21 @@ class TokenServiceCoordinator(
      * Token Service will be needed in different screens and may have 2 or more collectors.
      * Therefore, we are using SharedFlow
      * */
-    private val tokensState = MutableSharedFlow<UserTokenState>()
+    private val tokensState = MutableSharedFlow<UserTokensState>(replay = 1)
 
     init {
         solanaTokensLoader.observeState()
             .combine(ethereumTokensLoader.observeState()) { solState, ethState ->
-                mapTokenState(solState, ethState)
+                val newTokenState = mapTokenState(solState, ethState)
+                tokensState.emit(newTokenState)
             }
             .launchIn(appScope)
     }
 
-    fun observeUserTokens(): SharedFlow<UserTokenState> = tokensState.asSharedFlow()
+    fun observeUserTokens(): SharedFlow<UserTokensState> = tokensState.asSharedFlow()
 
     fun start() {
+        Timber.tag(TAG).i("Starting Token Service loaders")
         appScope.launch {
             solanaTokensLoader.load()
             ethereumTokensLoader.loadIfEnabled()
@@ -54,32 +53,34 @@ class TokenServiceCoordinator(
     }
 
     fun refresh() {
+        Timber.tag(TAG).i("Refreshing Token Service loaders")
+
         appScope.launch {
             solanaTokensLoader.refresh()
             ethereumTokensLoader.refreshIfEnabled()
         }
     }
 
-    private fun mapTokenState(solState: SolanaTokenLoadState, ethState: EthTokenLoadState): UserTokenState =
+    private fun mapTokenState(solState: SolanaTokenLoadState, ethState: EthTokenLoadState): UserTokensState =
         when (solState) {
-            is SolanaTokenLoadState.Idle -> UserTokenState.Idle
-            is SolanaTokenLoadState.Loading -> UserTokenState.Loading
-            is SolanaTokenLoadState.Refreshing -> UserTokenState.Refreshing
-            is SolanaTokenLoadState.Error -> UserTokenState.Error(solState.throwable)
+            is SolanaTokenLoadState.Idle -> UserTokensState.Idle
+            is SolanaTokenLoadState.Loading -> UserTokensState.Loading
+            is SolanaTokenLoadState.Refreshing -> UserTokensState.Refreshing
+            is SolanaTokenLoadState.Error -> UserTokensState.Error(solState.throwable)
             is SolanaTokenLoadState.Loaded -> handleLoadedState(solState, ethState)
         }
 
     private fun handleLoadedState(
         solState: SolanaTokenLoadState.Loaded,
         ethState: EthTokenLoadState
-    ): UserTokenState {
+    ): UserTokensState {
         val solTokens = solState.tokens
         val ethTokens = if (ethState is EthTokenLoadState.Loaded) ethState.tokens else emptyList()
 
         if (solTokens.all(Token.Active::isZero) && ethTokens.isEmpty()) {
-            return UserTokenState.Empty
+            return UserTokensState.Empty
         }
 
-        return UserTokenState.Loaded(solTokens, ethTokens)
+        return UserTokensState.Loaded(solTokens, ethTokens)
     }
 }

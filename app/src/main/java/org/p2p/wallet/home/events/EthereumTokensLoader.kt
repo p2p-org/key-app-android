@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
-import org.p2p.token.service.api.events.manager.TokenServiceEvent
+import org.p2p.token.service.api.events.manager.TokenServiceUpdate
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
 import org.p2p.token.service.api.events.manager.TokenServiceEventSubscriber
@@ -96,13 +96,13 @@ class EthereumTokensLoader(
         private val block: (List<TokenServicePrice>) -> Unit
     ) : TokenServiceEventSubscriber {
 
-        override fun onUpdate(eventType: TokenServiceEventType, event: TokenServiceEvent) {
+        override fun onUpdate(eventType: TokenServiceEventType, data: TokenServiceUpdate) {
             if (eventType != TokenServiceEventType.ETHEREUM_CHAIN_EVENT) return
 
-            when (event) {
-                is TokenServiceEvent.Loading -> Unit
-                is TokenServiceEvent.TokensPriceLoaded -> block(event.result)
-                is TokenServiceEvent.Idle -> Unit
+            when (data) {
+                is TokenServiceUpdate.Loading -> Unit
+                is TokenServiceUpdate.TokensPriceLoaded -> block(data.result)
+                is TokenServiceUpdate.Idle -> Unit
                 else -> Unit
             }
         }
