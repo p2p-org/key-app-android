@@ -31,8 +31,6 @@ sealed class Token constructor(
     open val mintAddress: String,
     open val tokenName: String,
     open val iconUrl: String?,
-    open val serumV3Usdc: String?,
-    open val serumV3Usdt: String?,
     open val isWrapped: Boolean,
     open var rate: BigDecimal?,
     open var currency: String = Constants.USD_READABLE_SYMBOL
@@ -44,14 +42,11 @@ sealed class Token constructor(
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
-        val coingeckoId: String?,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
         override val tokenName: String,
         override val iconUrl: String?,
-        override val serumV3Usdc: String?,
-        override val serumV3Usdt: String?,
         override val isWrapped: Boolean,
         override var rate: BigDecimal?,
         override var currency: String = Constants.USD_READABLE_SYMBOL
@@ -62,8 +57,6 @@ sealed class Token constructor(
         mintAddress = mintAddress,
         tokenName = tokenName,
         iconUrl = iconUrl,
-        serumV3Usdc = serumV3Usdc,
-        serumV3Usdt = serumV3Usdt,
         isWrapped = isWrapped,
         rate = rate,
         currency = currency
@@ -127,8 +120,6 @@ sealed class Token constructor(
         mintAddress = mintAddress,
         tokenName = tokenName,
         iconUrl = iconUrl,
-        serumV3Usdc = null,
-        serumV3Usdt = null,
         isWrapped = false,
         rate = rate,
         currency = currency
@@ -172,8 +163,6 @@ sealed class Token constructor(
         override val mintAddress: String,
         override val tokenName: String,
         override val iconUrl: String?,
-        override val serumV3Usdc: String?,
-        override val serumV3Usdt: String?,
         override val isWrapped: Boolean,
         override var rate: BigDecimal?,
         override var currency: String = Constants.USD_READABLE_SYMBOL
@@ -184,8 +173,6 @@ sealed class Token constructor(
         mintAddress = mintAddress,
         tokenName = tokenName,
         iconUrl = iconUrl,
-        serumV3Usdc = serumV3Usdc,
-        serumV3Usdt = serumV3Usdt,
         isWrapped = isWrapped,
         rate = rate,
         currency = currency
@@ -232,26 +219,23 @@ sealed class Token constructor(
     companion object {
         fun createSOL(
             publicKey: String,
-            tokenData: TokenData,
+            tokenMetadata: TokenMetadata,
             amount: Long,
             solPrice: BigDecimal?
         ): Active {
-            val total: BigDecimal = BigDecimal(amount).divide(tokenData.decimals.toPowerValue())
+            val total: BigDecimal = BigDecimal(amount).divide(tokenMetadata.decimals.toPowerValue())
             return Active(
                 publicKey = publicKey,
-                tokenSymbol = tokenData.symbol,
-                decimals = tokenData.decimals,
-                mintAddress = tokenData.mintAddress,
+                tokenSymbol = tokenMetadata.symbol,
+                decimals = tokenMetadata.decimals,
+                mintAddress = tokenMetadata.mintAddress,
                 tokenName = SOL_NAME,
-                iconUrl = tokenData.iconUrl,
+                iconUrl = tokenMetadata.iconUrl,
                 totalInUsd = if (amount == 0L) null else solPrice?.let { total.multiply(it) },
-                coingeckoId = tokenData.coingeckoId,
-                total = total.scaleLong(tokenData.decimals),
+                total = total.scaleLong(tokenMetadata.decimals),
                 rate = solPrice,
                 visibility = TokenVisibility.DEFAULT,
-                serumV3Usdc = tokenData.serumV3Usdc,
-                serumV3Usdt = tokenData.serumV3Usdt,
-                isWrapped = tokenData.isWrapped
+                isWrapped = tokenMetadata.isWrapped
             )
         }
     }

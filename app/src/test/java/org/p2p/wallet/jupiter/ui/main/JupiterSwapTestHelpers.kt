@@ -6,8 +6,9 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 import org.p2p.core.common.TextContainer
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.toLamports
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -19,7 +20,6 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
-import org.p2p.core.crypto.Base58String
 
 object JupiterSwapTestHelpers {
     val JUPITER_SOL_TOKEN = JupiterSwapToken(
@@ -237,16 +237,13 @@ object JupiterSwapTestHelpers {
     ): Token.Active =
         Token.createSOL(
             "some public key",
-            TokenData(
+            TokenMetadata(
                 JUPITER_SOL_TOKEN.tokenMint.base58Value,
                 "Solana",
                 JUPITER_SOL_TOKEN.tokenSymbol,
                 iconUrl = JUPITER_SOL_TOKEN.logoUri,
                 decimals = JUPITER_SOL_TOKEN.decimals,
-                isWrapped = false,
-                serumV3Usdc = null,
-                serumV3Usdt = null,
-                coingeckoId = JUPITER_SOL_TOKEN.coingeckoId,
+                isWrapped = false
             ),
             amount.toLamports(JUPITER_SOL_TOKEN.decimals).toLong(),
             rateToUsd
@@ -255,32 +252,26 @@ object JupiterSwapTestHelpers {
     fun createUSDCToken(amount: BigDecimal = BigDecimal("10.28")): Token.Active =
         Token.createSOL(
             publicKey = "some public key",
-            tokenData = TokenData(
+            tokenMetadata = TokenMetadata(
                 JUPITER_USDC_TOKEN.tokenMint.base58Value,
                 JUPITER_USDC_TOKEN.tokenName,
                 JUPITER_USDC_TOKEN.tokenSymbol,
                 iconUrl = JUPITER_USDC_TOKEN.logoUri,
                 decimals = JUPITER_USDC_TOKEN.decimals,
-                isWrapped = false,
-                serumV3Usdc = null,
-                serumV3Usdt = null,
-                coingeckoId = JUPITER_USDC_TOKEN.coingeckoId
+                isWrapped = false
             ),
             amount = amount.toLamports(JUPITER_USDC_TOKEN.decimals).toLong(),
             solPrice = BigDecimal("1")
         )
 
-    fun Token.Active.toTokenData(): TokenData {
-        return TokenData(
+    fun Token.Active.toTokenData(): TokenMetadata {
+        return TokenMetadata(
             mintAddress = mintAddress,
             name = tokenName,
             symbol = tokenSymbol,
             iconUrl = iconUrl,
             decimals = decimals,
-            isWrapped = isWrapped,
-            serumV3Usdc = serumV3Usdc,
-            serumV3Usdt = serumV3Usdt,
-            coingeckoId = coingeckoId
+            isWrapped = isWrapped
         )
     }
 }

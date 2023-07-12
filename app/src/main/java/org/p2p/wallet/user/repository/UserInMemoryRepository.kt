@@ -4,7 +4,7 @@ import timber.log.Timber
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.Constants
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
@@ -19,20 +19,20 @@ class UserInMemoryRepository(
     private val tokenServiceRepository: TokenServiceRepository
 ) : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
-    private val allTokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
+    private val allTokensFlow = MutableStateFlow<List<TokenMetadata>>(emptyList())
 
     private val tokensSearchResultFlow = MutableStateFlow(TokenListData())
-    private val searchTextByTokens: MutableMap<String, List<TokenData>> = mutableMapOf()
+    private val searchTextByTokens: MutableMap<String, List<TokenMetadata>> = mutableMapOf()
 
     override fun areInitialTokensLoaded(): Boolean {
         return allTokensFlow.value.isNotEmpty()
     }
 
-    override fun setTokenData(data: List<TokenData>) {
+    override fun setTokenData(data: List<TokenMetadata>) {
         allTokensFlow.value = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
 
-    override fun getTokensData(): List<TokenData> = allTokensFlow.value
+    override fun getTokensData(): List<TokenMetadata> = allTokensFlow.value
 
     override fun fetchTokens(searchText: String, count: Int, refresh: Boolean) {
         if (refresh) {
@@ -85,8 +85,8 @@ class UserInMemoryRepository(
         searchTextByTokens[searchText] = searchResult.take(newSearchTokensSize)
     }
 
-    private fun findTokensBySearchText(searchText: String): List<TokenData> {
-        val filteredList = mutableListOf<TokenData>()
+    private fun findTokensBySearchText(searchText: String): List<TokenMetadata> {
+        val filteredList = mutableListOf<TokenMetadata>()
 
         val allTokens = allTokensFlow.value
 
@@ -107,7 +107,7 @@ class UserInMemoryRepository(
 
     override fun getTokenListFlow(): Flow<TokenListData> = tokensSearchResultFlow
 
-    override fun findTokenData(mintAddress: String): TokenData? {
+    override fun findTokenData(mintAddress: String): TokenMetadata? {
         val resultToken = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
         if (resultToken == null) {
             Timber.tag(TAG).i("No user token found for mint $mintAddress")
@@ -116,7 +116,7 @@ class UserInMemoryRepository(
         return resultToken
     }
 
-    override fun findTokenDataBySymbol(symbol: String): TokenData? {
+    override fun findTokenDataBySymbol(symbol: String): TokenMetadata? {
         val resultToken = allTokensFlow.value.firstOrNull { it.symbol == symbol }
         if (resultToken == null) {
             Timber.tag(TAG).i("No token found for symbol $symbol")
@@ -125,8 +125,8 @@ class UserInMemoryRepository(
         return resultToken
     }
 
-    private fun getPopularDecimals(): List<TokenData> {
-        val popularTokens = mutableListOf<TokenData>()
+    private fun getPopularDecimals(): List<TokenMetadata> {
+        val popularTokens = mutableListOf<TokenMetadata>()
         val tokens = allTokensFlow.value
         for (symbol in popularItems) {
             val token = tokens.firstOrNull { it.symbol == symbol }
@@ -136,12 +136,12 @@ class UserInMemoryRepository(
     }
 
     override suspend fun findTokenByMint(mintAddress: String): Token? {
-        val tokenData: TokenData? = findTokenData(mintAddress)
-        return if (tokenData != null) {
+        val tokenMetadata: TokenMetadata? = findTokenData(mintAddress)
+        return if (tokenMetadata != null) {
             val price = tokenServiceRepository.findTokenPriceByAddress(
-                tokenAddress = tokenData.mintAddress,
+                tokenAddress = tokenMetadata.mintAddress,
             )
-            tokenConverter.fromNetwork(tokenData, price)
+            tokenConverter.fromNetwork(tokenMetadata, price)
         } else {
             null
         }

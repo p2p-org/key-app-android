@@ -1,6 +1,6 @@
 package org.p2p.wallet.user.repository
 
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.user.api.SolanaApi
 
@@ -10,7 +10,7 @@ class UserRemoteRepository(
     private val solanaApi: SolanaApi
 ) : UserRepository {
 
-    override suspend fun loadAllTokens(): List<TokenData> =
+    override suspend fun loadAllTokens(): List<TokenMetadata> =
         solanaApi.loadTokenlist()
             .tokens
             .chunked(ALL_TOKENS_MAP_CHUNKED_COUNT)

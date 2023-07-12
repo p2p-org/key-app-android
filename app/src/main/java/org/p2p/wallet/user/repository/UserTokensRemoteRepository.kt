@@ -53,7 +53,7 @@ class UserTokensRemoteRepository(
         )
         val solToken = Token.createSOL(
             publicKey = publicKey.toBase58(),
-            tokenData = tokenData,
+            tokenMetadata = tokenData,
             amount = solBalance,
             solPrice = solPrice?.usdRate
         )
