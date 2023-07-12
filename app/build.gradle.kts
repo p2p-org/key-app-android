@@ -7,7 +7,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("io.sentry.android.gradle") version "3.2.0"
-    id("org.jetbrains.kotlinx.kover") version "0.7.0"
+    id("org.jetbrains.kotlinx.kover") version "0.7.2"
     id("kotlin-kapt")
 }
 
@@ -15,6 +15,11 @@ koverReport {
     androidReports("debug") {
         filters {
             excludes {
+                annotatedBy(
+                    "*NoCoverage",
+                    "*Generated*",
+                    "androidx.room.Database",
+                )
                 packages(
                     "com.bumptech.glide*",
                 )
