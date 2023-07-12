@@ -2,7 +2,6 @@ package org.p2p.wallet.common.storage
 
 import android.content.Context
 import timber.log.Timber
-import java.io.File
 
 class ExternalStorageRepository(
     private val context: Context
@@ -33,8 +32,7 @@ class ExternalStorageRepository(
 
         return try {
             context.openFileInput(file.name).bufferedReader().useLines { lines ->
-                val lastModified = File(context.filesDir, filePrefix).lastModified()
-                ExternalFile(lines.joinToString(""), filePrefix)
+                ExternalFile(lines.joinToString(""))
             }
         } catch (e: Throwable) {
             Timber.e(e, "Error reading json file: $filePrefix")

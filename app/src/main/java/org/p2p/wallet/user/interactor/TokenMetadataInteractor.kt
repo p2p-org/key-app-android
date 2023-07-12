@@ -20,7 +20,7 @@ class TokenMetadataInteractor(
 ) {
 
     suspend fun loadAllTokensData() {
-        val file = externalStorageRepository.readJsonFile(TOKENS_FILE_NAME)
+        val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
 
         val lastModified = if (file != null) {
             gson.fromJson(file.data, TokensMetadataInfo::class.java).timestamp
