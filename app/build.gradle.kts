@@ -6,7 +6,7 @@ plugins {
     id("org.p2p.wallet.android.application")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
-    id("io.sentry.android.gradle") version "3.2.0"
+    id("io.sentry.android.gradle") version "3.11.0"
     id("org.jetbrains.kotlinx.kover") version "0.7.0"
     id("kotlin-kapt")
 }
@@ -88,7 +88,7 @@ android {
 
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
-            jvmTarget = "11"
+            jvmTarget = "17"
         }
     }
 }

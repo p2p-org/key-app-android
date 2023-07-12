@@ -8,10 +8,6 @@ apply {
     from("${project.rootDir}/.scripts/config.gradle")
 }
 
-android {
-    buildFeatures.buildConfig = true
-}
-
 dependencies {
     Dependencies.baseAndroidLibraries.forEach { implementation(it) }
 
