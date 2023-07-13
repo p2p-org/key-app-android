@@ -10,7 +10,7 @@ import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 
 private const val TAG = "TokenMetadataInteractor"
-private const val TOKENS_FILE_NAME = "tokens"
+private const val TOKENS_FILE_NAME = "tokens_metadata"
 
 class TokenMetadataInteractor(
     private val externalStorageRepository: ExternalStorageRepository,
@@ -21,11 +21,8 @@ class TokenMetadataInteractor(
 
     suspend fun loadAllTokensData() {
         val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
-        // TODO fix bug with saving metadata, here we receive list of tokenMetadata
-        // instead of TokensMetadataInfo
         val metadata: TokensMetadataInfo? = if (file != null) {
-//            gson.fromJson(file.data, TokensMetadataInfo::class.java)
-            null
+            gson.fromJson(file.data, TokensMetadataInfo::class.java)
         } else {
             null
         }
@@ -48,7 +45,7 @@ class TokenMetadataInteractor(
 
         // Save tokens to the file
         externalStorageRepository.saveJson(
-            json = gson.toJson(tokensMetadata),
+            jsonObject = tokensMetadata,
             fileName = TOKENS_FILE_NAME
         )
     }
