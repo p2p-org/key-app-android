@@ -63,6 +63,7 @@ class MyCryptoPresenter(
     }
 
     private fun handleTokenState(newState: UserTokensState) {
+        Timber.tag("_____").d(newState.toString())
         view?.showRefreshing(isRefreshing = newState.isLoading())
 
         when (newState) {

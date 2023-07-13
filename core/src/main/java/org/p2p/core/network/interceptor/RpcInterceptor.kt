@@ -1,6 +1,5 @@
 package org.p2p.core.network.interceptor
 
-import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import okhttp3.HttpUrl
@@ -15,7 +14,6 @@ import org.json.JSONTokener
 import timber.log.Timber
 import java.io.IOException
 import java.net.URI
-import java.net.URL
 import org.p2p.core.BuildConfig.rpcPoolApiKey
 import org.p2p.core.network.data.EmptyDataException
 import org.p2p.core.network.data.ErrorCode

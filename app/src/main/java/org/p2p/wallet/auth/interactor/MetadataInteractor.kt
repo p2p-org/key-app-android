@@ -87,6 +87,7 @@ class MetadataInteractor(
 
     private fun tryToGetEthAddress(): String? {
         return if (bridgeFeatureToggle.isFeatureEnabled) {
+            ethereumInteractor.setup(userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase)
             ethereumInteractor.getEthUserAddress().hex
         } else {
             null
