@@ -11,11 +11,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import kotlin.reflect.KClass
 import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
 import org.p2p.uikit.components.ScreenTab
-import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -27,9 +27,13 @@ import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
+import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
+import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -81,7 +85,7 @@ class MainContainerFragment :
                         isSellEnabled = sellInteractor.isSellAvailable()
                     )
                 }
-                navigate(ScreenTab.SEND_SCREEN)
+                presenter.onSendClicked()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -96,6 +100,7 @@ class MainContainerFragment :
         }
 
         presenter.initializeDeeplinks()
+        presenter.observeUserTokens()
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -145,7 +150,19 @@ class MainContainerFragment :
     }
 
     override fun showSettingsBadgeVisible(isVisible: Boolean) {
-        binding.bottomNavigation.setBadgeVisible(isVisible = isVisible)
+        binding.bottomNavigation.setBadgeVisible(screenTab = ScreenTab.SETTINGS_SCREEN, isVisible = isVisible)
+    }
+
+    override fun showCryptoBadgeVisible(isVisible: Boolean) {
+        binding.bottomNavigation.setBadgeVisible(screenTab = ScreenTab.MY_CRYPTO_SCREEN, isVisible = isVisible)
+    }
+
+    override fun navigateToSendNoTokens(fallbackToken: Token) {
+        replaceFragment(SendUnavailableFragment.create(fallbackToken))
+    }
+
+    override fun navigateToSendScreen() {
+        replaceFragment(NewSearchFragment.create(SearchOpenedFromScreen.MAIN))
     }
 
     override fun navigateFromDeeplink(data: DeeplinkData) {
@@ -169,7 +186,7 @@ class MainContainerFragment :
     override fun navigate(clickedTab: ScreenTab) {
         when (clickedTab) {
             ScreenTab.SEND_SCREEN -> {
-                toast("Will be implemented after token will be on upper level!")
+                presenter.onSendClicked()
                 resetOnLastBottomNavigationItem()
                 return
             }

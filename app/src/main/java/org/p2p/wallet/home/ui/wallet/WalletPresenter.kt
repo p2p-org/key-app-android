@@ -53,7 +53,7 @@ class WalletPresenter(
             is UserTokensState.Loading -> Unit
             is UserTokensState.Refreshing -> Unit
             is UserTokensState.Error -> view?.showErrorMessage(newState.cause)
-            is UserTokensState.Empty -> view?.showBalance(null)
+            is UserTokensState.Empty -> view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
             is UserTokensState.Loaded -> {
                 val usdc = newState.solTokens.find { it.isUSDC }
                 val balance = usdc?.total ?: BigDecimal.ZERO

@@ -8,11 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
-import org.p2p.token.service.api.events.manager.TokenServiceUpdate
+import org.p2p.core.token.Token
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
 import org.p2p.token.service.api.events.manager.TokenServiceEventSubscriber
 import org.p2p.token.service.api.events.manager.TokenServiceEventType
+import org.p2p.token.service.api.events.manager.TokenServiceUpdate
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.bridge.EthereumTokensPollingService
@@ -79,6 +80,14 @@ class EthereumTokensLoader(
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e, "Error while refreshing ethereum tokens")
             updateState(EthTokenLoadState.Error(e))
+        }
+    }
+
+    fun getEthTokens(): List<Token.Eth> {
+        return if (isEnabled()) {
+            ethereumInteractor.getEthTokens()
+        } else {
+            emptyList()
         }
     }
 
