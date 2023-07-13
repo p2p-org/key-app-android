@@ -5,15 +5,15 @@ import com.google.gson.Gson
 import timber.log.Timber
 
 class ExternalStorageRepository(
-    private val context: Context
+    private val context: Context,
+    private val gson: Gson
 ) {
 
-
-    fun <T> saveJson(jsonObject: T, fileName: String){
+    fun <T> saveJson(jsonObject: T, fileName: String) {
         try {
             context.openFileOutput(fileName, Context.MODE_PRIVATE)
                 .bufferedWriter()
-                .use { Gson().toJson(jsonObject, it) }
+                .use { gson.toJson(jsonObject, it) }
         } catch (e: Throwable) {
             Timber.e(e, "Error saving json file: $fileName")
         }
