@@ -15,7 +15,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveListBinding
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -67,7 +67,7 @@ class TokenListFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun showItems(items: List<TokenData>, scrollToUp: Boolean) {
+    override fun showItems(items: List<TokenMetadata>, scrollToUp: Boolean) {
         with(binding) {
             recyclerView.post {
                 adapter.setItems(items)

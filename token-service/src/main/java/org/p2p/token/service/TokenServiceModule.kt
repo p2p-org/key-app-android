@@ -55,7 +55,7 @@ object TokenServiceModule : InjectionModule {
         factory<TokenPriceRepository> { TokenPriceRemoteRepository(get(), get()) }
 
         factoryOf(::TokenServiceMapper)
-        factoryOf(::TokenMetadataRemoteRepository) bind TokenMetadataRepository::class
+        singleOf(::TokenMetadataRemoteRepository) bind TokenMetadataRepository::class
         factory<org.p2p.token.service.repository.TokenServiceRepository> {
             TokenServiceRepositoryImpl(
                 priceRemoteRepository = get(),

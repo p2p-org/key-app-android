@@ -124,7 +124,7 @@ class UserTokensDatabaseRepository(
             mintAddress = tokenMint.base58Value,
             totalLamports = newBalanceLamports,
             accountPublicKey = accountPublicKey.base58Value,
-            tokenData = tokenData,
+            tokenMetadata = tokenData,
             price = null
         )
     }

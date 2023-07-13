@@ -70,11 +70,8 @@ class BridgeSendInteractor(
             mintAddress = token.mintAddress,
             tokenName = token.tokenName,
             iconUrl = token.iconUrl,
-            coingeckoId = null,
             rate = null,
             visibility = TokenVisibility.DEFAULT,
-            serumV3Usdc = token.serumV3Usdc,
-            serumV3Usdt = token.serumV3Usdt,
             isWrapped = token.isWrapped
         )
     }

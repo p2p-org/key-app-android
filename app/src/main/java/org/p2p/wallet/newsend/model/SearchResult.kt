@@ -5,7 +5,7 @@ import java.util.Date
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 
@@ -22,13 +22,13 @@ sealed class SearchResult(open val address: String) : Parcelable {
     @Parcelize
     data class InvalidDirectAddress(
         override val address: String,
-        val directToken: TokenData
+        val directToken: TokenMetadata
     ) : SearchResult(address)
 
     @Parcelize
     data class OwnAddressError(
         override val address: String,
-        val directToken: TokenData? = null
+        val directToken: TokenMetadata? = null
     ) : SearchResult(address)
 
     @Parcelize

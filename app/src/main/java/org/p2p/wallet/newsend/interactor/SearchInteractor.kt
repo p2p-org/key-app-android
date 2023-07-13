@@ -1,7 +1,7 @@
 package org.p2p.wallet.newsend.interactor
 
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.Constants
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.solanaj.core.PublicKey
@@ -82,9 +82,9 @@ class SearchInteractor(
         )
     }
 
-    private suspend fun isInvalidAddress(tokenData: TokenData?, sourceToken: Token.Active?): Boolean {
-        val userToken = tokenData?.let { userTokensInteractor.findUserToken(it.mintAddress) }
-        val hasNoTokensToSend = tokenData != null && userToken == null
+    private suspend fun isInvalidAddress(tokenMetadata: TokenMetadata?, sourceToken: Token.Active?): Boolean {
+        val userToken = tokenMetadata?.let { userTokensInteractor.findUserToken(it.mintAddress) }
+        val hasNoTokensToSend = tokenMetadata != null && userToken == null
         val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
         return hasNoTokensToSend || sendToOtherDirectToken
     }

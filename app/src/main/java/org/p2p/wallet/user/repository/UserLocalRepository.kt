@@ -2,7 +2,7 @@ package org.p2p.wallet.user.repository
 
 import kotlinx.coroutines.flow.Flow
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.wallet.receive.list.TokenListData
 
 interface UserLocalRepository {
@@ -14,21 +14,21 @@ interface UserLocalRepository {
     /**
      * Cache all available tokens (from json file currently)
      */
-    fun setTokenData(data: List<TokenData>)
-    fun getTokensData(): List<TokenData>
+    fun setTokenData(data: List<TokenMetadata>)
+    fun getTokensData(): List<TokenMetadata>
 
     fun fetchTokens(searchText: String, count: Int, refresh: Boolean)
     fun getTokenListFlow(): Flow<TokenListData>
 
     /**
-     * Find [TokenData] by mint address
+     * Find [TokenMetadata] by mint address
      */
-    fun findTokenData(mintAddress: String): TokenData?
+    fun findTokenData(mintAddress: String): TokenMetadata?
 
     /**
-     * Find [TokenData] by its symbol
+     * Find [TokenMetadata] by its symbol
      */
-    fun findTokenDataBySymbol(symbol: String): TokenData?
+    fun findTokenDataBySymbol(symbol: String): TokenMetadata?
 
     /**
      * Find [Token] by its symbol

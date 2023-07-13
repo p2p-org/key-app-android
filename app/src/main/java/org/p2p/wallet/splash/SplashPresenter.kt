@@ -14,7 +14,7 @@ import org.p2p.wallet.user.interactor.TokenMetadataInteractor
 class SplashPresenter(
     private val authInteractor: AuthInteractor,
     private val onboardingAnalytics: OnboardingAnalytics,
-    private val blockchainTokensInteractor: TokenMetadataInteractor,
+    private val tokenMetadataInteractor: TokenMetadataInteractor,
     private val appLoader: AppLoader,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val appScope: AppScope
@@ -32,7 +32,7 @@ class SplashPresenter(
     private fun loadTokensList() {
         launch {
             try {
-                blockchainTokensInteractor.loadAllTokensData()
+                tokenMetadataInteractor.loadAllTokensData()
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading initial tokens data")
             } finally {
