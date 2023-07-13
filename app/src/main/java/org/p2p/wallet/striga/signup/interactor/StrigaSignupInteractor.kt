@@ -21,7 +21,7 @@ import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
-import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
+import org.p2p.wallet.striga.sms.StrigaOtpConfirmInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.repository.StrigaUserStatusRepository
 import org.p2p.wallet.utils.DateTimeUtils
@@ -37,7 +37,7 @@ class StrigaSignupInteractor(
     private val signupDataRepository: StrigaSignupDataLocalRepository,
     private val userInteractor: StrigaUserInteractor,
     private val metadataInteractor: MetadataInteractor,
-    private val strigaSmsInputInteractor: StrigaSmsInputInteractor,
+    private val strigaOtpConfirmInteractor: StrigaOtpConfirmInteractor,
     private val strigaUserStatusRepository: StrigaUserStatusRepository,
 ) {
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
@@ -145,7 +145,7 @@ class StrigaSignupInteractor(
         }
         if (inAppFeatureFlags.strigaSimulateUserCreateFlag.featureValue) {
             delay(1000)
-            strigaSmsInputInteractor.launchInitialTimer()
+            strigaOtpConfirmInteractor.launchInitialTimer()
             return
         }
         // firstly, check if metadata is available
@@ -157,7 +157,7 @@ class StrigaSignupInteractor(
                 updateMetadata(result.value.userId)
                 // if user is created successfully, but sms is not verified, status won't be updated
                 strigaUserStatusRepository.updateUserStatus(result.value)
-                strigaSmsInputInteractor.launchInitialTimer()
+                strigaOtpConfirmInteractor.launchInitialTimer()
             }
             is StrigaDataLayerResult.Failure -> {
                 throw result.error

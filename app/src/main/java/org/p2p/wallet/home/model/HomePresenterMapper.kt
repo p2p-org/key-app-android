@@ -21,7 +21,7 @@ import org.p2p.wallet.home.ui.main.delegates.hidebutton.TokenButtonCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
-import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
+import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.toPx
 
@@ -73,7 +73,7 @@ class HomePresenterMapper(
     suspend fun mapToItems(
         tokens: List<Token.Active>,
         ethereumTokens: List<Token.Eth>,
-        strigaClaimableTokens: List<StrigaClaimableToken>,
+        strigaOnRampTokens: List<StrigaOnRampToken>,
         visibilityState: VisibilityState,
         isZerosHidden: Boolean
     ): List<HomeElementItem> {
@@ -91,16 +91,16 @@ class HomePresenterMapper(
 
             result += HomeElementItem.Title(R.string.home_tokens)
 
-            result += strigaClaimableTokens.map {
+            result += strigaOnRampTokens.map {
                 val mintAddress = it.tokenDetails.mintAddress.toBase58Instance()
-                HomeElementItem.StrigaClaim(
+                HomeElementItem.StrigaOnRampTokenItem(
                     strigaToken = it,
                     amountAvailable = it.claimableAmount,
                     tokenName = it.tokenDetails.tokenName,
                     tokenMintAddress = mintAddress,
                     tokenSymbol = it.tokenDetails.tokenSymbol,
                     tokenIcon = it.tokenDetails.iconUrl.orEmpty(),
-                    isClaimInProcess = false
+                    isOnRampInProcess = false
                 )
             }
 

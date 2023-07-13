@@ -11,7 +11,7 @@ import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyFragment
 import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputFragment
 import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputFragment
-import org.p2p.wallet.striga.sms.onramp.StrigaClaimSmsInputFragment
+import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
 import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsInputFragment
 
 object SmsInputFactory {
@@ -25,7 +25,7 @@ object SmsInputFactory {
         ),
         StrigaSignup(StrigaSignupSmsInputFragment::class.java, NavigationStrategy.Replace),
         StrigaOnRamp(
-            StrigaClaimSmsInputFragment::class.java,
+            StrigaOtpConfirmFragment::class.java,
             NavigationStrategy.PopBackStackTo(MainContainerFragment::class.java)
         ),
         UpdateDevice(

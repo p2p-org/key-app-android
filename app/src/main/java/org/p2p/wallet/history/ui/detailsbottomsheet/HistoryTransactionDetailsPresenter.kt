@@ -5,6 +5,8 @@ import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 import java.util.Locale
 import kotlinx.coroutines.launch
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.emptyString
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -15,10 +17,8 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.cutMiddle
-import org.p2p.core.crypto.toBase58Instance
 
 class HistoryTransactionDetailsPresenter(
     private val resources: Resources,
@@ -99,7 +99,7 @@ class HistoryTransactionDetailsPresenter(
     private suspend fun parseTransfer(transaction: RpcHistoryTransaction.Transfer) {
         view?.apply {
             if (transaction.status.isPending()) {
-                view?.showSubtitle(resources.getString(R.string.details_pending))
+                showSubtitle(resources.getString(R.string.details_pending))
                 showProgressTransactionInProgress()
             }
             showTransferView(transaction.iconUrl, transaction.getIcon())

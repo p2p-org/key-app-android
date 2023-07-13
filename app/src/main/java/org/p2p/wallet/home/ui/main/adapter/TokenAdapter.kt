@@ -11,7 +11,7 @@ import org.p2p.wallet.home.model.HomeElementItem.Banner
 import org.p2p.wallet.home.model.HomeElementItem.Claim
 import org.p2p.wallet.home.model.HomeElementItem.Hidden
 import org.p2p.wallet.home.model.HomeElementItem.Shown
-import org.p2p.wallet.home.model.HomeElementItem.StrigaClaim
+import org.p2p.wallet.home.model.HomeElementItem.StrigaOnRampTokenItem
 import org.p2p.wallet.home.model.HomeElementItem.Title
 
 class TokenAdapter(
@@ -65,7 +65,7 @@ class TokenAdapter(
         is Banner -> R.layout.item_home_banner
         is Title -> R.layout.item_main_header
         is Claim -> R.layout.item_token_to_claim
-        is StrigaClaim -> R.layout.item_token_to_striga_claim
+        is StrigaOnRampTokenItem -> R.layout.item_token_to_striga_onramp
     }
 
     override fun getItemCount(): Int = data.size
@@ -77,7 +77,7 @@ class TokenAdapter(
         R.layout.item_main_header -> HeaderViewHolder(parent)
         R.layout.item_token_to_claim -> BridgeTokenToClaimViewHolder(parent, glideManager, listener)
         R.layout.item_home_banner -> SingleBannerViewHolder(parent, listener)
-        R.layout.item_token_to_striga_claim -> StrigaTokenToClaimViewHolder(parent, glideManager, listener)
+        R.layout.item_token_to_striga_onramp -> StrigaTokenToOnRampViewHolder(parent, glideManager, listener)
         else -> error("Unknown viewType: $viewType")
     }
 
@@ -90,7 +90,7 @@ class TokenAdapter(
             is SingleBannerViewHolder -> holder.onBind((item as Banner).banner)
             is HeaderViewHolder -> holder.onBind(item as Title)
             is BridgeTokenToClaimViewHolder -> holder.onBind(item as Claim)
-            is StrigaTokenToClaimViewHolder -> holder.onBind(item as StrigaClaim)
+            is StrigaTokenToOnRampViewHolder -> holder.onBind(item as StrigaOnRampTokenItem)
         }
     }
 

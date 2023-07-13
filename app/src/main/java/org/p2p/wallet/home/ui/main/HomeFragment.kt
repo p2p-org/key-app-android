@@ -53,7 +53,7 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
-import org.p2p.wallet.striga.sms.onramp.StrigaClaimSmsInputFragment
+import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
 import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -255,19 +255,23 @@ class HomeFragment :
         }.also(::replaceFragment)
     }
 
-    override fun navigateToStrigaClaimOtp(
+    override fun navigateToStrigaOnRampConfirmOtp(
         challengeId: StrigaWithdrawalChallengeId,
-        token: HomeElementItem.StrigaClaim
+        token: HomeElementItem.StrigaOnRampTokenItem
     ) {
-        val fragment = strigaKycFragmentFactory.claimOtpFragment(
+        val fragment = strigaKycFragmentFactory.onRampConfirmOtpFragment(
             titleAmount = token.amountAvailable.asUsd(),
             challengeId = challengeId,
         )
 
         replaceFragmentForResult(
             target = fragment,
-            requestKey = StrigaClaimSmsInputFragment.REQUEST_KEY,
-            onResult = { _, bundle -> if (bundle.isEmpty) presenter.onClaimConfirmed(challengeId, token) }
+            requestKey = StrigaOtpConfirmFragment.REQUEST_KEY,
+            onResult = { _, bundle ->
+                if (bundle.getBoolean(StrigaOtpConfirmFragment.RESULT_KEY_CONFIRMED, false)) {
+                    presenter.onOnRampConfirmed(challengeId, token)
+                }
+            }
         )
     }
 
@@ -343,17 +347,17 @@ class HomeFragment :
         presenter.onBannerClicked(bannerTitleId)
     }
 
-    override fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim) {
-        presenter.onStrigaClaimTokenClicked(item)
+    override fun onStrigaOnRampTokenClicked(item: HomeElementItem.StrigaOnRampTokenItem) {
+        presenter.onStrigaOnRampTokenClicked(item)
     }
 
-    override fun showStrigaClaimProgress(isClaimInProgress: Boolean, tokenMint: Base58String) {
-        contentAdapter.updateItem<HomeElementItem.StrigaClaim>(
+    override fun showStrigaOnRampProgress(isOnRampInProgress: Boolean, tokenMint: Base58String) {
+        contentAdapter.updateItem<HomeElementItem.StrigaOnRampTokenItem>(
             itemFilter = { item ->
-                item is HomeElementItem.StrigaClaim && item.tokenMintAddress == tokenMint
+                item is HomeElementItem.StrigaOnRampTokenItem && item.tokenMintAddress == tokenMint
             },
             transform = {
-                it.copy(isClaimInProcess = isClaimInProgress)
+                it.copy(isOnRampInProcess = isOnRampInProgress)
             }
         )
     }

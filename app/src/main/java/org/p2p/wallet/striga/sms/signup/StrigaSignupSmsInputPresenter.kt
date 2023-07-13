@@ -10,11 +10,11 @@ import org.p2p.wallet.smsinput.SmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
+import org.p2p.wallet.striga.sms.StrigaOtpConfirmInteractor
 import org.p2p.wallet.utils.removeWhiteSpaces
 
 class StrigaSignupSmsInputPresenter(
-    private val interactor: StrigaSmsInputInteractor,
+    private val interactor: StrigaOtpConfirmInteractor,
 ) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
 
     override fun firstAttach() {

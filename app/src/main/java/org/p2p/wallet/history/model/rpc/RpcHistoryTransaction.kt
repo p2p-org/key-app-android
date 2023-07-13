@@ -29,9 +29,11 @@ sealed class RpcHistoryTransaction(
     open val type: RpcHistoryTransactionType
 ) : HistoryTransaction(), Parcelable {
 
-    override fun getHistoryTransactionId(): String {
-        return signature
+    companion object {
+        const val UNDEFINED_BLOCK_NUMBER = -1
     }
+
+    override fun getHistoryTransactionId(): String = signature
 
     protected open fun getSymbol(isNegativeOperation: Boolean): String = if (isNegativeOperation) "-" else "+"
 

@@ -8,7 +8,6 @@ import org.p2p.wallet.striga.wallet.repository.StrigaWithdrawalsRepository
 class StrigaOnRampSmsApiCaller(
     private val challengeId: StrigaWithdrawalChallengeId,
     private val strigaWithdrawalsRepository: StrigaWithdrawalsRepository
-
 ) : StrigaSmsApiCaller {
     override suspend fun resendSms(): StrigaDataLayerResult<Unit> {
         return strigaWithdrawalsRepository.resendSms(challengeId)

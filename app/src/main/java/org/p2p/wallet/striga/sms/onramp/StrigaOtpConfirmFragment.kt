@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.sms.onramp
 
+import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.View
@@ -20,12 +21,13 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 
-class StrigaClaimSmsInputFragment : BaseSmsInputFragment() {
+class StrigaOtpConfirmFragment : BaseSmsInputFragment() {
 
     companion object {
         const val ARG_TITLE_AMOUNT = "ARG_TITLE_AMOUNT"
         const val ARG_CHALLENGE_ID = "ARG_CHALLENGE_ID"
-        val REQUEST_KEY: String = StrigaClaimSmsInputFragment::class.java.name
+        val REQUEST_KEY: String = StrigaOtpConfirmFragment::class.java.name
+        const val RESULT_KEY_CONFIRMED: String = "RESULT_KEY_CONFIRMED"
     }
 
     private val titleAmount: String by args(ARG_TITLE_AMOUNT)
@@ -33,7 +35,10 @@ class StrigaClaimSmsInputFragment : BaseSmsInputFragment() {
 
     override val presenter: SmsInputContract.Presenter by inject(named(StrigaWalletModule.SMS_QUALIFIER))
 
+    private var isOtpConfirmed: Boolean = false
+
     override fun onBackPressed() {
+        setFragmentResult(REQUEST_KEY, bundleOf(RESULT_KEY_CONFIRMED to false))
         popBackStack()
     }
 
@@ -44,7 +49,7 @@ class StrigaClaimSmsInputFragment : BaseSmsInputFragment() {
     }
 
     override fun navigateNext() {
-        setFragmentResult(REQUEST_KEY, Bundle.EMPTY)
+        isOtpConfirmed = true
         super.navigateNext()
     }
 
@@ -63,5 +68,10 @@ class StrigaClaimSmsInputFragment : BaseSmsInputFragment() {
 
     override fun navigateToExceededConfirmationAttempts() {
         replaceFragment(StrigaSmsErrorFragment.create(viewType = StrigaSmsErrorViewType.ExceededConfirmationAttempts()))
+    }
+
+    override fun onDestroyView() {
+        setFragmentResult(REQUEST_KEY, bundleOf(RESULT_KEY_CONFIRMED to isOtpConfirmed))
+        super.onDestroyView()
     }
 }

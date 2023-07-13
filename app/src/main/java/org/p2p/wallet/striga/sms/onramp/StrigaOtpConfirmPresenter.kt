@@ -9,17 +9,18 @@ import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.striga.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.model.StrigaDataLayerError
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
+import org.p2p.wallet.striga.sms.StrigaOtpConfirmInteractor
 import org.p2p.wallet.utils.removeWhiteSpaces
 
 private const val SMS_CODE_LENGTH = 6
 
-class StrigaClaimSmsInputPresenter(
-    private val interactor: StrigaSmsInputInteractor,
+class StrigaOtpConfirmPresenter(
+    private val interactor: StrigaOtpConfirmInteractor,
 ) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
 
     override fun firstAttach() {
         super.firstAttach()
+
         checkForExceededLimits()
         resendSmsIfNeeded()
     }

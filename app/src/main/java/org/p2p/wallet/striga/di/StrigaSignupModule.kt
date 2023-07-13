@@ -40,7 +40,7 @@ import org.p2p.wallet.striga.signup.ui.StrigaSignUpFirstStepPresenter
 import org.p2p.wallet.striga.signup.ui.StrigaSignUpSecondStepPresenter
 import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
-import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
+import org.p2p.wallet.striga.sms.StrigaOtpConfirmInteractor
 import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsApiCaller
 import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsInputPresenter
 import org.p2p.wallet.striga.user.api.StrigaApi
@@ -84,7 +84,7 @@ object StrigaSignupModule : InjectionModule {
                 signupDataRepository = get(),
                 userInteractor = get(),
                 metadataInteractor = get(),
-                strigaSmsInputInteractor = get(named(SMS_QUALIFIER)),
+                strigaOtpConfirmInteractor = get(named(SMS_QUALIFIER)),
                 strigaUserStatusRepository = get(),
             )
         }
@@ -125,7 +125,7 @@ object StrigaSignupModule : InjectionModule {
         } bind StrigaSmsApiCaller::class
 
         factory(named(SMS_QUALIFIER)) {
-            StrigaSmsInputInteractor(
+            StrigaOtpConfirmInteractor(
                 strigaSignupDataRepository = get(),
                 phoneCodeRepository = get(),
                 inAppFeatureFlags = get(),

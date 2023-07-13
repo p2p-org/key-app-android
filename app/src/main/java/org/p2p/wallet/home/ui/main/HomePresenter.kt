@@ -31,14 +31,14 @@ import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
-import org.p2p.wallet.home.ui.main.striga.StrigaClaimConfirmedHandler
+import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
-import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
+import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
@@ -64,8 +64,8 @@ class HomePresenter(
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val userTokensInteractor: UserTokensInteractor,
-    private val strigaInteractor: StrigaClaimInteractor,
-    private val claimConfirmedHandler: StrigaClaimConfirmedHandler,
+    private val strigaInteractor: StrigaOnRampInteractor,
+    private val onRampConfirmedHandler: StrigaOnRampConfirmedHandler,
     private val analytics: HomeAnalytics,
     tokenKeyProvider: TokenKeyProvider,
     context: Context,
@@ -101,7 +101,7 @@ class HomePresenter(
         observeKycBanners()
         observeState()
 
-        loadStrigaClaimableTokens()
+        loadStrigaOnRampTokens()
     }
 
     override fun refreshTokens() {
@@ -174,11 +174,11 @@ class HomePresenter(
         }
     }
 
-    private fun loadStrigaClaimableTokens() {
+    private fun loadStrigaOnRampTokens() {
         launch {
-            val claimTokens = strigaInteractor.getClaimableTokens().successOrNull().orEmpty()
+            val claimTokens = strigaInteractor.getOnRampTokens().successOrNull().orEmpty()
             state = state.copy(
-                strigaClaimableTokens = claimTokens
+                strigaOnRampTokens = claimTokens
             )
         }
     }
@@ -256,12 +256,12 @@ class HomePresenter(
         }
     }
 
-    override fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim) {
+    override fun onStrigaOnRampTokenClicked(item: HomeElementItem.StrigaOnRampTokenItem) {
         launch {
             try {
-                view?.showStrigaClaimProgress(isClaimInProgress = true, tokenMint = item.tokenMintAddress)
+                view?.showStrigaOnRampProgress(isOnRampInProgress = true, tokenMint = item.tokenMintAddress)
                 val challengeId = homeInteractor.claimStrigaToken(item.amountAvailable, item.strigaToken).unwrap()
-                view?.navigateToStrigaClaimOtp(challengeId, item)
+                view?.navigateToStrigaOnRampConfirmOtp(challengeId, item)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on claiming striga token")
                 if (BuildConfig.DEBUG) {
@@ -270,14 +270,17 @@ class HomePresenter(
                     view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 }
             } finally {
-                view?.showStrigaClaimProgress(isClaimInProgress = false, tokenMint = item.tokenMintAddress)
+                view?.showStrigaOnRampProgress(isOnRampInProgress = false, tokenMint = item.tokenMintAddress)
             }
         }
     }
 
-    override fun onClaimConfirmed(challengeId: StrigaWithdrawalChallengeId, token: HomeElementItem.StrigaClaim) {
+    override fun onOnRampConfirmed(
+        challengeId: StrigaWithdrawalChallengeId,
+        token: HomeElementItem.StrigaOnRampTokenItem
+    ) {
         launch {
-            claimConfirmedHandler.handleClaimConfirmed(token)
+            onRampConfirmedHandler.handleConfirmed(token)
         }
     }
 
@@ -456,7 +459,7 @@ class HomePresenter(
                 tokens = state.tokens,
                 ethereumTokens = state.ethTokens,
                 visibilityState = state.visibilityState,
-                strigaClaimableTokens = state.strigaClaimableTokens,
+                strigaOnRampTokens = state.strigaOnRampTokens,
                 isZerosHidden = areZerosHidden,
             )
 

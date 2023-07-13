@@ -33,7 +33,7 @@ import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.utils.mockInAppFeatureFlag
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class StrigaSmsInputInteractorTest {
+class StrigaOtpConfirmInteractorTest {
 
     @MockK(relaxed = true)
     private lateinit var strigaUserRepository: StrigaUserRepository
@@ -161,8 +161,8 @@ class StrigaSmsInputInteractorTest {
         coVerify(exactly = 2) { apiCaller.resendSms() }
     }
 
-    private fun createInteractor(apiCaller: StrigaSmsApiCaller? = null): StrigaSmsInputInteractor {
-        return StrigaSmsInputInteractor(
+    private fun createInteractor(apiCaller: StrigaSmsApiCaller? = null): StrigaOtpConfirmInteractor {
+        return StrigaOtpConfirmInteractor(
             strigaSignupDataRepository = strigaSignupDataRepository,
             phoneCodeRepository = countryCodeRepository,
             inAppFeatureFlags = inAppFeatureFlags,

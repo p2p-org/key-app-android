@@ -15,12 +15,10 @@ import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.container.MainContainerContract
 import org.p2p.wallet.home.ui.container.MainContainerPresenter
-import org.p2p.wallet.home.ui.crypto.MyCryptoContract
-import org.p2p.wallet.home.ui.crypto.MyCryptoPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.HomePresenter
-import org.p2p.wallet.home.ui.main.striga.StrigaClaimConfirmedHandler
+import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.home.ui.wallet.WalletContract
@@ -79,14 +77,14 @@ object HomeModule : InjectionModule {
                 sellInteractor = get(),
                 ethereumInteractor = get(),
                 strigaUserInteractor = get(),
-                strigaClaimInteractor = get(),
+                strigaOnRampInteractor = get(),
                 strigaWalletInteractor = get(),
                 tokenKeyProvider = get()
             )
         }
         factoryOf(::HomePresenterMapper)
         factoryOf(::StrigaKycUiBannerMapper)
-        factoryOf(::StrigaClaimConfirmedHandler)
+        factoryOf(::StrigaOnRampConfirmedHandler)
         factory<HomeContract.Presenter> {
             // todo: do something with this dependenices!
             // todo: to eliminate all this hell, we could just migrate to hilt
@@ -108,11 +106,10 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get(),
                 tokenServiceCoordinator = get(),
                 strigaInteractor = get(),
-                claimConfirmedHandler = get()
+                onRampConfirmedHandler = get()
             )
         }
         factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
-        factoryOf(::MyCryptoPresenter) bind MyCryptoContract.Presenter::class
 
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
 
