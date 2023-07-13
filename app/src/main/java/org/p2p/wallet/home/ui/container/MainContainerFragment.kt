@@ -85,7 +85,7 @@ class MainContainerFragment :
                         isSellEnabled = sellInteractor.isSellAvailable()
                     )
                 }
-                navigate(ScreenTab.SEND_SCREEN)
+                presenter.onSendClicked()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -187,6 +187,7 @@ class MainContainerFragment :
         when (clickedTab) {
             ScreenTab.SEND_SCREEN -> {
                 presenter.onSendClicked()
+                resetOnLastBottomNavigationItem()
                 return
             }
             else -> {

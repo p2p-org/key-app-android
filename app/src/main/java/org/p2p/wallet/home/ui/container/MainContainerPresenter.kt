@@ -1,7 +1,7 @@
 package org.p2p.wallet.home.ui.container
 
 import timber.log.Timber
-import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -89,7 +89,7 @@ class MainContainerPresenter(
 
     override fun onSendClicked() {
         launch {
-            when (tokenServiceCoordinator.observeUserTokens().last()) {
+            when (tokenServiceCoordinator.observeUserTokens().first()) {
                 is UserTokensState.Empty -> {
                     val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
                     view?.navigateToSendNoTokens(validTokenToBuy)

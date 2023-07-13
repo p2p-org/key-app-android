@@ -89,7 +89,9 @@
                     android:nestedScrollingEnabled="false"
                     android:orientation="vertical"
                     android:overScrollMode="never"
+                    android:paddingBottom="20dp"
                     tools:listitem="@layout/item_token" />
+
             </androidx.core.widget.NestedScrollView>
 
             <TextView
