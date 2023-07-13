@@ -1,17 +1,19 @@
 package org.p2p.wallet.common.storage
 
 import android.content.Context
+import com.google.gson.Gson
 import timber.log.Timber
 
 class ExternalStorageRepository(
     private val context: Context
 ) {
 
-    fun saveJson(json: String, fileName: String) {
+
+    fun <T> saveJson(jsonObject: T, fileName: String){
         try {
-            context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
-                it.write(json.toByteArray())
-            }
+            context.openFileOutput(fileName, Context.MODE_PRIVATE)
+                .bufferedWriter()
+                .use { Gson().toJson(jsonObject, it) }
         } catch (e: Throwable) {
             Timber.e(e, "Error saving json file: $fileName")
         }
