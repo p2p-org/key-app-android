@@ -21,9 +21,11 @@ class TokenMetadataInteractor(
 
     suspend fun loadAllTokensData() {
         val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
-
-        val metadata = if (file != null) {
-            gson.fromJson(file.data, TokensMetadataInfo::class.java)
+        // TODO fix bug with saving metadata, here we receive list of tokenMetadata
+        // instead of TokensMetadataInfo
+        val metadata: TokensMetadataInfo? = if (file != null) {
+//            gson.fromJson(file.data, TokensMetadataInfo::class.java)
+            null
         } else {
             null
         }
