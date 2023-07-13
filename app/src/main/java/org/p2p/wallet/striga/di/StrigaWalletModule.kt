@@ -23,8 +23,8 @@ import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsPresenter
 import org.p2p.wallet.striga.iban.StrigaUserIbanUiMapper
 import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
 import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
+import org.p2p.wallet.striga.sms.onramp.StrigaClaimSmsInputPresenter
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsApiCaller
-import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputPresenter
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
@@ -102,11 +102,8 @@ object StrigaWalletModule : InjectionModule {
         }
 
         factory(named(SMS_QUALIFIER)) {
-            StrigaOnRampSmsInputPresenter(
-                interactor = get(
-                    named(SMS_QUALIFIER),
-                    parameters = { it }
-                )
+            StrigaClaimSmsInputPresenter(
+                interactor = get(named(SMS_QUALIFIER), parameters = { it })
             )
         } bind SmsInputContract.Presenter::class
     }

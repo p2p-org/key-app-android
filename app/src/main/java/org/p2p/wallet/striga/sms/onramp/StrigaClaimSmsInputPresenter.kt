@@ -14,8 +14,8 @@ import org.p2p.wallet.utils.removeWhiteSpaces
 
 private const val SMS_CODE_LENGTH = 6
 
-class StrigaOnRampSmsInputPresenter(
-    private val interactor: StrigaSmsInputInteractor
+class StrigaClaimSmsInputPresenter(
+    private val interactor: StrigaSmsInputInteractor,
 ) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
 
     override fun firstAttach() {
@@ -48,11 +48,15 @@ class StrigaOnRampSmsInputPresenter(
         val smsCodeRaw = smsCode.removeWhiteSpaces()
         launch {
             when (val result = interactor.validateSms(smsCodeRaw)) {
-                is StrigaDataLayerResult.Success -> view?.navigateNext()
+                is StrigaDataLayerResult.Success -> handleSmsSuccess()
                 is StrigaDataLayerResult.Failure -> handleError(result.error)
             }
             view?.renderButtonLoading(isLoading = false)
         }
+    }
+
+    private fun handleSmsSuccess() {
+        view?.navigateNext()
     }
 
     private fun resendSmsIfNeeded() {

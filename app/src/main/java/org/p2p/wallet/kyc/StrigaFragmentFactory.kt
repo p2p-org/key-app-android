@@ -9,7 +9,7 @@ import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
-import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputFragment
+import org.p2p.wallet.striga.sms.onramp.StrigaClaimSmsInputFragment
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 
@@ -36,8 +36,8 @@ class StrigaFragmentFactory {
         return SmsInputFactory.create<Fragment>(
             type = SmsInputFactory.Type.StrigaOnRamp,
             args = bundleOf(
-                StrigaOnRampSmsInputFragment.ARG_TITLE_AMOUNT to titleAmount,
-                StrigaOnRampSmsInputFragment.ARG_CHALLENGE_ID to challengeId
+                StrigaClaimSmsInputFragment.ARG_TITLE_AMOUNT to titleAmount,
+                StrigaClaimSmsInputFragment.ARG_CHALLENGE_ID to challengeId
             )
         )
     }

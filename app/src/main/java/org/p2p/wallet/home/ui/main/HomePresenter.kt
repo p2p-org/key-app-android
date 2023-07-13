@@ -15,7 +15,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -32,6 +31,7 @@ import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
+import org.p2p.wallet.home.ui.main.striga.StrigaClaimConfirmedHandler
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
@@ -39,6 +39,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.transaction.model.TransactionState
@@ -64,6 +65,7 @@ class HomePresenter(
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val userTokensInteractor: UserTokensInteractor,
     private val strigaInteractor: StrigaClaimInteractor,
+    private val claimConfirmedHandler: StrigaClaimConfirmedHandler,
     private val analytics: HomeAnalytics,
     tokenKeyProvider: TokenKeyProvider,
     context: Context,
@@ -259,10 +261,7 @@ class HomePresenter(
             try {
                 view?.showStrigaClaimProgress(isClaimInProgress = true, tokenMint = item.tokenMintAddress)
                 val challengeId = homeInteractor.claimStrigaToken(item.amountAvailable, item.strigaToken).unwrap()
-                view?.navigateToStrigaClaimOtp(
-                    item.amountAvailable.asUsd(),
-                    challengeId
-                )
+                view?.navigateToStrigaClaimOtp(challengeId, item)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on claiming striga token")
                 if (BuildConfig.DEBUG) {
@@ -273,6 +272,12 @@ class HomePresenter(
             } finally {
                 view?.showStrigaClaimProgress(isClaimInProgress = false, tokenMint = item.tokenMintAddress)
             }
+        }
+    }
+
+    override fun onClaimConfirmed(challengeId: StrigaWithdrawalChallengeId, token: HomeElementItem.StrigaClaim) {
+        launch {
+            claimConfirmedHandler.handleClaimConfirmed(token)
         }
     }
 
