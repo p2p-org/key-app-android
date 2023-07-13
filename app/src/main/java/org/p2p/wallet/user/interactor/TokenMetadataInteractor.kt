@@ -44,7 +44,6 @@ class TokenMetadataInteractor(
         Timber.tag(TAG).i("Received an updated tokens metadata, updating file in local storage")
 
         val tokensMetadata = result.tokensMetadataInfo
-        Timber.tag(TAG).i("Metadata to save = $tokensMetadata")
         userLocalRepository.setTokenData(tokensMetadata.tokens)
 
         // Save tokens to the file
