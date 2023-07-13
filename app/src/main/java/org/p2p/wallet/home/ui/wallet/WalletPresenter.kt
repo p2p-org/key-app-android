@@ -53,7 +53,7 @@ class WalletPresenter(
     override fun attach(view: WalletContract.View) {
         super.attach(view)
         observeRefreshingStatus()
-        observeScreenState()
+        observeViewState()
 
         loadInitialData()
         observeRefreshingStatus()
@@ -90,7 +90,7 @@ class WalletPresenter(
         }
     }
 
-    private fun observeScreenState() {
+    private fun observeViewState() {
         launch {
             viewStateFlow.collect {
                 val items = walletMapper.buildCellItems {
