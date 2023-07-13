@@ -8,7 +8,7 @@ import org.p2p.token.service.repository.metadata.TokenMetadataLocalRepository
 import org.p2p.token.service.repository.price.TokenPriceLocalRepository
 import org.p2p.token.service.repository.price.TokenPriceRepository
 
-class TokenServiceRepositoryImpl(
+internal class TokenServiceRepositoryImpl(
     private val priceRemoteRepository: TokenPriceRepository,
     private val priceLocalRepository: TokenPriceLocalRepository,
     private val metadataLocalRepository: TokenMetadataLocalRepository,

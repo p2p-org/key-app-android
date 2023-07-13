@@ -1,29 +1,29 @@
 package org.p2p.token.service.database.mapper
 
-import org.p2p.token.service.database.entity.TokenPriceEntity
+import org.p2p.token.service.database.entity.TokenServicePriceEntity
 import org.p2p.token.service.model.TokenRate
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 
-internal class TokenServiceDatabaseMapper() {
+internal class TokenServiceDatabaseMapper {
 
-    fun toEntity(item: TokenServicePrice): TokenPriceEntity? {
+    fun toEntity(item: TokenServicePrice): TokenServicePriceEntity? {
         val tokenRate = item.rate
         val usdRate = tokenRate.usd ?: return null
-        return TokenPriceEntity(
+        return TokenServicePriceEntity(
             tokenAddress = item.address,
-            networkChain = item.network.networkName,
+            networkChainName = item.network.networkName,
             usdRate = usdRate
         )
     }
 
-    fun fromEntity(entity: TokenPriceEntity): TokenServicePrice {
+    fun fromEntity(entity: TokenServicePriceEntity): TokenServicePrice {
         return TokenServicePrice(
             address = entity.tokenAddress,
             rate = TokenRate(
                 usd = entity.usdRate
             ),
-            network = TokenServiceNetwork.getValueOf(entity.networkChain)
+            network = TokenServiceNetwork.getValueOf(entity.networkChainName)
         )
     }
 }

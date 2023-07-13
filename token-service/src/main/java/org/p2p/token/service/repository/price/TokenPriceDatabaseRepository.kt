@@ -24,8 +24,13 @@ internal class TokenPriceDatabaseRepository(
         return found?.let { converter.fromEntity(it) }
     }
 
-    override suspend fun observeTokenPrices(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>> {
+    override fun observeTokenPrices(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>> {
         return tokenPriceDao.getTokensRatesByNetworkFlow(networkChain.networkName)
             .map { it.map(converter::fromEntity) }
+    }
+
+    override suspend fun getLocalTokenPrices(): List<TokenServicePrice> {
+        return tokenPriceDao.getAllTokensPrices()
+            .map(converter::fromEntity)
     }
 }

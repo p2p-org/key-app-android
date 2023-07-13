@@ -5,16 +5,16 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import org.p2p.core.room.RoomConverters
 import org.p2p.token.service.database.TokenServiceDatabase.Companion.DATABASE_VERSION
-import org.p2p.token.service.database.entity.TokenPriceEntity
+import org.p2p.token.service.database.entity.TokenServicePriceEntity
 
 @Database(
     entities = [
-        TokenPriceEntity::class
+        TokenServicePriceEntity::class
     ],
     version = DATABASE_VERSION,
     exportSchema = false
 )
-@TypeConverters(value = arrayOf(RoomConverters::class,))
+@TypeConverters(value = [RoomConverters::class])
 internal abstract class TokenServiceDatabase : RoomDatabase() {
 
     companion object {
