@@ -4,8 +4,10 @@ import androidx.recyclerview.widget.DiffUtil
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import java.util.Objects
+import org.p2p.core.utils.NoCoverage
 import org.p2p.uikit.model.AnyCellItem
 
+@NoCoverage
 class CommonAnyCellAdapter(
     vararg delegates: AdapterDelegate<List<AnyCellItem>>,
     diffUtilCallback: DiffUtil.ItemCallback<AnyCellItem> = DefaultDiffCallback()
