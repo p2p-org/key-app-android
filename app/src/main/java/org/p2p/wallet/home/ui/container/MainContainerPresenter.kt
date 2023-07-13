@@ -2,6 +2,7 @@ package org.p2p.wallet.home.ui.container
 
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
@@ -14,11 +15,16 @@ import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.tokenservice.UserTokensState
+import org.p2p.wallet.user.interactor.UserInteractor
 
 class MainContainerPresenter(
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val metadataInteractor: MetadataInteractor,
+    private val userInteractor: UserInteractor,
     private val homeAnalytics: HomeAnalytics
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
 
@@ -60,6 +66,13 @@ class MainContainerPresenter(
         deeplinksManager.executeTransferPendingAppLink()
     }
 
+    override fun observeUserTokens() {
+        launch {
+            tokenServiceCoordinator.observeUserTokens()
+                .collect { handleTokenState(it) }
+        }
+    }
+
     override fun logHomeOpened() {
         homeAnalytics.logBottomNavigationHomeClicked()
     }
@@ -70,6 +83,18 @@ class MainContainerPresenter(
 
     override fun logSettingsOpened() {
         homeAnalytics.logBottomNavigationSettingsClicked()
+    }
+
+    override fun onSendClicked() {
+        launch {
+            val userTokens = tokenServiceCoordinator.getUserTokens()
+            if (userTokens.isEmpty()) {
+                val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
+                view?.navigateToSendNoTokens(validTokenToBuy)
+            } else {
+                view?.navigateToSendScreen()
+            }
+        }
     }
 
     private fun observeInternetState() {
@@ -83,5 +108,20 @@ class MainContainerPresenter(
     private fun checkDeviceShare() {
         val hasDifferentDeviceShare = metadataInteractor.hasDifferentDeviceShare()
         view?.showSettingsBadgeVisible(isVisible = hasDifferentDeviceShare)
+    }
+
+    private fun handleTokenState(newState: UserTokensState) {
+        when (newState) {
+            is UserTokensState.Idle -> Unit
+            is UserTokensState.Loading -> Unit
+            is UserTokensState.Refreshing -> Unit
+            is UserTokensState.Error -> Unit
+            is UserTokensState.Empty -> {
+                view?.showCryptoBadgeVisible(isVisible = false)
+            }
+            is UserTokensState.Loaded -> {
+                view?.showCryptoBadgeVisible(isVisible = newState.ethTokens.isNotEmpty())
+            }
+        }
     }
 }

@@ -156,23 +156,9 @@ dependencies {
     implementation(Dependencies.tickerView)
     implementation(Dependencies.bitcoinj)
 
-
-    // Core testing
-    Dependencies.coreTestingLibraries.forEach { testImplementation(it) }
-
-    // Koin testing
-    Dependencies.koinTestingLibraries.forEach { testImplementation(it) }
-
-    // Other testing tools
-    Dependencies.otherTestingLibraries.forEach { testImplementation(it) }
-
-    // Runtime only testing tools
-    testRuntimeOnly(Dependencies.junitPlatform) {
-        because("This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.")
-    }
-    Dependencies.junitRuntimeOnlyLibraries.forEach { testRuntimeOnly(it) }
-
     implementation(Dependencies.roomRuntime)
     implementation(Dependencies.roomKtx)
     kapt(Dependencies.roomCompiler)
+
+    Dependencies.testUtilsModule(this)
 }

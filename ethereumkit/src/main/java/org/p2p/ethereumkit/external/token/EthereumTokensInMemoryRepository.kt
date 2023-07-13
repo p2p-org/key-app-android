@@ -24,4 +24,8 @@ class EthereumTokensInMemoryRepository : EthereumTokensLocalRepository {
     override fun getTokensFlow(): StateFlow<List<Token.Eth>> {
         return cachedTokens
     }
+
+    override fun getWalletTokens(): List<Token.Eth> {
+        return cachedTokens.value
+    }
 }
