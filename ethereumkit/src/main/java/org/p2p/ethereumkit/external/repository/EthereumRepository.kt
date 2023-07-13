@@ -17,6 +17,7 @@ interface EthereumRepository {
     suspend fun cacheWalletTokens(tokens: List<Token.Eth>)
     suspend fun updateTokensRates(rates: List<TokenServicePrice>)
     fun getWalletTokensFlow(): Flow<List<Token.Eth>>
+    fun getWalletTokens(): List<Token.Eth>
 
     fun getAddress(): EthAddress
     fun getPrivateKey(): BigInteger

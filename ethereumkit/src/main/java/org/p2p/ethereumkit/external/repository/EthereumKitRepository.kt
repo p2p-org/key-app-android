@@ -172,6 +172,10 @@ internal class EthereumKitRepository(
         return tokensLocalRepository.getTokensFlow()
     }
 
+    override fun getWalletTokens(): List<Token.Eth> {
+        return tokensLocalRepository.getWalletTokens()
+    }
+
     private fun throwInitError(): Nothing =
         error("You must call EthereumKitRepository.init() method, before interact with this repository")
 }
