@@ -1,6 +1,5 @@
 package org.p2p.wallet.home.ui.container
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.p2p.core.network.ConnectionManager
@@ -12,13 +11,11 @@ import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 
 class MainContainerPresenter(
-    private val refreshErrorInteractor: RefreshErrorInteractor,
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
     private val metadataInteractor: MetadataInteractor,
@@ -27,7 +24,7 @@ class MainContainerPresenter(
 
     override fun attach(view: MainContainerContract.View) {
         super.attach(view)
-        observeRefreshEvent()
+        observeInternetState()
     }
 
     override fun loadMainNavigation() {
@@ -47,14 +44,6 @@ class MainContainerPresenter(
         view?.inflateBottomNavigationMenu(menuRes = R.menu.menu_ui_kit_bottom_navigation)
 
         checkDeviceShare()
-    }
-
-    override fun launchInternetObserver(coroutineScope: CoroutineScope) {
-        connectionManager.connectionStatus
-            .onEach { isConnected ->
-                if (!isConnected) view?.showConnectionError(isVisible = true)
-            }
-            .launchIn(coroutineScope)
     }
 
     override fun initializeDeeplinks() {
@@ -83,12 +72,10 @@ class MainContainerPresenter(
         homeAnalytics.logBottomNavigationSettingsClicked()
     }
 
-    private fun observeRefreshEvent() {
-        refreshErrorInteractor.getRefreshEventFlow()
-            .onEach {
-                if (connectionManager.connectionStatus.value) {
-                    view?.showConnectionError(isVisible = false)
-                }
+    private fun observeInternetState() {
+        connectionManager.connectionStatus
+            .onEach { isConnected ->
+                if (!isConnected) view?.showUiKitSnackBar(messageResId = R.string.error_no_internet_message)
             }
             .launchIn(this)
     }
