@@ -21,12 +21,12 @@ import org.p2p.wallet.striga.common.StrigaIpAddressProvider
 import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsContract
 import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsPresenter
 import org.p2p.wallet.striga.iban.StrigaUserIbanUiMapper
+import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
+import org.p2p.wallet.striga.sms.StrigaOtpConfirmInteractor
 import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
-import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
-import org.p2p.wallet.striga.sms.onramp.StrigaClaimSmsInputPresenter
 import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsApiCaller
+import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmPresenter
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
-import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
@@ -48,7 +48,7 @@ object StrigaWalletModule : InjectionModule {
         initSms()
         initIban()
 
-        factoryOf(::StrigaClaimInteractor)
+        factoryOf(::StrigaOnRampInteractor)
         factoryOf(::StrigaWalletInteractor)
 
         factoryOf(::StrigaIpAddressProvider)
@@ -88,7 +88,7 @@ object StrigaWalletModule : InjectionModule {
         } bind StrigaSmsApiCaller::class
 
         factory(named(SMS_QUALIFIER)) {
-            StrigaSmsInputInteractor(
+            StrigaOtpConfirmInteractor(
                 strigaSignupDataRepository = get(),
                 phoneCodeRepository = get(),
                 inAppFeatureFlags = get(),
@@ -102,7 +102,7 @@ object StrigaWalletModule : InjectionModule {
         }
 
         factory(named(SMS_QUALIFIER)) {
-            StrigaClaimSmsInputPresenter(
+            StrigaOtpConfirmPresenter(
                 interactor = get(named(SMS_QUALIFIER), parameters = { it })
             )
         } bind SmsInputContract.Presenter::class

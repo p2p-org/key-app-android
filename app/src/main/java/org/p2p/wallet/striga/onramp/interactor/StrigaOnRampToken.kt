@@ -1,14 +1,15 @@
-package org.p2p.wallet.striga.wallet.models
+package org.p2p.wallet.striga.onramp.interactor
 
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
 import org.p2p.core.utils.fromLamports
+import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
 
-data class StrigaClaimableToken(
+data class StrigaOnRampToken(
     val totalAmount: BigInteger,
     val fees: StrigaOnchainWithdrawalFees,
     val tokenDetails: Token,

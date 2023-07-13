@@ -40,7 +40,7 @@ private val SMS_ERROR_VERIFICATIONS_EXCEEDED: StrigaDataLayerResult.Failure<Unit
         )
     ).toFailureResult()
 
-class StrigaSmsInputInteractor(
+class StrigaOtpConfirmInteractor(
     private val strigaSignupDataRepository: StrigaSignupDataLocalRepository,
     private val phoneCodeRepository: CountryCodeRepository,
     private val inAppFeatureFlags: InAppFeatureFlags,

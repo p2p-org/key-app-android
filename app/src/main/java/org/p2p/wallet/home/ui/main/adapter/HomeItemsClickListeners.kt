@@ -10,5 +10,5 @@ interface HomeItemsClickListeners {
     fun onToggleClicked()
     fun onHideClicked(token: Token.Active)
     fun onClaimTokenClicked(canBeClaimed: Boolean, token: Token.Eth)
-    fun onStrigaClaimTokenClicked(item: HomeElementItem.StrigaClaim)
+    fun onStrigaOnRampTokenClicked(item: HomeElementItem.StrigaOnRampTokenItem)
 }

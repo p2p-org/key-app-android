@@ -9,7 +9,7 @@ import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
 import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
-import org.p2p.wallet.striga.sms.onramp.StrigaClaimSmsInputFragment
+import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 
@@ -20,7 +20,7 @@ class StrigaFragmentFactory {
     /**
      * Usage example:
      * <pre>
-     * val fragment = strigaKycFragmentFactory.claimOtpFragment(
+     * val fragment = strigaKycFragmentFactory.onRampConfirmOtpFragment(
      *     titleAmount = "$100",
      *     challengeId = StrigaWithdrawalChallengeId("123456")
      * )
@@ -29,15 +29,15 @@ class StrigaFragmentFactory {
      * })
      * </pre>
      */
-    fun claimOtpFragment(
+    fun onRampConfirmOtpFragment(
         titleAmount: String,
         challengeId: StrigaWithdrawalChallengeId
     ): Fragment {
         return SmsInputFactory.create<Fragment>(
             type = SmsInputFactory.Type.StrigaOnRamp,
             args = bundleOf(
-                StrigaClaimSmsInputFragment.ARG_TITLE_AMOUNT to titleAmount,
-                StrigaClaimSmsInputFragment.ARG_CHALLENGE_ID to challengeId
+                StrigaOtpConfirmFragment.ARG_TITLE_AMOUNT to titleAmount,
+                StrigaOtpConfirmFragment.ARG_CHALLENGE_ID to challengeId
             )
         )
     }

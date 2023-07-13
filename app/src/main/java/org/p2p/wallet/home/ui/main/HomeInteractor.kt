@@ -12,10 +12,10 @@ import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
+import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
-import org.p2p.wallet.striga.wallet.interactor.StrigaClaimInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
-import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.user.interactor.UserInteractor
 
@@ -26,7 +26,7 @@ class HomeInteractor(
     private val sellInteractor: SellInteractor,
     private val ethereumInteractor: EthereumInteractor,
     private val strigaUserInteractor: StrigaUserInteractor,
-    private val strigaClaimInteractor: StrigaClaimInteractor,
+    private val strigaOnRampInteractor: StrigaOnRampInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -69,8 +69,8 @@ class HomeInteractor(
 
     suspend fun claimStrigaToken(
         amountLamports: BigDecimal,
-        token: StrigaClaimableToken
+        token: StrigaOnRampToken
     ): StrigaDataLayerResult<StrigaWithdrawalChallengeId> {
-        return strigaClaimInteractor.claim(amountLamports, token)
+        return strigaOnRampInteractor.onRampToken(amountLamports, token)
     }
 }

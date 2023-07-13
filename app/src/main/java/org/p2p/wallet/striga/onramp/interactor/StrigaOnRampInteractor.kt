@@ -1,4 +1,4 @@
-package org.p2p.wallet.striga.wallet.interactor
+package org.p2p.wallet.striga.onramp.interactor
 
 import timber.log.Timber
 import java.math.BigDecimal
@@ -16,7 +16,6 @@ import org.p2p.wallet.striga.model.map
 import org.p2p.wallet.striga.model.toFailureResult
 import org.p2p.wallet.striga.model.toSuccessResult
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
-import org.p2p.wallet.striga.wallet.models.StrigaClaimableToken
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
@@ -29,7 +28,7 @@ import org.p2p.wallet.striga.wallet.repository.StrigaWhitelistAddressesRepositor
 import org.p2p.wallet.striga.wallet.repository.StrigaWithdrawalsRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 
-class StrigaClaimInteractor(
+class StrigaOnRampInteractor(
     private val dispatchers: CoroutineDispatchers,
     private val strigaWalletRepository: StrigaWalletRepository,
     private val strigaWithdrawalsRepository: StrigaWithdrawalsRepository,
@@ -39,13 +38,13 @@ class StrigaClaimInteractor(
     private val userTokenKeyProvider: TokenKeyProvider,
     private val userInteractor: StrigaUserInteractor,
 ) {
-    private val isClaimDisabled: Boolean
+    private val isOnRampDisabled: Boolean
         get() = !strigaFeatureToggle.isFeatureEnabled || !userInteractor.isKycApproved
 
-    suspend fun getClaimableTokens(): StrigaDataLayerResult<List<StrigaClaimableToken>> {
-        if (isClaimDisabled) {
-            Timber.d("Striga user cannot get claimable tokens because of feature toggle or KYC status")
-            return emptyList<StrigaClaimableToken>().toSuccessResult()
+    suspend fun getOnRampTokens(): StrigaDataLayerResult<List<StrigaOnRampToken>> {
+        if (isOnRampDisabled) {
+            Timber.d("Striga user cannot get onramp tokens because of feature toggle or KYC status")
+            return emptyList<StrigaOnRampToken>().toSuccessResult()
         }
 
         val getWalletResult = strigaWalletRepository.getUserWallet()
@@ -55,11 +54,11 @@ class StrigaClaimInteractor(
         val userWallet = getWalletResult.unwrap()
 
         return userWallet.accounts
-            .filter(::isTokenClaimable)
+            .filter(::isTokenSuitsForOnRamp)
             .mapNotNull { tokenAccount ->
                 val tokenMetadata = getClaimableTokenMetadata(tokenAccount) ?: return@mapNotNull null
-                val fees = getFeesForClaimableToken(tokenAccount) ?: return@mapNotNull null
-                StrigaClaimableToken(
+                val fees = getFeesForOnRampToken(tokenAccount) ?: return@mapNotNull null
+                StrigaOnRampToken(
                     totalAmount = tokenAccount.availableBalanceLamports,
                     tokenDetails = tokenMetadata,
                     walletId = userWallet.walletId,
@@ -70,9 +69,9 @@ class StrigaClaimInteractor(
             .toSuccessResult()
     }
 
-    suspend fun claim(
+    suspend fun onRampToken(
         amount: BigDecimal,
-        token: StrigaClaimableToken
+        token: StrigaOnRampToken
     ): StrigaDataLayerResult<StrigaWithdrawalChallengeId> = withContext(dispatchers.io) {
         try {
             val whitelistedAddressList = strigaWhitelistAddressesRepository
@@ -109,13 +108,13 @@ class StrigaClaimInteractor(
             ?.let { tokensRepository.findTokenByMint(it.mintAddress) }
     }
 
-    private fun isTokenClaimable(tokenAccount: StrigaUserWalletAccount): Boolean {
+    private fun isTokenSuitsForOnRamp(tokenAccount: StrigaUserWalletAccount): Boolean {
         return tokenAccount.run {
             accountCurrency == StrigaWalletAccountCurrency.USDC && availableBalance.isNotZero()
         }
     }
 
-    private suspend fun getFeesForClaimableToken(tokenAccount: StrigaUserWalletAccount): StrigaOnchainWithdrawalFees? {
+    private suspend fun getFeesForOnRampToken(tokenAccount: StrigaUserWalletAccount): StrigaOnchainWithdrawalFees? {
         return strigaWithdrawalsRepository.getOnchainWithdrawalFees(
             sourceAccountId = tokenAccount.accountId,
             whitelistedAddressId = StrigaWhitelistedAddressId(userTokenKeyProvider.publicKey),
