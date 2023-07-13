@@ -4,6 +4,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.utils.asUsd
@@ -80,13 +81,8 @@ class WalletPresenter(
     private fun observeStrigaKycBanners() {
         launch {
             strigaUserInteractor.getUserStatusBannerFlow()
-                .collect { banner ->
-                    viewStateFlow.emit(
-                        viewStateFlow.value.copy(
-                            strigaBanner = banner
-                        )
-                    )
-                }
+                .map { viewStateFlow.value.copy(strigaBanner = it) }
+                .collect { viewStateFlow.emit(it) }
         }
     }
 
@@ -94,7 +90,7 @@ class WalletPresenter(
         launch {
             viewStateFlow.collect {
                 val items = walletMapper.buildCellItems {
-                    // order is matter
+                    // order matters
                     mapStrigaKycBanner(it.strigaBanner)
                     mapStrigaOnRampTokens(it.strigaOnRampTokens)
                 }
@@ -209,11 +205,9 @@ class WalletPresenter(
 
                         if (statusFromKycBanner == StrigaKycStatusBanner.VERIFICATION_DONE) {
                             view?.showStrigaBannerProgress(isLoading = true)
-
                             homeInteractor.loadDetailsForStrigaAccounts()
                                 .onSuccess { view?.navigateToStrigaByBanner(statusFromKycBanner) }
                                 .onFailure { view?.showUiKitSnackBar(messageResId = R.string.error_general_message) }
-
                             view?.showStrigaBannerProgress(isLoading = false)
                         } else {
                             view?.navigateToStrigaByBanner(statusFromKycBanner)

@@ -16,11 +16,10 @@ class WalletPresenterMapper {
     inner class Builder internal constructor() {
         private val cellItems = mutableListOf<AnyCellItem>()
 
-        fun mapStrigaKycBanner(banner: StrigaKycStatusBanner?): Builder {
+        fun mapStrigaKycBanner(banner: StrigaKycStatusBanner?): Builder = apply {
             banner?.let {
                 cellItems += StrigaBanner(isLoading = false, status = banner)
             }
-            return this
         }
 
         fun mapStrigaOnRampTokens(strigaOnRampTokens: List<StrigaOnRampToken>): Builder {
