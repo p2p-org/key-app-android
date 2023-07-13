@@ -3,23 +3,23 @@ package org.p2p.wallet.utils
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
-import org.p2p.ethereumkit.external.core.DefaultDispatchers
 import org.p2p.core.dispatchers.CoroutineDispatchers
 
+/**
+ * These dispatchers executes everything immediately, which is very handy for testing complex things
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
-class TestCoroutineDispatchers(private val dispatcher: CoroutineDispatcher = StandardTestDispatcher()) :
-    DefaultDispatchers(),
-    CoroutineDispatchers {
+class UnconfinedTestDispatchers : CoroutineDispatchers {
     override val computation: CoroutineDispatcher
-        get() = dispatcher
+        get() = UnconfinedTestDispatcher()
     override val io: CoroutineDispatcher
-        get() = dispatcher
+        get() = UnconfinedTestDispatcher()
     override val ui: CoroutineDispatcher
-        get() = dispatcher
+        get() = UnconfinedTestDispatcher()
 
     init {
-        Dispatchers.setMain(dispatcher)
+        Dispatchers.setMain(ui)
     }
 }

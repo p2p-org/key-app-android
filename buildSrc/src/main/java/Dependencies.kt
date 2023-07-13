@@ -1,3 +1,8 @@
+import gradle.kotlin.dsl.accessors._4b7ad2363fc1fce7c774e054dc9a9300.testImplementation
+import gradle.kotlin.dsl.accessors._4b7ad2363fc1fce7c774e054dc9a9300.testRuntimeOnly
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.project
+
 object Dependencies {
 
     // Kotlin
@@ -280,4 +285,26 @@ object Dependencies {
         xmlPull,
         kxml
     )
+
+    fun testUtilsModule(scope: DependencyHandlerScope) {
+        with(scope) {
+            testImplementation(project(":test-utils"))
+
+            // Core testing
+            coreTestingLibraries.forEach { testImplementation(it) }
+            // Koin testing
+            koinTestingLibraries.forEach { testImplementation(it) }
+            // Other testing tools
+            otherTestingLibraries.forEach { testImplementation(it) }
+
+            // Runtime only testing tools
+            testRuntimeOnly(junitPlatform) {
+                because(
+                    "This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe " +
+                        "be incompatible with the version of junit-platform-launcher shipped with the IDE."
+                )
+            }
+            junitRuntimeOnlyLibraries.forEach { testRuntimeOnly(it) }
+        }
+    }
 }
