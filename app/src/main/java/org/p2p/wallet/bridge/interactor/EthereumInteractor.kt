@@ -53,6 +53,10 @@ class EthereumInteractor(
         return ethereumRepository.getWalletTokensFlow()
     }
 
+    fun getEthTokens(): List<Token.Eth> {
+        return ethereumRepository.getWalletTokens()
+    }
+
     fun getEthUserAddress(): EthAddress = ethereumRepository.getAddress()
 
     suspend fun getEthereumBundle(erc20Token: EthAddress?, amount: String): BridgeBundle {

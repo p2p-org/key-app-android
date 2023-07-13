@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.ui.crypto
 
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.SimpleItemAnimator
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -93,6 +94,7 @@ class MyCryptoFragment :
     private fun FragmentMyCryptoBinding.setupView() {
         recyclerViewCrypto.apply {
             layoutManager = HomeScreenLayoutManager(requireContext())
+            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             attachAdapter(cellAdapter)
             addItemDecoration(GroupedRoundingDecoration(TokenCellModel::class, 16f.toPx()))
             addItemDecoration(topOffsetDifferentClassDecoration())

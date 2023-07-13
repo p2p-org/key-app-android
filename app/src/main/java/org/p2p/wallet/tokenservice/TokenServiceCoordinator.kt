@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
@@ -34,15 +35,14 @@ class TokenServiceCoordinator(
     private val tokensState = MutableSharedFlow<UserTokensState>(replay = 1)
 
     init {
-        solanaTokensLoader.observeState()
-            .combine(ethereumTokensLoader.observeState()) { solState, ethState ->
-                val newTokenState = mapTokenState(solState, ethState)
-                tokensState.emit(newTokenState)
-            }
+        combine(
+            flow = solanaTokensLoader.observeState(),
+            flow2 = ethereumTokensLoader.observeState(),
+            transform = ::mapTokenState
+        )
+            .onEach(tokensState::emit)
             .launchIn(appScope)
     }
-
-    fun observeUserTokens(): SharedFlow<UserTokensState> = tokensState.asSharedFlow()
 
     fun start() {
         Timber.tag(TAG).i("Starting Token Service loaders")
@@ -59,6 +59,16 @@ class TokenServiceCoordinator(
             solanaTokensLoader.refresh()
             ethereumTokensLoader.refreshIfEnabled()
         }
+    }
+
+    fun observeUserTokens(): SharedFlow<UserTokensState> = tokensState.asSharedFlow()
+
+    suspend fun getUserTokens(): List<Token.Active> {
+        return solanaTokensLoader.getUserTokens()
+    }
+
+    fun getEthTokens(): List<Token.Eth> {
+        return ethereumTokensLoader.getEthTokens()
     }
 
     private fun mapTokenState(solState: SolanaTokenLoadState, ethState: EthTokenLoadState): UserTokensState =
