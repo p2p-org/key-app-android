@@ -3,13 +3,11 @@ package org.p2p.wallet.home.ui.wallet
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
+import org.p2p.wallet.kyc.model.StrigaBanner
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
-import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 
-class WalletPresenterMapper(
-    private val strigaKycUiBannerMapper: StrigaKycUiBannerMapper
-) {
+class WalletPresenterMapper {
 
     fun buildCellItems(mapper: WalletPresenterMapper.Builder.() -> Unit): List<AnyCellItem> {
         return Builder().apply(mapper).build()
@@ -20,7 +18,7 @@ class WalletPresenterMapper(
 
         fun mapStrigaKycBanner(banner: StrigaKycStatusBanner?): Builder {
             banner?.let {
-                cellItems += strigaKycUiBannerMapper.mapToBanner(isLoading = false, status = banner)
+                cellItems += StrigaBanner(isLoading = false, status = banner)
             }
             return this
         }
