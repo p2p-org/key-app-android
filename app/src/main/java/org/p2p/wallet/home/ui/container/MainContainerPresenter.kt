@@ -46,7 +46,6 @@ class MainContainerPresenter(
 
     override fun attach(view: MainContainerContract.View) {
         super.attach(view)
-        handleDeeplinks()
         observeInternetState()
     }
 
@@ -74,14 +73,17 @@ class MainContainerPresenter(
             DeeplinkTarget.MY_CRYPTO,
             DeeplinkTarget.HISTORY,
             DeeplinkTarget.SETTINGS,
+            DeeplinkTarget.BUY,
+            DeeplinkTarget.SEND,
+            DeeplinkTarget.SWAP,
+            DeeplinkTarget.CASH_OUT
         )
-        deeplinksManager.apply {
-            subscribeOnDeeplinks(supportedTargets)
+        launchSupervisor {
+            deeplinksManager.subscribeOnDeeplinks(supportedTargets)
                 .onEach { view?.navigateFromDeeplink(it) }
-                .launchIn(this@MainContainerPresenter)
-
-            executeHomePendingDeeplink()
-            executeTransferPendingAppLink()
+                .collect(deeplinkHandler::handle)
+            deeplinksManager.executeHomePendingDeeplink()
+            deeplinksManager.executeTransferPendingAppLink()
         }
     }
 
@@ -122,19 +124,6 @@ class MainContainerPresenter(
                 if (!isConnected) view?.showUiKitSnackBar(messageResId = R.string.error_no_internet_message)
             }
             .launchIn(this)
-    }
-
-    private fun handleDeeplinks() {
-        launchSupervisor {
-            deeplinksManager.subscribeOnDeeplinks(
-                setOf(
-                    DeeplinkTarget.BUY,
-                    DeeplinkTarget.SEND,
-                    DeeplinkTarget.SWAP,
-                    DeeplinkTarget.CASH_OUT
-                )
-            ).collect(deeplinkHandler::handle)
-        }
     }
 
     private fun handleDeeplinkTarget(target: DeeplinkTarget) {
