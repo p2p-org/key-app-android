@@ -1,15 +1,11 @@
 package org.p2p.wallet.home.ui.wallet
 
-import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.p2p.core.utils.asUsd
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.BUY_BUTTON
@@ -17,13 +13,16 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.SELL_BUTTON
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
+import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
+import org.p2p.wallet.home.ui.wallet.handlers.StrigaBannerClickHandler
+import org.p2p.wallet.home.ui.wallet.handlers.StrigaOnRampClickHandler
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaBanner
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.utils.ellipsizeAddress
@@ -37,6 +36,9 @@ class WalletPresenter(
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val strigaOnRampInteractor: StrigaOnRampInteractor,
     private val strigaUserInteractor: StrigaUserInteractor,
+    private val strigaBannerClickHandler: StrigaBannerClickHandler,
+    private val strigaOnRampClickHandler: StrigaOnRampClickHandler,
+    private val strigaOnRampConfirmedHandler: StrigaOnRampConfirmedHandler,
 ) : BasePresenter<WalletContract.View>(), WalletContract.Presenter {
 
     private var username: Username? = null
@@ -171,53 +173,22 @@ class WalletPresenter(
 
     override fun onStrigaOnRampClicked(item: StrigaOnRampCellModel) {
         launch {
-            try {
-                view?.showStrigaOnRampProgress(isLoading = true, tokenMint = item.tokenMintAddress)
-                val challengeId = strigaOnRampInteractor.onRampToken(item.amountAvailable, item.payload).unwrap()
-                view?.navigateToStrigaOnRampOtp(
-                    item.amountAvailable.asUsd(),
-                    challengeId
-                )
-            } catch (e: Throwable) {
-                Timber.e(e, "Error on on-ramping striga token")
-                if (BuildConfig.DEBUG) {
-                    view?.showErrorMessage(IllegalStateException("Striga Claim is not supported yet", e))
-                } else {
-                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-                }
-            } finally {
-                view?.showStrigaOnRampProgress(isLoading = false, tokenMint = item.tokenMintAddress)
-            }
+            strigaOnRampClickHandler.handle(view, item)
         }
     }
 
     override fun onStrigaBannerClicked(item: StrigaBanner) {
-        with(item.status) {
-            val statusFromKycBanner = homeMapper.getKycStatusBannerFromTitle(bannerTitleResId)
-            when {
-                statusFromKycBanner == StrigaKycStatusBanner.PENDING -> {
-                    view?.showKycPendingDialog()
-                }
-                statusFromKycBanner != null -> {
-                    launch {
-                        // hide banner if necessary
-                        homeInteractor.hideStrigaUserStatusBanner(statusFromKycBanner)
+        launch {
+            strigaBannerClickHandler.handle(view, item)
+        }
+    }
 
-                        if (statusFromKycBanner == StrigaKycStatusBanner.VERIFICATION_DONE) {
-                            view?.showStrigaBannerProgress(isLoading = true)
-                            homeInteractor.loadDetailsForStrigaAccounts()
-                                .onSuccess { view?.navigateToStrigaByBanner(statusFromKycBanner) }
-                                .onFailure { view?.showUiKitSnackBar(messageResId = R.string.error_general_message) }
-                            view?.showStrigaBannerProgress(isLoading = false)
-                        } else {
-                            view?.navigateToStrigaByBanner(statusFromKycBanner)
-                        }
-                    }
-                }
-                else -> {
-                    view?.showTopupWalletDialog()
-                }
-            }
+    override fun onOnRampConfirmed(
+        challengeId: StrigaWithdrawalChallengeId,
+        token: StrigaOnRampCellModel
+    ) {
+        launch {
+            strigaOnRampConfirmedHandler.handleConfirmed(token)
         }
     }
 

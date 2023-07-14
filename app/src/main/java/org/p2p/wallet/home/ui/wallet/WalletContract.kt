@@ -25,7 +25,10 @@ interface WalletContract {
         fun showKycPendingDialog()
         fun navigateToProfile()
         fun navigateToReserveUsername()
-        fun navigateToStrigaOnRampOtp(usdAmount: String, challengeId: StrigaWithdrawalChallengeId)
+        fun navigateToStrigaOnRampConfirmOtp(
+            challengeId: StrigaWithdrawalChallengeId,
+            token: StrigaOnRampCellModel
+        )
         fun navigateToStrigaByBanner(status: StrigaKycStatusBanner)
         fun showAddressCopied(addressOrUsername: String)
         fun setCellItems(items: List<AnyCellItem>)
@@ -42,5 +45,9 @@ interface WalletContract {
         fun onAddressClicked()
         fun onStrigaOnRampClicked(item: StrigaOnRampCellModel)
         fun onStrigaBannerClicked(item: StrigaBanner)
+        fun onOnRampConfirmed(
+            challengeId: StrigaWithdrawalChallengeId,
+            token: StrigaOnRampCellModel
+        )
     }
 }

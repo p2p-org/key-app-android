@@ -8,6 +8,7 @@ import org.koin.android.ext.android.inject
 import timber.log.Timber
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.utils.asUsd
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.recycler.decoration.GroupedRoundingDecoration
@@ -204,14 +205,18 @@ class WalletFragment :
         replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
     }
 
-    override fun navigateToStrigaOnRampOtp(usdAmount: String, challengeId: StrigaWithdrawalChallengeId) {
+    override fun navigateToStrigaOnRampConfirmOtp(
+        challengeId: StrigaWithdrawalChallengeId,
+        token: StrigaOnRampCellModel
+    ) {
         val fragment = strigaFragmentFactory.onRampConfirmOtpFragment(
-            titleAmount = usdAmount,
+            titleAmount = token.amountAvailable.asUsd(),
             challengeId = challengeId
         )
-        replaceFragmentForResult(fragment, StrigaOtpConfirmFragment.REQUEST_KEY, onResult = { _, _ ->
-            Timber.d("Striga claim OTP: success")
-            // todo: show success claim bottomsheet
+        replaceFragmentForResult(fragment, StrigaOtpConfirmFragment.REQUEST_KEY, onResult = { _, bundle ->
+            if (bundle.getBoolean(StrigaOtpConfirmFragment.RESULT_KEY_CONFIRMED, false)) {
+                presenter.onOnRampConfirmed(challengeId, token)
+            }
         })
     }
 
