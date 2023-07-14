@@ -10,11 +10,15 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.ui.recycler.swipe.SwipeRevealLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
-import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
 private const val VIEW_ALPHA_MAX_VALUE = 0.8f
+
+const val DIFF_FIELD_TOGGLE_BUTTON = "DIFF_FIELD_TOGGLE_BUTTON"
+const val DIFF_FIELD_TOKEN_BALANCE = "DIFF_FIELD_TOKEN_BALANCE"
+const val DIFF_FIELD_HIDDEN_TOKEN_BALANCE = "DIFF_FIELD_HIDDEN_TOKEN_BALANCE"
+const val DIFF_FIELD_TITLE = "DIFF_FIELD_TITLE"
 
 private typealias BindListener = ((binding: ItemTokenBinding, item: TokenCellModel) -> Unit)
 
@@ -38,7 +42,7 @@ fun tokenDelegate(
             } else {
                 diffFields.forEach { field ->
                     when (field) {
-                        TokenAdapter.DIFF_FIELD_TOKEN_BALANCE -> bindBalance()
+                        DIFF_FIELD_TOKEN_BALANCE -> bindBalance()
                     }
                 }
             }

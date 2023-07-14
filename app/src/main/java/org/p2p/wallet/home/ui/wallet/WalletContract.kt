@@ -9,7 +9,6 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.kyc.model.StrigaBanner
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 
 interface WalletContract {
@@ -36,11 +35,8 @@ interface WalletContract {
 
     interface Presenter : MvpPresenter<View> {
         fun refreshTokens()
-        fun onBuyClicked()
         fun onSellClicked()
-        fun onSwapClicked()
         fun onTopupClicked()
-        fun onSendClicked(clickSource: SearchOpenedFromScreen)
         fun onProfileClick()
         fun onAddressClicked()
         fun onStrigaOnRampClicked(item: StrigaOnRampCellModel)

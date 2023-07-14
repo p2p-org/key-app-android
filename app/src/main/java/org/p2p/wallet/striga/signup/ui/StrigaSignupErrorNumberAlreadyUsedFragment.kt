@@ -19,7 +19,7 @@ import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.mvp.NoOpPresenter
 import org.p2p.wallet.databinding.FragmentStrigaSmsErrorBinding
 import org.p2p.wallet.home.ui.container.MainContainerFragment
-import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
@@ -48,7 +48,7 @@ class StrigaSignupErrorNumberAlreadyUsedFragment : BaseMvpFragment<MvpView, NoOp
         with(binding) {
             buttonOpenWalletScreen.setOnClickListener {
                 val fragment = StrigaSignUpFirstStepFragment.create(scrollToViewId = R.id.editTextPhoneNumber)
-                popBackStackTo(HomeFragment::class)
+                popBackStackTo(WalletFragment::class)
                 replaceFragment(fragment)
             }
             buttonWriteToSupport.setOnClickListener {

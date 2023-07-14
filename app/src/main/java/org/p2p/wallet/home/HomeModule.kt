@@ -17,9 +17,7 @@ import org.p2p.wallet.home.ui.container.MainContainerContract
 import org.p2p.wallet.home.ui.container.MainContainerPresenter
 import org.p2p.wallet.home.ui.crypto.MyCryptoContract
 import org.p2p.wallet.home.ui.crypto.MyCryptoPresenter
-import org.p2p.wallet.home.ui.main.HomeContract
-import org.p2p.wallet.home.ui.main.HomeInteractor
-import org.p2p.wallet.home.ui.main.HomePresenter
+import org.p2p.wallet.home.ui.crypto.MyCryptoInteractor
 import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
@@ -73,18 +71,11 @@ object HomeModule : InjectionModule {
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
-        // Cached data exists, therefore creating singleton
         factory {
-            HomeInteractor(
+            MyCryptoInteractor(
                 userInteractor = get(),
                 settingsInteractor = get(),
-                usernameInteractor = get(),
-                sellInteractor = get(),
                 ethereumInteractor = get(),
-                strigaUserInteractor = get(),
-                strigaOnRampInteractor = get(),
-                strigaWalletInteractor = get(),
-                tokenKeyProvider = get()
             )
         }
         factoryOf(::HomePresenterMapper)
@@ -93,27 +84,6 @@ object HomeModule : InjectionModule {
         factoryOf(::StrigaOnRampConfirmedHandler)
         factoryOf(::StrigaOnRampClickHandler)
         factoryOf(::StrigaBannerClickHandler)
-        factory<HomeContract.Presenter> {
-            // todo: do something with this dependenices!
-            // todo: to eliminate all this hell, we could just migrate to hilt
-            HomePresenter(
-                homeInteractor = get(),
-                analytics = get(),
-                homeMapper = get(),
-                newBuyFeatureToggle = get(),
-                intercomDeeplinkManager = get(),
-                connectionManager = get(),
-                transactionManager = get(),
-                userTokensInteractor = get(),
-                updatesManager = get(),
-                environmentManager = get(),
-                strigaFeatureToggle = get(),
-                tokenKeyProvider = get(),
-                tokenServiceCoordinator = get(),
-                strigaInteractor = get(),
-                onRampConfirmedHandler = get()
-            )
-        }
         factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
         factoryOf(::MyCryptoPresenter) bind MyCryptoContract.Presenter::class
 
