@@ -6,6 +6,7 @@
     android:id="@id/contentView"
     android:layout_width="match_parent"
     android:layout_height="72dp"
+    android:layout_marginHorizontal="16dp"
     android:background="@color/backgroundPrimary"
     android:clickable="true"
     android:focusable="true"

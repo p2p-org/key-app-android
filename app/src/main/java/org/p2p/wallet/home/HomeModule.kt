@@ -25,6 +25,9 @@ import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.home.ui.wallet.WalletContract
 import org.p2p.wallet.home.ui.wallet.WalletPresenter
+import org.p2p.wallet.home.ui.wallet.WalletPresenterMapper
+import org.p2p.wallet.home.ui.wallet.handlers.StrigaBannerClickHandler
+import org.p2p.wallet.home.ui.wallet.handlers.StrigaOnRampClickHandler
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.interactor.SendInteractor
@@ -86,21 +89,21 @@ object HomeModule : InjectionModule {
         }
         factoryOf(::HomePresenterMapper)
         factoryOf(::StrigaKycUiBannerMapper)
+        factoryOf(::WalletPresenterMapper)
         factoryOf(::StrigaOnRampConfirmedHandler)
+        factoryOf(::StrigaOnRampClickHandler)
+        factoryOf(::StrigaBannerClickHandler)
         factory<HomeContract.Presenter> {
             // todo: do something with this dependenices!
             // todo: to eliminate all this hell, we could just migrate to hilt
             HomePresenter(
                 homeInteractor = get(),
                 analytics = get(),
-                userInteractor = get(),
                 homeMapper = get(),
                 newBuyFeatureToggle = get(),
                 intercomDeeplinkManager = get(),
-                deeplinksManager = get(),
                 connectionManager = get(),
                 transactionManager = get(),
-                context = get(),
                 userTokensInteractor = get(),
                 updatesManager = get(),
                 environmentManager = get(),

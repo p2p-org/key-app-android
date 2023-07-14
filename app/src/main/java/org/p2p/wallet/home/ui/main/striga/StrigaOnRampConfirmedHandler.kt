@@ -9,7 +9,7 @@ import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction.Companion.UNDEFINED_BLOCK_NUMBER
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
-import org.p2p.wallet.home.model.HomeElementItem
+import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
@@ -22,13 +22,13 @@ class StrigaOnRampConfirmedHandler(
     private val tokenKeyProvider: TokenKeyProvider,
     private val strigaUserWalletInteractor: StrigaWalletInteractor
 ) {
-    suspend fun handleConfirmed(claimedToken: HomeElementItem.StrigaOnRampTokenItem) {
+    suspend fun handleConfirmed(claimedToken: StrigaOnRampCellModel) {
         kotlin.runCatching {
             addOnRampPendingTransaction(claimedToken)
         }.onFailure { Timber.e(it, "Failed to add pending transaction on onramp") }
     }
 
-    private suspend fun addOnRampPendingTransaction(onRampTokenItem: HomeElementItem.StrigaOnRampTokenItem) {
+    private suspend fun addOnRampPendingTransaction(onRampTokenItem: StrigaOnRampCellModel) {
         val strigaUserCryptoAddress = strigaUserWalletInteractor.getCryptoAccountDetails().depositAddress
 
         historyInteractor.addPendingTransaction(
@@ -39,7 +39,7 @@ class StrigaOnRampConfirmedHandler(
     }
 
     private fun createReceiveTransaction(
-        claimedToken: HomeElementItem.StrigaOnRampTokenItem,
+        claimedToken: StrigaOnRampCellModel,
         strigaUserCryptoAddress: String
     ): RpcHistoryTransaction.Transfer {
         return RpcHistoryTransaction.Transfer(

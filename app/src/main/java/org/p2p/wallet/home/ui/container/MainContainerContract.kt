@@ -5,10 +5,11 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.deeplinks.DeeplinkData
+import org.p2p.wallet.home.deeplinks.DeeplinkScreenNavigator
 
 interface MainContainerContract {
 
-    interface View : MvpView {
+    interface View : MvpView, DeeplinkScreenNavigator {
         fun setMainNavigationConfiguration(screensConfiguration: List<ScreenConfiguration>)
         fun inflateBottomNavigationMenu(@MenuRes menuRes: Int)
         fun showSettingsBadgeVisible(isVisible: Boolean)
