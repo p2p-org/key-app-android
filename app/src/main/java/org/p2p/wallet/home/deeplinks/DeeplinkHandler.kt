@@ -1,24 +1,26 @@
-package org.p2p.wallet.home.ui.main
+package org.p2p.wallet.home.deeplinks
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
-import org.p2p.wallet.home.ui.main.models.HomeScreenViewState
 import org.p2p.wallet.infrastructure.coroutines.waitForCondition
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.user.interactor.UserInteractor
 
 /**
- * Handles deeplinks supported by the home screen
+ * Handles deeplinks supported by main
+ * @param deeplinkTopLevelHandler - if case is already done in implementation on a top level you can just pass it up
  */
-class HomePresenterDeeplinkHandler(
+class DeeplinkHandler(
     private val coroutineScope: CoroutineScope,
-    private val presenter: HomeContract.Presenter,
-    private val view: HomeContract.View?,
-    private val state: HomeScreenViewState,
-    private val userInteractor: UserInteractor
+    private val screenNavigator: DeeplinkScreenNavigator?,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
+    private val userInteractor: UserInteractor,
+    private val newBuyFeatureToggle: NewBuyFeatureToggle,
+    private val deeplinkTopLevelHandler: (target: DeeplinkTarget) -> Unit,
 ) {
 
     suspend fun handle(data: DeeplinkData) {
@@ -32,27 +34,26 @@ class HomePresenterDeeplinkHandler(
     }
 
     private fun handleCashOutDeeplink() {
-        view?.showCashOut()
+        screenNavigator?.showCashOut()
     }
 
     private fun handleSwapDeeplink(data: DeeplinkData) {
         if (data.args.containsKey("from") && data.args.containsKey("to")) {
             val amount = data.args["amount"]?.toBigDecimalOrNull()?.toPlainString() ?: "0"
-            view?.showSwapWithArgs(
+            screenNavigator?.showSwapWithArgs(
                 tokenASymbol = data.args.getValue("from"),
                 tokenBSymbol = data.args.getValue("to"),
                 amountA = amount,
                 source = SwapOpenedFrom.MAIN_SCREEN
             )
         } else {
-            view?.showSwap(SwapOpenedFrom.MAIN_SCREEN)
+            screenNavigator?.showSwap()
         }
     }
 
     private suspend fun handleSendDeeplink() {
-        // fixme hack! waiting for tokens to load, probably it's better to show progress
-        waitForCondition(1000) { state.tokens.isNotEmpty() }
-        presenter.onSendClicked(SearchOpenedFromScreen.MAIN)
+        waitForCondition(1000) { tokenServiceCoordinator.getUserTokens().isNotEmpty() }
+        deeplinkTopLevelHandler(DeeplinkTarget.SEND)
     }
 
     /**
@@ -67,13 +68,26 @@ class HomePresenterDeeplinkHandler(
             coroutineScope.launch {
                 val token = userInteractor.getSingleTokenForBuy(listOf(cryptoToken))
                 if (token != null) {
-                    view?.navigateToNewBuyScreen(token, fiatToken, fiatAmount)
+                    screenNavigator?.navigateToNewBuyScreen(token, fiatToken, fiatAmount)
                 } else {
-                    presenter.onBuyClicked()
+                    onBuyHandled()
                 }
             }
         } else {
-            presenter.onBuyClicked()
+            onBuyHandled()
+        }
+    }
+
+    private fun onBuyHandled() {
+        coroutineScope.launch {
+            val tokensForBuy = userInteractor.getTokensForBuy()
+            if (tokensForBuy.isEmpty()) return@launch
+
+            if (newBuyFeatureToggle.isFeatureEnabled) {
+                screenNavigator?.navigateToBuyScreen(tokensForBuy.first())
+            } else {
+                screenNavigator?.showTokensForBuy(tokensForBuy)
+            }
         }
     }
 }

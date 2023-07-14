@@ -31,6 +31,7 @@ class HomeInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
+    @Deprecated("To be removed when striga is removed from the HomePresenter")
     suspend fun loadDetailsForStrigaAccounts(): Result<Unit> =
         strigaWalletInteractor.loadDetailsForStrigaAccounts()
 
@@ -63,10 +64,13 @@ class HomeInteractor(
     suspend fun getClaimMinAmountForFreeFee(): BigDecimal =
         ethereumInteractor.getClaimMinAmountForFreeFee()
 
+    @Deprecated("To be removed when striga is removed from the HomePresenter")
     fun getUserStatusBannerFlow(): SharedFlow<StrigaKycStatusBanner?> = strigaUserInteractor.getUserStatusBannerFlow()
 
+    @Deprecated("To be removed when striga is removed from the HomePresenter")
     fun hideStrigaUserStatusBanner(banner: StrigaKycStatusBanner) = strigaUserInteractor.hideUserStatusBanner(banner)
 
+    @Deprecated("To be removed when striga is removed from the HomePresenter")
     suspend fun claimStrigaToken(
         amountLamports: BigDecimal,
         token: StrigaOnRampToken

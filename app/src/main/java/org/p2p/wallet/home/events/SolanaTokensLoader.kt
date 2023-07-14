@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
+import org.p2p.core.token.Token
 import org.p2p.token.service.api.events.manager.TokenServiceUpdate
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventSubscriber
@@ -64,6 +65,10 @@ class SolanaTokensLoader(
             Timber.e(e, "Error on refreshing sol tokens")
             updateState(SolanaTokenLoadState.Error(e))
         }
+    }
+
+    suspend fun getUserTokens(): List<Token.Active> {
+        return userTokensInteractor.getUserTokens()
     }
 
     private fun saveTokensRates(list: List<TokenServicePrice>) {
