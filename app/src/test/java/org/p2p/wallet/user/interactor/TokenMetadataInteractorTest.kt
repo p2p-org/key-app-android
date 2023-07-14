@@ -4,10 +4,7 @@ import com.google.gson.Gson
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
@@ -72,15 +69,13 @@ internal class TokenMetadataInteractorTest {
         val timestamp = "some timestamp"
         val file: ExternalFile = mockk()
         val tokens: List<TokenMetadata> = mockk()
-        val metadata: TokensMetadataInfo = mockk()
+        val metadata = TokensMetadataInfo(timestamp, tokens)
         val metadataResult = UpdateTokenMetadataResult.NewMetadata(metadata)
 
         every { file.data } returns "metadata json"
         every { externalStorageRepository.readJsonFile(TOKENS_FILE_NAME) } returns file
         every { gson.fromJson(any<String>(), TokensMetadataInfo::class.java) } returns metadata
-        every { metadata.timestamp } returns timestamp
-        every { metadata.tokens } returns tokens
-        every { userLocalRepository.setTokenData(any()) } returns Unit
+        every { userLocalRepository.setTokenData(tokens) } just Runs
         every { externalStorageRepository.saveJson(metadata, TOKENS_FILE_NAME) } returns Unit
         coEvery { metadataRepository.loadTokensMetadata(any()) } returns metadataResult
 
