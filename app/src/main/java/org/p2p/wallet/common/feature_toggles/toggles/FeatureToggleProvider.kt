@@ -5,6 +5,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.RemoteFeatureToggle
 
 /**
  * Provider made to use one class except of providing every FT in other class
+ * In case if you need provide ONE FT you can inject FT directly, else - inject this class
+ *
  * Usage example:
  * ```
  * val toggle: Toggle = featureToggleProvider.getFeatureToggle(Toggle::class.java)
