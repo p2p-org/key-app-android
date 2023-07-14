@@ -1,7 +1,6 @@
 package org.p2p.wallet.home.ui.main
 
 import androidx.lifecycle.LifecycleOwner
-import android.content.Context
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
@@ -25,8 +24,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
-import org.p2p.wallet.deeplinks.AppDeeplinksManager
-import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.HomePresenterMapper
@@ -44,7 +41,6 @@ import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.unsafeLazy
 
@@ -53,10 +49,8 @@ val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(USDC_SYMBOL, SOL_SYMBOL)
 class HomePresenter(
     // interactors
     private val homeInteractor: HomeInteractor,
-    private val userInteractor: UserInteractor,
     private val updatesManager: SubscriptionUpdatesManager,
     private val environmentManager: NetworkEnvironmentManager,
-    private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
     private val transactionManager: TransactionManager,
     private val intercomDeeplinkManager: IntercomDeeplinkManager,
@@ -68,7 +62,6 @@ class HomePresenter(
     private val onRampConfirmedHandler: StrigaOnRampConfirmedHandler,
     private val analytics: HomeAnalytics,
     tokenKeyProvider: TokenKeyProvider,
-    context: Context,
     private val tokenServiceCoordinator: TokenServiceCoordinator
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
@@ -79,16 +72,6 @@ class HomePresenter(
 
     private val userPublicKey: String by unsafeLazy { tokenKeyProvider.publicKey }
 
-    private val deeplinkHandler by unsafeLazy {
-        HomePresenterDeeplinkHandler(
-            coroutineScope = this,
-            presenter = this,
-            view = view,
-            state = state,
-            userInteractor = userInteractor
-        )
-    }
-
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         launch {
@@ -97,7 +80,6 @@ class HomePresenter(
             }
         }
         observeActionButtonState()
-        handleDeeplinks()
         observeKycBanners()
         observeState()
 
@@ -281,19 +263,6 @@ class HomePresenter(
     ) {
         launch {
             onRampConfirmedHandler.handleConfirmed(token)
-        }
-    }
-
-    private fun handleDeeplinks() {
-        launchSupervisor {
-            deeplinksManager.subscribeOnDeeplinks(
-                setOf(
-                    DeeplinkTarget.BUY,
-                    DeeplinkTarget.SEND,
-                    DeeplinkTarget.SWAP,
-                    DeeplinkTarget.CASH_OUT
-                )
-            ).collect(deeplinkHandler::handle)
         }
     }
 
