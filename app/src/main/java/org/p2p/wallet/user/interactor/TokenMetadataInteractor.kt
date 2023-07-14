@@ -27,10 +27,10 @@ class TokenMetadataInteractor(
             null
         }
 
-        val lastModified = metadata?.timestamp
-        Timber.tag(TAG).i("Checking if metadata is modified since: $lastModified")
+        val ifModifiedSince = metadata?.timestamp
+        Timber.tag(TAG).i("Checking if metadata is modified since: $ifModifiedSince")
 
-        when (val result = metadataRepository.loadTokensMetadata(lastModified = lastModified)) {
+        when (val result = metadataRepository.loadTokensMetadata(ifModifiedSince = ifModifiedSince)) {
             is UpdateTokenMetadataResult.NewMetadata -> updateMemoryCacheAndLocalFile(result)
             is UpdateTokenMetadataResult.NoUpdate -> updateMemoryCache(metadata?.tokens)
             is UpdateTokenMetadataResult.Error -> Timber.tag(TAG).e(result.throwable, "Error loading metadata")
@@ -38,9 +38,11 @@ class TokenMetadataInteractor(
     }
 
     private fun updateMemoryCacheAndLocalFile(result: UpdateTokenMetadataResult.NewMetadata) {
-        Timber.tag(TAG).i("Received an updated tokens metadata, updating file in local storage")
-
         val tokensMetadata = result.tokensMetadataInfo
+
+        val lastModified = tokensMetadata.timestamp
+        Timber.tag(TAG).i("New tokens metadata received from: $lastModified, updating local storage.")
+
         userLocalRepository.setTokenData(tokensMetadata.tokens)
 
         // Save tokens to the file
