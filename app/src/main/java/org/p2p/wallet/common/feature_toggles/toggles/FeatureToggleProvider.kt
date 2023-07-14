@@ -1,5 +1,6 @@
 package org.p2p.wallet.common.feature_toggles.toggles
 
+import kotlin.reflect.KClass
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RemoteFeatureToggle
 
 /**
@@ -11,7 +12,13 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.RemoteFeatureToggle
  */
 class FeatureToggleProvider(private val featureToggles: List<RemoteFeatureToggle<*>>) {
     @Throws(ClassCastException::class)
-    fun <T : RemoteFeatureToggle<*>> getFeatureToggle(klass: Class<T>): T {
-        return featureToggles.filterIsInstance(klass).first()
+    fun <T : RemoteFeatureToggle<*>> getFeatureToggle(klass: KClass<T>): T {
+        return featureToggles.filterIsInstance(klass.java).first()
+    }
+
+    // usage: val ft = ftProvider[StrigaSignupEnabledFeatureToggle::class]
+    @Throws(ClassCastException::class)
+    operator fun <T : RemoteFeatureToggle<*>> get(klass: KClass<T>): T {
+        return getFeatureToggle(klass)
     }
 }
