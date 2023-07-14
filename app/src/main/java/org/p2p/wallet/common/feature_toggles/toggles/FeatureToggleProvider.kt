@@ -8,6 +8,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.RemoteFeatureToggle
  * Usage example:
  * ```
  * val toggle: Toggle = featureToggleProvider.getFeatureToggle(Toggle::class.java)
+ * val toggle: Toggle = featureToggleProvider.getFeatureToggle<Toggle>()
+ * val toggle: Toggle = featureToggleProvider[Toggle::class]
  * ```
  */
 class FeatureToggleProvider(private val featureToggles: List<RemoteFeatureToggle<*>>) {
@@ -20,5 +22,9 @@ class FeatureToggleProvider(private val featureToggles: List<RemoteFeatureToggle
     @Throws(ClassCastException::class)
     operator fun <T : RemoteFeatureToggle<*>> get(klass: KClass<T>): T {
         return getFeatureToggle(klass)
+    }
+
+    inline fun <reified T : RemoteFeatureToggle<*>> getFeatureToggle(): T {
+        return getFeatureToggle(T::class)
     }
 }
