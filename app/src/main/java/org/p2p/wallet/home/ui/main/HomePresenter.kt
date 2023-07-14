@@ -224,6 +224,7 @@ class HomePresenter(
         }
     }
 
+    @Deprecated("To be removed when striga is removed from the HomePresenter")
     override fun onBannerClicked(bannerTitleId: Int) {
         val statusFromKycBanner = homeMapper.getKycStatusBannerFromTitle(bannerTitleId)
         when {
@@ -256,6 +257,7 @@ class HomePresenter(
         }
     }
 
+    @Deprecated("To be removed when striga is removed from the HomePresenter")
     override fun onStrigaOnRampTokenClicked(item: HomeElementItem.StrigaOnRampTokenItem) {
         launch {
             try {
@@ -275,13 +277,12 @@ class HomePresenter(
         }
     }
 
+    @Deprecated("To be removed when striga is removed from the HomePresenter")
     override fun onOnRampConfirmed(
         challengeId: StrigaWithdrawalChallengeId,
         token: HomeElementItem.StrigaOnRampTokenItem
     ) {
-        launch {
-            onRampConfirmedHandler.handleConfirmed(token)
-        }
+        // TODO: remove
     }
 
     private fun handleDeeplinks() {
