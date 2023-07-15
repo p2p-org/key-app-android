@@ -12,6 +12,7 @@ import org.p2p.core.network.data.transactionerrors.RpcTransactionError
 import org.p2p.core.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
 import org.p2p.core.network.data.transactionerrors.RpcTransactionInstructionErrorParser
 import org.p2p.core.network.data.transactionerrors.TransactionInstructionError
+import org.p2p.wallet.utils.getTestRawResourceUrl
 
 class RpcTransactionErrorParserTest {
     private val gson = Gson()
@@ -20,8 +21,7 @@ class RpcTransactionErrorParserTest {
         RpcTransactionInstructionErrorParser()
     )
 
-    private val transactionErrorsArray: JsonArray = javaClass.classLoader
-        .getResource("transaction_errors.json")
+    private val transactionErrorsArray: JsonArray = getTestRawResourceUrl("transaction_errors.json")
         .readText()
         .let { gson.fromJson(it, JsonArray::class.java) }
 

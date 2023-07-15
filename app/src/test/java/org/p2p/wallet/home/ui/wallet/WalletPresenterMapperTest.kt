@@ -36,8 +36,8 @@ class WalletPresenterMapperTest {
 
         result.assertThat().hasSize(1)
         result.first().assertThat()
-            .isInstanceOf(StrigaBanner::class.java)
             .isInstanceOf(AnyCellItem::class.java)
+            .isInstanceOf(StrigaBanner::class.java)
             .all {
                 prop(StrigaBanner::isLoading).isEqualTo(false)
                 prop(StrigaBanner::status).isEqualTo(StrigaKycStatusBanner.IDENTIFY)
