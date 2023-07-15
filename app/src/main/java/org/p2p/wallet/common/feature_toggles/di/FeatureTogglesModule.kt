@@ -10,6 +10,7 @@ import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConf
 import org.p2p.wallet.common.feature_toggles.remote_config.FeatureTogglesValuesSource
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
+import org.p2p.wallet.common.feature_toggles.toggles.FeatureToggleProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDebounceFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
@@ -71,5 +72,7 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::SocketSubscriptionsFeatureToggle)
         factoryOf(::SwapRoutesValidationEnabledFeatureToggle)
         factoryOf(::StrigaSignupEnabledFeatureToggle)
+
+        singleOf(::FeatureToggleProvider)
     }
 }

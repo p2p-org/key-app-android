@@ -8,4 +8,5 @@ interface EthereumTokensLocalRepository {
     suspend fun cacheTokens(tokens: List<Token.Eth>)
     suspend fun updateTokensRate(tokensRate: List<TokenServicePrice>)
     fun getTokensFlow(): StateFlow<List<Token.Eth>>
+    fun getWalletTokens(): List<Token.Eth>
 }

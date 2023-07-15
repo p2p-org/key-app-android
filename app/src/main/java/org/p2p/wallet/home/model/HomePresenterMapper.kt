@@ -58,12 +58,9 @@ class HomePresenterMapper(
         return claimUiMapper.prepareShowProgress(amountToClaim, iconUrl, claimDetails)
     }
 
+    @Deprecated("To be removed when striga is removed from the HomePresenter")
     fun getKycStatusBannerFromTitle(bannerTitleId: Int): StrigaKycStatusBanner? {
         return strigaUiBannerMapper.getKycStatusBannerFromTitle(bannerTitleId)
-    }
-
-    fun mapToBigBanner(banner: StrigaKycStatusBanner, isLoading: Boolean): HomeBannerItem {
-        return strigaUiBannerMapper.mapToHomeBigBanner(banner, isLoading)
     }
 
     fun mapToHomeBanner(isLoading: Boolean, banner: StrigaKycStatusBanner): HomeScreenBanner {

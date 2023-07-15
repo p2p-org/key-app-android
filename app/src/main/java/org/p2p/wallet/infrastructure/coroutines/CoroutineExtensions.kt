@@ -12,7 +12,7 @@ import kotlinx.coroutines.delay
  */
 suspend fun waitForCondition(
     timeoutMillis: Long,
-    condition: () -> Boolean
+    condition: suspend () -> Boolean
 ): Boolean {
     val endTime = System.currentTimeMillis() + timeoutMillis
     while (!condition() && System.currentTimeMillis() < endTime) {
