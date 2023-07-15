@@ -23,13 +23,13 @@ class FeatureToggleProviderTest {
     }
 
     @Test
-    fun `WHEN get for different FT is called THEN return FT with correct type`(){
+    fun `WHEN get for different FT is called THEN return FT with correct type`() {
         // WHEN
-        val strigaFt =  ftProvider.getFeatureToggle(StrigaSignupEnabledFeatureToggle::class)
+        val strigaFt = ftProvider.getFeatureToggle(StrigaSignupEnabledFeatureToggle::class)
         val strigaFt2 = ftProvider.getFeatureToggle<StrigaSignupEnabledFeatureToggle>()
         val strigaFt3 = ftProvider[StrigaSignupEnabledFeatureToggle::class]
 
-        val usernameFt =  ftProvider.getFeatureToggle(UsernameDomainFeatureToggle::class)
+        val usernameFt = ftProvider.getFeatureToggle(UsernameDomainFeatureToggle::class)
         val usernameFt2 = ftProvider.getFeatureToggle<UsernameDomainFeatureToggle>()
         val usernameFt3 = ftProvider[UsernameDomainFeatureToggle::class]
 
@@ -42,7 +42,4 @@ class FeatureToggleProviderTest {
         usernameFt2.assertThat().isInstanceOf(UsernameDomainFeatureToggle::class)
         usernameFt3.assertThat().isInstanceOf(UsernameDomainFeatureToggle::class)
     }
-
-
-
 }
