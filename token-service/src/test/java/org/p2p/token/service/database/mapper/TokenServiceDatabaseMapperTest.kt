@@ -88,7 +88,7 @@ class TokenServiceDatabaseMapperTest {
     }
 
     @Test
-    fun `GIVEN valid domain no rate WHEN map THEN return correct null`() {
+    fun `GIVEN valid domain no rate WHEN map THEN return null`() {
         // GIVEN
         val network = TokenServiceNetwork.SOLANA
         val domain = TokenServicePrice(
