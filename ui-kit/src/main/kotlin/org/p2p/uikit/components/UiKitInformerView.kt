@@ -40,7 +40,7 @@ class UiKitInformerView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
     private val binding = inflateViewBinding<ViewInformerViewBinding>()
 
-    private lateinit var renderedCellModel:InformerViewCellModel
+    private lateinit var renderedCellModel: InformerViewCellModel
 
     /**
      * In case of static init via XML, use this field to put listeners on info line clicks
@@ -51,14 +51,20 @@ class UiKitInformerView @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.UiKitInformerView).use { style ->
             val leftIconRes: Int =
                 style.getResourceId(R.styleable.UiKitInformerView_leftIcon, R.drawable.ic_checkbox_checked)
-            val leftIconTint: Int = style.getResourceId(R.styleable.UiKitInformerView_leftIconTint, R.color.icons_mountain)
-            val title: String? = style.getString(R.styleable.UiKitInformerView_title)
-            val caption: String? = style.getString(R.styleable.UiKitInformerView_caption)
-            val infoLine: String? = style.getString(R.styleable.UiKitInformerView_infoLine)
-            val infoLinePosition = style.getInt(R.styleable.UiKitInformerView_infoLinePosition, -1)
-                .takeIf { it != -1 }
-                ?.let { InfoLinePosition.values()[it] }
-            val infoLineColor = style.getResourceId(R.styleable.UiKitInformerView_infoLineColor, R.color.text_mountain)
+            val leftIconTint: Int =
+                style.getResourceId(R.styleable.UiKitInformerView_leftIconTint, R.color.icons_mountain)
+            val title: String? =
+                style.getString(R.styleable.UiKitInformerView_title)
+            val caption: String? =
+                style.getString(R.styleable.UiKitInformerView_caption)
+            val infoLine: String? =
+                style.getString(R.styleable.UiKitInformerView_infoLine)
+            val infoLinePosition =
+                style.getInt(R.styleable.UiKitInformerView_infoLinePosition, -1)
+                    .takeIf { it != -1 }
+                    ?.let { InfoLinePosition.values()[it] }
+            val infoLineColor =
+                style.getResourceId(R.styleable.UiKitInformerView_infoLineColor, R.color.text_mountain)
 
             val leftIconParams = InformerViewCellModel.LeftIconParams(
                 DrawableContainer(iconRes = leftIconRes),

@@ -9,6 +9,10 @@ plugins {
     kotlin("android")
 }
 
+apply {
+    from("${project.rootDir}/.scripts/ktlint.gradle")
+}
+
 android {
     compileSdk = Versions.sdkCompileVersion
 
@@ -42,6 +46,11 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     buildFeatures {

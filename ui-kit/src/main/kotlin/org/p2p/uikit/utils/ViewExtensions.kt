@@ -155,7 +155,7 @@ fun View.setMargins(
     right: Int = marginEnd,
     @Dimension(unit = Dimension.DP)
     bottom: Int = marginBottom
-){
+) {
     updateLayoutParams<ViewGroup.MarginLayoutParams> {
         this.setMargins(left, top, right, bottom)
     }

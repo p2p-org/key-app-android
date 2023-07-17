@@ -9,5 +9,4 @@ interface TokenPriceRepository {
         chain: TokenServiceNetwork,
         addresses: List<String>
     ): List<TokenServiceQueryResult<TokenServicePrice>>
-
 }

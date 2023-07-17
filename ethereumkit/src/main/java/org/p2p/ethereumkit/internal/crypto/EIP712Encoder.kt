@@ -20,13 +20,13 @@ class EIP712Encoder {
 }
 
 data class TypedData(
-        val types: Map<String, List<TypeParam>>,
-        val primaryType: String,
-        val domain: Map<String, Any>,
-        val message: Map<String, Any>
+    val types: Map<String, List<TypeParam>>,
+    val primaryType: String,
+    val domain: Map<String, Any>,
+    val message: Map<String, Any>
 )
 
 data class TypeParam(
-        val name: String,
-        val type: String
+    val name: String,
+    val type: String
 )

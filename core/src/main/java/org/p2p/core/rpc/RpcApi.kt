@@ -16,9 +16,15 @@ const val RPC_JSON_QUALIFIER = "RPC_JSON_QUALIFIER"
 interface RpcApi {
     @POST
     @Headers("Content-Type: application/json", "Accept: application/json")
-    suspend fun launch(@Url uri: URI, @Body jsonRpc: String): RpcResponse
+    suspend fun launch(
+        @Url uri: URI,
+        @Body jsonRpc: String
+    ): RpcResponse
 
     @GET
     @Headers("Content-Type: application/json", "Accept: application/json")
-    suspend fun getZipFile(@Url uri: String, @Header("if-modified-since") ifModifiedSince: String?): Response<JsonObject>
+    suspend fun getZipFile(
+        @Url uri: String,
+        @Header("if-modified-since") ifModifiedSince: String?
+    ): Response<JsonObject>
 }

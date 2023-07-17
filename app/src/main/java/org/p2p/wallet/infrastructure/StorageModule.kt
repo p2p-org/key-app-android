@@ -22,6 +22,7 @@ import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFeatureToggleStorage
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.common.storage.FileRepository
+import org.p2p.wallet.common.storage.FilesDirStorageRepository
 import org.p2p.wallet.infrastructure.account.AccountStorage
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorage
@@ -100,6 +101,6 @@ object StorageModule {
         single<KeyStore> { KeyStore.getInstance("AndroidKeyStore") }
         factoryOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class
         factoryOf(::FileRepository)
-        factoryOf(::ExternalStorageRepository)
+        factoryOf(::FilesDirStorageRepository) bind ExternalStorageRepository::class
     }
 }

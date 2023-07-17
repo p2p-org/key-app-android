@@ -10,11 +10,13 @@ class ECIESEncryptedMessage {
     val cipher: ByteArray
     val checkSum: ByteArray
 
-    constructor(prefixBytes: ByteArray,
-                ephemeralPublicKey: ByteArray,
-                initialVector: ByteArray,
-                cipher: ByteArray,
-                checkSum: ByteArray) {
+    constructor(
+        prefixBytes: ByteArray,
+        ephemeralPublicKey: ByteArray,
+        initialVector: ByteArray,
+        cipher: ByteArray,
+        checkSum: ByteArray
+    ) {
         this.prefixBytes = prefixBytes
         this.ephemeralPublicKey = ephemeralPublicKey
         this.initialVector = initialVector

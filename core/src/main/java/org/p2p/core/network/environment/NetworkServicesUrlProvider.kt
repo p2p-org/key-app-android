@@ -194,7 +194,6 @@ class NetworkServicesUrlProvider(
         return TokenServiceEnvironment(url)
     }
 
-
     private fun saveMoonpayEnvironment(newServerSideUrl: String) {
         storage.putString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, newServerSideUrl)
     }
