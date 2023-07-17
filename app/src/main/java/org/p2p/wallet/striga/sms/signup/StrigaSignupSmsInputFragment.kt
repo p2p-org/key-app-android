@@ -12,7 +12,7 @@ import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
 import org.p2p.wallet.smsinput.SmsInputContract
-import org.p2p.wallet.striga.di.StrigaSignupModule
+import org.p2p.wallet.striga.signup.StrigaSignupModule
 import org.p2p.wallet.striga.sms.error.StrigaSmsErrorFragment
 import org.p2p.wallet.striga.sms.error.StrigaSmsErrorViewType
 import org.p2p.wallet.utils.popBackStackTo

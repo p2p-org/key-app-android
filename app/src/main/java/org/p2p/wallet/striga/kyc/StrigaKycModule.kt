@@ -5,7 +5,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.striga.kyc.ui.StrigaKycContract
-import org.p2p.wallet.striga.kyc.ui.StrigaKycInteractor
+import org.p2p.wallet.striga.kyc.interactor.StrigaKycInteractor
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPresenter
 
 object StrigaKycModule : InjectionModule {

@@ -4,11 +4,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.smsinput.SmsInputFactory
-import org.p2p.wallet.striga.finish.StrigaSignupFinishFragment
-import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
+import org.p2p.wallet.striga.signup.finish.StrigaSignupFinishFragment
+import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
-import org.p2p.wallet.striga.onboarding.StrigaOnboardingFragment
+import org.p2p.wallet.striga.signup.onboarding.StrigaOnboardingFragment
 import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId

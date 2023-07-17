@@ -18,7 +18,7 @@ import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
-import org.p2p.wallet.striga.user.StrigaStorageContract
+import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 
 class AuthLogoutInteractor(

@@ -8,6 +8,7 @@ import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.signup.steps.validation.StrigaSignupDataValidator
 
 class StrigaSignupDataValidatorTest {
 

@@ -9,6 +9,7 @@ import org.junit.Test
 import org.p2p.wallet.common.EncryptedSharedPreferences
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
+import org.p2p.wallet.striga.user.storage.StrigaStorage
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet

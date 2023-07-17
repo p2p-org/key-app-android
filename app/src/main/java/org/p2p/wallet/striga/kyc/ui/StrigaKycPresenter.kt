@@ -12,6 +12,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.striga.kyc.interactor.StrigaKycInteractor
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkInitParams
 import org.p2p.wallet.striga.kyc.sdk.StrigaSdkListeners
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor

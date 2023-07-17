@@ -7,6 +7,9 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
+import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsContract
+import org.p2p.wallet.striga.onramp.iban.presenter.StrigaUserIbanDetailsPresenter
+import org.p2p.wallet.striga.onramp.iban.presenter.StrigaUserIbanUiMapper
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.plantStubTimber

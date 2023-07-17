@@ -34,9 +34,9 @@ import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.striga.iban.StrigaUserIbanDetailsFragment
+import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
-import org.p2p.wallet.striga.ui.TopUpWalletBottomSheet
+import org.p2p.wallet.home.ui.topup.TopUpWalletBottomSheet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard

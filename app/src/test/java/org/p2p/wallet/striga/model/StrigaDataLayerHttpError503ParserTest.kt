@@ -6,6 +6,8 @@ import assertk.assertions.isNotNull
 import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import java.net.HttpURLConnection
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerHttpErrorParser
 import org.p2p.wallet.utils.createHttpException
 import org.p2p.wallet.utils.emptyString
 

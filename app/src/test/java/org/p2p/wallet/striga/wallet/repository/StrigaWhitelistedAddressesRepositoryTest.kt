@@ -15,7 +15,7 @@ import org.junit.Assert
 import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.models.StrigaBlockchainNetworkInfo
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
