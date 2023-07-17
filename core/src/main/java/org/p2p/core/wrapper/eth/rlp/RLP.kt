@@ -443,12 +443,12 @@ object RLP {
             )
         } catch (e: OutOfMemoryError) {
             throw RuntimeException(
-                message = buildString {
+                buildString {
                     append("Invalid RLP (excessive mem allocation while parsing) (")
                     append(Hex.toHexString(msgData, startPos, endPos - startPos))
                     append(")")
                 },
-                cause = e
+                e
             )
         }
     }
