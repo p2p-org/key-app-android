@@ -1,15 +1,25 @@
-package org.p2p.wallet.home.ui.wallet
+package org.p2p.wallet.home.ui.wallet.mapper
 
+import android.content.res.Resources
+import java.math.BigDecimal
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.utils.formatFiat
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.wallet.R
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.kyc.model.StrigaBanner
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 
-class WalletPresenterMapper {
+class WalletMapper(private val resources: Resources) {
 
-    fun buildCellItems(mapper: WalletPresenterMapper.Builder.() -> Unit): List<AnyCellItem> {
+    fun mapBalance(balance: BigDecimal): TextViewCellModel {
+        val result = resources.getString(R.string.home_usd_format, balance.formatFiat())
+        return TextViewCellModel.Raw(org.p2p.core.common.TextContainer(result))
+    }
+
+    fun buildCellItems(mapper: Builder.() -> Unit): List<AnyCellItem> {
         return Builder().apply(mapper).build()
     }
 

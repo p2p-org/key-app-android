@@ -179,10 +179,7 @@
     <string name="main_combined_token_value">Combined token value</string>
     <string name="home_receive">Receive</string>
     <string name="main_transfer">Transfer</string>
-    <string name="home_usd_format">$ %s</string>
-    <string name="main_usd_end_format">%s $</string>
-    <string name="main_all_tokens">All tokens</string>
-    <string name="main_no_data">You have no wallets yet</string>
+    <string name="home_usd_format">$%s</string>
     <string name="main_swap">Swap</string>
     <string name="home_swap">Swap</string>
     <string name="main_close_account">Close Account</string>

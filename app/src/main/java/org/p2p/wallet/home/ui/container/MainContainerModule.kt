@@ -1,4 +1,4 @@
-package org.p2p.wallet.home
+package org.p2p.wallet.home.ui.container
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -8,33 +8,19 @@ import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.interactor.RefreshErrorInteractor
-import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
-import org.p2p.wallet.home.ui.container.MainContainerContract
-import org.p2p.wallet.home.ui.container.MainContainerPresenter
-import org.p2p.wallet.home.ui.crypto.MyCryptoContract
-import org.p2p.wallet.home.ui.crypto.MyCryptoPresenter
-import org.p2p.wallet.home.ui.crypto.MyCryptoInteractor
-import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
+import org.p2p.wallet.home.ui.container.mapper.BalanceMapper
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
-import org.p2p.wallet.home.ui.wallet.WalletContract
-import org.p2p.wallet.home.ui.wallet.WalletPresenter
-import org.p2p.wallet.home.ui.wallet.WalletPresenterMapper
-import org.p2p.wallet.home.ui.wallet.handlers.StrigaBannerClickHandler
-import org.p2p.wallet.home.ui.wallet.handlers.StrigaOnRampClickHandler
-import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.interactor.SendInteractor
-import org.p2p.wallet.receive.list.TokenListContract
-import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.striga.ui.TopUpWalletContract
 import org.p2p.wallet.striga.ui.TopUpWalletPresenter
 
-object HomeModule : InjectionModule {
+object MainContainerModule : InjectionModule {
 
     override fun create() = module {
         initDataLayer()
@@ -71,24 +57,7 @@ object HomeModule : InjectionModule {
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
-        factory {
-            MyCryptoInteractor(
-                userInteractor = get(),
-                settingsInteractor = get(),
-                ethereumInteractor = get(),
-            )
-        }
-        factoryOf(::HomePresenterMapper)
-        factoryOf(::StrigaKycUiBannerMapper)
-        factoryOf(::WalletPresenterMapper)
-        factoryOf(::StrigaOnRampConfirmedHandler)
-        factoryOf(::StrigaOnRampClickHandler)
-        factoryOf(::StrigaBannerClickHandler)
-        factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
-        factoryOf(::MyCryptoPresenter) bind MyCryptoContract.Presenter::class
-
-        factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
-
         factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
+        factoryOf(::BalanceMapper)
     }
 }

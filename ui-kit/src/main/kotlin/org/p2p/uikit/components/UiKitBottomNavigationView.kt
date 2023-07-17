@@ -52,6 +52,11 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
             bottomNavigationView.getOrCreateBadge(screenItem.itemId).isVisible = isVisible
         }
     }
+
+    fun setMenuItemTitle(screenTab: ScreenTab, title: String) {
+        val screenItem = menu.findItem(screenTab.itemId) ?: return
+        screenItem.title = title
+    }
 }
 
 enum class ScreenTab(val itemId: Int) {
