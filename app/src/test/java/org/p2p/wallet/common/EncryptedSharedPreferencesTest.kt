@@ -85,6 +85,7 @@ class EncryptedSharedPreferencesTest {
     }
 
     @Test
+    @Suppress("DEPRECATION")
     fun `GIVEN list of strings  WHEN save and get THEN list of strings are correct`() {
         // GIVEN
         val expectedStrings = English.INSTANCE.words.toList().take(12)
@@ -97,6 +98,7 @@ class EncryptedSharedPreferencesTest {
     }
 
     // getObjectList doesn't work properly
+    @Suppress("DEPRECATION")
     @Test(expected = org.opentest4j.AssertionFailedError::class)
     fun `GIVEN valid list of objects WHEN save and get THEN list of objects is correct`() {
         // GIVEN

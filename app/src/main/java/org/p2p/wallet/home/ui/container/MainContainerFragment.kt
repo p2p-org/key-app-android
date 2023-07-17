@@ -25,7 +25,6 @@ import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
-import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
@@ -86,7 +85,6 @@ class MainContainerFragment :
         with(binding) {
             viewPagerMainFragment.isUserInputEnabled = false
             bottomNavigation.setOnItemSelectedListener { tab ->
-                triggerTokensUpdateIfNeeded()
                 navigate(tab)
                 return@setOnItemSelectedListener true
             }
@@ -173,6 +171,10 @@ class MainContainerFragment :
 
     override fun showCryptoBadgeVisible(isVisible: Boolean) {
         binding.bottomNavigation.setBadgeVisible(screenTab = ScreenTab.MY_CRYPTO_SCREEN, isVisible = isVisible)
+    }
+
+    override fun showWalletBalance(balance: String) {
+        binding.bottomNavigation.setMenuItemTitle(screenTab = ScreenTab.WALLET_SCREEN, balance)
     }
 
     override fun navigateToSendNoTokens(fallbackToken: Token) {
@@ -298,7 +300,6 @@ class MainContainerFragment :
             viewPagerMainFragment.adapter = mainContainerAdapter
             viewPagerMainFragment.isUserInputEnabled = false
             bottomNavigation.setOnItemSelectedListener { tab ->
-                triggerTokensUpdateIfNeeded()
                 navigate(tab)
                 return@setOnItemSelectedListener true
             }
@@ -309,15 +310,6 @@ class MainContainerFragment :
         binding.bottomNavigation.menu.clear()
         binding.bottomNavigation.inflateMenu(menuRes)
         binding.bottomNavigation.menu.findItem(R.id.sendItem)?.isCheckable = false
-    }
-
-    // TODO: this is a dirty hack on how to trigger data update
-    // Find a good solution for tracking the KEY_HIDDEN_ZERO_BALANCE value in SP
-    private fun triggerTokensUpdateIfNeeded() {
-        val homeItemId = ScreenTab.MY_CRYPTO_SCREEN.itemId
-        val foundFragment = mainContainerAdapter.fragments[fragmentPositionByItemId(homeItemId)]
-        val fragment = foundFragment as? HomeFragment ?: return
-        fragment.updateTokensIfNeeded()
     }
 
     private fun fragmentPositionByItemId(itemId: Int): Int {

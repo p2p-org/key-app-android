@@ -15,24 +15,27 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.home.model.HomePresenterMapper
+import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.home.ui.main.HomeInteractor
-import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
-import org.p2p.wallet.transaction.model.TransactionState
 
 class MyCryptoPresenter(
-    private val homeInteractor: HomeInteractor,
-    private val homeMapper: HomePresenterMapper,
+    private val cryptoInteractor: MyCryptoInteractor,
+    private val cryptoMapper: MyCryptoMapper,
     private val connectionManager: ConnectionManager,
-    private val transactionManager: TransactionManager,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val analytics: HomeAnalytics,
+    private val claimHandler: BridgeClaimBundleClickHandler,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
-    private var visibilityState: VisibilityState = VisibilityState.Hidden
+    private var currentVisibilityState: VisibilityState = if (cryptoInteractor.getHiddenTokensVisibility()) {
+        VisibilityState.Visible
+    } else {
+        VisibilityState.Hidden
+    }
+
     private var cryptoTokensSubscription: Job? = null
 
     override fun attach(view: MyCryptoContract.View) {
@@ -88,14 +91,14 @@ class MyCryptoPresenter(
 
     private fun showTokensAndBalance(solTokens: List<Token.Active>, ethTokens: List<Token.Eth>) {
         val balance = getUserBalance(solTokens)
-        view?.showBalance(homeMapper.mapBalance(balance))
+        view?.showBalance(cryptoMapper.mapBalance(balance))
         logBalance(balance)
 
-        val areZerosHidden = homeInteractor.areZerosHidden()
-        val mappedItems: List<AnyCellItem> = homeMapper.mapToCellItems(
+        val areZerosHidden = cryptoInteractor.areZerosHidden()
+        val mappedItems: List<AnyCellItem> = cryptoMapper.mapToCellItems(
             tokens = solTokens,
             ethereumTokens = ethTokens,
-            visibilityState = visibilityState,
+            visibilityState = currentVisibilityState,
             isZerosHidden = areZerosHidden,
         )
         view?.showItems(mappedItems)
@@ -112,13 +115,13 @@ class MyCryptoPresenter(
 
     private fun handleEmptyAccount() {
         logBalance(BigDecimal.ZERO)
-        view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
+        view?.showBalance(cryptoMapper.mapBalance(BigDecimal.ZERO))
     }
 
     override fun toggleTokenVisibility(token: Token.Active) {
         launch {
             val handleDefaultVisibility = { token: Token.Active ->
-                if (homeInteractor.areZerosHidden() && token.isZero) {
+                if (cryptoInteractor.areZerosHidden() && token.isZero) {
                     TokenVisibility.SHOWN
                 } else {
                     TokenVisibility.HIDDEN
@@ -130,7 +133,7 @@ class MyCryptoPresenter(
                 TokenVisibility.DEFAULT -> handleDefaultVisibility(token)
             }
 
-            homeInteractor.setTokenHidden(
+            cryptoInteractor.setTokenHidden(
                 mintAddress = token.mintAddress,
                 visibility = newVisibility.stringValue
             )
@@ -138,8 +141,8 @@ class MyCryptoPresenter(
     }
 
     override fun toggleTokenVisibilityState() {
-        visibilityState = visibilityState.toggle()
-        homeInteractor.setHiddenTokensVisibility(visibilityState.isVisible)
+        currentVisibilityState = currentVisibilityState.toggle()
+        cryptoInteractor.setHiddenTokensVisibility(currentVisibilityState.isVisible)
         observeCryptoTokens()
     }
 
@@ -164,31 +167,9 @@ class MyCryptoPresenter(
     }
 
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
+        analytics.logClaimButtonClicked()
         launch {
-            analytics.logClaimButtonClicked()
-            if (canBeClaimed) {
-                view?.navigateToTokenClaim(token)
-            } else {
-                val latestActiveBundleId = token.latestActiveBundleId ?: return@launch
-                val bridgeBundle = homeInteractor.getClaimBundleById(latestActiveBundleId) ?: return@launch
-                val claimDetails = homeMapper.mapToClaimDetails(
-                    bridgeBundle = bridgeBundle,
-                    minAmountForFreeFee = homeInteractor.getClaimMinAmountForFreeFee(),
-                )
-                val progressDetails = homeMapper.mapShowProgressForClaim(
-                    amountToClaim = bridgeBundle.resultAmount.amountInToken,
-                    iconUrl = token.iconUrl.orEmpty(),
-                    claimDetails = claimDetails
-                )
-                transactionManager.emitTransactionState(
-                    latestActiveBundleId,
-                    TransactionState.ClaimProgress(latestActiveBundleId)
-                )
-                view?.showProgressDialog(
-                    bundleId = bridgeBundle.bundleId,
-                    progressDetails = progressDetails
-                )
-            }
+            claimHandler.handle(view, canBeClaimed, token)
         }
     }
 }
