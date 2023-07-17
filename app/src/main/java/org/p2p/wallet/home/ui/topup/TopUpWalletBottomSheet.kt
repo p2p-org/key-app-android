@@ -23,9 +23,9 @@ import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTopupWalletBinding
-import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.receive.ReceiveFragmentFactory
+import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
