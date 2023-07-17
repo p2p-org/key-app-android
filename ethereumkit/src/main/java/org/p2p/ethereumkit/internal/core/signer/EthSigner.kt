@@ -31,5 +31,4 @@ class EthSigner(
     }
 
     private fun sign(message: ByteArray): ByteArray = cryptoUtils.ellipticSign(message, privateKey)
-
 }

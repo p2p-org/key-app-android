@@ -24,7 +24,7 @@ private typealias SubscriptionId = Long
 class SocketClientException(
     override val cause: Throwable,
     override val message: String? = cause.message,
-): Throwable()
+) : Throwable()
 
 internal class SubscriptionWebSocketClient internal constructor(
     serverURI: URI,
@@ -138,7 +138,7 @@ internal class SubscriptionWebSocketClient internal constructor(
 
     override fun onError(ex: Exception) {
         val logger = Timber.tag(TAG)
-        if(ex is UnknownHostException) {
+        if (ex is UnknownHostException) {
             logger.w(SocketClientException(ex), "Error on socket working")
         } else {
             logger.e(SocketClientException(ex), "Error on socket working")

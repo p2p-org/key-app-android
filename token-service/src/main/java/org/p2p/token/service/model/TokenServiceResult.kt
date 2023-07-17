@@ -14,7 +14,7 @@ fun <T> TokenServiceResult<T>.unwrap(): T? {
 }
 
 fun <T> TokenServiceResult<T>.successOrNull(): T? {
-    return when(this) {
+    return when (this) {
         is TokenServiceResult.Success<T> -> this.data
         is TokenServiceResult.Error<T> -> null
     }

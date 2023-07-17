@@ -9,4 +9,3 @@ sealed interface TokenServiceUpdate {
     data class TokensMetadataLoaded(val result: List<TokenServiceMetadata>) : TokenServiceUpdate
     object Idle : TokenServiceUpdate
 }
-

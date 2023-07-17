@@ -47,5 +47,4 @@ class AddressValidator {
             return containsLowerCase && containsUpperCase
         }
     }
-
 }

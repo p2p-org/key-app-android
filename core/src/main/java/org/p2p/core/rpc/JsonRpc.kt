@@ -37,7 +37,7 @@ abstract class JsonRpc<P, T>(
         } catch (error: Throwable) {
             Timber.tag(TAG).i(result.toString())
             Timber.tag(TAG).i(error)
-            throw ResponseError.InvalidResult("Error: $error.toString()\nOn result: ${result.toString()}")
+            throw ResponseError.InvalidResult("Error: $error.toString()\nOn result: $result")
         }
     }
 

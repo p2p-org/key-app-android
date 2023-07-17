@@ -5,4 +5,4 @@ import kotlinx.parcelize.Parcelize
 
 @JvmInline
 @Parcelize
-value class SolAddress(val raw: String): Parcelable
+value class SolAddress(val raw: String) : Parcelable

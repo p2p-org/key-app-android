@@ -95,7 +95,7 @@ class UiKitRightSideView @JvmOverloads constructor(
     }
 
     private fun WidgetRightSideProgressWrapperBinding.bind(model: RightSideCellModel.Progress) {
-        if(model.indeterminateProgressTint != null) {
+        if (model.indeterminateProgressTint != null) {
             this.progressWrapper.indeterminateDrawable.setTint(getColor(model.indeterminateProgressTint))
         }
     }

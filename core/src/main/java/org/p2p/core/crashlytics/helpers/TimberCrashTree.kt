@@ -5,7 +5,6 @@ import timber.log.Timber
 import org.p2p.core.BuildConfig
 import org.p2p.core.crashlytics.CrashLogger
 
-
 class TimberCrashTree(
     private val crashLogger: CrashLogger
 ) : Timber.Tree() {

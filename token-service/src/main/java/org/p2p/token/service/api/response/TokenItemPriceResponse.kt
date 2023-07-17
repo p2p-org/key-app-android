@@ -8,5 +8,3 @@ internal class TokenItemPriceResponse(
     @SerializedName("price")
     val price: TokenRateResponse?
 )
-
-

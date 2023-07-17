@@ -9,4 +9,3 @@ internal data class TokenServiceItemRequest(
     @SerializedName("addresses")
     val addresses: List<String>
 )
-

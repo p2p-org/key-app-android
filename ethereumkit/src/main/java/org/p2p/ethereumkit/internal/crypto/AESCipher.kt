@@ -6,7 +6,7 @@ import org.bouncycastle.crypto.modes.SICBlockCipher
 import org.bouncycastle.crypto.params.KeyParameter
 import org.bouncycastle.crypto.params.ParametersWithIV
 
-class AESCipher(val key: ByteArray, forEncryption: Boolean ) {
+class AESCipher(val key: ByteArray, forEncryption: Boolean) {
 
     private val cipher: StreamCipher
 

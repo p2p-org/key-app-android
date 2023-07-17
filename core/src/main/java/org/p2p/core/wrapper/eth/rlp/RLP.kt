@@ -5,7 +5,7 @@ import org.bouncycastle.util.BigIntegers.asUnsignedByteArray
 import org.bouncycastle.util.encoders.Hex
 import java.io.Serializable
 import java.math.BigInteger
-import java.util.*
+import java.util.Arrays
 import kotlin.experimental.and
 import kotlin.math.pow
 import org.p2p.core.wrapper.eth.toByteArray
@@ -71,8 +71,19 @@ object RLP {
     fun encodeInt(singleInt: Int) = when (singleInt) {
         singleInt and 0xFF -> encodeByte(singleInt.toByte())
         singleInt and 0xFFFF -> encodeShort(singleInt.toShort())
-        singleInt and 0xFFFFFF -> byteArrayOf((OFFSET_SHORT_ITEM + 3).toByte(), singleInt.ushr(16).toByte(), singleInt.ushr(8).toByte(), singleInt.toByte())
-        else -> byteArrayOf((OFFSET_SHORT_ITEM + 4).toByte(), singleInt.ushr(24).toByte(), singleInt.ushr(16).toByte(), singleInt.ushr(8).toByte(), singleInt.toByte())
+        singleInt and 0xFFFFFF -> byteArrayOf(
+            (OFFSET_SHORT_ITEM + 3).toByte(),
+            singleInt.ushr(16).toByte(),
+            singleInt.ushr(8).toByte(),
+            singleInt.toByte()
+        )
+        else -> byteArrayOf(
+            (OFFSET_SHORT_ITEM + 4).toByte(),
+            singleInt.ushr(24).toByte(),
+            singleInt.ushr(16).toByte(),
+            singleInt.ushr(8).toByte(),
+            singleInt.toByte()
+        )
     }
 
     fun encodeLong(longValue: Long): ByteArray {
@@ -152,11 +163,15 @@ object RLP {
     }
 
     private fun encodeShort(singleShort: Short) =
-            if ((singleShort and 0xFF) == singleShort)
-                encodeByte(singleShort.toByte())
-            else {
-                byteArrayOf((OFFSET_SHORT_ITEM + 2).toByte(), (singleShort.toInt() shr 8 and 0xFF).toByte(), (singleShort.toInt() shr 0 and 0xFF).toByte())
-            }
+        if ((singleShort and 0xFF) == singleShort)
+            encodeByte(singleShort.toByte())
+        else {
+            byteArrayOf(
+                (OFFSET_SHORT_ITEM + 2).toByte(),
+                (singleShort.toInt() shr 8 and 0xFF).toByte(),
+                (singleShort.toInt() shr 0 and 0xFF).toByte()
+            )
+        }
 
     fun encodeList(vararg elements: ByteArray): ByteArray {
         var totalLength = 0
@@ -211,8 +226,13 @@ object RLP {
                 val lenlen = prefix - OFFSET_LONG_ITEM
                 val lenbytes = data.copyOfRange(pos + 1, pos + 1 + lenlen).toInt()
 
-                return DecodeResult(pos + 1 + lenlen + lenbytes, data.copyOfRange(pos + 1 + lenlen, pos + 1 + lenlen
-                        + lenbytes))
+                return DecodeResult(
+                    pos = pos + 1 + lenlen + lenbytes,
+                    decoded = data.copyOfRange(
+                        pos + 1 + lenlen,
+                        pos + 1 + lenlen + lenbytes
+                    )
+                )
             }
             prefix <= OFFSET_LONG_LIST -> {
                 val len = prefix - OFFSET_SHORT_LIST
@@ -277,8 +297,14 @@ object RLP {
         else -> throw RuntimeException("Unsupported type: Only accepting String, Integer and BigInteger for now")
     }
 
-    fun fullTraverse(msgData: ByteArray?, level: Int, startPos: Int,
-                     endPos: Int, rlpList: RLPList, depth: Int) {
+    fun fullTraverse(
+        msgData: ByteArray?,
+        level: Int,
+        startPos: Int,
+        endPos: Int,
+        rlpList: RLPList,
+        depth: Int
+    ) {
         if (level > MAX_DEPTH) {
             throw RuntimeException(String.format("Error: Traversing over max RLP depth (%s)", MAX_DEPTH))
         }
@@ -303,15 +329,22 @@ object RLP {
                     }
 
                     val rlpData = ByteArray(lengthOfLength.toInt() + length + 1)
-                    System.arraycopy(msgData, pos, rlpData, 0, lengthOfLength.toInt()
-                            + length + 1)
+                    System.arraycopy(
+                        /* src = */ msgData,
+                        /* srcPos = */ pos,
+                        /* dest = */ rlpData,
+                        /* destPos = */ 0,
+                        /* length = */ lengthOfLength.toInt() + length + 1
+                    )
 
                     if (level + 1 < depth) {
                         val newLevelList = RLPList()
                         newLevelList.rlpData = rlpData
 
-                        fullTraverse(msgData, level + 1, pos + lengthOfLength.toInt() + 1,
-                                pos + lengthOfLength.toInt() + length + 1, newLevelList, depth)
+                        fullTraverse(
+                            msgData, level + 1, pos + lengthOfLength.toInt() + 1,
+                            pos + lengthOfLength.toInt() + length + 1, newLevelList, depth
+                        )
                         rlpList.add(newLevelList)
                     } else {
                         rlpList.add(RLPItem(rlpData))
@@ -355,8 +388,10 @@ object RLP {
 
                     // now we can parse an item for data[1]..data[length]
                     val item = ByteArray(length)
-                    System.arraycopy(msgData, pos + lengthOfLength + 1, item,
-                            0, length)
+                    System.arraycopy(
+                        msgData, pos + lengthOfLength + 1, item,
+                        0, length
+                    )
 
                     val rlpItem = RLPItem(item)
                     rlpList.add(rlpItem)
@@ -402,11 +437,20 @@ object RLP {
                 }
             }
         } catch (e: Exception) {
-            throw RuntimeException("RLP wrong encoding (" + Hex.toHexString(msgData, startPos, endPos - startPos) + ")", e)
+            throw RuntimeException(
+                "RLP wrong encoding (" + Hex.toHexString(msgData, startPos, endPos - startPos) + ")",
+                e
+            )
         } catch (e: OutOfMemoryError) {
-            throw RuntimeException("Invalid RLP (excessive mem allocation while parsing) (" + Hex.toHexString(msgData, startPos, endPos - startPos) + ")", e)
+            throw RuntimeException(
+                message = buildString {
+                    append("Invalid RLP (excessive mem allocation while parsing) (")
+                    append(Hex.toHexString(msgData, startPos, endPos - startPos))
+                    append(")")
+                },
+                cause = e
+            )
         }
-
     }
 
     private fun calcLength(lengthOfLength: Int, msgData: ByteArray, pos: Int): Int {

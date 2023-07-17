@@ -4,4 +4,4 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class HexString(val rawValue: String): Parcelable
+data class HexString(val rawValue: String) : Parcelable
