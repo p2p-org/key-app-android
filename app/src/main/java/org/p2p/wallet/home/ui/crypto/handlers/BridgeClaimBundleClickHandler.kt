@@ -1,14 +1,14 @@
 package org.p2p.wallet.home.ui.crypto.handlers
 
 import org.p2p.core.token.Token
-import org.p2p.wallet.home.model.CryptoPresenterMapper
+import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
 import org.p2p.wallet.home.ui.crypto.MyCryptoContract
 import org.p2p.wallet.home.ui.crypto.MyCryptoInteractor
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionState
 
-class ClaimHandler(
-    private val cryptoMapper: CryptoPresenterMapper,
+class BridgeClaimBundleClickHandler(
+    private val cryptoMapper: MyCryptoMapper,
     private val transactionManager: TransactionManager,
     private val cryptoInteractor: MyCryptoInteractor,
 ) {

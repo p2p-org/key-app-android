@@ -15,22 +15,22 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.home.model.CryptoPresenterMapper
+import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.home.ui.crypto.handlers.ClaimHandler
+import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 
 class MyCryptoPresenter(
     private val cryptoInteractor: MyCryptoInteractor,
-    private val cryptoMapper: CryptoPresenterMapper,
+    private val cryptoMapper: MyCryptoMapper,
     private val connectionManager: ConnectionManager,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val analytics: HomeAnalytics,
-    private val claimHandler: ClaimHandler,
+    private val claimHandler: BridgeClaimBundleClickHandler,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
-    private var visibilityState: VisibilityState = if (cryptoInteractor.getHiddenTokensVisibility()) {
+    private var currentVisibilityState: VisibilityState = if (cryptoInteractor.getHiddenTokensVisibility()) {
         VisibilityState.Visible
     } else {
         VisibilityState.Hidden
@@ -98,7 +98,7 @@ class MyCryptoPresenter(
         val mappedItems: List<AnyCellItem> = cryptoMapper.mapToCellItems(
             tokens = solTokens,
             ethereumTokens = ethTokens,
-            visibilityState = visibilityState,
+            visibilityState = currentVisibilityState,
             isZerosHidden = areZerosHidden,
         )
         view?.showItems(mappedItems)
@@ -141,8 +141,8 @@ class MyCryptoPresenter(
     }
 
     override fun toggleTokenVisibilityState() {
-        visibilityState = visibilityState.toggle()
-        cryptoInteractor.setHiddenTokensVisibility(visibilityState.isVisible)
+        currentVisibilityState = currentVisibilityState.toggle()
+        cryptoInteractor.setHiddenTokensVisibility(currentVisibilityState.isVisible)
         observeCryptoTokens()
     }
 

@@ -9,11 +9,11 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.BUY_BUTTON
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.SELL_BUTTON
-import org.p2p.wallet.home.model.CryptoPresenterMapper
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
 import org.p2p.wallet.home.ui.wallet.handlers.StrigaBannerClickHandler
 import org.p2p.wallet.home.ui.wallet.handlers.StrigaOnRampClickHandler
+import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaBanner
@@ -27,8 +27,7 @@ import org.p2p.wallet.utils.unsafeLazy
 
 class WalletPresenter(
     private val usernameInteractor: UsernameInteractor,
-    private val homeMapper: CryptoPresenterMapper,
-    private val walletMapper: WalletPresenterMapper,
+    private val walletMapper: WalletMapper,
     tokenKeyProvider: TokenKeyProvider,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val strigaOnRampInteractor: StrigaOnRampInteractor,
@@ -102,11 +101,11 @@ class WalletPresenter(
             is UserTokensState.Loading -> Unit
             is UserTokensState.Refreshing -> Unit
             is UserTokensState.Error -> view?.showErrorMessage(newState.cause)
-            is UserTokensState.Empty -> view?.showBalance(homeMapper.mapBalance(BigDecimal.ZERO))
+            is UserTokensState.Empty -> view?.showBalance(walletMapper.mapBalance(BigDecimal.ZERO))
             is UserTokensState.Loaded -> {
                 val usdc = newState.solTokens.find { it.isUSDC }
                 val balance = usdc?.total ?: BigDecimal.ZERO
-                view?.showBalance(homeMapper.mapBalance(balance))
+                view?.showBalance(walletMapper.mapBalance(balance))
             }
         }
     }
