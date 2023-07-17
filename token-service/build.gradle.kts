@@ -1,6 +1,33 @@
 plugins {
     id("org.p2p.wallet.android.library")
     id("kotlin-kapt")
+    id("org.jetbrains.kotlinx.kover") version "0.7.2"
+}
+
+koverReport {
+    androidReports("debug") {
+        filters {
+            excludes {
+                annotatedBy(
+                    "*NoCoverage",
+                    "*Generated*",
+                    "androidx.room.Database",
+                )
+                packages(
+                    "com.bumptech.glide*",
+                )
+                classes(
+                    "*Module",
+                    "*Module\$*",
+                    "*Interceptor",
+                    "*Interceptor\$*",
+                    "*.BuildConfig",
+                    // excludes debug classes
+                    "*.DebugUtil"
+                )
+            }
+        }
+    }
 }
 
 android {
