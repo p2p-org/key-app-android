@@ -10,7 +10,6 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.home.ui.main.TOKEN_SYMBOLS_VALID_FOR_BUY
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
@@ -19,6 +18,7 @@ import org.p2p.wallet.user.repository.UserTokensLocalRepository
 import org.p2p.wallet.utils.emptyString
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
+val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(Constants.USDC_SYMBOL, Constants.SOL_SYMBOL)
 
 class UserInteractor(
     private val userLocalRepository: UserLocalRepository,
@@ -27,7 +27,7 @@ class UserInteractor(
     private val recipientsLocalRepository: RecipientsLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val sharedPreferences: SharedPreferences,
-    private val tokenServiceRepository: TokenServiceRepository
+    private val tokenServiceRepository: TokenServiceRepository,
 ) {
 
     suspend fun findTokenData(mintAddress: String): Token? {

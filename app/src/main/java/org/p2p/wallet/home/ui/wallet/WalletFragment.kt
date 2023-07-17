@@ -31,7 +31,6 @@ import org.p2p.wallet.home.ui.main.delegates.striga.onramp.strigaOnRampTokenDele
 import org.p2p.wallet.kyc.StrigaFragmentFactory
 import org.p2p.wallet.kyc.model.StrigaBanner
 import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
@@ -149,19 +148,9 @@ class WalletFragment :
     }
 
     private fun onActionButtonClicked(clickedButton: ActionButton) {
-        // todo: remove unused buttons
         when (clickedButton) {
-            ActionButton.BUY_BUTTON -> {
-                presenter.onTopupClicked()
-            }
-            ActionButton.SEND_BUTTON -> {
-                presenter.onSendClicked(clickSource = SearchOpenedFromScreen.MAIN)
-            }
             ActionButton.SELL_BUTTON -> {
                 presenter.onSellClicked()
-            }
-            ActionButton.SWAP_BUTTON -> {
-                presenter.onSwapClicked()
             }
             ActionButton.TOP_UP_BUTTON -> {
                 presenter.onTopupClicked()
