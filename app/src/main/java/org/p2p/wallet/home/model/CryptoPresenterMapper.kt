@@ -15,13 +15,11 @@ import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.hidebutton.TokenButtonCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
-import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
 import org.p2p.wallet.transaction.model.NewShowProgress
 
 class CryptoPresenterMapper(
     private val resources: Resources,
     private val claimUiMapper: ClaimUiMapper,
-    private val strigaUiBannerMapper: StrigaKycUiBannerMapper,
 ) {
 
     fun mapBalance(balance: BigDecimal): TextViewCellModel {
