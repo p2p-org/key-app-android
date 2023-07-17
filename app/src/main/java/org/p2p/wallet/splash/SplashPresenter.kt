@@ -32,7 +32,7 @@ class SplashPresenter(
     private fun loadTokensList() {
         launch {
             try {
-                tokenMetadataInteractor.loadAllTokensData()
+                tokenMetadataInteractor.loadAllTokensMetadata()
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading initial tokens data")
             } finally {

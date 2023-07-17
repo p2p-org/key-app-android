@@ -8,6 +8,7 @@ import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.orZero
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
+import kotlin.properties.Delegates.observable
 
 /**
  * This Watcher is responsible for limitation input amount by the user and formatting
@@ -48,7 +49,7 @@ class AmountFractionTextWatcher(
 
     private val field = WeakReference(editText)
 
-    private var valueText: String by Delegates.observable(editText.text?.toString().orEmpty()) { _, oldValue, newValue ->
+    private var valueText: String by observable(editText.text?.toString().orEmpty()) { _, oldValue, newValue ->
         if (oldValue != newValue) onValueChanged.invoke(newValue.dropSpaces())
     }
 

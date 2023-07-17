@@ -3,6 +3,7 @@ package org.p2p.wallet.utils
 import assertk.Assert
 import com.google.gson.Gson
 import io.mockk.MockKVerificationScope
+import io.mockk.coVerify
 import io.mockk.verify
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody
@@ -39,8 +40,16 @@ fun verifyNone(block: MockKVerificationScope.() -> Unit) {
     verify(exactly = 0, verifyBlock = { block() })
 }
 
+fun coVerifyNone(block: suspend MockKVerificationScope.() -> Unit) {
+    coVerify(exactly = 0, verifyBlock = { block() })
+}
+
 fun verifyOnce(block: MockKVerificationScope.() -> Unit) {
     verify(exactly = 1, verifyBlock = { block() })
+}
+
+fun coVerifyOnce(block: suspend MockKVerificationScope.() -> Unit) {
+    coVerify(exactly = 1, verifyBlock = { block() })
 }
 
 fun Int.isEven(): Boolean = this % 2 == 0
