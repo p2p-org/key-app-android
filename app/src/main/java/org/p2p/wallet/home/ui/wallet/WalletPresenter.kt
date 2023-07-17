@@ -2,16 +2,14 @@ package org.p2p.wallet.home.ui.wallet
 
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.BUY_BUTTON
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.SELL_BUTTON
-import org.p2p.wallet.home.model.HomePresenterMapper
+import org.p2p.wallet.home.model.CryptoPresenterMapper
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
 import org.p2p.wallet.home.ui.wallet.handlers.StrigaBannerClickHandler
@@ -29,7 +27,7 @@ import org.p2p.wallet.utils.unsafeLazy
 
 class WalletPresenter(
     private val usernameInteractor: UsernameInteractor,
-    private val homeMapper: HomePresenterMapper,
+    private val homeMapper: CryptoPresenterMapper,
     private val walletMapper: WalletPresenterMapper,
     tokenKeyProvider: TokenKeyProvider,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
@@ -42,7 +40,6 @@ class WalletPresenter(
 
     private var username: Username? = null
 
-    private val refreshingFlow = MutableStateFlow(true)
     private val viewStateFlow = MutableStateFlow(WalletViewState())
 
     private val userPublicKey: String by unsafeLazy { tokenKeyProvider.publicKey }
@@ -54,11 +51,9 @@ class WalletPresenter(
 
     override fun attach(view: WalletContract.View) {
         super.attach(view)
-        observeRefreshingStatus()
         observeViewState()
 
         loadInitialData()
-        observeRefreshingStatus()
         observeUsdc()
         observeStrigaKycBanners()
     }
@@ -116,14 +111,6 @@ class WalletPresenter(
         }
     }
 
-    private fun observeRefreshingStatus() {
-        refreshingFlow
-            .onEach {
-                view?.showRefreshing(it)
-            }
-            .launchIn(this)
-    }
-
     private fun loadInitialData() {
         launch {
             val buttons = listOf(BUY_BUTTON, SELL_BUTTON)
@@ -147,7 +134,7 @@ class WalletPresenter(
     }
 
     override fun refreshTokens() {
-        // TODO
+        tokenServiceCoordinator.refresh()
     }
 
     override fun onSellClicked() {
@@ -186,6 +173,4 @@ class WalletPresenter(
             view?.navigateToReserveUsername()
         }
     }
-
-    private fun showRefreshing(isRefreshing: Boolean) = refreshingFlow.tryEmit(isRefreshing)
 }

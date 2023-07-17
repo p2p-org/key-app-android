@@ -3,14 +3,10 @@ package org.p2p.wallet.home.model
 import androidx.annotation.ColorRes
 import android.content.res.Resources
 import java.math.BigDecimal
-import kotlinx.coroutines.withContext
 import org.p2p.core.common.TextContainer
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
 import org.p2p.uikit.model.AnyCellItem
-import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.model.ClaimDetails
@@ -19,32 +15,19 @@ import org.p2p.wallet.bridge.model.BridgeBundle
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.hidebutton.TokenButtonCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
 import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
-import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.utils.toPx
 
-class HomePresenterMapper(
+class CryptoPresenterMapper(
     private val resources: Resources,
     private val claimUiMapper: ClaimUiMapper,
     private val strigaUiBannerMapper: StrigaKycUiBannerMapper,
-    private val dispatchers: CoroutineDispatchers
 ) {
 
     fun mapBalance(balance: BigDecimal): TextViewCellModel {
         val result = resources.getString(R.string.home_usd_format, balance.formatFiat())
         return TextViewCellModel.Raw(TextContainer(result))
     }
-
-    fun mapRateSkeleton(): TextViewCellModel =
-        TextViewCellModel.Skeleton(
-            SkeletonCellModel(
-                height = 34.toPx(),
-                width = 160.toPx(),
-                radius = 4f.toPx()
-            )
-        )
 
     fun mapToClaimDetails(bridgeBundle: BridgeBundle, minAmountForFreeFee: BigDecimal): ClaimDetails {
         return claimUiMapper.makeClaimDetails(bridgeBundle, minAmountForFreeFee)
@@ -56,70 +39,6 @@ class HomePresenterMapper(
         claimDetails: ClaimDetails
     ): NewShowProgress {
         return claimUiMapper.prepareShowProgress(amountToClaim, iconUrl, claimDetails)
-    }
-
-    @Deprecated("To be removed when striga is removed from the HomePresenter")
-    fun getKycStatusBannerFromTitle(bannerTitleId: Int): StrigaKycStatusBanner? {
-        return strigaUiBannerMapper.getKycStatusBannerFromTitle(bannerTitleId)
-    }
-
-    fun mapToHomeBanner(isLoading: Boolean, banner: StrigaKycStatusBanner): HomeScreenBanner {
-        return strigaUiBannerMapper.mapToBanner(isLoading, banner)
-    }
-
-    suspend fun mapToItems(
-        tokens: List<Token.Active>,
-        ethereumTokens: List<Token.Eth>,
-        strigaOnRampTokens: List<StrigaOnRampToken>,
-        visibilityState: VisibilityState,
-        isZerosHidden: Boolean
-    ): List<HomeElementItem> {
-        // TODO remove after striga will move to WS
-        return withContext(dispatchers.io) {
-
-            val isHiddenGroupToTokens: Map<Boolean, List<Token.Active>> = tokens.groupBy { token ->
-                token.isDefinitelyHidden(isZerosHidden)
-            }
-
-            val hiddenTokens = isHiddenGroupToTokens[true].orEmpty()
-            val visibleTokens = isHiddenGroupToTokens[false].orEmpty()
-
-            val result = mutableListOf<HomeElementItem>()
-
-            result += HomeElementItem.Title(R.string.home_tokens)
-
-            result += strigaOnRampTokens.map {
-                val mintAddress = it.tokenDetails.mintAddress.toBase58Instance()
-                HomeElementItem.StrigaOnRampTokenItem(
-                    strigaToken = it,
-                    amountAvailable = it.claimableAmount,
-                    tokenName = it.tokenDetails.tokenName,
-                    tokenMintAddress = mintAddress,
-                    tokenSymbol = it.tokenDetails.tokenSymbol,
-                    tokenIcon = it.tokenDetails.iconUrl.orEmpty(),
-                    isOnRampInProcess = false
-                )
-            }
-
-            result += ethereumTokens.map { token ->
-                HomeElementItem.Claim(
-                    token = token,
-                    isClaimEnabled = !token.isClaiming
-                )
-            }
-
-            result += visibleTokens.map { HomeElementItem.Shown(it) }
-
-            if (hiddenTokens.isNotEmpty()) {
-                result += HomeElementItem.Action(visibilityState)
-            }
-
-            if (visibilityState.isVisible) {
-                result += hiddenTokens.map { HomeElementItem.Hidden(it, visibilityState) }
-            }
-
-            result.toList()
-        }
     }
 
     fun mapToCellItems(
