@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.common.StrigaUserIdProvider
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult

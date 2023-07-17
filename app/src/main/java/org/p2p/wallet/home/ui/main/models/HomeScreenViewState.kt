@@ -2,7 +2,7 @@ package org.p2p.wallet.home.ui.main.models
 
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 
 data class HomeScreenViewState(

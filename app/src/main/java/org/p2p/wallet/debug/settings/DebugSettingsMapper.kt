@@ -6,7 +6,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.settings.model.SettingsRow
 
 class DebugSettingsMapper(

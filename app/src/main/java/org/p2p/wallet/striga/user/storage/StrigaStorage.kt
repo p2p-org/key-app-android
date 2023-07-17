@@ -4,7 +4,7 @@ import org.p2p.core.utils.MillisSinceEpoch
 import org.p2p.wallet.common.EncryptedSharedPreferences
 import org.p2p.wallet.common.LongPreference
 import org.p2p.wallet.common.ObjectEncryptedPreference
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails

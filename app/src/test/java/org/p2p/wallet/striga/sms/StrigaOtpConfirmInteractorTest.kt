@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.runTest
 import org.p2p.core.utils.MillisSinceEpoch
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.common.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.common.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError

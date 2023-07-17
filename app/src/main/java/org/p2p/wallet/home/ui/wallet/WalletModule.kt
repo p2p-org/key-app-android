@@ -8,7 +8,7 @@ import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
 import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
 import org.p2p.wallet.home.ui.wallet.handlers.StrigaBannerClickHandler
 import org.p2p.wallet.home.ui.wallet.handlers.StrigaOnRampClickHandler
-import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycUiBannerMapper
 
 object WalletModule : InjectionModule {
 

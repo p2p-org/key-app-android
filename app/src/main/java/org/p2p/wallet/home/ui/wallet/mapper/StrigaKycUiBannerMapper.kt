@@ -1,7 +1,9 @@
-package org.p2p.wallet.kyc.model
+package org.p2p.wallet.home.ui.wallet.mapper
 
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeScreenBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 
 class StrigaKycUiBannerMapper {
 

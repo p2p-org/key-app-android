@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.user.interactor
 
 import kotlinx.coroutines.flow.StateFlow
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.common.StrigaUserIdProvider
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository

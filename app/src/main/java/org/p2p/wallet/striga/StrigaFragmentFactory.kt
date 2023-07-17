@@ -1,4 +1,4 @@
-package org.p2p.wallet.kyc
+package org.p2p.wallet.striga
 
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment

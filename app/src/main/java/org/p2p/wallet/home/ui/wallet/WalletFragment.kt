@@ -29,8 +29,8 @@ import org.p2p.wallet.home.ui.main.delegates.banner.homeScreenBannerDelegate
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.strigaOnRampTokenDelegate
 import org.p2p.wallet.kyc.StrigaFragmentFactory
-import org.p2p.wallet.kyc.model.StrigaBanner
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment

@@ -1,4 +1,4 @@
-package org.p2p.wallet.kyc.model
+package org.p2p.wallet.home.ui.wallet.mapper.model
 
 import org.p2p.wallet.home.model.HomeScreenBanner
 
