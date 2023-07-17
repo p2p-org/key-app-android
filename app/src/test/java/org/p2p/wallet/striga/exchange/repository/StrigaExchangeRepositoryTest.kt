@@ -111,9 +111,12 @@ class StrigaExchangeRepositoryTest {
 
         result as StrigaDataLayerResult.Success<StrigaExchangePairsWithRates>
 
-        result.value.hasRate(Constants.EUR_SYMBOL, Constants.USDC_SYMBOL).assertThat()
+        result.value.hasRate(Constants.EUR_SYMBOL, Constants.USDC_SYMBOL)
+            .assertThat()
             .isTrue()
-        result.value.hasRate(Constants.USDC_SYMBOL, Constants.EUR_SYMBOL).assertThat()
+
+        result.value.hasRate(Constants.USDC_SYMBOL, Constants.EUR_SYMBOL)
+            .assertThat()
             .isTrue()
     }
 
