@@ -6,12 +6,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.BUY_BUTTON
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.SELL_BUTTON
 import org.p2p.wallet.home.model.HomePresenterMapper
-import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
 import org.p2p.wallet.home.ui.wallet.handlers.StrigaBannerClickHandler
@@ -19,7 +19,6 @@ import org.p2p.wallet.home.ui.wallet.handlers.StrigaOnRampClickHandler
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.kyc.model.StrigaBanner
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -29,7 +28,7 @@ import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.unsafeLazy
 
 class WalletPresenter(
-    private val homeInteractor: HomeInteractor,
+    private val usernameInteractor: UsernameInteractor,
     private val homeMapper: HomePresenterMapper,
     private val walletMapper: WalletPresenterMapper,
     tokenKeyProvider: TokenKeyProvider,
@@ -138,7 +137,7 @@ class WalletPresenter(
     }
 
     private fun showUserAddressAndUsername() {
-        this.username = homeInteractor.getUsername()
+        this.username = usernameInteractor.getUsername()
         val userAddress = username?.fullUsername ?: userPublicKey.ellipsizeAddress()
         view?.showUserAddress(userAddress)
     }
@@ -151,24 +150,12 @@ class WalletPresenter(
         // TODO
     }
 
-    override fun onBuyClicked() {
-        // TODO
-    }
-
     override fun onSellClicked() {
-        // TODO
-    }
-
-    override fun onSwapClicked() {
         // TODO
     }
 
     override fun onTopupClicked() {
         view?.showTopupWalletDialog()
-    }
-
-    override fun onSendClicked(clickSource: SearchOpenedFromScreen) {
-        // TODO
     }
 
     override fun onStrigaOnRampClicked(item: StrigaOnRampCellModel) {
@@ -193,7 +180,7 @@ class WalletPresenter(
     }
 
     override fun onProfileClick() {
-        if (homeInteractor.isUsernameExist()) {
+        if (usernameInteractor.isUsernameExist()) {
             view?.navigateToProfile()
         } else {
             view?.navigateToReserveUsername()

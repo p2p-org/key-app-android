@@ -17,14 +17,13 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.HomePresenterMapper
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.home.ui.main.HomeInteractor
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.transaction.model.TransactionState
 
 class MyCryptoPresenter(
-    private val homeInteractor: HomeInteractor,
+    private val cryptoInteractor: MyCryptoInteractor,
     private val homeMapper: HomePresenterMapper,
     private val connectionManager: ConnectionManager,
     private val transactionManager: TransactionManager,
@@ -91,7 +90,7 @@ class MyCryptoPresenter(
         view?.showBalance(homeMapper.mapBalance(balance))
         logBalance(balance)
 
-        val areZerosHidden = homeInteractor.areZerosHidden()
+        val areZerosHidden = cryptoInteractor.areZerosHidden()
         val mappedItems: List<AnyCellItem> = homeMapper.mapToCellItems(
             tokens = solTokens,
             ethereumTokens = ethTokens,
@@ -118,7 +117,7 @@ class MyCryptoPresenter(
     override fun toggleTokenVisibility(token: Token.Active) {
         launch {
             val handleDefaultVisibility = { token: Token.Active ->
-                if (homeInteractor.areZerosHidden() && token.isZero) {
+                if (cryptoInteractor.areZerosHidden() && token.isZero) {
                     TokenVisibility.SHOWN
                 } else {
                     TokenVisibility.HIDDEN
@@ -130,7 +129,7 @@ class MyCryptoPresenter(
                 TokenVisibility.DEFAULT -> handleDefaultVisibility(token)
             }
 
-            homeInteractor.setTokenHidden(
+            cryptoInteractor.setTokenHidden(
                 mintAddress = token.mintAddress,
                 visibility = newVisibility.stringValue
             )
@@ -139,7 +138,7 @@ class MyCryptoPresenter(
 
     override fun toggleTokenVisibilityState() {
         visibilityState = visibilityState.toggle()
-        homeInteractor.setHiddenTokensVisibility(visibilityState.isVisible)
+        cryptoInteractor.setHiddenTokensVisibility(visibilityState.isVisible)
         observeCryptoTokens()
     }
 
@@ -170,10 +169,10 @@ class MyCryptoPresenter(
                 view?.navigateToTokenClaim(token)
             } else {
                 val latestActiveBundleId = token.latestActiveBundleId ?: return@launch
-                val bridgeBundle = homeInteractor.getClaimBundleById(latestActiveBundleId) ?: return@launch
+                val bridgeBundle = cryptoInteractor.getClaimBundleById(latestActiveBundleId) ?: return@launch
                 val claimDetails = homeMapper.mapToClaimDetails(
                     bridgeBundle = bridgeBundle,
-                    minAmountForFreeFee = homeInteractor.getClaimMinAmountForFreeFee(),
+                    minAmountForFreeFee = cryptoInteractor.getClaimMinAmountForFreeFee(),
                 )
                 val progressDetails = homeMapper.mapShowProgressForClaim(
                     amountToClaim = bridgeBundle.resultAmount.amountInToken,

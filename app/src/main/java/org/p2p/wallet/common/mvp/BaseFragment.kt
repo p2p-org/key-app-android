@@ -28,7 +28,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
-import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
@@ -127,7 +127,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is NewCreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
         is DerivableAccountsFragment -> ScreenNames.OnBoarding.DERIVATION
         is ReserveUsernameFragment -> ScreenNames.OnBoarding.USERNAME_RESERVE
-        is HomeFragment -> ScreenNames.Main.MAIN
+        is WalletFragment -> ScreenNames.Main.MAIN
         is SettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
         is JupiterSwapFragment -> ScreenNames.Swap.MAIN
