@@ -14,6 +14,7 @@ interface MainContainerContract {
         fun inflateBottomNavigationMenu(@MenuRes menuRes: Int)
         fun showSettingsBadgeVisible(isVisible: Boolean)
         fun showCryptoBadgeVisible(isVisible: Boolean)
+        fun showWalletBalance(balance: String)
         fun navigateFromDeeplink(data: DeeplinkData)
 
         fun navigateToSendNoTokens(fallbackToken: Token)

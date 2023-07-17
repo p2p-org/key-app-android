@@ -20,12 +20,14 @@ import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
-import org.p2p.wallet.home.HomeModule
+import org.p2p.wallet.home.ui.container.MainContainerModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.ethereumkit.external.EthereumModule
 import org.p2p.token.service.TokenServiceModule
 import org.p2p.wallet.home.events.HomeEventsModule
+import org.p2p.wallet.home.ui.crypto.CryptoModule
+import org.p2p.wallet.home.ui.wallet.WalletModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
@@ -83,7 +85,9 @@ object AppModule {
                 ClaimModule.create(),
                 DebugSettingsModule.create(),
                 HistoryModule.create(),
-                HomeModule.create(),
+                MainContainerModule.create(),
+                CryptoModule.create(),
+                WalletModule.create(),
                 JupiterModule.create(),
                 PushNotificationsModule.create(),
                 ReceiveModule.create(),
