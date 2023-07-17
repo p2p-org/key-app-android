@@ -30,7 +30,12 @@ class MyCryptoPresenter(
     private val claimHandler: ClaimHandler,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
-    private var visibilityState: VisibilityState = VisibilityState.Hidden
+    private var visibilityState: VisibilityState = if (cryptoInteractor.getHiddenTokensVisibility()) {
+        VisibilityState.Visible
+    } else {
+        VisibilityState.Hidden
+    }
+
     private var cryptoTokensSubscription: Job? = null
 
     override fun attach(view: MyCryptoContract.View) {
