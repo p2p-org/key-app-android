@@ -9,6 +9,10 @@ plugins {
     kotlin("android")
 }
 
+apply {
+    from("${project.rootDir}/.scripts/ktlint.gradle")
+}
+
 android {
     compileSdk = Versions.sdkCompileVersion
 
