@@ -99,7 +99,7 @@ class TopUpWalletPresenter(
         }
 
         if (strigaUserInteractor.isUserCreated()) {
-            if (strigaUserInteractor.isUserVerificationStatusLoaded()) {
+            if (strigaUserInteractor.isUserVerificationStatusLoaded() && !strigaUserInteractor.isKycApproved) {
                 Timber.i("Striga user status is not fetched. Trying again...")
                 loadStrigaUserStatus()
             }
