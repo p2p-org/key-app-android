@@ -1,6 +1,7 @@
 package org.p2p.core.rpc
 
 import com.google.gson.JsonObject
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -19,5 +20,5 @@ interface RpcApi {
 
     @GET
     @Headers("Content-Type: application/json", "Accept: application/json")
-    suspend fun getZipFile(@Url uri: String, @Header("last-modified") lastModified: String?): JsonObject
+    suspend fun getZipFile(@Url uri: String, @Header("if-modified-since") ifModifiedSince: String?): Response<JsonObject>
 }

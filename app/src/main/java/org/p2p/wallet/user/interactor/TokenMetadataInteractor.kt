@@ -10,7 +10,7 @@ import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 
 private const val TAG = "TokenMetadataInteractor"
-private const val TOKENS_FILE_NAME = "tokens_metadata"
+const val TOKENS_FILE_NAME = "tokens_metadata"
 
 class TokenMetadataInteractor(
     private val externalStorageRepository: ExternalStorageRepository,
@@ -27,20 +27,22 @@ class TokenMetadataInteractor(
             null
         }
 
-        val lastModified = metadata?.timestamp
-        Timber.tag(TAG).i("Checking if metadata is modified since: $lastModified")
+        val ifModifiedSince = metadata?.timestamp
+        Timber.tag(TAG).i("Checking if metadata is modified since: $ifModifiedSince")
 
-        when (val result = metadataRepository.loadTokensMetadata(lastModified = lastModified)) {
+        when (val result = metadataRepository.loadTokensMetadata(ifModifiedSince = ifModifiedSince)) {
             is UpdateTokenMetadataResult.NewMetadata -> updateMemoryCacheAndLocalFile(result)
             is UpdateTokenMetadataResult.NoUpdate -> updateMemoryCache(metadata?.tokens)
-            is UpdateTokenMetadataResult.Error -> Timber.tag(TAG).e(result.throwable, "Error loading metadata")
+            is UpdateTokenMetadataResult.Error -> handleError(result.throwable)
         }
     }
 
-    private fun updateMemoryCacheAndLocalFile(result: UpdateTokenMetadataResult.NewMetadata) {
-        Timber.tag(TAG).i("Received an updated tokens metadata, updating file in local storage")
-
+    internal fun updateMemoryCacheAndLocalFile(result: UpdateTokenMetadataResult.NewMetadata) {
         val tokensMetadata = result.tokensMetadataInfo
+
+        val lastModified = tokensMetadata.timestamp
+        Timber.tag(TAG).i("New tokens metadata received from: $lastModified, updating local storage.")
+
         userLocalRepository.setTokenData(tokensMetadata.tokens)
 
         // Save tokens to the file
@@ -50,7 +52,7 @@ class TokenMetadataInteractor(
         )
     }
 
-    private fun updateMemoryCache(tokensMetadata: List<TokenMetadata>?) {
+    internal fun updateMemoryCache(tokensMetadata: List<TokenMetadata>?) {
         Timber.tag(TAG).i("Metadata is up-to-date. Using local file")
 
         if (tokensMetadata == null) {
@@ -59,5 +61,9 @@ class TokenMetadataInteractor(
         }
 
         userLocalRepository.setTokenData(tokensMetadata)
+    }
+
+    internal fun handleError(throwable: Throwable) {
+        Timber.tag(TAG).e(throwable, "Error loading metadata")
     }
 }

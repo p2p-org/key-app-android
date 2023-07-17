@@ -13,6 +13,7 @@ import io.mockk.mockk
 import org.intellij.lang.annotations.Language
 import org.junit.Assert
 import org.junit.Test
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
@@ -25,6 +26,7 @@ import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWhitelistAddressesMa
 import org.p2p.wallet.utils.assertThat
 import org.p2p.wallet.utils.fromJson
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class StrigaWhitelistedAddressesRepositoryTest {
 
     private val gson = Gson()

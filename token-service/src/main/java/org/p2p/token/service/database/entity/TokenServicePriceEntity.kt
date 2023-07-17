@@ -1,23 +1,20 @@
 package org.p2p.token.service.database.entity
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.math.BigDecimal
-import org.p2p.token.service.database.entity.TokenPriceEntity.Companion.TABLE_NAME
-import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.database.entity.TokenServicePriceEntity.Companion.TABLE_NAME
 
 @Entity(tableName = TABLE_NAME)
-data class TokenPriceEntity(
+internal data class TokenServicePriceEntity(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = COLUMN_TOKEN_ADDRESS)
     val tokenAddress: String,
     @ColumnInfo(name = COLUMN_NETWORK_CHAIN)
-    val networkChain: String,
+    val networkChainName: String,
     @ColumnInfo(name = COLUMN_USD_RATE)
     val usdRate: BigDecimal
-
 ) {
     companion object {
         const val TABLE_NAME = "token_price_table"

@@ -25,29 +25,31 @@ internal class TokenMetadataRemoteRepository(
     private val tokenServiceUrl
         get() = urlProvider.loadTokenServiceEnvironment().baseServiceUrl
 
-    override suspend fun loadTokensMetadata(lastModified: String?): UpdateTokenMetadataResult =
-        withContext(dispatchers.io) {
-            val response = try {
-                api.getZipFile("${tokenServiceUrl}get_all_tokens_info", lastModified)
-            } catch (e: HttpException) {
-                return@withContext if (e.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {
-                    UpdateTokenMetadataResult.NoUpdate
-                } else {
-                    UpdateTokenMetadataResult.Error(e)
-                }
+    override suspend fun loadTokensMetadata(
+        ifModifiedSince: String?
+    ): UpdateTokenMetadataResult = withContext(dispatchers.io) {
+        val response = try {
+            api.getZipFile("${tokenServiceUrl}get_all_tokens_info", ifModifiedSince)
+        } catch (e: HttpException) {
+            return@withContext if (e.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+                UpdateTokenMetadataResult.NoUpdate
+            } else {
+                UpdateTokenMetadataResult.Error(e)
             }
-
-            val jsonResponse = gson.fromJson(response, TokenListResponse::class.java)
-
-            val tokens = jsonResponse.tokens
-                .chunked(ALL_TOKENS_MAP_CHUNKED_COUNT)
-                .flatMap { chunkedList -> chunkedList.map { mapper.fromNetwork(it) } }
-
-            val metadata = TokensMetadataInfo(
-                timestamp = jsonResponse.timestamp,
-                tokens = tokens
-            )
-
-            UpdateTokenMetadataResult.NewMetadata(tokensMetadataInfo = metadata)
         }
+
+        val responseBody = response.body() ?: return@withContext UpdateTokenMetadataResult.NoUpdate
+        val jsonResponse = gson.fromJson(responseBody, TokenListResponse::class.java)
+
+        val tokens = jsonResponse.tokens
+            .chunked(ALL_TOKENS_MAP_CHUNKED_COUNT)
+            .flatMap { chunkedList -> chunkedList.map { mapper.fromNetwork(it) } }
+
+        val metadata = TokensMetadataInfo(
+            timestamp = response.headers()["last-modified"],
+            tokens = tokens
+        )
+
+        UpdateTokenMetadataResult.NewMetadata(tokensMetadataInfo = metadata)
+    }
 }
