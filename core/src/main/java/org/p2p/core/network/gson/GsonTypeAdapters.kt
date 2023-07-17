@@ -182,8 +182,6 @@ internal class DefaultBlockParameterTypeAdapter : TypeAdapter<DefaultBlockParame
     }
 }
 
-
-
 internal class OptionalTypeAdapter<T>(
     private val type: Type,
 ) : TypeAdapter<Optional<T>>() {

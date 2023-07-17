@@ -20,4 +20,3 @@ fun infoBlockCellDelegate(
             onBindListener?.invoke(binding.root, item)
         }
     }
-

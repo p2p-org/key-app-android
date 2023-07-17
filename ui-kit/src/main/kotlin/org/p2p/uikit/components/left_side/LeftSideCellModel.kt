@@ -23,7 +23,7 @@ sealed interface LeftSideCellModel {
             firstLineText: TextContainer? = null,
             secondLineText: TextContainer? = null,
             thirdLineText: TextContainer? = null
-        ): this(
+        ) : this(
             icon = null,
             firstLineText?.let(TextViewCellModel::Raw),
             secondLineText?.let(TextViewCellModel::Raw),

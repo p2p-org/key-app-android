@@ -6,10 +6,14 @@ import org.bouncycastle.crypto.BufferedBlockCipher
 import org.bouncycastle.crypto.agreement.ECDHBasicAgreement
 import org.bouncycastle.crypto.digests.SHA256Digest
 import org.bouncycastle.crypto.engines.AESEngine
-import org.bouncycastle.crypto.engines.IESEngine
 import org.bouncycastle.crypto.macs.HMac
 import org.bouncycastle.crypto.modes.SICBlockCipher
-import org.bouncycastle.crypto.params.*
+import org.bouncycastle.crypto.params.ECDomainParameters
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters
+import org.bouncycastle.crypto.params.ECPublicKeyParameters
+import org.bouncycastle.crypto.params.IESWithCipherParameters
+import org.bouncycastle.crypto.params.KeyParameter
+import org.bouncycastle.crypto.params.ParametersWithIV
 import org.bouncycastle.crypto.signers.ECDSASigner
 import org.bouncycastle.crypto.signers.HMacDSAKCalculator
 import org.bouncycastle.jcajce.provider.digest.Keccak
@@ -19,7 +23,7 @@ import org.bouncycastle.math.ec.ECCurve
 import org.bouncycastle.math.ec.ECPoint
 import org.bouncycastle.util.BigIntegers
 import java.math.BigInteger
-import java.util.*
+import java.util.Arrays
 import org.p2p.core.wrapper.eth.helpers.RandomHelper
 
 object CryptoUtils {
@@ -56,7 +60,7 @@ object CryptoUtils {
         val r = components[0]
         var s = components[1]
 
-        //canonicalize s
+        // canonicalize s
         s = if (s <= HALF_CURVE_ORDER) s else CURVE.n.subtract(s)
 
         var recId = -1
@@ -100,11 +104,13 @@ object CryptoUtils {
 
         val cipher = iesEngine.processBlock(message, 0, message.size, prefixBytes)
 
-        return ECIESEncryptedMessage(prefixBytes,
-                ephemPair.publicKeyPoint.getEncoded(false),
-                iv,
-                cipher.copyOfRange(0, cipher.size - 32),
-                cipher.copyOfRange(cipher.size - 32, cipher.size))
+        return ECIESEncryptedMessage(
+            prefixBytes,
+            ephemPair.publicKeyPoint.getEncoded(false),
+            iv,
+            cipher.copyOfRange(0, cipher.size - 32),
+            cipher.copyOfRange(cipher.size - 32, cipher.size)
+        )
     }
 
     fun sha3(data: ByteArray): ByteArray {
@@ -125,16 +131,21 @@ object CryptoUtils {
         return ECKey(privKey, CURVE.g.multiply(privKey))
     }
 
-    private fun makeIESEngine(isEncrypt: Boolean, pub: ECPoint, prv: BigInteger, IV: ByteArray): org.p2p.core.wrapper.eth.IESEngine {
+    private fun makeIESEngine(
+        isEncrypt: Boolean,
+        pub: ECPoint,
+        prv: BigInteger,
+        IV: ByteArray
+    ): org.p2p.core.wrapper.eth.IESEngine {
         val aesFastEngine = AESEngine()
 
         val iesEngine = IESEngine(
-                ECDHBasicAgreement(),
-                ConcatKDFBytesGenerator(SHA256Digest()),
-                HMac(SHA256Digest()),
-                SHA256Digest(),
-                BufferedBlockCipher(SICBlockCipher(aesFastEngine)))
-
+            ECDHBasicAgreement(),
+            ConcatKDFBytesGenerator(SHA256Digest()),
+            HMac(SHA256Digest()),
+            SHA256Digest(),
+            BufferedBlockCipher(SICBlockCipher(aesFastEngine))
+        )
 
         val d = byteArrayOf()
         val e = byteArrayOf()
@@ -142,11 +153,21 @@ object CryptoUtils {
         val p = IESWithCipherParameters(d, e, KEY_SIZE, KEY_SIZE)
         val parametersWithIV = ParametersWithIV(p, IV)
 
-        iesEngine.init(isEncrypt, ECPrivateKeyParameters(prv, CURVE), ECPublicKeyParameters(pub, CURVE), parametersWithIV)
+        iesEngine.init(
+            forEncryption = isEncrypt,
+            privParam = ECPrivateKeyParameters(prv, CURVE),
+            pubParam = ECPublicKeyParameters(pub, CURVE),
+            params = parametersWithIV
+        )
         return iesEngine
     }
 
-    private fun recoverPubBytesFromSignature(recId: Int, r: BigInteger, s: BigInteger, messageHash: ByteArray?): ByteArray? {
+    private fun recoverPubBytesFromSignature(
+        recId: Int,
+        r: BigInteger,
+        s: BigInteger,
+        messageHash: ByteArray?
+    ): ByteArray? {
         val n = CURVE.n
         val i = BigInteger.valueOf(recId.toLong() / 2)
         val x = r.add(i.multiply(n))

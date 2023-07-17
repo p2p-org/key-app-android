@@ -11,7 +11,6 @@ import android.os.Parcelable
 import android.text.Editable
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
-import android.view.View
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.uikit.R
@@ -19,7 +18,6 @@ import org.p2p.uikit.databinding.WidgetUiKitEdittextBinding
 import org.p2p.uikit.utils.SimpleTagTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
-import org.p2p.uikit.utils.toDp
 
 private const val CORNER_RADIUS = 20f
 private const val STROKE_WIDTH = 1
@@ -111,11 +109,11 @@ class UiKitEditText @JvmOverloads constructor(
             val digits = styleAttrs.getString(R.styleable.UiKitEditText_android_digits)
             digits?.let(::setDigits)
         }
-        if(styleAttrs.hasValue(R.styleable.UiKitEditText_android_nextFocusDown)) {
+        if (styleAttrs.hasValue(R.styleable.UiKitEditText_android_nextFocusDown)) {
             val nextFocusDown = styleAttrs.getResourceIdOrThrow(R.styleable.UiKitEditText_android_nextFocusDown)
             binding.editTextField.nextFocusDownId = nextFocusDown
         }
-        if(styleAttrs.hasValue(R.styleable.UiKitEditText_android_imeOptions)) {
+        if (styleAttrs.hasValue(R.styleable.UiKitEditText_android_imeOptions)) {
             val imeOptions = styleAttrs.getIntOrThrow(R.styleable.UiKitEditText_android_imeOptions)
             binding.editTextField.imeOptions = imeOptions
         }

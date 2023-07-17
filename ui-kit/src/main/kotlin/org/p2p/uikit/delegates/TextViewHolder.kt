@@ -16,4 +16,3 @@ fun textViewCellDelegate(): AdapterDelegate<List<AnyCellItem>> =
             binding.root.bind(item)
         }
     }
-

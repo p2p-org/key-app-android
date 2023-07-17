@@ -3,7 +3,6 @@ package org.p2p.token.service.database
 import androidx.room.Room
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.util.concurrent.Executors
 import org.p2p.core.common.di.InjectionModule

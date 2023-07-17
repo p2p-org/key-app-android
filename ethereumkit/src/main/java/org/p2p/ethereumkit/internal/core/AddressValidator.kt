@@ -1,7 +1,7 @@
 package org.p2p.ethereumkit.internal.core
 
-import org.p2p.core.wrapper.eth.EIP55
 import java.math.BigInteger
+import org.p2p.core.wrapper.eth.EIP55
 
 class AddressValidator {
 
@@ -48,5 +48,4 @@ class AddressValidator {
             return containsLowerCase && containsUpperCase
         }
     }
-
 }

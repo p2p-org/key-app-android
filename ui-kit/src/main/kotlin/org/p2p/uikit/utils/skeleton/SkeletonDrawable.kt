@@ -117,7 +117,11 @@ class SkeletonDrawable : PaintDrawable() {
     }
 
     override fun getOpacity(): Int {
-        return if (mShimmer != null && (mShimmer!!.clipToChildren || mShimmer!!.alphaShimmer)) PixelFormat.TRANSLUCENT else PixelFormat.OPAQUE
+        return if (mShimmer != null && (mShimmer!!.clipToChildren || mShimmer!!.alphaShimmer)) {
+            PixelFormat.TRANSLUCENT
+        } else {
+            PixelFormat.OPAQUE
+        }
     }
 
     private fun offset(start: Float, end: Float, percent: Float): Float {
@@ -136,20 +140,26 @@ class SkeletonDrawable : PaintDrawable() {
         } else {
             started = false
         }
-        mValueAnimator = ValueAnimator.ofFloat(0f, 1f + (mShimmer!!.repeatDelay / mShimmer!!.animationDuration).toFloat())
-            .apply {
-                repeatMode = mShimmer!!.repeatMode
-                repeatCount = mShimmer!!.repeatCount
-                duration = mShimmer!!.animationDuration + mShimmer!!.repeatDelay
-                addUpdateListener(mUpdateListener)
-                if (started) {
-                    start()
+        mValueAnimator =
+            ValueAnimator.ofFloat(0f, 1f + (mShimmer!!.repeatDelay / mShimmer!!.animationDuration).toFloat())
+                .apply {
+                    repeatMode = mShimmer!!.repeatMode
+                    repeatCount = mShimmer!!.repeatCount
+                    duration = mShimmer!!.animationDuration + mShimmer!!.repeatDelay
+                    addUpdateListener(mUpdateListener)
+                    if (started) {
+                        start()
+                    }
                 }
-            }
     }
 
     fun maybeStartShimmer() {
-        if (mValueAnimator != null && !mValueAnimator!!.isStarted && mShimmer != null && mShimmer!!.autoStart && callback != null) {
+        if (mValueAnimator != null &&
+            !mValueAnimator!!.isStarted &&
+            mShimmer != null &&
+            mShimmer!!.autoStart &&
+            callback != null
+        ) {
             mValueAnimator!!.start()
         }
     }
@@ -166,12 +176,20 @@ class SkeletonDrawable : PaintDrawable() {
         val shader: Shader
         shader = when (mShimmer!!.shape) {
             Shimmer.Shape.LINEAR -> {
-                val vertical = (mShimmer!!.direction == Shimmer.Direction.TOP_TO_BOTTOM
-                    || mShimmer!!.direction == Shimmer.Direction.BOTTOM_TO_TOP)
+                val vertical = (
+                    mShimmer!!.direction == Shimmer.Direction.TOP_TO_BOTTOM ||
+                        mShimmer!!.direction == Shimmer.Direction.BOTTOM_TO_TOP
+                    )
                 val endX = if (vertical) 0 else width
                 val endY = if (vertical) height else 0
                 LinearGradient(
-                    0f, 0f, endX.toFloat(), endY.toFloat(), mShimmer!!.colors, mShimmer!!.positions, Shader.TileMode.CLAMP
+                    0f,
+                    0f,
+                    endX.toFloat(),
+                    endY.toFloat(),
+                    mShimmer!!.colors,
+                    mShimmer!!.positions,
+                    Shader.TileMode.CLAMP
                 )
             }
             Shimmer.Shape.RADIAL -> RadialGradient(
@@ -182,12 +200,20 @@ class SkeletonDrawable : PaintDrawable() {
                 Shader.TileMode.CLAMP
             )
             else -> {
-                val vertical = (mShimmer!!.direction == Shimmer.Direction.TOP_TO_BOTTOM
-                    || mShimmer!!.direction == Shimmer.Direction.BOTTOM_TO_TOP)
+                val vertical = (
+                    mShimmer!!.direction == Shimmer.Direction.TOP_TO_BOTTOM ||
+                        mShimmer!!.direction == Shimmer.Direction.BOTTOM_TO_TOP
+                    )
                 val endX = if (vertical) 0 else width
                 val endY = if (vertical) height else 0
                 LinearGradient(
-                    0f, 0f, endX.toFloat(), endY.toFloat(), mShimmer!!.colors, mShimmer!!.positions, Shader.TileMode.CLAMP
+                    0f,
+                    0f,
+                    endX.toFloat(),
+                    endY.toFloat(),
+                    mShimmer!!.colors,
+                    mShimmer!!.positions,
+                    Shader.TileMode.CLAMP
                 )
             }
         }

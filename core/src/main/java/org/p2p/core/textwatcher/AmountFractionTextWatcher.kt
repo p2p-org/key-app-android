@@ -3,12 +3,11 @@ package org.p2p.core.textwatcher
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import java.lang.ref.WeakReference
+import kotlin.properties.Delegates.observable
 import org.p2p.core.R
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.orZero
-import java.lang.ref.WeakReference
-import kotlin.properties.Delegates
-import kotlin.properties.Delegates.observable
 
 /**
  * This Watcher is responsible for limitation input amount by the user and formatting

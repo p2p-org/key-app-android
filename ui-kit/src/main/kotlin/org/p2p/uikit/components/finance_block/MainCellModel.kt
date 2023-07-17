@@ -19,5 +19,5 @@ data class MainCellModel(
 
     @Suppress("UNCHECKED_CAST")
     @Throws(ClassCastException::class)
-    fun <T: Any> typedPayload(): T = payload as T
+    fun <T : Any> typedPayload(): T = payload as T
 }

@@ -1,10 +1,9 @@
 package org.p2p.core.network.environment
 
-import org.p2p.core.crashlytics.CrashLogger
 import timber.log.Timber
 import kotlin.reflect.KClass
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.core.network.storage.NetworkEnvironmentStorage
-
 
 class NetworkEnvironmentManager(
     private val networkEnvironmentStorage: NetworkEnvironmentStorage,

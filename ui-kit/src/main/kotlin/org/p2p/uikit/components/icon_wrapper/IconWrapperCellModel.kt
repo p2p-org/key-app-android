@@ -26,10 +26,12 @@ sealed interface IconWrapperCellModel {
 }
 
 sealed interface TwoIconAngle {
-    //horizontal line, first icon on the center of left side, second icon on the center of right side
+    // horizontal line, first icon on the center of left side, second icon on the center of right side
     object Zero : TwoIconAngle
-    //first icon on the left top corner, second icon on the right bottom corner
+
+    // first icon on the left top corner, second icon on the right bottom corner
     object Plus45 : TwoIconAngle
-    //horizontal line, first icon on the center of right side, second icon on the center of left side
+
+    // horizontal line, first icon on the center of right side, second icon on the center of left side
     object Plus180 : TwoIconAngle
 }
