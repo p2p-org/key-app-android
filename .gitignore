@@ -76,3 +76,6 @@ captures/
 *.DS_Store
 
 sentry.properties
+
+# Local test used for checking logic within the app's code context (such as http request etc)
+app/src/test/java/org/p2p/wallet/LocalTest.kt
