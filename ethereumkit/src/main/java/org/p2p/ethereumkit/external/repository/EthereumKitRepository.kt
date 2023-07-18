@@ -98,13 +98,11 @@ internal class EthereumKitRepository(
                 )
             }
                 .filter { token ->
-                    true
                     val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
                     val tokenFiatAmount = token.totalInUsd.orZero()
                     val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
                     tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
                 }
-            Timber.tag("_____").d("wallet tokens = ${walletTokens.size}")
 
             walletTokens
         } catch (e: Throwable) {
