@@ -29,8 +29,8 @@ import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorage
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
-import org.p2p.wallet.striga.user.StrigaStorage
-import org.p2p.wallet.striga.user.StrigaStorageContract
+import org.p2p.wallet.striga.user.storage.StrigaStorage
+import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 
 private const val PREFS_DEFAULT = "prefs"
 private const val PREFS_ACCOUNT = "account_prefs"

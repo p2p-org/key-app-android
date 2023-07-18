@@ -2,9 +2,9 @@ package org.p2p.wallet.home.ui.wallet.handlers
 
 import org.p2p.wallet.R
 import org.p2p.wallet.home.ui.wallet.WalletContract
-import org.p2p.wallet.kyc.model.StrigaBanner
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
-import org.p2p.wallet.kyc.model.StrigaKycUiBannerMapper
+import org.p2p.wallet.home.ui.wallet.mapper.StrigaKycUiBannerMapper
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 

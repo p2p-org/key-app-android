@@ -20,8 +20,8 @@ import org.p2p.core.utils.fromLamports
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
-import org.p2p.wallet.kyc.model.StrigaBanner
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees

@@ -14,9 +14,9 @@ import io.mockk.spyk
 import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.striga.StrigaUserIdProvider
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.StrigaUserIdProvider
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsResendRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsVerifyRequest

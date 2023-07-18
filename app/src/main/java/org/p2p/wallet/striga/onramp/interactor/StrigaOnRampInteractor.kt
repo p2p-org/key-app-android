@@ -10,11 +10,11 @@ import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.model.map
-import org.p2p.wallet.striga.model.toFailureResult
-import org.p2p.wallet.striga.model.toSuccessResult
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.map
+import org.p2p.wallet.striga.common.model.toFailureResult
+import org.p2p.wallet.striga.common.model.toSuccessResult
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency

@@ -16,7 +16,7 @@ import org.p2p.wallet.home.ui.wallet.handlers.StrigaOnRampClickHandler
 import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.kyc.model.StrigaBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId

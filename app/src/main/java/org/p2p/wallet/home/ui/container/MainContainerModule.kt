@@ -15,10 +15,10 @@ import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.container.mapper.BalanceMapper
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
+import org.p2p.wallet.home.ui.topup.TopUpWalletContract
+import org.p2p.wallet.home.ui.topup.TopUpWalletPresenter
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.interactor.SendInteractor
-import org.p2p.wallet.striga.ui.TopUpWalletContract
-import org.p2p.wallet.striga.ui.TopUpWalletPresenter
 
 object MainContainerModule : InjectionModule {
 

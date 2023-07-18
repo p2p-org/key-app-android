@@ -22,6 +22,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeRepository
+import org.p2p.wallet.striga.signup.steps.validation.PhoneNumberInputValidator
 import org.p2p.wallet.utils.TestCoroutineDispatchers
 import org.p2p.wallet.utils.TimberUnitTestInstance
 

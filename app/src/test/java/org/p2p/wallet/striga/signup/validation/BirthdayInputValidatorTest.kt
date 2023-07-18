@@ -7,6 +7,7 @@ import org.junit.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.p2p.core.common.TextContainer
 import org.p2p.wallet.R
+import org.p2p.wallet.striga.signup.steps.validation.BirthdayInputValidator
 
 @ExperimentalCoroutinesApi
 class BirthdayInputValidatorTest {

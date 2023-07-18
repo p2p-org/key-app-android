@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.user.repository
 
 import timber.log.Timber
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus

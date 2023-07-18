@@ -1,10 +1,10 @@
 package org.p2p.wallet.striga.wallet.repository.impl
 
 import timber.log.Timber
-import org.p2p.wallet.striga.StrigaUserIdProvider
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.model.toSuccessResult
+import org.p2p.wallet.striga.common.StrigaUserIdProvider
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.toSuccessResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.api.request.StrigaAddWhitelistedAddressRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
