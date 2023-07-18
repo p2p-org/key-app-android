@@ -17,11 +17,13 @@ import java.math.BigDecimal
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.p2p.core.utils.Constants
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.exchange.api.StrigaExchangeApi
+import org.p2p.wallet.striga.exchange.api.response.StrigaExchangeRateItemResponse
 import org.p2p.wallet.striga.exchange.models.StrigaExchangePairsWithRates
 import org.p2p.wallet.striga.exchange.repository.impl.StrigaExchangeRemoteRepository
 import org.p2p.wallet.striga.exchange.repository.mapper.StrigaExchangeRepositoryMapper
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
 import org.p2p.wallet.utils.assertThat
 import org.p2p.wallet.utils.fromJson
 
@@ -55,8 +57,8 @@ class StrigaExchangeRepositoryTest {
 
     private val expectedUsdcEuroRate = StrigaExchangePairsWithRates.Rate(
         price = BigDecimal("0.89"),
-        buy = BigDecimal("0.9"),
-        sell = BigDecimal("0.88"),
+        buyRate = BigDecimal("0.9"),
+        sellRate = BigDecimal("0.88"),
         timestamp = 1689587019000L,
         currency = "Euros"
     )
@@ -67,7 +69,11 @@ class StrigaExchangeRepositoryTest {
             api = api,
             mapper = StrigaExchangeRepositoryMapper(),
         )
-        coEvery { api.getExchangeRates() } returns exchangeRatesResponseBody.fromJson(gson)
+
+        val obj = exchangeRatesResponseBody.fromJson<Map<String, StrigaExchangeRateItemResponse>>(gson)
+        coEvery { api.getExchangeRates() } returns obj
+        val jsonBack = gson.toJson(obj)
+        println(jsonBack)
     }
 
     @Test
@@ -79,7 +85,7 @@ class StrigaExchangeRepositoryTest {
     }
 
     @Test
-    fun `GIVEN exchange rates WHEN findRate with random order of symbols THEN it returns the same rates`() = runTest {
+    fun `GIVEN exchange rates WHEN findRate with arbitrary order of symbols THEN it returns the same rates`() = runTest {
         val result = repository.getExchangeRates()
         result.assertThat()
             .isInstanceOf(StrigaDataLayerResult.Success::class.java)
@@ -136,4 +142,30 @@ class StrigaExchangeRepositoryTest {
                     Constants.BTC_SYMBOL to Constants.EUR_SYMBOL,
                 )
         }
+
+    @Test
+    fun `GIVE exchange rates WHEN getExchangeRateForPair THEN check result has a rate`() = runTest {
+        val result = repository.getExchangeRateForPair(Constants.EUR_SYMBOL, Constants.USDC_SYMBOL)
+
+        result as StrigaDataLayerResult.Success<StrigaExchangePairsWithRates.Rate>
+
+        result.value.assertThat()
+            .isEqualTo(expectedUsdcEuroRate)
+    }
+
+    @Test
+    fun `GIVE exchange rates WHEN getExchangeRateForPair for nonexistent pair THEN check result has no rate`() = runTest {
+        val result = repository.getExchangeRateForPair("ABRAKADABRA", Constants.USDC_SYMBOL)
+
+        result.assertThat()
+            .isInstanceOf(StrigaDataLayerResult.Failure::class.java)
+
+        result as StrigaDataLayerResult.Failure<StrigaExchangePairsWithRates.Rate>
+        result.error.assertThat()
+            .isInstanceOf(StrigaDataLayerError.InternalError::class.java)
+
+        result.error.cause.assertThat()
+            .isNotNull()
+            .isInstanceOf(StrigaExchangeRemoteRepository.StrigaExchangeRateNotFound::class.java)
+    }
 }

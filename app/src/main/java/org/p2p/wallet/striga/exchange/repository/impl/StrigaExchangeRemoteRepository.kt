@@ -1,17 +1,20 @@
 package org.p2p.wallet.striga.exchange.repository.impl
 
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.map
+import org.p2p.wallet.striga.common.model.toSuccessResult
 import org.p2p.wallet.striga.exchange.api.StrigaExchangeApi
 import org.p2p.wallet.striga.exchange.models.StrigaExchangePairsWithRates
 import org.p2p.wallet.striga.exchange.repository.StrigaExchangeRepository
 import org.p2p.wallet.striga.exchange.repository.mapper.StrigaExchangeRepositoryMapper
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.model.toSuccessResult
 
 class StrigaExchangeRemoteRepository(
     private val api: StrigaExchangeApi,
     private val mapper: StrigaExchangeRepositoryMapper,
 ) : StrigaExchangeRepository {
+
+    class StrigaExchangeRateNotFound : Throwable()
 
     override suspend fun getExchangeRates(): StrigaDataLayerResult<StrigaExchangePairsWithRates> {
         return try {
@@ -22,6 +25,15 @@ class StrigaExchangeRemoteRepository(
                 error = error,
                 default = StrigaDataLayerError.InternalError(error)
             )
+        }
+    }
+
+    override suspend fun getExchangeRateForPair(
+        fromTokenSymbol: String,
+        toTokenSymbol: String
+    ): StrigaDataLayerResult<StrigaExchangePairsWithRates.Rate> {
+        return getExchangeRates().map {
+            it.findRate(fromTokenSymbol, toTokenSymbol) ?: throw StrigaExchangeRateNotFound()
         }
     }
 }

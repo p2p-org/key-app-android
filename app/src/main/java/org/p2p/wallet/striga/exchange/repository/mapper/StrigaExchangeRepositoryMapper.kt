@@ -1,13 +1,12 @@
 package org.p2p.wallet.striga.exchange.repository.mapper
 
-import java.math.BigDecimal
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.striga.exchange.api.response.StrigaExchangeRateItemResponse
 import org.p2p.wallet.striga.exchange.models.StrigaExchangePairsWithRates
 
 class StrigaExchangeRepositoryMapper {
 
-    companion object {
+    private companion object {
         private val SUPPORTED_TOKEN_RATES = setOf(
             Constants.USDC_SYMBOL,
             Constants.USDT_SYMBOL,
@@ -34,9 +33,9 @@ class StrigaExchangeRepositoryMapper {
 
     private fun StrigaExchangeRateItemResponse.toDomain(): StrigaExchangePairsWithRates.Rate =
         StrigaExchangePairsWithRates.Rate(
-            price = BigDecimal(price),
-            buy = BigDecimal(buy),
-            sell = BigDecimal(sell),
+            price = price.toBigDecimal(),
+            buyRate = buyRate.toBigDecimal(),
+            sellRate = sellRate.toBigDecimal(),
             timestamp = timestamp,
             currency = currency,
         )

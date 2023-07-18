@@ -1,6 +1,7 @@
 package org.p2p.wallet.striga.exchange.models
 
 import java.math.BigDecimal
+import org.p2p.core.utils.MillisSinceEpoch
 
 private typealias StrigaExchangePair = Pair<String, String>
 
@@ -9,23 +10,24 @@ data class StrigaExchangePairsWithRates(
 ) {
     data class Rate(
         val price: BigDecimal,
-        val buy: BigDecimal,
-        val sell: BigDecimal,
-        val timestamp: Long,
+        val buyRate: BigDecimal,
+        val sellRate: BigDecimal,
+        val timestamp: MillisSinceEpoch,
         val currency: String,
     )
 
-    fun getAvailablePairsForToken(token: String): Set<StrigaExchangePair> {
-        return rateMap.keys.filter { it.hasValue(token) }.toSet()
+    fun getAvailablePairsForToken(tokenSymbol: String): Set<StrigaExchangePair> {
+        return rateMap.keys.filter { it.hasValue(tokenSymbol) }.toSet()
     }
 
-    fun hasRate(from: String, to: String): Boolean {
-        return rateMap.containsKey(StrigaExchangePair(from, to)) ||
-            rateMap.containsKey(StrigaExchangePair(to, from))
+    fun hasRate(fromTokenSymbol: String, toTokenSymbol: String): Boolean {
+        return rateMap.containsKey(StrigaExchangePair(fromTokenSymbol, toTokenSymbol)) ||
+            rateMap.containsKey(StrigaExchangePair(toTokenSymbol, fromTokenSymbol))
     }
 
-    fun findRate(from: String, to: String): Rate? {
-        return rateMap[StrigaExchangePair(from, to)] ?: rateMap[StrigaExchangePair(to, from)]
+    fun findRate(fromTokenSymbol: String, toTokenSymbol: String): Rate? {
+        return rateMap[StrigaExchangePair(fromTokenSymbol, toTokenSymbol)]
+            ?: rateMap[StrigaExchangePair(toTokenSymbol, fromTokenSymbol)]
     }
 
     private fun Pair<String, String>.hasValue(value: String): Boolean {

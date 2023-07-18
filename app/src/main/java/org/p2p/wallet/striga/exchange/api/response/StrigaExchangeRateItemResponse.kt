@@ -1,16 +1,17 @@
 package org.p2p.wallet.striga.exchange.api.response
 
 import com.google.gson.annotations.SerializedName
+import org.p2p.core.utils.MillisSinceEpoch
 
 class StrigaExchangeRateItemResponse(
     @SerializedName("price")
     val price: String,
     @SerializedName("buy")
-    val buy: String,
+    val buyRate: String,
     @SerializedName("sell")
-    val sell: String,
+    val sellRate: String,
     @SerializedName("timestamp")
-    val timestamp: Long,
+    val timestamp: MillisSinceEpoch,
     @SerializedName("currency")
     val currency: String,
 )
