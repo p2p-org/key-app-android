@@ -1,6 +1,5 @@
 package org.p2p.wallet.home.ui.wallet.mapper
 
-import android.content.res.Resources
 import android.view.Gravity
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
@@ -17,11 +16,15 @@ import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 import org.p2p.wallet.utils.toPx
 
-class WalletMapper(private val resources: Resources) {
+class WalletMapper() {
 
     fun mapFiatBalance(balance: BigDecimal): TextViewCellModel {
-        val result = resources.getString(R.string.home_usd_format, balance.formatFiat())
-        return TextViewCellModel.Raw(TextContainer(result))
+        return TextViewCellModel.Raw(
+            TextContainer.ResParams(
+                textRes = R.string.home_usd_format,
+                args = listOf(balance.formatFiat())
+            )
+        )
     }
 
     fun getFiatBalanceSkeleton(): TextViewCellModel.Skeleton =
@@ -35,8 +38,15 @@ class WalletMapper(private val resources: Resources) {
         )
 
     fun mapTokenBalance(balance: BigDecimal): TextViewCellModel {
-        val result = resources.getString(R.string.wallet_token_format, balance.formatFiat(), Constants.USDC_SYMBOL)
-        return TextViewCellModel.Raw(TextContainer(result))
+        return TextViewCellModel.Raw(
+            TextContainer.ResParams(
+                textRes = R.string.wallet_token_format,
+                args = listOf(
+                    balance.formatFiat(),
+                    Constants.USDC_SYMBOL
+                )
+            )
+        )
     }
 
     fun getTokenBalanceSkeleton(): TextViewCellModel.Skeleton =
