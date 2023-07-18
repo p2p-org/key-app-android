@@ -50,7 +50,13 @@ fun <T> T.toSuccessResult(): StrigaDataLayerResult.Success<T> =
 
 inline fun <T, R> StrigaDataLayerResult<T>.map(transform: (T) -> R): StrigaDataLayerResult<R> {
     return when (this) {
-        is StrigaDataLayerResult.Success -> StrigaDataLayerResult.Success(transform(value))
+        is StrigaDataLayerResult.Success -> {
+            try {
+                StrigaDataLayerResult.Success(transform(value))
+            } catch (e: Throwable) {
+                StrigaDataLayerResult.Failure(StrigaDataLayerError.InternalError(e))
+            }
+        }
         is StrigaDataLayerResult.Failure -> StrigaDataLayerResult.Failure(error)
     }
 }
