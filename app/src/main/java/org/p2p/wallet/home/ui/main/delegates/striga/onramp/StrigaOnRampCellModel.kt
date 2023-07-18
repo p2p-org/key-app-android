@@ -8,7 +8,6 @@ import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 
 data class StrigaOnRampCellModel(
     val amountAvailable: BigDecimal,
-    val tokenName: String,
     val tokenMintAddress: Base58String,
     val tokenSymbol: String,
     val tokenIcon: String,
