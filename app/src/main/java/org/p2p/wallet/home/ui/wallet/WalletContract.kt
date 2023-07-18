@@ -5,7 +5,6 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
@@ -14,12 +13,11 @@ import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 interface WalletContract {
 
     interface View : MvpView {
-        fun showBalance(cellModel: TextViewCellModel?)
+        fun showBalance(fiatBalanceCellModel: TextViewCellModel?, tokenBalanceCellModel: TextViewCellModel?)
         fun showRefreshing(isRefreshing: Boolean)
         fun showStrigaOnRampProgress(isLoading: Boolean, tokenMint: Base58String)
         fun showStrigaBannerProgress(isLoading: Boolean)
         fun showUserAddress(ellipsizedAddress: String)
-        fun showActionButtons(buttons: List<ActionButton>)
         fun showTopupWalletDialog()
         fun showKycPendingDialog()
         fun navigateToProfile()
@@ -35,8 +33,8 @@ interface WalletContract {
 
     interface Presenter : MvpPresenter<View> {
         fun refreshTokens()
-        fun onSellClicked()
-        fun onTopupClicked()
+        fun onWithdrawClicked()
+        fun onAddMoneyClicked()
         fun onProfileClick()
         fun onAddressClicked()
         fun onStrigaOnRampClicked(item: StrigaOnRampCellModel)

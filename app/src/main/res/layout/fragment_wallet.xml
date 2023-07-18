@@ -22,29 +22,77 @@
             app:expandedTitleGravity="top"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/containerHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_toolbar_height"
-                android:orientation="vertical"
                 app:layout_collapseMode="none">
 
                 <include
                     android:id="@+id/viewBalance"
                     layout="@layout/layout_home_balance"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <org.p2p.wallet.common.ui.widget.actionbuttons.ActionButtonsView
-                    android:id="@+id/viewActionButtons"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="30dp"
-                    tools:layout_height="50dp" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/textViewTokenAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="26dp"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:maxLines="1"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+                    android:textColor="@color/text_night"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/viewBalance"
+                    tools:text="1 000.97 USDC" />
+
+                <org.p2p.uikit.components.UiKitButton
+                    android:id="@+id/buttonAddMoney"
+                    style="@style/UiKit.Components.Button.Medium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="44dp"
+                    android:layout_marginBottom="12dp"
+                    android:backgroundTint="@color/bg_night"
+                    android:text="@string/add_money_button"
+                    android:textColor="@color/text_snow"
+                    app:icon="@drawable/ic_plus"
+                    app:iconGravity="textEnd"
+                    app:iconTint="@color/icons_snow"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonWithdraw"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewTokenAmount" />
+
+                <org.p2p.uikit.components.UiKitButton
+                    android:id="@+id/buttonWithdraw"
+                    style="@style/UiKit.Components.Button.Medium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="44dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="12dp"
+                    android:backgroundTint="@color/bg_night"
+                    android:text="@string/withdraw_button"
+                    android:textColor="@color/text_snow"
+                    app:icon="@drawable/ic_deposit"
+                    app:iconGravity="textEnd"
+                    app:iconTint="@color/icons_snow"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/buttonAddMoney"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewTokenAmount" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <include
                 android:id="@+id/layoutToolbar"

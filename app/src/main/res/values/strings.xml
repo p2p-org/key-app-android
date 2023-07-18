@@ -267,6 +267,11 @@
     <string name="home_tokens">Tokens</string>
     <string name="home_top_up">Top up</string>
 
+    <!--Wallet-->
+    <string name="wallet_token_format">%s %s</string>
+    <string name="add_money_button">Add money</string>
+    <string name="withdraw_button">Withdraw</string>
+
     <!--MY Crypto Empty-->
     <string name="my_crypto_empty_title">Welcome to your crypto portfolio.\nExplore over 800 tokens with zero fees.</string>
 

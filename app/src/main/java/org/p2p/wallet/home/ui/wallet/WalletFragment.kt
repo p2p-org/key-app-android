@@ -21,7 +21,6 @@ import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentWalletBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
@@ -110,10 +109,6 @@ class WalletFragment :
         )
     }
 
-    override fun showActionButtons(buttons: List<ActionButton>) {
-        binding.viewActionButtons.showActionButtons(buttons)
-    }
-
     private fun FragmentWalletBinding.setupView() {
         layoutToolbar.setupToolbar()
 
@@ -125,7 +120,12 @@ class WalletFragment :
         }
 
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
-        viewActionButtons.onButtonClicked = ::onActionButtonClicked
+        buttonAddMoney.setOnClickListener {
+            presenter.onAddMoneyClicked()
+        }
+        buttonWithdraw.setOnClickListener {
+            presenter.onWithdrawClicked()
+        }
 
         if (BuildConfig.DEBUG) {
             with(layoutToolbar) {
@@ -147,24 +147,13 @@ class WalletFragment :
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
-    private fun onActionButtonClicked(clickedButton: ActionButton) {
-        when (clickedButton) {
-            ActionButton.SELL_BUTTON -> {
-                presenter.onSellClicked()
-            }
-            ActionButton.TOP_UP_BUTTON -> {
-                presenter.onTopupClicked()
-            }
-            else -> Unit
-        }
-    }
-
     override fun showUserAddress(ellipsizedAddress: String) {
         binding.layoutToolbar.textViewAddress.text = ellipsizedAddress
     }
 
-    override fun showBalance(cellModel: TextViewCellModel?) {
-        binding.viewBalance.textViewAmount.bindOrGone(cellModel)
+    override fun showBalance(fiatBalanceCellModel: TextViewCellModel?, tokenBalanceCellModel: TextViewCellModel?) {
+        binding.viewBalance.textViewAmount.bindOrGone(fiatBalanceCellModel)
+        binding.textViewTokenAmount.bindOrGone(fiatBalanceCellModel)
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {
