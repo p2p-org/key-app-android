@@ -12,7 +12,7 @@ enum class TokenServiceEventType {
 
     companion object {
         fun from(networkChain: TokenServiceNetwork): TokenServiceEventType {
-            return when(networkChain) {
+            return when (networkChain) {
                 TokenServiceNetwork.ETHEREUM -> ETHEREUM_CHAIN_EVENT
                 TokenServiceNetwork.SOLANA -> SOLANA_CHAIN_EVENT
             }

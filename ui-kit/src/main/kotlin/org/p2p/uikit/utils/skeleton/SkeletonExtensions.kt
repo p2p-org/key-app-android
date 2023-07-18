@@ -3,7 +3,6 @@ package org.p2p.uikit.utils.skeleton
 import androidx.annotation.Px
 import android.view.Gravity
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.toPx
 
 fun textCellSkeleton(
     @Px height: Int,

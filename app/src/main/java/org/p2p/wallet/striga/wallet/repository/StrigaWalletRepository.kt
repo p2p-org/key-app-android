@@ -1,6 +1,6 @@
 package org.p2p.wallet.striga.wallet.repository
 
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet

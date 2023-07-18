@@ -6,7 +6,7 @@ sealed interface UpdateTokenMetadataResult {
 
     object NoUpdate : UpdateTokenMetadataResult
 
-    data class NewMetadata(val tokensMetadataInfo: TokensMetadataInfo) : UpdateTokenMetadataResult
+    data class NewMetadata(val remoteTokensMetadata: TokensMetadataInfo) : UpdateTokenMetadataResult
 
     data class Error(val throwable: Throwable) : UpdateTokenMetadataResult
 }

@@ -106,7 +106,7 @@ private fun internalMakeSnackbar(
             setAction(buttonText) { buttonAction.onActionButtonClicked(this) }
         }
 
-        val bottomMargin = if(enableBottomNavOffset) {
+        val bottomMargin = if (enableBottomNavOffset) {
             context.resources.getDimension(R.dimen.bottom_navigation_height).toInt()
         } else {
             0

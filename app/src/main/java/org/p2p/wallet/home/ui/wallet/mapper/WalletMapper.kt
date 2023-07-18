@@ -8,8 +8,8 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
-import org.p2p.wallet.kyc.model.StrigaBanner
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 
 class WalletMapper(private val resources: Resources) {

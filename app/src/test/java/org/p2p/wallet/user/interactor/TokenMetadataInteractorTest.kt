@@ -1,31 +1,34 @@
 package org.p2p.wallet.user.interactor
 
+import assertk.assertions.matchesPredicate
 import com.google.gson.Gson
-import io.mockk.MockKAnnotations
-import io.mockk.Runs
+import com.google.gson.JsonParseException
 import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokensMetadataInfo
+import org.p2p.core.utils.emptyString
 import org.p2p.token.service.model.UpdateTokenMetadataResult
 import org.p2p.token.service.repository.metadata.TokenMetadataRepository
 import org.p2p.wallet.common.storage.ExternalFile
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.assertThat
+import org.p2p.wallet.utils.coVerifyNone
+import org.p2p.wallet.utils.coVerifyOnce
+import org.p2p.wallet.utils.verifyOnce
 
 @ExperimentalCoroutinesApi
 internal class TokenMetadataInteractorTest {
 
-    private val externalStorageRepository: ExternalStorageRepository = mockk()
+    private val externalStorageRepository: ExternalStorageRepository = mockk(relaxed = true)
 
-    private val userLocalRepository: UserLocalRepository = mockk()
+    private val userLocalRepository: UserLocalRepository = mockk(relaxed = true)
 
     private val metadataRepository: TokenMetadataRepository = mockk()
 
@@ -33,10 +36,14 @@ internal class TokenMetadataInteractorTest {
 
     private lateinit var tokenMetadataInteractor: TokenMetadataInteractor
 
+    private val metadataJson: String = """{
+      "timestamp": "11.11.2011",
+      "tokens": []
+    }
+    """.trimIndent()
+
     @Before
     fun setUp() {
-        MockKAnnotations.init(this)
-
         tokenMetadataInteractor = TokenMetadataInteractor(
             externalStorageRepository = externalStorageRepository,
             userLocalRepository = userLocalRepository,
@@ -46,41 +53,76 @@ internal class TokenMetadataInteractorTest {
     }
 
     @Test
-    fun `GIVEN metadata WHEN backend not modified THEN use local file`() = runTest {
-        val timestamp = "some timestamp"
-        val file: ExternalFile = mockk()
-        val metadata: TokensMetadataInfo = mockk()
-        val tokens: List<TokenMetadata> = mockk()
-        every { file.data } returns "metadata json"
-        every { metadata.timestamp } returns timestamp
-        every { metadata.tokens } returns tokens
-        every { externalStorageRepository.readJsonFile(TOKENS_FILE_NAME) } returns file
-        every { gson.fromJson(any<String>(), TokensMetadataInfo::class.java) } returns metadata
-        every { userLocalRepository.setTokenData(tokens) } just Runs
-        coEvery { metadataRepository.loadTokensMetadata(any()) } returns UpdateTokenMetadataResult.NoUpdate
+    fun `GIVEN absent json file WHEN loadAllTokensData THEN cache updated and create file`() = runTest {
+        // GIVEN
+        val expectedMetadata = TokensMetadataInfo(emptyString(), emptyList())
+        coEvery { externalStorageRepository.readJsonFile(any()) }.returns(null)
+        coEvery { metadataRepository.loadTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.NewMetadata(expectedMetadata))
 
-        tokenMetadataInteractor.loadAllTokensData()
+        // WHEN
+        tokenMetadataInteractor.loadAllTokensMetadata()
 
-        verify { tokenMetadataInteractor.updateMemoryCache(tokens) }
+        // THEN
+        verifyOnce { userLocalRepository.setTokenData(expectedMetadata.tokens) }
+        coVerifyOnce { externalStorageRepository.saveAsJsonFile(expectedMetadata, any()) }
     }
 
     @Test
-    fun `GIVEN metadata WHEN metadata has changes THEN update local file and use a new one`() = runTest {
-        val timestamp = "some timestamp"
-        val file: ExternalFile = mockk()
-        val tokens: List<TokenMetadata> = mockk()
-        val metadata = TokensMetadataInfo(timestamp, tokens)
-        val metadataResult = UpdateTokenMetadataResult.NewMetadata(metadata)
+    fun `GIVEN existent json file and NoUpdate WHEN loadAllTokensData THEN cache is not updated`() = runTest {
+        // GIVEN
+        val expectedMetadata = TokensMetadataInfo(emptyString(), emptyList())
+        every { gson.fromJson(metadataJson, TokensMetadataInfo::class.java) }.returns(expectedMetadata)
+        coEvery { externalStorageRepository.readJsonFile(any()) }.returns(ExternalFile(metadataJson))
+        coEvery { metadataRepository.loadTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.NoUpdate)
 
-        every { file.data } returns "metadata json"
-        every { externalStorageRepository.readJsonFile(TOKENS_FILE_NAME) } returns file
-        every { gson.fromJson(any<String>(), TokensMetadataInfo::class.java) } returns metadata
-        every { userLocalRepository.setTokenData(tokens) } just Runs
-        every { externalStorageRepository.saveJson(metadata, TOKENS_FILE_NAME) } returns Unit
-        coEvery { metadataRepository.loadTokensMetadata(any()) } returns metadataResult
+        // WHEN
+        tokenMetadataInteractor.loadAllTokensMetadata()
 
-        tokenMetadataInteractor.loadAllTokensData()
+        // THEN
+        coVerifyOnce { userLocalRepository.setTokenData(expectedMetadata.tokens) }
+        coVerifyNone { externalStorageRepository.saveAsJsonFile(expectedMetadata, any()) }
+    }
 
-        verify { tokenMetadataInteractor.updateMemoryCacheAndLocalFile(metadataResult) }
+    @Test
+    fun `GIVEN Error from remote WHEN loadAllTokensData THEN nothing happens`() = runTest {
+        // GIVEN
+        coEvery { externalStorageRepository.readJsonFile(any()) }.returns(null)
+        coEvery { metadataRepository.loadTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.Error(Throwable()))
+
+        // WHEN
+        tokenMetadataInteractor.loadAllTokensMetadata()
+
+        // THEN
+        coVerifyNone { userLocalRepository.setTokenData(any()) }
+        coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
+    }
+
+    @Test
+    fun `GIVEN error from IO THEN method throws and cache is not updated`() = runTest {
+        // GIVEN
+        coEvery { externalStorageRepository.readJsonFile(any()) }.throws(IOException("Illegal access denied"))
+
+        // WHEN
+        val result = kotlin.runCatching { tokenMetadataInteractor.loadAllTokensMetadata() }
+
+        // THEN
+        result.assertThat().matchesPredicate { it.exceptionOrNull() is IOException }
+        coVerifyNone { userLocalRepository.setTokenData(any()) }
+        coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
+    }
+
+    @Test
+    fun `GIVEN error from gson THEN method throws and cache is not updated`() = runTest {
+        // GIVEN
+        coEvery { externalStorageRepository.readJsonFile(any()) }.returns(ExternalFile(metadataJson))
+        every { gson.fromJson(metadataJson, TokensMetadataInfo::class.java) }.throws(JsonParseException("Unknown symbol found"))
+
+        // WHEN
+        val result = kotlin.runCatching { tokenMetadataInteractor.loadAllTokensMetadata() }
+
+        // THEN
+        result.assertThat().matchesPredicate { it.exceptionOrNull() is JsonParseException }
+        coVerifyNone { userLocalRepository.setTokenData(any()) }
+        coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
     }
 }

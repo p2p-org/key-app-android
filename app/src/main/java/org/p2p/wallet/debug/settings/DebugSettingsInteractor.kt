@@ -1,8 +1,8 @@
 package org.p2p.wallet.debug.settings
 
 import org.p2p.wallet.auth.interactor.MetadataInteractor
-import org.p2p.wallet.striga.kyc.ui.StrigaKycInteractor
-import org.p2p.wallet.striga.user.StrigaStorageContract
+import org.p2p.wallet.striga.kyc.interactor.StrigaKycInteractor
+import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 
 class DebugSettingsInteractor(
     private val strigaKycInteractor: StrigaKycInteractor,

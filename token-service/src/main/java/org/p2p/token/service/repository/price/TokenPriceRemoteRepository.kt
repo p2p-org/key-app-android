@@ -24,10 +24,9 @@ internal class TokenPriceRemoteRepository(
         val tokensPrice = queryResponse.map { response ->
             val tokenServiceChain = mapper.fromNetwork(response.tokenServiceChainResponse)
             val tokenPrices = response.tokenServiceItemsResponse
-                .mapNotNull { mapper.fromNetwork(tokenServiceChain,it) }
+                .mapNotNull { mapper.fromNetwork(tokenServiceChain, it) }
 
             TokenServiceQueryResult(networkChain = tokenServiceChain, items = tokenPrices)
-
         }
         return tokensPrice
     }

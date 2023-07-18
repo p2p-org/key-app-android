@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class EthAddress(var raw: ByteArray): Parcelable{
+data class EthAddress(var raw: ByteArray) : Parcelable {
     init {
         if (raw.size == 32) {
             raw = raw.copyOfRange(12, raw.size)
@@ -36,5 +36,4 @@ data class EthAddress(var raw: ByteArray): Parcelable{
     override fun toString(): String {
         return hex
     }
-
 }

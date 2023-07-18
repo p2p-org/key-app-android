@@ -20,6 +20,8 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.utils.emptyString
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.interactor.MetadataInteractor
@@ -27,15 +29,14 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.core.common.di.AppScope
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.model.toFailureResult
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.toFailureResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupInteractor
+import org.p2p.wallet.striga.signup.steps.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserInitialKycDetails
@@ -432,7 +433,9 @@ class StrigaSignupInteractorTest {
             coEvery { countryRepository.detectCountryOrDefault() } returns SupportedCountry
 
             val interactor = createInteractor()
-            val result = interactor.retrievePhoneNumberWithCode(cachedPhoneCode = expectedCode, cachedPhoneNumber = expectedNumber)
+            val result = interactor.retrievePhoneNumberWithCode(
+                cachedPhoneCode = expectedCode, cachedPhoneNumber = expectedNumber
+            )
             assertNotEquals(numberFromMetadata, result.phoneNumberNational)
             assertEquals(expectedNumber, result.phoneNumberNational)
             assertEquals(TurkeyCountry, result.phoneCode)

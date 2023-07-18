@@ -1,9 +1,9 @@
 package org.p2p.wallet.striga.user.repository
 
-import org.p2p.wallet.striga.StrigaUserIdProvider
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.model.toSuccessResult
+import org.p2p.wallet.striga.common.StrigaUserIdProvider
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.toSuccessResult
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.user.api.StrigaApi
 import org.p2p.wallet.striga.user.api.request.StrigaResendSmsRequest

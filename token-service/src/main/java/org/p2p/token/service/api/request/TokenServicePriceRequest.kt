@@ -16,5 +16,4 @@ internal data class TokenServicePriceRequest(
     @Transient
     override val typeOfResult: Type =
         object : TypeToken<PriceResponse>() {}.type
-
 }

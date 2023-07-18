@@ -12,7 +12,7 @@ import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
 import org.p2p.wallet.smsinput.SmsInputContract
-import org.p2p.wallet.striga.di.StrigaWalletModule
+import org.p2p.wallet.striga.onramp.StrigaOnRampModule
 import org.p2p.wallet.striga.sms.error.StrigaSmsErrorFragment
 import org.p2p.wallet.striga.sms.error.StrigaSmsErrorViewType
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -33,7 +33,7 @@ class StrigaOtpConfirmFragment : BaseSmsInputFragment() {
     private val titleAmount: String by args(ARG_TITLE_AMOUNT)
     private val challengeId: StrigaWithdrawalChallengeId by args(ARG_CHALLENGE_ID)
 
-    override val presenter: SmsInputContract.Presenter by inject(named(StrigaWalletModule.SMS_QUALIFIER))
+    override val presenter: SmsInputContract.Presenter by inject(named(StrigaOnRampModule.SMS_QUALIFIER))
 
     private var isOtpConfirmed: Boolean = false
 

@@ -22,8 +22,8 @@ import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinkEntity
 import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinksDao
 import org.p2p.wallet.newsend.db.RecipientEntity
 import org.p2p.wallet.newsend.db.RecipientsDao
-import org.p2p.wallet.striga.signup.dao.StrigaSignupDataDao
-import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
+import org.p2p.wallet.striga.signup.repository.dao.StrigaSignupDataDao
+import org.p2p.wallet.striga.signup.repository.dao.StrigaSignupDataEntity
 
 @Database(
     entities = [

@@ -1,17 +1,32 @@
 package org.p2p.core.wrapper.eth
 
-
-import org.bouncycastle.crypto.*
-import org.bouncycastle.crypto.params.*
+import org.bouncycastle.crypto.BasicAgreement
+import org.bouncycastle.crypto.BufferedBlockCipher
+import org.bouncycastle.crypto.CipherParameters
+import org.bouncycastle.crypto.DerivationFunction
+import org.bouncycastle.crypto.DerivationParameters
+import org.bouncycastle.crypto.Digest
+import org.bouncycastle.crypto.InvalidCipherTextException
+import org.bouncycastle.crypto.KeyParser
+import org.bouncycastle.crypto.Mac
+import org.bouncycastle.crypto.params.IESParameters
+import org.bouncycastle.crypto.params.IESWithCipherParameters
+import org.bouncycastle.crypto.params.KDFParameters
+import org.bouncycastle.crypto.params.KeyParameter
+import org.bouncycastle.crypto.params.ParametersWithIV
 import org.bouncycastle.util.Arrays
 import org.bouncycastle.util.BigIntegers
 import org.bouncycastle.util.Pack
 import java.io.ByteArrayInputStream
 import java.io.IOException
 
-class IESEngine(var agree: BasicAgreement,
-                var kdf: DerivationFunction,
-                var mac: Mac, private val hash: Digest, private var cipher: BufferedBlockCipher) {
+class IESEngine(
+    var agree: BasicAgreement,
+    var kdf: DerivationFunction,
+    var mac: Mac,
+    private val hash: Digest,
+    private var cipher: BufferedBlockCipher
+) {
 
     private var forEncryption: Boolean = false
     lateinit var privParam: CipherParameters
@@ -23,10 +38,11 @@ class IESEngine(var agree: BasicAgreement,
     private var IV: ByteArray? = null
 
     fun init(
-            forEncryption: Boolean,
-            privParam: CipherParameters,
-            pubParam: CipherParameters,
-            params: CipherParameters) {
+        forEncryption: Boolean,
+        privParam: CipherParameters,
+        pubParam: CipherParameters,
+        params: CipherParameters
+    ) {
         this.forEncryption = forEncryption
         this.privParam = privParam
         this.pubParam = pubParam
@@ -47,10 +63,11 @@ class IESEngine(var agree: BasicAgreement,
 
     @Throws(InvalidCipherTextException::class)
     private fun encryptBlock(
-            input: ByteArray,
-            inOff: Int,
-            inLen: Int,
-            macData: ByteArray?): ByteArray {
+        input: ByteArray,
+        inOff: Int,
+        inLen: Int,
+        macData: ByteArray?
+    ): ByteArray {
         val c = ByteArray(cipher.getOutputSize(inLen))
         lateinit var k: ByteArray
         val k1 = ByteArray((param as IESWithCipherParameters).cipherKeySize / 8)
@@ -112,10 +129,11 @@ class IESEngine(var agree: BasicAgreement,
 
     @Throws(InvalidCipherTextException::class)
     private fun decryptBlock(
-            in_enc: ByteArray,
-            inOff: Int,
-            inLen: Int,
-            macData: ByteArray?): ByteArray {
+        in_enc: ByteArray,
+        inOff: Int,
+        inLen: Int,
+        macData: ByteArray?
+    ): ByteArray {
         val M: ByteArray?
         val K: ByteArray?
         val K1: ByteArray?
@@ -146,7 +164,6 @@ class IESEngine(var agree: BasicAgreement,
         M = ByteArray(cipher.getOutputSize(inLen - V.size - mac.macSize))
         len = cipher.processBytes(in_enc, inOff + V.size, inLen - V.size - mac.macSize, M, 0)
         len += cipher.doFinal(M, len)
-
 
         // Convert the length of the encoding vector into a byte array.
         val P2 = param.encodingV
@@ -191,10 +208,11 @@ class IESEngine(var agree: BasicAgreement,
     @Throws(InvalidCipherTextException::class)
     @JvmOverloads
     fun processBlock(
-            input: ByteArray,
-            inOff: Int,
-            inLen: Int,
-            macData: ByteArray? = null): ByteArray {
+        input: ByteArray,
+        inOff: Int,
+        inLen: Int,
+        macData: ByteArray? = null
+    ): ByteArray {
 
         if (keyParser != null) {
             val bIn = ByteArrayInputStream(input, inOff, inLen)

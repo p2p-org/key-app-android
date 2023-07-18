@@ -1,8 +1,8 @@
 package org.p2p.wallet.striga.signup.repository.mapper
 
 import android.content.res.Resources
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.signup.repository.dao.StrigaSignupDataEntity
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.core.crypto.Base58String

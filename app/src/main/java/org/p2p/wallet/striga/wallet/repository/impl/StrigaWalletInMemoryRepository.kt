@@ -1,6 +1,6 @@
 package org.p2p.wallet.striga.wallet.repository.impl
 
-import org.p2p.wallet.striga.user.StrigaStorageContract
+import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet

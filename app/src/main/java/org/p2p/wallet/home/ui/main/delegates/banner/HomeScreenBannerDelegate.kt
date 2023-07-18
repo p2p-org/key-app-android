@@ -12,7 +12,7 @@ import org.p2p.uikit.utils.getString
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.wallet.databinding.ItemHomeBannerBinding
 import org.p2p.wallet.home.model.HomeScreenBanner
-import org.p2p.wallet.kyc.model.StrigaBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 
 private typealias ItemBinding = ItemHomeBannerBinding
 

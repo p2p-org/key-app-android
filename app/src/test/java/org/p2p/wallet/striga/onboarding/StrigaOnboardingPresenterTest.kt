@@ -13,11 +13,13 @@ import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
-import org.p2p.wallet.striga.signup.StrigaPresetDataLocalRepository
+import org.p2p.wallet.striga.signup.onboarding.StrigaOnboardingContract
+import org.p2p.wallet.striga.signup.onboarding.StrigaOnboardingPresenter
+import org.p2p.wallet.striga.signup.onboarding.interactor.StrigaOnboardingInteractor
+import org.p2p.wallet.striga.signup.presetpicker.repository.StrigaPresetDataLocalRepository
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.back
 import org.p2p.wallet.utils.front
@@ -116,33 +118,34 @@ class StrigaOnboardingPresenterTest {
     }
 
     @Test
-    fun `GIVEN unsupported country and changed to supported WHEN presenter initialized THEN check button state is Continue`() = runTest {
-        coEvery { interactor.getChosenCountry() } returns UnsupportedCountry
-        coEvery { interactor.checkIsCountrySupported(any()) } answers { arg<CountryCode>(0) == SupportedCountry }
-        coEvery { interactor.saveCurrentCountry(any()) }.returns(Unit)
+    fun `GIVEN unsupported country and changed to supported WHEN presenter initialized THEN check button state is Continue`() =
+        runTest {
+            coEvery { interactor.getChosenCountry() } returns UnsupportedCountry
+            coEvery { interactor.checkIsCountrySupported(any()) } answers { arg<CountryCode>(0) == SupportedCountry }
+            coEvery { interactor.saveCurrentCountry(any()) }.returns(Unit)
 
-        val view: StrigaOnboardingContract.View = mockk(relaxed = true)
+            val view: StrigaOnboardingContract.View = mockk(relaxed = true)
 
-        val presenter = createPresenter()
-        presenter.attach(view)
-        advanceUntilIdle()
+            val presenter = createPresenter()
+            presenter.attach(view)
+            advanceUntilIdle()
 
-        // changing country
-        presenter.onCurrentCountryChanged(SupportedCountry)
+            // changing country
+            presenter.onCurrentCountryChanged(SupportedCountry)
 
-        val countryStates = mutableListQueueOf<CountryCode>()
-        val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
-        verify(exactly = 2) { view.setCurrentCountry(capture(countryStates)) }
-        verify(exactly = 2) { view.setAvailabilityState(capture(availabilityStates)) }
-        verify(exactly = 0) { view.navigateNext() }
+            val countryStates = mutableListQueueOf<CountryCode>()
+            val availabilityStates = mutableListQueueOf<StrigaOnboardingContract.View.AvailabilityState>()
+            verify(exactly = 2) { view.setCurrentCountry(capture(countryStates)) }
+            verify(exactly = 2) { view.setAvailabilityState(capture(availabilityStates)) }
+            verify(exactly = 0) { view.navigateNext() }
 
-        assertEquals(UnsupportedCountry, countryStates.front())
-        assertEquals(SupportedCountry, countryStates.back())
-        assertEquals(StrigaOnboardingContract.View.AvailabilityState.Unavailable, availabilityStates.front())
-        assertEquals(StrigaOnboardingContract.View.AvailabilityState.Available, availabilityStates.back())
+            assertEquals(UnsupportedCountry, countryStates.front())
+            assertEquals(SupportedCountry, countryStates.back())
+            assertEquals(StrigaOnboardingContract.View.AvailabilityState.Unavailable, availabilityStates.front())
+            assertEquals(StrigaOnboardingContract.View.AvailabilityState.Available, availabilityStates.back())
 
-        presenter.detach()
-    }
+            presenter.detach()
+        }
 
     @Test
     fun `GIVEN initial state WHEN selected unsupported country THEN check button state is ChangeCountry`() = runTest {
