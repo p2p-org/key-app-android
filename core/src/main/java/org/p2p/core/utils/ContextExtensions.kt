@@ -41,7 +41,6 @@ fun Resources.getHtmlString(@StringRes id: Int, vararg args: Any): Spanned =
         HtmlCompat.FROM_HTML_MODE_LEGACY
     )
 
-
 /**
  * Use this is very rare cases if you don't have an opportunity to get the string resource
  * in a common way like R.string.foo

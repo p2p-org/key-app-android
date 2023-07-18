@@ -16,9 +16,10 @@ object EthTokenConverter {
 
         val tokenRate = metadata.price
         val total = tokenAmount ?: metadata.balance.fromLamports(metadata.decimals)
-        val totalInUsd = fiatAmount ?: tokenRate?.let { metadata.balance
-            .fromLamports(metadata.decimals)
-            .times(it)
+        val totalInUsd = fiatAmount ?: tokenRate?.let {
+            metadata.balance
+                .fromLamports(metadata.decimals)
+                .times(it)
         }
         return Token.Eth(
             publicKey = metadata.contractAddress.hex,

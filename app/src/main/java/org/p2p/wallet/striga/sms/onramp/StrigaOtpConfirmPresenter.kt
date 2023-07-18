@@ -6,10 +6,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.smsinput.SmsInputContract
-import org.p2p.wallet.striga.model.StrigaApiErrorCode
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.sms.StrigaOtpConfirmInteractor
+import org.p2p.wallet.striga.common.model.StrigaApiErrorCode
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.sms.interactor.StrigaOtpConfirmInteractor
 import org.p2p.wallet.utils.removeWhiteSpaces
 
 private const val SMS_CODE_LENGTH = 6

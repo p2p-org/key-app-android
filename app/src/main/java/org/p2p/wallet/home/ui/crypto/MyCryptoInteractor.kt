@@ -16,6 +16,10 @@ class MyCryptoInteractor(
         userInteractor.setTokenHidden(mintAddress, visibility)
     }
 
+    fun getHiddenTokensVisibility(): Boolean {
+        return userInteractor.getHiddenTokensVisibility()
+    }
+
     fun setHiddenTokensVisibility(isVisible: Boolean) {
         userInteractor.setHiddenTokensVisibility(isVisible)
     }

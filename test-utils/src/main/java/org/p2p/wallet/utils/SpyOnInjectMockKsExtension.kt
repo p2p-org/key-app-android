@@ -28,7 +28,10 @@ class SpyOnInjectMockKsExtension : TestInstancePostProcessor {
             .find { it.findAnnotation<InjectMockKs>() != null } ?: return
 
         if (property !is KMutableProperty1<Any, Any>) {
-            throw MockKException("Annotation @InjectMockKs present on ${property.name} read-only property, make it read-write please('lateinit var' or 'var')")
+            throw MockKException(
+                "Annotation @InjectMockKs present on ${property.name} read-only property," +
+                    " make it read-write please('lateinit var' or 'var')"
+            )
         }
 
         property.set(target, spyk(property.get(target)))

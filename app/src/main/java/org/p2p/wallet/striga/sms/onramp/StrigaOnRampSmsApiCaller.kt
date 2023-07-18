@@ -1,6 +1,6 @@
 package org.p2p.wallet.striga.sms.onramp
 
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.sms.StrigaSmsApiCaller
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.striga.wallet.repository.StrigaWithdrawalsRepository

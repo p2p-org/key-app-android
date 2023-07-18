@@ -106,9 +106,9 @@ fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 fun BigInteger.isZeroOrLess() = isZero() || isLessThan(BigInteger.ZERO)
 
 fun BigDecimal.asCurrency(currency: String): String =
-    if (lessThenMinValue()) "<$currency 0.01" else "$currency ${formatFiat()}"
+    if (lessThenMinValue()) "<${currency}0.01" else "${currency}${formatFiat()}"
 
-fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$ 0.01" else "$ ${formatFiat()}"
+fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$0.01" else "$${formatFiat()}"
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
     isZero() -> "$0"
     lessThenMinValue() -> "(<$0.01)"
@@ -120,7 +120,7 @@ fun BigDecimal.asPositiveUsdTransaction(): String = asUsdTransaction("+")
 fun BigDecimal.asNegativeUsdTransaction(): String = asUsdTransaction("-")
 fun BigDecimal.asUsdTransaction(
     transactionSymbol: String
-): String = if (lessThenMinValue()) "<$ 0.01" else "$transactionSymbol$ ${formatFiat()}"
+): String = if (lessThenMinValue()) "<$0.01" else "$transactionSymbol$ ${formatFiat()}"
 
 fun BigDecimal.asUsdSwap(): String = when {
     isZero() -> "0 USD"

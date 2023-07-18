@@ -18,7 +18,7 @@ import org.p2p.core.network.gson.BigDecimalTypeAdapter
 import org.p2p.core.network.data.transactionerrors.RpcTransactionError
 import org.p2p.core.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
 import org.p2p.core.network.data.transactionerrors.RpcTransactionInstructionErrorParser
-import org.p2p.wallet.striga.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.user.api.request.StrigaCreateUserRequest

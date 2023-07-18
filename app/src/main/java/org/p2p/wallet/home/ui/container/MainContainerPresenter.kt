@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.ui.container
 
 import timber.log.Timber
+import java.math.BigDecimal
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -15,6 +16,7 @@ import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.deeplinks.DeeplinkHandler
+import org.p2p.wallet.home.ui.container.mapper.BalanceMapper
 import org.p2p.wallet.home.ui.crypto.MyCryptoFragment
 import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
@@ -31,6 +33,7 @@ class MainContainerPresenter(
     private val userInteractor: UserInteractor,
     private val homeAnalytics: HomeAnalytics,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
+    private val balanceMapper: BalanceMapper,
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
 
     private val deeplinkHandler by unsafeLazy {
@@ -55,9 +58,7 @@ class MainContainerPresenter(
 
     private fun getScreenConfiguration(): List<ScreenConfiguration> = buildList {
         add(ScreenConfiguration(ScreenTab.WALLET_SCREEN, WalletFragment::class))
-        // add(ScreenConfiguration(ScreenTab.MY_CRYPTO_SCREEN, HomeFragment::class))
         add(ScreenConfiguration(ScreenTab.MY_CRYPTO_SCREEN, MyCryptoFragment::class))
-        // TODO PWN-9151 migrate on crypto fragment after striga move to Wallet Screen
         add(ScreenConfiguration(ScreenTab.HISTORY_SCREEN, HistoryFragment::class))
         add(ScreenConfiguration(ScreenTab.SETTINGS_SCREEN, SettingsFragment::class))
     }
@@ -148,6 +149,9 @@ class MainContainerPresenter(
                 view?.showCryptoBadgeVisible(isVisible = false)
             }
             is UserTokensState.Loaded -> {
+                val usdc = newState.solTokens.find { it.isUSDC }
+                val balance = usdc?.total ?: BigDecimal.ZERO
+                view?.showWalletBalance(balanceMapper.mapBalanceForWallet(balance))
                 view?.showCryptoBadgeVisible(isVisible = newState.ethTokens.isNotEmpty())
             }
         }

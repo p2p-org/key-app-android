@@ -22,14 +22,15 @@ import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFeatureToggleStorage
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.common.storage.FileRepository
+import org.p2p.wallet.common.storage.FilesDirStorageRepository
 import org.p2p.wallet.infrastructure.account.AccountStorage
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorage
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
-import org.p2p.wallet.striga.user.StrigaStorage
-import org.p2p.wallet.striga.user.StrigaStorageContract
+import org.p2p.wallet.striga.user.storage.StrigaStorage
+import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 
 private const val PREFS_DEFAULT = "prefs"
 private const val PREFS_ACCOUNT = "account_prefs"
@@ -100,6 +101,6 @@ object StorageModule {
         single<KeyStore> { KeyStore.getInstance("AndroidKeyStore") }
         factoryOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class
         factoryOf(::FileRepository)
-        factoryOf(::ExternalStorageRepository)
+        factoryOf(::FilesDirStorageRepository) bind ExternalStorageRepository::class
     }
 }

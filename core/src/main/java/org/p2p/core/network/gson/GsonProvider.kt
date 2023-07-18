@@ -3,12 +3,11 @@ package org.p2p.core.network.gson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import org.p2p.core.wrapper.eth.EthAddress
 import java.math.BigInteger
-import java.util.Optional
 import org.p2p.core.model.DefaultBlockParameter
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.HexString
+import org.p2p.core.wrapper.eth.EthAddress
 
 class GsonProvider {
 
@@ -30,11 +29,8 @@ class GsonProvider {
             registerTypeAdapter(SolAddress::class.java, SolAddressTypeAdapter())
             registerTypeAdapter(HexString::class.java, HexStringTypeAdapter())
             registerTypeHierarchyAdapter(DefaultBlockParameter::class.java, DefaultBlockParameterTypeAdapter())
-
-        }.create().also {
-            gson = it
         }
+            .create()
+            .also { gson = it }
     }
 }
-
-

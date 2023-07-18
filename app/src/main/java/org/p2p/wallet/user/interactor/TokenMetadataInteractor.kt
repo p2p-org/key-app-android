@@ -2,7 +2,6 @@ package org.p2p.wallet.user.interactor
 
 import com.google.gson.Gson
 import timber.log.Timber
-import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokensMetadataInfo
 import org.p2p.token.service.model.UpdateTokenMetadataResult
 import org.p2p.token.service.repository.metadata.TokenMetadataRepository
@@ -19,51 +18,54 @@ class TokenMetadataInteractor(
     private val gson: Gson
 ) {
 
-    suspend fun loadAllTokensData() {
-        val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
-        val metadata: TokensMetadataInfo? = if (file != null) {
-            gson.fromJson(file.data, TokensMetadataInfo::class.java)
-        } else {
-            null
-        }
+    suspend fun loadAllTokensMetadata() {
+        val metadataFromFile: TokensMetadataInfo? = readTokensMetadataFromFile()
 
-        val ifModifiedSince = metadata?.timestamp
-        Timber.tag(TAG).i("Checking if metadata is modified since: $ifModifiedSince")
+        val modifiedSince = metadataFromFile?.timestamp
+        Timber.tag(TAG).i("Checking if metadata is modified since: $modifiedSince")
 
-        when (val result = metadataRepository.loadTokensMetadata(ifModifiedSince = ifModifiedSince)) {
-            is UpdateTokenMetadataResult.NewMetadata -> updateMemoryCacheAndLocalFile(result)
-            is UpdateTokenMetadataResult.NoUpdate -> updateMemoryCache(metadata?.tokens)
-            is UpdateTokenMetadataResult.Error -> handleError(result.throwable)
+        when (val result = metadataRepository.loadTokensMetadata(ifModifiedSince = modifiedSince)) {
+            is UpdateTokenMetadataResult.NewMetadata -> {
+                updateLocalFile(result.remoteTokensMetadata)
+                updateMemoryCache(result.remoteTokensMetadata)
+            }
+            is UpdateTokenMetadataResult.NoUpdate -> {
+                updateMemoryCache(metadataFromFile)
+            }
+            is UpdateTokenMetadataResult.Error -> {
+                handleError(result.throwable)
+            }
         }
     }
 
-    internal fun updateMemoryCacheAndLocalFile(result: UpdateTokenMetadataResult.NewMetadata) {
-        val tokensMetadata = result.tokensMetadataInfo
+    private suspend fun readTokensMetadataFromFile(): TokensMetadataInfo? {
+        val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
+        return file?.let { gson.fromJson(it.data, TokensMetadataInfo::class.java) }
+    }
 
+    private suspend fun updateLocalFile(tokensMetadata: TokensMetadataInfo) {
         val lastModified = tokensMetadata.timestamp
-        Timber.tag(TAG).i("New tokens metadata received from: $lastModified, updating local storage.")
-
-        userLocalRepository.setTokenData(tokensMetadata.tokens)
+        Timber.tag(TAG).i("New tokens metadata received from: $lastModified, updating local file.")
 
         // Save tokens to the file
-        externalStorageRepository.saveJson(
+        externalStorageRepository.saveAsJsonFile(
             jsonObject = tokensMetadata,
             fileName = TOKENS_FILE_NAME
         )
     }
 
-    internal fun updateMemoryCache(tokensMetadata: List<TokenMetadata>?) {
-        Timber.tag(TAG).i("Metadata is up-to-date. Using local file")
+    private fun updateMemoryCache(tokensMetadata: TokensMetadataInfo?) {
+        Timber.tag(TAG).i("Updating in-memory cache for tokens-metadata")
 
-        if (tokensMetadata == null) {
+        if (tokensMetadata?.tokens == null) {
             Timber.tag(TAG).e("Local file not found!")
             return
         }
 
-        userLocalRepository.setTokenData(tokensMetadata)
+        userLocalRepository.setTokenData(tokensMetadata.tokens)
     }
 
-    internal fun handleError(throwable: Throwable) {
+    private fun handleError(throwable: Throwable) {
         Timber.tag(TAG).e(throwable, "Error loading metadata")
     }
 }

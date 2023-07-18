@@ -42,11 +42,9 @@ fun <T : Any> JsonReader.nextArray(arrayScope: (JsonReader) -> T): T {
     return result
 }
 
-
 fun Result<*>.invokeAndForget() {
     getOrNull()
 }
-
 
 fun Gson.toJsonObject(obj: Any): JsonObject {
     val objectAsJsonStr = toJson(obj).takeIf { obj !is String }
@@ -61,8 +59,9 @@ inline fun <reified Type> Gson.fromJsonReified(json: String): Type? {
     }
     return result
 }
-inline fun <reified T>Gson.fromJsonReified(json: JsonElement, typeToken: Type):  T {
-    val result = fromJson<T>(json,typeToken)
+
+inline fun <reified T> Gson.fromJsonReified(json: JsonElement, typeToken: Type): T {
+    val result = fromJson<T>(json, typeToken)
     return result
 }
 
@@ -75,4 +74,3 @@ fun Request.bodyAsString(): String = kotlin.runCatching {
     .getOrDefault("")
 
 fun Response.bodyAsString(): String = peekBody(Long.MAX_VALUE).string()
-

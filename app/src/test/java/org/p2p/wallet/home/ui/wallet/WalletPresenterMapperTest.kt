@@ -1,10 +1,13 @@
 package org.p2p.wallet.home.ui.wallet
 
+import android.content.res.Resources
 import assertk.all
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -16,20 +19,26 @@ import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
 import org.p2p.core.utils.fromLamports
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
-import org.p2p.wallet.kyc.model.StrigaBanner
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
 import org.p2p.wallet.utils.assertThat
+import org.p2p.wallet.utils.emptyString
 
 class WalletPresenterMapperTest {
 
+    private val resources = mockk<Resources> {
+        every { getString(any()) } returns emptyString()
+    }
+
     @Test
     fun `GIVEN non-null striga banner WHEN mapStrigaKycBanner THEN check it has correct model`() {
-        val mapper = WalletPresenterMapper()
+        val mapper = WalletMapper(resources)
         val result = mapper.buildCellItems {
             mapStrigaKycBanner(StrigaKycStatusBanner.IDENTIFY)
         }
@@ -46,7 +55,7 @@ class WalletPresenterMapperTest {
 
     @Test
     fun `GIVEN null striga banner WHEN mapStrigaKycBanner THEN check it did not map`() {
-        val mapper = WalletPresenterMapper()
+        val mapper = WalletMapper(resources)
         val result = mapper.buildCellItems {
             mapStrigaKycBanner(null)
         }
@@ -89,7 +98,7 @@ class WalletPresenterMapperTest {
             walletId = StrigaWalletId("walletId"),
             accountId = StrigaAccountId("accountId"),
         )
-        val mapper = WalletPresenterMapper()
+        val mapper = WalletMapper(resources)
         val result = mapper.buildCellItems {
             mapStrigaOnRampTokens(listOf(onRampToken))
         }

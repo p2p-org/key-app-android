@@ -253,4 +253,3 @@ fun List<Token.Active>.findByMintAddress(mintAddress: String): Token.Active? =
 @JvmName("findByNullableMintAddress")
 fun List<Token.Active>.findByMintAddress(mintAddress: String?): Token.Active? =
     mintAddress?.let(::findByMintAddress)
-

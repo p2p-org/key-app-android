@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.wallet.repository
 
 import java.math.BigInteger
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId

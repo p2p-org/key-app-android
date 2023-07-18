@@ -2,7 +2,7 @@ package org.p2p.wallet.home.events
 
 import timber.log.Timber
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
-import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
+import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 

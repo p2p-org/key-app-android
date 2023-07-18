@@ -3,9 +3,6 @@ package org.p2p.ethereumkit.external.model
 import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
 import org.p2p.core.utils.Constants.ETH_NAME
 import org.p2p.core.utils.Constants.ETH_SYMBOL
-import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
-import org.p2p.core.utils.Constants.SOL_NAME
-import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_COINGECKO_ID
@@ -13,6 +10,7 @@ import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_ETH_MINT
 import org.p2p.core.wrapper.eth.EthAddress
 
+/* ktlint-disable max-line-length */
 enum class ERC20Tokens(
     val contractAddress: String,
     val mintAddress: String,

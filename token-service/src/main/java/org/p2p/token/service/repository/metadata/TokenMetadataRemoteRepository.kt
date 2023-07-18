@@ -13,6 +13,7 @@ import org.p2p.token.service.api.response.TokenListResponse
 import org.p2p.token.service.model.UpdateTokenMetadataResult
 
 private const val ALL_TOKENS_MAP_CHUNKED_COUNT = 50
+private const val HEADER_MODIFIED_SINCE = "last-modified"
 
 internal class TokenMetadataRemoteRepository(
     private val api: RpcApi,
@@ -22,7 +23,7 @@ internal class TokenMetadataRemoteRepository(
     private val dispatchers: CoroutineDispatchers
 ) : TokenMetadataRepository {
 
-    private val tokenServiceUrl
+    private val tokenServiceUrl: String
         get() = urlProvider.loadTokenServiceEnvironment().baseServiceUrl
 
     override suspend fun loadTokensMetadata(
@@ -46,10 +47,10 @@ internal class TokenMetadataRemoteRepository(
             .flatMap { chunkedList -> chunkedList.map { mapper.fromNetwork(it) } }
 
         val metadata = TokensMetadataInfo(
-            timestamp = response.headers()["last-modified"],
+            timestamp = response.headers()[HEADER_MODIFIED_SINCE],
             tokens = tokens
         )
 
-        UpdateTokenMetadataResult.NewMetadata(tokensMetadataInfo = metadata)
+        UpdateTokenMetadataResult.NewMetadata(remoteTokensMetadata = metadata)
     }
 }

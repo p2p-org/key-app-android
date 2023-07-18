@@ -7,7 +7,7 @@ import java.lang.reflect.Type
 
 internal class GetTokenMetadataJsonRpc(
     @Transient val contractAddresses: EthAddress
-): JsonRpc<List<Any>, TokenMetadataResponse>(
+) : JsonRpc<List<Any>, TokenMetadataResponse>(
     method = "alchemy_getTokenMetadata",
     params = listOf(contractAddresses)
 ) {

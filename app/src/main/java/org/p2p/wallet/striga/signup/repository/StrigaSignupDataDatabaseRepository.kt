@@ -3,11 +3,11 @@ package org.p2p.wallet.striga.signup.repository
 import android.content.res.Resources
 import timber.log.Timber
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.model.toSuccessResult
-import org.p2p.wallet.striga.signup.dao.StrigaSignupDataDao
-import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.toSuccessResult
+import org.p2p.wallet.striga.signup.repository.dao.StrigaSignupDataDao
+import org.p2p.wallet.striga.signup.repository.dao.StrigaSignupDataEntity
 import org.p2p.wallet.striga.signup.repository.mapper.StrigaSignupDataMapper
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType

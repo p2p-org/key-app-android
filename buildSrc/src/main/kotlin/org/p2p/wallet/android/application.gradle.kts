@@ -4,6 +4,7 @@ import AppVersions
 import BuildConfiguration
 import Versions
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import gradle.kotlin.dsl.accessors._4b7ad2363fc1fce7c774e054dc9a9300.java
 
 plugins {
     id("com.android.application")
@@ -88,6 +89,11 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     applicationVariants.all {
