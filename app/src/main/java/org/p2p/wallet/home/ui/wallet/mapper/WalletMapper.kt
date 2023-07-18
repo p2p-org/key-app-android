@@ -77,7 +77,6 @@ class WalletMapper() {
                 val mintAddress = it.tokenDetails.mintAddress.toBase58Instance()
                 StrigaOnRampCellModel(
                     amountAvailable = it.claimableAmount,
-                    tokenName = it.tokenDetails.tokenName,
                     tokenMintAddress = mintAddress,
                     tokenSymbol = it.tokenDetails.tokenSymbol,
                     tokenIcon = it.tokenDetails.iconUrl.orEmpty(),

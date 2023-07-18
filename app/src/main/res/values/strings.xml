@@ -268,6 +268,7 @@
     <string name="home_top_up">Top up</string>
 
     <!--Wallet-->
+    <string name="incoming_transfer">Incoming transfer</string>
     <string name="wallet_token_format">%s %s</string>
     <string name="add_money_button">Add money</string>
     <string name="withdraw_button">Withdraw</string>

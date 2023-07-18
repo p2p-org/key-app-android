@@ -7,7 +7,6 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import org.p2p.core.crypto.Base58String
-import org.p2p.core.glide.GlideManager
 import org.p2p.core.utils.asUsd
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
@@ -57,12 +56,10 @@ class WalletFragment :
     private val binding: FragmentWalletBinding by viewBinding()
 
     private val receiveAnalytics: ReceiveAnalytics by inject()
-    private val glideManager: GlideManager by inject()
     private val strigaFragmentFactory: StrigaFragmentFactory by inject()
 
     private val cellAdapter = CommonAnyCellAdapter(
         strigaOnRampTokenDelegate(
-            glideManager = glideManager,
             onBindListener = { binding, item ->
                 binding.buttonClaim.setOnClickListener {
                     presenter.onStrigaOnRampClicked(item)

@@ -99,7 +99,6 @@ class WalletPresenterMapperTest {
             .isInstanceOf(StrigaOnRampCellModel::class.java)
             .all {
                 prop(StrigaOnRampCellModel::amountAvailable).isEqualTo(expectedAmount)
-                prop(StrigaOnRampCellModel::tokenName).isEqualTo("USDC")
                 prop(StrigaOnRampCellModel::tokenMintAddress).isEqualTo(tokenMint)
                 prop(StrigaOnRampCellModel::tokenSymbol).isEqualTo("USDC")
                 prop(StrigaOnRampCellModel::tokenIcon).isEqualTo("iconUrl")
