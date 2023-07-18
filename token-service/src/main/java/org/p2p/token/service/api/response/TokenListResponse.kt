@@ -23,7 +23,7 @@ data class TokenResponse(
     @SerializedName("tags")
     val tags: List<String>?,
     @SerializedName("extensions")
-    val extensions: TokenExtensions?
+    val extensions: TokenExtensionResponse?
 ) {
 
     companion object {
@@ -33,11 +33,19 @@ data class TokenResponse(
     fun isWrapped() = !tags.isNullOrEmpty() && tags.any { it == WRAPPED_TAG }
 }
 
-data class TokenExtensions(
-    @SerializedName("serumV3Usdc")
-    val serumV3Usdc: String?,
-    @SerializedName("serumV3Usdt")
-    val serumV3Usdt: String?,
-    @SerializedName("coingeckoId")
-    val coingeckoId: String?
+data class TokenExtensionResponse(
+    @SerializedName("ruleOfProcessingTokenPriceWs")
+    val ruleOfProcessingTokenPriceWs: String?,
+    @SerializedName("isPositionOnWs")
+    val isPositionOnWs: Boolean?,
+    @SerializedName("isTokenCellVisibleOnWs")
+    val isTokenCellVisibleOnWs: Boolean?,
+    @SerializedName("percentDifferenceToShowByPriceOnWs")
+    val percentDifferenceToShowByPriceOnWs: Int?,
+    @SerializedName("calculationOfFinalBalanceOnWs")
+    val calculationOfFinalBalanceOnWs: Boolean?,
+    @SerializedName("ruleOfFractionalPartOnWs")
+    val ruleOfFractionalPartOnWs: String?,
+    @SerializedName("canBeHidden")
+    val canBeHidden: Boolean?
 )

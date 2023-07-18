@@ -73,7 +73,6 @@ internal class EthereumKitRepository(
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> {
         return try {
             val walletTokens = buildList<EthTokenMetadata> {
-                this += getEthToken()
                 this += loadTokensMetadata()
             }.map { tokenMetadata ->
 
@@ -99,11 +98,14 @@ internal class EthereumKitRepository(
                 )
             }
                 .filter { token ->
-                    val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
-                    val tokenFiatAmount = token.totalInUsd.orZero()
-                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
-                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
+                    true
+//                    val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
+//                    val tokenFiatAmount = token.totalInUsd.orZero()
+//                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
+//                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
                 }
+            Timber.tag("_____").d("wallet tokens = ${walletTokens.size}")
+
             walletTokens
         } catch (e: Throwable) {
             Timber.e(e, "Error on loading ethereumTokens")
@@ -140,11 +142,11 @@ internal class EthereumKitRepository(
         return tokenKeyProvider?.publicKey ?: throwInitError()
     }
 
-    private suspend fun loadTokensMetadata(): List<EthTokenMetadata> = withContext(dispatchers.io) {
+    private suspend fun loadTokensMetadata(): List<EthTokenMetadata> {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
         val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
 
-        loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
+        return loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
             getMetadataAsync(
                 tokenBalance = tokenBalance,
                 contractAddress = tokenBalance.contractAddress

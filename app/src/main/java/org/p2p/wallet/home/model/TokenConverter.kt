@@ -3,14 +3,17 @@ package org.p2p.wallet.home.model
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadata
+import org.p2p.core.token.TokenExtension
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.solanaj.model.types.Account
+import org.p2p.token.service.api.response.TokenExtensionResponse
+import org.p2p.token.service.api.response.TokenResponse
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.home.db.TokenEntity
-import org.p2p.wallet.user.local.TokenResponse
+import org.p2p.wallet.home.db.TokenExtensionEntity
 
 object TokenConverter {
 
@@ -21,8 +24,21 @@ object TokenConverter {
             symbol = response.symbol,
             iconUrl = response.logoUrl,
             decimals = response.decimals,
-            isWrapped = response.isWrapped()
+            isWrapped = response.isWrapped(),
+            extensions = fromNetwork(response.extensions)
         )
+
+    private fun fromNetwork(response: TokenExtensionResponse?): TokenExtension {
+        return TokenExtension(
+            ruleOfProcessingTokenPriceWs = response?.ruleOfProcessingTokenPriceWs,
+            isPositionOnWs = response?.isPositionOnWs,
+            isTokenCellVisibleOnWs = response?.isTokenCellVisibleOnWs,
+            percentDifferenceToShowByPriceOnWs = response?.percentDifferenceToShowByPriceOnWs,
+            calculationOfFinalBalanceOnWs = response?.calculationOfFinalBalanceOnWs,
+            ruleOfFractionalPartOnWs = response?.ruleOfFractionalPartOnWs,
+            canBeHidden = response?.canBeHidden
+        )
+    }
 
     fun fromNetwork(
         mintAddress: String,
@@ -49,7 +65,8 @@ object TokenConverter {
             total = total,
             rate = tokenRate,
             visibility = TokenVisibility.DEFAULT,
-            isWrapped = tokenMetadata.isWrapped
+            isWrapped = tokenMetadata.isWrapped,
+            extensions = tokenMetadata.extensions
         )
     }
 
@@ -96,8 +113,21 @@ object TokenConverter {
             total = token.total,
             exchangeRate = token.rate?.toString(),
             visibility = token.visibility.stringValue,
-            isWrapped = token.isWrapped
+            isWrapped = token.isWrapped,
+            extensions = toDatabase(token.extensions)
         )
+
+    fun toDatabase(tokenExtension: TokenExtension?): TokenExtensionEntity {
+        return TokenExtensionEntity(
+            ruleOfProcessingTokenPriceWs = tokenExtension?.ruleOfProcessingTokenPriceWs,
+            isPositionOnWs = tokenExtension?.isPositionOnWs,
+            isTokenCellVisibleOnWs = tokenExtension?.isTokenCellVisibleOnWs,
+            percentDifferenceToShowByPriceOnWs = tokenExtension?.percentDifferenceToShowByPriceOnWs,
+            calculationOfFinalBalanceOnWs = tokenExtension?.calculationOfFinalBalanceOnWs,
+            ruleOfFractionalPartOnWs = tokenExtension?.ruleOfFractionalPartOnWs,
+            canBeHidden = tokenExtension?.canBeHidden
+        )
+    }
 
     fun fromDatabase(entity: TokenEntity): Token.Active =
         Token.Active(
@@ -111,6 +141,18 @@ object TokenConverter {
             total = entity.total,
             rate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
-            isWrapped = entity.isWrapped
+            isWrapped = entity.isWrapped,
+            extensions = fromDatabase(entity.extensions)
+        )
+
+    fun fromDatabase(entity: TokenExtensionEntity?): TokenExtension =
+        TokenExtension(
+            ruleOfProcessingTokenPriceWs = entity?.ruleOfProcessingTokenPriceWs,
+            isPositionOnWs = entity?.isPositionOnWs,
+            isTokenCellVisibleOnWs = entity?.isTokenCellVisibleOnWs,
+            percentDifferenceToShowByPriceOnWs = entity?.percentDifferenceToShowByPriceOnWs,
+            calculationOfFinalBalanceOnWs = entity?.calculationOfFinalBalanceOnWs,
+            ruleOfFractionalPartOnWs = entity?.ruleOfFractionalPartOnWs,
+            canBeHidden = entity?.canBeHidden
         )
 }

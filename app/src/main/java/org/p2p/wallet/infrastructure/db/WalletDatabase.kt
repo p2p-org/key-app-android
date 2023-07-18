@@ -49,7 +49,7 @@ import org.p2p.wallet.striga.signup.dao.StrigaSignupDataEntity
 abstract class WalletDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 14
+        const val DATABASE_VERSION = 15
         const val DATABASE_NAME = "p2p.wallet"
     }
 

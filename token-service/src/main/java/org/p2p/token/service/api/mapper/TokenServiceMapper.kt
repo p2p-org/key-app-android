@@ -1,8 +1,10 @@
 package org.p2p.token.service.api.mapper
 
+import org.p2p.core.token.TokenExtension
 import org.p2p.core.token.TokenMetadata
 import org.p2p.token.service.api.request.TokenServiceItemRequest
 import org.p2p.token.service.api.request.TokenServiceQueryRequest
+import org.p2p.token.service.api.response.TokenExtensionResponse
 import org.p2p.token.service.api.response.TokenItemPriceResponse
 import org.p2p.token.service.api.response.TokenRateResponse
 import org.p2p.token.service.api.response.TokenResponse
@@ -20,7 +22,8 @@ class TokenServiceMapper {
             symbol = response.symbol,
             iconUrl = response.logoUrl,
             decimals = response.decimals,
-            isWrapped = response.isWrapped()
+            isWrapped = response.isWrapped(),
+            extensions = fromNetwork(response.extensions)
         )
 
     internal fun fromNetwork(
@@ -32,6 +35,18 @@ class TokenServiceMapper {
             address = response.tokenAddress,
             rate = fromNetwork(tokenRate),
             network = tokenServiceNetwork
+        )
+    }
+
+    internal fun fromNetwork(response: TokenExtensionResponse?): TokenExtension {
+        return TokenExtension(
+            ruleOfProcessingTokenPriceWs = response?.ruleOfProcessingTokenPriceWs,
+            isPositionOnWs = response?.isPositionOnWs,
+            isTokenCellVisibleOnWs = response?.isTokenCellVisibleOnWs,
+            percentDifferenceToShowByPriceOnWs = response?.percentDifferenceToShowByPriceOnWs,
+            calculationOfFinalBalanceOnWs = response?.calculationOfFinalBalanceOnWs,
+            ruleOfFractionalPartOnWs = response?.ruleOfFractionalPartOnWs,
+            canBeHidden = response?.canBeHidden
         )
     }
 
