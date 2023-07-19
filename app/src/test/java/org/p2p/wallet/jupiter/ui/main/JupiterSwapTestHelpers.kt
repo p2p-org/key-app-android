@@ -243,7 +243,8 @@ object JupiterSwapTestHelpers {
                 JUPITER_SOL_TOKEN.tokenSymbol,
                 iconUrl = JUPITER_SOL_TOKEN.logoUri,
                 decimals = JUPITER_SOL_TOKEN.decimals,
-                isWrapped = false
+                isWrapped = false,
+                extensions = null
             ),
             amount.toLamports(JUPITER_SOL_TOKEN.decimals).toLong(),
             rateToUsd
@@ -258,7 +259,8 @@ object JupiterSwapTestHelpers {
                 JUPITER_USDC_TOKEN.tokenSymbol,
                 iconUrl = JUPITER_USDC_TOKEN.logoUri,
                 decimals = JUPITER_USDC_TOKEN.decimals,
-                isWrapped = false
+                isWrapped = false,
+                extensions = null
             ),
             amount = amount.toLamports(JUPITER_USDC_TOKEN.decimals).toLong(),
             solPrice = BigDecimal("1")
@@ -271,7 +273,8 @@ object JupiterSwapTestHelpers {
             symbol = tokenSymbol,
             iconUrl = iconUrl,
             decimals = decimals,
-            isWrapped = isWrapped
+            isWrapped = isWrapped,
+            extensions = null
         )
     }
 }

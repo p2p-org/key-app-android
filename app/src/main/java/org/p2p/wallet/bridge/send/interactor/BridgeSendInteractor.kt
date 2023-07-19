@@ -72,7 +72,8 @@ class BridgeSendInteractor(
             iconUrl = token.iconUrl,
             rate = null,
             visibility = TokenVisibility.DEFAULT,
-            isWrapped = token.isWrapped
+            isWrapped = token.isWrapped,
+            extensions = null
         )
     }
 

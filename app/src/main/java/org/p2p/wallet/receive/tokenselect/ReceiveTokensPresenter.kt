@@ -68,9 +68,10 @@ class ReceiveTokensPresenter(
                         mintAddress = token.mintAddress,
                         name = erc20Token.replaceTokenName ?: token.tokenName,
                         symbol = erc20Token.replaceTokenSymbol ?: token.tokenSymbol,
-                        iconUrl = erc20Token.tokenIconUrl ?: token.iconUrl,
+                        iconUrl = erc20Token.tokenIconUrl,
                         decimals = token.decimals,
                         isWrapped = false,
+                        extensions = null
                     )
                 }
             }

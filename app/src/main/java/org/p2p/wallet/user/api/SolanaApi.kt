@@ -1,7 +1,7 @@
 package org.p2p.wallet.user.api
 
-import org.p2p.wallet.user.local.TokenListResponse
 import retrofit2.http.GET
+import org.p2p.token.service.api.response.TokenListResponse
 
 interface SolanaApi {
 

@@ -10,5 +10,6 @@ data class TokenMetadata(
     val symbol: String,
     val iconUrl: String?,
     val decimals: Int,
-    val isWrapped: Boolean
+    val isWrapped: Boolean,
+    val extensions: TokenExtension?
 ) : Parcelable
