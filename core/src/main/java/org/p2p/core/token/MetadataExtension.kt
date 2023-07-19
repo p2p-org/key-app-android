@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class TokenExtension(
+data class MetadataExtension(
     val ruleOfProcessingTokenPriceWs: String?,
     val isPositionOnWs: Boolean?,
     val isTokenCellVisibleOnWs: Boolean?,

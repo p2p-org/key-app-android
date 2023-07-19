@@ -8,7 +8,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
-import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalanceResponse
@@ -73,9 +72,10 @@ internal class EthereumKitRepository(
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> {
         return try {
             val walletTokens = buildList<EthTokenMetadata> {
+                // TODO revert this change after token service for ETH tokens will be fix
+                // this += getEthToken()
                 this += loadTokensMetadata()
             }.map { tokenMetadata ->
-
                 var isClaiming = false
                 var latestBundleId: String? = null
                 var tokenAmount: BigDecimal? = null
@@ -98,10 +98,12 @@ internal class EthereumKitRepository(
                 )
             }
                 .filter { token ->
-                    val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
-                    val tokenFiatAmount = token.totalInUsd.orZero()
-                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
-                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
+                    // TODO revert this change after token service for ETH tokens will be fix
+//                    val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
+//                    val tokenFiatAmount = token.totalInUsd.orZero()
+//                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
+//                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
+                    true
                 }
 
             walletTokens

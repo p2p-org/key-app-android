@@ -23,7 +23,7 @@ data class TokenResponse(
     @SerializedName("tags")
     val tags: List<String>?,
     @SerializedName("extensions")
-    val extensions: TokenExtensionResponse?
+    val extensions: MetadataExtensionResponse?
 ) {
 
     companion object {
@@ -33,7 +33,7 @@ data class TokenResponse(
     fun isWrapped() = !tags.isNullOrEmpty() && tags.any { it == WRAPPED_TAG }
 }
 
-data class TokenExtensionResponse(
+data class MetadataExtensionResponse(
     @SerializedName("ruleOfProcessingTokenPriceWs")
     val ruleOfProcessingTokenPriceWs: String?,
     @SerializedName("isPositionOnWs")

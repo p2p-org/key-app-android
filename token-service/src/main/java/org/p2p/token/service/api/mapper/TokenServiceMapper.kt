@@ -1,10 +1,10 @@
 package org.p2p.token.service.api.mapper
 
-import org.p2p.core.token.TokenExtension
+import org.p2p.core.token.MetadataExtension
 import org.p2p.core.token.TokenMetadata
 import org.p2p.token.service.api.request.TokenServiceItemRequest
 import org.p2p.token.service.api.request.TokenServiceQueryRequest
-import org.p2p.token.service.api.response.TokenExtensionResponse
+import org.p2p.token.service.api.response.MetadataExtensionResponse
 import org.p2p.token.service.api.response.TokenItemPriceResponse
 import org.p2p.token.service.api.response.TokenRateResponse
 import org.p2p.token.service.api.response.TokenResponse
@@ -38,8 +38,8 @@ class TokenServiceMapper {
         )
     }
 
-    internal fun fromNetwork(response: TokenExtensionResponse?): TokenExtension {
-        return TokenExtension(
+    internal fun fromNetwork(response: MetadataExtensionResponse?): MetadataExtension {
+        return MetadataExtension(
             ruleOfProcessingTokenPriceWs = response?.ruleOfProcessingTokenPriceWs,
             isPositionOnWs = response?.isPositionOnWs,
             isTokenCellVisibleOnWs = response?.isTokenCellVisibleOnWs,

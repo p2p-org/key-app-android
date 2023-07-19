@@ -4,6 +4,7 @@ import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
@@ -21,13 +22,17 @@ class EthereumTokensPollingService(
     fun start() {
         pollingJob?.cancel()
         pollingJob = launch {
-            try {
-                delay(DELAY_IN_MILLISECONDS)
-                val claimTokens = ethereumInteractor.loadClaimTokens()
-                ethereumInteractor.loadSendTransactionDetails()
-                ethereumInteractor.loadWalletTokens(claimTokens)
-            } catch (e: Throwable) {
-                Timber.tag(TAG).e(e, "Error while try to poll ethereum tokens")
+            while (isActive) {
+                try {
+                    delay(DELAY_IN_MILLISECONDS)
+                    Timber.tag("_____").d("claim tokens")
+                    val claimTokens = ethereumInteractor.loadClaimTokens()
+                    ethereumInteractor.loadSendTransactionDetails()
+                    ethereumInteractor.loadWalletTokens(claimTokens)
+                    Timber.tag("_____").d("claim tokens loaded")
+                } catch (e: Throwable) {
+                    Timber.tag(TAG).e(e, "Error while try to poll ethereum tokens")
+                }
             }
         }
     }

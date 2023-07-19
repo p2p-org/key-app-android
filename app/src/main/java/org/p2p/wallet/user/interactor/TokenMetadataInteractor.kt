@@ -1,6 +1,7 @@
 package org.p2p.wallet.user.interactor
 
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import timber.log.Timber
 import org.p2p.core.token.TokensMetadataInfo
 import org.p2p.token.service.model.UpdateTokenMetadataResult
@@ -9,7 +10,7 @@ import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 
 private const val TAG = "TokenMetadataInteractor"
-const val TOKENS_FILE_NAME = "tokens_metadata"
+const val TOKENS_FILE_NAME = "token_service_metadata"
 
 class TokenMetadataInteractor(
     private val externalStorageRepository: ExternalStorageRepository,
@@ -39,8 +40,15 @@ class TokenMetadataInteractor(
     }
 
     private suspend fun readTokensMetadataFromFile(): TokensMetadataInfo? {
-        val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
-        return file?.let { gson.fromJson(it.data, TokensMetadataInfo::class.java) }
+        return try {
+            Timber.tag("____").d("Try to read metadata")
+            val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
+            Timber.tag("____").d("Metadata readed size = $file")
+            file?.let { gson.fromJson(it.data, TokensMetadataInfo::class.java) }
+        } catch (e: JsonSyntaxException) {
+            Timber.tag("____").d("Metadata readed error")
+            null
+        }
     }
 
     private suspend fun updateLocalFile(tokensMetadata: TokensMetadataInfo) {
