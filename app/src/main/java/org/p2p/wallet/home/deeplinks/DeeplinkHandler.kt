@@ -2,7 +2,6 @@ package org.p2p.wallet.home.deeplinks
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.infrastructure.coroutines.waitForCondition
@@ -19,7 +18,6 @@ class DeeplinkHandler(
     private val screenNavigator: DeeplinkScreenNavigator?,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val userInteractor: UserInteractor,
-    private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val deeplinkTopLevelHandler: (target: DeeplinkTarget) -> Unit,
 ) {
 
@@ -83,11 +81,7 @@ class DeeplinkHandler(
             val tokensForBuy = userInteractor.getTokensForBuy()
             if (tokensForBuy.isEmpty()) return@launch
 
-            if (newBuyFeatureToggle.isFeatureEnabled) {
-                screenNavigator?.navigateToBuyScreen(tokensForBuy.first())
-            } else {
-                screenNavigator?.showTokensForBuy(tokensForBuy)
-            }
+            screenNavigator?.navigateToBuyScreen(tokensForBuy.first())
         }
     }
 }
