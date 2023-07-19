@@ -20,6 +20,7 @@ import org.p2p.wallet.home.ui.container.mapper.BalanceMapper
 import org.p2p.wallet.home.ui.crypto.MyCryptoFragment
 import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -31,6 +32,7 @@ class MainContainerPresenter(
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val metadataInteractor: MetadataInteractor,
     private val userInteractor: UserInteractor,
+    private val strigaOnRampInteractor: StrigaOnRampInteractor,
     private val homeAnalytics: HomeAnalytics,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val balanceMapper: BalanceMapper,
@@ -66,6 +68,7 @@ class MainContainerPresenter(
     override fun loadBottomNavigationMenu() {
         view?.inflateBottomNavigationMenu(menuRes = R.menu.menu_ui_kit_bottom_navigation)
 
+        checkIncomeTransfers()
         checkDeviceShare()
     }
 
@@ -137,6 +140,13 @@ class MainContainerPresenter(
     private fun checkDeviceShare() {
         val hasDifferentDeviceShare = metadataInteractor.hasDifferentDeviceShare()
         view?.showSettingsBadgeVisible(isVisible = hasDifferentDeviceShare)
+    }
+
+    private fun checkIncomeTransfers() {
+        launch {
+            val strigaOnRampTokens = strigaOnRampInteractor.getOnRampTokens().successOrNull().orEmpty()
+            view?.showWalletBadgeVisible(isVisible = strigaOnRampTokens.isNotEmpty())
+        }
     }
 
     private fun handleTokenState(newState: UserTokensState) {

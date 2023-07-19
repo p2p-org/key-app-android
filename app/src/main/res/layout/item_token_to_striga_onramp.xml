@@ -23,11 +23,13 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginVertical="16dp"
+            android:background="@drawable/bg_rounded_solid_rain_24"
+            android:scaleType="center"
+            android:src="@drawable/ic_transaction_receive"
             app:cornerRadius="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@tools:sample/avatars" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/imageViewWrapped"
@@ -48,12 +50,12 @@
             android:layout_marginHorizontal="12dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+            android:text="@string/incoming_transfer"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
             app:layout_constraintBottom_toTopOf="@id/textViewTokenTotal"
             app:layout_constraintEnd_toStartOf="@id/buttonClaim"
             app:layout_constraintStart_toEndOf="@id/imageViewToken"
-            app:layout_constraintTop_toTopOf="@id/imageViewToken"
-            tools:text="Wrapped Ethereum" />
+            app:layout_constraintTop_toTopOf="@id/imageViewToken" />
 
         <TextView
             android:id="@+id/textViewTokenTotal"

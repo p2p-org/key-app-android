@@ -7,8 +7,6 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.BUY_BUTTON
-import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton.SELL_BUTTON
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
 import org.p2p.wallet.home.ui.wallet.handlers.StrigaBannerClickHandler
@@ -98,23 +96,33 @@ class WalletPresenter(
         view?.showRefreshing(isRefreshing = newState.isLoading())
         when (newState) {
             is UserTokensState.Idle -> Unit
-            is UserTokensState.Loading -> Unit
+            is UserTokensState.Loading -> {
+                view?.showBalance(
+                    walletMapper.getFiatBalanceSkeleton(),
+                    walletMapper.getTokenBalanceSkeleton()
+                )
+            }
             is UserTokensState.Refreshing -> Unit
             is UserTokensState.Error -> view?.showErrorMessage(newState.cause)
-            is UserTokensState.Empty -> view?.showBalance(walletMapper.mapBalance(BigDecimal.ZERO))
+            is UserTokensState.Empty -> {
+                view?.showBalance(
+                    walletMapper.mapFiatBalance(BigDecimal.ZERO),
+                    walletMapper.mapTokenBalance(BigDecimal.ZERO)
+                )
+            }
             is UserTokensState.Loaded -> {
                 val usdc = newState.solTokens.find { it.isUSDC }
                 val balance = usdc?.total ?: BigDecimal.ZERO
-                view?.showBalance(walletMapper.mapBalance(balance))
+                view?.showBalance(
+                    walletMapper.mapFiatBalance(balance),
+                    walletMapper.mapTokenBalance(balance)
+                )
             }
         }
     }
 
     private fun loadInitialData() {
         launch {
-            val buttons = listOf(BUY_BUTTON, SELL_BUTTON)
-            view?.showActionButtons(buttons)
-
             showUserAddressAndUsername()
 
             val userId = username?.value ?: userPublicKey
@@ -136,11 +144,11 @@ class WalletPresenter(
         tokenServiceCoordinator.refresh()
     }
 
-    override fun onSellClicked() {
+    override fun onWithdrawClicked() {
         // TODO
     }
 
-    override fun onTopupClicked() {
+    override fun onAddMoneyClicked() {
         view?.showTopupWalletDialog()
     }
 

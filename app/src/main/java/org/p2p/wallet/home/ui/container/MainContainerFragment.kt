@@ -173,6 +173,10 @@ class MainContainerFragment :
         binding.bottomNavigation.setBadgeVisible(screenTab = ScreenTab.MY_CRYPTO_SCREEN, isVisible = isVisible)
     }
 
+    override fun showWalletBadgeVisible(isVisible: Boolean) {
+        binding.bottomNavigation.setBadgeVisible(screenTab = ScreenTab.WALLET_SCREEN, isVisible = isVisible)
+    }
+
     override fun showWalletBalance(balance: String) {
         binding.bottomNavigation.setMenuItemTitle(screenTab = ScreenTab.WALLET_SCREEN, balance)
     }

@@ -1,13 +1,10 @@
 package org.p2p.wallet.home.ui.wallet
 
-import android.content.res.Resources
 import assertk.all
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.Test
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -29,17 +26,12 @@ import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
 import org.p2p.wallet.utils.assertThat
-import org.p2p.wallet.utils.emptyString
 
 class WalletPresenterMapperTest {
 
-    private val resources = mockk<Resources> {
-        every { getString(any()) } returns emptyString()
-    }
-
     @Test
     fun `GIVEN non-null striga banner WHEN mapStrigaKycBanner THEN check it has correct model`() {
-        val mapper = WalletMapper(resources)
+        val mapper = WalletMapper()
         val result = mapper.buildCellItems {
             mapStrigaKycBanner(StrigaKycStatusBanner.IDENTIFY)
         }
@@ -56,7 +48,7 @@ class WalletPresenterMapperTest {
 
     @Test
     fun `GIVEN null striga banner WHEN mapStrigaKycBanner THEN check it did not map`() {
-        val mapper = WalletMapper(resources)
+        val mapper = WalletMapper()
         val result = mapper.buildCellItems {
             mapStrigaKycBanner(null)
         }
@@ -99,7 +91,7 @@ class WalletPresenterMapperTest {
             walletId = StrigaWalletId("walletId"),
             accountId = StrigaAccountId("accountId"),
         )
-        val mapper = WalletMapper(resources)
+        val mapper = WalletMapper()
         val result = mapper.buildCellItems {
             mapStrigaOnRampTokens(listOf(onRampToken))
         }
@@ -109,7 +101,6 @@ class WalletPresenterMapperTest {
             .isInstanceOf(StrigaOnRampCellModel::class.java)
             .all {
                 prop(StrigaOnRampCellModel::amountAvailable).isEqualTo(expectedAmount)
-                prop(StrigaOnRampCellModel::tokenName).isEqualTo("USDC")
                 prop(StrigaOnRampCellModel::tokenMintAddress).isEqualTo(tokenMint)
                 prop(StrigaOnRampCellModel::tokenSymbol).isEqualTo("USDC")
                 prop(StrigaOnRampCellModel::tokenIcon).isEqualTo("iconUrl")
