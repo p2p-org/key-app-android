@@ -17,7 +17,6 @@ class UserTokensRemoteRepository(
     private val tokenServiceRepository: TokenServiceRepository,
     private val userLocalRepository: UserLocalRepository,
     private val rpcBalanceRepository: RpcBalanceRepository
-
 ) : UserTokensRepository {
 
     override suspend fun loadUserTokens(publicKey: PublicKey): List<Token.Active> =
@@ -37,6 +36,7 @@ class UserTokensRemoteRepository(
             }
 
             val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
+            if (token.decimals == 0) return@mapNotNull null
             val solPrice = tokenServiceRepository.findTokenPriceByAddress(
                 tokenAddress = token.mintAddress
             )
