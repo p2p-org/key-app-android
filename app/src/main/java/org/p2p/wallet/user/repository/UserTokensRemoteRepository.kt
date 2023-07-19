@@ -11,6 +11,8 @@ import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 
+private const val NFT_DECIMALS = 0
+
 class UserTokensRemoteRepository(
     private val rpcRepository: RpcAccountRepository,
     private val dispatchers: CoroutineDispatchers,
@@ -36,7 +38,7 @@ class UserTokensRemoteRepository(
             }
 
             val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
-            if (token.decimals == 0) return@mapNotNull null
+            if (token.decimals == NFT_DECIMALS) return@mapNotNull null
             val solPrice = tokenServiceRepository.findTokenPriceByAddress(
                 tokenAddress = token.mintAddress
             )
