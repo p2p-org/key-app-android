@@ -25,11 +25,9 @@ class EthereumTokensPollingService(
             while (isActive) {
                 try {
                     delay(DELAY_IN_MILLISECONDS)
-                    Timber.tag("_____").d("claim tokens")
                     val claimTokens = ethereumInteractor.loadClaimTokens()
                     ethereumInteractor.loadSendTransactionDetails()
                     ethereumInteractor.loadWalletTokens(claimTokens)
-                    Timber.tag("_____").d("claim tokens loaded")
                 } catch (e: Throwable) {
                     Timber.tag(TAG).e(e, "Error while try to poll ethereum tokens")
                 }

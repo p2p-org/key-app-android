@@ -90,9 +90,7 @@ class SolanaTokensLoader(
 
             when (data) {
                 is TokenServiceUpdate.Loading -> Unit
-                is TokenServiceUpdate.TokensPriceLoaded -> {
-                    block.invoke(data.result)
-                }
+                is TokenServiceUpdate.TokensPriceLoaded -> block.invoke(data.result)
                 is TokenServiceUpdate.Idle -> Unit
                 else -> Unit
             }

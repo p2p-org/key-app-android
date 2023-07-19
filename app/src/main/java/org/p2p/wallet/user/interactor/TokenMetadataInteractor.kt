@@ -41,12 +41,9 @@ class TokenMetadataInteractor(
 
     private suspend fun readTokensMetadataFromFile(): TokensMetadataInfo? {
         return try {
-            Timber.tag("____").d("Try to read metadata")
             val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
-            Timber.tag("____").d("Metadata readed size = $file")
             file?.let { gson.fromJson(it.data, TokensMetadataInfo::class.java) }
         } catch (e: JsonSyntaxException) {
-            Timber.tag("____").d("Metadata readed error")
             null
         }
     }
