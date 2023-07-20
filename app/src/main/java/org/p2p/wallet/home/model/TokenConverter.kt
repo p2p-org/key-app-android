@@ -3,15 +3,12 @@ package org.p2p.wallet.home.model
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadata
-import org.p2p.core.token.MetadataExtension
 import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.solanaj.model.types.Account
-import org.p2p.token.service.api.response.MetadataExtensionResponse
-import org.p2p.token.service.api.response.TokenResponse
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.repository.configurator.TokenExtensionsConfigurator
 import org.p2p.wallet.home.db.TokenEntity
@@ -19,30 +16,7 @@ import org.p2p.wallet.home.db.TokenExtensionEntity
 
 object TokenConverter {
 
-    fun fromNetwork(response: TokenResponse): TokenMetadata =
-        TokenMetadata(
-            mintAddress = response.address,
-            name = response.name,
-            symbol = response.symbol,
-            iconUrl = response.logoUrl,
-            decimals = response.decimals,
-            isWrapped = response.isWrapped(),
-            extensions = fromNetwork(response.extensions)
-        )
-
-    private fun fromNetwork(response: MetadataExtensionResponse?): MetadataExtension {
-        return MetadataExtension(
-            ruleOfProcessingTokenPriceWs = response?.ruleOfProcessingTokenPriceWs,
-            isPositionOnWs = response?.isPositionOnWs,
-            isTokenCellVisibleOnWs = response?.isTokenCellVisibleOnWs,
-            percentDifferenceToShowByPriceOnWs = response?.percentDifferenceToShowByPriceOnWs,
-            calculationOfFinalBalanceOnWs = response?.calculationOfFinalBalanceOnWs,
-            ruleOfFractionalPartOnWs = response?.ruleOfFractionalPartOnWs,
-            canBeHidden = response?.canBeHidden
-        )
-    }
-
-    fun fromNetwork(
+    fun createToken(
         mintAddress: String,
         totalLamports: BigInteger,
         accountPublicKey: String,
@@ -68,10 +42,12 @@ object TokenConverter {
             rate = tokenRate,
             visibility = TokenVisibility.DEFAULT,
             isWrapped = tokenMetadata.isWrapped,
-            tokenExtensions = TokenExtensions()
+            tokenExtensions = TokenExtensions.NONE
         )
-        val extensions = tokenMetadata.extensions ?: return token
-        val tokenExtensions = TokenExtensionsConfigurator(extensions).config(token)
+        val tokenExtensions = TokenExtensionsConfigurator(
+            extensions = tokenMetadata.extensions,
+            token = token
+        ).config()
         return token.copy(tokenExtensions = tokenExtensions)
     }
 
@@ -83,7 +59,7 @@ object TokenConverter {
         val data = account.account.data.parsed.info
         val mintAddress = data.mint
         val total = data.tokenAmount.amount.toBigInteger()
-        return fromNetwork(
+        return createToken(
             mintAddress = mintAddress,
             totalLamports = total,
             accountPublicKey = account.pubkey,
@@ -147,17 +123,6 @@ object TokenConverter {
             rate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
             isWrapped = entity.isWrapped,
-            tokenExtensions = TokenExtensions()
-        )
-
-    fun fromDatabase(entity: TokenExtensionEntity?): TokenExtensions =
-        TokenExtensions(
-            ruleOfProcessingTokenPrice = entity?.ruleOfProcessingTokenPrice,
-            isTokenVisibleOnWalletScreen = entity?.isTokenVisibleOnWalletScreen,
-            isTokenCellVisibleOnWalletScreen = entity?.isTokenCellVisibleOnWalletScreen,
-            tokenPercentDifferenceOnWalletScreen = entity?.tokenPercentDifferenceOnWalletScreen,
-            isCalculateWithTotalBalance = entity?.isCalculateWithTotalBalance,
-            tokenFractionRuleOnWalletScreen = entity?.tokenFractionRuleOnWalletScreen,
-            canTokenBeHidden = entity?.canTokenBeHidden
+            tokenExtensions = TokenExtensions.NONE
         )
 }

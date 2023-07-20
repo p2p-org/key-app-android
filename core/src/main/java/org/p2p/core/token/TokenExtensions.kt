@@ -17,4 +17,9 @@ data class TokenExtensions(
     val isCalculateWithTotalBalance: Boolean? = null,
     val tokenFractionRuleOnWalletScreen: String? = null,
     val canTokenBeHidden: Boolean? = null
-) : Parcelable
+) : Parcelable {
+
+    companion object {
+        val NONE = TokenExtensions()
+    }
+}

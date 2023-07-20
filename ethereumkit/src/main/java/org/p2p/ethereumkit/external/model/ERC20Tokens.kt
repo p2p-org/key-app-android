@@ -48,37 +48,32 @@ enum class ERC20Tokens(
             "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk",
             WRAPPED_ETH_MINT
         )
+    ),
+    AVAX(
+        contractAddress = "0x85f138bfee4ef8e540890cfb48f620571d67eda3",
+        mintAddress = "KgV1GvrHQmRBY8sHQQeUKwTm2r2h8t4C8qt12Cw1HVE",
+        tokenIconUrl = "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1670992574",
+        replaceTokenName = "Avalanche",
+    ),
+    BNB(
+        contractAddress = "0x418d75f65a02b3d53b2418fb8e1fe493759c7605",
+        mintAddress = "9gP2kCy3wA1ctvYWQk75guqXuHfrEomqydHLtcTCqiLa",
+        tokenIconUrl = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850",
+        replaceTokenName = "BNB",
+    ),
+    MATIC(
+        contractAddress = "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+        mintAddress = "C7NNPWuZCNjZBfW5p6JvGsR8pUdsRpEdP1ZAhnoDwj7h",
+        tokenIconUrl = "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png?1624446912",
+        replaceTokenName = "Polygon",
+        replaceTokenSymbol = "MATIC"
+    ),
+    CRV(
+        contractAddress = "0xd533a949740bb3306d119cc777fa900ba034cd52",
+        mintAddress = "7gjNiPun3AzEazTZoFEjZgcBMeuaXdpjHq2raZTmTrfs",
+        tokenIconUrl = "https://assets.coingecko.com/coins/images/12124/large/Curve.png?1597369484",
+        replaceTokenName = "Curve DAO Token"
     );
-//    )
-//    AVAX(
-//        contractAddress = "0x85f138bfee4ef8e540890cfb48f620571d67eda3",
-//        mintAddress = "KgV1GvrHQmRBY8sHQQeUKwTm2r2h8t4C8qt12Cw1HVE",
-//        coingeckoId = "avalanche-2",
-//        tokenIconUrl = "https://assets.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1670992574",
-//        replaceTokenName = "Avalanche",
-//    ),
-//    BNB(
-//        contractAddress = "0x418d75f65a02b3d53b2418fb8e1fe493759c7605",
-//        mintAddress = "9gP2kCy3wA1ctvYWQk75guqXuHfrEomqydHLtcTCqiLa",
-//        coingeckoId = "binancecoin",
-//        tokenIconUrl = "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850",
-//        replaceTokenName = "BNB",
-//    ),
-//    MATIC(
-//        contractAddress = "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
-//        mintAddress = "C7NNPWuZCNjZBfW5p6JvGsR8pUdsRpEdP1ZAhnoDwj7h",
-//        coingeckoId = "matic-network",
-//        tokenIconUrl = "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png?1624446912",
-//        replaceTokenName = "Polygon",
-//        replaceTokenSymbol = "MATIC"
-//    ),
-//    CRV(
-//        contractAddress = "0xd533a949740bb3306d119cc777fa900ba034cd52",
-//        mintAddress = "7gjNiPun3AzEazTZoFEjZgcBMeuaXdpjHq2raZTmTrfs",
-//        coingeckoId = "curve-dao-token",
-//        tokenIconUrl = "https://assets.coingecko.com/coins/images/12124/large/Curve.png?1597369484",
-//        replaceTokenName = "Curve DAO Token"
-//    );
 
     companion object {
 

@@ -1,7 +1,6 @@
 package org.p2p.wallet.user.interactor
 
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import timber.log.Timber
 import org.p2p.core.token.TokensMetadataInfo
 import org.p2p.token.service.model.UpdateTokenMetadataResult
@@ -39,14 +38,11 @@ class TokenMetadataInteractor(
         }
     }
 
-    private suspend fun readTokensMetadataFromFile(): TokensMetadataInfo? {
-        return try {
+    private suspend fun readTokensMetadataFromFile(): TokensMetadataInfo? =
+        runCatching {
             val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
             file?.let { gson.fromJson(it.data, TokensMetadataInfo::class.java) }
-        } catch (e: JsonSyntaxException) {
-            null
-        }
-    }
+        }.getOrNull()
 
     private suspend fun updateLocalFile(tokensMetadata: TokensMetadataInfo) {
         val lastModified = tokensMetadata.timestamp
