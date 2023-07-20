@@ -21,7 +21,6 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
-import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
@@ -43,6 +42,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -74,7 +74,6 @@ class TokenHistoryFragment :
     private val sendAnalytics: NewSendAnalytics by inject()
     private val swapAnalytics: SwapAnalytics by inject()
     private val sellAnalytics: SellAnalytics by inject()
-    private val buyFragmentFactory: BuyFragmentFactory by inject()
 
     private var listener: RootListener? = null
 
@@ -151,7 +150,7 @@ class TokenHistoryFragment :
         when (clickedButton) {
             ActionButton.BUY_BUTTON -> {
                 buyAnalytics.logTokenScreenActionClicked()
-                replaceFragment(buyFragmentFactory.buyFragment(tokenForHistory))
+                replaceFragment(NewBuyFragment.create(tokenForHistory))
             }
             ActionButton.RECEIVE_BUTTON -> {
                 receiveAnalytics.logTokenScreenActionClicked()

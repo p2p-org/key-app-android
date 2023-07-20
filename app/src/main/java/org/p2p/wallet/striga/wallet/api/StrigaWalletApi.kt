@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.wallet.api
 
 import retrofit2.http.Body
 import retrofit2.http.POST
+import org.p2p.wallet.striga.wallet.api.request.StrigaAccountStatementRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaAddWhitelistedAddressRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaEnrichAccountRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaGetWhitelistedAddressesRequest
@@ -10,6 +11,7 @@ import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsResendRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnRampSmsVerifyRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaOnchainWithdrawalFeeRequest
 import org.p2p.wallet.striga.wallet.api.request.StrigaUserWalletsRequest
+import org.p2p.wallet.striga.wallet.api.response.StrigaAccountStatementResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichCryptoAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaEnrichFiatAccountResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaInitWithdrawalResponse
@@ -69,4 +71,9 @@ interface StrigaWalletApi {
 
     @POST("v1/wallets/transaction/confirm")
     suspend fun withdrawalVerifySms(@Body body: StrigaOnRampSmsVerifyRequest)
+
+    @POST("v1/wallets/get/account/statement")
+    suspend fun getAccountStatement(
+        @Body body: StrigaAccountStatementRequest
+    ): StrigaAccountStatementResponse
 }

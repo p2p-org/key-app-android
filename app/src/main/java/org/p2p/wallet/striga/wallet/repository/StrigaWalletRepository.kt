@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.wallet.repository
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 
@@ -24,4 +25,8 @@ interface StrigaWalletRepository {
     ): StrigaDataLayerResult<StrigaCryptoAccountDetails>
 
     suspend fun getUserWallet(): StrigaDataLayerResult<StrigaUserWallet>
+
+    suspend fun getAccountStatement(
+        accountId: StrigaAccountId,
+    ): StrigaDataLayerResult<StrigaUserBankingDetails>
 }
