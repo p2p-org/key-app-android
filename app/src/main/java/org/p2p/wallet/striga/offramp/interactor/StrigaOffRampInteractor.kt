@@ -62,7 +62,6 @@ class StrigaOffRampInteractor(
                             Constants.EUR_SYMBOL,
                         ).unwrap()
 
-                        delay(3000)
                         exchangeRateState.emit(
                             StrigaOffRampRateState.Success(result)
                         )
