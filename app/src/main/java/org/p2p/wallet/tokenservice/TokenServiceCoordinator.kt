@@ -54,7 +54,6 @@ class TokenServiceCoordinator(
 
     fun refresh() {
         Timber.tag(TAG).i("Refreshing Token Service loaders")
-
         appScope.launch {
             solanaTokensLoader.refresh()
             ethereumTokensLoader.refreshIfEnabled()
