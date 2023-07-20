@@ -5,11 +5,13 @@ import org.p2p.core.token.TokenMetadata
 import org.p2p.token.service.api.request.TokenServiceItemRequest
 import org.p2p.token.service.api.request.TokenServiceQueryRequest
 import org.p2p.token.service.api.response.TokenExtensionResponse
+import org.p2p.token.service.api.response.TokenItemMetadataResponse
 import org.p2p.token.service.api.response.TokenItemPriceResponse
 import org.p2p.token.service.api.response.TokenRateResponse
 import org.p2p.token.service.api.response.TokenResponse
 import org.p2p.token.service.api.response.TokenServiceNetworkResponse
 import org.p2p.token.service.model.TokenRate
+import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 
@@ -35,6 +37,19 @@ class TokenServiceMapper {
             address = response.tokenAddress,
             rate = fromNetwork(tokenRate),
             network = tokenServiceNetwork
+        )
+    }
+
+    internal fun fromNetwork(
+        tokenServiceNetwork: TokenServiceNetwork,
+        response: TokenItemMetadataResponse
+    ): TokenServiceMetadata {
+        return TokenServiceMetadata(
+            address = response.address,
+            symbol = response.symbol,
+            logoUrl = response.logoUrl.orEmpty(),
+            decimals = response.decimals,
+            chain = tokenServiceNetwork
         )
     }
 

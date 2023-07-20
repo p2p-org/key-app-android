@@ -5,14 +5,13 @@ import org.p2p.token.service.model.TokenServiceNetwork
 
 class TokenMetadataInMemoryRepository : TokenMetadataLocalRepository {
 
-    private val tokensMetadataMap = mutableMapOf<TokenServiceNetwork, Map<String, TokenServiceMetadata>>()
+    private val tokensMetadataList = mutableSetOf<TokenServiceMetadata>()
 
-    override fun setTokensMetadata(networkChain: TokenServiceNetwork, metadata: List<TokenServiceMetadata>) {
-        tokensMetadataMap[networkChain] = metadata.associateBy { it.address }
+    override fun saveTokensMetadata(metadata: List<TokenServiceMetadata>) {
+        tokensMetadataList.addAll(metadata)
     }
 
     override fun findTokenMetadataByAddress(networkChain: TokenServiceNetwork, address: String): TokenServiceMetadata? {
-        val tokenMetadata = tokensMetadataMap[networkChain]
-        return tokenMetadata?.get(address)
+        return tokensMetadataList.firstOrNull { it.chain == networkChain && it.address == address }
     }
 }
