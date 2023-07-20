@@ -45,6 +45,9 @@ class EthereumTokensLoader(
         if (!isEnabled()) return
 
         try {
+            if (!ethereumInteractor.isInitialized()) {
+                ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+            }
             updateState(EthTokenLoadState.Loading)
             ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
             tokenServiceEventManager.subscribe(EthereumTokensRatesEventSubscriber(::saveTokensRates))
@@ -70,6 +73,9 @@ class EthereumTokensLoader(
         if (!isEnabled()) return
 
         try {
+            if (!ethereumInteractor.isInitialized()) {
+                ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+            }
             updateState(EthTokenLoadState.Refreshing)
             val claimTokens = ethereumInteractor.loadClaimTokens()
 

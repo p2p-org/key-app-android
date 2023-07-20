@@ -14,7 +14,7 @@ internal class TokenServiceRemoteRepository(
     private val api: RpcApi,
     private val gson: Gson,
     urlProvider: NetworkServicesUrlProvider,
-) : TokenServiceRepository {
+) : TokenServiceApiRepository {
     private val tokenServiceStringUrl = urlProvider.loadTokenServiceEnvironment().baseServiceUrl
     private val tokenServiceUrl = URI(tokenServiceStringUrl)
 
