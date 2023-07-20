@@ -43,11 +43,11 @@ class StrigaOffRampSwapWidgetMapper {
 
     fun mapTokenA(
         amount: BigDecimal,
-        amountAvailable: BigDecimal
+        balance: BigDecimal
     ): StrigaOffRampTokenState {
         return StrigaOffRampTokenState.Content(
             amount = amount,
-            balance = amountAvailable
+            balance = balance
         )
     }
 

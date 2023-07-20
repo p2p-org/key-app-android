@@ -164,7 +164,7 @@ class StrigaOffRampPresenter(
                     tokenType = StrigaOffRampTokenType.TokenA,
                     state = swapWidgetMapper.mapTokenA(
                         amount = amount,
-                        amountAvailable = balance,
+                        balance = balance,
                     )
                 )
                 view?.setTokenAWidgetState(tokenAState)
@@ -191,7 +191,7 @@ class StrigaOffRampPresenter(
         val buttonState = interactor.validateAmount(
             amountA = inputAmountA,
             amountB = inputAmountB,
-            amountAvailable = balance
+            balance = balance
         )
         setButtonState(buttonState)
 
@@ -335,7 +335,7 @@ class StrigaOffRampPresenter(
                 tokenType = StrigaOffRampTokenType.TokenA,
                 state = swapWidgetMapper.mapTokenA(
                     amount = inputAmountA,
-                    amountAvailable = balance,
+                    balance = balance,
                 )
             )
         }

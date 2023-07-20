@@ -105,11 +105,11 @@ class StrigaOffRampInteractor(
     fun validateAmount(
         amountA: BigDecimal,
         amountB: BigDecimal,
-        amountAvailable: BigDecimal
+        balance: BigDecimal
     ): StrigaOffRampButtonState {
         return when {
             amountA.isZero() -> StrigaOffRampButtonState.EnterAmount
-            amountA > amountAvailable -> StrigaOffRampButtonState.ErrorInsufficientFunds
+            amountA > balance -> StrigaOffRampButtonState.ErrorInsufficientFunds
             amountB < MIN_EUR_AMOUNT -> StrigaOffRampButtonState.ErrorMinLimit
             amountB > MAX_EUR_AMOUNT -> StrigaOffRampButtonState.ErrorMaxLimit
             else -> StrigaOffRampButtonState.Enabled
