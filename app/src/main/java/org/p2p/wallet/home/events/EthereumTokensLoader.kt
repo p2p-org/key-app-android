@@ -54,7 +54,7 @@ class EthereumTokensLoader(
             ethereumInteractor.loadSendTransactionDetails()
 
             val ethTokens = ethereumInteractor.loadWalletTokens(claimTokens)
-
+            state.emit(EthTokenLoadState.Loaded(ethTokens))
             ethereumInteractor.cacheWalletTokens(ethTokens)
             tokenServiceEventPublisher.loadTokensPrice(
                 networkChain = TokenServiceNetwork.ETHEREUM,
