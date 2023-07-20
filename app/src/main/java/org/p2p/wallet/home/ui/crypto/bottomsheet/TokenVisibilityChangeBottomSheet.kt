@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import org.p2p.core.token.Token
+import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogTokensVisibilityChangePartBinding
@@ -31,7 +32,8 @@ class TokenVisibilityChangeBottomSheet : BaseDoneBottomSheet() {
             ARG_TOKEN_VISIBILITY_STATE to isTokenHidden,
             ARG_REQUEST_KEY to requestKey,
             ARG_RESULT_KEY to resultKey
-        ).show(fm, TokenVisibilityChangeBottomSheet::javaClass.name)
+        )
+            .show(fm, TokenVisibilityChangeBottomSheet::javaClass.name)
     }
 
     private val token: Token.Active by args(ARG_TOKEN)
@@ -40,7 +42,7 @@ class TokenVisibilityChangeBottomSheet : BaseDoneBottomSheet() {
     private lateinit var binding: DialogTokensVisibilityChangePartBinding
 
     override fun onCreateInnerView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DialogTokensVisibilityChangePartBinding.inflate(inflater, container, false)
+        binding = inflater.inflateViewBinding(container, attachToRoot = false)
         return binding.root
     }
 
