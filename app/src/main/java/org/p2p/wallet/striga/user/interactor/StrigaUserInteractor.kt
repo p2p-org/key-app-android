@@ -16,7 +16,7 @@ class StrigaUserInteractor(
     private val userRepository: StrigaUserRepository,
     private val strigaUserIdProvider: StrigaUserIdProvider,
     private val userStatusRepository: StrigaUserStatusRepository,
-    private val strigaSignupDataRepository: StrigaSignupDataLocalRepository
+    private val strigaSignupDataRepository: StrigaSignupDataLocalRepository,
 ) {
     val isKycApproved: Boolean
         get() = userStatusRepository.getUserVerificationStatus()?.isKycApproved == true

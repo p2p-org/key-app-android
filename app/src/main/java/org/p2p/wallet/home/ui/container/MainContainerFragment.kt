@@ -26,10 +26,8 @@ import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
-import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
@@ -38,15 +36,11 @@ import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
-import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
-
-private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
-private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 
 class MainContainerFragment :
     BaseMvpFragment<MainContainerContract.View, MainContainerContract.Presenter>(R.layout.fragment_main),
@@ -66,8 +60,6 @@ class MainContainerFragment :
 
     private lateinit var mainContainerAdapter: BaseFragmentAdapter
     private lateinit var fragmentsMap: Map<ScreenTab, KClass<out Fragment>>
-
-    private val buyFragmentFactory: BuyFragmentFactory by inject()
 
     companion object {
         fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainContainerFragment =
@@ -108,12 +100,6 @@ class MainContainerFragment :
             onCreateActions?.forEach(::doOnCreateAction)
             onCreateActions = arrayListOf()
         }
-
-        childFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_TOKEN,
-            viewLifecycleOwner,
-            ::onFragmentResult
-        )
 
         presenter.initializeDeeplinks()
         presenter.observeUserTokens()
@@ -195,16 +181,7 @@ class MainContainerFragment :
     }
 
     override fun navigateToBuyScreen(token: Token) {
-        replaceFragment(buyFragmentFactory.buyFragment(token))
-    }
-
-    override fun showTokensForBuy(tokens: List<Token>) {
-        SelectTokenBottomSheet.show(
-            fm = childFragmentManager,
-            tokens = tokens,
-            requestKey = KEY_REQUEST_TOKEN,
-            resultKey = KEY_RESULT_TOKEN
-        )
+        replaceFragment(NewBuyFragment.create(token))
     }
 
     override fun showCashOut() {
@@ -221,12 +198,6 @@ class MainContainerFragment :
         replaceFragment(JupiterSwapFragment.create(source = SwapOpenedFrom.MAIN_SCREEN))
     }
     //endregion
-
-    private fun onFragmentResult(requestKey: String, result: Bundle) {
-        if (requestKey == KEY_REQUEST_TOKEN) {
-            result.getParcelableCompat<Token>(KEY_RESULT_TOKEN)?.also(::navigateToBuyScreen)
-        }
-    }
 
     override fun navigateFromDeeplink(data: DeeplinkData) {
         when (data.target) {

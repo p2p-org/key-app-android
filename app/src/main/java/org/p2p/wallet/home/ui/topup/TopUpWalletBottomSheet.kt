@@ -23,7 +23,7 @@ import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTopupWalletBinding
-import org.p2p.wallet.moonpay.ui.BuyFragmentFactory
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
@@ -44,7 +44,6 @@ class TopUpWalletBottomSheet :
 
     private val binding: DialogTopupWalletBinding by viewBinding()
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
-    private val buyFragmentFactory: BuyFragmentFactory by inject()
     private val strigaFragmentFactory: StrigaFragmentFactory by inject()
 
     override val presenter: TopUpWalletContract.Presenter by inject()
@@ -92,7 +91,7 @@ class TopUpWalletBottomSheet :
             )
         )
         binding.bankCardView.setOnClickAction { _, _ ->
-            dismissAndNavigate(buyFragmentFactory.buyFragment(tokenToBuy))
+            dismissAndNavigate(NewBuyFragment.create(tokenToBuy))
         }
     }
 

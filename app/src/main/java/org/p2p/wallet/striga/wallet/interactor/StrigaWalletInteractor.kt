@@ -42,6 +42,14 @@ class StrigaWalletInteractor(
         return walletRepository.getFiatAccountDetails(eurAccountId).unwrap()
     }
 
+    @Throws(StrigaEuroAccountNotFound::class)
+    suspend fun getEurAccountId(): StrigaAccountId {
+        return walletRepository.getUserWallet()
+            .map { it.eurAccount?.accountId }
+            .successOrNull()
+            ?: throw StrigaEuroAccountNotFound()
+    }
+
     @Throws(StrigaUsdcAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
     suspend fun getCryptoAccountDetails(): StrigaCryptoAccountDetails {
         val usdcAccountId = walletRepository.getUserWallet()

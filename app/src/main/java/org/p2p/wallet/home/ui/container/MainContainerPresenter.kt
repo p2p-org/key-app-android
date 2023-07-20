@@ -9,7 +9,6 @@ import org.p2p.core.network.ConnectionManager
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
@@ -34,7 +33,6 @@ class MainContainerPresenter(
     private val userInteractor: UserInteractor,
     private val strigaOnRampInteractor: StrigaOnRampInteractor,
     private val homeAnalytics: HomeAnalytics,
-    private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val balanceMapper: BalanceMapper,
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
 
@@ -44,7 +42,6 @@ class MainContainerPresenter(
             screenNavigator = view,
             tokenServiceCoordinator = tokenServiceCoordinator,
             userInteractor = userInteractor,
-            newBuyFeatureToggle = newBuyFeatureToggle,
             deeplinkTopLevelHandler = ::handleDeeplinkTarget
         )
     }
