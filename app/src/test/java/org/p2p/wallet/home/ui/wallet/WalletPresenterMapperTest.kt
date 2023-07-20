@@ -10,6 +10,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
@@ -85,7 +86,7 @@ class WalletPresenterMapperTest {
                 totalInUsd = BigDecimal("2.0"),
                 total = BigDecimal("1.0"),
                 visibility = TokenVisibility.SHOWN,
-                extensions = null
+                tokenExtensions = TokenExtensions()
             ),
             walletId = StrigaWalletId("walletId"),
             accountId = StrigaAccountId("accountId"),

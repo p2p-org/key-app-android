@@ -9,6 +9,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadata
+import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.toLamports
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -244,7 +245,7 @@ object JupiterSwapTestHelpers {
                 iconUrl = JUPITER_SOL_TOKEN.logoUri,
                 decimals = JUPITER_SOL_TOKEN.decimals,
                 isWrapped = false,
-                extensions = null
+                extensions = TokenMetadataExtension.NONE
             ),
             amount.toLamports(JUPITER_SOL_TOKEN.decimals).toLong(),
             rateToUsd
@@ -260,7 +261,7 @@ object JupiterSwapTestHelpers {
                 iconUrl = JUPITER_USDC_TOKEN.logoUri,
                 decimals = JUPITER_USDC_TOKEN.decimals,
                 isWrapped = false,
-                extensions = null
+                extensions = TokenMetadataExtension.NONE
             ),
             amount = amount.toLamports(JUPITER_USDC_TOKEN.decimals).toLong(),
             solPrice = BigDecimal("1")
@@ -274,7 +275,7 @@ object JupiterSwapTestHelpers {
             iconUrl = iconUrl,
             decimals = decimals,
             isWrapped = isWrapped,
-            extensions = null
+            extensions = TokenMetadataExtension.NONE
         )
     }
 }

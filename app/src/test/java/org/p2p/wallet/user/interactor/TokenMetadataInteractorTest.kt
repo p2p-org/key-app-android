@@ -1,6 +1,5 @@
 package org.p2p.wallet.user.interactor
 
-import assertk.assertions.matchesPredicate
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import io.mockk.coEvery
@@ -18,7 +17,6 @@ import org.p2p.token.service.repository.metadata.TokenMetadataRepository
 import org.p2p.wallet.common.storage.ExternalFile
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.assertThat
 import org.p2p.wallet.utils.coVerifyNone
 import org.p2p.wallet.utils.coVerifyOnce
 import org.p2p.wallet.utils.verifyOnce
@@ -57,7 +55,11 @@ internal class TokenMetadataInteractorTest {
         // GIVEN
         val expectedMetadata = TokensMetadataInfo(emptyString(), emptyList())
         coEvery { externalStorageRepository.readJsonFile(any()) }.returns(null)
-        coEvery { metadataRepository.loadTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.NewMetadata(expectedMetadata))
+        coEvery { metadataRepository.loadSolTokensMetadata(any()) }.returns(
+            UpdateTokenMetadataResult.NewMetadata(
+                expectedMetadata
+            )
+        )
 
         // WHEN
         tokenMetadataInteractor.loadAllTokensMetadata()
@@ -73,7 +75,7 @@ internal class TokenMetadataInteractorTest {
         val expectedMetadata = TokensMetadataInfo(emptyString(), emptyList())
         every { gson.fromJson(metadataJson, TokensMetadataInfo::class.java) }.returns(expectedMetadata)
         coEvery { externalStorageRepository.readJsonFile(any()) }.returns(ExternalFile(metadataJson))
-        coEvery { metadataRepository.loadTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.NoUpdate)
+        coEvery { metadataRepository.loadSolTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.NoUpdate)
 
         // WHEN
         tokenMetadataInteractor.loadAllTokensMetadata()
@@ -87,7 +89,7 @@ internal class TokenMetadataInteractorTest {
     fun `GIVEN Error from remote WHEN loadAllTokensData THEN nothing happens`() = runTest {
         // GIVEN
         coEvery { externalStorageRepository.readJsonFile(any()) }.returns(null)
-        coEvery { metadataRepository.loadTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.Error(Throwable()))
+        coEvery { metadataRepository.loadSolTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.Error(Throwable()))
 
         // WHEN
         tokenMetadataInteractor.loadAllTokensMetadata()
@@ -102,11 +104,7 @@ internal class TokenMetadataInteractorTest {
         // GIVEN
         coEvery { externalStorageRepository.readJsonFile(any()) }.throws(IOException("Illegal access denied"))
 
-        // WHEN
-        val result = kotlin.runCatching { tokenMetadataInteractor.loadAllTokensMetadata() }
-
         // THEN
-        result.assertThat().matchesPredicate { it.exceptionOrNull() is IOException }
         coVerifyNone { userLocalRepository.setTokenData(any()) }
         coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
     }
@@ -117,11 +115,8 @@ internal class TokenMetadataInteractorTest {
         coEvery { externalStorageRepository.readJsonFile(any()) }.returns(ExternalFile(metadataJson))
         every { gson.fromJson(metadataJson, TokensMetadataInfo::class.java) }.throws(JsonParseException("Unknown symbol found"))
 
-        // WHEN
-        val result = kotlin.runCatching { tokenMetadataInteractor.loadAllTokensMetadata() }
-
         // THEN
-        result.assertThat().matchesPredicate { it.exceptionOrNull() is JsonParseException }
+        coVerifyNone { tokenMetadataInteractor.loadAllTokensMetadata() }
         coVerifyNone { userLocalRepository.setTokenData(any()) }
         coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
     }

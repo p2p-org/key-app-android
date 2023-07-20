@@ -41,7 +41,7 @@ sealed class Token constructor(
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
-        val extensions: TokenExtension?,
+        val tokenExtensions: TokenExtensions,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -233,7 +233,7 @@ sealed class Token constructor(
                 rate = solPrice,
                 visibility = TokenVisibility.DEFAULT,
                 isWrapped = tokenMetadata.isWrapped,
-                extensions = tokenMetadata.extensions
+                tokenExtensions = TokenExtensions()
             )
         }
     }

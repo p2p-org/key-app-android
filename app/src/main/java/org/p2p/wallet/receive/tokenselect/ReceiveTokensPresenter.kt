@@ -17,6 +17,7 @@ import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.wallet.receive.tokenselect.ReceiveTokensMapper.toTokenFinanceCellModel
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
@@ -71,7 +72,7 @@ class ReceiveTokensPresenter(
                         iconUrl = erc20Token.tokenIconUrl,
                         decimals = token.decimals,
                         isWrapped = false,
-                        extensions = null
+                        extensions = TokenMetadataExtension.NONE
                     )
                 }
             }
