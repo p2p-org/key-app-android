@@ -37,11 +37,11 @@ class NewSelectTokenViewHolder(
             imageViewCheck.isVisible = item.tokenSymbol == selectedItem?.tokenSymbol
 
             if (!item.iconUrl.isNullOrEmpty()) {
-                loadImage(tokenImageView, item.iconUrl!!)
+                loadImage(imageViewToken, item.iconUrl!!)
             }
 
             textViewTokenSymbol.text = item.tokenSymbol.uppercase(Locale.getDefault())
-            wrappedImageView.isVisible = item.isWrapped
+            imageViewWrapped.isVisible = item.isWrapped
             itemView.setOnClickListener { onItemClicked(item) }
 
             textViewUsdValue.withTextOrGone(item.currencyFormattedRate)

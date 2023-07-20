@@ -44,7 +44,7 @@ class DerivableAccountsAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private val root = binding.root
-        private val tokenImageView = binding.tokenImageView
+        private val tokenImageView = binding.imageViewToken
         private val startAmountView = binding.startAmountView
         private val endAmountView = binding.endAmountView
 

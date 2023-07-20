@@ -8,8 +8,6 @@ import org.p2p.uikit.components.finance_block.mainCellDelegate
 import org.p2p.uikit.delegates.textViewCellDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
-import org.p2p.uikit.utils.setMargins
-import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
 import org.p2p.wallet.auth.ui.animationscreen.TimerState
@@ -38,14 +36,11 @@ class DevicesFragment :
 
     private val binding: FragmentDevicesBinding by viewBinding()
 
-    private val mainCellHorizontalMargin = 12.toPx()
-
     private val adapter = CommonAnyCellAdapter(
         textViewCellDelegate(),
         sectionHeaderCellDelegate(),
         mainCellDelegate(
             inflateListener = {
-                it.setMargins(left = mainCellHorizontalMargin, right = mainCellHorizontalMargin)
                 it.setOnRightFirstTextClickListener { showConfirmationDialog() }
                 it.setOnClickAction { _, item ->
                     if (item.rightSideCellModel != null) {
