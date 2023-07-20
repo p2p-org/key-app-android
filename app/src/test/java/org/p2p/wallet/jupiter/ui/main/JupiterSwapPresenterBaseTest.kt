@@ -126,7 +126,6 @@ open class JupiterSwapPresenterBaseTest {
     @MockK(relaxed = true)
     lateinit var tokenServiceCoordinator: TokenServiceCoordinator
 
-
     @MockK(relaxed = true)
     lateinit var tokenKeyProvider: TokenKeyProvider
 
@@ -291,7 +290,6 @@ open class JupiterSwapPresenterBaseTest {
             tokenRates(tokens)
         }
     }
-
 
     private fun createInitialTokenSelector(
         tokenASymbol: String? = null,
