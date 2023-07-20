@@ -2,7 +2,6 @@ package org.p2p.wallet.splash
 
 import timber.log.Timber
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -52,7 +51,7 @@ class SplashPresenter(
         }
     }
 
-    private suspend fun launchAppLoaders() = withContext(appScope.coroutineContext) {
+    private suspend fun launchAppLoaders() {
         tokenServiceCoordinator.start()
         appLoader.onLoad()
     }

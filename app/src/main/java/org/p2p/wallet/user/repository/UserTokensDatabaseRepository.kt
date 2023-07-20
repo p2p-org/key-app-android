@@ -120,7 +120,7 @@ class UserTokensDatabaseRepository(
             networkChain = TokenServiceNetwork.SOLANA,
             addresses = listOf(tokenMint.base58Value)
         )
-        return tokenConverter.fromNetwork(
+        return tokenConverter.createToken(
             mintAddress = tokenMint.base58Value,
             totalLamports = newBalanceLamports,
             accountPublicKey = accountPublicKey.base58Value,

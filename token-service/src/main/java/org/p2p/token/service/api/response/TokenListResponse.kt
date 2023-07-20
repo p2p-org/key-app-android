@@ -2,14 +2,14 @@ package org.p2p.token.service.api.response
 
 import com.google.gson.annotations.SerializedName
 
-data class TokenListResponse(
+internal data class TokenListResponse(
     @SerializedName("timestamp")
     val timestamp: String,
     @SerializedName("tokens")
     val tokens: List<TokenResponse>
 )
 
-data class TokenResponse(
+internal data class TokenResponse(
     @SerializedName("address")
     val address: String,
     @SerializedName("symbol")
@@ -23,7 +23,7 @@ data class TokenResponse(
     @SerializedName("tags")
     val tags: List<String>?,
     @SerializedName("extensions")
-    val extensions: TokenExtensionResponse?
+    val extensions: MetadataExtensionResponse?
 ) {
 
     companion object {
@@ -33,7 +33,7 @@ data class TokenResponse(
     fun isWrapped() = !tags.isNullOrEmpty() && tags.any { it == WRAPPED_TAG }
 }
 
-data class TokenExtensionResponse(
+internal data class MetadataExtensionResponse(
     @SerializedName("ruleOfProcessingTokenPriceWs")
     val ruleOfProcessingTokenPriceWs: String?,
     @SerializedName("isPositionOnWs")
