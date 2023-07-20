@@ -1,0 +1,118 @@
+package org.p2p.wallet.striga.offramp.ui
+
+import android.os.Bundle
+import android.view.View
+import com.google.android.material.snackbar.Snackbar
+import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.UiKitSnackbarGravity
+import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.bindOrInvisible
+import org.p2p.wallet.R
+import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.databinding.FragmentStrigaOffRampBinding
+import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
+import org.p2p.wallet.striga.offramp.StrigaOffRampContract
+import org.p2p.wallet.striga.offramp.models.StrigaOffRampButtonState
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.viewbinding.getColor
+import org.p2p.wallet.utils.viewbinding.getDrawable
+import org.p2p.wallet.utils.viewbinding.viewBinding
+
+private typealias FragmentContract = BaseMvpFragment<
+    StrigaOffRampContract.View,
+    StrigaOffRampContract.Presenter
+    >
+
+class StrigaOffRampFragment :
+    FragmentContract(R.layout.fragment_striga_off_ramp),
+    StrigaOffRampContract.View {
+
+    override val presenter: StrigaOffRampContract.Presenter by inject()
+    private val binding: FragmentStrigaOffRampBinding by viewBinding()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupWidgetActions()
+        binding.toolbar.setNavigationOnClickListener {
+            popBackStack()
+        }
+        binding.buttonNext.setOnClickListener {
+            presenter.onSubmit()
+        }
+    }
+
+    override fun setTokenAWidgetState(state: SwapWidgetModel) {
+        binding.swapWidgetFrom.bind(state)
+    }
+
+    override fun setTokenBWidgetState(state: SwapWidgetModel) {
+        binding.swapWidgetTo.bind(state)
+    }
+
+    override fun setRatioState(state: TextViewCellModel?) {
+        binding.textViewRate.bindOrInvisible(state)
+    }
+
+    override fun setButtonState(buttonState: StrigaOffRampButtonState) {
+        with(binding.buttonNext) {
+            setText(buttonState.titleResId)
+            isEnabled = buttonState.isEnabled
+            setLoading(buttonState.isLoading)
+
+            icon = if (isEnabled) {
+                background.setTint(binding.getColor(buttonState.styleEnabledBgColorRes))
+                setTextColor(binding.getColor(buttonState.styleEnabledTextColorRes))
+                binding.getDrawable(buttonState.iconDrawableResId)
+            } else {
+                background.setTint(binding.getColor(buttonState.styleDisabledBgColorRes))
+                setTextColor(binding.getColor(buttonState.styleDisabledTextColorRes))
+                null
+            }
+        }
+    }
+
+    override fun setTokenAErrorState(isError: Boolean) {
+        binding.swapWidgetFrom.setAmountTextColor(
+            if (isError) binding.getColor(R.color.text_rose) else binding.getColor(R.color.text_night)
+        )
+    }
+
+    override fun showUiKitSnackBar(
+        message: String?,
+        messageResId: Int?,
+        onDismissed: () -> Unit,
+        actionButtonResId: Int?,
+        actionBlock: ((Snackbar) -> Unit)?
+    ) {
+        require(message != null || messageResId != null) {
+            "Snackbar text must be set from `message` or `messageResId` params"
+        }
+        val snackbarText: String = message ?: messageResId?.let(::getString)!!
+        val root = requireView().rootView
+        if (actionButtonResId != null && actionBlock != null) {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                actionButtonText = getString(actionButtonResId),
+                actionButtonListener = actionBlock,
+                enableBottomNavOffset = false,
+                gravity = UiKitSnackbarGravity.TOP
+            )
+        } else {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                onDismissed = onDismissed,
+                enableBottomNavOffset = false,
+                gravity = UiKitSnackbarGravity.TOP
+            )
+        }
+    }
+
+    private fun setupWidgetActions() {
+        with(binding) {
+            swapWidgetFrom.onAmountChanged = presenter::onTokenAAmountChange
+            swapWidgetFrom.onAllAmountClick = presenter::onAllAmountClick
+            swapWidgetTo.onAmountChanged = presenter::onTokenBAmountChange
+        }
+    }
+}

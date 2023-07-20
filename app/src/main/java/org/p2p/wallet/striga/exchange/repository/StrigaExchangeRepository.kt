@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.exchange.repository
 
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.exchange.models.StrigaExchangePairsWithRates
+import org.p2p.wallet.striga.exchange.models.StrigaExchangeRate
 
 interface StrigaExchangeRepository {
 
@@ -13,5 +14,5 @@ interface StrigaExchangeRepository {
     suspend fun getExchangeRateForPair(
         fromTokenSymbol: String,
         toTokenSymbol: String
-    ): StrigaDataLayerResult<StrigaExchangePairsWithRates.Rate>
+    ): StrigaDataLayerResult<StrigaExchangeRate>
 }

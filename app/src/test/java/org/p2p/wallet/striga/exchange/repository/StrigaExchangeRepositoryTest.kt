@@ -22,6 +22,7 @@ import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.exchange.api.StrigaExchangeApi
 import org.p2p.wallet.striga.exchange.api.response.StrigaExchangeRateItemResponse
 import org.p2p.wallet.striga.exchange.models.StrigaExchangePairsWithRates
+import org.p2p.wallet.striga.exchange.models.StrigaExchangeRate
 import org.p2p.wallet.striga.exchange.repository.impl.StrigaExchangeRemoteRepository
 import org.p2p.wallet.striga.exchange.repository.mapper.StrigaExchangeRepositoryMapper
 import org.p2p.wallet.utils.assertThat
@@ -55,7 +56,7 @@ class StrigaExchangeRepositoryTest {
         }
     """.trimIndent()
 
-    private val expectedUsdcEuroRate = StrigaExchangePairsWithRates.Rate(
+    private val expectedUsdcEuroRate = StrigaExchangeRate(
         price = BigDecimal("0.89"),
         buyRate = BigDecimal("0.9"),
         sellRate = BigDecimal("0.88"),
@@ -147,7 +148,7 @@ class StrigaExchangeRepositoryTest {
     fun `GIVE exchange rates WHEN getExchangeRateForPair THEN check result has a rate`() = runTest {
         val result = repository.getExchangeRateForPair(Constants.EUR_SYMBOL, Constants.USDC_SYMBOL)
 
-        result as StrigaDataLayerResult.Success<StrigaExchangePairsWithRates.Rate>
+        result as StrigaDataLayerResult.Success<StrigaExchangeRate>
 
         result.value.assertThat()
             .isEqualTo(expectedUsdcEuroRate)
@@ -160,7 +161,7 @@ class StrigaExchangeRepositoryTest {
         result.assertThat()
             .isInstanceOf(StrigaDataLayerResult.Failure::class.java)
 
-        result as StrigaDataLayerResult.Failure<StrigaExchangePairsWithRates.Rate>
+        result as StrigaDataLayerResult.Failure<StrigaExchangeRate>
         result.error.assertThat()
             .isInstanceOf(StrigaDataLayerError.InternalError::class.java)
 

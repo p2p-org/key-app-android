@@ -97,4 +97,10 @@
         <attr name="shadowColor" format="color" />
     </declare-styleable>
 
+    <declare-styleable name="SwapWidget">
+        <attr name="balanceVisible" format="boolean" />
+        <attr name="fiatAmountVisible" format="boolean" />
+        <attr name="enableChangeCurrency" format="boolean" />
+    </declare-styleable>
+
 </resources>

@@ -42,6 +42,8 @@ class SwapWidget @JvmOverloads constructor(
     var onInputClicked: () -> Unit = {}
 
     init {
+        val attributes = context.obtainStyledAttributes(attrs, R.styleable.SwapWidget)
+
         minHeight = 120.toPx()
         background = shapeDrawable(shapeRounded16dp())
         backgroundTintList = backgroundTint()
@@ -59,7 +61,20 @@ class SwapWidget @JvmOverloads constructor(
 
             editTextAmount.setOnClickListener { onInputClicked() }
             textViewShadowAutoSize.setOnClickListener { onInputClicked() }
+
+            if (attributes.hasValue(R.styleable.SwapWidget_balanceVisible)) {
+                textViewBalance.isVisible = attributes.getBoolean(R.styleable.SwapWidget_balanceVisible, true)
+            }
+            if (attributes.hasValue(R.styleable.SwapWidget_fiatAmountVisible)) {
+                textViewFiatAmount.isVisible = attributes.getBoolean(R.styleable.SwapWidget_fiatAmountVisible, true)
+            }
+            if (attributes.hasValue(R.styleable.SwapWidget_enableChangeCurrency)) {
+                textViewChangeCurrency.isVisible =
+                    attributes.getBoolean(R.styleable.SwapWidget_enableChangeCurrency, true)
+            }
         }
+
+        attributes.recycle()
     }
 
     fun bind(model: SwapWidgetModel) {
@@ -77,6 +92,10 @@ class SwapWidget @JvmOverloads constructor(
         binding.editTextAmount.setText(amount)
     }
 
+    fun setAmountTextColor(textColor: Int) {
+        binding.editTextAmount.setTextColor(textColor)
+    }
+
     private fun bindLoading(model: SwapWidgetModel.Loading) = with(binding) {
         isEnabled = !model.isStatic
         textViewWidgetTitle.bindOrGone(model.widgetTitle)
@@ -86,8 +105,12 @@ class SwapWidget @JvmOverloads constructor(
         textViewCurrencyName.setOnClickListener(null)
         textViewChangeCurrency.setOnClickListener(null)
         bindLoadingInput(model.amountSkeleton)
-        textViewBalance.bindOrGone(model.balanceSkeleton)
-        textViewFiatAmount.isVisible = false
+        if (textViewBalance.isVisible) {
+            textViewBalance.bindOrGone(model.balanceSkeleton)
+        }
+        if (textViewFiatAmount.isVisible) {
+            textViewFiatAmount.isVisible = false
+        }
     }
 
     private fun bindContent(model: SwapWidgetModel.Content) = with(binding) {
@@ -105,8 +128,12 @@ class SwapWidget @JvmOverloads constructor(
         } else {
             bindInput(model, model.amount)
         }
-        textViewBalance.bindOrGone(model.balance)
-        textViewFiatAmount.bindOrGone(model.fiatAmount)
+        if (textViewBalance.isVisible) {
+            textViewBalance.bindOrGone(model.balance)
+        }
+        if (textViewFiatAmount.isVisible) {
+            textViewFiatAmount.bindOrGone(model.fiatAmount)
+        }
     }
 
     private fun bindInput(model: SwapWidgetModel.Content, newAmount: TextViewCellModel) = with(binding) {
@@ -124,7 +151,7 @@ class SwapWidget @JvmOverloads constructor(
             newAmountRaw != oldAMountRaw ||
             newTextColorRes != oldTextColorRes
         ) {
-            editTextAmount.bindOrGone(newAmount)
+            editTextAmount.bindOrGone(newAmount, force = true)
             currentAmountCell = newAmount
             editTextAmount.setSelection(editTextAmount.text.length)
         }
@@ -137,7 +164,7 @@ class SwapWidget @JvmOverloads constructor(
         AmountFractionTextWatcher.uninstallFrom(binding.editTextAmount)
         editTextAmount.setReadOnly(readOnly, inputType)
         internalOnAmountChanged = null
-        editTextAmount.bindOrGone(skeleton)
+        editTextAmount.bindOrGone(skeleton, force = true)
         currentAmountCell = skeleton
     }
 

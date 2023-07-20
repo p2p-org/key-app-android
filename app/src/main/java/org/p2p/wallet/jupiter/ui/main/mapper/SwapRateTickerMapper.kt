@@ -8,6 +8,14 @@ import org.p2p.wallet.utils.toPx
 
 class SwapRateTickerMapper {
 
+    fun mapRate(newState: SwapRateTickerState): TextViewCellModel? {
+        return when (newState) {
+            is SwapRateTickerState.Shown -> mapRateLoaded(newState)
+            is SwapRateTickerState.Loading -> mapRateSkeleton(newState)
+            is SwapRateTickerState.Hidden -> null
+        }
+    }
+
     fun mapRateLoaded(newState: SwapRateTickerState.Shown): TextViewCellModel =
         TextViewCellModel.Raw(TextContainer(newState.formattedNewRate))
 

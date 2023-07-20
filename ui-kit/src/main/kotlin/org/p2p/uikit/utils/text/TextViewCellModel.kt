@@ -101,9 +101,9 @@ fun badgeRounded(
     tint = tint,
 )
 
-fun TextView.bindOrGone(model: TextViewCellModel?) {
+fun TextView.bindOrGone(model: TextViewCellModel?, force: Boolean = false) {
     this.isVisible = model != null
-    if (model != null) bind(model)
+    if (model != null) bind(model, force)
 }
 
 fun TextView.bindOrInvisible(model: TextViewCellModel?) {
@@ -111,8 +111,8 @@ fun TextView.bindOrInvisible(model: TextViewCellModel?) {
     if (model != null) bind(model)
 }
 
-fun TextView.bind(model: TextViewCellModel) {
-    if (equalsNewCellModel(model)) return
+fun TextView.bind(model: TextViewCellModel, force: Boolean = false) {
+    if (!force && equalsNewCellModel(model)) return
     when (model) {
         is TextViewCellModel.Raw -> bind(model)
         is TextViewCellModel.Skeleton -> bindSkeleton(model)

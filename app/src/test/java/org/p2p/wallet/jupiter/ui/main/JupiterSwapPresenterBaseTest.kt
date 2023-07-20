@@ -23,11 +23,14 @@ import java.math.BigInteger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.common.TextContainer
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.Base64String
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.DecimalFormatter
 import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.core.crypto.Base64String
+import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
@@ -75,12 +78,9 @@ import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.crypto.Base58String
-import org.p2p.token.service.model.TokenServicePrice
-import org.p2p.token.service.repository.TokenServiceRepository
-import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
@@ -197,36 +197,36 @@ open class JupiterSwapPresenterBaseTest {
 
     private fun initSwapButtonMapper() {
         every { swapButtonMapper.mapEnterAmount() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(enter amount)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(enter amount)")
             swapButtonMapperBackend.mapEnterAmount()
         }
         every { swapButtonMapper.mapLoading() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(counting)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(counting)")
             swapButtonMapperBackend.mapLoading()
         }
 
         every { swapButtonMapper.mapRouteNotFound() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(route not found)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(route not found)")
             swapButtonMapperBackend.mapRouteNotFound()
         }
 
         every { swapButtonMapper.mapSameToken() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(same token)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(same token)")
             swapButtonMapperBackend.mapSameToken()
         }
 
         every { swapButtonMapper.mapSmallTokenAAmount() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(small token amount)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(small token amount)")
             swapButtonMapperBackend.mapSmallTokenAAmount()
         }
 
         every { swapButtonMapper.mapInsufficientSolBalance(any(), any()) } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(insufficient sol balance)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(insufficient sol balance)")
             swapButtonMapperBackend.mapInsufficientSolBalance(arg(0), arg(1))
         }
 
         every { swapButtonMapper.mapTokenAmountNotEnough(any()) } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(amount not enough)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(amount not enough)")
             swapButtonMapperBackend.mapTokenAmountNotEnough(arg(0))
         }
 
