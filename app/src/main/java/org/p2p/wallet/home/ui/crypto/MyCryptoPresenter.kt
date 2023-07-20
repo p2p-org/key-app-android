@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
+import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -90,9 +91,7 @@ class MyCryptoPresenter(
     }
 
     private fun filterCryptoTokens(solTokens: List<Token.Active>): List<Token.Active> {
-        val excludedTokens = solTokens.filter {
-            it.tokenExtensions.isTokenVisibleOnWalletScreen == true
-        }
+        val excludedTokens = solTokens.filterTokensForWalletScreen()
         return solTokens.minus(excludedTokens.toSet())
     }
 
