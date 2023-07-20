@@ -1,7 +1,6 @@
 package org.p2p.wallet.home.ui.container
 
 import timber.log.Timber
-import java.math.BigDecimal
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -156,8 +155,10 @@ class MainContainerPresenter(
                 view?.showCryptoBadgeVisible(isVisible = false)
             }
             is UserTokensState.Loaded -> {
-                val usdc = newState.solTokens.find { it.isUSDC }
-                val balance = usdc?.total ?: BigDecimal.ZERO
+                val filteredTokens = newState.solTokens.filter {
+                    it.tokenExtensions.isTokenVisibleOnWalletScreen == true
+                }
+                val balance = filteredTokens.sumOf { it.total }
                 view?.showWalletBalance(balanceMapper.mapBalanceForWallet(balance))
                 view?.showCryptoBadgeVisible(isVisible = newState.ethTokens.isNotEmpty())
             }

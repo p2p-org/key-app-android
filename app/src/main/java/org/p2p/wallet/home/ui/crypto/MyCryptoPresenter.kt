@@ -82,11 +82,18 @@ class MyCryptoPresenter(
             is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
                 showTokensAndBalance(
-                    solTokens = newState.solTokens,
+                    solTokens = filterCryptoTokens(newState.solTokens),
                     ethTokens = newState.ethTokens
                 )
             }
         }
+    }
+
+    private fun filterCryptoTokens(solTokens: List<Token.Active>): List<Token.Active> {
+        val excludedTokens = solTokens.filter {
+            it.tokenExtensions.isTokenVisibleOnWalletScreen == true
+        }
+        return solTokens.minus(excludedTokens.toSet())
     }
 
     private fun showTokensAndBalance(solTokens: List<Token.Active>, ethTokens: List<Token.Eth>) {
