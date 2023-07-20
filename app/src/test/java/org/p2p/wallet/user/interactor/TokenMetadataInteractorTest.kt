@@ -1,6 +1,5 @@
 package org.p2p.wallet.user.interactor
 
-import assertk.assertions.matchesPredicate
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import io.mockk.coEvery
@@ -18,7 +17,6 @@ import org.p2p.token.service.repository.metadata.TokenMetadataRepository
 import org.p2p.wallet.common.storage.ExternalFile
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.assertThat
 import org.p2p.wallet.utils.coVerifyNone
 import org.p2p.wallet.utils.coVerifyOnce
 import org.p2p.wallet.utils.verifyOnce
