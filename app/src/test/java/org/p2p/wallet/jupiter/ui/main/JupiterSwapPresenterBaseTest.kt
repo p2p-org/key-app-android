@@ -197,36 +197,36 @@ open class JupiterSwapPresenterBaseTest {
 
     private fun initSwapButtonMapper() {
         every { swapButtonMapper.mapEnterAmount() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(enter amount)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(enter amount)")
             swapButtonMapperBackend.mapEnterAmount()
         }
         every { swapButtonMapper.mapLoading() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(counting)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(counting)")
             swapButtonMapperBackend.mapLoading()
         }
 
         every { swapButtonMapper.mapRouteNotFound() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(route not found)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(route not found)")
             swapButtonMapperBackend.mapRouteNotFound()
         }
 
         every { swapButtonMapper.mapSameToken() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(same token)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(same token)")
             swapButtonMapperBackend.mapSameToken()
         }
 
         every { swapButtonMapper.mapSmallTokenAAmount() } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(small token amount)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(small token amount)")
             swapButtonMapperBackend.mapSmallTokenAAmount()
         }
 
         every { swapButtonMapper.mapInsufficientSolBalance(any(), any()) } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(insufficient sol balance)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(insufficient sol balance)")
             swapButtonMapperBackend.mapInsufficientSolBalance(arg(0), arg(1))
         }
 
         every { swapButtonMapper.mapTokenAmountNotEnough(any()) } answers {
-            Timber.tag("SwapButtonMapper").i("SwapButtonState.EnterAmount(amount not enough)")
+            Timber.tag("SwapButtonMapper").i("SwapButtonState.Disabled(amount not enough)")
             swapButtonMapperBackend.mapTokenAmountNotEnough(arg(0))
         }
 
