@@ -9,11 +9,11 @@ enum class StrigaOffRampTokenType(
     val currencyName: String,
 ) {
     TokenA(
-        R.string.striga_off_ramp_you_pay,
-        Constants.USDC_SYMBOL,
+        titleResId = R.string.striga_off_ramp_you_pay,
+        currencyName = Constants.USDC_SYMBOL,
     ),
     TokenB(
-        R.string.striga_off_ramp_you_receive,
-        Constants.EUR_SYMBOL,
+        titleResId = R.string.striga_off_ramp_you_receive,
+        currencyName = Constants.EUR_SYMBOL,
     )
 }
