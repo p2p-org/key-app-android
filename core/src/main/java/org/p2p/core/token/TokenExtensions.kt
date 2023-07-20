@@ -23,3 +23,7 @@ data class TokenExtensions(
         val NONE = TokenExtensions()
     }
 }
+
+fun List<Token.Active>.filterTokensForWalletScreen(): List<Token.Active> {
+    return filter { it.tokenExtensions.isTokenVisibleOnWalletScreen == true }
+}
