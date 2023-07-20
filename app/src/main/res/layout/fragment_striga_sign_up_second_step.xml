@@ -89,7 +89,7 @@
                 android:layout_marginTop="12dp"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_select_from_list_hint"
-                app:isDropdown="true"
+                android:drawableEnd="@drawable/ic_chevron_right"
                 app:labelText="@string/striga_occupation_industry" />
 
             <org.p2p.uikit.components.UiKitEditText
@@ -100,7 +100,7 @@
                 android:layout_marginTop="24dp"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_select_from_list_hint"
-                app:isDropdown="true"
+                android:drawableEnd="@drawable/ic_chevron_right"
                 app:labelText="@string/striga_source_of_funds" />
 
             <TextView
@@ -122,7 +122,7 @@
                 android:nextFocusDown="@id/editTextCity"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_select_from_list_hint"
-                app:isDropdown="true"
+                android:drawableEnd="@drawable/ic_chevron_right"
                 app:labelText="@string/striga_country" />
 
             <org.p2p.uikit.components.UiKitEditText

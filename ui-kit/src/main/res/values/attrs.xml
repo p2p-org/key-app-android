@@ -101,7 +101,7 @@
         <attr name="android:inputType" />
         <attr name="android:maxLength" />
         <attr name="android:imeOptions" />
-        <attr name="android:digits" />
+        <attr name="android:digits" format="string" />
         <attr name="android:enabled" />
         <attr name="android:text" />
         <attr name="android:hint" />
@@ -111,7 +111,6 @@
         <attr name="android:textSize" />
         <attr name="android:nextFocusDown" />
         <attr name="android:imeActionId" />
-        <attr name="isDropdown" format="boolean" />
     </declare-styleable>
 
     <!--    can be extended if there is need -->
