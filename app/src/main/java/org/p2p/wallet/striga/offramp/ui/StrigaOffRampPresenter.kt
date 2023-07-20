@@ -226,7 +226,7 @@ class StrigaOffRampPresenter(
             }
             is StrigaDataLayerError.InternalError -> {
                 if (throwable.cause != null) {
-                    logError(throwable.cause ?: throwable)
+                    logError(throwable.cause!!)
                 } else {
                     timber.e(throwable, "DataLayer: Error while rate polling")
                 }
