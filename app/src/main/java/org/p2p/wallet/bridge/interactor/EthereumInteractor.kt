@@ -29,6 +29,10 @@ class EthereumInteractor(
         ethereumRepository.init(userSeedPhrase)
     }
 
+    fun isInitialized(): Boolean {
+        return ethereumRepository.isInitialized()
+    }
+
     suspend fun loadWalletTokens(claimTokens: List<EthereumClaimToken>): List<Token.Eth> {
         return ethereumRepository.loadWalletTokens(claimTokens)
     }

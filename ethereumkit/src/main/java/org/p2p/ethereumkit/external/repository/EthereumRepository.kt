@@ -11,6 +11,7 @@ import org.p2p.token.service.model.TokenServicePrice
 
 interface EthereumRepository {
     fun init(seedPhrase: List<String>)
+    fun isInitialized(): Boolean
 
     suspend fun getBalance(): BigInteger
     suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth>

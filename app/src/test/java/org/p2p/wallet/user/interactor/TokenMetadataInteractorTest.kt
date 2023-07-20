@@ -55,7 +55,11 @@ internal class TokenMetadataInteractorTest {
         // GIVEN
         val expectedMetadata = TokensMetadataInfo(emptyString(), emptyList())
         coEvery { externalStorageRepository.readJsonFile(any()) }.returns(null)
-        coEvery { metadataRepository.loadTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.NewMetadata(expectedMetadata))
+        coEvery { metadataRepository.loadSolTokensMetadata(any()) }.returns(
+            UpdateTokenMetadataResult.NewMetadata(
+                expectedMetadata
+            )
+        )
 
         // WHEN
         tokenMetadataInteractor.loadAllTokensMetadata()
@@ -71,7 +75,7 @@ internal class TokenMetadataInteractorTest {
         val expectedMetadata = TokensMetadataInfo(emptyString(), emptyList())
         every { gson.fromJson(metadataJson, TokensMetadataInfo::class.java) }.returns(expectedMetadata)
         coEvery { externalStorageRepository.readJsonFile(any()) }.returns(ExternalFile(metadataJson))
-        coEvery { metadataRepository.loadTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.NoUpdate)
+        coEvery { metadataRepository.loadSolTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.NoUpdate)
 
         // WHEN
         tokenMetadataInteractor.loadAllTokensMetadata()
@@ -85,7 +89,7 @@ internal class TokenMetadataInteractorTest {
     fun `GIVEN Error from remote WHEN loadAllTokensData THEN nothing happens`() = runTest {
         // GIVEN
         coEvery { externalStorageRepository.readJsonFile(any()) }.returns(null)
-        coEvery { metadataRepository.loadTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.Error(Throwable()))
+        coEvery { metadataRepository.loadSolTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.Error(Throwable()))
 
         // WHEN
         tokenMetadataInteractor.loadAllTokensMetadata()
