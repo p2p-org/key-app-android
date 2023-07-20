@@ -63,13 +63,11 @@ class MyCryptoFragment :
 
     private val cellAdapter = CommonAnyCellAdapter(
         tokenDelegate(glideManager) { binding, item ->
-            with(binding) {
-                contentView.apply {
-                    setOnClickListener { onTokenClicked(item.payload) }
-                    setOnLongClickListener {
-                        showTokenVisibilityStateChangeDialog(item)
-                        true
-                    }
+            with(binding.contentView) {
+                setOnClickListener { onTokenClicked(item.payload) }
+                setOnLongClickListener {
+                    showTokenVisibilityStateChangeDialog(item)
+                    true
                 }
             }
         },
