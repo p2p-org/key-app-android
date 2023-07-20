@@ -275,6 +275,8 @@
 
     <!--MY Crypto Empty-->
     <string name="my_crypto_empty_title">Welcome to your crypto portfolio.\nExplore over 800 tokens with zero fees.</string>
+    <string name="my_crypto_hide_token_button">Hide token</string>
+    <string name="my_crypto_show_token_button">Show token</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>
