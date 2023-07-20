@@ -24,6 +24,7 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentMyCryptoBinding
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.HomeAnalytics
+import org.p2p.wallet.home.ui.crypto.bottomsheet.TokenVisibilityChangeBottomSheet
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.ethClaimTokenDelegate
 import org.p2p.wallet.home.ui.main.delegates.hidebutton.tokenButtonDelegate
@@ -35,8 +36,12 @@ import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.HomeScreenLayoutManager
+import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
+
+private const val KEY_REQUEST = "KEY_REQUEST"
+private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 
 class MyCryptoFragment :
     BaseMvpFragment<MyCryptoContract.View, MyCryptoContract.Presenter>(R.layout.fragment_my_crypto),
@@ -59,11 +64,13 @@ class MyCryptoFragment :
     private val cellAdapter = CommonAnyCellAdapter(
         tokenDelegate(glideManager) { binding, item ->
             with(binding) {
-                imageViewHideToken.setOnClickListener {
-                    onHideClicked(item.payload)
-                    binding.root.close(animation = true)
+                contentView.apply {
+                    setOnClickListener { onTokenClicked(item.payload) }
+                    setOnLongClickListener {
+                        showTokenVisibilityStateChangeDialog(item)
+                        true
+                    }
                 }
-                contentView.setOnClickListener { onTokenClicked(item.payload) }
             }
         },
         tokenButtonDelegate() { binding, _ ->
@@ -85,10 +92,25 @@ class MyCryptoFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.setupView()
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST,
+            viewLifecycleOwner,
+            ::onFragmentResult
+        )
     }
 
     override fun showActionButtons(buttons: List<ActionButton>) {
         binding.viewActionButtons.showActionButtons(buttons)
+    }
+
+    private fun showTokenVisibilityStateChangeDialog(item: TokenCellModel) {
+        TokenVisibilityChangeBottomSheet.show(
+            fm = childFragmentManager,
+            token = item.payload,
+            isTokenHidden = item.isDefinitelyHidden,
+            requestKey = KEY_REQUEST,
+            resultKey = KEY_RESULT_TOKEN
+        )
     }
 
     private fun FragmentMyCryptoBinding.setupView() {
@@ -170,5 +192,13 @@ class MyCryptoFragment :
 
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
         listener?.showTransactionProgress(bundleId, progressDetails)
+    }
+
+    private fun onFragmentResult(requestKey: String, result: Bundle) {
+        if (result.containsKey(KEY_RESULT_TOKEN)) {
+            result.getParcelableCompat<Token.Active>(KEY_RESULT_TOKEN)?.let {
+                onHideClicked(it)
+            }
+        }
     }
 }

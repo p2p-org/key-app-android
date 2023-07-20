@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import kotlinx.coroutines.withContext
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -21,12 +22,13 @@ import org.p2p.uikit.utils.text.TextViewSize
 import org.p2p.uikit.utils.text.badgePadding
 import org.p2p.uikit.utils.text.badgeRounded
 import org.p2p.wallet.R
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.toPx
 
 class DeviceCellMapper(
     private val dispatchers: CoroutineDispatchers
 ) {
+
+    private val mainCellHorizontalMargin = 12.toPx()
 
     suspend fun toCellModels(
         currentDeviceName: String,
@@ -119,7 +121,8 @@ class DeviceCellMapper(
         return MainCellModel(
             leftSideCellModel = leftSideCellModel,
             rightSideCellModel = rightSideCellModel,
-            background = roundedBackground
+            background = roundedBackground,
+            horizontalMargins = mainCellHorizontalMargin
         )
     }
 

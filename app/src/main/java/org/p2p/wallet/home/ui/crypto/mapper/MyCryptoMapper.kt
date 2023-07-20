@@ -65,7 +65,7 @@ class MyCryptoMapper(
         }
 
         if (visibilityState.isVisible) {
-            result += hiddenTokens.map { it.mapToCellModel(!isZerosHidden) }
+            result += hiddenTokens.map { it.mapToCellModel(isZerosHidden) }
         }
 
         return result.toList()
@@ -78,7 +78,7 @@ class MyCryptoMapper(
             isWrapped = isWrapped,
             formattedUsdTotal = getFormattedUsdTotal(),
             formattedTotal = getFormattedTotal(includeSymbol = true),
-            visibilityIcon = getVisibilityIcon(isZerosHidden),
+            isDefinitelyHidden = isDefinitelyHidden(isZerosHidden),
             payload = this
         )
     }
