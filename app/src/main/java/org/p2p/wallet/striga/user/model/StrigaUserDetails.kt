@@ -48,7 +48,9 @@ class StrigaUserInfo(
     val phoneNumber: String,
     val phoneNumberCode: String,
     val placeOfBirth: String,
-)
+) {
+    val fullName: String = "$firstName $lastName"
+}
 
 data class StrigaUserAddress(
     val addressLine1: String,

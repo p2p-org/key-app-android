@@ -5,7 +5,7 @@ import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 
-class StrigaWalletInMemoryRepository(
+internal class StrigaWalletInMemoryRepository(
     private val strigaStorage: StrigaStorageContract
 ) {
     var fiatAccountDetails: StrigaFiatAccountDetails?
