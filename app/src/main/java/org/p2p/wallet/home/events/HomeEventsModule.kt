@@ -41,8 +41,11 @@ object HomeEventsModule : InjectionModule {
                     strigaUserInteractor = get(),
                     strigaSignupInteractor = get(),
                     strigaWalletInteractor = get()
+                ),
+                TokenServiceWorkerLoader(
+                    appScope = get(),
+                    tokenServiceCoordinator = get()
                 )
-
             )
             AppLoaderFacade(appLoaders, appScope = get())
         }
