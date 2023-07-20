@@ -56,6 +56,7 @@ import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
@@ -81,6 +82,7 @@ class JupiterSwapPresenter(
     private val historyInteractor: HistoryInteractor,
     private val resources: Resources,
     private val alarmErrorsLogger: AlarmErrorsLogger,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val initialAmountA: String? = null,
 ) : BasePresenter<JupiterSwapContract.View>(dispatchers.ui), JupiterSwapContract.Presenter {
 
@@ -200,7 +202,7 @@ class JupiterSwapPresenter(
                         tokenBAmountUsd = tokenBUsdAmount.toString(),
                         signature = result.signature
                     )
-
+                    tokenServiceCoordinator.refresh()
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
                     val transactionState = TransactionState.JupiterSwapSuccess
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
