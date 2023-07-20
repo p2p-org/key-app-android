@@ -148,23 +148,19 @@ internal class EthereumKitRepository(
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
         val tokenAddresses = ERC20Tokens.values().map { it.contractAddress }
 
-        val tokensBalance = loadTokenBalances(publicKey, tokenAddresses.map(::EthAddress))
+        val tokensBalances = loadTokenBalances(publicKey, tokenAddresses.map(::EthAddress))
 
         val tokensMetadata = tokenServiceRepository.loadMetadataForTokens(
             chain = TokenServiceNetwork.ETHEREUM,
             tokenAddresses = tokenAddresses
-        ).map {
-            val ethAddress = EthAddress(it.address)
-            val erc20Token = ERC20Tokens.findToken(ethAddress)
-            EthTokenMetadata(
-                contractAddress = ethAddress,
-                mintAddress = erc20Token.mintAddress,
-                balance = tokensBalance.firstOrNull { it.contractAddress == ethAddress }?.tokenBalance.orZero(),
-                decimals = it.decimals,
-                logoUrl = it.logoUrl,
-                tokenName = erc20Token.replaceTokenName.orEmpty(),
-                symbol = erc20Token.replaceTokenSymbol.orEmpty(),
-                price = null
+        ).map { metadata ->
+            val ethAddress = EthAddress(metadata.address)
+            val tokenBalance = tokensBalances.firstOrNull { it.contractAddress == ethAddress }
+                ?.tokenBalance.orZero()
+            converter.toEthTokenMetadata(
+                metadata = metadata,
+                tokenBalance = tokenBalance,
+                ethAddress = ethAddress
             )
         }
         return tokensMetadata
