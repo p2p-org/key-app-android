@@ -51,7 +51,6 @@ class StrigaOffRampInteractor(
             return
         }
         Timber.d("Start polling rates: in progress...")
-        stopPolling()
         pollingJob = scope.launch(dispatchers.io) {
             while (isPollingRunning()) {
                 exchangeRateState.emit(StrigaOffRampRateState.Loading)
