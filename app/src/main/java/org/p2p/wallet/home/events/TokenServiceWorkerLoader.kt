@@ -28,7 +28,7 @@ class TokenServiceWorkerLoader(
         pollingJob = launch {
             while (isActive) {
                 try {
-                    Timber.tag(TAG).d( "Update token rates")
+                    Timber.tag(TAG).d("Update token rates")
                     delay(DELAY_IN_MINUTES.toMillis())
                     tokenServiceCoordinator.refresh()
                 } catch (e: Throwable) {
