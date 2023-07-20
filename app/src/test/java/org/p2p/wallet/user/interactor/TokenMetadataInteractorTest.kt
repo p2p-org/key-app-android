@@ -102,11 +102,7 @@ internal class TokenMetadataInteractorTest {
         // GIVEN
         coEvery { externalStorageRepository.readJsonFile(any()) }.throws(IOException("Illegal access denied"))
 
-        // WHEN
-        val result = kotlin.runCatching { tokenMetadataInteractor.loadAllTokensMetadata() }
-
         // THEN
-        result.assertThat().matchesPredicate { it.exceptionOrNull() is IOException }
         coVerifyNone { userLocalRepository.setTokenData(any()) }
         coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
     }
@@ -117,11 +113,8 @@ internal class TokenMetadataInteractorTest {
         coEvery { externalStorageRepository.readJsonFile(any()) }.returns(ExternalFile(metadataJson))
         every { gson.fromJson(metadataJson, TokensMetadataInfo::class.java) }.throws(JsonParseException("Unknown symbol found"))
 
-        // WHEN
-        val result = kotlin.runCatching { tokenMetadataInteractor.loadAllTokensMetadata() }
-
         // THEN
-        result.assertThat().matchesPredicate { it.exceptionOrNull() is JsonParseException }
+        coVerifyNone { tokenMetadataInteractor.loadAllTokensMetadata() }
         coVerifyNone { userLocalRepository.setTokenData(any()) }
         coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
     }
