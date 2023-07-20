@@ -24,7 +24,7 @@ class TokenMetadataInteractor(
         val modifiedSince = metadataFromFile?.timestamp
         Timber.tag(TAG).i("Checking if metadata is modified since: $modifiedSince")
 
-        when (val result = metadataRepository.loadTokensMetadata(ifModifiedSince = modifiedSince)) {
+        when (val result = metadataRepository.loadSolTokensMetadata(ifModifiedSince = modifiedSince)) {
             is UpdateTokenMetadataResult.NewMetadata -> {
                 updateLocalFile(result.remoteTokensMetadata)
                 updateMemoryCache(result.remoteTokensMetadata)

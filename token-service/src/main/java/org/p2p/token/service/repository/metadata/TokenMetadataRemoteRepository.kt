@@ -8,7 +8,7 @@ import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.rpc.RpcApi
 import org.p2p.core.token.TokensMetadataInfo
-import org.p2p.token.service.api.TokenServiceApiRepository
+import org.p2p.token.service.api.TokenServiceDataSource
 import org.p2p.token.service.api.mapper.TokenServiceMapper
 import org.p2p.token.service.api.request.TokenServiceMetadataRequest
 import org.p2p.token.service.api.response.TokenListResponse
@@ -23,7 +23,7 @@ private const val HEADER_MODIFIED_SINCE = "last-modified"
 
 internal class TokenMetadataRemoteRepository(
     private val api: RpcApi,
-    private val tokenServiceRepository: TokenServiceApiRepository,
+    private val tokenServiceRepository: TokenServiceDataSource,
     private val mapper: TokenServiceMapper,
     private val gson: Gson,
     private val urlProvider: NetworkServicesUrlProvider,
@@ -33,7 +33,7 @@ internal class TokenMetadataRemoteRepository(
     private val tokenServiceUrl: String
         get() = urlProvider.loadTokenServiceEnvironment().baseServiceUrl
 
-    override suspend fun loadTokensMetadata(
+    override suspend fun loadSolTokensMetadata(
         ifModifiedSince: String?
     ): UpdateTokenMetadataResult = withContext(dispatchers.io) {
         val response = try {
@@ -72,7 +72,7 @@ internal class TokenMetadataRemoteRepository(
         val tokensPrice = queryResponse.map { response ->
             val tokenServiceChain = mapper.fromNetwork(response.tokenServiceChainResponse)
             val tokenPrices = response.tokenServiceItemsResponse
-                .mapNotNull { mapper.fromNetwork(tokenServiceChain, it) }
+                .map { mapper.fromNetwork(tokenServiceChain, it) }
 
             TokenServiceQueryResult(networkChain = tokenServiceChain, items = tokenPrices)
         }

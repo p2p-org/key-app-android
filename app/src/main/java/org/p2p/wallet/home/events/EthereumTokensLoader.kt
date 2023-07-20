@@ -45,9 +45,7 @@ class EthereumTokensLoader(
         if (!isEnabled()) return
 
         try {
-            if (!ethereumInteractor.isInitialized()) {
-                ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
-            }
+            setupEthereum()
             updateState(EthTokenLoadState.Loading)
             ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
             tokenServiceEventManager.subscribe(EthereumTokensRatesEventSubscriber(::saveTokensRates))
@@ -73,9 +71,7 @@ class EthereumTokensLoader(
         if (!isEnabled()) return
 
         try {
-            if (!ethereumInteractor.isInitialized()) {
-                ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
-            }
+            setupEthereum()
             updateState(EthTokenLoadState.Refreshing)
             val claimTokens = ethereumInteractor.loadClaimTokens()
 
@@ -99,6 +95,12 @@ class EthereumTokensLoader(
 
     private fun isEnabled(): Boolean {
         return userSeedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled
+    }
+
+    private fun setupEthereum() {
+        if (!ethereumInteractor.isInitialized()) {
+            ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+        }
     }
 
     private fun saveTokensRates(list: List<TokenServicePrice>) {

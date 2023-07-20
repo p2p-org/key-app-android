@@ -35,7 +35,7 @@ internal class EthereumKitRepository(
 ) : EthereumRepository {
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
-    private lateinit var ethToken: EthTokenMetadata
+    private var ethToken: EthTokenMetadata? = null
 
     override fun init(seedPhrase: List<String>) {
         tokenKeyProvider = EthTokenKeyProvider(
@@ -43,10 +43,10 @@ internal class EthereumKitRepository(
             privateKey = Signer.privateKey(words = seedPhrase, chain = Chain.Ethereum)
         )
 
-        val contractAddress = tokenKeyProvider?.publicKey ?: return
+        val ethAddress = tokenKeyProvider?.publicKey ?: return
 
         ethToken = EthTokenMetadata(
-            contractAddress = contractAddress,
+            contractAddress = ethAddress,
             mintAddress = ERC20Tokens.ETH.mintAddress,
             balance = BigInteger.ZERO,
             decimals = ERC20Tokens.ETH_DECIMALS,
@@ -87,9 +87,9 @@ internal class EthereumKitRepository(
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> {
         return try {
             val ethBalance = getBalance()
-            ethToken = ethToken.copy(balance = ethBalance)
+            ethToken = ethToken?.copy(balance = ethBalance)
             val walletTokens = buildList<EthTokenMetadata> {
-                this += ethToken
+                this += ethToken ?: return emptyList()
                 this += loadTokensMetadata()
             }.map { tokenMetadata ->
 
@@ -156,7 +156,8 @@ internal class EthereumKitRepository(
         ).map { metadata ->
             val ethAddress = EthAddress(metadata.address)
             val tokenBalance = tokensBalances.firstOrNull { it.contractAddress == ethAddress }
-                ?.tokenBalance.orZero()
+                ?.tokenBalance
+                .orZero()
             converter.toEthTokenMetadata(
                 metadata = metadata,
                 tokenBalance = tokenBalance,

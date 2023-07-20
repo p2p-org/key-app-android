@@ -9,7 +9,7 @@ data class EthTokenMetadata(
     val mintAddress: String,
     val balance: BigInteger,
     val decimals: Int,
-    val logoUrl: String,
+    val logoUrl: String?,
     val tokenName: String,
     val symbol: String,
     var price: BigDecimal? = null

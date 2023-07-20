@@ -6,7 +6,7 @@ import org.p2p.token.service.model.TokenServiceQueryResult
 import org.p2p.token.service.model.UpdateTokenMetadataResult
 
 interface TokenMetadataRepository {
-    suspend fun loadTokensMetadata(ifModifiedSince: String?): UpdateTokenMetadataResult
+    suspend fun loadSolTokensMetadata(ifModifiedSince: String?): UpdateTokenMetadataResult
     suspend fun loadTokensMetadata(
         chain: TokenServiceNetwork,
         addresses: List<String>

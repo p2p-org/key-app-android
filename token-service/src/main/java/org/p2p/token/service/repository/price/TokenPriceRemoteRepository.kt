@@ -1,6 +1,6 @@
 package org.p2p.token.service.repository.price
 
-import org.p2p.token.service.api.TokenServiceApiRepository
+import org.p2p.token.service.api.TokenServiceDataSource
 import org.p2p.token.service.api.mapper.TokenServiceMapper
 import org.p2p.token.service.api.request.TokenServicePriceRequest
 import org.p2p.token.service.model.TokenServiceNetwork
@@ -9,7 +9,7 @@ import org.p2p.token.service.model.TokenServiceQueryResult
 import org.p2p.token.service.model.successOrNull
 
 internal class TokenPriceRemoteRepository(
-    private val api: TokenServiceApiRepository,
+    private val api: TokenServiceDataSource,
     private val mapper: TokenServiceMapper
 ) : TokenPriceRepository {
 

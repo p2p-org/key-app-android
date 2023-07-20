@@ -11,8 +11,7 @@ import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.rpc.RPC_JSON_QUALIFIER
-import org.p2p.token.service.api.TokenServiceRemoteRepository
-import org.p2p.token.service.api.TokenServiceApiRepository
+import org.p2p.token.service.api.TokenServiceRemoteDataSource
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
 import org.p2p.token.service.api.mapper.TokenServiceMapper
@@ -34,8 +33,8 @@ object TokenServiceModule : InjectionModule {
 
     override fun create() = module {
         includes(TokenServiceDatabaseModule.create())
-        single<TokenServiceApiRepository> {
-            TokenServiceRemoteRepository(
+        single<org.p2p.token.service.api.TokenServiceDataSource> {
+            TokenServiceRemoteDataSource(
                 api = get<Retrofit>(named(TOKEN_SERVICE_RETROFIT_QUALIFIER)).create(),
                 gson = get(named(RPC_JSON_QUALIFIER)),
                 urlProvider = get()
