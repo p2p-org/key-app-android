@@ -64,16 +64,16 @@ class QrView @JvmOverloads constructor(
 
     fun setName(qrName: String) {
         with(binding) {
-            nameTextView.text = qrName
-            nameTextView.isVisible = qrName.isNotEmpty()
-            nameTextView.setOnClickListener {
+            textViewName.text = qrName
+            textViewName.isVisible = qrName.isNotEmpty()
+            textViewName.setOnClickListener {
                 context.copyToClipBoard(qrName)
                 context.toast(R.string.receive_username_copied)
             }
         }
     }
 
-    fun getName(): String = binding.nameTextView.text.toString()
+    fun getName(): String = binding.textViewName.text.toString()
 
     fun setImage(bitmap: Bitmap) {
         binding.imageViewQr.setImageBitmap(bitmap)

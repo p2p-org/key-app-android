@@ -5,7 +5,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.p2p.core.R
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.SOL_NAME
@@ -75,6 +74,10 @@ sealed class Token constructor(
         val isZero: Boolean
             get() = total.isZero()
 
+        @IgnoredOnParcel
+        val isHidden: Boolean
+            get() = visibility == TokenVisibility.HIDDEN
+
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN ||
                 isZerosHidden &&
@@ -90,13 +93,6 @@ sealed class Token constructor(
                 "${total.formatToken(decimals)} $tokenSymbol"
             } else {
                 total.formatToken(decimals)
-            }
-
-        fun getVisibilityIcon(isZerosHidden: Boolean): Int =
-            if (isDefinitelyHidden(isZerosHidden)) {
-                R.drawable.ic_show
-            } else {
-                R.drawable.ic_hide
             }
     }
 
