@@ -25,6 +25,7 @@ import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.token.TokenExtensions
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 
@@ -73,7 +74,7 @@ class BridgeSendInteractor(
             rate = null,
             visibility = TokenVisibility.DEFAULT,
             isWrapped = token.isWrapped,
-            extensions = null
+            tokenExtensions = TokenExtensions()
         )
     }
 

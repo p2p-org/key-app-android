@@ -115,7 +115,6 @@ class EthereumTokensLoader(
 
         override fun onUpdate(eventType: TokenServiceEventType, data: TokenServiceUpdate) {
             if (eventType != TokenServiceEventType.ETHEREUM_CHAIN_EVENT) return
-
             when (data) {
                 is TokenServiceUpdate.Loading -> Unit
                 is TokenServiceUpdate.TokensPriceLoaded -> block(data.result)

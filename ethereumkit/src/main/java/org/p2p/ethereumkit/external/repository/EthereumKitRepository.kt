@@ -92,7 +92,6 @@ internal class EthereumKitRepository(
                 this += ethToken ?: return emptyList()
                 this += loadTokensMetadata()
             }.map { tokenMetadata ->
-
                 var isClaiming = false
                 var latestBundleId: String? = null
                 var tokenAmount: BigDecimal? = null

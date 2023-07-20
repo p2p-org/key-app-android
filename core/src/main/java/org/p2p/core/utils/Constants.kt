@@ -20,13 +20,6 @@ object Constants {
     const val WETH_SYMBOL = "WETH"
     const val WBTC_SYMBOL = "WBTC"
 
-    const val SOL_COINGECKO_ID = "solana"
-    const val USDC_COINGECKO_ID = "usd-coin"
-    const val BTC_COINGECKO_ID = "bitcoin"
-    const val ETH_COINGECKO_ID = "ethereum"
-    const val WETH_COINGECKO_ID = "ethereum-wormhole"
-    const val USDT_COINGECKO_ID = "tether"
-
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
     const val WRAPPED_ETH_MINT = "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"
     const val WRAPPED_BTC_MINT = "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh"
