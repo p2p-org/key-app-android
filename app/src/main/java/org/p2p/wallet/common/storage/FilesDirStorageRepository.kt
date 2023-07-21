@@ -44,7 +44,7 @@ class FilesDirStorageRepository(
             context.openFileInput(file.name)
                 .bufferedReader()
                 .useLines { lines ->
-                    val joinedLines = lines.joinToString()
+                    val joinedLines = lines.joinToString("")
                     Timber.i("File $filePrefix is read successfully: ${joinedLines.length}")
                     ExternalFile(joinedLines)
                 }
