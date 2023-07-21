@@ -1,6 +1,5 @@
 package org.p2p.ethereumkit.external.token
 
-import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.p2p.core.token.Token
