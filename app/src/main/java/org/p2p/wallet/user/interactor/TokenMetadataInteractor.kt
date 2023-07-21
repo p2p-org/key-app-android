@@ -9,7 +9,7 @@ import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 
 private const val TAG = "TokenMetadataInteractor"
-const val TOKENS_FILE_NAME = "token_service_metadata"
+const val TOKENS_FILE_NAME = "token_service_metadata.json"
 
 class TokenMetadataInteractor(
     private val externalStorageRepository: ExternalStorageRepository,
@@ -42,7 +42,9 @@ class TokenMetadataInteractor(
         runCatching {
             val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
             file?.let { gson.fromJson(it.data, TokensMetadataInfo::class.java) }
-        }.getOrNull()
+        }
+            .onFailure { Timber.i(it, "Failed to read metadata from file") }
+            .getOrNull()
 
     private suspend fun updateLocalFile(tokensMetadata: TokensMetadataInfo) {
         val lastModified = tokensMetadata.timestamp

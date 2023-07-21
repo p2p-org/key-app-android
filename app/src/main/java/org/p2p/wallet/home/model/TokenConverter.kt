@@ -123,6 +123,17 @@ object TokenConverter {
             rate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
             isWrapped = entity.isWrapped,
-            tokenExtensions = TokenExtensions.NONE
+            tokenExtensions = fromDatabase(entity.extensions)
+        )
+
+    fun fromDatabase(entity: TokenExtensionEntity?): TokenExtensions =
+        TokenExtensions(
+            ruleOfProcessingTokenPrice = entity?.ruleOfProcessingTokenPrice,
+            isTokenVisibleOnWalletScreen = entity?.isTokenVisibleOnWalletScreen,
+            isTokenCellVisibleOnWalletScreen = entity?.isTokenCellVisibleOnWalletScreen,
+            tokenPercentDifferenceOnWalletScreen = entity?.tokenPercentDifferenceOnWalletScreen,
+            isCalculateWithTotalBalance = entity?.isCalculateWithTotalBalance,
+            tokenFractionRuleOnWalletScreen = entity?.tokenFractionRuleOnWalletScreen,
+            canTokenBeHidden = entity?.canTokenBeHidden
         )
 }
