@@ -42,6 +42,7 @@ object TokenConverter {
             rate = tokenRate,
             visibility = TokenVisibility.DEFAULT,
             isWrapped = tokenMetadata.isWrapped,
+            tokenServiceAddress = tokenMetadata.mintAddress,
             tokenExtensions = TokenExtensions.NONE
         )
         val tokenExtensions = TokenExtensionsConfigurator(
@@ -123,6 +124,7 @@ object TokenConverter {
             rate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
             isWrapped = entity.isWrapped,
+            tokenServiceAddress = entity.mintAddress,
             tokenExtensions = fromDatabase(entity.extensions)
         )
 

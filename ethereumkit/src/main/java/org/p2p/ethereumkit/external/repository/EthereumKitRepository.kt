@@ -5,6 +5,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.flow.Flow
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.TOKEN_SERVICE_NATIVE_ETH_TOKEN
 import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
@@ -52,7 +53,8 @@ internal class EthereumKitRepository(
             decimals = ERC20Tokens.ETH_DECIMALS,
             logoUrl = ERC20Tokens.ETH.tokenIconUrl,
             tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
-            symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty()
+            symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
+            tokenServiceAddress = TOKEN_SERVICE_NATIVE_ETH_TOKEN
         )
     }
 

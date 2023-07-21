@@ -35,7 +35,8 @@ object EthTokenConverter {
             total = total,
             rate = metadata.price,
             isClaiming = isClaiming,
-            latestActiveBundleId = bundleId
+            latestActiveBundleId = bundleId,
+            tokenServiceAddress = metadata.tokenServiceAddress
         )
     }
 
