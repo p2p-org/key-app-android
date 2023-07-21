@@ -23,6 +23,7 @@ import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTopupWalletBinding
+import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.striga.StrigaFragmentFactory
@@ -75,6 +76,10 @@ class TopUpWalletBottomSheet :
         strigaFragmentFactory.bankTransferFragment(target)?.let(::dismissAndNavigate)
     }
 
+    override fun navigateToBuyWithTransfer(tokenToBuy: Token) {
+        dismissAndNavigate(NewBuyFragment.create(tokenToBuy))
+    }
+
     override fun navigateToKycPending() {
         dismiss()
         strigaFragmentFactory.showPendingBottomSheet(requireActivity().supportFragmentManager)
@@ -91,7 +96,12 @@ class TopUpWalletBottomSheet :
             )
         )
         binding.bankCardView.setOnClickAction { _, _ ->
-            dismissAndNavigate(NewBuyFragment.create(tokenToBuy))
+            dismissAndNavigate(
+                NewBuyFragment.create(
+                    token = tokenToBuy,
+                    preselectedMethodType = PaymentMethod.MethodType.CARD
+                )
+            )
         }
     }
 
