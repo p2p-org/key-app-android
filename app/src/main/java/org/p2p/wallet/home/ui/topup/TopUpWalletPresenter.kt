@@ -61,6 +61,7 @@ class TopUpWalletPresenter(
                     view?.navigateToBuyWithTransfer(it)
                 }
             }
+            return
         }
         // in case of simulation web3 user, we don't need to check metadata
         if (inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
