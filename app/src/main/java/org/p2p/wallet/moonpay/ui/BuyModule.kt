@@ -38,11 +38,11 @@ object BuyModule : InjectionModule {
             )
         }
         factory<NewBuyContract.Presenter> { (
-                                                token: Token,
-                                                fiatToken: String?,
-                                                fiatAmount: String?,
-                                                preselectedMethodType: PaymentMethod.MethodType?
-                                            ) ->
+            token: Token,
+            fiatToken: String?,
+            fiatAmount: String?,
+            preselectedMethodType: PaymentMethod.MethodType?
+        ) ->
             NewBuyPresenter(
                 tokenToBuy = token,
                 fiatToken = fiatToken,
