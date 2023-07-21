@@ -30,19 +30,29 @@ private val BANK_TRANSFER_PAYMENT_METHOD = PaymentMethod(
 
 class PaymentMethodsInteractor(private val repository: NewMoonpayBuyRepository) {
 
-    fun getAvailablePaymentMethods(alpha3Code: String): List<PaymentMethod> =
-        if (bankTransferIsAvailable(alpha3Code)) {
+    fun getAvailablePaymentMethods(
+        alpha3Code: String,
+        preselectedMethodType: PaymentMethod.MethodType?
+    ): List<PaymentMethod> {
+        return if (bankTransferIsAvailable(alpha3Code)) {
             val validatedBankTransfer = BANK_TRANSFER_PAYMENT_METHOD.copy(
                 paymentType = if (alpha3Code == BANK_TRANSFER_UK_CODE) GBP_BANK_TRANSFER else SEPA_BANK_TRANSFER,
-                isSelected = true
+                isSelected = if (preselectedMethodType == null) {
+                    true
+                } else {
+                    preselectedMethodType == PaymentMethod.MethodType.BANK_TRANSFER
+                }
             )
-            val cardPayment = CARD_PAYMENT_METHOD.copy()
+            val cardPayment = CARD_PAYMENT_METHOD.copy(
+                isSelected = preselectedMethodType == PaymentMethod.MethodType.CARD
+            )
             listOf(
                 validatedBankTransfer, cardPayment
             )
         } else {
             listOf(CARD_PAYMENT_METHOD.copy(isSelected = true))
         }
+    }
 
     private fun bankTransferIsAvailable(alpha3Code: String): Boolean = BANK_TRANSFER_ALPHA3_CODES.contains(alpha3Code)
 

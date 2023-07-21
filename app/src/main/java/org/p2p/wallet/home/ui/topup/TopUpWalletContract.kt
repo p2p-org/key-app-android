@@ -11,6 +11,7 @@ interface TopUpWalletContract {
         fun showStrigaBankTransferView(showProgress: Boolean = false)
         fun hideStrigaBankTransferView()
         fun navigateToBankTransferTarget(target: StrigaUserStatusDestination)
+        fun navigateToBuyWithTransfer(tokenToBuy: Token)
         fun navigateToKycPending()
         fun showBankCardView(tokenToBuy: Token)
         fun hideBankCardView()

@@ -42,7 +42,7 @@ class TopUpWalletPresenter(
             strigaBankTransferProgress.onEach(view::showStrigaBankTransferView)
                 .launchIn(this)
         } else {
-            view.hideStrigaBankTransferView()
+            view.showStrigaBankTransferView(showProgress = false)
         }
 
         launch {
@@ -54,6 +54,14 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
+        if (!strigaSignupFeatureToggle.isFeatureEnabled) {
+            launch {
+                val tokenToBuy = userInteractor.getSingleTokenForBuy()
+                tokenToBuy?.let {
+                    view?.navigateToBuyWithTransfer(it)
+                }
+            }
+        }
         // in case of simulation web3 user, we don't need to check metadata
         if (inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
             view?.navigateToBankTransferTarget(StrigaUserStatusDestination.ONBOARDING)

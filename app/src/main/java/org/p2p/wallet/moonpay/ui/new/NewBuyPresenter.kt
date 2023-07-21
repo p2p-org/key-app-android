@@ -42,6 +42,7 @@ class NewBuyPresenter(
     tokenToBuy: Token,
     private val fiatToken: String? = null,
     private val fiatAmount: String? = null,
+    private val preselectedMethodType: PaymentMethod.MethodType? = null,
     private val buyAnalytics: BuyAnalytics,
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
@@ -103,7 +104,9 @@ class NewBuyPresenter(
             view?.showLoading(isLoading = true)
             currentAlphaCode = paymentMethodsInteractor.getBankTransferAlphaCode()
 
-            val availablePaymentMethods = paymentMethodsInteractor.getAvailablePaymentMethods(currentAlphaCode)
+            val availablePaymentMethods = paymentMethodsInteractor.getAvailablePaymentMethods(
+                currentAlphaCode, preselectedMethodType
+            )
             selectedPaymentMethod = availablePaymentMethods.first { it.isSelected }
             paymentMethods.addAll(availablePaymentMethods)
 
@@ -215,6 +218,15 @@ class NewBuyPresenter(
         }
         selectedCurrency = currency
 
+        if (isValidCurrencyForPay()) {
+            recalculate()
+        }
+    }
+
+    private fun selectPaymentMethod(methodType: PaymentMethod.MethodType) {
+        paymentMethods.find { it.method == methodType }?.let {
+            onPaymentMethodSelected(it, byUser = false)
+        }
         if (isValidCurrencyForPay()) {
             recalculate()
         }
