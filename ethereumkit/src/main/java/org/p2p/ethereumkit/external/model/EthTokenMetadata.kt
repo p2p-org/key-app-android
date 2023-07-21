@@ -12,5 +12,6 @@ data class EthTokenMetadata(
     val logoUrl: String?,
     val tokenName: String,
     val symbol: String,
-    var price: BigDecimal? = null
+    var price: BigDecimal? = null,
+    val tokenServiceAddress: String = contractAddress.hex
 )

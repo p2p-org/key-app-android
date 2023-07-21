@@ -20,6 +20,9 @@ object Constants {
     const val WETH_SYMBOL = "WETH"
     const val WBTC_SYMBOL = "WBTC"
 
+    const val TOKEN_SERVICE_NATIVE_SOL_TOKEN = "native"
+    const val TOKEN_SERVICE_NATIVE_ETH_TOKEN = "native"
+
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
     const val WRAPPED_ETH_MINT = "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"
     const val WRAPPED_BTC_MINT = "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh"

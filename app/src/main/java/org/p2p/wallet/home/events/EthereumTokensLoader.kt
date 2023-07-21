@@ -62,7 +62,7 @@ class EthereumTokensLoader(
             ethereumInteractor.cacheWalletTokens(ethTokens)
             tokenServiceEventPublisher.loadTokensPrice(
                 networkChain = TokenServiceNetwork.ETHEREUM,
-                addresses = ethTokens.map { it.publicKey }
+                addresses = ethTokens.map { it.tokenServiceAddress }
             )
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e, "Error while loading ethereum tokens")
@@ -84,7 +84,7 @@ class EthereumTokensLoader(
             ethereumInteractor.cacheWalletTokens(ethTokens)
             tokenServiceEventPublisher.loadTokensPrice(
                 networkChain = TokenServiceNetwork.ETHEREUM,
-                addresses = ethTokens.map { it.publicKey }
+                addresses = ethTokens.map { it.tokenServiceAddress }
             )
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e, "Error while refreshing ethereum tokens")

@@ -86,7 +86,8 @@ class WalletPresenterMapperTest {
                 totalInUsd = BigDecimal("2.0"),
                 total = BigDecimal("1.0"),
                 visibility = TokenVisibility.SHOWN,
-                tokenExtensions = TokenExtensions()
+                tokenExtensions = TokenExtensions(),
+                tokenServiceAddress = "publicKey"
             ),
             walletId = StrigaWalletId("walletId"),
             accountId = StrigaAccountId("accountId"),
