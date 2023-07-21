@@ -58,7 +58,7 @@ class NewBuyPresenter(
     private var selectedCurrency: BuyCurrency.Currency = SelectCurrencyBottomSheet.DEFAULT_CURRENCY
     private var selectedToken: Token = tokenToBuy
     private var selectedPaymentMethod: PaymentMethod? = null
-    private var currentAlphaCode: String = emptyString()
+    private var currentAlpha3Code: String = emptyString()
 
     private var amount: String = "0"
     private var isSwappedToToken: Boolean = false
@@ -102,10 +102,10 @@ class NewBuyPresenter(
     private fun loadAvailablePaymentMethods() {
         launch {
             view?.showLoading(isLoading = true)
-            currentAlphaCode = paymentMethodsInteractor.getBankTransferAlphaCode()
+            currentAlpha3Code = paymentMethodsInteractor.getBankTransferAlphaCode()
 
             val availablePaymentMethods = paymentMethodsInteractor.getAvailablePaymentMethods(
-                currentAlphaCode, preselectedMethodType
+                currentAlpha3Code, preselectedMethodType
             )
             selectedPaymentMethod = availablePaymentMethods.first { it.isSelected }
             paymentMethods.addAll(availablePaymentMethods)
@@ -172,7 +172,7 @@ class NewBuyPresenter(
 
     private fun validatePaymentMethod() {
         if (selectedPaymentMethod?.method == PaymentMethod.MethodType.BANK_TRANSFER) {
-            if (currentAlphaCode == BANK_TRANSFER_UK_CODE) {
+            if (currentAlpha3Code == BANK_TRANSFER_UK_CODE) {
                 selectCurrency(BuyCurrency.Currency.create(Constants.GBP_SYMBOL))
             } else {
                 selectCurrency(BuyCurrency.Currency.create(Constants.EUR_SYMBOL))
@@ -238,13 +238,13 @@ class NewBuyPresenter(
 
         if (currentPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL ||
-                (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
+                (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
             ) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
                 return isValidCurrencyForPay()
-            } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {
+            } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlpha3Code != BANK_TRANSFER_UK_CODE) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
@@ -487,7 +487,7 @@ class NewBuyPresenter(
     }
 
     private fun getValidPaymentType(): String? {
-        return if (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrency.code == Constants.EUR_SYMBOL) {
+        return if (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrency.code == Constants.EUR_SYMBOL) {
             SEPA_BANK_TRANSFER
         } else {
             selectedPaymentMethod?.paymentType
