@@ -163,12 +163,13 @@ abstract class StrigaOffRampPresenterBaseTest {
                     tokenSymbol = "USDC",
                     decimals = 6,
                     mintAddress = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
-                    tokenName = "USDC",
+                    tokenName = "USD Coin",
                     iconUrl = "https://raw.githubusercontent.com/p2p-org/solana-token-list/main/assets/mainnet/4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU/logo.png",
                     isWrapped = false,
                     rate = null,
                     currency = "USD",
-                    tokenExtensions = TokenExtensions()
+                    tokenExtensions = TokenExtensions(),
+                    tokenServiceAddress = "publicKey"
                 )
             ),
             ethTokens = emptyList()
