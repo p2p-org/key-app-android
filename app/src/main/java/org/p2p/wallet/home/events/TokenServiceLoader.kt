@@ -13,7 +13,7 @@ import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 private val DELAY_IN_MINUTES = 5.minutes
 private const val TAG = "TokenServiceWorkerLoader"
 
-class TokenServiceWorkerLoader(
+class TokenServiceLoader(
     private val appScope: AppScope,
     private val tokenServiceCoordinator: TokenServiceCoordinator
 ) : AppLoader, CoroutineScope by CoroutineScope(appScope.coroutineContext) {

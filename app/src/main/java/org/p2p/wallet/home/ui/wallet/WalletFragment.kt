@@ -155,7 +155,7 @@ class WalletFragment :
 
     override fun showBalance(fiatBalanceCellModel: TextViewCellModel?, tokenBalanceCellModel: TextViewCellModel?) {
         binding.viewBalance.textViewAmount.bindOrGone(fiatBalanceCellModel)
-        binding.textViewTokenAmount.bindOrGone(fiatBalanceCellModel)
+        binding.textViewTokenAmount.bindOrGone(tokenBalanceCellModel)
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

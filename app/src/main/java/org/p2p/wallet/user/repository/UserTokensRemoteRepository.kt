@@ -55,7 +55,7 @@ class UserTokensRemoteRepository(
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(Constants.WRAPPED_SOL_MINT) ?: return tokens
         val solPrice = tokenServiceRepository.findTokenPriceByAddress(
-            tokenAddress = tokenData.mintAddress
+            tokenAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN
         )
         val solToken = Token.createSOL(
             publicKey = publicKey.toBase58(),
