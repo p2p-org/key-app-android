@@ -16,7 +16,7 @@ class StrigaOffRampPresenterCalculationTest : StrigaOffRampPresenterBaseTest() {
     @Test
     fun `GIVEN striga off ramp WHEN enter usdc amount THEN check eur amount is correct`() = runTest {
         val amountA = BigDecimal("10")
-        val amountB = (amountA * exchangeRate.buyRate)
+        val amountB = (amountA * exchangeRate.sellRate)
         val expectedState = swapWidgetMapper.mapByState(
             StrigaOffRampTokenType.TokenB,
             swapWidgetMapper.mapTokenB(amountB)
@@ -37,7 +37,7 @@ class StrigaOffRampPresenterCalculationTest : StrigaOffRampPresenterBaseTest() {
     @Test
     fun `GIVEN striga off ramp WHEN enter eur amount THEN check usdc amount is correct`() = runTest {
         val amountB = BigDecimal("10")
-        val amountA = (amountB.divideSafe(exchangeRate.buyRate))
+        val amountA = (amountB.divideSafe(exchangeRate.sellRate))
         val expectedState = swapWidgetMapper.mapByState(
             StrigaOffRampTokenType.TokenA,
             swapWidgetMapper.mapTokenA(amountA, getWalletUSDCBalance())
@@ -58,7 +58,7 @@ class StrigaOffRampPresenterCalculationTest : StrigaOffRampPresenterBaseTest() {
     @Test
     fun `GIVEN striga off ramp WHEN clicked all amount THEN check states for A and B tokens`() = runTest {
         val amountA = BigDecimal("4000.21")
-        val amountB = amountA * exchangeRate.buyRate
+        val amountB = amountA * exchangeRate.sellRate
 
         // fill balance with custom one
         refillUsdcBalance(amountA)

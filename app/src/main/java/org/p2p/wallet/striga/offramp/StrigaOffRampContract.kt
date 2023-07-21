@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.offramp
 
+import androidx.annotation.ColorRes
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -13,7 +14,7 @@ interface StrigaOffRampContract {
         fun setTokenBWidgetState(state: SwapWidgetModel)
         fun setRatioState(state: TextViewCellModel?)
         fun setButtonState(buttonState: StrigaOffRampButtonState)
-        fun setTokenAErrorState(isError: Boolean)
+        fun setTokenATextColorRes(@ColorRes textColorRes: Int)
     }
 
     interface Presenter : MvpPresenter<View> {

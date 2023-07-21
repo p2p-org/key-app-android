@@ -34,10 +34,10 @@ class StrigaExchangeRepositoryMapper {
 
     private fun StrigaExchangeRateItemResponse.toDomain(): StrigaExchangeRate =
         StrigaExchangeRate(
-            price = price.toBigDecimal(),
+            priceUsd = price.toBigDecimal(),
             buyRate = buyRate.toBigDecimal(),
             sellRate = sellRate.toBigDecimal(),
             timestamp = timestamp,
-            currency = currency,
+            currencyName = currency,
         )
 }

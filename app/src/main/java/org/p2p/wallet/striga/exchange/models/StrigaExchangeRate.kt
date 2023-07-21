@@ -4,9 +4,9 @@ import java.math.BigDecimal
 import org.p2p.core.utils.MillisSinceEpoch
 
 data class StrigaExchangeRate(
-    val price: BigDecimal,
+    val priceUsd: BigDecimal,
     val buyRate: BigDecimal,
     val sellRate: BigDecimal,
     val timestamp: MillisSinceEpoch,
-    val currency: String,
+    val currencyName: String,
 )

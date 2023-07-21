@@ -12,6 +12,7 @@ import org.junit.After
 import org.junit.Before
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestScope
 import org.p2p.core.common.TextContainer
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.ConnectionManager
@@ -28,6 +29,7 @@ import org.p2p.wallet.striga.exchange.models.StrigaExchangeRate
 import org.p2p.wallet.striga.exchange.repository.StrigaExchangeRepository
 import org.p2p.wallet.striga.offramp.StrigaOffRampContract
 import org.p2p.wallet.striga.offramp.interactor.StrigaOffRampInteractor
+import org.p2p.wallet.striga.offramp.interactor.polling.StrigaOffRampExchangeRateNotifier
 import org.p2p.wallet.striga.offramp.mappers.StrigaOffRampMapper
 import org.p2p.wallet.striga.offramp.mappers.StrigaOffRampSwapWidgetMapper
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
@@ -50,6 +52,7 @@ abstract class StrigaOffRampPresenterBaseTest {
     @MockK
     lateinit var strigaExchangeRepository: StrigaExchangeRepository
 
+    lateinit var exchangeRateNotifier: StrigaOffRampExchangeRateNotifier
     lateinit var interactor: StrigaOffRampInteractor
 
     @MockK
@@ -65,11 +68,11 @@ abstract class StrigaOffRampPresenterBaseTest {
     var userWallet = MutableStateFlow<UserTokensState>(UserTokensState.Loading)
 
     val exchangeRate = StrigaExchangeRate(
-        price = BigDecimal("0.89"),
+        priceUsd = BigDecimal("0.89"),
         buyRate = BigDecimal("0.9"),
         sellRate = BigDecimal("0.88"),
         timestamp = 1689587019000,
-        currency = "Euros",
+        currencyName = "Euros",
     )
 
     @Before
@@ -98,11 +101,6 @@ abstract class StrigaOffRampPresenterBaseTest {
         every { connectionManager.connectionStatus } returns hasInternetState
 
         refillUsdcBalance(DEFAULT_BALANCE)
-
-        interactor = StrigaOffRampInteractor(
-            dispatchers = dispatchers,
-            strigaExchangeRepository = strigaExchangeRepository,
-        )
     }
 
     @After
@@ -110,8 +108,16 @@ abstract class StrigaOffRampPresenterBaseTest {
         unmockkStatic(Resources::class)
     }
 
-    protected fun createPresenter(): StrigaOffRampPresenter {
+    protected fun createPresenter(localDispatchers: CoroutineDispatchers? = null): StrigaOffRampPresenter {
+        exchangeRateNotifier = StrigaOffRampExchangeRateNotifier(
+            dispatchers = localDispatchers ?: dispatchers,
+            strigaExchangeRepository = strigaExchangeRepository,
+        )
+        interactor = StrigaOffRampInteractor(
+            exchangeRateNotifier = exchangeRateNotifier
+        )
         return StrigaOffRampPresenter(
+            dispatchers = localDispatchers ?: dispatchers,
             connectionManager = connectionManager,
             interactor = interactor,
             tokenServiceCoordinator = tokenServiceCoordinator,
@@ -186,4 +192,6 @@ abstract class StrigaOffRampPresenterBaseTest {
             )
         """.trimIndent()
     }
+
+    protected fun TestScope.advanceTimeUntilRatesHasCome(): Unit = testScheduler.advanceTimeBy(65_000)
 }

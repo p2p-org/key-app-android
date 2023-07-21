@@ -5,9 +5,11 @@ import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.utils.NoCoverage
 import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -31,13 +33,14 @@ private const val TAG = "StrigaOffRampPresenter"
 private val DEFAULT_INITIAL_AMOUNT = BigDecimal.ZERO
 
 class StrigaOffRampPresenter(
+    dispatchers: CoroutineDispatchers,
     private val connectionManager: ConnectionManager,
     private val interactor: StrigaOffRampInteractor,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val strigaOffRampMapper: StrigaOffRampMapper,
     private val swapWidgetMapper: StrigaOffRampSwapWidgetMapper,
     private val rateTickerMapper: SwapRateTickerMapper,
-) : BasePresenter<View>(), Presenter {
+) : BasePresenter<View>(dispatchers.ui), Presenter {
 
     private val timber: Timber.Tree = Timber.tag(TAG)
 
@@ -49,7 +52,7 @@ class StrigaOffRampPresenter(
     )
 
     private var rate: StrigaExchangeRate? = null
-    private var balance: BigDecimal = DEFAULT_INITIAL_AMOUNT
+    private var usdcBalance: BigDecimal = DEFAULT_INITIAL_AMOUNT
     private var inputAmountA: BigDecimal = DEFAULT_INITIAL_AMOUNT
     private var inputAmountB: BigDecimal = DEFAULT_INITIAL_AMOUNT
     private var isErrorHappened: Boolean = false
@@ -59,7 +62,7 @@ class StrigaOffRampPresenter(
 
     override fun attach(view: View) {
         super.attach(view)
-        interactor.startPolling(this)
+        interactor.startExchangeRateNotifier(this)
         observeUsdc()
         observeRateChanges()
         observeInternetState()
@@ -68,20 +71,20 @@ class StrigaOffRampPresenter(
 
     override fun detach() {
         super.detach()
-        interactor.stopPolling()
+        interactor.stopExchangeRateNotifier()
     }
 
     private fun observeUsdc() {
         launch {
             tokenServiceCoordinator.observeUserTokens()
-                .collect { handleTokenState(it) }
+                .collect(::handleTokenState)
         }
     }
 
     private fun observeRateChanges() {
         launch {
             interactor.observeExchangeRateState()
-                .collect { state -> handleRateChange(state) }
+                .collect(::handleRateChange)
         }
     }
 
@@ -89,7 +92,7 @@ class StrigaOffRampPresenter(
         launch {
             connectionManager.connectionStatus.collect { hasConnection ->
                 if (hasConnection) {
-                    interactor.startPolling(this)
+                    interactor.startExchangeRateNotifier(this)
 
                     // restore after error
                     if (isErrorHappened) {
@@ -98,7 +101,7 @@ class StrigaOffRampPresenter(
                     }
                 } else {
                     isErrorHappened = true
-                    interactor.stopPolling()
+                    interactor.stopExchangeRateNotifier()
 
                     setExchangeRateState(strigaOffRampMapper.mapRateError())
                     setTokensAreDisabled()
@@ -125,7 +128,7 @@ class StrigaOffRampPresenter(
             targetTokenType = StrigaOffRampTokenType.TokenB,
             amount = inputAmountA
         )
-        validate()
+        validateView()
     }
 
     override fun onTokenBAmountChange(amountB: String) {
@@ -134,7 +137,7 @@ class StrigaOffRampPresenter(
             targetTokenType = StrigaOffRampTokenType.TokenA,
             amount = inputAmountB
         )
-        validate()
+        validateView()
     }
 
     override fun onAllAmountClick() {
@@ -143,13 +146,13 @@ class StrigaOffRampPresenter(
 
         setTokenAmount(
             targetTokenType = StrigaOffRampTokenType.TokenA,
-            amount = balance
+            amount = usdcBalance
         )
         setAndCalcTokenAmount(
             targetTokenType = StrigaOffRampTokenType.TokenB,
-            amount = balance
+            amount = usdcBalance
         )
-        validate()
+        validateView()
     }
 
     override fun onSubmit() {
@@ -164,7 +167,7 @@ class StrigaOffRampPresenter(
                     tokenType = StrigaOffRampTokenType.TokenA,
                     state = swapWidgetMapper.mapTokenA(
                         amount = amount,
-                        balance = balance,
+                        balance = usdcBalance,
                     )
                 )
                 view?.setTokenAWidgetState(tokenAState)
@@ -187,28 +190,35 @@ class StrigaOffRampPresenter(
         setTokenAmount(targetTokenType, calculatedAmount)
     }
 
-    private fun validate() {
-        val buttonState = interactor.validateAmount(
+    private fun validateView() {
+        val buttonState = strigaOffRampMapper.mapButtonStateByAmountsAndTotalBalance(
             amountA = inputAmountA,
             amountB = inputAmountB,
-            balance = balance
+            totalBalance = usdcBalance
         )
         setButtonState(buttonState)
 
-        if (buttonState.isAmountError) {
-            view?.setTokenAErrorState(isError = true)
-        } else {
-            view?.setTokenAErrorState(isError = false)
-        }
+        view?.setTokenATextColorRes(
+            if (buttonState.isAmountError) {
+                R.color.text_rose
+            } else {
+                R.color.text_night
+            }
+        )
     }
 
     private fun setButtonState(state: StrigaOffRampButtonState) {
         timber.d("Set button state: $state")
-        viewState.value = viewState.value.copy(buttonState = state)
+        launch {
+            viewState.emit(viewState.value.copy(buttonState = state))
+        }
     }
 
     private fun setExchangeRateState(state: SwapRateTickerState) {
-        viewState.value = viewState.value.copy(exchangeRateState = state)
+        timber.d("Set ratio state: $state")
+        launch {
+            viewState.emit(viewState.value.copy(exchangeRateState = state))
+        }
     }
 
     @NoCoverage
@@ -239,26 +249,23 @@ class StrigaOffRampPresenter(
 
     private fun handleTokenState(newState: UserTokensState) {
         when (newState) {
-            is UserTokensState.Idle -> Unit
             is UserTokensState.Loading -> {
                 timber.d("Loading USDC balance")
-                balance = BigDecimal.ZERO
+                usdcBalance = BigDecimal.ZERO
                 setTokenABalance(null)
             }
-            is UserTokensState.Refreshing -> Unit
-            is UserTokensState.Error -> view?.showErrorMessage(newState.cause)
             is UserTokensState.Empty -> {
-                timber.d("USDC balance is empty...")
-                balance = BigDecimal.ZERO
-                setTokenABalance(balance)
+                timber.d("USDC balance is empty")
+                usdcBalance = BigDecimal.ZERO
+                setTokenABalance(usdcBalance)
             }
             is UserTokensState.Loaded -> {
-                val usdc = newState.solTokens.find { it.isUSDC }
-                val balance = usdc?.total ?: BigDecimal.ZERO
-                timber.d("USDC balance = ${balance.formatFiat()}")
-                this.balance = balance
-                setTokenABalance(balance)
+                usdcBalance = newState.solTokens.find { it.isUSDC }?.total.orZero()
+                timber.d("USDC balance = ${usdcBalance.formatFiat()}")
+                setTokenABalance(usdcBalance)
             }
+            is UserTokensState.Error -> view?.showErrorMessage(newState.cause)
+            else -> Unit
         }
     }
 
@@ -279,7 +286,7 @@ class StrigaOffRampPresenter(
                     amount = inputAmountA
                 )
 
-                validate()
+                validateView()
             }
             is StrigaOffRampRateState.Failure -> {
                 isErrorHappened = true
@@ -298,7 +305,7 @@ class StrigaOffRampPresenter(
         view?.setTokenAWidgetState(
             swapWidgetMapper.mapByState(
                 StrigaOffRampTokenType.TokenA,
-                StrigaOffRampTokenState.Loading(balance)
+                StrigaOffRampTokenState.Loading(usdcBalance)
             )
         )
         view?.setTokenBWidgetState(
@@ -313,7 +320,7 @@ class StrigaOffRampPresenter(
         view?.setTokenAWidgetState(
             swapWidgetMapper.mapByState(
                 StrigaOffRampTokenType.TokenA,
-                StrigaOffRampTokenState.Disabled(balance)
+                StrigaOffRampTokenState.Disabled(usdcBalance)
             )
         )
         view?.setTokenBWidgetState(

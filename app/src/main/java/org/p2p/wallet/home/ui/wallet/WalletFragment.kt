@@ -136,7 +136,7 @@ class WalletFragment :
         }
     }
 
-    override fun navigateToWithdraw() {
+    override fun navigateToOffRamp() {
         replaceFragment(StrigaOffRampFragment())
     }
 

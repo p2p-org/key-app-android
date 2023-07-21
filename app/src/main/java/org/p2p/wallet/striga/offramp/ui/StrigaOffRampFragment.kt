@@ -6,6 +6,8 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarGravity
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.utils.drawable.shape.shapeCircle
+import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.wallet.R
@@ -33,13 +35,7 @@ class StrigaOffRampFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupWidgetActions()
-        binding.toolbar.setNavigationOnClickListener {
-            popBackStack()
-        }
-        binding.buttonNext.setOnClickListener {
-            presenter.onSubmit()
-        }
+        binding.setupView()
     }
 
     override fun setTokenAWidgetState(state: SwapWidgetModel) {
@@ -72,10 +68,8 @@ class StrigaOffRampFragment :
         }
     }
 
-    override fun setTokenAErrorState(isError: Boolean) {
-        binding.swapWidgetFrom.setAmountTextColor(
-            if (isError) binding.getColor(R.color.text_rose) else binding.getColor(R.color.text_night)
-        )
+    override fun setTokenATextColorRes(textColorRes: Int) {
+        binding.swapWidgetFrom.setAmountTextColorRes(textColorRes)
     }
 
     override fun showUiKitSnackBar(
@@ -106,6 +100,18 @@ class StrigaOffRampFragment :
                 gravity = UiKitSnackbarGravity.TOP
             )
         }
+    }
+
+    private fun FragmentStrigaOffRampBinding.setupView() {
+        setupWidgetActions()
+        toolbar.setNavigationOnClickListener {
+            popBackStack()
+        }
+        buttonNext.setOnClickListener {
+            presenter.onSubmit()
+        }
+        imageViewSwapTokens.background = shapeDrawable(shapeCircle())
+        imageViewSwapTokens.backgroundTintList = requireContext().getColorStateList(R.color.button_rain)
     }
 
     private fun setupWidgetActions() {

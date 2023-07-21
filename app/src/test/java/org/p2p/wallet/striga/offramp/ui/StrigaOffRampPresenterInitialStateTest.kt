@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.offramp.ui
 
 import io.mockk.Ordering
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.verify
 import org.junit.ClassRule
 import org.junit.Test
@@ -17,6 +18,7 @@ import org.p2p.wallet.striga.common.model.toFailureResult
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampButtonState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenType
+import org.p2p.wallet.utils.StandardTestCoroutineDispatchers
 import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.mutableListQueueOf
 
@@ -27,17 +29,18 @@ class StrigaOffRampPresenterInitialStateTest : StrigaOffRampPresenterBaseTest() 
         @ClassRule
         @JvmField
         val timber = TimberUnitTestInstance(
-            isEnabled = false,
-            defaultTag = "StrigaOffRamp:InitialState"
+            isEnabled = true,
+            defaultTag = "StrigaOffRamp:InitialState",
+            excludeMessages = listOf("java.lang.Exception: Expected error")
         )
     }
 
     @Test
     fun `GIVEN striga off ramp WHEN initial state THEN check exchange rate values`() = runTest {
-        val presenter = createPresenter()
+        val presenter = createPresenter(StandardTestCoroutineDispatchers())
 
         presenter.attach(view)
-        advanceUntilIdle()
+        advanceTimeUntilRatesHasCome()
 
         verify(ordering = Ordering.ORDERED) {
             // 1. skeleton
@@ -47,7 +50,7 @@ class StrigaOffRampPresenterInitialStateTest : StrigaOffRampPresenterBaseTest() 
                 }
             )
             // 2. ratio
-            view.setRatioState(formatRate(exchangeRate.buyRate).toRawTextViewCellModel())
+            view.setRatioState(formatRate(exchangeRate.sellRate).toRawTextViewCellModel())
         }
 
         presenter.detach()
@@ -55,12 +58,12 @@ class StrigaOffRampPresenterInitialStateTest : StrigaOffRampPresenterBaseTest() 
 
     @Test
     fun `GIVEN striga off ramp WHEN initial state THEN check button is enter the amount`() = runTest {
-        val presenter = createPresenter()
+        val presenter = createPresenter(StandardTestCoroutineDispatchers())
 
         presenter.attach(view)
-        advanceUntilIdle()
+        advanceTimeUntilRatesHasCome()
 
-        verify(ordering = Ordering.ORDERED) {
+        coVerify(ordering = Ordering.ORDERED) {
             view.setButtonState(StrigaOffRampButtonState.LoadingRates)
             view.setButtonState(StrigaOffRampButtonState.EnterAmount)
         }
@@ -73,7 +76,7 @@ class StrigaOffRampPresenterInitialStateTest : StrigaOffRampPresenterBaseTest() 
         val presenter = createPresenter()
 
         presenter.attach(view)
-        advanceUntilIdle()
+        advanceTimeUntilRatesHasCome()
 
         val widgetStates = mutableListQueueOf<SwapWidgetModel>()
         verify { view.setTokenAWidgetState(capture(widgetStates)) }
@@ -127,7 +130,7 @@ class StrigaOffRampPresenterInitialStateTest : StrigaOffRampPresenterBaseTest() 
         val presenter = createPresenter()
 
         presenter.attach(view)
-        advanceUntilIdle()
+        advanceTimeUntilRatesHasCome()
 
         val expectedState1 = swapWidgetMapper.mapByState(
             StrigaOffRampTokenType.TokenB,

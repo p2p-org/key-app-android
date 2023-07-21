@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.R
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampButtonState
+import org.p2p.wallet.utils.StandardTestCoroutineDispatchers
 import org.p2p.wallet.utils.TimberUnitTestInstance
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -17,7 +18,7 @@ class StrigaOffRampPresenterNextButtonTest : StrigaOffRampPresenterBaseTest() {
         @ClassRule
         @JvmField
         val timber = TimberUnitTestInstance(
-            isEnabled = false,
+            isEnabled = true,
             defaultTag = "StrigaOffRamp:NextButton"
         )
     }
@@ -41,30 +42,27 @@ class StrigaOffRampPresenterNextButtonTest : StrigaOffRampPresenterBaseTest() {
     // todo: this test is not working yet because of coroutines synchronization in tests; needs to investigate
     fun `GIVE striga off ramp WHEN internet disconnected and reconnected THEN check button disabled and enabled`() =
         runTest {
-            hasInternetState.value = false
-            val presenter = createPresenter()
+            val presenter = createPresenter(StandardTestCoroutineDispatchers())
+            hasInternetState.emit(false)
 
             presenter.attach(view)
             advanceUntilIdle()
-
-            hasInternetState.value = true
-            advanceUntilIdle()
-
-            val states = mutableListOf<StrigaOffRampButtonState>()
-            verify {
-                view.setButtonState(capture(states))
-            }
 
             verify {
                 // 1. loading
                 view.setButtonState(StrigaOffRampButtonState.LoadingRates)
                 // 2. no internet - error
                 view.setButtonState(StrigaOffRampButtonState.ErrorGeneral)
+            }
+
+            hasInternetState.emit(true)
+            advanceTimeUntilRatesHasCome()
+
+            verify {
                 // 3. internet appeared - loading
                 view.setButtonState(StrigaOffRampButtonState.LoadingRates)
                 // 4. rates loaded - show enter amount button
                 view.setButtonState(StrigaOffRampButtonState.EnterAmount)
             }
-            println(states)
         }
 }

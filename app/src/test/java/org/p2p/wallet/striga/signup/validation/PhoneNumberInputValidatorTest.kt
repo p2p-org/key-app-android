@@ -23,7 +23,7 @@ import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.striga.signup.steps.validation.PhoneNumberInputValidator
-import org.p2p.wallet.utils.TestCoroutineDispatchers
+import org.p2p.wallet.utils.StandardTestCoroutineDispatchers
 import org.p2p.wallet.utils.TimberUnitTestInstance
 
 class PhoneNumberInputValidatorTest {
@@ -45,7 +45,7 @@ class PhoneNumberInputValidatorTest {
 
     private val currentWorkingDir = Paths.get("").toAbsolutePath().toString()
     private val assetsRoot = File(currentWorkingDir, "build/intermediates/assets/debug")
-    private val dispatchers = TestCoroutineDispatchers()
+    private val dispatchers = StandardTestCoroutineDispatchers()
     lateinit var countryCodeRepository: CountryCodeRepository
 
     @Test

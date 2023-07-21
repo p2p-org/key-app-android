@@ -71,26 +71,38 @@ class StrigaOffRampSwapWidgetMapper {
         return SwapWidgetModel.Content(
             isStatic = isStatic,
             widgetTitle = mapWidgetTitle(titleResId),
-            availableAmount = if (isLoadingBalance) {
-                // todo: maybe we should use skeleton for availableAmount too?
-                // SwapWidget currently doesn't support skeleton for availableAmount
-                mapTokenAmountText(BigDecimal.ZERO)
-            } else {
-                // the "balance" is inconsistent with the "availableAmount" but it's clearly describes what it is,
-                // and of course the "balance" is shorter than the "availableAmount"
-                balance?.let { mapTokenAmountText(it) }
-            },
+            availableAmount = mapAvailableAmount(isLoadingBalance, balance, currencyName),
             currencyName = currencyName.toRawTextViewCellModel(),
-            amount = if (isLoadingAmount) {
-                mapTokenAmountSkeleton()
-            } else {
-                mapTokenAmountText(amount)
-            },
+            amount = mapAmount(isLoadingAmount, amount),
             amountMaxDecimals = STRIGA_FIAT_DECIMALS,
             // not used in striga
             balance = emptyString().toRawTextViewCellModel(),
             fiatAmount = null
         )
+    }
+
+    private fun mapAvailableAmount(
+        isLoadingBalance: Boolean,
+        balance: BigDecimal?,
+        currencyName: String
+    ): TextViewCellModel? {
+        return if (isLoadingBalance) {
+            // todo: maybe we should use skeleton for availableAmount too?
+            // SwapWidget currently doesn't support skeleton for availableAmount
+            mapTokenAmountText(BigDecimal.ZERO, currencyName)
+        } else {
+            // the "balance" is inconsistent with the "availableAmount" but it's clearly describes what it is,
+            // and of course the "balance" is shorter than the "availableAmount"
+            balance?.let { mapTokenAmountText(it, currencyName) }
+        }
+    }
+
+    private fun mapAmount(isLoadingAmount: Boolean, amount: BigDecimal): TextViewCellModel {
+        return if (isLoadingAmount) {
+            mapTokenAmountSkeleton()
+        } else {
+            mapTokenAmountText(amount)
+        }
     }
 
     private fun String.toRawTextViewCellModel(): TextViewCellModel {
@@ -111,10 +123,16 @@ class StrigaOffRampSwapWidgetMapper {
         radius = 6f.toPx(),
     )
 
-    private fun mapTokenAmountText(amount: BigDecimal): TextViewCellModel {
+    private fun mapTokenAmountText(amount: BigDecimal, currencyName: String? = null): TextViewCellModel {
+        val amountText = amount.formatToken(STRIGA_FIAT_DECIMALS)
         return TextViewCellModel.Raw(
             TextContainer(
-                amount.formatToken(STRIGA_FIAT_DECIMALS)
+                if (currencyName != null) {
+                    "$amountText $currencyName"
+                } else {
+                    amountText
+                }
+
             )
         )
     }

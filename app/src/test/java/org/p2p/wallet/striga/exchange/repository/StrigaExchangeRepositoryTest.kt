@@ -57,11 +57,11 @@ class StrigaExchangeRepositoryTest {
     """.trimIndent()
 
     private val expectedUsdcEuroRate = StrigaExchangeRate(
-        price = BigDecimal("0.89"),
+        priceUsd = BigDecimal("0.89"),
         buyRate = BigDecimal("0.9"),
         sellRate = BigDecimal("0.88"),
         timestamp = 1689587019000L,
-        currency = "Euros"
+        currencyName = "Euros"
     )
 
     @Before
