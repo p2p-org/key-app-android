@@ -52,7 +52,7 @@ internal class EthereumKitRepository(
             decimals = ERC20Tokens.ETH_DECIMALS,
             logoUrl = ERC20Tokens.ETH.tokenIconUrl,
             tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
-            symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
+            symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty()
         )
     }
 
@@ -89,7 +89,7 @@ internal class EthereumKitRepository(
             val ethBalance = getBalance()
             ethToken = ethToken?.copy(balance = ethBalance)
             val walletTokens = buildList<EthTokenMetadata> {
-                this += ethToken ?: return emptyList()
+                this += ethToken ?: error("Ethereum kit is not initialized")
                 this += loadTokensMetadata()
             }.map { tokenMetadata ->
                 var isClaiming = false

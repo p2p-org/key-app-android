@@ -4,7 +4,6 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.new
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
-import org.p2p.wallet.bridge.EthereumTokensPollingService
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
 import org.p2p.wallet.updates.subscribe.SplTokenProgramSubscriber
@@ -42,18 +41,12 @@ object HomeEventsModule : InjectionModule {
                     strigaSignupInteractor = get(),
                     strigaWalletInteractor = get()
                 ),
-                TokenServiceWorkerLoader(
+                TokenServiceLoader(
                     appScope = get(),
                     tokenServiceCoordinator = get()
                 )
             )
             AppLoaderFacade(appLoaders, appScope = get())
-        }
-        single {
-            EthereumTokensPollingService(
-                ethereumInteractor = get(),
-                appScope = get()
-            )
         }
 
         single {
@@ -67,7 +60,6 @@ object HomeEventsModule : InjectionModule {
                 seedPhraseProvider = get(),
                 bridgeFeatureToggle = get(),
                 ethereumInteractor = get(),
-                ethereumTokensPollingService = get(),
                 tokenServiceEventManager = get(),
                 tokenServiceEventPublisher = get(),
                 appScope = get()

@@ -66,10 +66,6 @@ class TokenServiceCoordinator(
         return solanaTokensLoader.getUserTokens()
     }
 
-    fun getEthTokens(): List<Token.Eth> {
-        return ethereumTokensLoader.getEthTokens()
-    }
-
     private fun mapTokenState(solState: SolanaTokenLoadState, ethState: EthTokenLoadState): UserTokensState =
         when (solState) {
             is SolanaTokenLoadState.Idle -> UserTokensState.Idle
