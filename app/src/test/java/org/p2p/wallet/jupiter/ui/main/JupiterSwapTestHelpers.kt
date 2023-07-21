@@ -55,7 +55,7 @@ object JupiterSwapTestHelpers {
     fun SwapButtonState.toReadableString(): String {
         return when (this) {
             is SwapButtonState.Hide -> "SwapButtonState.Hide"
-            is SwapButtonState.Disabled -> "SwapButtonState.EnterAmount(${text.toReadableString()})"
+            is SwapButtonState.Disabled -> "SwapButtonState.Disabled(${text.toReadableString()})"
             is SwapButtonState.ReadyToSwap -> "SwapButtonState.ReadyToSwap(${text.toReadableString()})"
         }
     }
