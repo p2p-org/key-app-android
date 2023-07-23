@@ -6,9 +6,9 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
+import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.root.RootActivity
-import org.p2p.wallet.striga.offramp.withdraw.StrigaWithdrawFragment
 import org.p2p.wallet.utils.replaceFragment
 
 class SplashFragment :
@@ -34,7 +34,7 @@ class SplashFragment :
     }
 
     override fun navigateToSignIn() {
-        replaceFragment(StrigaWithdrawFragment(), addToBackStack = false)
+        replaceFragment(SignInPinFragment.create(), addToBackStack = false)
         hideSplashScreen()
     }
 
