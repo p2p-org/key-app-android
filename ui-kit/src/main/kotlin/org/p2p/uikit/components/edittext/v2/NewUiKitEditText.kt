@@ -46,4 +46,3 @@ class NewUiKitEditText @JvmOverloads constructor(
         }
     }
 }
-
