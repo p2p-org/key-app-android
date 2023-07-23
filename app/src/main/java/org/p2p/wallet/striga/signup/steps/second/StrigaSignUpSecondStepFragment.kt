@@ -15,11 +15,11 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.striga.signup.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.signup.presetpicker.StrigaPresetDataPickerFragment
-import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaOccupation
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaPresetDataItem
+import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaOccupation
+import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupFieldState
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupFieldState
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -69,13 +69,13 @@ class StrigaSignUpSecondStepFragment :
                 }
             }
 
-            editTextOccupation.clickListener = {
+            editTextOccupation.setOnClickListener {
                 presenter.onOccupationClicked()
             }
-            editTextFunds.clickListener = {
+            editTextFunds.setOnClickListener {
                 presenter.onFundsClicked()
             }
-            editTextCountry.clickListener = {
+            editTextCountry.setOnClickListener {
                 presenter.onCountryClicked()
             }
 
@@ -215,31 +215,31 @@ class StrigaSignUpSecondStepFragment :
             buildMap {
                 StrigaSignupDataType.OCCUPATION.let {
                     this[it] = editTextOccupation
-                    editTextOccupation.currentViewTag = it
+                    editTextOccupation.setViewTag(it)
                 }
                 StrigaSignupDataType.SOURCE_OF_FUNDS.let {
                     this[it] = editTextFunds
-                    editTextFunds.currentViewTag = it
+                    editTextFunds.setViewTag(it)
                 }
                 StrigaSignupDataType.COUNTRY_ALPHA_2.let {
                     this[it] = editTextCountry
-                    editTextCountry.currentViewTag = it
+                    editTextCountry.setViewTag(it)
                 }
                 StrigaSignupDataType.CITY.let {
                     this[it] = editTextCity
-                    editTextCity.currentViewTag = it
+                    editTextCity.setViewTag(it)
                 }
                 StrigaSignupDataType.CITY_ADDRESS_LINE.let {
                     this[it] = editTextAddressLine
-                    editTextAddressLine.currentViewTag = it
+                    editTextAddressLine.setViewTag(it)
                 }
                 StrigaSignupDataType.CITY_POSTAL_CODE.let {
                     this[it] = editTextPostalCode
-                    editTextPostalCode.currentViewTag = it
+                    editTextPostalCode.setViewTag(it)
                 }
                 StrigaSignupDataType.CITY_STATE.let {
                     this[it] = editTextStateOrRegion
-                    editTextStateOrRegion.currentViewTag = it
+                    editTextStateOrRegion.setViewTag(it)
                 }
             }
         }

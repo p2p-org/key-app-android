@@ -90,7 +90,7 @@ class StrigaSignUpFirstStepFragment :
                     }
                 }
             }
-            editTextCountry.clickListener = {
+            editTextCountry.setOnClickListener {
                 presenter.onCountryOfBirthClicked()
             }
             buttonNext.setOnClickListener {
@@ -218,7 +218,7 @@ class StrigaSignUpFirstStepFragment :
             buildMap {
                 StrigaSignupDataType.EMAIL.let {
                     this[it] = editTextEmail
-                    editTextEmail.currentViewTag = it
+                    editTextEmail.setViewTag(it)
                 }
                 StrigaSignupDataType.PHONE_NUMBER.let {
                     this[it] = editTextPhoneNumber
@@ -230,19 +230,19 @@ class StrigaSignUpFirstStepFragment :
                 }
                 StrigaSignupDataType.FIRST_NAME.let {
                     this[it] = editTextFirstName
-                    editTextFirstName.currentViewTag = it
+                    editTextFirstName.setViewTag(it)
                 }
                 StrigaSignupDataType.LAST_NAME.let {
                     this[it] = editTextLastname
-                    editTextLastname.currentViewTag = it
+                    editTextLastname.setViewTag(it)
                 }
                 StrigaSignupDataType.DATE_OF_BIRTH.let {
                     this[it] = editTextBirthday
-                    editTextBirthday.currentViewTag = it
+                    editTextBirthday.setViewTag(it)
                 }
                 StrigaSignupDataType.COUNTRY_OF_BIRTH_ALPHA_3.let {
                     this[it] = editTextCountry
-                    editTextCountry.currentViewTag = it
+                    editTextCountry.setViewTag(it)
                 }
             }
         }

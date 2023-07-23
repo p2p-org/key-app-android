@@ -8,16 +8,19 @@
     android:layout_height="wrap_content"
     android:minHeight="78dp"
     android:orientation="vertical"
-    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+    tools:background="@color/bg_smoke"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
+    tools:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
 
     <TextView
         android:id="@+id/textViewLabel"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Title" />
@@ -26,10 +29,15 @@
         android:id="@+id/containerInputView"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="2dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/bg_rounded_solid_snow_16"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewLabel">
 
         <TextView
@@ -48,62 +56,53 @@
             app:layout_constraintStart_toStartOf="@id/editTextField"
             app:layout_constraintTop_toTopOf="@id/editTextField" />
 
-
         <org.p2p.uikit.components.HintEditText
             android:id="@+id/editTextField"
             android:layout_width="0dp"
             android:layout_height="56dp"
+            android:layout_marginEnd="8dp"
             android:background="@null"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:saveEnabled="false"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            android:textColor="@color/text_night"
             android:textColorHint="@color/text_night_30"
             android:textCursorDrawable="@drawable/ic_text_cursor"
             android:textIsSelectable="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageViewArrow"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewIconEnd"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Very long text from some source unknown to god" />
+            tools:text="Very long text from some source unknown to god"
+            tools:textAppearance="@style/UiKit.TextAppearance.Regular.Text3" />
 
         <ImageView
-            android:id="@+id/imageViewArrow"
+            android:id="@+id/imageViewIconEnd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@null"
             android:src="@drawable/ic_chevron_right"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@null" />
+            tools:src="@drawable/ic_close"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/textViewHint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="4dp"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-        android:textColor="@color/text_mountain"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@id/editTextField"
-        app:layout_constraintTop_toBottomOf="@id/editTextField" />
 
     <TextView
         android:id="@+id/textViewError"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
         android:layout_marginTop="4dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_rose"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/textViewLabel"
         app:layout_constraintStart_toStartOf="@id/textViewLabel"
         app:layout_constraintTop_toBottomOf="@id/containerInputView"
-        tools:text="Sorry, we don't know such a country"
-        tools:visibility="visible" />
+        tools:text="Sorry, we don't know such a country and a big multilne strng" />
 </merge>

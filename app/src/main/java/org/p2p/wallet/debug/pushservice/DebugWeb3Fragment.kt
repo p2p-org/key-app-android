@@ -10,8 +10,8 @@ import com.google.gson.Gson
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import java.nio.charset.Charset
-import org.p2p.core.utils.fromJsonReified
 import org.p2p.core.crypto.toBase64Instance
+import org.p2p.core.utils.fromJsonReified
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
