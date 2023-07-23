@@ -29,7 +29,7 @@ class NewUiKitEditTextMutator(
 
     init {
         binding.editTextField.addTextChangedListener {
-            if(endDrawableStrategy == NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT) {
+            if (endDrawableStrategy == NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT) {
                 setEndDrawableIsVisible(!it.isNullOrEmpty())
             }
         }
