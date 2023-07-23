@@ -177,7 +177,7 @@
                 android:layout_marginTop="24dp"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
                 app:hintText="@string/striga_country_of_birth_hint"
-                android:drawableEnd="@drawable/ic_chevron_right"
+                app:isDropdown="true"
                 app:labelText="@string/striga_country_of_birth" />
 
             <org.p2p.uikit.components.UiKitButton
