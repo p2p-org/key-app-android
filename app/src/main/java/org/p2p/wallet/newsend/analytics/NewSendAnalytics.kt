@@ -18,6 +18,9 @@ private const val NEW_SEND_HOME_BAR_BUTTON = "Main_Screen_Send_Bar"
 private const val NEW_SEND_SHOWING_DETAILS = "Send_Showing_Details"
 private const val NEW_SEND_QR_GOING_BACK = "Send_QR_Going_Back"
 
+private const val SEND_CLICK_CHANGE_TOKEN_CHOSEN = "Send_Click_Change_Token_Chosen"
+private const val SEND_CLICK_CHANGE_TOKEN_VALUE = "Send_Click_Change_Token_Value"
+
 private const val SEND_START_SCREEN_OPEN = "Send_Start_Screen_Open"
 private const val SEND_TOKEN_SCREEN_ACTION_CLICKED = "Token_Screen_Send_Bar"
 
@@ -144,6 +147,27 @@ class NewSendAnalytics(
                 "QR_Camera_Availability" to qrCameraIsAvailable,
                 "QR_Gallery_Availability" to qrGalleryIsAvailable,
                 "QR_Tab" to qrTab.title,
+            )
+        )
+    }
+
+    fun logTokenAmountChanged(tokenSymbol: String, formattedNewAmount: String, flow: AnalyticsSendFlow) {
+        analytics.logEvent(
+            event = SEND_CLICK_CHANGE_TOKEN_VALUE,
+            params = mapOf(
+                "Token_Name" to tokenSymbol,
+                "Token_Value" to formattedNewAmount,
+                "Send_Flow" to flow.title
+            )
+        )
+    }
+
+    fun logTokenChanged(newTokenSymbol: String, flow: AnalyticsSendFlow) {
+        analytics.logEvent(
+            event = SEND_CLICK_CHANGE_TOKEN_CHOSEN,
+            params = mapOf(
+                "Token_Name" to newTokenSymbol,
+                "Send_Flow" to flow.title
             )
         )
     }
