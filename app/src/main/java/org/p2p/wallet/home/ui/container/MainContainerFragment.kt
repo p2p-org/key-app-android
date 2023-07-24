@@ -214,7 +214,7 @@ class MainContainerFragment :
             else -> {
                 when (clickedTab) {
                     ScreenTab.WALLET_SCREEN -> presenter.logWalletOpened()
-                    ScreenTab.MY_CRYPTO_SCREEN -> presenter.logWalletOpened()
+                    ScreenTab.MY_CRYPTO_SCREEN -> presenter.logCryptoOpened()
                     ScreenTab.HISTORY_SCREEN -> presenter.logHistoryOpened()
                     ScreenTab.SETTINGS_SCREEN -> presenter.logSettingsOpened()
                     else -> Unit
