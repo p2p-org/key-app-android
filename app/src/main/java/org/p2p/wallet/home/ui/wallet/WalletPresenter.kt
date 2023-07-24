@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
@@ -34,6 +35,7 @@ class WalletPresenter(
     private val strigaBannerClickHandler: StrigaBannerClickHandler,
     private val strigaOnRampClickHandler: StrigaOnRampClickHandler,
     private val strigaOnRampConfirmedHandler: StrigaOnRampConfirmedHandler,
+    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
 ) : BasePresenter<WalletContract.View>(), WalletContract.Presenter {
 
     private var username: Username? = null
@@ -54,6 +56,8 @@ class WalletPresenter(
         loadInitialData()
         observeUsdc()
         observeStrigaKycBanners()
+
+        view.setWithdrawButtonIsVisible(strigaSignupEnabledFeatureToggle.isFeatureEnabled)
     }
 
     private fun observeUsdc() {

@@ -93,6 +93,10 @@ class WalletFragment :
         }
     }
 
+    override fun setWithdrawButtonIsVisible(isVisible: Boolean) {
+        binding.buttonWithdraw.isVisible = isVisible
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.setupView()
