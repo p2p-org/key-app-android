@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.p2p.core.token.filterTokensForWalletScreen
+import org.p2p.core.token.filterIsUsdcTokens
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
@@ -116,7 +116,7 @@ class WalletPresenter(
                 )
             }
             is UserTokensState.Loaded -> {
-                val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
+                val filteredTokens = newState.solTokens.filterIsUsdcTokens()
                 val balance = filteredTokens.sumOf { it.total }
                 view?.showBalance(
                     walletMapper.mapFiatBalance(balance),

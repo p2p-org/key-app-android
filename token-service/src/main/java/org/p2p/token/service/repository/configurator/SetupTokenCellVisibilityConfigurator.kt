@@ -9,6 +9,6 @@ class SetupTokenCellVisibilityConfigurator(
 ) : TokenConfigurator {
 
     override fun config(): TokenExtensions {
-        return tokenExtensions.copy(isTokenCellVisibleOnWalletScreen = extensions.isTokenCellVisibleOnWs ?: true)
+        return tokenExtensions.copy(isTokenCellVisibleOnWalletScreen = extensions.isTokenCellVisibleOnWs)
     }
 }

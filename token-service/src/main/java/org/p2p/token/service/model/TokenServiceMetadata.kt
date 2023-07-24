@@ -5,5 +5,6 @@ data class TokenServiceMetadata(
     val symbol: String,
     val logoUrl: String?,
     val decimals: Int,
+    val name: String,
     val chain: TokenServiceNetwork
 )
