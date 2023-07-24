@@ -21,7 +21,6 @@ import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_HASH
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_SALT
 import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
-import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
 /**
  * The secure storage now includes the hash which is encrypted in two ways
@@ -34,7 +33,6 @@ class AuthInteractor(
     private val biometricManager: BiometricManager,
     private val pbkdf2Hash: Pbkdf2HashGenerator,
     private val pushNotificationsInteractor: PushNotificationsInteractor,
-    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val appLoader: AppLoader,
     private val dispatchers: CoroutineDispatchers,
     private val appScope: AppScope
@@ -156,7 +154,6 @@ class AuthInteractor(
     }
 
     private suspend fun launchAppLoaders() = withContext(appScope.coroutineContext) {
-        tokenServiceCoordinator.start()
         appLoader.onLoad()
     }
 

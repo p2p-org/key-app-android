@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
-private val DELAY_IN_MINUTES = 5.minutes
+private val POLLING_INTERVAL = 5.minutes
 private const val TAG = "TokenServiceWorkerLoader"
 
 class TokenServiceLoader(
@@ -20,16 +20,17 @@ class TokenServiceLoader(
     private var pollingJob: Job? = null
 
     override suspend fun onLoad() {
-        start()
+        tokenServiceCoordinator.start()
+        startPolling()
     }
 
-    fun start() {
+    private fun startPolling() {
         pollingJob?.cancel()
         pollingJob = launch {
             while (isActive) {
                 try {
                     Timber.tag(TAG).d("Update token rates")
-                    delay(DELAY_IN_MINUTES)
+                    delay(POLLING_INTERVAL)
                     tokenServiceCoordinator.refresh()
                 } catch (e: Throwable) {
                     Timber.tag(TAG).e(e, "Error while try to refresh token rates")
