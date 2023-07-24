@@ -146,7 +146,7 @@ class WalletPresenter(
     }
 
     override fun onWithdrawClicked() {
-        // TODO
+        view?.navigateToOffRamp()
     }
 
     override fun onAddMoneyClicked() {

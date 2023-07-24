@@ -6,6 +6,7 @@ import org.p2p.wallet.striga.common.model.map
 import org.p2p.wallet.striga.common.model.toSuccessResult
 import org.p2p.wallet.striga.exchange.api.StrigaExchangeApi
 import org.p2p.wallet.striga.exchange.models.StrigaExchangePairsWithRates
+import org.p2p.wallet.striga.exchange.models.StrigaExchangeRate
 import org.p2p.wallet.striga.exchange.repository.StrigaExchangeRepository
 import org.p2p.wallet.striga.exchange.repository.mapper.StrigaExchangeRepositoryMapper
 
@@ -31,7 +32,7 @@ class StrigaExchangeRemoteRepository(
     override suspend fun getExchangeRateForPair(
         fromTokenSymbol: String,
         toTokenSymbol: String
-    ): StrigaDataLayerResult<StrigaExchangePairsWithRates.Rate> {
+    ): StrigaDataLayerResult<StrigaExchangeRate> {
         return getExchangeRates().map {
             it.findRate(fromTokenSymbol, toTokenSymbol) ?: throw StrigaExchangeRateNotFound()
         }
