@@ -93,13 +93,15 @@ class EthereumTokensLoader(
 
     private fun isEnabled(): Boolean {
         return seedPhraseProvider.getUserSeedPhrase()
-            .seedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled
+            .seedPhrase.isNotEmpty() &&
+            bridgeFeatureToggle.isFeatureEnabled
     }
 
     private fun setupEthereum() {
         if (!ethereumInteractor.isInitialized()) {
             ethereumInteractor.setup(
-                userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
+                userSeedPhrase = seedPhraseProvider
+                    .getUserSeedPhrase()
                     .seedPhrase
             )
         }
