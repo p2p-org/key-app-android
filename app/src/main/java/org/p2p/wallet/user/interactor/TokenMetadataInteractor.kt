@@ -20,7 +20,6 @@ class TokenMetadataInteractor(
 
     suspend fun loadAllTokensMetadata() {
         val metadataFromFile: TokensMetadataInfo? = readTokensMetadataFromFile()
-
         val modifiedSince = metadataFromFile?.timestamp
         Timber.tag(TAG).i("Checking if metadata is modified since: $modifiedSince")
 

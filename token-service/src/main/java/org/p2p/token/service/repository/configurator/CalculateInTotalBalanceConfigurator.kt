@@ -9,6 +9,6 @@ class CalculateInTotalBalanceConfigurator(
 ) : TokenConfigurator {
 
     override fun config(): TokenExtensions {
-        return tokenExtensions.copy(isCalculateWithTotalBalance = extensions.calculationOfFinalBalanceOnWs ?: true)
+        return tokenExtensions.copy(isCalculateWithTotalBalance = extensions.calculationOfFinalBalanceOnWs)
     }
 }

@@ -41,18 +41,18 @@ object EthTokenConverter {
     }
 
     fun toEthTokenMetadata(
-        ethAddress: EthAddress,
+        ethAddress: String,
         metadata: TokenServiceMetadata,
         tokenBalance: BigInteger
     ): EthTokenMetadata {
         val erc20Token = ERC20Tokens.findToken(ethAddress)
         return EthTokenMetadata(
-            contractAddress = ethAddress,
+            contractAddress = EthAddress(erc20Token.contractAddress),
             mintAddress = erc20Token.mintAddress,
             balance = tokenBalance,
             decimals = metadata.decimals,
             logoUrl = metadata.logoUrl,
-            tokenName = erc20Token.replaceTokenName.orEmpty(),
+            tokenName = metadata.name,
             symbol = erc20Token.replaceTokenSymbol.orEmpty(),
             price = null
         )

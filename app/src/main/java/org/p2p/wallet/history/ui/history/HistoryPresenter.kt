@@ -48,7 +48,7 @@ class HistoryPresenter(
                 minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
             )
             val amountToClaim = bridgeBundle.resultAmount.amountInToken
-            val iconUrl = ERC20Tokens.findToken(bridgeBundle.findTokenOrDefaultEth()).tokenIconUrl
+            val iconUrl = ERC20Tokens.findToken(bridgeBundle.findTokenOrDefaultEth().hex).tokenIconUrl
             val progressDetails = claimUiMapper.prepareShowProgress(
                 amountToClaim = amountToClaim,
                 iconUrl = iconUrl,

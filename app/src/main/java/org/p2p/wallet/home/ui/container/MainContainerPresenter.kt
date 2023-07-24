@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
-import org.p2p.core.token.filterTokensForWalletScreen
+import org.p2p.core.token.filterIsUSDCToken
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
@@ -156,7 +156,7 @@ class MainContainerPresenter(
                 view?.showCryptoBadgeVisible(isVisible = false)
             }
             is UserTokensState.Loaded -> {
-                val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
+                val filteredTokens = newState.solTokens.filterIsUSDCToken()
                 val balance = filteredTokens.sumOf { it.total }
                 view?.showWalletBalance(balanceMapper.mapBalanceForWallet(balance))
                 view?.showCryptoBadgeVisible(isVisible = newState.ethTokens.isNotEmpty())

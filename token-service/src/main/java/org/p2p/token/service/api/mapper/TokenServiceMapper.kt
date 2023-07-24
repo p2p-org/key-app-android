@@ -49,7 +49,8 @@ class TokenServiceMapper {
             symbol = response.symbol,
             logoUrl = response.logoUrl,
             decimals = response.decimals,
-            chain = tokenServiceNetwork
+            chain = tokenServiceNetwork,
+            name = response.name
         )
     }
 

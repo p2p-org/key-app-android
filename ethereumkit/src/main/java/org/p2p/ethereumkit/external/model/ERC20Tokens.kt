@@ -5,7 +5,6 @@ import org.p2p.core.utils.Constants.ETH_SYMBOL
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_ETH_MINT
-import org.p2p.core.wrapper.eth.EthAddress
 
 /* ktlint-disable max-line-length */
 enum class ERC20Tokens(
@@ -80,8 +79,8 @@ enum class ERC20Tokens(
         const val ETH_DECIMALS = 18
         const val SOL_TOKEN_URL = "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422"
 
-        fun findToken(contractAddress: EthAddress): ERC20Tokens {
-            return values().first { contractAddress.hex.contains(it.contractAddress, ignoreCase = true) }
+        fun findToken(contractAddress: String): ERC20Tokens {
+            return values().firstOrNull { contractAddress.equals(it.contractAddress, ignoreCase = true) } ?: ETH
         }
 
         fun findTokenByMint(mintAddress: String): ERC20Tokens? {
