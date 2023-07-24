@@ -11,12 +11,14 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledF
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
+import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
 import org.p2p.wallet.home.ui.wallet.handlers.StrigaBannerClickHandler
 import org.p2p.wallet.home.ui.wallet.handlers.StrigaOnRampClickHandler
 import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -36,6 +38,8 @@ class WalletPresenter(
     private val strigaOnRampClickHandler: StrigaOnRampClickHandler,
     private val strigaOnRampConfirmedHandler: StrigaOnRampConfirmedHandler,
     private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
+    private val sellInteractor: SellInteractor,
+    private val mainScreenAnalytics: MainScreenAnalytics,
 ) : BasePresenter<WalletContract.View>(), WalletContract.Presenter {
 
     private var username: Username? = null
@@ -58,6 +62,9 @@ class WalletPresenter(
         observeStrigaKycBanners()
 
         view.setWithdrawButtonIsVisible(strigaSignupEnabledFeatureToggle.isFeatureEnabled)
+        launch {
+            mainScreenAnalytics.logMainScreenOpen(isSellEnabled = sellInteractor.isSellAvailable())
+        }
     }
 
     private fun observeUsdc() {
@@ -89,8 +96,12 @@ class WalletPresenter(
             viewStateFlow.collect {
                 val items = walletMapper.buildCellItems {
                     // order matters
+                    val strigaClaimTokens = it.strigaOnRampTokens
                     mapStrigaKycBanner(it.strigaBanner)
-                    mapStrigaOnRampTokens(it.strigaOnRampTokens)
+                    mapStrigaOnRampTokens(strigaClaimTokens)
+                    if (strigaClaimTokens.isNotEmpty()) {
+                        mainScreenAnalytics.logMainScreenClaimTransferedViewed(claimCount = strigaClaimTokens.size)
+                    }
                 }
                 view?.setCellItems(items)
             }
@@ -118,6 +129,7 @@ class WalletPresenter(
             is UserTokensState.Loaded -> {
                 val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
                 val balance = filteredTokens.sumOf { it.total }
+                mainScreenAnalytics.logUserAggregateBalanceBase(balance)
                 view?.showBalance(
                     walletMapper.mapFiatBalance(balance),
                     walletMapper.mapTokenBalance(balance)
@@ -142,7 +154,12 @@ class WalletPresenter(
     }
 
     override fun onAddressClicked() {
+        mainScreenAnalytics.logMainScreenAddressClick()
         view?.showAddressCopied(username?.fullUsername ?: userPublicKey)
+    }
+
+    override fun onAmountClicked() {
+        mainScreenAnalytics.logMainScreenAmountClick()
     }
 
     override fun refreshTokens() {
@@ -150,14 +167,17 @@ class WalletPresenter(
     }
 
     override fun onWithdrawClicked() {
+        mainScreenAnalytics.logMainScreenWithdrawClick()
         view?.navigateToOffRamp()
     }
 
     override fun onAddMoneyClicked() {
+        mainScreenAnalytics.logMainScreenAddMoneyClick()
         view?.showTopupWalletDialog()
     }
 
     override fun onStrigaOnRampClicked(item: StrigaOnRampCellModel) {
+        mainScreenAnalytics.logMainScreenClaimTransferedClick()
         launch {
             strigaOnRampClickHandler.handle(view, item)
         }

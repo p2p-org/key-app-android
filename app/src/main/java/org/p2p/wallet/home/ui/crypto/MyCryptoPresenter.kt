@@ -9,16 +9,14 @@ import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.token.filterTokensForWalletScreen
-import org.p2p.core.utils.isMoreThan
-import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
-import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
 import org.p2p.wallet.home.model.VisibilityState
+import org.p2p.wallet.home.ui.crypto.analytics.CryptoScreenAnalytics
 import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler
+import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 
@@ -27,7 +25,7 @@ class MyCryptoPresenter(
     private val cryptoMapper: MyCryptoMapper,
     private val connectionManager: ConnectionManager,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
-    private val analytics: HomeAnalytics,
+    private val cryptoScreenAnalytics: CryptoScreenAnalytics,
     private val claimHandler: BridgeClaimBundleClickHandler,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
@@ -43,6 +41,7 @@ class MyCryptoPresenter(
         super.attach(view)
         prepareAndShowActionButtons()
         observeCryptoTokens()
+        cryptoScreenAnalytics.logCryptoScreenOpened()
     }
 
     override fun refreshTokens() {
@@ -56,6 +55,15 @@ class MyCryptoPresenter(
                 view?.showErrorMessage(error)
             }
         }
+    }
+
+    override fun onTokenClicked(token: Token.Active) {
+        cryptoScreenAnalytics.logCryptoTokenClick(tokenName = token.tokenName, tokenSymbol = token.tokenSymbol)
+        view?.showTokenHistory(token)
+    }
+
+    override fun onAmountClicked() {
+        cryptoScreenAnalytics.logCryptoAmountClick()
     }
 
     private fun observeCryptoTokens() {
@@ -98,9 +106,12 @@ class MyCryptoPresenter(
     private fun showTokensAndBalance(solTokens: List<Token.Active>, ethTokens: List<Token.Eth>) {
         val balance = getUserBalance(solTokens)
         view?.showBalance(cryptoMapper.mapBalance(balance))
-        logBalance(balance)
+        cryptoScreenAnalytics.logUserAggregateBalanceBase(balance)
 
         val areZerosHidden = cryptoInteractor.areZerosHidden()
+        if (ethTokens.isNotEmpty()) {
+            cryptoScreenAnalytics.logCryptoClaimTransferedViewed(ethTokens.size)
+        }
         val mappedItems: List<AnyCellItem> = cryptoMapper.mapToCellItems(
             tokens = solTokens,
             ethereumTokens = ethTokens,
@@ -120,7 +131,7 @@ class MyCryptoPresenter(
     }
 
     private fun handleEmptyAccount() {
-        logBalance(BigDecimal.ZERO)
+        cryptoScreenAnalytics.logUserAggregateBalanceBase(BigDecimal.ZERO)
         view?.showBalance(cryptoMapper.mapBalance(BigDecimal.ZERO))
     }
 
@@ -152,28 +163,23 @@ class MyCryptoPresenter(
         observeCryptoTokens()
     }
 
-    private fun logBalance(balance: BigDecimal?) {
-        val hasPositiveBalance = balance != null && balance.isMoreThan(BigDecimal.ZERO)
-        analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
-        analytics.logUserAggregateBalanceProperty(balance.orZero())
-    }
-
     private fun prepareAndShowActionButtons() {
         val buttons = listOf(ActionButton.RECEIVE_BUTTON, ActionButton.SWAP_BUTTON)
         view?.showActionButtons(buttons)
     }
 
     override fun onReceiveClicked() {
+        cryptoScreenAnalytics.logCryptoReceiveClick()
         view?.navigateToReceive()
     }
 
     override fun onSwapClicked() {
-        analytics.logSwapActionButtonClicked()
+        cryptoScreenAnalytics.logCryptoSwapClick()
         view?.navigateToSwap()
     }
 
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
-        analytics.logClaimButtonClicked()
+        cryptoScreenAnalytics.logCryptoClaimTransferedClicked()
         launch {
             claimHandler.handle(view, canBeClaimed, token)
         }

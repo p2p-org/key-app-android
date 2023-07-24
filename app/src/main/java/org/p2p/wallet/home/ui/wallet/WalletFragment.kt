@@ -29,7 +29,6 @@ import org.p2p.wallet.home.ui.main.delegates.striga.onramp.strigaOnRampTokenDele
 import org.p2p.wallet.home.ui.topup.TopUpWalletBottomSheet
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
-import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.StrigaFragmentFactory
@@ -56,7 +55,6 @@ class WalletFragment :
 
     private val binding: FragmentWalletBinding by viewBinding()
 
-    private val receiveAnalytics: ReceiveAnalytics by inject()
     private val strigaFragmentFactory: StrigaFragmentFactory by inject()
 
     private val cellAdapter = CommonAnyCellAdapter(
@@ -122,6 +120,9 @@ class WalletFragment :
         }
 
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
+        viewBalance.textViewAmount.setOnClickListener {
+            presenter.onAmountClicked()
+        }
         buttonAddMoney.setOnClickListener {
             presenter.onAddMoneyClicked()
         }
@@ -146,7 +147,6 @@ class WalletFragment :
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {
         textViewAddress.setOnClickListener {
-            receiveAnalytics.logAddressOnMainClicked()
             presenter.onAddressClicked()
         }
         imageViewProfile.setOnClickListener { presenter.onProfileClick() }
