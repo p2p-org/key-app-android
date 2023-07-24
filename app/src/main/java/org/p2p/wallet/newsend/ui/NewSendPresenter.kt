@@ -296,6 +296,7 @@ class NewSendPresenter(
     }
 
     override fun updateToken(newToken: Token.Active) {
+        newSendAnalytics.logTokenChanged(newToken.tokenSymbol, flow)
         token = newToken
         checkTokenRatesAndSetSwitchAmountState(newToken)
 
@@ -346,6 +347,7 @@ class NewSendPresenter(
     }
 
     override fun updateInputAmount(amount: String) {
+        newSendAnalytics.logTokenAmountChanged(token?.tokenSymbol.orEmpty(), amount, flow)
         calculationMode.updateInputAmount(amount)
         view?.showFeeViewVisible(isVisible = true)
         showMaxButtonIfNeeded()
