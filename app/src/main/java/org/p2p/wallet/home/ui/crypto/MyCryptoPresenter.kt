@@ -92,7 +92,6 @@ class MyCryptoPresenter(
 
     private fun filterCryptoTokens(solTokens: List<Token.Active>): List<Token.Active> {
         val excludedTokens = solTokens.filterTokensForWalletScreen()
-        Timber.tag("____ex").d(excludedTokens.size.toString())
         return solTokens.minus(excludedTokens.toSet())
     }
 

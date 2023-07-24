@@ -22,6 +22,7 @@ import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.Signature
+import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.repository.TokenServiceRepository
@@ -146,15 +147,13 @@ internal class EthereumKitRepository(
             chain = TokenServiceNetwork.ETHEREUM,
             tokenAddresses = allTokensAddresses
         )
-        val ethTokenMetadata = tokensMetadata.firstOrNull {
+
+        val nativeEthMetadata = tokensMetadata.firstOrNull {
             it.address == TOKEN_SERVICE_NATIVE_ETH_TOKEN
         } ?: return emptyList()
         val ethBalance = getBalance()
-        val ethToken = converter.toEthTokenMetadata(
-            ethAddress = getAddress().hex,
-            metadata = ethTokenMetadata,
-            tokenBalance = ethBalance,
-        )
+
+        val nativeEthToken = createNativeEthToken(nativeEthMetadata, ethBalance)
         val erc20TokensMetadata = tokensMetadata.map { metadata ->
             val tokenBalance = tokensBalances
                 .firstOrNull { it.contractAddress.hex == metadata.address }
@@ -167,9 +166,17 @@ internal class EthereumKitRepository(
             )
         }
         return buildList {
-            this += ethToken
+            this += nativeEthToken
             this += erc20TokensMetadata
         }
+    }
+
+    private fun createNativeEthToken(tokenMetadata: TokenServiceMetadata, balance: BigInteger): EthTokenMetadata {
+        return converter.toEthTokenMetadata(
+            ethAddress = getAddress().hex,
+            metadata = tokenMetadata,
+            tokenBalance = balance,
+        )
     }
 
     private suspend fun loadTokenBalances(

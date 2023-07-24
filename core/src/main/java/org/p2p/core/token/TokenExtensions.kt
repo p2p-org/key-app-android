@@ -29,6 +29,6 @@ fun List<Token.Active>.filterTokensForWalletScreen(): List<Token.Active> {
     return filter { it.tokenExtensions.isTokenVisibleOnWalletScreen == true }
 }
 
-fun List<Token.Active>.filterIsUSDCToken(): List<Token.Active> {
+fun List<Token.Active>.filterIsUsdcTokens(): List<Token.Active> {
     return filter { it.tokenSymbol.equals(Constants.USDC_SYMBOL, ignoreCase = true) }
 }
