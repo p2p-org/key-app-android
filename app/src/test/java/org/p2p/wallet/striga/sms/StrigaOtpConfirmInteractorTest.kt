@@ -30,6 +30,7 @@ import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.utils.mockInAppFeatureFlag
 
@@ -53,6 +54,7 @@ class StrigaOtpConfirmInteractorTest {
         override var userWallet: StrigaUserWallet? = null
         override var fiatAccount: StrigaFiatAccountDetails? = null
         override var cryptoAccount: StrigaCryptoAccountDetails? = null
+        override var bankingDetails: StrigaUserBankingDetails? = null
         override var smsExceededVerificationAttemptsMillis: MillisSinceEpoch = 0
         override var smsExceededResendAttemptsMillis: MillisSinceEpoch = 0
         override fun hideBanner(banner: StrigaKycStatusBanner) = Unit

@@ -92,7 +92,7 @@ class StrigaWalletInteractor(
         return whitelistAddressesRepository.getWhitelistedAddresses()
     }
 
-    suspend fun getEurAccountStatement(): StrigaUserBankingDetails {
-        return walletRepository.getAccountStatement(getEurAccountId()).unwrap()
+    suspend fun getUserBankingDetails(): StrigaUserBankingDetails {
+        return walletRepository.getUserBankingDetails(getEurAccountId()).unwrap()
     }
 }

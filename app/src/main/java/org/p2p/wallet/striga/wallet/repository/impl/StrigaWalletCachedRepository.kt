@@ -43,14 +43,14 @@ internal class StrigaWalletCachedRepository(
         }
     }
 
-    override suspend fun getAccountStatement(
+    override suspend fun getUserBankingDetails(
         accountId: StrigaAccountId,
     ): StrigaDataLayerResult<StrigaUserBankingDetails> {
-        return withCache(null) {
+        return withCache(cache::userBankingDetails) {
             val strigaUserFullName = strigaUserRepository.getUserDetails().unwrap()
                 .userInfo
                 .fullName
-            remoteRepository.getAccountStatement(accountId, strigaUserFullName)
+            remoteRepository.getUserBankingDetails(accountId, strigaUserFullName)
         }
     }
 

@@ -18,7 +18,7 @@ class StrigaWithdrawPresenter(
         super.attach(view)
         launch {
             try {
-                val offRampCredentials = strigaWalletInteractor.getEurAccountStatement()
+                val offRampCredentials = strigaWalletInteractor.getUserBankingDetails()
                 enteredIban = offRampCredentials.bankingIban.orEmpty()
                 enteredBic = offRampCredentials.bankingBic.orEmpty()
 
