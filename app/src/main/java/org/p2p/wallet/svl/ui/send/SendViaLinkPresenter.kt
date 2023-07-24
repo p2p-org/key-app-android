@@ -167,7 +167,7 @@ class SendViaLinkPresenter(
     }
 
     override fun onTokenClicked() {
-        newSendAnalytics.logTokenSelectionClicked(NewSendAnalytics.AnalyticsSendFlow.SELL)
+        newSendAnalytics.logTokenSelectionClicked(NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK)
         launch {
             val tokens = userTokensInteractor.getUserTokens()
             val result = tokens.filterNot(Token.Active::isZero)
@@ -203,7 +203,7 @@ class SendViaLinkPresenter(
 
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
-        newSendAnalytics.logSwitchCurrencyModeClicked(newMode, NewSendAnalytics.AnalyticsSendFlow.SELL)
+        newSendAnalytics.logSwitchCurrencyModeClicked(newMode, NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK)
     }
 
     override fun updateInputAmount(amount: String) {
@@ -233,7 +233,7 @@ class SendViaLinkPresenter(
     }
 
     override fun onFeeInfoClicked() {
-        newSendAnalytics.logFreeTransactionsClicked(NewSendAnalytics.AnalyticsSendFlow.SELL)
+        newSendAnalytics.logFreeTransactionsClicked(NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK)
         view?.showFreeTransactionsInfo()
     }
 
