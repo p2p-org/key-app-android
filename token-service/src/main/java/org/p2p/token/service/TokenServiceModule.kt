@@ -11,13 +11,13 @@ import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.rpc.RPC_JSON_QUALIFIER
-import org.p2p.token.service.api.TokenServiceRemoteRepository
-import org.p2p.token.service.api.TokenServiceRepository
+import org.p2p.token.service.api.TokenServiceRemoteDataSource
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
 import org.p2p.token.service.api.mapper.TokenServiceMapper
 import org.p2p.token.service.database.TokenServiceDatabaseModule
 import org.p2p.token.service.database.mapper.TokenServiceDatabaseMapper
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.token.service.repository.TokenServiceRepositoryImpl
 import org.p2p.token.service.repository.metadata.TokenMetadataInMemoryRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataLocalRepository
@@ -33,8 +33,8 @@ object TokenServiceModule : InjectionModule {
 
     override fun create() = module {
         includes(TokenServiceDatabaseModule.create())
-        single<TokenServiceRepository> {
-            TokenServiceRemoteRepository(
+        single<org.p2p.token.service.api.TokenServiceDataSource> {
+            TokenServiceRemoteDataSource(
                 api = get<Retrofit>(named(TOKEN_SERVICE_RETROFIT_QUALIFIER)).create(),
                 gson = get(named(RPC_JSON_QUALIFIER)),
                 urlProvider = get()
@@ -56,11 +56,12 @@ object TokenServiceModule : InjectionModule {
 
         factoryOf(::TokenServiceMapper)
         singleOf(::TokenMetadataRemoteRepository) bind TokenMetadataRepository::class
-        factory<org.p2p.token.service.repository.TokenServiceRepository> {
+        factory<TokenServiceRepository> {
             TokenServiceRepositoryImpl(
                 priceRemoteRepository = get(),
                 priceLocalRepository = get(),
-                metadataLocalRepository = get()
+                metadataLocalRepository = get(),
+                metadataRemoteRepository = get()
             )
         }
         singleOf(::TokenServiceEventPublisher)

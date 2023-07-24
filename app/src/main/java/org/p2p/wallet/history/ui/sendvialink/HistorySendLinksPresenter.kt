@@ -18,6 +18,7 @@ import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -29,6 +30,9 @@ class HistorySendLinksPresenter(
     private val userSendLinksRepository: UserSendLinksLocalRepository
 ) : BasePresenter<HistorySendLinksContract.View>(),
     HistorySendLinksContract.Presenter {
+
+    private val mainCellHorizontalMargin = 12.toPx()
+
     override fun attach(view: HistorySendLinksContract.View) {
         super.attach(view)
 
@@ -80,7 +84,8 @@ class HistorySendLinksPresenter(
         return MainCellModel(
             leftSideCellModel = leftSide,
             rightSideCellModel = rightSide,
-            payload = uuid
+            payload = uuid,
+            horizontalMargins = mainCellHorizontalMargin
         )
     }
 

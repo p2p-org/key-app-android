@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonTokenVisibilityChangeState"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/bg_rain"
+        android:text="@string/my_crypto_hide_token_button"
+        android:textColor="@color/text_night"
+        app:iconTint="@color/icons_night"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</FrameLayout>

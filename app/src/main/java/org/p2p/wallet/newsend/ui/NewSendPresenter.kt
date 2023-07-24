@@ -52,6 +52,7 @@ import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendFatalError
 import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.newsend.model.getFee
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
@@ -81,7 +82,8 @@ class NewSendPresenter(
     private val alertErrorsLogger: AlarmErrorsLogger,
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
-    private val historyInteractor: HistoryInteractor
+    private val historyInteractor: HistoryInteractor,
+    private val tokenServiceCoordinator: TokenServiceCoordinator
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private val flow: NewSendAnalytics.AnalyticsSendFlow = if (openedFrom == SendOpenedFrom.SELL_FLOW) {
@@ -466,6 +468,9 @@ class NewSendPresenter(
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
                 userInteractor.addRecipient(recipientAddress, Date(transactionDate.dateMilli()))
+
+                tokenServiceCoordinator.refresh()
+
                 val transaction = buildTransaction(result, token)
                 val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)

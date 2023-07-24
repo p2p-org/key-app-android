@@ -5,7 +5,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.p2p.core.R
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.SOL_NAME
@@ -42,7 +41,8 @@ sealed class Token constructor(
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
-        val extensions: TokenExtension?,
+        val tokenServiceAddress: String,
+        val tokenExtensions: TokenExtensions,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -75,6 +75,10 @@ sealed class Token constructor(
         val isZero: Boolean
             get() = total.isZero()
 
+        @IgnoredOnParcel
+        val isHidden: Boolean
+            get() = visibility == TokenVisibility.HIDDEN
+
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN ||
                 isZerosHidden &&
@@ -91,13 +95,6 @@ sealed class Token constructor(
             } else {
                 total.formatToken(decimals)
             }
-
-        fun getVisibilityIcon(isZerosHidden: Boolean): Int =
-            if (isDefinitelyHidden(isZerosHidden)) {
-                R.drawable.ic_show
-            } else {
-                R.drawable.ic_hide
-            }
     }
 
     @Parcelize
@@ -107,6 +104,7 @@ sealed class Token constructor(
         val total: BigDecimal,
         var isClaiming: Boolean = false,
         var latestActiveBundleId: String? = null,
+        val tokenServiceAddress: String = publicKey,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -235,9 +233,10 @@ sealed class Token constructor(
                 totalInUsd = if (amount == 0L) null else solPrice?.let { total.multiply(it) },
                 total = total.scaleLong(tokenMetadata.decimals),
                 rate = solPrice,
+                tokenServiceAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN,
                 visibility = TokenVisibility.DEFAULT,
                 isWrapped = tokenMetadata.isWrapped,
-                extensions = tokenMetadata.extensions
+                tokenExtensions = TokenExtensions()
             )
         }
     }

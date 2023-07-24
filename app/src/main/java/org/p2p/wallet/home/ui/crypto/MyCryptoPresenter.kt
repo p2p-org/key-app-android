@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
+import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -82,11 +83,16 @@ class MyCryptoPresenter(
             is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
                 showTokensAndBalance(
-                    solTokens = newState.solTokens,
+                    solTokens = filterCryptoTokens(newState.solTokens),
                     ethTokens = newState.ethTokens
                 )
             }
         }
+    }
+
+    private fun filterCryptoTokens(solTokens: List<Token.Active>): List<Token.Active> {
+        val excludedTokens = solTokens.filterTokensForWalletScreen()
+        return solTokens.minus(excludedTokens.toSet())
     }
 
     private fun showTokensAndBalance(solTokens: List<Token.Active>, ethTokens: List<Token.Eth>) {

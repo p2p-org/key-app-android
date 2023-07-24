@@ -80,6 +80,7 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.crypto.Base58String
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.repository.TokenServiceRepository
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
@@ -121,6 +122,9 @@ open class JupiterSwapPresenterBaseTest {
 
     @MockK(relaxed = true)
     lateinit var relaySdkFacade: RelaySdkFacade
+
+    @MockK(relaxed = true)
+    lateinit var tokenServiceCoordinator: TokenServiceCoordinator
 
     @MockK(relaxed = true)
     lateinit var tokenKeyProvider: TokenKeyProvider
@@ -484,7 +488,8 @@ open class JupiterSwapPresenterBaseTest {
             historyInteractor = historyInteractor,
             resources = mockk(relaxed = true),
             alarmErrorsLogger = mockk(relaxed = true),
-            initialAmountA = data.initialAmountA
+            initialAmountA = data.initialAmountA,
+            tokenServiceCoordinator = tokenServiceCoordinator
         )
     }
 

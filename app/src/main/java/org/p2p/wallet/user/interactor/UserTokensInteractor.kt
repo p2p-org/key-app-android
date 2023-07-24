@@ -21,7 +21,7 @@ class UserTokensInteractor(
 ) {
 
     suspend fun loadUserRates(userTokens: List<Token.Active>) {
-        val tokenAddresses = userTokens.map { it.mintAddress }
+        val tokenAddresses = userTokens.map { it.tokenServiceAddress }
         tokenServiceInteractor.loadTokensPrice(
             networkChain = TokenServiceNetwork.SOLANA,
             addresses = tokenAddresses

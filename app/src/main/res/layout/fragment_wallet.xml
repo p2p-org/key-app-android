@@ -70,7 +70,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/buttonWithdraw"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewTokenAmount" />
+                    app:layout_constraintTop_toBottomOf="@+id/textViewTokenAmount"
+                    app:layout_goneMarginEnd="16dp" />
 
                 <org.p2p.uikit.components.UiKitButton
                     android:id="@+id/buttonWithdraw"
@@ -84,6 +85,7 @@
                     android:backgroundTint="@color/bg_night"
                     android:text="@string/withdraw_button"
                     android:textColor="@color/text_snow"
+                    android:visibility="gone"
                     app:icon="@drawable/ic_deposit"
                     app:iconGravity="textEnd"
                     app:iconTint="@color/icons_snow"
