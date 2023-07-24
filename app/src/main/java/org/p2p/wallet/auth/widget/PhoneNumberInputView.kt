@@ -51,35 +51,35 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     }
 
     init {
-        val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitEditText, 0, 0)
-        val labelText = styleAttrs.getString(R.styleable.UiKitEditText_labelText).orEmpty()
+        val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.PhoneNumberInputView, 0, 0)
+        val labelText = styleAttrs.getString(R.styleable.PhoneNumberInputView_labelText).orEmpty()
         if (labelText.isNotEmpty()) {
             binding.textViewLabel.text = labelText
             binding.textViewLabel.isVisible = true
         }
-        val hintText = styleAttrs.getString(R.styleable.UiKitEditText_hintText).orEmpty()
+        val hintText = styleAttrs.getString(R.styleable.PhoneNumberInputView_hintText).orEmpty()
         if (hintText.isNotEmpty()) {
             binding.textViewHint.text = hintText
             binding.textViewHint.isVisible = true
         }
-        val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitEditText_android_textAppearance, -1)
+        val textAppearance = styleAttrs.getResourceId(R.styleable.PhoneNumberInputView_android_textAppearance, -1)
         if (textAppearance != -1) {
             binding.editTextPhoneNumber.setTextAppearance(textAppearance)
             binding.editTextCountryCode.setTextAppearance(textAppearance)
             binding.textViewPlusSign.setTextAppearance(textAppearance)
         }
-        val text = styleAttrs.getText(R.styleable.UiKitEditText_android_text)
+        val text = styleAttrs.getText(R.styleable.PhoneNumberInputView_android_text)
         if (!text.isNullOrEmpty()) {
             binding.editTextPhoneNumber.setText(text)
         }
-        val backgroundTint = styleAttrs.getResourceId(R.styleable.UiKitEditText_android_backgroundTint, -1)
+        val backgroundTint = styleAttrs.getResourceId(R.styleable.PhoneNumberInputView_android_backgroundTint, -1)
         if (backgroundTint != -1) {
             bgNormal.setColor(context.getColor(backgroundTint))
             bgNormal.setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
 
             bgRed.setColor(context.getColor(backgroundTint))
         }
-        val textSize = styleAttrs.getDimensionPixelSize(R.styleable.UiKitEditText_android_textSize, -1)
+        val textSize = styleAttrs.getDimensionPixelSize(R.styleable.PhoneNumberInputView_android_textSize, -1)
         if (textSize != -1) {
             val minSize = 12
             val granularity = binding.autoSizeHelperTextView.autoSizeStepGranularity
@@ -91,12 +91,12 @@ open class PhoneNumberInputView @JvmOverloads constructor(
                 unit
             )
         }
-        if (styleAttrs.hasValue(R.styleable.UiKitEditText_android_nextFocusDown)) {
-            val nextFocusDown = styleAttrs.getResourceIdOrThrow(R.styleable.UiKitEditText_android_nextFocusDown)
+        if (styleAttrs.hasValue(R.styleable.PhoneNumberInputView_android_nextFocusDown)) {
+            val nextFocusDown = styleAttrs.getResourceIdOrThrow(R.styleable.PhoneNumberInputView_android_nextFocusDown)
             binding.editTextPhoneNumber.nextFocusDownId = nextFocusDown
         }
-        if (styleAttrs.hasValue(R.styleable.UiKitEditText_android_imeOptions)) {
-            val imeOptions = styleAttrs.getIntOrThrow(R.styleable.UiKitEditText_android_imeOptions)
+        if (styleAttrs.hasValue(R.styleable.PhoneNumberInputView_android_imeOptions)) {
+            val imeOptions = styleAttrs.getIntOrThrow(R.styleable.PhoneNumberInputView_android_imeOptions)
             binding.editTextPhoneNumber.imeOptions = imeOptions
         }
         binding.inputViewContainer.background = bgNormal

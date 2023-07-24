@@ -6,7 +6,6 @@ import androidx.core.content.res.getResourceIdOrThrow
 import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
-import android.os.Parcel
 import android.os.Parcelable
 import android.text.Editable
 import android.text.method.DigitsKeyListener
@@ -14,18 +13,21 @@ import android.util.AttributeSet
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.uikit.R
+import org.p2p.uikit.components.edittext.UiKitEditTextSavedState
 import org.p2p.uikit.databinding.WidgetUiKitEdittextBinding
 import org.p2p.uikit.utils.SimpleTagTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
 
-private const val CORNER_RADIUS = 20f
-private const val STROKE_WIDTH = 1
-
 class UiKitEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
+
+    private companion object {
+        private const val CORNER_RADIUS = 20f
+        private const val STROKE_WIDTH = 1
+    }
 
     private val binding by lazy(LazyThreadSafetyMode.NONE) { inflateViewBinding<WidgetUiKitEdittextBinding>() }
 
@@ -179,43 +181,6 @@ class UiKitEditText @JvmOverloads constructor(
     override fun onSaveInstanceState(): Parcelable {
         val superState = super.onSaveInstanceState()
         return UiKitEditTextSavedState(superState, text?.toString())
-    }
-
-    override fun onRestoreInstanceState(state: Parcelable?) {
-        if (state is UiKitEditTextSavedState) {
-            super.onRestoreInstanceState(state.superState)
-            setText(state.text ?: "")
-        } else {
-            super.onRestoreInstanceState(state)
-        }
-    }
-
-    // Custom state class to hold the state of the custom EditText
-    private class UiKitEditTextSavedState : BaseSavedState {
-        var text: String? = null
-
-        constructor(superState: Parcelable?, text: String?) : super(superState) {
-            this.text = text
-        }
-
-        constructor(source: Parcel) : super(source) {
-            text = source.readString()
-        }
-
-        override fun writeToParcel(out: Parcel, flags: Int) {
-            super.writeToParcel(out, flags)
-            out.writeString(text)
-        }
-
-        companion object CREATOR : Parcelable.Creator<UiKitEditTextSavedState> {
-            override fun createFromParcel(source: Parcel): UiKitEditTextSavedState {
-                return UiKitEditTextSavedState(source)
-            }
-
-            override fun newArray(size: Int): Array<UiKitEditTextSavedState?> {
-                return arrayOfNulls(size)
-            }
-        }
     }
 
     fun setOnClickListener(block: () -> Unit) {
