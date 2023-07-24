@@ -93,9 +93,11 @@ class OnboardingRootPresenter(
     private fun createPin(deeplink: Uri) {
         val pinCode = deeplink.getQueryParameter(DeeplinkQuery.pinCode) ?: return
         if (pinCode.isNotEmpty()) {
-            authInteractor.registerComplete(pinCode, cipher = null)
-            authInteractor.finishSignUp()
-            view?.navigateToMain()
+            launch {
+                authInteractor.registerComplete(pinCode, cipher = null)
+                authInteractor.finishSignUp()
+                view?.navigateToMain()
+            }
         }
     }
 }
