@@ -33,8 +33,11 @@ internal class StrigaWalletInMemoryRepository(
     var userBankingDetails: StrigaUserBankingDetails?
         get() = cachedUserBankingDetails ?: strigaStorage.bankingDetails?.also { cachedUserBankingDetails = it }
         set(value) {
-            cachedUserBankingDetails = value
-            strigaStorage.bankingDetails = value
+            // no need to save empty bic and iban, try to fetch again if needed
+            if (value != null && !value.bankingBic.isNullOrEmpty() && !value.bankingIban.isNullOrEmpty()) {
+                cachedUserBankingDetails = value
+                strigaStorage.bankingDetails = value
+            }
         }
 
     private var cachedFiatAccountDetails: StrigaFiatAccountDetails? = null
