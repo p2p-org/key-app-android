@@ -6,14 +6,17 @@ import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 
 interface StrigaWithdrawContract {
     interface View : MvpView {
-        fun showBankingDetails(offRampCredentials: StrigaUserBankingDetails)
+        fun showLoading(isLoading: Boolean)
 
-        fun showIbanIsValid(validationResult: StrigaWithdrawValidationResult)
-        fun showBicIsValid(validationResult: StrigaWithdrawValidationResult)
+        fun showPrefilledBankingDetails(details: StrigaUserBankingDetails)
+
+        fun showIbanValidationResult(result: StrigaWithdrawValidationResult)
+        fun showBicValidationResult(result: StrigaWithdrawValidationResult)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun onBicChanged(newBic: String)
         fun onIbanChanged(newIban: String)
+        fun withdraw(withdrawType: StrigaWithdrawFragmentType)
     }
 }
