@@ -2,6 +2,7 @@ package org.p2p.core.token
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import org.p2p.core.utils.Constants
 
 /**
  * @param canTokenBeHidden [org.p2p.token.service.repository.configurator.CanBeHiddenConfigurator]
@@ -29,5 +30,5 @@ fun List<Token.Active>.filterTokensForWalletScreen(): List<Token.Active> {
 }
 
 fun List<Token.Active>.filterIsUSDCToken(): List<Token.Active> {
-    return filter { it.tokenSymbol.equals("USDC", ignoreCase = true) }
+    return filter { it.tokenSymbol.equals(Constants.USDC_SYMBOL, ignoreCase = true) }
 }
