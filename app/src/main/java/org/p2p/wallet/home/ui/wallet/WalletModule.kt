@@ -18,6 +18,21 @@ object WalletModule : InjectionModule {
         factoryOf(::StrigaOnRampConfirmedHandler)
         factoryOf(::StrigaOnRampClickHandler)
         factoryOf(::StrigaBannerClickHandler)
-        factoryOf(::WalletPresenter) bind WalletContract.Presenter::class
+        factory {
+            WalletPresenter(
+                usernameInteractor = get(),
+                walletMapper = get(),
+                tokenKeyProvider = get(),
+                tokenServiceCoordinator = get(),
+                strigaOnRampInteractor = get(),
+                strigaUserInteractor = get(),
+                strigaBannerClickHandler = get(),
+                strigaOnRampClickHandler = get(),
+                strigaOnRampConfirmedHandler = get(),
+                strigaSignupEnabledFeatureToggle = get(),
+                sellInteractor = get(),
+                mainScreenAnalytics = get(),
+            )
+        } bind WalletContract.Presenter::class
     }
 }

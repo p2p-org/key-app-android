@@ -13,11 +13,11 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.history.ui.history.HistoryFragment
-import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.deeplinks.DeeplinkHandler
 import org.p2p.wallet.home.ui.container.mapper.BalanceMapper
 import org.p2p.wallet.home.ui.crypto.MyCryptoFragment
 import org.p2p.wallet.home.ui.wallet.WalletFragment
+import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
@@ -32,8 +32,8 @@ class MainContainerPresenter(
     private val metadataInteractor: MetadataInteractor,
     private val userInteractor: UserInteractor,
     private val strigaOnRampInteractor: StrigaOnRampInteractor,
-    private val homeAnalytics: HomeAnalytics,
     private val balanceMapper: BalanceMapper,
+    private val mainScreenAnalytics: MainScreenAnalytics
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
 
     private val deeplinkHandler by unsafeLazy {
@@ -95,19 +95,24 @@ class MainContainerPresenter(
         }
     }
 
-    override fun logHomeOpened() {
-        homeAnalytics.logBottomNavigationHomeClicked()
+    override fun logWalletOpened() {
+        mainScreenAnalytics.logMainScreenMainClick()
+    }
+
+    override fun logCryptoOpened() {
+        mainScreenAnalytics.logMainScreenCryptoClick()
     }
 
     override fun logHistoryOpened() {
-        homeAnalytics.logBottomNavigationHistoryClicked()
+        mainScreenAnalytics.logMainScreenHistoryClick()
     }
 
     override fun logSettingsOpened() {
-        homeAnalytics.logBottomNavigationSettingsClicked()
+        mainScreenAnalytics.logMainScreenSettingsClick()
     }
 
     override fun onSendClicked() {
+        mainScreenAnalytics.logMainScreenSendClick()
         launch {
             val userTokens = tokenServiceCoordinator.getUserTokens()
             if (userTokens.isEmpty()) {
