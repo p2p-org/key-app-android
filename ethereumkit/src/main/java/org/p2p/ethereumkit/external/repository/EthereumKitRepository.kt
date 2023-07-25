@@ -121,42 +121,47 @@ internal class EthereumKitRepository(
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
-
+        // Map erc 20 tokens to hex string addresses list
         val erc20TokensAddresses = ERC20Tokens.values().map { it.contractAddress }
+        // Load balances for ERC 20 tokens
+        val tokensBalances = loadTokenBalances(publicKey, erc20TokensAddresses.map(::EthAddress))
 
+        // Create list with [native] token, to receive tokens metadata, from token service
         val allTokensAddresses = buildList<String> {
             this += TOKEN_SERVICE_NATIVE_ETH_TOKEN
             this += erc20TokensAddresses
         }
-
-        val tokensBalances = loadTokenBalances(publicKey, erc20TokensAddresses.map(::EthAddress))
-
+        // Fetch tokens metadata
         val tokensMetadata = tokenServiceRepository.loadMetadataForTokens(
             chain = TokenServiceNetwork.ETHEREUM,
             tokenAddresses = allTokensAddresses
         )
 
+        // Create metadata for native ETH token
         val nativeEthMetadata = tokensMetadata.firstOrNull {
             it.address == TOKEN_SERVICE_NATIVE_ETH_TOKEN
-        } ?: return emptyList()
+        }
+        // Fetch balance for native ETH token
         val ethBalance = getBalance()
+        // Create ETH token
+        val nativeETHToken = nativeEthMetadata?.let { createNativeEthToken(it, ethBalance) }
 
-        val nativeEthToken = createNativeEthToken(nativeEthMetadata, ethBalance)
         val erc20TokensMetadata = tokensMetadata.map { metadata ->
             val tokenBalance = tokensBalances
                 .firstOrNull { it.contractAddress.hex == metadata.address }
                 ?.tokenBalance
                 .orZero()
+
             converter.toEthTokenMetadata(
                 metadata = metadata,
                 tokenBalance = tokenBalance,
                 ethAddress = metadata.address
             )
         }
-        return buildList {
-            this += nativeEthToken
+        return buildList<EthTokenMetadata?> {
+            this += nativeETHToken
             this += erc20TokensMetadata
-        }
+        }.filterNotNull()
     }
 
     private fun createNativeEthToken(tokenMetadata: TokenServiceMetadata, balance: BigInteger): EthTokenMetadata {

@@ -77,7 +77,7 @@ class MyCryptoFragment :
                 contentView.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
                 buttonClaim.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
             }
-        }
+        },
     )
 
     override fun onAttach(context: Context) {

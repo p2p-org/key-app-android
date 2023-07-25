@@ -7,11 +7,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
+import org.p2p.core.token.Token
 import org.p2p.core.utils.orZero
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
@@ -39,17 +39,20 @@ class EthereumTokensLoader(
 
     private val state: MutableStateFlow<EthTokenLoadState> = MutableStateFlow(EthTokenLoadState.Idle)
 
+    // Caching last ethereum tokens, to prevent hiding tokens while refreshing
+    private val ethereumTokens = mutableListOf<Token.Eth>()
+
     init {
         ethereumInteractor.observeTokensFlow()
-            .filterNot { it.isEmpty() }
             .onEach { ethTokens ->
-
                 val filteredEthTokens = ethTokens.filter { token ->
                     val tokenFiatAmount = token.totalInUsd.orZero()
                     val isClaimInProgress = token.isClaiming
                     val isFiatAmountAboveThreshold = tokenFiatAmount >= MINIMAL_DUST
                     isFiatAmountAboveThreshold || isClaimInProgress
                 }
+                ethereumTokens.clear()
+                ethereumTokens.addAll(filteredEthTokens)
                 updateState(EthTokenLoadState.Loaded(filteredEthTokens))
             }
             .launchIn(appScope)
@@ -59,8 +62,13 @@ class EthereumTokensLoader(
 
     fun observeState(): Flow<EthTokenLoadState> = state.asStateFlow()
 
+    fun getTokens(): List<Token.Eth> = ethereumTokens
+
     suspend fun loadIfEnabled() {
-        if (!isEnabled()) return
+        if (!isEnabled()) {
+            updateState(EthTokenLoadState.Loaded(emptyList()))
+            return
+        }
 
         try {
             setupEthereum()
@@ -84,7 +92,10 @@ class EthereumTokensLoader(
     }
 
     suspend fun refreshIfEnabled() {
-        if (!isEnabled()) return
+        if (!isEnabled()) {
+            updateState(EthTokenLoadState.Loaded(emptyList()))
+            return
+        }
 
         try {
             setupEthereum()
