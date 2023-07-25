@@ -26,5 +26,5 @@ data class TokenExtensions(
 }
 
 fun List<Token.Active>.filterTokensForWalletScreen(): List<Token.Active> {
-    return filter { it.isUSDC || it.mintAddress == Constants.USDC_MINT }
+    return filter { it.isUSDC && it.mintAddress == Constants.USDC_MINT }
 }
