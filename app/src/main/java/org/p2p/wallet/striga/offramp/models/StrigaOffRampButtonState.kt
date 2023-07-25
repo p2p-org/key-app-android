@@ -5,6 +5,7 @@ import org.p2p.wallet.R
 sealed class StrigaOffRampButtonState(
     val titleResId: Int,
     val isEnabled: Boolean,
+    val isClickable: Boolean = false,
     val isLoading: Boolean = false,
     // button styles
     val iconDrawableResId: Int = R.drawable.ic_arrow_forward,
@@ -51,14 +52,16 @@ sealed class StrigaOffRampButtonState(
 
     object Enabled : StrigaOffRampButtonState(
         titleResId = R.string.striga_off_ramp_button_next,
-        isEnabled = true
+        isEnabled = true,
+        isClickable = true
     )
 
     // todo: is not ready yet
     object NextProgress : StrigaOffRampButtonState(
         titleResId = R.string.striga_off_ramp_button_next,
         isEnabled = true,
-        isLoading = true
+        isLoading = true,
+        isClickable = false,
     )
 
     override fun toString(): String {

@@ -25,13 +25,14 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOnboardingBinding
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.striga.signup.onboarding.StrigaOnboardingContract.View.AvailabilityState
 import org.p2p.wallet.striga.signup.presetpicker.StrigaPresetDataPickerFragment
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.steps.first.StrigaSignUpFirstStepFragment
 import org.p2p.wallet.utils.getParcelableCompat
-import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.replaceFragmentForResult
 import org.p2p.wallet.utils.viewbinding.getDrawable
@@ -116,7 +117,7 @@ class StrigaOnboardingFragment :
     }
 
     private fun onBackPressed() {
-        popBackStack()
+        popBackStackTo(MainContainerFragment::class)
     }
 
     private fun bindHelpText() {

@@ -2,10 +2,9 @@ package org.p2p.wallet.striga.offramp.ui
 
 import android.os.Bundle
 import android.view.View
-import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.natives.UiKitSnackbarGravity
-import org.p2p.uikit.natives.showSnackbarShort
+import java.math.BigDecimal
+import org.p2p.uikit.components.UiKitButtonIconState
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -14,9 +13,12 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOffRampBinding
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
+import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.offramp.StrigaOffRampContract
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampButtonState
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -30,7 +32,13 @@ class StrigaOffRampFragment :
     FragmentContract(R.layout.fragment_striga_off_ramp),
     StrigaOffRampContract.View {
 
+    companion object {
+        fun create(): StrigaOffRampFragment = StrigaOffRampFragment()
+    }
+
     override val presenter: StrigaOffRampContract.Presenter by inject()
+    private val strigaFragmentFactory: StrigaFragmentFactory by inject()
+
     private val binding: FragmentStrigaOffRampBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,16 +62,25 @@ class StrigaOffRampFragment :
         with(binding.buttonNext) {
             setText(buttonState.titleResId)
             isEnabled = buttonState.isEnabled
-            setLoading(buttonState.isLoading)
+            isClickable = buttonState.isClickable
 
-            icon = if (isEnabled) {
-                background.setTint(binding.getColor(buttonState.styleEnabledBgColorRes))
-                setTextColor(binding.getColor(buttonState.styleEnabledTextColorRes))
-                binding.getDrawable(buttonState.iconDrawableResId)
-            } else {
-                background.setTint(binding.getColor(buttonState.styleDisabledBgColorRes))
-                setTextColor(binding.getColor(buttonState.styleDisabledTextColorRes))
-                null
+            // this is the rare case, when we can't just use setLoading(bool)
+            // because setLoading overwrites its icon and restore previous one
+            // when it set to false, but here we need to set icon and set loading independently
+            when {
+                buttonState.isLoading -> setIconState(UiKitButtonIconState.Loading())
+                buttonState.isEnabled -> {
+                    background.setTint(binding.getColor(buttonState.styleEnabledBgColorRes))
+                    setTextColor(binding.getColor(buttonState.styleEnabledTextColorRes))
+                    setIconState(
+                        UiKitButtonIconState.Icon(binding.getDrawable(buttonState.iconDrawableResId))
+                    )
+                }
+                else -> {
+                    background.setTint(binding.getColor(buttonState.styleDisabledBgColorRes))
+                    setTextColor(binding.getColor(buttonState.styleDisabledTextColorRes))
+                    setIconState(UiKitButtonIconState.None)
+                }
             }
         }
     }
@@ -72,34 +89,12 @@ class StrigaOffRampFragment :
         binding.swapWidgetFrom.setAmountTextColorRes(textColorRes)
     }
 
-    override fun showUiKitSnackBar(
-        message: String?,
-        messageResId: Int?,
-        onDismissed: () -> Unit,
-        actionButtonResId: Int?,
-        actionBlock: ((Snackbar) -> Unit)?
-    ) {
-        require(message != null || messageResId != null) {
-            "Snackbar text must be set from `message` or `messageResId` params"
-        }
-        val snackbarText: String = message ?: messageResId?.let(::getString)!!
-        val root = requireView().rootView
-        if (actionButtonResId != null && actionBlock != null) {
-            root.showSnackbarShort(
-                snackbarText = snackbarText,
-                actionButtonText = getString(actionButtonResId),
-                actionButtonListener = actionBlock,
-                enableBottomNavOffset = false,
-                gravity = UiKitSnackbarGravity.TOP
-            )
-        } else {
-            root.showSnackbarShort(
-                snackbarText = snackbarText,
-                onDismissed = onDismissed,
-                enableBottomNavOffset = false,
-                gravity = UiKitSnackbarGravity.TOP
-            )
-        }
+    override fun navigateToSignup(destination: StrigaUserStatusDestination) {
+        strigaFragmentFactory.signupFragment(destination)?.let(::replaceFragment)
+    }
+
+    override fun navigateToWithdraw(amountInUsdc: BigDecimal) {
+        strigaFragmentFactory.withdrawUsdcFragment(amountInUsdc).let(::replaceFragment)
     }
 
     private fun FragmentStrigaOffRampBinding.setupView() {

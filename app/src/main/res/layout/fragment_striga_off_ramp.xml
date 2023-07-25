@@ -15,6 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
         app:title="@string/striga_off_ramp_title" />
 
     <TextView
