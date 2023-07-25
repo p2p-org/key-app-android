@@ -25,7 +25,7 @@ import org.p2p.wallet.tokenservice.model.EthTokenLoadState
 private const val TAG = "EthereumTokensLoader"
 
 class EthereumTokensLoader(
-    seedPhraseProvider: SeedPhraseProvider,
+    private val seedPhraseProvider: SeedPhraseProvider,
     private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
     private val ethereumInteractor: EthereumInteractor,
     private val tokenServiceEventPublisher: TokenServiceEventPublisher,
@@ -42,7 +42,6 @@ class EthereumTokensLoader(
     }
 
     override val coroutineContext: CoroutineContext = appScope.coroutineContext
-    private val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
 
     fun observeState(): Flow<EthTokenLoadState> = state.asStateFlow()
 
@@ -52,7 +51,7 @@ class EthereumTokensLoader(
         try {
             setupEthereum()
             updateState(EthTokenLoadState.Loading)
-            ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+            ethereumInteractor.setup(userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase)
             tokenServiceEventManager.subscribe(EthereumTokensRatesEventSubscriber(::saveTokensRates))
 
             val claimTokens = ethereumInteractor.loadClaimTokens()
@@ -93,12 +92,15 @@ class EthereumTokensLoader(
     }
 
     private fun isEnabled(): Boolean {
-        return userSeedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled
+        return seedPhraseProvider.getUserSeedPhrase()
+            .seedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled
     }
 
     private fun setupEthereum() {
         if (!ethereumInteractor.isInitialized()) {
-            ethereumInteractor.setup(userSeedPhrase = userSeedPhrase)
+            ethereumInteractor.setup(
+                userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
+            )
         }
     }
 

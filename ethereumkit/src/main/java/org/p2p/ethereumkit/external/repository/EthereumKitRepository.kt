@@ -22,6 +22,7 @@ import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.Signature
+import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.repository.TokenServiceRepository
@@ -36,7 +37,6 @@ internal class EthereumKitRepository(
 ) : EthereumRepository {
 
     private var tokenKeyProvider: EthTokenKeyProvider? = null
-    private var ethToken: EthTokenMetadata? = null
 
     override fun init(seedPhrase: List<String>) {
         tokenKeyProvider = EthTokenKeyProvider(
@@ -45,17 +45,6 @@ internal class EthereumKitRepository(
         )
 
         val ethAddress = tokenKeyProvider?.publicKey ?: return
-
-        ethToken = EthTokenMetadata(
-            contractAddress = ethAddress,
-            mintAddress = ERC20Tokens.ETH.mintAddress,
-            balance = BigInteger.ZERO,
-            decimals = ERC20Tokens.ETH_DECIMALS,
-            logoUrl = ERC20Tokens.ETH.tokenIconUrl,
-            tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
-            symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
-            tokenServiceAddress = TOKEN_SERVICE_NATIVE_ETH_TOKEN
-        )
     }
 
     override fun isInitialized(): Boolean {
@@ -88,10 +77,7 @@ internal class EthereumKitRepository(
 
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> {
         return try {
-            val ethBalance = getBalance()
-            ethToken = ethToken?.copy(balance = ethBalance)
             val walletTokens = buildList<EthTokenMetadata> {
-                this += ethToken ?: error("Ethereum kit is not initialized")
                 this += loadTokensMetadata()
             }.map { tokenMetadata ->
                 var isClaiming = false
@@ -147,25 +133,50 @@ internal class EthereumKitRepository(
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
-        val tokenAddresses = ERC20Tokens.values().map { it.contractAddress }
 
-        val tokensBalances = loadTokenBalances(publicKey, tokenAddresses.map(::EthAddress))
+        val erc20TokensAddresses = ERC20Tokens.values().map { it.contractAddress }
+
+        val allTokensAddresses = buildList<String> {
+            this += TOKEN_SERVICE_NATIVE_ETH_TOKEN
+            this += erc20TokensAddresses
+        }
+
+        val tokensBalances = loadTokenBalances(publicKey, erc20TokensAddresses.map(::EthAddress))
 
         val tokensMetadata = tokenServiceRepository.loadMetadataForTokens(
             chain = TokenServiceNetwork.ETHEREUM,
-            tokenAddresses = tokenAddresses
-        ).map { metadata ->
-            val ethAddress = EthAddress(metadata.address)
-            val tokenBalance = tokensBalances.firstOrNull { it.contractAddress == ethAddress }
+            tokenAddresses = allTokensAddresses
+        )
+
+        val nativeEthMetadata = tokensMetadata.firstOrNull {
+            it.address == TOKEN_SERVICE_NATIVE_ETH_TOKEN
+        } ?: return emptyList()
+        val ethBalance = getBalance()
+
+        val nativeEthToken = createNativeEthToken(nativeEthMetadata, ethBalance)
+        val erc20TokensMetadata = tokensMetadata.map { metadata ->
+            val tokenBalance = tokensBalances
+                .firstOrNull { it.contractAddress.hex == metadata.address }
                 ?.tokenBalance
                 .orZero()
             converter.toEthTokenMetadata(
                 metadata = metadata,
                 tokenBalance = tokenBalance,
-                ethAddress = ethAddress
+                ethAddress = metadata.address
             )
         }
-        return tokensMetadata
+        return buildList {
+            this += nativeEthToken
+            this += erc20TokensMetadata
+        }
+    }
+
+    private fun createNativeEthToken(tokenMetadata: TokenServiceMetadata, balance: BigInteger): EthTokenMetadata {
+        return converter.toEthTokenMetadata(
+            ethAddress = getAddress().hex,
+            metadata = tokenMetadata,
+            tokenBalance = balance,
+        )
     }
 
     private suspend fun loadTokenBalances(

@@ -96,6 +96,7 @@ object TokenConverter {
             exchangeRate = token.rate?.toString(),
             visibility = token.visibility.stringValue,
             isWrapped = token.isWrapped,
+            tokenServiceAddress = token.tokenServiceAddress,
             extensions = toDatabase(token.tokenExtensions)
         )
 
@@ -124,7 +125,7 @@ object TokenConverter {
             rate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
             isWrapped = entity.isWrapped,
-            tokenServiceAddress = entity.mintAddress,
+            tokenServiceAddress = entity.tokenServiceAddress,
             tokenExtensions = fromDatabase(entity.extensions)
         )
 

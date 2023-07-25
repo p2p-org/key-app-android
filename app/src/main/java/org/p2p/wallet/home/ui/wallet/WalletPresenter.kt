@@ -4,9 +4,10 @@ import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.p2p.core.token.filterTokensForWalletScreen
+import org.p2p.core.token.filterIsUsdcTokens
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.striga.StrigaOnRampConfirmedHandler
@@ -34,6 +35,7 @@ class WalletPresenter(
     private val strigaBannerClickHandler: StrigaBannerClickHandler,
     private val strigaOnRampClickHandler: StrigaOnRampClickHandler,
     private val strigaOnRampConfirmedHandler: StrigaOnRampConfirmedHandler,
+    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
 ) : BasePresenter<WalletContract.View>(), WalletContract.Presenter {
 
     private var username: Username? = null
@@ -54,6 +56,8 @@ class WalletPresenter(
         loadInitialData()
         observeUsdc()
         observeStrigaKycBanners()
+
+        view.setWithdrawButtonIsVisible(strigaSignupEnabledFeatureToggle.isFeatureEnabled)
     }
 
     private fun observeUsdc() {
@@ -112,7 +116,7 @@ class WalletPresenter(
                 )
             }
             is UserTokensState.Loaded -> {
-                val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
+                val filteredTokens = newState.solTokens.filterIsUsdcTokens()
                 val balance = filteredTokens.sumOf { it.total }
                 view?.showBalance(
                     walletMapper.mapFiatBalance(balance),
@@ -146,7 +150,7 @@ class WalletPresenter(
     }
 
     override fun onWithdrawClicked() {
-        // TODO
+        view?.navigateToOffRamp()
     }
 
     override fun onAddMoneyClicked() {

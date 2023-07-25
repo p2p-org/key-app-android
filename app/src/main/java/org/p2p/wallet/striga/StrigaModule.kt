@@ -5,6 +5,7 @@ import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaHeaderSignatureGenerator
 import org.p2p.wallet.striga.common.StrigaUserIdProvider
+import org.p2p.wallet.striga.exchange.StrigaExchangeModule
 import org.p2p.wallet.striga.kyc.StrigaKycModule
 import org.p2p.wallet.striga.offramp.StrigaOffRampModule
 import org.p2p.wallet.striga.onramp.StrigaOnRampModule
@@ -17,7 +18,8 @@ object StrigaModule : InjectionModule {
             StrigaSignupModule.create(),
             StrigaKycModule.create(),
             StrigaOnRampModule.create(),
-            StrigaOffRampModule.create()
+            StrigaOffRampModule.create(),
+            StrigaExchangeModule.create(),
         )
 
         factoryOf(::StrigaUserIdProvider)
