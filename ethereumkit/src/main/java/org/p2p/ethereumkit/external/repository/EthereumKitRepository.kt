@@ -160,7 +160,7 @@ internal class EthereumKitRepository(
     }
 
     private fun createNativeEthToken(tokenMetadata: TokenServiceMetadata, balance: BigInteger): EthTokenMetadata {
-        return converter.toEthTokenMetadata(
+        return converter.createNativeEthMetadata(
             ethAddress = getAddress().hex,
             metadata = tokenMetadata,
             tokenBalance = balance,
