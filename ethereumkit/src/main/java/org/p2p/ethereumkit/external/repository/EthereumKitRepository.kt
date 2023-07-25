@@ -27,8 +27,6 @@ import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.repository.TokenServiceRepository
 
-private val MINIMAL_DUST = BigDecimal("5")
-
 internal class EthereumKitRepository(
     private val tokensRepository: EthereumTokenRepository,
     private val tokensLocalRepository: EthereumTokensLocalRepository,
@@ -77,9 +75,7 @@ internal class EthereumKitRepository(
 
     override suspend fun loadWalletTokens(claimingTokens: List<EthereumClaimToken>): List<Token.Eth> {
         return try {
-            val walletTokens = buildList<EthTokenMetadata> {
-                this += loadTokensMetadata()
-            }.map { tokenMetadata ->
+            loadTokensMetadata().map { tokenMetadata ->
                 var isClaiming = false
                 var latestBundleId: String? = null
                 var tokenAmount: BigDecimal? = null
@@ -101,14 +97,6 @@ internal class EthereumKitRepository(
                     fiatAmount = fiatAmount
                 )
             }
-                .filter { token ->
-                    val tokenBundle = claimingTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
-                    val tokenFiatAmount = token.totalInUsd.orZero()
-                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
-                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
-                }
-
-            walletTokens
         } catch (e: Throwable) {
             Timber.e(e, "Error on loading ethereumTokens")
             emptyList()

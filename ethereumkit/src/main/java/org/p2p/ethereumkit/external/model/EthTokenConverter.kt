@@ -51,7 +51,7 @@ object EthTokenConverter {
             mintAddress = erc20Token.mintAddress,
             balance = tokenBalance,
             decimals = metadata.decimals,
-            logoUrl = metadata.logoUrl,
+            logoUrl = erc20Token.tokenIconUrl,
             tokenName = metadata.name,
             symbol = erc20Token.replaceTokenSymbol.orEmpty(),
             price = null
