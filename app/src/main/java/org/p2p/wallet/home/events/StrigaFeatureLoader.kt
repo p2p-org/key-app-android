@@ -17,10 +17,10 @@ class StrigaFeatureLoader(
         strigaSignupInteractor.loadAndSaveSignupData()
         Timber.d("Striga signup data loaded")
         strigaUserInteractor.loadAndSaveUserStatusData()
-        Timber.d("Striga user status loaded (is KYC approved? ${strigaUserInteractor.isKycApproved})")
+        Timber.i("Striga user status loaded (is KYC approved? ${strigaUserInteractor.isKycApproved})")
         if (strigaUserInteractor.canLoadAccounts) {
             strigaWalletInteractor.loadDetailsForStrigaAccounts()
-            Timber.d("Striga accounts details loaded")
+            Timber.i("Striga accounts details loaded")
         }
     }
 

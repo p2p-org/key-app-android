@@ -14,6 +14,7 @@ interface MyCryptoContract {
         fun showBalance(cellModel: TextViewCellModel?)
         fun showRefreshing(isRefreshing: Boolean)
         fun showActionButtons(buttons: List<ActionButton>)
+        fun showTokenHistory(token: Token.Active)
         fun showItems(items: List<AnyCellItem>)
         fun showEmptyState(isEmpty: Boolean)
         fun navigateToReceive()
@@ -24,6 +25,8 @@ interface MyCryptoContract {
 
     interface Presenter : MvpPresenter<View> {
         fun refreshTokens()
+        fun onTokenClicked(token: Token.Active)
+        fun onAmountClicked()
         fun onReceiveClicked()
         fun onSwapClicked()
         fun toggleTokenVisibility(token: Token.Active)

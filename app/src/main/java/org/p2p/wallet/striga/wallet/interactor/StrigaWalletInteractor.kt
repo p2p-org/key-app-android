@@ -9,6 +9,7 @@ import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
+import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
@@ -28,6 +29,7 @@ class StrigaWalletInteractor(
     suspend fun loadDetailsForStrigaAccounts(): Result<Unit> = kotlin.runCatching {
         getFiatAccountDetails()
         getCryptoAccountDetails()
+        getEurBankingDetails()
         Unit
     }.onFailure {
         Timber.e(it, "Unable to load striga accounts (fiat and crypto) details")
@@ -89,5 +91,13 @@ class StrigaWalletInteractor(
 
     suspend fun getWhitelistedAddresses(): StrigaDataLayerResult<List<StrigaWhitelistedAddressItem>> {
         return whitelistAddressesRepository.getWhitelistedAddresses()
+    }
+
+    suspend fun getEurBankingDetails(): StrigaUserBankingDetails {
+        return walletRepository.getUserBankingDetails(getEurAccountId()).unwrap()
+    }
+
+    suspend fun saveNewEurBankingDetails(userBic: String, userIban: String) {
+        walletRepository.saveUserEurBankingDetails(userBic, userIban)
     }
 }

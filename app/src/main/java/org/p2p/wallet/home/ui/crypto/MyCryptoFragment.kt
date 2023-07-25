@@ -23,7 +23,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentMyCryptoBinding
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
-import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.ui.crypto.bottomsheet.TokenVisibilityChangeBottomSheet
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.ethClaimTokenDelegate
@@ -57,14 +56,13 @@ class MyCryptoFragment :
 
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val glideManager: GlideManager by inject()
-    private val homeAnalytics: HomeAnalytics by inject()
 
     private var listener: RootListener? = null
 
     private val cellAdapter = CommonAnyCellAdapter(
         tokenDelegate(glideManager) { binding, item ->
             with(binding.contentView) {
-                setOnClickListener { onTokenClicked(item.payload) }
+                setOnClickListener { presenter.onTokenClicked(item.payload) }
                 setOnLongClickListener {
                     showTokenVisibilityStateChangeDialog(item)
                     true
@@ -99,6 +97,10 @@ class MyCryptoFragment :
 
     override fun showActionButtons(buttons: List<ActionButton>) {
         binding.viewActionButtons.showActionButtons(buttons)
+    }
+
+    override fun showTokenHistory(token: Token.Active) {
+        replaceFragment(TokenHistoryFragment.create(token))
     }
 
     private fun showTokenVisibilityStateChangeDialog(item: TokenCellModel) {
@@ -166,17 +168,10 @@ class MyCryptoFragment :
     }
 
     private fun onVisibilityToggleClicked() {
-        homeAnalytics.logHiddenTokensClicked()
         presenter.toggleTokenVisibilityState()
     }
 
-    private fun onTokenClicked(token: Token.Active) {
-        homeAnalytics.logMainScreenTokenDetailsOpen(tokenTier = token.tokenSymbol)
-        replaceFragment(TokenHistoryFragment.create(token))
-    }
-
     private fun onHideClicked(token: Token.Active) {
-        homeAnalytics.logHiddenTokensClicked()
         presenter.toggleTokenVisibility(token)
     }
 

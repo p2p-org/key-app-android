@@ -4,21 +4,17 @@ import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import kotlin.reflect.KClass
-import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.analytics.GeneralAnalytics
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentMainBinding
@@ -51,9 +47,6 @@ class MainContainerFragment :
 
     private val binding: FragmentMainBinding by viewBinding()
 
-    private val generalAnalytics: GeneralAnalytics by inject()
-    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
-
     private val sellInteractor: SellInteractor by inject()
 
     private var lastSelectedItemId = R.id.walletItem
@@ -81,12 +74,6 @@ class MainContainerFragment :
                 return@setOnItemSelectedListener true
             }
             buttonCenterAction.setOnClickListener {
-                lifecycleScope.launch {
-                    generalAnalytics.logActionButtonClicked(
-                        lastScreenName = analyticsInteractor.getCurrentScreenName(),
-                        isSellEnabled = sellInteractor.isSellAvailable()
-                    )
-                }
                 presenter.onSendClicked()
             }
         }
@@ -226,7 +213,8 @@ class MainContainerFragment :
             }
             else -> {
                 when (clickedTab) {
-                    ScreenTab.MY_CRYPTO_SCREEN -> presenter.logHomeOpened()
+                    ScreenTab.WALLET_SCREEN -> presenter.logWalletOpened()
+                    ScreenTab.MY_CRYPTO_SCREEN -> presenter.logCryptoOpened()
                     ScreenTab.HISTORY_SCREEN -> presenter.logHistoryOpened()
                     ScreenTab.SETTINGS_SCREEN -> presenter.logSettingsOpened()
                     else -> Unit
