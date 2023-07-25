@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.setMain
 import org.p2p.core.dispatchers.CoroutineDispatchers
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TestCoroutineDispatchers(
+class StandardTestCoroutineDispatchers(
     private val dispatcher: CoroutineDispatcher = StandardTestDispatcher()
 ) : CoroutineDispatchers {
     override val computation: CoroutineDispatcher

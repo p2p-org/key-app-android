@@ -94,8 +94,8 @@ class UserTokensDatabaseRepository(
     override suspend fun saveRatesForTokens(prices: List<TokenServicePrice>) {
         val oldTokens = getUserTokens()
         val newTokens = oldTokens.map { token ->
-            val tokenRate = prices.firstOrNull { token.mintAddress == it.address }?.usdRate
-            token.copy(rate = tokenRate, totalInUsd = tokenRate?.let { token.total.times(it) })
+            val tokenRate = prices.firstOrNull { token.tokenServiceAddress == it.address }
+            token.copy(rate = tokenRate?.usdRate, totalInUsd = tokenRate?.usdRate?.let { token.total.times(it) })
         }
         updateTokens(newTokens)
     }
@@ -120,7 +120,7 @@ class UserTokensDatabaseRepository(
             networkChain = TokenServiceNetwork.SOLANA,
             addresses = listOf(tokenMint.base58Value)
         )
-        return tokenConverter.fromNetwork(
+        return tokenConverter.createToken(
             mintAddress = tokenMint.base58Value,
             totalLamports = newBalanceLamports,
             accountPublicKey = accountPublicKey.base58Value,

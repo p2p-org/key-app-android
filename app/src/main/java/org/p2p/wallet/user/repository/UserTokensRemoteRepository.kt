@@ -29,20 +29,24 @@ class UserTokensRemoteRepository(
         }
 
     private suspend fun mapAccountsToTokens(publicKey: PublicKey, accounts: List<Account>): List<Token.Active> {
-        val tokens = accounts.mapNotNull {
-            val mintAddress = it.account.data.parsed.info.mint
+        val tokens = accounts.mapNotNull { token ->
+            val mintAddress = token.account.data.parsed.info.mint
 
             if (mintAddress == Constants.WRAPPED_SOL_MINT) {
                 // Hiding Wrapped Sol account because we are adding native SOL lower
                 return@mapNotNull null
             }
 
-            val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
-            if (token.decimals == NFT_DECIMALS) return@mapNotNull null
+            val tokenData = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
+            if (tokenData.decimals == NFT_DECIMALS) return@mapNotNull null
             val solPrice = tokenServiceRepository.findTokenPriceByAddress(
-                tokenAddress = token.mintAddress
+                tokenAddress = tokenData.mintAddress
             )
-            TokenConverter.fromNetwork(it, token, solPrice)
+            TokenConverter.fromNetwork(
+                account = token,
+                tokenMetadata = tokenData,
+                price = solPrice
+            )
         }
 
         /*
@@ -51,7 +55,7 @@ class UserTokensRemoteRepository(
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(Constants.WRAPPED_SOL_MINT) ?: return tokens
         val solPrice = tokenServiceRepository.findTokenPriceByAddress(
-            tokenAddress = tokenData.mintAddress
+            tokenAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN
         )
         val solToken = Token.createSOL(
             publicKey = publicKey.toBase58(),

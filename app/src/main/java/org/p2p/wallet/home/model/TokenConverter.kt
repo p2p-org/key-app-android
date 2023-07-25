@@ -3,44 +3,20 @@ package org.p2p.wallet.home.model
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadata
-import org.p2p.core.token.TokenExtension
+import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.solanaj.model.types.Account
-import org.p2p.token.service.api.response.TokenExtensionResponse
-import org.p2p.token.service.api.response.TokenResponse
 import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.configurator.TokenExtensionsConfigurator
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.home.db.TokenExtensionEntity
 
 object TokenConverter {
 
-    fun fromNetwork(response: TokenResponse): TokenMetadata =
-        TokenMetadata(
-            mintAddress = response.address,
-            name = response.name,
-            symbol = response.symbol,
-            iconUrl = response.logoUrl,
-            decimals = response.decimals,
-            isWrapped = response.isWrapped(),
-            extensions = fromNetwork(response.extensions)
-        )
-
-    private fun fromNetwork(response: TokenExtensionResponse?): TokenExtension {
-        return TokenExtension(
-            ruleOfProcessingTokenPriceWs = response?.ruleOfProcessingTokenPriceWs,
-            isPositionOnWs = response?.isPositionOnWs,
-            isTokenCellVisibleOnWs = response?.isTokenCellVisibleOnWs,
-            percentDifferenceToShowByPriceOnWs = response?.percentDifferenceToShowByPriceOnWs,
-            calculationOfFinalBalanceOnWs = response?.calculationOfFinalBalanceOnWs,
-            ruleOfFractionalPartOnWs = response?.ruleOfFractionalPartOnWs,
-            canBeHidden = response?.canBeHidden
-        )
-    }
-
-    fun fromNetwork(
+    fun createToken(
         mintAddress: String,
         totalLamports: BigInteger,
         accountPublicKey: String,
@@ -54,7 +30,7 @@ object TokenConverter {
             null
         }
         val total = totalLamports.toBigDecimal().divide(tokenMetadata.decimals.toPowerValue())
-        return Token.Active(
+        val token = Token.Active(
             publicKey = accountPublicKey,
             tokenSymbol = tokenMetadata.symbol,
             decimals = tokenMetadata.decimals,
@@ -66,8 +42,14 @@ object TokenConverter {
             rate = tokenRate,
             visibility = TokenVisibility.DEFAULT,
             isWrapped = tokenMetadata.isWrapped,
-            extensions = tokenMetadata.extensions
+            tokenServiceAddress = tokenMetadata.mintAddress,
+            tokenExtensions = TokenExtensions.NONE
         )
+        val tokenExtensions = TokenExtensionsConfigurator(
+            extensions = tokenMetadata.extensions,
+            token = token
+        ).config()
+        return token.copy(tokenExtensions = tokenExtensions)
     }
 
     fun fromNetwork(
@@ -78,7 +60,7 @@ object TokenConverter {
         val data = account.account.data.parsed.info
         val mintAddress = data.mint
         val total = data.tokenAmount.amount.toBigInteger()
-        return fromNetwork(
+        return createToken(
             mintAddress = mintAddress,
             totalLamports = total,
             accountPublicKey = account.pubkey,
@@ -114,18 +96,19 @@ object TokenConverter {
             exchangeRate = token.rate?.toString(),
             visibility = token.visibility.stringValue,
             isWrapped = token.isWrapped,
-            extensions = toDatabase(token.extensions)
+            tokenServiceAddress = token.tokenServiceAddress,
+            extensions = toDatabase(token.tokenExtensions)
         )
 
-    fun toDatabase(tokenExtension: TokenExtension?): TokenExtensionEntity {
+    fun toDatabase(tokenExtension: TokenExtensions): TokenExtensionEntity {
         return TokenExtensionEntity(
-            ruleOfProcessingTokenPriceWs = tokenExtension?.ruleOfProcessingTokenPriceWs,
-            isPositionOnWs = tokenExtension?.isPositionOnWs,
-            isTokenCellVisibleOnWs = tokenExtension?.isTokenCellVisibleOnWs,
-            percentDifferenceToShowByPriceOnWs = tokenExtension?.percentDifferenceToShowByPriceOnWs,
-            calculationOfFinalBalanceOnWs = tokenExtension?.calculationOfFinalBalanceOnWs,
-            ruleOfFractionalPartOnWs = tokenExtension?.ruleOfFractionalPartOnWs,
-            canBeHidden = tokenExtension?.canBeHidden
+            ruleOfProcessingTokenPrice = tokenExtension.ruleOfProcessingTokenPrice,
+            isTokenVisibleOnWalletScreen = tokenExtension.isTokenVisibleOnWalletScreen,
+            isTokenCellVisibleOnWalletScreen = tokenExtension.isTokenCellVisibleOnWalletScreen,
+            tokenPercentDifferenceOnWalletScreen = tokenExtension.tokenPercentDifferenceOnWalletScreen,
+            isCalculateWithTotalBalance = tokenExtension.isCalculateWithTotalBalance,
+            tokenFractionRuleOnWalletScreen = tokenExtension.tokenFractionRuleOnWalletScreen,
+            canTokenBeHidden = tokenExtension.canTokenBeHidden
         )
     }
 
@@ -142,17 +125,18 @@ object TokenConverter {
             rate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
             isWrapped = entity.isWrapped,
-            extensions = fromDatabase(entity.extensions)
+            tokenServiceAddress = entity.tokenServiceAddress,
+            tokenExtensions = fromDatabase(entity.extensions)
         )
 
-    fun fromDatabase(entity: TokenExtensionEntity?): TokenExtension =
-        TokenExtension(
-            ruleOfProcessingTokenPriceWs = entity?.ruleOfProcessingTokenPriceWs,
-            isPositionOnWs = entity?.isPositionOnWs,
-            isTokenCellVisibleOnWs = entity?.isTokenCellVisibleOnWs,
-            percentDifferenceToShowByPriceOnWs = entity?.percentDifferenceToShowByPriceOnWs,
-            calculationOfFinalBalanceOnWs = entity?.calculationOfFinalBalanceOnWs,
-            ruleOfFractionalPartOnWs = entity?.ruleOfFractionalPartOnWs,
-            canBeHidden = entity?.canBeHidden
+    fun fromDatabase(entity: TokenExtensionEntity?): TokenExtensions =
+        TokenExtensions(
+            ruleOfProcessingTokenPrice = entity?.ruleOfProcessingTokenPrice,
+            isTokenVisibleOnWalletScreen = entity?.isTokenVisibleOnWalletScreen,
+            isTokenCellVisibleOnWalletScreen = entity?.isTokenCellVisibleOnWalletScreen,
+            tokenPercentDifferenceOnWalletScreen = entity?.tokenPercentDifferenceOnWalletScreen,
+            isCalculateWithTotalBalance = entity?.isCalculateWithTotalBalance,
+            tokenFractionRuleOnWalletScreen = entity?.tokenFractionRuleOnWalletScreen,
+            canTokenBeHidden = entity?.canTokenBeHidden
         )
 }

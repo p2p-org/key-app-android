@@ -1,8 +1,11 @@
 package org.p2p.ethereumkit.external.model
 
 import java.math.BigDecimal
+import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
+import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.token.service.model.TokenServiceMetadata
 
 object EthTokenConverter {
 
@@ -32,7 +35,26 @@ object EthTokenConverter {
             total = total,
             rate = metadata.price,
             isClaiming = isClaiming,
-            latestActiveBundleId = bundleId
+            latestActiveBundleId = bundleId,
+            tokenServiceAddress = metadata.tokenServiceAddress
+        )
+    }
+
+    fun toEthTokenMetadata(
+        ethAddress: String,
+        metadata: TokenServiceMetadata,
+        tokenBalance: BigInteger
+    ): EthTokenMetadata {
+        val erc20Token = ERC20Tokens.findToken(ethAddress)
+        return EthTokenMetadata(
+            contractAddress = EthAddress(erc20Token.contractAddress),
+            mintAddress = erc20Token.mintAddress,
+            balance = tokenBalance,
+            decimals = metadata.decimals,
+            logoUrl = metadata.logoUrl,
+            tokenName = metadata.name,
+            symbol = erc20Token.replaceTokenSymbol.orEmpty(),
+            price = null
         )
     }
 }

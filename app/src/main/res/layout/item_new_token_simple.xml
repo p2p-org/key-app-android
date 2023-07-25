@@ -12,7 +12,7 @@
     android:paddingHorizontal="16dp">
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView
-        android:id="@+id/tokenImageView"
+        android:id="@+id/imageViewToken"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginVertical="16dp"
@@ -23,14 +23,14 @@
         tools:src="@tools:sample/avatars" />
 
     <ImageView
-        android:id="@+id/wrappedImageView"
+        android:id="@+id/imageViewWrapped"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="-4dp"
         android:src="@drawable/ic_wrapped"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
-        app:layout_constraintEnd_toEndOf="@id/tokenImageView"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
+        app:layout_constraintEnd_toEndOf="@id/imageViewToken"
         tools:ignore="ContentDescription"
         tools:visibility="visible" />
 
@@ -45,8 +45,8 @@
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@+id/textViewUsdValue"
         app:layout_constraintEnd_toStartOf="@id/imageViewCheck"
-        app:layout_constraintStart_toEndOf="@id/tokenImageView"
-        app:layout_constraintTop_toTopOf="@id/tokenImageView"
+        app:layout_constraintStart_toEndOf="@id/imageViewToken"
+        app:layout_constraintTop_toTopOf="@id/imageViewToken"
         tools:text="SOL" />
 
     <TextView
@@ -58,7 +58,7 @@
         android:singleLine="true"
         android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
         android:textColor="@color/textIconSecondary"
-        app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
         app:layout_constraintEnd_toStartOf="@id/imageViewCheck"
         app:layout_constraintStart_toStartOf="@id/textViewTokenSymbol"
         app:layout_constraintTop_toBottomOf="@id/textViewTokenSymbol"

@@ -29,6 +29,8 @@ interface WalletContract {
         fun navigateToStrigaByBanner(status: StrigaKycStatusBanner)
         fun showAddressCopied(addressOrUsername: String)
         fun setCellItems(items: List<AnyCellItem>)
+        fun setWithdrawButtonIsVisible(isVisible: Boolean)
+        fun navigateToOffRamp()
     }
 
     interface Presenter : MvpPresenter<View> {

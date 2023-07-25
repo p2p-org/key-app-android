@@ -54,7 +54,6 @@ class TokenServiceCoordinator(
 
     fun refresh() {
         Timber.tag(TAG).i("Refreshing Token Service loaders")
-
         appScope.launch {
             solanaTokensLoader.refresh()
             ethereumTokensLoader.refreshIfEnabled()
@@ -65,10 +64,6 @@ class TokenServiceCoordinator(
 
     suspend fun getUserTokens(): List<Token.Active> {
         return solanaTokensLoader.getUserTokens()
-    }
-
-    fun getEthTokens(): List<Token.Eth> {
-        return ethereumTokensLoader.getEthTokens()
     }
 
     private fun mapTokenState(solState: SolanaTokenLoadState, ethState: EthTokenLoadState): UserTokensState =

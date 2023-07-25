@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="topup_your_account">Top up your account</string>
+    <string name="topup_your_account">Add money</string>
     <string name="bank_transfer_title">Bank transfer</string>
-    <string name="bank_transfer_subtitle">Up to 3 days · 0% fees</string>
+    <string name="bank_transfer_subtitle">0% fees</string>
     <string name="bank_card_title">Bank card</string>
-    <string name="bank_card_subtitle">Instant · 4,5% fees</string>
+    <string name="bank_card_subtitle">4,5% fees</string>
     <string name="crypto_title">Crypto</string>
-    <string name="crypto_subtitle">Up to 1 hour · 0% fees</string>
+    <string name="crypto_subtitle">0% fees</string>
 
     <string name="striga_signup_finish_title">Thank you</string>
     <string name="striga_signup_finish_subtitle">
@@ -129,6 +129,31 @@
     <string name="striga_iban_account_currency">Currency</string>
     <string name="striga_iban_account_bic">BIC</string>
     <string name="striga_iban_account_beneficiary">Beneficiary</string>
+
+    <string name="striga_off_ramp_title">Withdraw</string>
+    <string name="striga_off_ramp_inform">For this transfer, the exchange rate isn\'t guaranteed: we will use the rate at the moment of receiving money</string>
+    <string name="striga_off_ramp_you_pay">You pay</string>
+    <string name="striga_off_ramp_you_receive">You receive</string>
+    <string name="striga_off_ramp_button_next">Next</string>
+    <string name="striga_off_ramp_button_enter_amount">Enter the amount</string>
+    <string name="striga_off_ramp_button_getting_rates">Getting rates</string>
+    <string name="striga_off_ramp_button_error_general">Can\'t withdraw now</string>
+    <string name="striga_off_ramp_button_error_insufficient_balance">Not enough money</string>
+    <string name="striga_off_ramp_button_error_min_limit">10 EUR is minimal amount for transfer</string>
+    <string name="striga_off_ramp_button_error_max_limit">Only 15 000 EUR per one transfer</string>
+
+    <string name="striga_withdrawal_title">Withdrawal</string>
+    <string name="striga_withdrawal_iban_title">Your IBAN</string>
+    <string name="striga_withdrawal_iban_hint">Your IBAN number</string>
+    <string name="striga_withdrawal_bic_title">Your BIC</string>
+    <string name="striga_withdrawal_bic_hint">BIC code of your bank</string>
+    <string name="striga_withdrawal_receiver_title">Receiver</string>
+    <string name="striga_withdrawal_receiver_label">
+        Your bank account name must match the name registered to your Key App account
+    </string>
+    <string name="striga_withdrawal_validation_empty_error">Could not be empty</string>
+    <string name="striga_withdrawal_validation_format_error">Incorrect format</string>
+
 
     <string name="striga_withdrawal_title">Withdrawal</string>
     <string name="striga_withdrawal_iban_title">Your IBAN</string>

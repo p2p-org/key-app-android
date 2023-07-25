@@ -3,22 +3,18 @@ package org.p2p.ethereumkit.external.repository
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.TOKEN_SERVICE_NATIVE_ETH_TOKEN
 import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalanceResponse
-import org.p2p.ethereumkit.external.core.CoroutineDispatchers
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.model.EthTokenConverter
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
-import org.p2p.ethereumkit.external.model.mapToTokenMetadata
 import org.p2p.ethereumkit.external.token.EthereumTokensLocalRepository
 import org.p2p.ethereumkit.external.token.EthereumTokenRepository
 import org.p2p.ethereumkit.internal.core.TransactionSignerEip1559
@@ -26,14 +22,17 @@ import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
 import org.p2p.ethereumkit.internal.models.Chain
 import org.p2p.ethereumkit.internal.models.Signature
+import org.p2p.token.service.model.TokenServiceMetadata
+import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.TokenServiceRepository
 
 private val MINIMAL_DUST = BigDecimal("5")
 
 internal class EthereumKitRepository(
     private val tokensRepository: EthereumTokenRepository,
     private val tokensLocalRepository: EthereumTokensLocalRepository,
-    private val dispatchers: CoroutineDispatchers,
+    private val tokenServiceRepository: TokenServiceRepository,
     private val converter: EthTokenConverter
 ) : EthereumRepository {
 
@@ -44,6 +43,12 @@ internal class EthereumKitRepository(
             publicKey = Signer.address(words = seedPhrase, chain = Chain.Ethereum),
             privateKey = Signer.privateKey(words = seedPhrase, chain = Chain.Ethereum)
         )
+
+        val ethAddress = tokenKeyProvider?.publicKey ?: return
+    }
+
+    override fun isInitialized(): Boolean {
+        return tokenKeyProvider != null
     }
 
     override fun getPrivateKey(): BigInteger {
@@ -75,7 +80,6 @@ internal class EthereumKitRepository(
             val walletTokens = buildList<EthTokenMetadata> {
                 this += loadTokensMetadata()
             }.map { tokenMetadata ->
-
                 var isClaiming = false
                 var latestBundleId: String? = null
                 var tokenAmount: BigDecimal? = null
@@ -123,33 +127,56 @@ internal class EthereumKitRepository(
         return tokenMetadata.contractAddress == claimToken.contractAddress && claimToken.isClaiming
     }
 
-    private suspend fun getEthToken(): EthTokenMetadata {
-        val ethContractAddress = tokenKeyProvider?.publicKey ?: throwInitError()
-        return EthTokenMetadata(
-            contractAddress = ethContractAddress,
-            mintAddress = ERC20Tokens.ETH.mintAddress,
-            balance = getBalance(),
-            decimals = ERC20Tokens.ETH_DECIMALS,
-            logoUrl = ERC20Tokens.ETH.tokenIconUrl,
-            tokenName = ERC20Tokens.ETH.replaceTokenName.orEmpty(),
-            symbol = ERC20Tokens.ETH.replaceTokenSymbol.orEmpty(),
-        )
-    }
-
     override fun getAddress(): EthAddress {
         return tokenKeyProvider?.publicKey ?: throwInitError()
     }
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
-        val tokenAddresses = ERC20Tokens.values().map { EthAddress(it.contractAddress) }
 
-        return loadTokenBalances(publicKey, tokenAddresses).map { tokenBalance ->
-            getMetadataAsync(
+        val erc20TokensAddresses = ERC20Tokens.values().map { it.contractAddress }
+
+        val allTokensAddresses = buildList<String> {
+            this += TOKEN_SERVICE_NATIVE_ETH_TOKEN
+            this += erc20TokensAddresses
+        }
+
+        val tokensBalances = loadTokenBalances(publicKey, erc20TokensAddresses.map(::EthAddress))
+
+        val tokensMetadata = tokenServiceRepository.loadMetadataForTokens(
+            chain = TokenServiceNetwork.ETHEREUM,
+            tokenAddresses = allTokensAddresses
+        )
+
+        val nativeEthMetadata = tokensMetadata.firstOrNull {
+            it.address == TOKEN_SERVICE_NATIVE_ETH_TOKEN
+        } ?: return emptyList()
+        val ethBalance = getBalance()
+
+        val nativeEthToken = createNativeEthToken(nativeEthMetadata, ethBalance)
+        val erc20TokensMetadata = tokensMetadata.map { metadata ->
+            val tokenBalance = tokensBalances
+                .firstOrNull { it.contractAddress.hex == metadata.address }
+                ?.tokenBalance
+                .orZero()
+            converter.toEthTokenMetadata(
+                metadata = metadata,
                 tokenBalance = tokenBalance,
-                contractAddress = tokenBalance.contractAddress
+                ethAddress = metadata.address
             )
-        }.awaitAll()
+        }
+        return buildList {
+            this += nativeEthToken
+            this += erc20TokensMetadata
+        }
+    }
+
+    private fun createNativeEthToken(tokenMetadata: TokenServiceMetadata, balance: BigInteger): EthTokenMetadata {
+        return converter.toEthTokenMetadata(
+            ethAddress = getAddress().hex,
+            metadata = tokenMetadata,
+            tokenBalance = balance,
+        )
     }
 
     private suspend fun loadTokenBalances(
@@ -158,15 +185,6 @@ internal class EthereumKitRepository(
     ): List<TokenBalanceResponse> {
         return tokensRepository.getTokenBalances(address, tokenAddresses).balances
     }
-
-    private suspend fun getMetadataAsync(tokenBalance: TokenBalanceResponse, contractAddress: EthAddress) =
-        withContext(dispatchers.io) {
-            async {
-                val metadata = tokensRepository.getTokenMetadata(contractAddress)
-                val erc20Token = ERC20Tokens.findToken(contractAddress)
-                mapToTokenMetadata(tokenBalance, metadata, erc20Token)
-            }
-        }
 
     override fun getWalletTokensFlow(): Flow<List<Token.Eth>> {
         return tokensLocalRepository.getTokensFlow()

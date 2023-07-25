@@ -72,7 +72,8 @@ object SendModule : InjectionModule {
                 sendModeProvider = get(),
                 alertErrorsLogger = get(),
                 historyInteractor = get(),
-                userTokensInteractor = get()
+                userTokensInteractor = get(),
+                tokenServiceCoordinator = get()
             )
         } bind NewSendContract.Presenter::class
         factoryOf(::NewSendDetailsPresenter) bind NewSendDetailsContract.Presenter::class

@@ -46,6 +46,9 @@ data class TokenEntity(
     @ColumnInfo(name = COLUMN_WRAPPED)
     val isWrapped: Boolean,
 
+    @ColumnInfo(name = COLUMN_TOKEN_SERVICE_ADDRESS)
+    val tokenServiceAddress: String,
+
     @Embedded(prefix = COLUMN_EXTENSIONS)
     val extensions: TokenExtensionEntity?
 ) {
@@ -62,6 +65,7 @@ data class TokenEntity(
         const val COLUMN_EXCHANGE_RATE = "exchange_rate"
         const val COLUMN_VISIBILITY = "visibility"
         const val COLUMN_WRAPPED = "wrapped"
+        const val COLUMN_TOKEN_SERVICE_ADDRESS = "token_service_address"
         const val COLUMN_EXTENSIONS = "ext_"
     }
 }

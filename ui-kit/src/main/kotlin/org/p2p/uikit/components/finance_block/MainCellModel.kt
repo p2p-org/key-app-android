@@ -14,6 +14,7 @@ data class MainCellModel(
     val accessibility: ViewAccessibilityCellModel = ViewAccessibilityCellModel(),
     val background: DrawableCellModel? = DrawableCellModel(tint = R.color.snow),
     val styleType: MainCellStyle = MainCellStyle.FINANCE_BLOCK,
+    val horizontalMargins: Int = 0,
     override val payload: Any? = null,
 ) : CellModelPayload, AnyCellItem {
 

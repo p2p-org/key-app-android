@@ -20,6 +20,7 @@ class FilesDirStorageRepository(
                 context.openFileOutput(fileName, Context.MODE_PRIVATE)
                     .bufferedWriter()
                     .use { gson.toJson(jsonObject, it) }
+                Timber.i("File $fileName saved")
             } catch (e: Throwable) {
                 Timber.e(e, "Error saving json file: $fileName")
             }
@@ -42,7 +43,11 @@ class FilesDirStorageRepository(
         try {
             context.openFileInput(file.name)
                 .bufferedReader()
-                .useLines { lines -> ExternalFile(lines.joinToString()) }
+                .useLines { lines ->
+                    val joinedLines = lines.joinToString("")
+                    Timber.i("File $filePrefix is read successfully: ${joinedLines.length}")
+                    ExternalFile(joinedLines)
+                }
         } catch (e: Throwable) {
             Timber.e(e, "Error reading json file: $filePrefix")
             null
