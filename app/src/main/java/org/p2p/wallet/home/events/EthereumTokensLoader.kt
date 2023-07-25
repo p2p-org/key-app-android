@@ -43,16 +43,11 @@ class EthereumTokensLoader(
         ethereumInteractor.observeTokensFlow()
             .filterNot { it.isEmpty() }
             .onEach { ethTokens ->
-                val claimTokens = ethereumInteractor.loadClaimTokens()
+
                 val filteredEthTokens = ethTokens.filter { token ->
-
-                    val tokenBundle = claimTokens.firstOrNull {
-                        token.publicKey == it.contractAddress.hex
-                    }
                     val tokenFiatAmount = token.totalInUsd.orZero()
-                    val isClaimInProgress = tokenBundle?.isClaiming ?: false
+                    val isClaimInProgress = token.isClaiming
                     val isFiatAmountAboveThreshold = tokenFiatAmount >= MINIMAL_DUST
-
                     isFiatAmountAboveThreshold || isClaimInProgress
                 }
                 updateState(EthTokenLoadState.Loaded(filteredEthTokens))

@@ -57,4 +57,22 @@ object EthTokenConverter {
             price = null
         )
     }
+
+    fun createNativeEthMetadata(
+        ethAddress: String,
+        metadata: TokenServiceMetadata,
+        tokenBalance: BigInteger
+    ): EthTokenMetadata {
+        val erc20Token = ERC20Tokens.findToken(ethAddress)
+        return EthTokenMetadata(
+            contractAddress = EthAddress(ethAddress),
+            mintAddress = erc20Token.mintAddress,
+            balance = tokenBalance,
+            decimals = metadata.decimals,
+            logoUrl = erc20Token.tokenIconUrl,
+            tokenName = metadata.name,
+            symbol = erc20Token.replaceTokenSymbol.orEmpty(),
+            price = null
+        )
+    }
 }
