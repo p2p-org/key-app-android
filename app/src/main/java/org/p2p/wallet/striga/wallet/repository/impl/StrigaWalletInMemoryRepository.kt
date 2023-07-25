@@ -1,8 +1,8 @@
 package org.p2p.wallet.striga.wallet.repository.impl
 
 import org.p2p.wallet.striga.user.storage.StrigaStorageContract
-import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 
@@ -30,7 +30,7 @@ internal class StrigaWalletInMemoryRepository(
             strigaStorage.userWallet = value
         }
 
-    var userBankingDetails: StrigaUserBankingDetails?
+    var userEurBankingDetails: StrigaUserBankingDetails?
         get() = cachedUserBankingDetails ?: strigaStorage.bankingDetails?.also { cachedUserBankingDetails = it }
         set(value) {
             // no need to save empty bic and iban, try to fetch again if needed

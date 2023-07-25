@@ -153,20 +153,4 @@
     </string>
     <string name="striga_withdrawal_validation_empty_error">Could not be empty</string>
     <string name="striga_withdrawal_validation_format_error">Incorrect format</string>
-
-
-    <string name="striga_withdrawal_title">Withdrawal</string>
-    <string name="striga_withdrawal_iban_title">Your IBAN</string>
-    <string name="striga_withdrawal_iban_hint">Your IBAN number</string>
-    <string name="striga_withdrawal_bic_title">Your BIC</string>
-    <string name="striga_withdrawal_bic_hint">BIC code of your bank</string>
-    <string name="striga_withdrawal_receiver_title">Receiver</string>
-    <string name="striga_withdrawal_receiver_label">
-        Your bank account name must match the name registered to your Key App account
-    </string>
-    <string name="striga_withdrawal_validation_empty_error">Could not be empty</string>
-    <string name="striga_withdrawal_validation_format_error">Incorrect format</string>
-
-
-
 </resources>

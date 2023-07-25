@@ -18,7 +18,7 @@ class StrigaWithdrawPresenter(
         super.attach(view)
         launch {
             try {
-                val offRampCredentials = strigaWalletInteractor.getEurAccountStatement()
+                val offRampCredentials = strigaWalletInteractor.getEurBankingDetails()
                 enteredIban = offRampCredentials.bankingIban.orEmpty()
                 enteredBic = offRampCredentials.bankingBic.orEmpty()
 
@@ -43,7 +43,7 @@ class StrigaWithdrawPresenter(
                 view?.showLoading(isLoading = true)
                 // make request to SEPA OR Solana blockchain
 
-                strigaWalletInteractor.saveNewUserBankingDetails(
+                strigaWalletInteractor.saveNewEurBankingDetails(
                     userBic = enteredBic,
                     userIban = enteredIban
                 )

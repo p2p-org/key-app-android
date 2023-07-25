@@ -30,5 +30,5 @@ interface StrigaWalletRepository {
         accountId: StrigaAccountId,
     ): StrigaDataLayerResult<StrigaUserBankingDetails>
 
-    suspend fun saveUserBankingDetails(userBic: String, userIban: String)
+    suspend fun saveUserEurBankingDetails(userBic: String, userIban: String)
 }
