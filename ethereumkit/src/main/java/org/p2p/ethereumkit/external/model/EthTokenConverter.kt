@@ -3,6 +3,7 @@ package org.p2p.ethereumkit.external.model
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.token.service.model.TokenServiceMetadata
@@ -54,6 +55,7 @@ object EthTokenConverter {
             logoUrl = erc20Token.tokenIconUrl,
             tokenName = metadata.name,
             symbol = erc20Token.replaceTokenSymbol.orEmpty(),
+            tokenServiceAddress = erc20Token.contractAddress,
             price = null
         )
     }
@@ -72,6 +74,7 @@ object EthTokenConverter {
             logoUrl = erc20Token.tokenIconUrl,
             tokenName = metadata.name,
             symbol = erc20Token.replaceTokenSymbol.orEmpty(),
+            tokenServiceAddress = Constants.TOKEN_SERVICE_NATIVE_ETH_TOKEN,
             price = null
         )
     }
