@@ -2,9 +2,11 @@ package org.p2p.wallet.striga.offramp.ui
 
 import android.os.Bundle
 import android.view.View
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import java.math.BigDecimal
 import org.p2p.uikit.components.UiKitButtonIconState
+import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -95,6 +97,34 @@ class StrigaOffRampFragment :
 
     override fun navigateToWithdraw(amountInUsdc: BigDecimal) {
         strigaFragmentFactory.withdrawUsdcFragment(amountInUsdc).let(::replaceFragment)
+    }
+
+    override fun showUiKitSnackBar(
+        message: String?,
+        messageResId: Int?,
+        onDismissed: () -> Unit,
+        actionButtonResId: Int?,
+        actionBlock: ((Snackbar) -> Unit)?
+    ) {
+        require(message != null || messageResId != null) {
+            "Snackbar text must be set from `message` or `messageResId` params"
+        }
+        val snackbarText: String = message ?: messageResId?.let(::getString)!!
+        val root = requireView().rootView
+        if (actionButtonResId != null && actionBlock != null) {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                actionButtonText = getString(actionButtonResId),
+                actionButtonListener = actionBlock,
+                enableBottomNavOffset = false
+            )
+        } else {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                onDismissed = onDismissed,
+                enableBottomNavOffset = false
+            )
+        }
     }
 
     private fun FragmentStrigaOffRampBinding.setupView() {
