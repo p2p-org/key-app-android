@@ -26,9 +26,5 @@ data class TokenExtensions(
 }
 
 fun List<Token.Active>.filterTokensForWalletScreen(): List<Token.Active> {
-    return filter { it.tokenExtensions.isTokenVisibleOnWalletScreen == true }
-}
-
-fun List<Token.Active>.filterIsUsdcTokens(): List<Token.Active> {
-    return filter { it.tokenSymbol.equals(Constants.USDC_SYMBOL, ignoreCase = true) }
+    return filter { it.isUSDC || it.mintAddress == Constants.USDC_MINT }
 }

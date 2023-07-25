@@ -92,8 +92,7 @@ class EthereumTokensLoader(
     }
 
     private fun isEnabled(): Boolean {
-        return seedPhraseProvider.getUserSeedPhrase()
-            .seedPhrase.isNotEmpty() && bridgeFeatureToggle.isFeatureEnabled
+        return seedPhraseProvider.isAvailable && bridgeFeatureToggle.isFeatureEnabled
     }
 
     private fun setupEthereum() {
