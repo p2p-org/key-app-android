@@ -191,7 +191,7 @@ sealed class Token constructor(
 
     @IgnoredOnParcel
     val isUSDC: Boolean
-        get() = tokenSymbol.equals(USDC_SYMBOL,ignoreCase = true)
+        get() = tokenSymbol.equals(USDC_SYMBOL, ignoreCase = true)
 
     @IgnoredOnParcel
     val isUSDT: Boolean
