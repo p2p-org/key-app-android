@@ -58,8 +58,8 @@ import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
+import org.p2p.wallet.transaction.model.progressstate.JupiterSwapProgressState
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetToken
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -204,7 +204,7 @@ class JupiterSwapPresenter(
                     )
                     tokenServiceCoordinator.refresh()
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
-                    val transactionState = TransactionState.JupiterSwapSuccess
+                    val transactionState = JupiterSwapProgressState.Success
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
 
                     val pendingTransaction = buildPendingTransaction(result, currentState)
@@ -225,7 +225,7 @@ class JupiterSwapPresenter(
                         Timber.i("Swap failure: low slippage = unknown")
                         TransactionStateSwapFailureReason.Unknown(result.message.orEmpty())
                     }
-                    val transactionState = TransactionState.JupiterSwapFailed(failure = causeFailure)
+                    val transactionState = JupiterSwapProgressState.Error(failure = causeFailure)
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
                     Timber.e(result, "Failed to swap tokens")
                     view?.showDefaultSlider()

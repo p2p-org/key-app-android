@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.transaction.model.TransactionExecutionState
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 
 /**
  * This class is represent storage for saving and getting transactions

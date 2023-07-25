@@ -1,11 +1,12 @@
 package org.p2p.wallet.home.ui.crypto.handlers
 
 import org.p2p.core.token.Token
-import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
+import org.p2p.wallet.R
 import org.p2p.wallet.home.ui.crypto.MyCryptoContract
 import org.p2p.wallet.home.ui.crypto.MyCryptoInteractor
+import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 
 class BridgeClaimBundleClickHandler(
     private val cryptoMapper: MyCryptoMapper,
@@ -29,7 +30,7 @@ class BridgeClaimBundleClickHandler(
             )
             transactionManager.emitTransactionState(
                 latestActiveBundleId,
-                TransactionState.ClaimProgress(latestActiveBundleId)
+                TransactionState.Progress(description = R.string.bridge_claim_description_progress)
             )
             view?.showProgressDialog(
                 bundleId = bridgeBundle.bundleId,

@@ -20,6 +20,7 @@ import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -119,6 +120,6 @@ class HistoryFragment :
     }
 
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
-        listener?.showTransactionProgress(bundleId, progressDetails)
+        listener?.showTransactionProgress(bundleId, progressDetails, SendSwapTransactionProgressHandler.QUALIFIER)
     }
 }

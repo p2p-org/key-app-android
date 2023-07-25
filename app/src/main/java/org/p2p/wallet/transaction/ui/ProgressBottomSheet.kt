@@ -17,7 +17,8 @@ import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.SendSwapProgressState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -96,28 +97,33 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
                 TransitionManager.beginDelayedTransition(binding.root)
                 when (state) {
                     is TransactionState.Progress -> handleProgress(state)
-                    is TransactionState.SendSuccess -> handleSendSuccess(state)
-                    is TransactionState.SwapSuccess -> handleSwapSuccess(state)
-                    is TransactionState.Error -> handleError(state)
-                    is TransactionState.JupiterSwapSuccess -> {
-                        // TODO: WHAT SHOULD BE HERE?
-                    }
-                    is TransactionState.JupiterSwapFailed -> {
-                        // TODO: WHAT SHOULD BE HERE?
-                    }
+                    is SendSwapProgressState.Success -> handleSendSuccess(state)
+                    is SendSwapProgressState.Error -> handleError(state)
                     else -> Unit
                 }
             }
         }
     }
 
-    private fun handleSwapSuccess(state: TransactionState.SwapSuccess) {
-        val message = getString(R.string.swap_successfully_format, state.fromToken, state.toToken)
+    private fun handleSuccess(state: SendSwapProgressState.Success) {
+        if (state.destinationTokenSymbol == null) {
+            handleSendSuccess(state)
+        } else {
+            handleSwapSuccess(state)
+        }
+    }
+
+    private fun handleSwapSuccess(state: SendSwapProgressState.Success) {
+        val message = getString(
+            R.string.swap_successfully_format,
+            state.sourceTokenSymbol,
+            state.destinationTokenSymbol
+        )
         val signature = state.transaction.getHistoryTransactionId()
         setSuccessState(message, signature)
     }
 
-    private fun handleSendSuccess(state: TransactionState.SendSuccess) {
+    private fun handleSendSuccess(state: SendSwapProgressState.Success) {
         val message = getString(R.string.send_successfully_format, state.sourceTokenSymbol)
         val signature = state.transaction.getHistoryTransactionId()
         setSuccessState(message, signature)
@@ -155,7 +161,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
         }
     }
 
-    private fun handleError(state: TransactionState.Error) {
+    private fun handleError(state: SendSwapProgressState.Error) {
         with(binding) {
             titleTextView.text = state.message
             progressBar.isVisible = false
