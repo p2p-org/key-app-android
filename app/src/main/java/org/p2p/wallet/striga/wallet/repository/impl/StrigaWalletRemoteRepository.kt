@@ -34,7 +34,7 @@ internal class StrigaWalletRemoteRepository(
         return walletMapper.fromNetwork(response)
     }
 
-    suspend fun getAccountStatement(
+    suspend fun getUserBankingDetails(
         accountId: StrigaAccountId,
         strigaUserFullName: String
     ): StrigaUserBankingDetails {

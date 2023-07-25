@@ -5,6 +5,7 @@ import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 
 interface StrigaStorageContract {
@@ -12,6 +13,7 @@ interface StrigaStorageContract {
     var userWallet: StrigaUserWallet?
     var fiatAccount: StrigaFiatAccountDetails?
     var cryptoAccount: StrigaCryptoAccountDetails?
+    var bankingDetails: StrigaUserBankingDetails?
     var smsExceededVerificationAttemptsMillis: MillisSinceEpoch
     var smsExceededResendAttemptsMillis: MillisSinceEpoch
 

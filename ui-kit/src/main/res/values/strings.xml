@@ -15,6 +15,9 @@
     <string name="common_swap">Swap</string>
     <string name="common_all">All</string>
     <string name="common_share">Share</string>
+    <string name="common_iban">IBAN</string>
+    <string name="common_bic">BIC</string>
+    <string name="common_withdraw">Withdraw</string>
 
     <string name="tip_button_next_title">Next</string>
     <string name="tip_button_skip_all_title">Skip all</string>

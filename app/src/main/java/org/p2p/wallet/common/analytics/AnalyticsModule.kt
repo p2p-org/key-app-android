@@ -8,7 +8,6 @@ import org.koin.dsl.module
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
-import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.UsernameAnalytics
@@ -20,7 +19,8 @@ import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.wallet.home.analytics.HomeAnalytics
+import org.p2p.wallet.home.ui.crypto.analytics.CryptoScreenAnalytics
+import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
@@ -42,9 +42,7 @@ object AnalyticsModule : InjectionModule {
             )
             Analytics(trackers)
         }
-
         factoryOf(::AdminAnalytics)
-        factoryOf(::GeneralAnalytics)
         factoryOf(::AuthAnalytics)
         factoryOf(::ReceiveAnalytics)
         factoryOf(::AnalyticsPushChannel)
@@ -53,7 +51,8 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::ScreensAnalyticsInteractor)
         factoryOf(::OnboardingAnalytics)
         factoryOf(::BrowseAnalytics)
-        factoryOf(::HomeAnalytics)
+        factoryOf(::MainScreenAnalytics)
+        factoryOf(::CryptoScreenAnalytics)
         factoryOf(::UsernameAnalytics)
         factoryOf(::CreateWalletAnalytics)
         factoryOf(::RestoreWalletAnalytics)

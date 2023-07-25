@@ -39,6 +39,7 @@ interface WalletContract {
         fun onAddMoneyClicked()
         fun onProfileClick()
         fun onAddressClicked()
+        fun onAmountClicked()
         fun onStrigaOnRampClicked(item: StrigaOnRampCellModel)
         fun onStrigaBannerClicked(item: StrigaBanner)
         fun onOnRampConfirmed(
