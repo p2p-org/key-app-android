@@ -6,7 +6,10 @@
 
     <!-- Home -->
     <string name="main_loading">Loading</string>
-    <string name="home_address_snackbar_text">Address was copied to clipboard</string>
+
+    <!--Wallet-->
+    <string name="wallet_address_copy_snackbar_text">Address copied to clipboard</string>
+    <string name="wallet_username_copy_snackbar_text">Username copied to clipboard</string>
 
     <!--Home Screen Actions-->
     <string name="home_actions_title">Actions</string>

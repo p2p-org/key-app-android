@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.ui.wallet
 
+import androidx.annotation.StringRes
 import org.p2p.core.crypto.Base58String
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -27,7 +28,7 @@ interface WalletContract {
             token: StrigaOnRampCellModel
         )
         fun navigateToStrigaByBanner(status: StrigaKycStatusBanner)
-        fun showAddressCopied(addressOrUsername: String)
+        fun showAddressCopied(addressOrUsername: String, @StringRes stringResId: Int)
         fun setCellItems(items: List<AnyCellItem>)
         fun setWithdrawButtonIsVisible(isVisible: Boolean)
         fun navigateToOffRamp()
