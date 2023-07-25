@@ -18,7 +18,7 @@ class StrigaWithdrawPresenter(
         super.attach(view)
         launch {
             try {
-                val offRampCredentials = strigaWalletInteractor.getEurAccountStatement()
+                val offRampCredentials = strigaWalletInteractor.getEurBankingDetails()
                 enteredIban = offRampCredentials.bankingIban.orEmpty()
                 enteredBic = offRampCredentials.bankingBic.orEmpty()
 
@@ -41,8 +41,12 @@ class StrigaWithdrawPresenter(
         launch {
             try {
                 view?.showLoading(isLoading = true)
-                // make request to SEPA OR Solana blockhain
-                // save bic and iban to local state
+                // make request to SEPA OR Solana blockchain
+
+                strigaWalletInteractor.saveNewEurBankingDetails(
+                    userBic = enteredBic,
+                    userIban = enteredIban
+                )
             } catch (error: Throwable) {
                 Timber.e(error, "Failed to make withdrawal")
             }

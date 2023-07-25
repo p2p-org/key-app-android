@@ -8,6 +8,7 @@ import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 
 private const val KEY_USER_STATUS =
@@ -24,6 +25,8 @@ private const val KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS =
     "KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS"
 private const val KEY_USER_BANNER_IS_HIDDEN =
     "KEY_USER_BANNER_IS_HIDDEN"
+private const val KEY_USER_BANKING_DETAILS =
+    "KEY_USER_BANKING_DETAILS"
 
 class StrigaStorage(
     private val encryptedPrefs: EncryptedSharedPreferences,
@@ -54,6 +57,13 @@ class StrigaStorage(
         preferences = encryptedPrefs,
         keyProvider = { KEY_CRYPTO_ACCOUNT_DETAILS },
         type = StrigaCryptoAccountDetails::class,
+        nullIfMappingFailed = true
+    )
+
+    override var bankingDetails: StrigaUserBankingDetails? by ObjectEncryptedPreference(
+        preferences = encryptedPrefs,
+        keyProvider = { KEY_USER_BANKING_DETAILS },
+        type = StrigaUserBankingDetails::class,
         nullIfMappingFailed = true
     )
 
