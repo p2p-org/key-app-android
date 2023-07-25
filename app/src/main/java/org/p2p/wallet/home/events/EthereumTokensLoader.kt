@@ -1,15 +1,18 @@
 package org.p2p.wallet.home.events
 
 import timber.log.Timber
+import java.math.BigDecimal
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
+import org.p2p.core.utils.orZero
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
 import org.p2p.token.service.api.events.manager.TokenServiceEventSubscriber
@@ -23,6 +26,7 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.tokenservice.model.EthTokenLoadState
 
 private const val TAG = "EthereumTokensLoader"
+private val MINIMAL_DUST = BigDecimal("5")
 
 class EthereumTokensLoader(
     private val seedPhraseProvider: SeedPhraseProvider,
@@ -37,7 +41,17 @@ class EthereumTokensLoader(
 
     init {
         ethereumInteractor.observeTokensFlow()
-            .onEach { updateState(EthTokenLoadState.Loaded(it)) }
+            .filterNot { it.isEmpty() }
+            .onEach { ethTokens ->
+                val claimTokens = ethereumInteractor.loadClaimTokens()
+                val filteredEthTokens = ethTokens.filter { token ->
+                    val tokenBundle = claimTokens.firstOrNull { token.publicKey == it.contractAddress.hex }
+                    val tokenFiatAmount = token.totalInUsd.orZero()
+                    val isClaimInProgress = tokenBundle != null && tokenBundle.isClaiming
+                    tokenFiatAmount >= MINIMAL_DUST || isClaimInProgress
+                }
+                updateState(EthTokenLoadState.Loaded(filteredEthTokens))
+            }
             .launchIn(appScope)
     }
 
