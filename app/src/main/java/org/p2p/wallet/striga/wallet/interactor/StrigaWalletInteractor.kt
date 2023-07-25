@@ -9,6 +9,7 @@ import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
+import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.StrigaWhitelistedAddressItem
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWhitelistedAddressId
@@ -89,5 +90,9 @@ class StrigaWalletInteractor(
 
     suspend fun getWhitelistedAddresses(): StrigaDataLayerResult<List<StrigaWhitelistedAddressItem>> {
         return whitelistAddressesRepository.getWhitelistedAddresses()
+    }
+
+    suspend fun getEurAccountStatement(): StrigaUserBankingDetails {
+        return walletRepository.getAccountStatement(getEurAccountId()).unwrap()
     }
 }

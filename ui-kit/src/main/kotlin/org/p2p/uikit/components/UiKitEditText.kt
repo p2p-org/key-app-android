@@ -19,6 +19,13 @@ import org.p2p.uikit.utils.SimpleTagTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
 
+@Deprecated(
+    message = "Not resizable and extendable",
+    replaceWith = ReplaceWith(
+        "NewUiKitEditText",
+        "org.p2p.uikit.components.edittext.v2.NewUiKitEditText"
+    )
+)
 class UiKitEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null

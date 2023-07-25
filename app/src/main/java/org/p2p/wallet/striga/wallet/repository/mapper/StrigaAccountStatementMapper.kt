@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.wallet.repository.mapper
 
+import timber.log.Timber
 import org.p2p.wallet.striga.StrigaUserConstants.USER_FILTER_START_DATE
 import org.p2p.wallet.striga.common.StrigaUserIdProvider
 import org.p2p.wallet.striga.wallet.api.request.StrigaAccountStatementRequest
@@ -41,8 +42,13 @@ class StrigaAccountStatementMapper(
         val transactionWithUserBankingDetails =
             getInitialOffRampTransaction(transactions) ?: getCompletedOnRampTransaction(transactions)
 
-        requireNotNull(transactionWithUserBankingDetails) {
-            "Not enough data for banking details: no transaction with full details; total=${response.total}"
+        if (transactionWithUserBankingDetails == null) {
+            Timber.i("Not enough data for banking details: no transaction with full details; total=${response.total}")
+            return StrigaUserBankingDetails(
+                bankingBic = null,
+                bankingIban = null,
+                bankingFullName = strigaUserFullName
+            )
         }
 
         return transactionWithUserBankingDetails.extractBankingDetails(strigaUserFullName)

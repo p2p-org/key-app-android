@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke"
+    android:gravity="center_horizontal">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_toolbar_back"
+        app:title="@string/striga_withdrawal_title"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night" />
+
+    <org.p2p.uikit.components.edittext.v2.NewUiKitEditText
+        android:id="@+id/editTextIban"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:inputEndDrawable="@drawable/ic_close"
+        app:inputHintText="@string/striga_withdrawal_iban_hint"
+        app:inputTextAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        app:inputTextColor="@color/text_mountain"
+        app:labelText="@string/striga_withdrawal_iban_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <org.p2p.uikit.components.edittext.v2.NewUiKitEditText
+        android:id="@+id/editTextBic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        app:inputEndDrawable="@drawable/ic_close"
+        app:inputHintText="@string/striga_withdrawal_bic_hint"
+        app:inputTextAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        app:labelText="@string/common_bic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextIban" />
+
+    <org.p2p.uikit.components.edittext.v2.NewUiKitEditText
+        android:id="@+id/editTextReceiver"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:enabled="false"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        app:inputBackgroundTint="@color/bg_rain"
+        app:inputTextColor="@color/bg_mountain"
+        app:labelText="Receiver"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextBic"
+        tools:text="Ivan ivanov" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonWithdraw"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/common_withdraw"
+        android:textColor="@color/text_snow"
+        app:iconGravity="textEnd"
+        app:iconSize="24dp"
+        app:iconTint="@color/icons_snow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:text="@string/striga_withdrawal_receiver_label"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        app:layout_constraintEnd_toEndOf="@+id/editTextReceiver"
+        app:layout_constraintStart_toStartOf="@+id/editTextReceiver"
+        app:layout_constraintTop_toBottomOf="@+id/editTextReceiver" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

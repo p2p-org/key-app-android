@@ -1,10 +1,12 @@
 package org.p2p.wallet.striga.offramp
 
-import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
+import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
+import org.p2p.wallet.striga.offramp.withdraw.StrigaWithdrawContract
+import org.p2p.wallet.striga.offramp.withdraw.StrigaWithdrawPresenter
 import org.p2p.wallet.striga.offramp.interactor.StrigaOffRampInteractor
 import org.p2p.wallet.striga.offramp.interactor.polling.StrigaOffRampExchangeRateNotifier
 import org.p2p.wallet.striga.offramp.mappers.StrigaOffRampMapper
@@ -16,6 +18,7 @@ object StrigaOffRampModule : InjectionModule {
         initDataLayer()
         initDomainLayer()
 
+        factoryOf(::StrigaWithdrawPresenter) bind StrigaWithdrawContract.Presenter::class
         factoryOf(::StrigaOffRampPresenter) bind StrigaOffRampContract.Presenter::class
     }
 
