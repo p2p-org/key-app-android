@@ -54,6 +54,17 @@ internal class StrigaWalletCachedRepository(
         }
     }
 
+    override suspend fun saveUserBankingDetails(userBic: String, userIban: String) {
+        val strigaUserFullName = strigaUserRepository.getUserDetails().unwrap()
+            .userInfo
+            .fullName
+        cache.userBankingDetails = StrigaUserBankingDetails(
+            bankingBic = userBic,
+            bankingIban = userIban,
+            bankingFullName = strigaUserFullName
+        )
+    }
+
     private suspend fun <T> withCache(
         cache: KMutableProperty0<T?>? = null,
         remote: suspend () -> T,
