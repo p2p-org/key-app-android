@@ -4,7 +4,7 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 
 class OnboardingMetadataLoader(
     private val metadataInteractor: MetadataInteractor
-) : AppLoader {
+) : AppLoader() {
 
     override suspend fun onLoad() {
         metadataInteractor.tryLoadAndSaveMetadata()
