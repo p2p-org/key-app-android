@@ -179,8 +179,10 @@ class StrigaOffRampPresenter(
         launch {
             try {
                 // load all necessary data again if it was not loaded before
-                // enrich crypto + enrich EUR + load statement to extract iban & bic
+                // enrich crypto + enrich EUR
                 strigaWalletInteractor.loadDetailsForStrigaAccounts().getOrThrow()
+                // load statement to extract iban & bic
+                strigaWalletInteractor.getEurBankingDetails()
 
                 // go to withdraw screen
                 view?.navigateToWithdraw(inputAmountA)
