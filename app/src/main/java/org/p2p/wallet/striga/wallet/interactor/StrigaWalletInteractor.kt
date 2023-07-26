@@ -29,7 +29,6 @@ class StrigaWalletInteractor(
     suspend fun loadDetailsForStrigaAccounts(): Result<Unit> = kotlin.runCatching {
         getFiatAccountDetails()
         getCryptoAccountDetails()
-        getEurBankingDetails()
         Unit
     }.onFailure {
         Timber.e(it, "Unable to load striga accounts (fiat and crypto) details")
