@@ -12,7 +12,15 @@ class EthereumTokensInMemoryRepository : EthereumTokensLocalRepository {
     private val cachedTokens = MutableStateFlow<List<Token.Eth>>(emptyList())
 
     override suspend fun cacheTokens(tokens: List<Token.Eth>) {
-        cachedTokens.value = tokens
+        val oldTokens = cachedTokens.value
+        val newTokens = tokens.map { token ->
+            val oldToken = oldTokens.firstOrNull { token.tokenServiceAddress == it.tokenServiceAddress }
+
+            val newTokenRate = token.rate ?: oldToken?.rate
+            val newTotalInUsd = newTokenRate?.let { token.total.times(it) }
+            token.copy(rate = newTokenRate, totalInUsd = newTotalInUsd)
+        }
+        cachedTokens.value = newTokens
     }
 
     override suspend fun updateTokensRate(tokensRate: List<TokenServicePrice>) {
@@ -26,7 +34,7 @@ class EthereumTokensInMemoryRepository : EthereumTokensLocalRepository {
         cachedTokens.value = cachedTokens.value.map { token ->
             val foundTokenRate = newTokenRates.firstOrNull { it.address == token.tokenServiceAddress }
             val totalInUsd = foundTokenRate?.usdRate?.let { token.total.times(it) }
-            token.copy(totalInUsd = totalInUsd)
+            token.copy(totalInUsd = totalInUsd, rate = foundTokenRate?.usdRate)
         }
     }
 
