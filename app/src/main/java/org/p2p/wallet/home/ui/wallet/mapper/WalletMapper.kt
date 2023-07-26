@@ -5,11 +5,11 @@ import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.asCurrencyAfter
+import org.p2p.core.utils.asUsd
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.wallet.R
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
@@ -20,10 +20,7 @@ class WalletMapper() {
 
     fun mapFiatBalance(balance: BigDecimal): TextViewCellModel {
         return TextViewCellModel.Raw(
-            TextContainer.ResParams(
-                textRes = R.string.home_usd_format,
-                args = listOf(balance.formatFiat())
-            )
+            TextContainer.Raw(balance.asUsd())
         )
     }
 
@@ -39,13 +36,7 @@ class WalletMapper() {
 
     fun mapTokenBalance(balance: BigDecimal): TextViewCellModel {
         return TextViewCellModel.Raw(
-            TextContainer.ResParams(
-                textRes = R.string.wallet_token_format,
-                args = listOf(
-                    balance.formatFiat(),
-                    Constants.USDC_SYMBOL
-                )
-            )
+            TextContainer.Raw(balance.asCurrencyAfter(Constants.USD_READABLE_SYMBOL))
         )
     }
 
