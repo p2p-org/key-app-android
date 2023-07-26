@@ -6,6 +6,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.isZero
 import org.p2p.uikit.utils.skeleton.textCellSkeleton
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
@@ -91,11 +92,11 @@ class StrigaOffRampSwapWidgetMapper {
         return if (isLoadingBalance) {
             // todo: maybe we should use skeleton for availableAmount too?
             // SwapWidget currently doesn't support skeleton for availableAmount
-            mapTokenAmountText(BigDecimal.ZERO, currencyName)
+            mapTokenAmountText(BigDecimal.ZERO.formatAmount(), currencyName)
         } else {
             // the "balance" is inconsistent with the "availableAmount" but it's clearly describes what it is,
             // and of course the "balance" is shorter than the "availableAmount"
-            balance?.let { mapTokenAmountText(it, currencyName) }
+            balance?.let { mapTokenAmountText(it.formatAmount(), currencyName) }
         }
     }
 
@@ -103,7 +104,8 @@ class StrigaOffRampSwapWidgetMapper {
         return if (isLoadingAmount) {
             mapTokenAmountSkeleton()
         } else {
-            mapTokenAmountText(amount)
+            // zero is shown in the EditTexts' hint
+            mapTokenAmountText(if (amount.isZero()) emptyString() else amount.formatAmount())
         }
     }
 
@@ -128,18 +130,21 @@ class StrigaOffRampSwapWidgetMapper {
         radius = 6f.toPx(),
     )
 
-    private fun mapTokenAmountText(amount: BigDecimal, currencyName: String? = null): TextViewCellModel {
-        val amountText = amount.formatToken(STRIGA_FIAT_DECIMALS)
+    private fun mapTokenAmountText(amount: String, currencyName: String? = null): TextViewCellModel {
         return TextViewCellModel.Raw(
             text = TextContainer(
                 if (currencyName != null) {
-                    "$amountText $currencyName"
+                    "$amount $currencyName"
                 } else {
-                    amountText
+                    amount
                 }
 
             ),
             textAppearance = R.style.UiKit_TextAppearance_Regular_Title1
         )
+    }
+
+    private fun BigDecimal.formatAmount(): String {
+        return this.formatToken(STRIGA_FIAT_DECIMALS)
     }
 }
