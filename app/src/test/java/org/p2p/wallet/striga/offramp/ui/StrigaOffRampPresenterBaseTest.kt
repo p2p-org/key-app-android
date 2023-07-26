@@ -32,6 +32,9 @@ import org.p2p.wallet.striga.offramp.interactor.StrigaOffRampInteractor
 import org.p2p.wallet.striga.offramp.interactor.polling.StrigaOffRampExchangeRateNotifier
 import org.p2p.wallet.striga.offramp.mappers.StrigaOffRampMapper
 import org.p2p.wallet.striga.offramp.mappers.StrigaOffRampSwapWidgetMapper
+import org.p2p.wallet.striga.user.interactor.StrigaSignupDataEnsurerInteractor
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.utils.JvmDecimalFormatter
@@ -51,6 +54,15 @@ abstract class StrigaOffRampPresenterBaseTest {
 
     @MockK
     lateinit var strigaExchangeRepository: StrigaExchangeRepository
+
+    @MockK(relaxed = true)
+    lateinit var strigaSignupDataEnsurerInteractor: StrigaSignupDataEnsurerInteractor
+
+    @MockK(relaxed = true)
+    lateinit var strigaUserInteractor: StrigaUserInteractor
+
+    @MockK(relaxed = true)
+    lateinit var strigaWalletInteractor: StrigaWalletInteractor
 
     lateinit var exchangeRateNotifier: StrigaOffRampExchangeRateNotifier
     lateinit var interactor: StrigaOffRampInteractor
@@ -100,6 +112,8 @@ abstract class StrigaOffRampPresenterBaseTest {
 
         every { connectionManager.connectionStatus } returns hasInternetState
 
+        every { strigaUserInteractor.isKycApproved } returns true
+
         refillUsdcBalance(DEFAULT_BALANCE)
     }
 
@@ -120,6 +134,9 @@ abstract class StrigaOffRampPresenterBaseTest {
             dispatchers = localDispatchers ?: dispatchers,
             connectionManager = connectionManager,
             interactor = interactor,
+            strigaSignupDataEnsurerInteractor = strigaSignupDataEnsurerInteractor,
+            strigaUserInteractor = strigaUserInteractor,
+            strigaWalletInteractor = strigaWalletInteractor,
             tokenServiceCoordinator = tokenServiceCoordinator,
             strigaOffRampMapper = strigaOffRampMapper,
             swapWidgetMapper = swapWidgetMapper,

@@ -105,10 +105,21 @@ fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
 fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 fun BigInteger.isZeroOrLess() = isZero() || isLessThan(BigInteger.ZERO)
 
-fun BigDecimal.asCurrency(currency: String): String =
-    if (lessThenMinValue()) "<${currency}0.01" else "${currency}${formatFiat()}"
+fun BigDecimal.asCurrency(currency: String): String = when {
+    isZero() -> "${currency}0"
+    lessThenMinValue() -> "<${currency}0.01"
+    else -> "${currency}${formatFiat()}"
+}
 
-fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$0.01" else "$${formatFiat()}"
+// TODO refactor after we will migrate on currency as an entity
+fun BigDecimal.asCurrencyAfter(currency: String): String = when {
+    isZero() -> "0 $currency"
+    lessThenMinValue() -> "<0.01 $currency"
+    else -> "${formatFiat()} $currency"
+}
+
+fun BigDecimal.asUsd(): String = asCurrency(Constants.USD_SYMBOL)
+
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
     isZero() -> "$0"
     lessThenMinValue() -> "(<$0.01)"

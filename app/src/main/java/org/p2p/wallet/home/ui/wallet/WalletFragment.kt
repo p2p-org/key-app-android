@@ -2,8 +2,13 @@ package org.p2p.wallet.home.ui.wallet
 
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import android.os.Bundle
 import android.view.View
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
@@ -33,7 +38,6 @@ import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.StrigaFragmentFactory
-import org.p2p.wallet.striga.offramp.ui.StrigaOffRampFragment
 import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -92,6 +96,26 @@ class WalletFragment :
         }
     }
 
+    override fun showEmptyState(isEmpty: Boolean) {
+        binding.recyclerViewHome.isVisible = !isEmpty
+        setAppBarScrollingState(!isEmpty)
+    }
+
+    private fun setAppBarScrollingState(isScrollingEnabled: Boolean) {
+        with(binding) {
+            collapsingToolbar.updateLayoutParams<AppBarLayout.LayoutParams> {
+                scrollFlags = if (isScrollingEnabled) {
+                    SCROLL_FLAG_SCROLL + SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+                } else {
+                    SCROLL_FLAG_NO_SCROLL
+                }
+            }
+            if (!isScrollingEnabled) {
+                appBarLayout.setExpanded(true, false)
+            }
+        }
+    }
+
     override fun setWithdrawButtonIsVisible(isVisible: Boolean) {
         binding.buttonWithdraw.isVisible = isVisible
     }
@@ -143,7 +167,9 @@ class WalletFragment :
     }
 
     override fun navigateToOffRamp() {
-        replaceFragment(StrigaOffRampFragment())
+        replaceFragment(
+            strigaFragmentFactory.offRampFragment()
+        )
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {

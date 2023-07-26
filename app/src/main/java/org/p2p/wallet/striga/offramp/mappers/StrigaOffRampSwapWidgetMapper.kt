@@ -1,13 +1,16 @@
 package org.p2p.wallet.striga.offramp.mappers
 
+import androidx.annotation.StyleRes
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.isZero
 import org.p2p.uikit.utils.skeleton.textCellSkeleton
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
+import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenType
@@ -72,7 +75,7 @@ class StrigaOffRampSwapWidgetMapper {
             isStatic = isStatic,
             widgetTitle = mapWidgetTitle(titleResId),
             availableAmount = mapAvailableAmount(isLoadingBalance, balance, currencyName),
-            currencyName = currencyName.toRawTextViewCellModel(),
+            currencyName = currencyName.toRawTextViewCellModel(R.style.UiKit_TextAppearance_Regular_Label1),
             amount = mapAmount(isLoadingAmount, amount),
             amountMaxDecimals = STRIGA_FIAT_DECIMALS,
             // not used in striga
@@ -89,11 +92,11 @@ class StrigaOffRampSwapWidgetMapper {
         return if (isLoadingBalance) {
             // todo: maybe we should use skeleton for availableAmount too?
             // SwapWidget currently doesn't support skeleton for availableAmount
-            mapTokenAmountText(BigDecimal.ZERO, currencyName)
+            mapTokenAmountText(BigDecimal.ZERO.formatAmount(), currencyName)
         } else {
             // the "balance" is inconsistent with the "availableAmount" but it's clearly describes what it is,
             // and of course the "balance" is shorter than the "availableAmount"
-            balance?.let { mapTokenAmountText(it, currencyName) }
+            balance?.let { mapTokenAmountText(it.formatAmount(), currencyName) }
         }
     }
 
@@ -101,13 +104,17 @@ class StrigaOffRampSwapWidgetMapper {
         return if (isLoadingAmount) {
             mapTokenAmountSkeleton()
         } else {
-            mapTokenAmountText(amount)
+            // zero is shown in the EditTexts' hint
+            mapTokenAmountText(if (amount.isZero()) emptyString() else amount.formatAmount())
         }
     }
 
-    private fun String.toRawTextViewCellModel(): TextViewCellModel {
+    private fun String.toRawTextViewCellModel(
+        @StyleRes textAppearanceResId: Int = R.style.UiKit_TextAppearance_Regular_Title1
+    ): TextViewCellModel {
         return TextViewCellModel.Raw(
-            text = TextContainer(this)
+            text = TextContainer(this),
+            textAppearance = textAppearanceResId
         )
     }
 
@@ -123,17 +130,21 @@ class StrigaOffRampSwapWidgetMapper {
         radius = 6f.toPx(),
     )
 
-    private fun mapTokenAmountText(amount: BigDecimal, currencyName: String? = null): TextViewCellModel {
-        val amountText = amount.formatToken(STRIGA_FIAT_DECIMALS)
+    private fun mapTokenAmountText(amount: String, currencyName: String? = null): TextViewCellModel {
         return TextViewCellModel.Raw(
-            TextContainer(
+            text = TextContainer(
                 if (currencyName != null) {
-                    "$amountText $currencyName"
+                    "$amount $currencyName"
                 } else {
-                    amountText
+                    amount
                 }
 
-            )
+            ),
+            textAppearance = R.style.UiKit_TextAppearance_Regular_Title1
         )
+    }
+
+    private fun BigDecimal.formatAmount(): String {
+        return this.formatToken(STRIGA_FIAT_DECIMALS)
     }
 }
