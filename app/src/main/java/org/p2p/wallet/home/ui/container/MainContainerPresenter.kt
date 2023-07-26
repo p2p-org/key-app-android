@@ -115,8 +115,8 @@ class MainContainerPresenter(
         mainScreenAnalytics.logMainScreenSendClick()
         launch {
             val userTokens = tokenServiceCoordinator.getUserTokens()
-            val emptyAccount = userTokens.isEmpty() || userTokens.all { it.isZero }
-            if (emptyAccount) {
+            val isAccountEmpty = userTokens.isEmpty() || userTokens.all { it.isZero }
+            if (isAccountEmpty) {
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
                 view?.navigateToSendNoTokens(validTokenToBuy)
             } else {
