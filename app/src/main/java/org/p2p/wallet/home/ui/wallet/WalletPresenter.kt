@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.p2p.core.token.filterTokensForWalletScreen
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
@@ -155,7 +156,16 @@ class WalletPresenter(
 
     override fun onAddressClicked() {
         mainScreenAnalytics.logMainScreenAddressClick()
-        view?.showAddressCopied(username?.fullUsername ?: userPublicKey)
+        val fullUsername = username?.fullUsername
+        val hasUserName = !fullUsername.isNullOrEmpty()
+        view?.showAddressCopied(
+            addressOrUsername = fullUsername ?: userPublicKey,
+            stringResId = if (hasUserName) {
+                R.string.wallet_username_copy_snackbar_text
+            } else {
+                R.string.wallet_address_copy_snackbar_text
+            }
+        )
     }
 
     override fun onAmountClicked() {
