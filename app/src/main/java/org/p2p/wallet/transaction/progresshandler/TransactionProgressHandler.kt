@@ -21,7 +21,6 @@ import org.p2p.uikit.utils.context
 import org.p2p.uikit.utils.getString
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.databinding.DialogNewTransactionProgressBinding
@@ -32,8 +31,6 @@ import org.p2p.wallet.utils.unsafeLazy
 private const val IMAGE_SIZE = 64
 private const val DATE_FORMAT = "MMMM dd, yyyy"
 private const val TIME_FORMAT = "HH:mm"
-
-private val mainCellHorizontalMargin = 16.toPx()
 
 abstract class TransactionProgressHandler(private val glideManager: GlideManager) {
 
