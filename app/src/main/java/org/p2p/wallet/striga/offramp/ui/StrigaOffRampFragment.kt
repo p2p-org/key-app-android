@@ -139,6 +139,14 @@ class StrigaOffRampFragment :
         }
         imageViewSwapTokens.background = shapeDrawable(shapeCircle())
         imageViewSwapTokens.backgroundTintList = requireContext().getColorStateList(R.color.button_rain)
+
+        // todo: hack! this should be fixed somewhere in SwapWidget.bind()
+        // This fixes behavior when user clicks on input and cursor sets before the initial 0,
+        // thus user by entering any amount will overwrite the initial 0 instead of appending digits to it.
+        // In JupiterSwap the same behavior is fixed by setting initial amount to 0 directly to the EditText
+        // see JupiterSwapPresenter.attach() -> view.setAmountFiat(String)
+        swapWidgetFrom.setAmount("0")
+        swapWidgetTo.setAmount("0")
     }
 
     private fun setupWidgetActions() {
