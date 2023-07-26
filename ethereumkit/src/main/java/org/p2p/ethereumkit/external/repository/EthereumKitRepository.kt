@@ -121,50 +121,40 @@ internal class EthereumKitRepository(
 
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
-
+        // Map erc 20 tokens to hex string addresses list
         val erc20TokensAddresses = ERC20Tokens.values().map { it.contractAddress }
+        // Load balances for ERC 20 tokens
 
+        // Create list with [native] token, to receive tokens metadata, from token service
         val allTokensAddresses = buildList<String> {
             this += TOKEN_SERVICE_NATIVE_ETH_TOKEN
             this += erc20TokensAddresses
         }
-
-        val tokensBalances = loadTokenBalances(publicKey, erc20TokensAddresses.map(::EthAddress))
-
+        // Fetch tokens metadata
         val tokensMetadata = tokenServiceRepository.loadMetadataForTokens(
             chain = TokenServiceNetwork.ETHEREUM,
             tokenAddresses = allTokensAddresses
         )
 
-        val nativeEthMetadata = tokensMetadata.firstOrNull {
-            it.address == TOKEN_SERVICE_NATIVE_ETH_TOKEN
-        } ?: return emptyList()
-        val ethBalance = getBalance()
+        val nativeEthToken = createNativeEthToken(tokensMetadata)
 
-        val nativeEthToken = createNativeEthToken(nativeEthMetadata, ethBalance)
+        val tokensBalances = loadTokenBalances(publicKey, erc20TokensAddresses.map(::EthAddress))
         val erc20TokensMetadata = tokensMetadata.map { metadata ->
             val tokenBalance = tokensBalances
                 .firstOrNull { it.contractAddress.hex == metadata.address }
                 ?.tokenBalance
                 .orZero()
+
             converter.toEthTokenMetadata(
                 metadata = metadata,
                 tokenBalance = tokenBalance,
                 ethAddress = metadata.address
             )
         }
-        return buildList {
+        return buildList<EthTokenMetadata?> {
             this += nativeEthToken
             this += erc20TokensMetadata
-        }
-    }
-
-    private fun createNativeEthToken(tokenMetadata: TokenServiceMetadata, balance: BigInteger): EthTokenMetadata {
-        return converter.createNativeEthMetadata(
-            ethAddress = getAddress().hex,
-            metadata = tokenMetadata,
-            tokenBalance = balance,
-        )
+        }.filterNotNull()
     }
 
     private suspend fun loadTokenBalances(
@@ -184,4 +174,23 @@ internal class EthereumKitRepository(
 
     private fun throwInitError(): Nothing =
         error("You must call EthereumKitRepository.init() method, before interact with this repository")
+
+    private suspend fun createNativeEthToken(
+        tokensMetadata: List<TokenServiceMetadata>
+    ): EthTokenMetadata? {
+        // Create metadata for native ETH token
+        val nativeEthMetadata = tokensMetadata.firstOrNull {
+            it.address == TOKEN_SERVICE_NATIVE_ETH_TOKEN
+        }
+        // Fetch balance for native ETH token
+        val ethBalance = getBalance()
+
+        return nativeEthMetadata?.let {
+            converter.createNativeEthMetadata(
+                ethAddress = getAddress().hex,
+                metadata = it,
+                tokenBalance = ethBalance,
+            )
+        }
+    }
 }
