@@ -21,7 +21,7 @@ class ClaimProgressHandler(
             is ClaimProgressState.Success -> setSuccessState()
             is ClaimProgressState.Error -> setErrorState()
             else -> {
-                Timber.d("Unsupported State: $state")
+                Timber.e("Unsupported State for ClaimProgressHandler: $state")
             }
         }
     }

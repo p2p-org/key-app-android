@@ -19,7 +19,7 @@ class BridgeSendProgressHandler(
             is BridgeSendProgressState.Success -> setSuccessState()
             is BridgeSendProgressState.Error -> setErrorState()
             else -> {
-                Timber.d("Unsupported State: $state")
+                Timber.e("Unsupported State for BridgeSendProgressHandler: $state")
             }
         }
     }

@@ -31,9 +31,8 @@ import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.utils.emptyString
 
 const val DEFAULT_DELAY_IN_MILLIS = 30_000L

@@ -19,7 +19,7 @@ class SendSwapTransactionProgressHandler(
             is SendSwapProgressState.Success -> setSuccessState()
             is SendSwapProgressState.Error -> setErrorState()
             else -> {
-                Timber.d("Unsupported State: $state")
+                Timber.e("Unsupported State for SendSwapTransactionProgressHandler: $state")
             }
         }
     }
