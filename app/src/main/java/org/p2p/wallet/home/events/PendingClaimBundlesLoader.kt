@@ -10,7 +10,9 @@ import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.BridgeSendProgressState
+import org.p2p.wallet.transaction.model.progressstate.ClaimProgressState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 
 class PendingClaimBundlesLoader(
     private val bridgeLocalRepository: EthereumBridgeLocalRepository,
@@ -38,8 +40,8 @@ class PendingClaimBundlesLoader(
             transactionManager.getTransactionStateFlow(bundleId)
                 .firstOrNull()
                 ?.let { state ->
-                    if (state !is TransactionState.ClaimProgress) return@let
-                    val newState = TransactionState.ClaimSuccess(
+                    if (state !is TransactionState.Progress) return@let
+                    val newState = ClaimProgressState.Success(
                         bundleId = bundleId,
                         sourceTokenSymbol = claimBundle.resultAmount.symbol
                     )
@@ -54,7 +56,7 @@ class PendingClaimBundlesLoader(
     private suspend fun observeSendDetails(sendDetails: List<BridgeSendTransactionDetails>) {
         sendDetails.filter(BridgeSendTransactionDetails::isFinalized).forEach { sendDetail ->
             val bundleId = sendDetail.id
-            val newState = TransactionState.BridgeSendSuccess(
+            val newState = BridgeSendProgressState.Success(
                 transactionId = bundleId,
                 sendDetails = sendDetail
             )

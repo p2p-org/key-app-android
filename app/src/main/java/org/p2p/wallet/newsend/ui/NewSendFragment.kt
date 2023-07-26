@@ -28,6 +28,7 @@ import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getParcelableArrayListCompat
@@ -268,7 +269,7 @@ class NewSendFragment :
     }
 
     override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
-        listener?.showTransactionProgress(internalTransactionId, data)
+        listener?.showTransactionProgress(internalTransactionId, data, SendSwapTransactionProgressHandler.QUALIFIER)
         when (openedFromFlow) {
             SendOpenedFrom.SELL_FLOW -> popBackStackTo(target = MainContainerFragment::class, inclusive = false)
             SendOpenedFrom.MAIN_FLOW -> popBackStackTo(target = NewSearchFragment::class, inclusive = true)

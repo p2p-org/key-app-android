@@ -43,6 +43,7 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -260,6 +261,6 @@ class TokenHistoryFragment :
     }
 
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
-        listener?.showTransactionProgress(bundleId, progressDetails)
+        listener?.showTransactionProgress(bundleId, progressDetails, SendSwapTransactionProgressHandler.QUALIFIER)
     }
 }

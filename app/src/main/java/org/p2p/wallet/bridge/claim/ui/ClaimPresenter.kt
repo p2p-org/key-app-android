@@ -7,6 +7,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asUsd
@@ -28,11 +29,10 @@ import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
 import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.bridge.model.toBridgeAmount
-import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.utils.emptyString
 
 const val DEFAULT_DELAY_IN_MILLIS = 30_000L
@@ -184,7 +184,9 @@ class ClaimPresenter(
 
                 ethereumInteractor.sendClaimBundle(signatures = signatures)
 
-                val transactionState = TransactionState.ClaimProgress(bundleId = latestBundleId)
+                val transactionState = TransactionState.Progress(
+                    description = R.string.bridge_claim_description_progress
+                )
                 transactionManager.emitTransactionState(
                     transactionId = latestBundleId,
                     state = transactionState

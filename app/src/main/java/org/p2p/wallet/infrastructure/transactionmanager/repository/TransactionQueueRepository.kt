@@ -3,7 +3,7 @@ package org.p2p.wallet.infrastructure.transactionmanager.repository
 import kotlinx.coroutines.flow.Flow
 import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.transaction.model.TransactionExecutionState
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 
 interface TransactionQueueRepository {
 

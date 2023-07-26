@@ -20,6 +20,8 @@ import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import org.p2p.core.crashlytics.CrashLogger
+import org.p2p.core.crashlytics.helpers.FragmentLoggingLifecycleListener
 import org.p2p.core.utils.KeyboardListener
 import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.toast
@@ -28,8 +30,6 @@ import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.core.crashlytics.CrashLogger
-import org.p2p.core.crashlytics.helpers.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.databinding.ActivityRootBinding
@@ -163,8 +163,17 @@ class RootActivity :
         }
     }
 
-    override fun showTransactionProgress(internalTransactionId: String, data: NewShowProgress) {
-        NewTransactionProgressBottomSheet.show(supportFragmentManager, internalTransactionId, data)
+    override fun showTransactionProgress(
+        internalTransactionId: String,
+        data: NewShowProgress,
+        handlerQualifierName: String
+    ) {
+        NewTransactionProgressBottomSheet.show(
+            supportFragmentManager,
+            internalTransactionId,
+            data,
+            handlerQualifierName
+        )
     }
 
     override fun triggerOnboardingDeeplink(deeplink: Uri) {

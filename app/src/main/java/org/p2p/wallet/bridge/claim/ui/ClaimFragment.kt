@@ -25,6 +25,7 @@ import org.p2p.wallet.databinding.FragmentClaimBinding
 import org.p2p.wallet.receive.eth.EthereumReceiveFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.progresshandler.ClaimProgressHandler
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
@@ -129,7 +130,7 @@ class ClaimFragment :
     }
 
     override fun showProgressDialog(bundleId: String, data: NewShowProgress) {
-        listener?.showTransactionProgress(bundleId, data)
+        listener?.showTransactionProgress(bundleId, data, ClaimProgressHandler.QUALIFIER)
         popBackStackTo(target = ClaimFragment::class, inclusive = true)
     }
 

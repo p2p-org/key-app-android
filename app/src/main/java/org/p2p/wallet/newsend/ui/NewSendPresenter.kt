@@ -55,7 +55,7 @@ import org.p2p.wallet.newsend.model.getFee
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.SendSwapProgressState
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.interactor.UserTokensInteractor
@@ -474,7 +474,7 @@ class NewSendPresenter(
                 tokenServiceCoordinator.refresh()
 
                 val transaction = buildTransaction(result, token)
-                val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
+                val transactionState = SendSwapProgressState.Success(transaction, token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
                 historyInteractor.addPendingTransaction(
                     txSignature = result,
@@ -484,7 +484,7 @@ class NewSendPresenter(
             } catch (e: Throwable) {
                 Timber.tag(TAG).e(e, "Failed sending transaction!")
                 val message = e.getErrorMessage { res -> resources.getString(res) }
-                transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
+                transactionManager.emitTransactionState(internalTransactionId, SendSwapProgressState.Error(message))
                 logSendError(token, e)
             }
         }
