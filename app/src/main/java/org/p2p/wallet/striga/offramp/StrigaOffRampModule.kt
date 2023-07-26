@@ -12,6 +12,8 @@ import org.p2p.wallet.striga.offramp.interactor.polling.StrigaOffRampExchangeRat
 import org.p2p.wallet.striga.offramp.mappers.StrigaOffRampMapper
 import org.p2p.wallet.striga.offramp.mappers.StrigaOffRampSwapWidgetMapper
 import org.p2p.wallet.striga.offramp.ui.StrigaOffRampPresenter
+import org.p2p.wallet.striga.offramp.withdraw.interactor.StrigaWithdrawInteractor
+import org.p2p.wallet.striga.offramp.withdraw.interactor.StrigaWithdrawSendTransactionBuilder
 
 object StrigaOffRampModule : InjectionModule {
     override fun create() = module {
@@ -30,5 +32,8 @@ object StrigaOffRampModule : InjectionModule {
     private fun Module.initDomainLayer() {
         factoryOf(::StrigaOffRampInteractor)
         factoryOf(::StrigaOffRampExchangeRateNotifier)
+
+        factoryOf(::StrigaWithdrawSendTransactionBuilder)
+        factoryOf(::StrigaWithdrawInteractor)
     }
 }
