@@ -49,7 +49,6 @@ class ClaimUiMapper(private val resources: Resources) {
             tokenUrl = iconUrl,
             amountTokens = amountTokens,
             amountUsd = amountUsd.asPositiveUsdTransaction(),
-            recipient = null,
             totalFees = feeList,
             amountColor = R.color.text_mint
         )
