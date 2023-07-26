@@ -52,7 +52,7 @@ class ActionButtonsView @JvmOverloads constructor(
 
 enum class ActionButton(@StringRes val textRes: Int, @DrawableRes val iconRes: Int) {
     BUY_BUTTON(R.string.home_buy, R.drawable.ic_plus),
-    RECEIVE_BUTTON(R.string.home_receive, R.drawable.ic_receive_simple),
+    RECEIVE_BUTTON(R.string.home_receive, R.drawable.ic_receive),
     SEND_BUTTON(R.string.home_send, R.drawable.ic_send_medium),
     SWAP_BUTTON(R.string.home_swap, R.drawable.ic_swap_medium),
     SELL_BUTTON(R.string.home_sell, R.drawable.ic_action_sell),
