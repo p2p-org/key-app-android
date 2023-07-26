@@ -12,8 +12,8 @@
 
     <ImageButton
         android:id="@+id/imageButtonAction"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
         android:background="@drawable/bg_circle_button"
         android:foreground="@drawable/ripple_button_circle"
         android:importantForAccessibility="no"
@@ -21,7 +21,7 @@
 
     <TextView
         android:id="@+id/textViewTitle"
-        style="@style/UiKit.TextAppearance.SemiBold.Text4"
+        style="@style/UiKit.TextAppearance.SemiBold.Label2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
