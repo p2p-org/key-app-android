@@ -1,6 +1,7 @@
 package org.p2p.wallet.striga.offramp.mappers
 
 import androidx.annotation.StyleRes
+import android.util.TypedValue
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
@@ -8,6 +9,7 @@ import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.uikit.utils.skeleton.textCellSkeleton
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.TextViewSize
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
@@ -74,7 +76,10 @@ class StrigaOffRampSwapWidgetMapper {
             isStatic = isStatic,
             widgetTitle = mapWidgetTitle(titleResId),
             availableAmount = mapAvailableAmount(isLoadingBalance, balance, currencyName),
-            currencyName = currencyName.toRawTextViewCellModel(R.style.UiKit_TextAppearance_Regular_Label1),
+            currencyName = currencyName.toRawTextViewCellModel(
+                textSizeSp = 28f,
+                textAppearanceResId = R.style.UiKit_TextAppearance_Regular_Title1
+            ),
             amount = mapAmount(isLoadingAmount, amount),
             amountMaxDecimals = STRIGA_FIAT_DECIMALS,
             // not used in striga
@@ -108,11 +113,13 @@ class StrigaOffRampSwapWidgetMapper {
     }
 
     private fun String.toRawTextViewCellModel(
-        @StyleRes textAppearanceResId: Int = R.style.UiKit_TextAppearance_Regular_Title1
+        textSizeSp: Float = 16f,
+        @StyleRes textAppearanceResId: Int = R.style.UiKit_TextAppearance_Regular_Title1,
     ): TextViewCellModel {
         return TextViewCellModel.Raw(
             text = TextContainer(this),
-            textAppearance = textAppearanceResId
+            textAppearance = textAppearanceResId,
+            textSize = TextViewSize(textSizeSp, TypedValue.COMPLEX_UNIT_SP),
         )
     }
 
