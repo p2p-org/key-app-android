@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.ui.crypto
 
+import android.content.SharedPreferences
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
@@ -18,6 +19,7 @@ import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.crypto.analytics.CryptoScreenAnalytics
 import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler
 import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
+import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 
@@ -30,12 +32,19 @@ class MyCryptoPresenter(
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val cryptoScreenAnalytics: CryptoScreenAnalytics,
     private val claimHandler: BridgeClaimBundleClickHandler,
+    private val sharedPreferences: SharedPreferences,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
     private var currentVisibilityState: VisibilityState = if (cryptoInteractor.getHiddenTokensVisibility()) {
         VisibilityState.Visible
     } else {
         VisibilityState.Hidden
+    }
+
+    private val sharedPreferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == SettingsInteractor.KEY_HIDDEN_ZERO_BALANCE) {
+            observeCryptoTokens()
+        }
     }
 
     private var cryptoTokensSubscription: Job? = null
@@ -45,6 +54,7 @@ class MyCryptoPresenter(
         prepareAndShowActionButtons()
         observeCryptoTokens()
         cryptoScreenAnalytics.logCryptoScreenOpened()
+        sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
     }
 
     override fun refreshTokens() {
@@ -187,5 +197,10 @@ class MyCryptoPresenter(
         launch {
             claimHandler.handle(view, canBeClaimed, token)
         }
+    }
+
+    override fun detach() {
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
+        super.detach()
     }
 }
