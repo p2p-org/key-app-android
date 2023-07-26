@@ -16,7 +16,7 @@ data class TokenExtensions(
     val isTokenCellVisibleOnWalletScreen: Boolean? = null,
     val tokenPercentDifferenceOnWalletScreen: Int? = null,
     val isCalculateWithTotalBalance: Boolean? = null,
-    val tokenFractionRuleOnWalletScreen: String? = null,
+    val numbersAfterDecimalPoint: Int? = null,
     val canTokenBeHidden: Boolean? = null
 ) : Parcelable {
 
