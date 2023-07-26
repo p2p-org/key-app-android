@@ -40,7 +40,7 @@ class EthereumTokensLoader(
     private val state: MutableStateFlow<EthTokenLoadState> = MutableStateFlow(EthTokenLoadState.Idle)
 
     // Caching last ethereum tokens, to prevent hiding tokens while refreshing
-    private val ethereumTokens = mutableListOf<Token.Eth>()
+    private var lastLoadedEthTokens = listOf<Token.Eth>()
 
     init {
         ethereumInteractor.observeTokensFlow()
@@ -51,9 +51,8 @@ class EthereumTokensLoader(
                     val isFiatAmountAboveThreshold = tokenFiatAmount >= MINIMAL_DUST
                     isFiatAmountAboveThreshold || isClaimInProgress
                 }
-                ethereumTokens.clear()
-                ethereumTokens.addAll(filteredEthTokens)
-                updateState(EthTokenLoadState.Loaded(filteredEthTokens))
+                lastLoadedEthTokens = filteredEthTokens
+                updateState(EthTokenLoadState.Loaded(lastLoadedEthTokens))
             }
             .launchIn(appScope)
     }
@@ -62,7 +61,7 @@ class EthereumTokensLoader(
 
     fun observeState(): Flow<EthTokenLoadState> = state.asStateFlow()
 
-    fun getTokens(): List<Token.Eth> = ethereumTokens
+    fun getLastLoadedTokens(): List<Token.Eth> = lastLoadedEthTokens
 
     suspend fun loadIfEnabled() {
         if (!isEnabled()) {
