@@ -55,7 +55,7 @@ abstract class StrigaOffRampPresenterBaseTest {
     @MockK
     lateinit var strigaExchangeRepository: StrigaExchangeRepository
 
-    //strigaSignupDataEnsurerInteractor = mockk(relaxed = true),
+    // strigaSignupDataEnsurerInteractor = mockk(relaxed = true),
     //            strigaUserInteractor = mockk(relaxed = true) {
     //                every { isKycApproved } returns true
     //            },

@@ -16,15 +16,15 @@ class StrigaSignupDataEnsurerInteractor(
             metadataInteractor.tryLoadAndSaveMetadata().throwIfFailure()
         }
 
-        if (strigaUserInteractor.isUserCreated()) {
-            if (strigaUserInteractor.isUserVerificationStatusLoaded() && !strigaUserInteractor.isKycApproved) {
-                Timber.i("Striga user status is not fetched. Trying again...")
-                strigaUserInteractor.loadAndSaveUserStatusData().unwrap()
-            }
-            if (!strigaUserInteractor.isUserDetailsLoaded()) {
-                Timber.i("Striga user signup data is not fetched. Trying again...")
-                strigaSignupInteractor.loadAndSaveSignupData().unwrap()
-            }
+        if (!strigaUserInteractor.isUserCreated()) return
+
+        if (strigaUserInteractor.isUserVerificationStatusLoaded() && !strigaUserInteractor.isKycApproved) {
+            Timber.i("Striga user status is not fetched. Trying again...")
+            strigaUserInteractor.loadAndSaveUserStatusData().unwrap()
+        }
+        if (!strigaUserInteractor.isUserDetailsLoaded()) {
+            Timber.i("Striga user signup data is not fetched. Trying again...")
+            strigaSignupInteractor.loadAndSaveSignupData().unwrap()
         }
     }
 }

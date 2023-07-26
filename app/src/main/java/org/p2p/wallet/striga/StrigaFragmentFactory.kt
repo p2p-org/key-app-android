@@ -46,7 +46,7 @@ class StrigaFragmentFactory {
         )
     }
 
-    fun signupFragment(target: StrigaUserStatusDestination): Fragment? {
+    fun signupFlowFragment(target: StrigaUserStatusDestination): Fragment? {
         return when (target) {
             StrigaUserStatusDestination.ONBOARDING -> {
                 StrigaOnboardingFragment.create()

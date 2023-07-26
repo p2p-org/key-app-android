@@ -67,10 +67,12 @@ class StrigaOffRampFragment :
             isClickable = buttonState.isClickable
 
             // this is the rare case, when we can't just use setLoading(bool)
-            // because setLoading overwrites its icon and restore previous one
+            // because setLoading overwrites its icon and restores previous one
             // when it set to false, but here we need to set icon and set loading independently
             when {
-                buttonState.isLoading -> setIconState(UiKitButtonIconState.Loading())
+                buttonState.isLoading -> {
+                    setIconState(UiKitButtonIconState.Loading())
+                }
                 buttonState.isEnabled -> {
                     background.setTint(binding.getColor(buttonState.styleEnabledBgColorRes))
                     setTextColor(binding.getColor(buttonState.styleEnabledTextColorRes))
@@ -92,7 +94,7 @@ class StrigaOffRampFragment :
     }
 
     override fun navigateToSignup(destination: StrigaUserStatusDestination) {
-        strigaFragmentFactory.signupFragment(destination)?.let(::replaceFragment)
+        strigaFragmentFactory.signupFlowFragment(destination)?.let(::replaceFragment)
     }
 
     override fun navigateToWithdraw(amountInUsdc: BigDecimal) {

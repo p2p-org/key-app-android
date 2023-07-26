@@ -39,7 +39,7 @@ class StrigaOffRampPresenter(
     dispatchers: CoroutineDispatchers,
     private val connectionManager: ConnectionManager,
     private val interactor: StrigaOffRampInteractor,
-    strigaSignupDataEnsurerInteractor: StrigaSignupDataEnsurerInteractor,
+    private val strigaSignupDataEnsurerInteractor: StrigaSignupDataEnsurerInteractor,
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
@@ -66,12 +66,12 @@ class StrigaOffRampPresenter(
     private val cannotClickAllAmount: Boolean
         get() = isErrorHappened
 
-    init {
-        launch { strigaSignupDataEnsurerInteractor.ensureNeededDataLoaded() }
-    }
-
     override fun attach(view: View) {
         super.attach(view)
+        launch {
+            runCatching { strigaSignupDataEnsurerInteractor.ensureNeededDataLoaded() }
+                .onFailure { Timber.e(it, "Unable to load Striga signup data") }
+        }
         interactor.startExchangeRateNotifier(this)
         observeUsdc()
         observeRateChanges()
@@ -169,26 +169,34 @@ class StrigaOffRampPresenter(
         setButtonState(StrigaOffRampButtonState.NextProgress)
 
         if (strigaUserInteractor.isKycApproved) {
-            launch {
-                try {
-                    // load all necessary data again if it was not loaded before
-                    // enrich crypto + enrich EUR + load statement to extract iban & bic
-                    strigaWalletInteractor.loadDetailsForStrigaAccounts().getOrThrow()
-
-                    // go to withdraw screen
-                    view?.navigateToWithdraw(inputAmountA)
-                } catch (e: Throwable) {
-                    Timber.e(e, "Unable to start Striga withdrawal process")
-                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-                } finally {
-                    setButtonState(StrigaOffRampButtonState.Enabled)
-                }
-            }
+            navigateToWithdrawFlow()
         } else {
-            // go to standard Striga signup flow
-            val destination = strigaUserInteractor.getUserDestination()
-            view?.navigateToSignup(destination)
+            navigateToSignupFlow()
         }
+    }
+
+    private fun navigateToWithdrawFlow() {
+        launch {
+            try {
+                // load all necessary data again if it was not loaded before
+                // enrich crypto + enrich EUR + load statement to extract iban & bic
+                strigaWalletInteractor.loadDetailsForStrigaAccounts().getOrThrow()
+
+                // go to withdraw screen
+                view?.navigateToWithdraw(inputAmountA)
+            } catch (e: Throwable) {
+                Timber.e(e, "Unable to start Striga withdrawal process")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            } finally {
+                setButtonState(StrigaOffRampButtonState.Enabled)
+            }
+        }
+    }
+
+    private fun navigateToSignupFlow() {
+        // go to standard Striga signup flow
+        val destination = strigaUserInteractor.getUserDestination()
+        view?.navigateToSignup(destination)
     }
 
     private fun setTokenAmount(targetTokenType: StrigaOffRampTokenType, amount: BigDecimal) {

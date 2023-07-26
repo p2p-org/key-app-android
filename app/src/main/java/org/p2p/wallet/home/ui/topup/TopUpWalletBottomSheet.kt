@@ -73,7 +73,7 @@ class TopUpWalletBottomSheet :
     }
 
     override fun navigateToBankTransferTarget(target: StrigaUserStatusDestination) {
-        strigaFragmentFactory.signupFragment(target)?.let(::dismissAndNavigate)
+        strigaFragmentFactory.signupFlowFragment(target)?.let(::dismissAndNavigate)
     }
 
     override fun navigateToBuyWithTransfer(tokenToBuy: Token) {
