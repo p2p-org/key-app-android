@@ -20,8 +20,9 @@ import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.Slippage.Companion.PERCENT_DIVIDE_VALUE
-import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
+import org.p2p.wallet.transaction.model.progressstate.JupiterSwapProgressState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.unsafeLazy
@@ -145,13 +146,13 @@ class JupiterTransactionProgressBottomSheet : BaseBottomSheet(R.layout.dialog_ju
                 TransitionManager.beginDelayedTransition(binding.root)
                 isBottomSheetDraggable(
                     state is TransactionState.Progress ||
-                        state is TransactionState.JupiterSwapSuccess
+                        state is JupiterSwapProgressState.Success
                 )
 
                 when (state) {
                     is TransactionState.Progress -> setProgressState()
-                    is TransactionState.JupiterSwapSuccess -> setSuccessState()
-                    is TransactionState.JupiterSwapFailed -> setErrorState(state.failure)
+                    is JupiterSwapProgressState.Success -> setSuccessState()
+                    is JupiterSwapProgressState.Error -> setErrorState(state.failure)
                     else -> error("Not supported transaction state for this details: $state")
                 }
             }

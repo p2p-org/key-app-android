@@ -80,8 +80,11 @@ class TokenServiceCoordinator(
         ethState: EthTokenLoadState
     ): UserTokensState {
         val solTokens = solState.tokens
-        val ethTokens = if (ethState is EthTokenLoadState.Loaded) ethState.tokens else emptyList()
-
+        val ethTokens = if (ethState is EthTokenLoadState.Loaded) {
+            ethState.tokens
+        } else {
+            ethereumTokensLoader.getLastLoadedTokens()
+        }
         if (solTokens.all(Token.Active::isZero) && ethTokens.isEmpty()) {
             return UserTokensState.Empty
         }

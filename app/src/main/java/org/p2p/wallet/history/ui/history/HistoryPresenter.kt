@@ -10,7 +10,7 @@ import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.ifNotEmpty
@@ -56,7 +56,7 @@ class HistoryPresenter(
             )
             transactionManager.emitTransactionState(
                 transactionId,
-                TransactionState.ClaimProgress(transactionId)
+                TransactionState.Progress(description = R.string.bridge_claim_description_progress)
             )
             view?.showProgressDialog(
                 bundleId = bridgeBundle.bundleId,

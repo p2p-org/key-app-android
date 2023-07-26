@@ -4,6 +4,7 @@ import timber.log.Timber
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -18,9 +19,8 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.rpc.interactor.TokenInteractor
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 class TokenHistoryPresenter(
@@ -91,7 +91,7 @@ class TokenHistoryPresenter(
             )
             transactionManager.emitTransactionState(
                 transactionId,
-                TransactionState.ClaimProgress(transactionId)
+                TransactionState.Progress(description = R.string.bridge_claim_description_progress)
             )
             view?.showProgressDialog(
                 bundleId = bridgeBundle.bundleId,

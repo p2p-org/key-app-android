@@ -34,6 +34,7 @@ import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.progresshandler.ClaimProgressHandler
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.replaceFragment
@@ -77,7 +78,7 @@ class MyCryptoFragment :
                 contentView.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
                 buttonClaim.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
             }
-        }
+        },
     )
 
     override fun onAttach(context: Context) {
@@ -184,7 +185,7 @@ class MyCryptoFragment :
     }
 
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
-        listener?.showTransactionProgress(bundleId, progressDetails)
+        listener?.showTransactionProgress(bundleId, progressDetails, ClaimProgressHandler.QUALIFIER)
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
