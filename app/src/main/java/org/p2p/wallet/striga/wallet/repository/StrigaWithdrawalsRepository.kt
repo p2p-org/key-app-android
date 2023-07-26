@@ -1,7 +1,9 @@
 package org.p2p.wallet.striga.wallet.repository
 
+import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.wallet.models.StrigaInitEurOffRampDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
@@ -35,4 +37,10 @@ interface StrigaWithdrawalsRepository {
 
     suspend fun verifySms(smsCode: String, challengeId: StrigaWithdrawalChallengeId): StrigaDataLayerResult<Unit>
     suspend fun resendSms(challengeId: StrigaWithdrawalChallengeId): StrigaDataLayerResult<Unit>
+    suspend fun startEurOffRamp(
+        sourceAccountId: StrigaAccountId,
+        amount: BigDecimal,
+        iban: String,
+        bic: String
+    ): StrigaDataLayerResult<StrigaInitEurOffRampDetails>
 }

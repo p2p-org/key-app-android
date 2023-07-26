@@ -3,9 +3,11 @@ package org.p2p.wallet.striga.wallet.repository.mapper
 import org.threeten.bp.ZonedDateTime
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toBigIntegerOrZero
+import org.p2p.wallet.striga.wallet.api.response.StrigaInitEurOffRampResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaInitWithdrawalResponse
 import org.p2p.wallet.striga.wallet.api.response.StrigaOnchainWithdrawalFeeResponse
 import org.p2p.wallet.striga.wallet.models.StrigaBlockchainNetworkInfo
+import org.p2p.wallet.striga.wallet.models.StrigaInitEurOffRampDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainTxStatus
@@ -58,6 +60,13 @@ class StrigaWithdrawalsMapper {
                 type = blockchainNetwork.type,
             ),
             transactionCurrency = StrigaNetworkCurrency.valueOf(transactionCurrency),
+        )
+    }
+
+    fun fromNetwork(response: StrigaInitEurOffRampResponse): StrigaInitEurOffRampDetails {
+        return StrigaInitEurOffRampDetails(
+            challengeId = StrigaWithdrawalChallengeId(response.challengeId),
+            dateExpires = ZonedDateTime.parse(response.dateExpires)
         )
     }
 }
