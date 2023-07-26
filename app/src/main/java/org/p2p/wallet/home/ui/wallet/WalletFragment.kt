@@ -101,16 +101,16 @@ class WalletFragment :
         setAppBarScrollingState(!isEmpty)
     }
 
-    private fun setAppBarScrollingState(isEnabled: Boolean) {
+    private fun setAppBarScrollingState(isScrollingEnabled: Boolean) {
         with(binding) {
             collapsingToolbar.updateLayoutParams<AppBarLayout.LayoutParams> {
-                scrollFlags = if (isEnabled) {
+                scrollFlags = if (isScrollingEnabled) {
                     SCROLL_FLAG_SCROLL + SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
                 } else {
                     SCROLL_FLAG_NO_SCROLL
                 }
             }
-            if (!isEnabled) {
+            if (!isScrollingEnabled) {
                 appBarLayout.setExpanded(true, false)
             }
         }
