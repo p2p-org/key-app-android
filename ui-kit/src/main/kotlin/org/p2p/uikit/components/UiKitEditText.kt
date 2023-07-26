@@ -190,6 +190,15 @@ class UiKitEditText @JvmOverloads constructor(
         return UiKitEditTextSavedState(superState, text?.toString())
     }
 
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state is UiKitEditTextSavedState) {
+            super.onRestoreInstanceState(state.superState)
+            setText(state.text ?: "")
+        } else {
+            super.onRestoreInstanceState(state)
+        }
+    }
+
     fun setOnClickListener(block: () -> Unit) {
         binding.editTextField.setOnClickListener { block() }
     }

@@ -14,6 +14,12 @@ private const val LOADER_RADIUS_LARGE = 8f
 private const val LOADER_RADIUS_SMALL = 6F
 private const val LOADER_STROKE_WIDTH = 2f
 
+sealed interface UiKitButtonIconState {
+    object None : UiKitButtonIconState
+    data class Loading(val isLoading: Boolean = true) : UiKitButtonIconState
+    data class Icon(val drawable: Drawable?) : UiKitButtonIconState
+}
+
 /**
  * Properties
  * style - the base style of the button (small / medium / large) (outline / filled / only text)
@@ -79,6 +85,14 @@ class UiKitButton @JvmOverloads constructor(
         } else {
             icon = buttonIcon
             circularProgressDrawable.stop()
+        }
+    }
+
+    fun setIconState(state: UiKitButtonIconState) {
+        when (state) {
+            is UiKitButtonIconState.None -> icon = null
+            is UiKitButtonIconState.Loading -> setLoading(state.isLoading)
+            is UiKitButtonIconState.Icon -> icon = state.drawable
         }
     }
 }

@@ -3,11 +3,15 @@ package org.p2p.wallet.striga
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import java.math.BigDecimal
 import org.p2p.wallet.smsinput.SmsInputFactory
-import org.p2p.wallet.striga.signup.finish.StrigaSignupFinishFragment
-import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycFragment
 import org.p2p.wallet.striga.kyc.ui.StrigaKycPendingBottomSheet
+import org.p2p.wallet.striga.offramp.ui.StrigaOffRampFragment
+import org.p2p.wallet.striga.offramp.withdraw.StrigaWithdrawFragment
+import org.p2p.wallet.striga.offramp.withdraw.StrigaWithdrawFragmentType
+import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsFragment
+import org.p2p.wallet.striga.signup.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.signup.onboarding.StrigaOnboardingFragment
 import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
@@ -42,7 +46,7 @@ class StrigaFragmentFactory {
         )
     }
 
-    fun bankTransferFragment(target: StrigaUserStatusDestination): Fragment? {
+    fun signupFlowFragment(target: StrigaUserStatusDestination): Fragment? {
         return when (target) {
             StrigaUserStatusDestination.ONBOARDING -> {
                 StrigaOnboardingFragment.create()
@@ -64,6 +68,20 @@ class StrigaFragmentFactory {
                 null
             }
         }
+    }
+
+    fun offRampFragment(): Fragment = StrigaOffRampFragment.create()
+
+    fun withdrawUsdcFragment(amountInUsdc: BigDecimal): Fragment {
+        return StrigaWithdrawFragment.create(
+            StrigaWithdrawFragmentType.ConfirmUsdcOffRamp(amountInUsdc)
+        )
+    }
+
+    fun withdrawEurFragment(): Fragment {
+        return StrigaWithdrawFragment.create(
+            StrigaWithdrawFragmentType.ConfirmEurOffRamp
+        )
     }
 
     fun showPendingBottomSheet(fragmentManager: FragmentManager) {

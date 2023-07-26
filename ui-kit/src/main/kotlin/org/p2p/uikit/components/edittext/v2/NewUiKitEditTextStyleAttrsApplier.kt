@@ -45,8 +45,9 @@ internal class NewUiKitEditTextStyleAttrsApplier {
         attrs.getString(ATTR_INPUT_DIGITS) { editTextField.keyListener = DigitsKeyListener.getInstance(it) }
 
         // styling
-        attrs.getColor(ATTR_INPUT_TEXT_COLOR, editTextField::setTextColor)
+        // firstly set textAppearance, because we want to override it by using inputTextColor
         attrs.getResourceId(ATTR_INPUT_TEXT_STYLE, editTextField::setTextAppearance)
+        attrs.getColor(ATTR_INPUT_TEXT_COLOR, editTextField::setTextColor)
         attrs.getColorStateList(ATTR_INPUT_BACKGROUND_TINT, containerInputView::setBackgroundTintList)
 
         attrs.getBoolean(ATTR_IS_INPUT_ENABLED, true).also {

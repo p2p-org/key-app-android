@@ -6,12 +6,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
-import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupInteractor
+import org.p2p.wallet.striga.user.interactor.StrigaSignupDataEnsurerInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
@@ -23,9 +22,8 @@ class TopUpWalletPresenter(
     private val strigaSignupFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val seedPhraseProvider: SeedPhraseProvider,
     private val strigaUserInteractor: StrigaUserInteractor,
-    private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
-    private val metadataInteractor: MetadataInteractor,
+    private val strigaSignupDataEnsurerInteractor: StrigaSignupDataEnsurerInteractor,
     private val inAppFeatureFlags: InAppFeatureFlags,
 ) : BasePresenter<TopUpWalletContract.View>(),
     TopUpWalletContract.Presenter {
@@ -73,7 +71,7 @@ class TopUpWalletPresenter(
             try {
                 strigaBankTransferProgress.emit(true)
 
-                ensureNeededStrigaDataLoaded()
+                strigaSignupDataEnsurerInteractor.ensureNeededDataLoaded()
 
                 val strigaDestination = strigaUserInteractor.getUserDestination()
 
@@ -99,35 +97,5 @@ class TopUpWalletPresenter(
                 strigaBankTransferProgress.emit(false)
             }
         }
-    }
-
-    private suspend fun ensureNeededStrigaDataLoaded() {
-        if (metadataInteractor.currentMetadata == null) {
-            Timber.i("Metadata is not fetched. Trying again...")
-            loadUserMetadata()
-        }
-
-        if (strigaUserInteractor.isUserCreated()) {
-            if (strigaUserInteractor.isUserVerificationStatusLoaded() && !strigaUserInteractor.isKycApproved) {
-                Timber.i("Striga user status is not fetched. Trying again...")
-                loadStrigaUserStatus()
-            }
-            if (!strigaUserInteractor.isUserDetailsLoaded()) {
-                Timber.i("Striga user signup data is not fetched. Trying again...")
-                loadStrigaUserDetails()
-            }
-        }
-    }
-
-    private suspend fun loadUserMetadata() {
-        metadataInteractor.tryLoadAndSaveMetadata().throwIfFailure()
-    }
-
-    private suspend fun loadStrigaUserStatus() {
-        strigaUserInteractor.loadAndSaveUserStatusData().unwrap()
-    }
-
-    private suspend fun loadStrigaUserDetails() {
-        strigaSignupInteractor.loadAndSaveSignupData().unwrap()
     }
 }

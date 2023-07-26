@@ -1,6 +1,7 @@
 package org.p2p.wallet.striga.wallet.api.response
 
 import com.google.gson.annotations.SerializedName
+import java.math.BigDecimal
 
 data class StrigaAccountStatementResponse(
     @SerializedName("transactions")
@@ -28,7 +29,7 @@ data class StrigaAccountStatementResponse(
         @SerializedName("feeEur")
         val feeEur: Long,
         @SerializedName("exchangeRate")
-        val exchangeRate: Long,
+        val exchangeRate: BigDecimal,
         @SerializedName("balanceBefore")
         val balanceBefore: AccountBalanceResponse,
         @SerializedName("balanceAfter")

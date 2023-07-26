@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.offramp.mappers
 
+import androidx.annotation.StyleRes
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
@@ -8,6 +9,7 @@ import org.p2p.core.utils.formatToken
 import org.p2p.uikit.utils.skeleton.textCellSkeleton
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
+import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenType
@@ -72,7 +74,7 @@ class StrigaOffRampSwapWidgetMapper {
             isStatic = isStatic,
             widgetTitle = mapWidgetTitle(titleResId),
             availableAmount = mapAvailableAmount(isLoadingBalance, balance, currencyName),
-            currencyName = currencyName.toRawTextViewCellModel(),
+            currencyName = currencyName.toRawTextViewCellModel(R.style.UiKit_TextAppearance_Regular_Label1),
             amount = mapAmount(isLoadingAmount, amount),
             amountMaxDecimals = STRIGA_FIAT_DECIMALS,
             // not used in striga
@@ -105,9 +107,12 @@ class StrigaOffRampSwapWidgetMapper {
         }
     }
 
-    private fun String.toRawTextViewCellModel(): TextViewCellModel {
+    private fun String.toRawTextViewCellModel(
+        @StyleRes textAppearanceResId: Int = R.style.UiKit_TextAppearance_Regular_Title1
+    ): TextViewCellModel {
         return TextViewCellModel.Raw(
-            text = TextContainer(this)
+            text = TextContainer(this),
+            textAppearance = textAppearanceResId
         )
     }
 
@@ -126,14 +131,15 @@ class StrigaOffRampSwapWidgetMapper {
     private fun mapTokenAmountText(amount: BigDecimal, currencyName: String? = null): TextViewCellModel {
         val amountText = amount.formatToken(STRIGA_FIAT_DECIMALS)
         return TextViewCellModel.Raw(
-            TextContainer(
+            text = TextContainer(
                 if (currencyName != null) {
                     "$amountText $currencyName"
                 } else {
                     amountText
                 }
 
-            )
+            ),
+            textAppearance = R.style.UiKit_TextAppearance_Regular_Title1
         )
     }
 }

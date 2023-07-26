@@ -26,6 +26,9 @@ import org.p2p.wallet.striga.offramp.models.StrigaOffRampButtonState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampRateState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenType
+import org.p2p.wallet.striga.user.interactor.StrigaSignupDataEnsurerInteractor
+import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 
@@ -36,6 +39,9 @@ class StrigaOffRampPresenter(
     dispatchers: CoroutineDispatchers,
     private val connectionManager: ConnectionManager,
     private val interactor: StrigaOffRampInteractor,
+    private val strigaSignupDataEnsurerInteractor: StrigaSignupDataEnsurerInteractor,
+    private val strigaUserInteractor: StrigaUserInteractor,
+    private val strigaWalletInteractor: StrigaWalletInteractor,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val strigaOffRampMapper: StrigaOffRampMapper,
     private val swapWidgetMapper: StrigaOffRampSwapWidgetMapper,
@@ -62,6 +68,10 @@ class StrigaOffRampPresenter(
 
     override fun attach(view: View) {
         super.attach(view)
+        launch {
+            runCatching { strigaSignupDataEnsurerInteractor.ensureNeededDataLoaded() }
+                .onFailure { Timber.e(it, "Unable to load Striga signup data") }
+        }
         interactor.startExchangeRateNotifier(this)
         observeUsdc()
         observeRateChanges()
@@ -156,7 +166,37 @@ class StrigaOffRampPresenter(
     }
 
     override fun onSubmit() {
-        // todo: https://p2pvalidator.atlassian.net/browse/PWN-9267
+        setButtonState(StrigaOffRampButtonState.NextProgress)
+
+        if (strigaUserInteractor.isKycApproved) {
+            navigateToWithdrawFlow()
+        } else {
+            navigateToSignupFlow()
+        }
+    }
+
+    private fun navigateToWithdrawFlow() {
+        launch {
+            try {
+                // load all necessary data again if it was not loaded before
+                // enrich crypto + enrich EUR + load statement to extract iban & bic
+                strigaWalletInteractor.loadDetailsForStrigaAccounts().getOrThrow()
+
+                // go to withdraw screen
+                view?.navigateToWithdraw(inputAmountA)
+            } catch (e: Throwable) {
+                Timber.e(e, "Unable to start Striga withdrawal process")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            } finally {
+                setButtonState(StrigaOffRampButtonState.Enabled)
+            }
+        }
+    }
+
+    private fun navigateToSignupFlow() {
+        // go to standard Striga signup flow
+        val destination = strigaUserInteractor.getUserDestination()
+        view?.navigateToSignup(destination)
     }
 
     private fun setTokenAmount(targetTokenType: StrigaOffRampTokenType, amount: BigDecimal) {
@@ -289,6 +329,7 @@ class StrigaOffRampPresenter(
                 validateView()
             }
             is StrigaOffRampRateState.Failure -> {
+                interactor.stopExchangeRateNotifier()
                 isErrorHappened = true
                 logError(state.throwable)
 

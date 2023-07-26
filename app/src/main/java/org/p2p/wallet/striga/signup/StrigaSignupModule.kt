@@ -44,6 +44,7 @@ import org.p2p.wallet.striga.sms.interactor.StrigaOtpConfirmInteractor
 import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsApiCaller
 import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsInputPresenter
 import org.p2p.wallet.striga.user.api.StrigaApi
+import org.p2p.wallet.striga.user.interactor.StrigaSignupDataEnsurerInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.repository.StrigaUserRemoteRepository
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
@@ -89,6 +90,7 @@ object StrigaSignupModule : InjectionModule {
             )
         }
         factoryOf(::StrigaUserInteractor)
+        factoryOf(::StrigaSignupDataEnsurerInteractor)
 
         factoryOf(::StrigaSignupFinishPresenter) bind StrigaSignupFinishContract.Presenter::class
     }

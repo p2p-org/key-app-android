@@ -33,7 +33,6 @@ import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.StrigaFragmentFactory
-import org.p2p.wallet.striga.offramp.ui.StrigaOffRampFragment
 import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -143,7 +142,9 @@ class WalletFragment :
     }
 
     override fun navigateToOffRamp() {
-        replaceFragment(StrigaOffRampFragment())
+        replaceFragment(
+            strigaFragmentFactory.offRampFragment()
+        )
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {
