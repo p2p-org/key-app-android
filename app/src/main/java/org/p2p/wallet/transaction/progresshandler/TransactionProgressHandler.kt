@@ -3,14 +3,26 @@ package org.p2p.wallet.transaction.progresshandler
 import androidx.annotation.CallSuper
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import android.content.Context
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.Locale
+import org.p2p.core.common.TextContainer
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.model.TextHighlighting
+import org.p2p.core.model.TitleValue
+import org.p2p.uikit.components.finance_block.MainCellModel
+import org.p2p.uikit.components.finance_block.mainCellDelegate
+import org.p2p.uikit.components.left_side.LeftSideCellModel
+import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.utils.SpanUtils
-import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.context
 import org.p2p.uikit.utils.getString
 import org.p2p.uikit.utils.setTextColorRes
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
+import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.databinding.DialogNewTransactionProgressBinding
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.progressstate.TransactionState
@@ -28,56 +40,90 @@ abstract class TransactionProgressHandler(private val glideManager: GlideManager
     protected lateinit var binding: DialogNewTransactionProgressBinding
     protected lateinit var progressStateFormat: String
 
+    val context: Context
+        get() = binding.context
+
+    private val cellAdapter = CommonAnyCellAdapter(
+        mainCellDelegate()
+    )
+
     fun init(viewBinding: DialogNewTransactionProgressBinding, data: NewShowProgress) {
         binding = viewBinding
         progressStateFormat = viewBinding.getString(R.string.transaction_progress_title)
         handleInitState(data)
     }
 
-    open fun handleInitState(data: NewShowProgress) {
+    open fun handleInitState(showProgressData: NewShowProgress) {
         with(binding) {
-            val colorMountain = getColor(R.color.text_mountain)
             textViewSubtitle.text = getString(
                 R.string.transaction_date_format,
-                dateFormat.format(data.date),
-                timeFormat.format(data.date)
+                dateFormat.format(showProgressData.date),
+                timeFormat.format(showProgressData.date)
             )
-            glideManager.load(imageViewToken, data.tokenUrl, IMAGE_SIZE)
-            val amountInUsd = data.amountUsd
+            glideManager.load(imageViewToken, showProgressData.tokenUrl, IMAGE_SIZE)
+            val amountInUsd = showProgressData.amountUsd
             if (amountInUsd != null) {
-                textViewAmountUsd.text = data.amountUsd
-                textViewAmountTokens.text = data.amountTokens
+                textViewAmountUsd.text = showProgressData.amountUsd
+                textViewAmountTokens.text = showProgressData.amountTokens
             } else {
-                textViewAmountUsd.text = data.amountTokens
+                textViewAmountUsd.text = showProgressData.amountTokens
                 textViewAmountTokens.isVisible = false
             }
-            data.amountColor?.let { amountColorRes ->
+            showProgressData.amountColor?.let { amountColorRes ->
                 textViewAmountUsd.setTextColorRes(amountColorRes)
             }
-            if (data.recipient == null) {
-                textViewSendToTitle.isVisible = false
-                textViewSendToValue.isVisible = false
-            } else {
-                textViewSendToValue.text = data.recipient
+
+            recyclerViewTransactionData.apply {
+                attachAdapter(cellAdapter)
+                layoutManager = LinearLayoutManager(context)
             }
-            val totalFees = data.totalFees
-            textViewFeeValue.text = if (totalFees != null) {
-                buildSpannedString {
-                    totalFees.forEach { textToHighlight ->
-                        append(
-                            SpanUtils.highlightText(
-                                commonText = textToHighlight.commonText,
-                                highlightedText = textToHighlight.highlightedText,
-                                color = colorMountain
-                            )
-                        )
-                        append("\n")
-                    }
-                }
-            } else {
-                getString(R.string.transaction_transaction_fee_free_value)
-            }
+            val feesCellModel = mapTransactionDataCell(
+                title = context.getString(R.string.transaction_transaction_fee_title),
+                value = getTotalFeesValue(showProgressData.totalFees)
+            )
+            cellAdapter.items = mapTitleValuesToMainCellItems(showProgressData.data) + feesCellModel
         }
+    }
+
+    private fun getTotalFeesValue(totalFees: List<TextHighlighting>?): CharSequence {
+        val colorMountain = context.getColor(R.color.text_mountain)
+        return if (totalFees != null) {
+            buildSpannedString {
+                totalFees.forEach { textToHighlight ->
+                    append(
+                        SpanUtils.highlightText(
+                            commonText = textToHighlight.commonText,
+                            highlightedText = textToHighlight.highlightedText,
+                            color = colorMountain
+                        )
+                    )
+                    append("\n")
+                }
+            }
+        } else {
+            context.getString(R.string.transaction_transaction_fee_free_value)
+        }
+    }
+
+    private fun mapTitleValuesToMainCellItems(data: List<TitleValue>?): List<MainCellModel> {
+        return data?.map { mapTransactionDataCell(it.title, it.value) } ?: emptyList()
+    }
+
+    private fun mapTransactionDataCell(title: String, value: CharSequence): MainCellModel {
+        val leftSideText = LeftSideCellModel.IconWithText(
+            firstLineText = TextViewCellModel.Raw(
+                text = TextContainer(title),
+                textAppearance = R.style.UiKit_TextAppearance_Regular_Text4,
+                textColor = R.color.text_mountain
+            ),
+        )
+        val rightSideText = RightSideCellModel.TwoLineText(
+            firstLineText = TextViewCellModel.Raw(TextContainer(value)),
+        )
+        return MainCellModel(
+            leftSideCellModel = leftSideText,
+            rightSideCellModel = rightSideText
+        )
     }
 
     /*

@@ -99,6 +99,8 @@ class StrigaStorage(
         userStatus = null
         userWallet = null
         fiatAccount = null
+        cryptoAccount = null
+        bankingDetails = null
         smsExceededVerificationAttemptsMillis = 0
         smsExceededResendAttemptsMillis = 0
 

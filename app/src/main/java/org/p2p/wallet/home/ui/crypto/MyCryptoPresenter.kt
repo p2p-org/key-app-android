@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.ui.crypto
 
+import android.content.SharedPreferences
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
@@ -9,6 +10,7 @@ import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.token.filterTokensForWalletScreen
+import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -17,8 +19,11 @@ import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.crypto.analytics.CryptoScreenAnalytics
 import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler
 import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
+import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
+
+private val MINIMAL_DUST_FOR_BALANCE = BigDecimal(0.01)
 
 class MyCryptoPresenter(
     private val cryptoInteractor: MyCryptoInteractor,
@@ -27,12 +32,19 @@ class MyCryptoPresenter(
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val cryptoScreenAnalytics: CryptoScreenAnalytics,
     private val claimHandler: BridgeClaimBundleClickHandler,
+    private val sharedPreferences: SharedPreferences,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
     private var currentVisibilityState: VisibilityState = if (cryptoInteractor.getHiddenTokensVisibility()) {
         VisibilityState.Visible
     } else {
         VisibilityState.Hidden
+    }
+
+    private val sharedPreferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == SettingsInteractor.KEY_HIDDEN_ZERO_BALANCE) {
+            observeCryptoTokens()
+        }
     }
 
     private var cryptoTokensSubscription: Job? = null
@@ -42,6 +54,7 @@ class MyCryptoPresenter(
         prepareAndShowActionButtons()
         observeCryptoTokens()
         cryptoScreenAnalytics.logCryptoScreenOpened()
+        sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
     }
 
     override fun refreshTokens() {
@@ -126,6 +139,7 @@ class MyCryptoPresenter(
 
         return tokens
             .mapNotNull(Token.Active::totalInUsd)
+            .filter { it.isMoreThan(MINIMAL_DUST_FOR_BALANCE) }
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
     }
@@ -183,5 +197,10 @@ class MyCryptoPresenter(
         launch {
             claimHandler.handle(view, canBeClaimed, token)
         }
+    }
+
+    override fun detach() {
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
+        super.detach()
     }
 }
