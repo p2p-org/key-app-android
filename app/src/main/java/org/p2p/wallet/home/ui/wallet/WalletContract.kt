@@ -30,6 +30,7 @@ interface WalletContract {
         fun navigateToStrigaByBanner(status: StrigaKycStatusBanner)
         fun showAddressCopied(addressOrUsername: String, @StringRes stringResId: Int)
         fun setCellItems(items: List<AnyCellItem>)
+        fun showEmptyState(isEmpty: Boolean)
         fun setWithdrawButtonIsVisible(isVisible: Boolean)
         fun navigateToOffRamp()
     }

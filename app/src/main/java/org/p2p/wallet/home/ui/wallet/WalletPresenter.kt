@@ -105,6 +105,7 @@ class WalletPresenter(
                     }
                 }
                 view?.setCellItems(items)
+                view?.showEmptyState(items.isEmpty())
             }
         }
     }

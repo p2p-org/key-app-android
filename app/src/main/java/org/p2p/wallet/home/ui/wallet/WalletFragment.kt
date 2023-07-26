@@ -2,8 +2,13 @@ package org.p2p.wallet.home.ui.wallet
 
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import android.os.Bundle
 import android.view.View
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
@@ -88,6 +93,26 @@ class WalletFragment :
         Timber.d("Set cell items: ${items.map { it::class.simpleName }}")
         cellAdapter.setItems(items) {
             binding.recyclerViewHome.invalidateItemDecorations()
+        }
+    }
+
+    override fun showEmptyState(isEmpty: Boolean) {
+        binding.recyclerViewHome.isVisible = !isEmpty
+        setAppBarScrollingState(!isEmpty)
+    }
+
+    private fun setAppBarScrollingState(isScrollingEnabled: Boolean) {
+        with(binding) {
+            collapsingToolbar.updateLayoutParams<AppBarLayout.LayoutParams> {
+                scrollFlags = if (isScrollingEnabled) {
+                    SCROLL_FLAG_SCROLL + SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+                } else {
+                    SCROLL_FLAG_NO_SCROLL
+                }
+            }
+            if (!isScrollingEnabled) {
+                appBarLayout.setExpanded(true, false)
+            }
         }
     }
 
