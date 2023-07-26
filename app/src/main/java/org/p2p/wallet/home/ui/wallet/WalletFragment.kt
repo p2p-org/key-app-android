@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.ui.wallet
 
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
@@ -100,10 +101,10 @@ class WalletFragment :
         binding.setupView()
     }
 
-    override fun showAddressCopied(addressOrUsername: String) {
+    override fun showAddressCopied(addressOrUsername: String, @StringRes stringResId: Int) {
         requireContext().copyToClipBoard(addressOrUsername)
         showUiKitSnackBar(
-            message = getString(R.string.home_address_snackbar_text),
+            message = getString(stringResId),
             actionButtonResId = R.string.common_ok,
             actionBlock = Snackbar::dismiss
         )
