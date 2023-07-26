@@ -105,7 +105,7 @@ class StrigaOffRampSwapWidgetMapper {
             mapTokenAmountSkeleton()
         } else {
             // zero is shown in the EditTexts' hint
-            mapTokenAmountText(if(amount.isZero()) emptyString() else amount.formatAmount())
+            mapTokenAmountText(if (amount.isZero()) emptyString() else amount.formatAmount())
         }
     }
 
