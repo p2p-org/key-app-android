@@ -6,7 +6,7 @@ import org.p2p.core.token.TokenExtensions
 class CanBeHiddenConfigurator(
     private val extensions: TokenMetadataExtension,
     private val tokenExtensions: TokenExtensions
-) : TokenConfigurator {
+) : TokenConfigurator<TokenExtensions> {
 
     override fun config(): TokenExtensions {
         return tokenExtensions.copy(canTokenBeHidden = extensions.canBeHidden)

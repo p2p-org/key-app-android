@@ -4,7 +4,7 @@ import android.os.Parcelable
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.utils.divideSafe
+import org.p2p.core.utils.divideSafe
 
 @Parcelize
 class TransactionFeeLimits(
