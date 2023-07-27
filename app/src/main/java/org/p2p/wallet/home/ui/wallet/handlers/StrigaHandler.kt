@@ -18,9 +18,9 @@ import org.p2p.wallet.home.ui.wallet.mapper.StrigaKycUiBannerMapper
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.striga.offramp.interactor.StrigaOffRampInteractor
 import org.p2p.wallet.striga.offramp.withdraw.interactor.StrigaWithdrawInteractor
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
+import org.p2p.wallet.striga.sms.interactor.StrigaOtpConfirmInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaNoBankingDetailsProvided
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
@@ -31,11 +31,11 @@ class StrigaHandler(
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
     private val strigaOnRampInteractor: StrigaOnRampInteractor,
-    private val strigaOffRampInteractor: StrigaOffRampInteractor,
     private val strigaWithdrawInteractor: StrigaWithdrawInteractor,
     private val historyInteractor: HistoryInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val localFeatureFlags: InAppFeatureFlags,
+    private val strigaOtpConfirmInteractor: StrigaOtpConfirmInteractor,
 ) {
     suspend fun handleBannerClick(view: WalletContract.View?, item: StrigaBanner) {
         with(item.status) {
@@ -69,6 +69,7 @@ class StrigaHandler(
         try {
             view?.showStrigaOnRampProgress(isLoading = true, tokenMint = item.tokenMintAddress)
             val challengeId = strigaOnRampInteractor.onRampToken(item.amountAvailable, item.payload).unwrap()
+            strigaOtpConfirmInteractor.launchInitialTimer()
             view?.navigateToStrigaOnRampConfirmOtp(challengeId, item)
         } catch (e: Throwable) {
             Timber.e(e, "Error on claiming striga token")
@@ -91,6 +92,7 @@ class StrigaHandler(
             }
 
             val challengeId = strigaWithdrawInteractor.withdrawEur(item.amountAvailable)
+            strigaOtpConfirmInteractor.launchInitialTimer()
 
             view?.navigateToStrigaOffRampConfirmOtp(challengeId, item)
         } catch (e: StrigaNoBankingDetailsProvided) {
