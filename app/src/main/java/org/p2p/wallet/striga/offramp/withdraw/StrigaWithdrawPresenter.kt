@@ -1,14 +1,21 @@
 package org.p2p.wallet.striga.offramp.withdraw
 
+import android.content.res.Resources
+import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
+import java.math.BigDecimal
 import kotlinx.coroutines.launch
+import org.p2p.core.model.TitleValue
+import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.striga.offramp.withdraw.interactor.StrigaWithdrawInteractor
+import org.p2p.wallet.transaction.model.NewShowProgress
 
 class StrigaWithdrawPresenter(
     private val validator: StrigaBankingDetailsValidator,
-    private val interactor: StrigaWithdrawInteractor
+    private val interactor: StrigaWithdrawInteractor,
+    private val resources: Resources
 ) : BasePresenter<StrigaWithdrawContract.View>(),
     StrigaWithdrawContract.Presenter {
 
@@ -43,11 +50,19 @@ class StrigaWithdrawPresenter(
                 view?.showLoading(isLoading = true)
 
                 when (withdrawType) {
-                    StrigaWithdrawFragmentType.ConfirmEurWithdraw -> {
-                        // no-op for now
-                    }
                     is StrigaWithdrawFragmentType.ConfirmUsdcWithdraw -> {
-                        interactor.withdrawUsdc(withdrawType.amountInUsdc)
+                        val (internalTransactionId, usdcToken) = interactor.withdrawUsdc(withdrawType.amountInUsdc)
+                        view?.navigateToTransactionDetails(
+                            transactionId = internalTransactionId,
+                            data = buildTransactionDetails(usdcToken, withdrawType.amountInUsdc)
+                        )
+                    }
+                    is StrigaWithdrawFragmentType.ConfirmEurWithdraw -> {
+                        val challengeId = interactor.withdrawEur(withdrawType.amountEur)
+                        view?.navigateToOtpConfirm(
+                            challengeId = challengeId,
+                            amountToOffRamp = withdrawType.amountEur
+                        )
                     }
                 }
 
@@ -58,5 +73,21 @@ class StrigaWithdrawPresenter(
             }
             view?.showLoading(isLoading = false)
         }
+    }
+
+    private fun buildTransactionDetails(
+        usdcToken: Token.Active,
+        usdcAmount: BigDecimal,
+    ): NewShowProgress {
+        return NewShowProgress(
+            date = ZonedDateTime.now(),
+            tokenUrl = usdcToken.iconUrl.orEmpty(),
+            amountTokens = usdcAmount.toPlainString(),
+            amountUsd = null,
+            data = listOf(
+                TitleValue(resources.getString(R.string.striga_withdrawal_transaction_iban), enteredIban),
+                TitleValue(resources.getString(R.string.striga_withdrawal_transaction_bic), enteredBic)
+            )
+        )
     }
 }

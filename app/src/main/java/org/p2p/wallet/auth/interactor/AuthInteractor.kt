@@ -13,7 +13,7 @@ import org.p2p.wallet.auth.model.BiometricType
 import org.p2p.wallet.auth.model.SignInResult
 import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
-import org.p2p.wallet.home.events.AppLoader
+import org.p2p.wallet.home.events.AppLoaderFacade
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
@@ -33,7 +33,7 @@ class AuthInteractor(
     private val biometricManager: BiometricManager,
     private val pbkdf2Hash: Pbkdf2HashGenerator,
     private val pushNotificationsInteractor: PushNotificationsInteractor,
-    private val appLoader: AppLoader,
+    private val appLoader: AppLoaderFacade,
     private val dispatchers: CoroutineDispatchers,
     private val appScope: AppScope
 ) {

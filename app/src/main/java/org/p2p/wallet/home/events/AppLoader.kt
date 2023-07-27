@@ -1,7 +1,14 @@
 package org.p2p.wallet.home.events
 
-interface AppLoader {
-    suspend fun onLoad()
-    suspend fun onRefresh(): Unit = Unit
-    suspend fun isEnabled(): Boolean = true
+abstract class AppLoader {
+    private val dependencies: MutableSet<AppLoader> = mutableSetOf()
+    abstract suspend fun onLoad()
+    open suspend fun onRefresh(): Unit = Unit
+    open suspend fun isEnabled(): Boolean = true
+
+    fun getDependencies(): Set<AppLoader> = dependencies
+
+    fun dependsOn(vararg loaders: AppLoader) {
+        dependencies += loaders
+    }
 }

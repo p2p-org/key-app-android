@@ -37,10 +37,12 @@ class TopUpWalletPresenter(
         super.attach(view)
 
         if (strigaSignupFeatureToggle.isFeatureEnabled && isUserAuthByWeb3) {
-            strigaBankTransferProgress.onEach(view::showStrigaBankTransferView)
+            strigaBankTransferProgress.onEach {
+                view.showStrigaBankTransferView(showProgress = it, isStringEnabled = true)
+            }
                 .launchIn(this)
         } else {
-            view.showStrigaBankTransferView(showProgress = false)
+            view.showStrigaBankTransferView(showProgress = false, isStringEnabled = false)
         }
 
         launch {
@@ -52,7 +54,8 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
-        if (!strigaSignupFeatureToggle.isFeatureEnabled) {
+        val isStrigaEnabled = strigaSignupFeatureToggle.isFeatureEnabled && isUserAuthByWeb3
+        if (!isStrigaEnabled) {
             launch {
                 val tokenToBuy = userInteractor.getSingleTokenForBuy()
                 tokenToBuy?.let {

@@ -5,14 +5,14 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.events.AppLoader
+import org.p2p.wallet.home.events.AppLoaderFacade
 import org.p2p.wallet.user.interactor.TokenMetadataInteractor
 
 class SplashPresenter(
     private val authInteractor: AuthInteractor,
     private val onboardingAnalytics: OnboardingAnalytics,
     private val tokenMetadataInteractor: TokenMetadataInteractor,
-    private val appLoader: AppLoader,
+    private val appLoader: AppLoaderFacade,
 ) : BasePresenter<SplashContract.View>(), SplashContract.Presenter {
 
     override fun attach(view: SplashContract.View) {

@@ -4,6 +4,7 @@ import android.view.Gravity
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.asCurrencyAfter
 import org.p2p.core.utils.asUsd
@@ -34,9 +35,11 @@ class WalletMapper() {
             )
         )
 
-    fun mapTokenBalance(balance: BigDecimal): TextViewCellModel {
+    fun mapTokenBalance(balanceToken: Token.Active?): TextViewCellModel {
+        val formattedBalance = balanceToken?.getFormattedTotal(true)
+            ?: BigDecimal.ZERO.asCurrencyAfter(Constants.USDC_SYMBOL)
         return TextViewCellModel.Raw(
-            TextContainer.Raw(balance.asCurrencyAfter(Constants.USD_READABLE_SYMBOL))
+            TextContainer.Raw(formattedBalance)
         )
     }
 

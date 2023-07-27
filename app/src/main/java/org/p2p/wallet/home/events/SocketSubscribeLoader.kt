@@ -8,7 +8,7 @@ import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
 class SocketSubscribeLoader(
     private val updatesManager: SocketUpdatesManager,
     private val updateSubscribers: List<SubscriptionUpdateSubscriber>,
-) : AppLoader {
+) : AppLoader() {
 
     override suspend fun onLoad() {
         updatesManager.addUpdatesStateObserver(object : SubscriptionUpdatesStateObserver {
