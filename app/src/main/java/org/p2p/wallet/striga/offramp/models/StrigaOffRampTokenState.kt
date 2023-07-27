@@ -18,8 +18,8 @@ sealed class StrigaOffRampTokenState(
         balance: BigDecimal = BigDecimal.ZERO
     ) : StrigaOffRampTokenState(amount, balance)
 
-    class Disabled(balance: BigDecimal = BigDecimal.ZERO) : StrigaOffRampTokenState(
-        amount = BigDecimal.ZERO,
+    class Disabled(amount: BigDecimal, balance: BigDecimal = BigDecimal.ZERO) : StrigaOffRampTokenState(
+        amount = amount,
         balance = balance
     )
 }

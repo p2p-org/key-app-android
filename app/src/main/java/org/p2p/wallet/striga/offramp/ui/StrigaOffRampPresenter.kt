@@ -363,13 +363,13 @@ class StrigaOffRampPresenter(
         view?.setTokenAWidgetState(
             swapWidgetMapper.mapByState(
                 StrigaOffRampTokenType.TokenA,
-                StrigaOffRampTokenState.Disabled(usdcBalance)
+                StrigaOffRampTokenState.Disabled(inputAmountA, usdcBalance)
             )
         )
         view?.setTokenBWidgetState(
             swapWidgetMapper.mapByState(
                 StrigaOffRampTokenType.TokenB,
-                StrigaOffRampTokenState.Disabled()
+                StrigaOffRampTokenState.Disabled(inputAmountB)
             )
         )
     }
