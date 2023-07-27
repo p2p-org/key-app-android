@@ -19,7 +19,7 @@ import org.p2p.wallet.jupiter.model.SwapRateTickerState
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.divideSafe
+import org.p2p.core.utils.divideSafe
 
 private const val TAG = "SwapRateTickerManager"
 

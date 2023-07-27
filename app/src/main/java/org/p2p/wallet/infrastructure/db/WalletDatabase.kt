@@ -28,7 +28,6 @@ import org.p2p.wallet.striga.signup.repository.dao.StrigaSignupDataEntity
 @Database(
     entities = [
         TokenEntity::class,
-
         CreateAccountTransactionEntity::class,
         CloseAccountTransactionEntity::class,
         SwapTransactionEntity::class,

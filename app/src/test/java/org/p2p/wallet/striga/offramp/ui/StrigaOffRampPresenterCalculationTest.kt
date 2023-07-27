@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampButtonState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenType
-import org.p2p.wallet.utils.divideSafe
+import org.p2p.core.utils.divideSafe
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrigaOffRampPresenterCalculationTest : StrigaOffRampPresenterBaseTest() {

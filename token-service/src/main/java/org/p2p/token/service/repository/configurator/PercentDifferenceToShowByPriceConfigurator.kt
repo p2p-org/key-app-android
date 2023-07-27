@@ -3,6 +3,8 @@ package org.p2p.token.service.repository.configurator
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadataExtension
+import org.p2p.core.utils.divideSafe
+import org.p2p.core.utils.orZero
 
 private const val RULE_BY_COUNT_OF_TOKENS = "byCountOfTokensValue"
 
@@ -12,24 +14,24 @@ class PercentDifferenceToShowByPriceConfigurator(
 ) : TokenConfigurator<Token.Active> {
 
     override fun config(): Token.Active {
-        val ruleOfProcessing = extensions.ruleOfProcessingTokenPriceWs
-
-        // 1. Select token fiat
-        val tokenFiatValue = token.total
-        // 2. Select token rate
-        val tokenRate = token.rate ?: BigDecimal.ONE
-        // 3. Calculate token value in USD
-        val tokenTotalInUsd = tokenRate * tokenFiatValue
-        // 4. Calculate C value
-        val c = BigDecimal(100) - (tokenFiatValue.divide(tokenTotalInUsd) * BigDecimal(100))
-        // 5. find take percent difference to show by price on wallet screen
-        val percentDifferenceToShowByPrice = BigDecimal(extensions.percentDifferenceToShowByPriceOnWs ?: 0)
-
-        // 5. if C value less that [percentDifferenceToShowPrice] and ruleOfProcessing == byCountOfTokensValue
-        if (c < percentDifferenceToShowByPrice && ruleOfProcessing == RULE_BY_COUNT_OF_TOKENS) {
-            return token.copy(totalInUsd = token.total)
+        if (extensions.ruleOfProcessingTokenPriceWs != RULE_BY_COUNT_OF_TOKENS) {
+            return token
         }
-        // 6. Else do nothing with token
-        return token
+        // We assume that this configuration will work only with stable coins
+        val percentDifferenceToShow = extensions.percentDifferenceToShowByPriceOnWs
+
+        if (percentDifferenceToShow == null || percentDifferenceToShow == 0) {
+            return token
+        }
+        val acceptableRateDiff = percentDifferenceToShow.toBigDecimal().divideSafe(BigDecimal(100))
+        if (isStableCoinRateDiffAcceptable(acceptableRateDiff)) {
+            return token
+        }
+        return token.copy(totalInUsd = token.total, rate = BigDecimal.ONE)
+    }
+
+    private fun isStableCoinRateDiffAcceptable(acceptableRateDiff: BigDecimal): Boolean {
+        val delta = token.rate.orZero() - BigDecimal.ONE
+        return delta.abs() < acceptableRateDiff
     }
 }

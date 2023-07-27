@@ -39,13 +39,13 @@ class UserTokensRemoteRepository(
 
             val tokenData = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
             if (tokenData.decimals == NFT_DECIMALS) return@mapNotNull null
-            val solPrice = tokenServiceRepository.findTokenPriceByAddress(
+            val tokenPrice = tokenServiceRepository.findTokenPriceByAddress(
                 tokenAddress = tokenData.mintAddress
             )
             TokenConverter.fromNetwork(
                 account = token,
                 tokenMetadata = tokenData,
-                price = solPrice
+                price = tokenPrice
             )
         }
 
