@@ -2,12 +2,13 @@ package org.p2p.wallet.striga.offramp.withdraw
 
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
+import org.p2p.wallet.striga.offramp.withdraw.interactor.StrigaWithdrawInteractor
 
 class StrigaWithdrawPresenter(
-    private val strigaWalletInteractor: StrigaWalletInteractor,
-    private val validator: StrigaBankingDetailsValidator
+    private val validator: StrigaBankingDetailsValidator,
+    private val interactor: StrigaWithdrawInteractor
 ) : BasePresenter<StrigaWithdrawContract.View>(),
     StrigaWithdrawContract.Presenter {
 
@@ -18,10 +19,7 @@ class StrigaWithdrawPresenter(
         super.attach(view)
         launch {
             try {
-                val offRampCredentials = strigaWalletInteractor.getEurBankingDetails()
-                enteredIban = offRampCredentials.bankingIban.orEmpty()
-                enteredBic = offRampCredentials.bankingBic.orEmpty()
-
+                val offRampCredentials = interactor.getUserEurBankingDetails()
                 view.showPrefilledBankingDetails(offRampCredentials)
             } catch (error: Throwable) {
                 Timber.e(error, "Failed to fetch off-ramp credentials")
@@ -30,10 +28,12 @@ class StrigaWithdrawPresenter(
     }
 
     override fun onIbanChanged(newIban: String) {
+        enteredIban = newIban
         view?.showIbanValidationResult(validator.validateIban(newIban))
     }
 
     override fun onBicChanged(newBic: String) {
+        enteredBic = newBic
         view?.showBicValidationResult(validator.validateBic(newBic))
     }
 
@@ -41,14 +41,20 @@ class StrigaWithdrawPresenter(
         launch {
             try {
                 view?.showLoading(isLoading = true)
-                // make request to SEPA OR Solana blockchain
 
-                strigaWalletInteractor.saveNewEurBankingDetails(
-                    userBic = enteredBic,
-                    userIban = enteredIban
-                )
+                when (withdrawType) {
+                    StrigaWithdrawFragmentType.ConfirmEurWithdraw -> {
+                        // no-op for now
+                    }
+                    is StrigaWithdrawFragmentType.ConfirmUsdcWithdraw -> {
+                        interactor.withdrawUsdc(withdrawType.amountInUsdc)
+                    }
+                }
+
+                interactor.saveUpdatedEurBankingDetails(enteredBic, enteredIban)
             } catch (error: Throwable) {
-                Timber.e(error, "Failed to make withdrawal")
+                Timber.e(error, "Failed to make withdrawal for $withdrawType")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
             view?.showLoading(isLoading = false)
         }

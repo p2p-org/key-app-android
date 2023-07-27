@@ -18,6 +18,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.model.CurrencyMode
+import org.p2p.core.model.TitleValue
 import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.asNegativeUsdTransaction
@@ -463,8 +464,13 @@ class NewSendPresenter(
                     tokenUrl = token.iconUrl.orEmpty(),
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd?.asNegativeUsdTransaction(),
-                    recipient = recipientAddress.nicknameOrAddress(),
-                    totalFees = total.getFeesCombined(checkFeePayer = false)?.let { listOf(it) }
+                    totalFees = total.getFeesCombined(checkFeePayer = false)?.let { listOf(it) },
+                    data = listOf(
+                        TitleValue(
+                            title = resources.getString(R.string.transaction_send_to_title),
+                            value = recipientAddress.nicknameOrAddress()
+                        )
+                    )
                 )
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 

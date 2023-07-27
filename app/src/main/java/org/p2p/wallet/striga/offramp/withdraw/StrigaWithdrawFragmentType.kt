@@ -10,7 +10,7 @@ sealed interface StrigaWithdrawFragmentType : Parcelable {
      * striga user blockchain address
      */
     @Parcelize
-    data class ConfirmUsdcOffRamp(
+    data class ConfirmUsdcWithdraw(
         val amountInUsdc: BigDecimal,
     ) : StrigaWithdrawFragmentType
 
@@ -18,5 +18,5 @@ sealed interface StrigaWithdrawFragmentType : Parcelable {
      * Second step of off-ramp - if there no IBAN/BIC available we need manually enter it
      */
     @Parcelize
-    object ConfirmEurOffRamp : StrigaWithdrawFragmentType
+    object ConfirmEurWithdraw : StrigaWithdrawFragmentType
 }
