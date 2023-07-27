@@ -45,11 +45,10 @@ object TokenConverter {
             tokenServiceAddress = tokenMetadata.mintAddress,
             tokenExtensions = TokenExtensions.NONE
         )
-        val tokenExtensions = TokenExtensionsConfigurator(
+        return TokenExtensionsConfigurator(
             extensions = tokenMetadata.extensions,
             token = token
         ).config()
-        return token.copy(tokenExtensions = tokenExtensions)
     }
 
     fun fromNetwork(
@@ -107,7 +106,7 @@ object TokenConverter {
             isTokenCellVisibleOnWalletScreen = tokenExtension.isTokenCellVisibleOnWalletScreen,
             tokenPercentDifferenceOnWalletScreen = tokenExtension.tokenPercentDifferenceOnWalletScreen,
             isCalculateWithTotalBalance = tokenExtension.isCalculateWithTotalBalance,
-            tokenFractionRuleOnWalletScreen = tokenExtension.tokenFractionRuleOnWalletScreen,
+            numbersAfterDecimalPoint = tokenExtension.numbersAfterDecimalPoint,
             canTokenBeHidden = tokenExtension.canTokenBeHidden
         )
     }
@@ -136,7 +135,7 @@ object TokenConverter {
             isTokenCellVisibleOnWalletScreen = entity?.isTokenCellVisibleOnWalletScreen,
             tokenPercentDifferenceOnWalletScreen = entity?.tokenPercentDifferenceOnWalletScreen,
             isCalculateWithTotalBalance = entity?.isCalculateWithTotalBalance,
-            tokenFractionRuleOnWalletScreen = entity?.tokenFractionRuleOnWalletScreen,
+            numbersAfterDecimalPoint = entity?.numbersAfterDecimalPoint,
             canTokenBeHidden = entity?.canTokenBeHidden
         )
 }
