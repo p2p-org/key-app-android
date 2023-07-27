@@ -6,7 +6,7 @@ import org.p2p.core.token.TokenExtensions
 class SetupTokenVisibilityConfigurator(
     private val extensions: TokenMetadataExtension,
     private val tokenExtensions: TokenExtensions
-) : TokenConfigurator {
+) : TokenConfigurator<TokenExtensions> {
 
     override fun config(): TokenExtensions {
         return tokenExtensions.copy(isTokenVisibleOnWalletScreen = extensions.isPositionOnWs)

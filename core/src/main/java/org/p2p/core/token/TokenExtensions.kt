@@ -2,7 +2,6 @@ package org.p2p.core.token
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.p2p.core.utils.Constants
 
 /**
  * @param canTokenBeHidden [org.p2p.token.service.repository.configurator.CanBeHiddenConfigurator]
@@ -16,7 +15,7 @@ data class TokenExtensions(
     val isTokenCellVisibleOnWalletScreen: Boolean? = null,
     val tokenPercentDifferenceOnWalletScreen: Int? = null,
     val isCalculateWithTotalBalance: Boolean? = null,
-    val tokenFractionRuleOnWalletScreen: String? = null,
+    val numbersAfterDecimalPoint: Int? = null,
     val canTokenBeHidden: Boolean? = null
 ) : Parcelable {
 
@@ -26,5 +25,9 @@ data class TokenExtensions(
 }
 
 fun List<Token.Active>.filterTokensForWalletScreen(): List<Token.Active> {
-    return filter { it.isUSDC && it.mintAddress == Constants.USDC_MINT }
+    return filter { it.tokenExtensions.isTokenVisibleOnWalletScreen == true }
+}
+
+fun List<Token.Active>.filterTokensByAvailability(): List<Token.Active> {
+    return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen == true }
 }
