@@ -15,6 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back"
+        app:titleTextColor="@color/text_night"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
         app:title="@string/striga_off_ramp_title" />
 
@@ -124,7 +125,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="44dp"
+            android:layout_marginBottom="32dp"
             android:autoSizeMaxTextSize="16sp"
             android:autoSizeMinTextSize="8sp"
             android:autoSizeTextType="uniform"
