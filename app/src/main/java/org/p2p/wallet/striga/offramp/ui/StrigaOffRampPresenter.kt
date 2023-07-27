@@ -306,7 +306,7 @@ class StrigaOffRampPresenter(
                 timber.d("USDC balance = ${usdcBalance.formatFiat()}")
                 setTokenABalance(usdcBalance)
             }
-            is UserTokensState.Error -> view?.showErrorMessage(newState.cause)
+            is UserTokensState.Error -> Unit
             else -> Unit
         }
     }
