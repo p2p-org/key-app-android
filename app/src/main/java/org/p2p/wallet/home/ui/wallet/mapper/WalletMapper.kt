@@ -37,7 +37,7 @@ class WalletMapper() {
 
     fun mapTokenBalance(balanceToken: Token.Active?): TextViewCellModel {
         val formattedBalance = balanceToken?.getFormattedTotal(true)
-            ?: BigDecimal.ZERO.asCurrencyAfter(Constants.USD_READABLE_SYMBOL)
+            ?: BigDecimal.ZERO.asCurrencyAfter(Constants.USDC_SYMBOL)
         return TextViewCellModel.Raw(
             TextContainer.Raw(formattedBalance)
         )
