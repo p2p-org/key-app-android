@@ -20,7 +20,7 @@ class PendingClaimBundlesLoader(
     private val transactionManager: TransactionManager,
     private val seedPhraseProvider: SeedPhraseProvider,
     private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle
-) : AppLoader {
+) : AppLoader() {
 
     val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
 

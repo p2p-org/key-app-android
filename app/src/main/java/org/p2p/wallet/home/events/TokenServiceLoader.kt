@@ -16,7 +16,7 @@ private const val TAG = "TokenServiceWorkerLoader"
 class TokenServiceLoader(
     private val appScope: AppScope,
     private val tokenServiceCoordinator: TokenServiceCoordinator
-) : AppLoader, CoroutineScope by CoroutineScope(appScope.coroutineContext) {
+) : AppLoader(), CoroutineScope by CoroutineScope(appScope.coroutineContext) {
     private var pollingJob: Job? = null
 
     override suspend fun onLoad() {

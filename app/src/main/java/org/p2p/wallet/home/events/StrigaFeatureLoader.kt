@@ -11,7 +11,7 @@ class StrigaFeatureLoader(
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaSignupInteractor: StrigaSignupInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor
-) : AppLoader {
+) : AppLoader() {
 
     override suspend fun onLoad() {
         strigaSignupInteractor.loadAndSaveSignupData()
