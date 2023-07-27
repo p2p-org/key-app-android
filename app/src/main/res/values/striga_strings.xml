@@ -2,7 +2,8 @@
 <resources>
     <string name="topup_your_account">Add money</string>
     <string name="bank_transfer_title">Bank transfer</string>
-    <string name="bank_transfer_subtitle">1% fees</string>
+    <string name="bank_transfer_subtitle_one_percent_fees">1% fees</string>
+    <string name="bank_transfer_subtitle_zero_fees">0% fees</string>
     <string name="bank_card_title">Bank card</string>
     <string name="bank_card_subtitle">4,5% fees</string>
     <string name="crypto_title">Crypto</string>

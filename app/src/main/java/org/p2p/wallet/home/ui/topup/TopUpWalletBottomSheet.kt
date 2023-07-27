@@ -51,12 +51,17 @@ class TopUpWalletBottomSheet :
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
-    override fun showStrigaBankTransferView(showProgress: Boolean) {
+    override fun showStrigaBankTransferView(showProgress: Boolean, isStringEnabled: Boolean) {
+        val subtitleRes = if (isStringEnabled) {
+            R.string.bank_transfer_subtitle_zero_fees
+        } else {
+            R.string.bank_transfer_subtitle_one_percent_fees
+        }
         binding.bankTransferView.isVisible = true
         binding.bankTransferView.bind(
             model = getFinanceBlock(
                 titleResId = R.string.bank_transfer_title,
-                subtitleRes = R.string.bank_transfer_subtitle,
+                subtitleRes = subtitleRes,
                 iconResId = R.drawable.ic_bank_transfer,
                 backgroundTintId = R.color.light_grass,
                 showRightProgress = showProgress
