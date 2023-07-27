@@ -8,7 +8,7 @@ import org.p2p.core.utils.orZero
 
 private const val RULE_BY_COUNT_OF_TOKENS = "byCountOfTokensValue"
 
-class PercentDifferenceToShowByPriceConfigurator(
+class PricePercentDifferenceToShow(
     private val extensions: TokenMetadataExtension,
     private val token: Token.Active
 ) : TokenConfigurator<Token.Active> {

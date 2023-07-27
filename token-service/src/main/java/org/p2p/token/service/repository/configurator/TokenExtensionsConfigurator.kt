@@ -38,7 +38,7 @@ class TokenExtensionsConfigurator(
         /**
          * Setup [Token.setupPercentDifferenceToShowByPrice] configuration
          */
-        val newToken = PercentDifferenceToShowByPriceConfigurator(extensions, token).config()
+        val newToken = PricePercentDifferenceToShow(extensions, token).config()
 
         return newToken.copy(tokenExtensions = tokenExtensions)
     }
