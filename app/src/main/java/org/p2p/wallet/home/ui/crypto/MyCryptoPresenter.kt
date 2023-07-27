@@ -94,9 +94,7 @@ class MyCryptoPresenter(
             is UserTokensState.Idle -> Unit
             is UserTokensState.Loading -> Unit
             is UserTokensState.Refreshing -> Unit
-            is UserTokensState.Error -> {
-                view?.showErrorMessage(newState.cause)
-            }
+            is UserTokensState.Error -> Unit
             is UserTokensState.Empty -> {
                 view?.showEmptyState(isEmpty = true)
                 handleEmptyAccount()
@@ -131,6 +129,7 @@ class MyCryptoPresenter(
             visibilityState = currentVisibilityState,
             isZerosHidden = areZerosHidden,
         )
+        view?.showErrorMessage()
         view?.showItems(mappedItems)
     }
 

@@ -121,7 +121,7 @@ class WalletPresenter(
                 )
             }
             is UserTokensState.Refreshing -> Unit
-            is UserTokensState.Error -> view?.showErrorMessage(newState.cause)
+            is UserTokensState.Error -> Unit
             is UserTokensState.Empty -> {
                 view?.showBalance(
                     walletMapper.mapFiatBalance(BigDecimal.ZERO),
