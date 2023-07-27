@@ -37,7 +37,7 @@ interface StrigaWithdrawalsRepository {
 
     suspend fun verifySms(smsCode: String, challengeId: StrigaWithdrawalChallengeId): StrigaDataLayerResult<Unit>
     suspend fun resendSms(challengeId: StrigaWithdrawalChallengeId): StrigaDataLayerResult<Unit>
-    suspend fun startEurOffRamp(
+    suspend fun initEurOffRamp(
         sourceAccountId: StrigaAccountId,
         amount: BigDecimal,
         iban: String,

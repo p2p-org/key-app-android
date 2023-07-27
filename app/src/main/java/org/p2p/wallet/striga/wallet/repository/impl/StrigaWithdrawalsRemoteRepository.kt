@@ -81,7 +81,7 @@ class StrigaWithdrawalsRemoteRepository(
         }
     }
 
-    override suspend fun startEurOffRamp(
+    override suspend fun initEurOffRamp(
         sourceAccountId: StrigaAccountId,
         amount: BigDecimal,
         iban: String,

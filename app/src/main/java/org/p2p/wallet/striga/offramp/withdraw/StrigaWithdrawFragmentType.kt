@@ -18,5 +18,5 @@ sealed interface StrigaWithdrawFragmentType : Parcelable {
      * Second step of off-ramp - if there no IBAN/BIC available we need manually enter it
      */
     @Parcelize
-    object ConfirmEurWithdraw : StrigaWithdrawFragmentType
+    data class ConfirmEurWithdraw(val amountEur: BigDecimal) : StrigaWithdrawFragmentType
 }

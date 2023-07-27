@@ -1,12 +1,14 @@
 package org.p2p.wallet.striga.wallet.interactor
 
 import timber.log.Timber
+import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.common.model.map
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaInitEurOffRampDetails
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
@@ -74,6 +76,19 @@ class StrigaWalletInteractor(
             whitelistedAddressId = whitelistedAddressId,
             amountInUnits = amount,
         )
+    }
+
+    suspend fun initEurOffRamp(eurAmount: BigDecimal): StrigaInitEurOffRampDetails {
+        val eurAccountId = getEurAccountId()
+        val userBankingDetails = getEurBankingDetails()
+        val iban = requireNotNull(userBankingDetails.bankingIban) { "BIC should be filled and found" }
+        val bic = requireNotNull(userBankingDetails.bankingBic) { "Iban should be filled and found" }
+        return withdrawalsRepository.initEurOffRamp(
+            sourceAccountId = eurAccountId,
+            amount = eurAmount,
+            iban = iban,
+            bic = bic
+        ).unwrap()
     }
 
     suspend fun whitelistAddress(

@@ -78,9 +78,9 @@ class StrigaFragmentFactory {
         )
     }
 
-    fun withdrawEurFragment(): Fragment {
+    fun withdrawEurFragment(amountInEur: BigDecimal): Fragment {
         return StrigaWithdrawFragment.create(
-            StrigaWithdrawFragmentType.ConfirmEurWithdraw
+            StrigaWithdrawFragmentType.ConfirmEurWithdraw(amountInEur)
         )
     }
 
