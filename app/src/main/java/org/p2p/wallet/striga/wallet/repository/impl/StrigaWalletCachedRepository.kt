@@ -56,7 +56,6 @@ internal class StrigaWalletCachedRepository(
 
     override suspend fun saveUserEurBankingDetails(userBic: String, userIban: String) {
         val strigaUserFullName = getFullName()
-        strigaSignupInteractor.getSignupData()
         cache.userEurBankingDetails = StrigaUserBankingDetails(
             bankingBic = userBic,
             bankingIban = userIban,
@@ -65,7 +64,7 @@ internal class StrigaWalletCachedRepository(
     }
 
     private suspend fun getFullName(): String {
-        return strigaSignupInteractor.getFullNameIfExists()
+        return strigaSignupInteractor.getFullName()
             ?: strigaUserRepository.getUserDetails().unwrap()
                 .userInfo
                 .fullName

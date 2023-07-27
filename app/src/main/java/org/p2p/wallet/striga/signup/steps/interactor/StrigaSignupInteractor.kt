@@ -106,7 +106,7 @@ class StrigaSignupInteractor(
     suspend fun getSignupDataFirstStep(): List<StrigaSignupData> = getSignupData(firstStepDataTypes)
     suspend fun getSignupDataSecondStep(): List<StrigaSignupData> = getSignupData(secondStepDataTypes)
 
-    suspend fun getFullNameIfExists(): String? {
+    suspend fun getFullName(): String? {
         val data = getSignupData(
             setOf(
                 StrigaSignupDataType.FIRST_NAME,
