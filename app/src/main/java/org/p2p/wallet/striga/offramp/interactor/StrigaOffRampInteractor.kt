@@ -8,7 +8,7 @@ import org.p2p.wallet.striga.exchange.models.StrigaExchangeRate
 import org.p2p.wallet.striga.offramp.interactor.polling.StrigaOffRampExchangeRateNotifier
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampRateState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenType
-import org.p2p.wallet.utils.divideSafe
+import org.p2p.core.utils.divideSafe
 
 class StrigaOffRampInteractor(
     private val exchangeRateNotifier: StrigaOffRampExchangeRateNotifier,

@@ -129,7 +129,6 @@ class MyCryptoPresenter(
             visibilityState = currentVisibilityState,
             isZerosHidden = areZerosHidden,
         )
-        view?.showErrorMessage()
         view?.showItems(mappedItems)
     }
 
