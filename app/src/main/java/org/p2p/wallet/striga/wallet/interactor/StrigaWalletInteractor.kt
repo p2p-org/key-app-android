@@ -19,6 +19,8 @@ import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
 import org.p2p.wallet.striga.wallet.repository.StrigaWhitelistAddressesRepository
 import org.p2p.wallet.striga.wallet.repository.StrigaWithdrawalsRepository
 
+class StrigaNoBankingDetailsProvided : Throwable("No bic or iban found")
+
 class StrigaWalletInteractor(
     private val walletRepository: StrigaWalletRepository,
     private val withdrawalsRepository: StrigaWithdrawalsRepository,
@@ -79,15 +81,16 @@ class StrigaWalletInteractor(
     }
 
     suspend fun initEurOffRamp(eurAmount: BigDecimal): StrigaInitEurOffRampDetails {
-        val eurAccountId = getEurAccountId()
         val userBankingDetails = getEurBankingDetails()
-        val iban = requireNotNull(userBankingDetails.bankingIban) { "BIC should be filled and found" }
-        val bic = requireNotNull(userBankingDetails.bankingBic) { "Iban should be filled and found" }
+        if (userBankingDetails.bankingIban.isNullOrEmpty() || userBankingDetails.bankingBic.isNullOrEmpty()) {
+            throw StrigaNoBankingDetailsProvided()
+        }
+
         return withdrawalsRepository.initEurOffRamp(
-            sourceAccountId = eurAccountId,
+            sourceAccountId = getEurAccountId(),
             amount = eurAmount,
-            iban = iban,
-            bic = bic
+            iban = userBankingDetails.bankingIban,
+            bic = userBankingDetails.bankingBic
         ).unwrap()
     }
 

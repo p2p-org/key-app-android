@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.offramp.withdraw
 
+import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
@@ -13,7 +14,8 @@ import org.p2p.wallet.transaction.model.NewShowProgress
 
 class StrigaWithdrawPresenter(
     private val validator: StrigaBankingDetailsValidator,
-    private val interactor: StrigaWithdrawInteractor
+    private val interactor: StrigaWithdrawInteractor,
+    private val resources: Resources
 ) : BasePresenter<StrigaWithdrawContract.View>(),
     StrigaWithdrawContract.Presenter {
 
@@ -75,7 +77,7 @@ class StrigaWithdrawPresenter(
 
     private fun buildTransactionDetails(
         usdcToken: Token.Active,
-        usdcAmount: BigDecimal
+        usdcAmount: BigDecimal,
     ): NewShowProgress {
         return NewShowProgress(
             date = ZonedDateTime.now(),
@@ -83,8 +85,8 @@ class StrigaWithdrawPresenter(
             amountTokens = usdcAmount.toPlainString(),
             amountUsd = null,
             data = listOf(
-                TitleValue("IBAN", "TR15 0001 5001 5800 1234 0000 11"),
-                TitleValue("BIC/SWIFT", "TRONLOLIPOPXXX")
+                TitleValue(resources.getString(R.string.striga_withdrawal_transaction_iban), enteredIban),
+                TitleValue(resources.getString(R.string.striga_withdrawal_transaction_bic), enteredBic)
             )
         )
     }
