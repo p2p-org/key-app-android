@@ -11,7 +11,7 @@ import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.activeRoute
 import org.p2p.wallet.jupiter.statemanager.currentSlippage
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.utils.divideSafe
+import org.p2p.core.utils.divideSafe
 
 private const val TAG = "JupiterSwapInteractor"
 

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
+import timber.log.Timber
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.toast
@@ -29,14 +30,18 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
     }
 
     override fun showErrorMessage(messageResId: Int) {
+        Timber.tag("_____3").d(getString(messageResId))
         showErrorDialog(titleRes = messageResId)
     }
 
     override fun showErrorMessage(e: Throwable?) {
+        Timber.tag("_____").d(e)
         showErrorDialog(e)
     }
 
     override fun showToast(message: TextContainer) {
+        Timber.tag("_____1").d(message.getString(this))
+
         toast(message.getString(this))
     }
 

@@ -8,7 +8,7 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.wallet.utils.divideSafe
+import org.p2p.core.utils.divideSafe
 
 @Parcelize
 data class BridgeFee(
