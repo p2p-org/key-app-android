@@ -153,6 +153,7 @@ class WalletFragment :
             attachAdapter(cellAdapter)
             addItemDecoration(topOffsetDifferentClassDecoration())
             addItemDecoration(GroupedRoundingDecoration(StrigaOnRampCellModel::class, 16f.toPx()))
+            addItemDecoration(GroupedRoundingDecoration(StrigaOffRampCellModel::class, 16f.toPx()))
         }
 
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
