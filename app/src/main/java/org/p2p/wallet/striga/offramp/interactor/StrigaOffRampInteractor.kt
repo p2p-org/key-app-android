@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.offramp.interactor
 import java.math.BigDecimal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import org.p2p.core.utils.divideSafe
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
@@ -18,7 +19,6 @@ import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaUserWalletAccount
 import org.p2p.wallet.striga.wallet.models.StrigaWalletAccountCurrency
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
-import org.p2p.wallet.utils.divideSafe
 
 class StrigaOffRampInteractor(
     private val exchangeRateNotifier: StrigaOffRampExchangeRateNotifier,
