@@ -1,17 +1,27 @@
 package org.p2p.wallet.striga.offramp.withdraw
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.components.edittext.v2.NewUiKitEditTextDrawableStrategy
 import org.p2p.uikit.components.edittext.v2.NewUiKitEditTextMutator
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOffRampWithdrawBinding
+import org.p2p.wallet.home.ui.container.MainContainerFragment
+import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
+import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -34,6 +44,13 @@ class StrigaWithdrawFragment :
     private val binding: FragmentStrigaOffRampWithdrawBinding by viewBinding()
 
     private val withdrawType: StrigaWithdrawFragmentType by args(ARG_WITHDRAW_TYPE)
+    private val strigaFragmentFactory: StrigaFragmentFactory by inject()
+    private var listener: RootListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = context as? RootListener
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,5 +93,28 @@ class StrigaWithdrawFragment :
         val error = result.errorTextRes?.let(TextContainer::invoke)
         binding.editTextBic.mutate().setError(error)
         binding.buttonWithdraw.isEnabled = !binding.editTextIban.values.isInErrorState && error != null
+    }
+
+    override fun navigateToTransactionDetails(
+        transactionId: String,
+        data: NewShowProgress
+    ) {
+        listener?.showTransactionProgress(
+            internalTransactionId = transactionId,
+            data = data,
+            handlerQualifierName = SendSwapTransactionProgressHandler.QUALIFIER
+        )
+        popBackStackTo(target = MainContainerFragment::class, inclusive = false)
+    }
+
+    override fun navigateToOtpConfirm(
+        challengeId: StrigaWithdrawalChallengeId,
+        amountToOffRamp: BigDecimal,
+    ) {
+        val fragment = strigaFragmentFactory.onRampConfirmOtpFragment(
+            titleAmount = amountToOffRamp.toString(),
+            challengeId = challengeId
+        )
+        replaceFragment(fragment)
     }
 }

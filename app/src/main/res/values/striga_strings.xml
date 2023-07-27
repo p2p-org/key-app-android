@@ -154,4 +154,7 @@
     </string>
     <string name="striga_withdrawal_validation_empty_error">Could not be empty</string>
     <string name="striga_withdrawal_validation_format_error">Incorrect format</string>
+
+    <string name="striga_withdrawal_transaction_iban">IBAN</string>
+    <string name="striga_withdrawal_transaction_bic">BIC/SWIFt</string>
 </resources>
