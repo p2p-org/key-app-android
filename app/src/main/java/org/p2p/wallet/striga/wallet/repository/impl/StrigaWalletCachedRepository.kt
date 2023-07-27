@@ -5,6 +5,7 @@ import kotlin.reflect.KMutableProperty0
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.common.model.toSuccessResult
+import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupInteractor
 import org.p2p.wallet.striga.user.repository.StrigaUserRepository
 import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
@@ -17,6 +18,7 @@ internal class StrigaWalletCachedRepository(
     private val remoteRepository: StrigaWalletRemoteRepository,
     private val cache: StrigaWalletInMemoryRepository,
     private val strigaUserRepository: StrigaUserRepository,
+    private val strigaSignupInteractor: StrigaSignupInteractor,
 ) : StrigaWalletRepository {
 
     private val timber: Timber.Tree = Timber.tag("StrigaWalletCachedRepository")
@@ -47,22 +49,26 @@ internal class StrigaWalletCachedRepository(
         accountId: StrigaAccountId,
     ): StrigaDataLayerResult<StrigaUserBankingDetails> {
         return withCache(cache::userEurBankingDetails) {
-            val strigaUserFullName = strigaUserRepository.getUserDetails().unwrap()
-                .userInfo
-                .fullName
+            val strigaUserFullName = getFullName()
             remoteRepository.getUserBankingDetails(accountId, strigaUserFullName)
         }
     }
 
     override suspend fun saveUserEurBankingDetails(userBic: String, userIban: String) {
-        val strigaUserFullName = strigaUserRepository.getUserDetails().unwrap()
-            .userInfo
-            .fullName
+        val strigaUserFullName = getFullName()
+        strigaSignupInteractor.getSignupData()
         cache.userEurBankingDetails = StrigaUserBankingDetails(
             bankingBic = userBic,
             bankingIban = userIban,
             bankingFullName = strigaUserFullName
         )
+    }
+
+    private suspend fun getFullName(): String {
+        return strigaSignupInteractor.getFullNameIfExists()
+            ?: strigaUserRepository.getUserDetails().unwrap()
+                .userInfo
+                .fullName
     }
 
     private suspend fun <T> withCache(
