@@ -1,14 +1,15 @@
 package org.p2p.token.service.repository.configurator
 
-import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.token.TokenExtensions
+import org.p2p.core.token.TokenMetadataExtension
 
-class SetupTokenCellVisibilityConfigurator(
+class RuleProcessingTokenConfigurator(
     private val extensions: TokenMetadataExtension,
     private val tokenExtensions: TokenExtensions
 ) : TokenConfigurator<TokenExtensions> {
 
     override fun config(): TokenExtensions {
-        return tokenExtensions.copy(isTokenCellVisibleOnWalletScreen = extensions.isTokenCellVisibleOnWs)
+        val processingRule = extensions.ruleOfProcessingTokenPriceWs
+        return tokenExtensions.copy(ruleOfProcessingTokenPrice = processingRule)
     }
 }
