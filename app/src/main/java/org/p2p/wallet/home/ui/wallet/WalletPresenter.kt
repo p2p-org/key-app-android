@@ -125,16 +125,17 @@ class WalletPresenter(
             is UserTokensState.Empty -> {
                 view?.showBalance(
                     walletMapper.mapFiatBalance(BigDecimal.ZERO),
-                    walletMapper.mapTokenBalance(BigDecimal.ZERO)
+                    walletMapper.mapTokenBalance(balanceToken = null)
                 )
             }
             is UserTokensState.Loaded -> {
                 val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
-                val balance = filteredTokens.sumOf { it.total }
-                mainScreenAnalytics.logUserAggregateBalanceBase(balance)
+                val balanceUsd = filteredTokens.sumOf { it.totalInUsd ?: BigDecimal.ZERO }
+                val tokenForBalance = filteredTokens.find { it.isUSDC }
+                mainScreenAnalytics.logUserAggregateBalanceBase(balanceUsd)
                 view?.showBalance(
-                    walletMapper.mapFiatBalance(balance),
-                    walletMapper.mapTokenBalance(balance)
+                    walletMapper.mapFiatBalance(balanceUsd),
+                    walletMapper.mapTokenBalance(tokenForBalance)
                 )
             }
         }
