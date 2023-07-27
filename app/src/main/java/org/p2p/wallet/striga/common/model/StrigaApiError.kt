@@ -12,12 +12,15 @@ data class StrigaApiErrorResponse(
     val httpStatus: Int,
     @SerializedName("errorCode")
     private val internalErrorCode: StrigaApiErrorCode?,
+    @SerializedName("message")
+    private val message: String?,
     @SerializedName("errorDetails")
     val details: JsonElement?,
 ) {
     constructor(httpStatus: Int, internalErrorCode: StrigaApiErrorCode, details: String?) : this(
         httpStatus = httpStatus,
         internalErrorCode = internalErrorCode,
+        message = null,
         details = JsonPrimitive(details)
     )
 

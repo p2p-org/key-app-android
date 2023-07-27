@@ -7,6 +7,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.inapp.InAppFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.PollingFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaEnableEmailFieldFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaKycBannerMockFlag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateIbanNotFilledFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateMobileAlreadyVerifiedFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateUserCreateFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
@@ -21,6 +22,7 @@ class InAppFeatureFlags(prefs: SharedPreferences) {
     val strigaKycBannerMockFlag = StrigaKycBannerMockFlag(prefs)
     val strigaSimulateMobileAlreadyVerifiedFlag = StrigaSimulateMobileAlreadyVerifiedFlag(prefs)
     val strigaEnableEmailFieldFlag = StrigaEnableEmailFieldFlag(prefs)
+    val strigaSimulateIbanNotFilledFlag = StrigaSimulateIbanNotFilledFlag(prefs)
 
     /**
      * Allows to override values from FirebaseRemoteConfig
@@ -37,6 +39,7 @@ class InAppFeatureFlags(prefs: SharedPreferences) {
         strigaKycBannerMockFlag,
         strigaSimulateMobileAlreadyVerifiedFlag,
         strigaEnableEmailFieldFlag,
+        strigaSimulateIbanNotFilledFlag,
     )
 
     fun findFeatureFlagByName(featureName: String): InAppFeatureFlag? {

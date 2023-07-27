@@ -3,6 +3,8 @@ package org.p2p.wallet.striga.wallet.repository.impl
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
+import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
+import org.p2p.core.utils.toLamports
 import org.p2p.wallet.striga.common.StrigaIpAddressProvider
 import org.p2p.wallet.striga.common.StrigaUserIdProvider
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError
@@ -92,7 +94,7 @@ class StrigaWithdrawalsRemoteRepository(
             val request = StrigaInitEurOffRampRequest(
                 userId = strigaUserIdProvider.getUserIdOrThrow(),
                 sourceAccountId = sourceAccountId.value,
-                amountInUnits = amount.toString(),
+                amountInUnits = amount.toLamports(STRIGA_FIAT_DECIMALS).toString(),
                 destination = StrigaInitEurOffRampRequest.BankingDetailsRequest(iban = iban, bic = bic)
             )
             val response = api.initiateEurOffRamp(request)

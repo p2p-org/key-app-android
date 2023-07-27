@@ -5,6 +5,7 @@ import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.GatewayHandledState
@@ -33,7 +34,9 @@ class StrigaOtpConfirmFragment : BaseSmsInputFragment() {
     private val titleAmount: String by args(ARG_TITLE_AMOUNT)
     private val challengeId: StrigaWithdrawalChallengeId by args(ARG_CHALLENGE_ID)
 
-    override val presenter: SmsInputContract.Presenter by inject(named(StrigaOnRampModule.SMS_QUALIFIER))
+    override val presenter: SmsInputContract.Presenter by inject(named(StrigaOnRampModule.SMS_QUALIFIER)) {
+        parametersOf(challengeId)
+    }
 
     private var isOtpConfirmed: Boolean = false
 
