@@ -18,4 +18,6 @@ class NewUiKitEditTextValues(
     val inputTextLength: Int get() = inputText.length
     val endDrawable: Drawable? get() = binding.imageViewIconEnd.drawable
     val isEndDrawableVisible: Boolean get() = binding.imageViewIconEnd.isVisible
+
+    val isInErrorState: Boolean get() = binding.textViewError.isVisible
 }

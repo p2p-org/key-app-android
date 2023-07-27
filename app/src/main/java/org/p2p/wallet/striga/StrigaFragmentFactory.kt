@@ -74,13 +74,13 @@ class StrigaFragmentFactory {
 
     fun withdrawUsdcFragment(amountInUsdc: BigDecimal): Fragment {
         return StrigaWithdrawFragment.create(
-            StrigaWithdrawFragmentType.ConfirmUsdcOffRamp(amountInUsdc)
+            StrigaWithdrawFragmentType.ConfirmUsdcWithdraw(amountInUsdc)
         )
     }
 
     fun withdrawEurFragment(): Fragment {
         return StrigaWithdrawFragment.create(
-            StrigaWithdrawFragmentType.ConfirmEurOffRamp
+            StrigaWithdrawFragmentType.ConfirmEurWithdraw
         )
     }
 
