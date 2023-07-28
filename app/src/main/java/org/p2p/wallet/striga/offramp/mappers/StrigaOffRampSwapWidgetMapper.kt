@@ -7,6 +7,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.isZero
 import org.p2p.uikit.utils.skeleton.textCellSkeleton
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -94,6 +95,8 @@ class StrigaOffRampSwapWidgetMapper {
         balance: BigDecimal?,
         currencyName: String
     ): TextViewCellModel? {
+        if (balance.isNullOrZero()) return null
+
         return if (isLoadingBalance) {
             // todo: maybe we should use skeleton for availableAmount too?
             // SwapWidget currently doesn't support skeleton for availableAmount
