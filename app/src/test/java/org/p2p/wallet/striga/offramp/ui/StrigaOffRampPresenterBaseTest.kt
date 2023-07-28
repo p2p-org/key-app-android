@@ -22,6 +22,7 @@ import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.DecimalFormatter
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.striga.common.model.toSuccessResult
@@ -35,10 +36,12 @@ import org.p2p.wallet.striga.offramp.mappers.StrigaOffRampSwapWidgetMapper
 import org.p2p.wallet.striga.user.interactor.StrigaSignupDataEnsurerInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
+import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
+import org.p2p.wallet.utils.mockBooleanFeatureFlag
 
 abstract class StrigaOffRampPresenterBaseTest {
 
@@ -64,6 +67,9 @@ abstract class StrigaOffRampPresenterBaseTest {
     @MockK(relaxed = true)
     lateinit var strigaWalletInteractor: StrigaWalletInteractor
 
+    @MockK(relaxed = true)
+    lateinit var strigaWalletRepository: StrigaWalletRepository
+
     lateinit var exchangeRateNotifier: StrigaOffRampExchangeRateNotifier
     lateinit var interactor: StrigaOffRampInteractor
 
@@ -76,6 +82,8 @@ abstract class StrigaOffRampPresenterBaseTest {
     val strigaOffRampMapper = StrigaOffRampMapper()
     val swapWidgetMapper = StrigaOffRampSwapWidgetMapper()
     val rateTickerMapper = SwapRateTickerMapper()
+
+    private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle = mockBooleanFeatureFlag()
 
     var userWallet = MutableStateFlow<UserTokensState>(UserTokensState.Loading)
 
@@ -128,7 +136,10 @@ abstract class StrigaOffRampPresenterBaseTest {
             strigaExchangeRepository = strigaExchangeRepository,
         )
         interactor = StrigaOffRampInteractor(
-            exchangeRateNotifier = exchangeRateNotifier
+            exchangeRateNotifier = exchangeRateNotifier,
+            strigaWalletRepository = strigaWalletRepository,
+            strigaFeatureToggle = strigaFeatureToggle,
+            strigaUserInteractor = strigaUserInteractor
         )
         return StrigaOffRampPresenter(
             dispatchers = localDispatchers ?: dispatchers,

@@ -31,14 +31,7 @@ class StrigaDataLayerHttpErrorParser {
         return response.runCatching {
             val errorBody = response.errorBodyOrNull()
             errorBody?.let {
-                val body = if (it.contains("\\\"")) {
-                    Timber.d("Error body contains escaped quotes, replacing them")
-                    val fixedBody = it.replace("\\\"", "\"")
-                    fixedBody.substring(1).take(fixedBody.length - 2)
-                } else {
-                    it
-                }
-                gson.fromJsonReified<StrigaApiErrorResponse>(body)
+                gson.fromJsonReified<StrigaApiErrorResponse>(it)
             } ?: error("Error body is null")
         }
             .onFailure { Timber.i(it) }

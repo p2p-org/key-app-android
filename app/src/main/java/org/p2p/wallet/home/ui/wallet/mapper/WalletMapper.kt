@@ -11,9 +11,11 @@ import org.p2p.core.utils.asUsd
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.wallet.home.ui.main.delegates.striga.offramp.StrigaOffRampCellModel
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
+import org.p2p.wallet.striga.offramp.models.StrigaOffRampToken
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampToken
 import org.p2p.wallet.utils.toPx
 
@@ -74,6 +76,18 @@ class WalletMapper() {
                     tokenMintAddress = mintAddress,
                     tokenSymbol = it.tokenDetails.tokenSymbol,
                     tokenIcon = it.tokenDetails.iconUrl.orEmpty(),
+                    isLoading = false,
+                    payload = it
+                )
+            }
+            return this
+        }
+
+        fun mapStrigaOffRampTokens(strigaOffRampTokens: List<StrigaOffRampToken>): Builder {
+            cellItems += strigaOffRampTokens.map {
+                StrigaOffRampCellModel(
+                    amountAvailable = it.amountToWithdraw,
+                    tokenSymbol = Constants.EUR_SYMBOL,
                     isLoading = false,
                     payload = it
                 )

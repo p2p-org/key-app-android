@@ -12,6 +12,7 @@ import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
+import java.math.BigDecimal
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.utils.asUsd
 import org.p2p.uikit.model.AnyCellItem
@@ -30,6 +31,8 @@ import org.p2p.wallet.databinding.FragmentWalletBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.home.ui.main.delegates.banner.homeScreenBannerDelegate
+import org.p2p.wallet.home.ui.main.delegates.striga.offramp.StrigaOffRampCellModel
+import org.p2p.wallet.home.ui.main.delegates.striga.offramp.strigaOffRampTokenDelegate
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.strigaOnRampTokenDelegate
 import org.p2p.wallet.home.ui.topup.TopUpWalletBottomSheet
@@ -40,6 +43,7 @@ import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
+import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.utils.HomeScreenLayoutManager
 import org.p2p.wallet.utils.copyToClipBoard
@@ -67,6 +71,13 @@ class WalletFragment :
             onBindListener = { binding, item ->
                 binding.buttonClaim.setOnClickListener {
                     presenter.onStrigaOnRampClicked(item)
+                }
+            }
+        ),
+        strigaOffRampTokenDelegate(
+            onBindListener = { binding, item ->
+                binding.buttonClaim.setOnClickListener {
+                    presenter.onStrigaOffRampClicked(item)
                 }
             }
         ),
@@ -142,6 +153,7 @@ class WalletFragment :
             attachAdapter(cellAdapter)
             addItemDecoration(topOffsetDifferentClassDecoration())
             addItemDecoration(GroupedRoundingDecoration(StrigaOnRampCellModel::class, 16f.toPx()))
+            addItemDecoration(GroupedRoundingDecoration(StrigaOffRampCellModel::class, 16f.toPx()))
         }
 
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
@@ -169,6 +181,12 @@ class WalletFragment :
     override fun navigateToOffRamp() {
         replaceFragment(
             strigaFragmentFactory.offRampFragment()
+        )
+    }
+
+    override fun navigateToOffRampWithdrawEur(amountInEur: BigDecimal) {
+        replaceFragment(
+            strigaFragmentFactory.withdrawEurFragment(amountInEur)
         )
     }
 
@@ -208,6 +226,17 @@ class WalletFragment :
         }
     }
 
+    override fun showStrigaOffRampProgress(isLoading: Boolean, accountId: StrigaAccountId) {
+        binding.recyclerViewHome.post {
+            cellAdapter.updateItem<StrigaOffRampCellModel>(
+                predicate = { item ->
+                    item is StrigaOffRampCellModel && item.payload.accountId == accountId
+                },
+                transform = { it.copy(isLoading = isLoading) }
+            )
+        }
+    }
+
     override fun navigateToProfile() {
         replaceFragment(SettingsFragment.create())
     }
@@ -227,6 +256,21 @@ class WalletFragment :
         replaceFragmentForResult(fragment, StrigaOtpConfirmFragment.REQUEST_KEY, onResult = { _, bundle ->
             if (bundle.getBoolean(StrigaOtpConfirmFragment.RESULT_KEY_CONFIRMED, false)) {
                 presenter.onOnRampConfirmed(challengeId, token)
+            }
+        })
+    }
+
+    override fun navigateToStrigaOffRampConfirmOtp(
+        challengeId: StrigaWithdrawalChallengeId,
+        token: StrigaOffRampCellModel
+    ) {
+        val fragment = strigaFragmentFactory.onRampConfirmOtpFragment(
+            titleAmount = token.amountAvailable.asUsd(),
+            challengeId = challengeId
+        )
+        replaceFragmentForResult(fragment, StrigaOtpConfirmFragment.REQUEST_KEY, onResult = { _, bundle ->
+            if (bundle.getBoolean(StrigaOtpConfirmFragment.RESULT_KEY_CONFIRMED, false)) {
+                presenter.onOffRampConfirmed(challengeId, token)
             }
         })
     }
