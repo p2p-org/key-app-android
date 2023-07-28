@@ -28,6 +28,7 @@ import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenType
 import org.p2p.wallet.striga.user.interactor.StrigaSignupDataEnsurerInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
@@ -198,7 +199,11 @@ class StrigaOffRampPresenter(
     private fun navigateToSignupFlow() {
         // go to standard Striga signup flow
         val destination = strigaUserInteractor.getUserDestination()
-        view?.navigateToSignup(destination)
+        if (destination == StrigaUserStatusDestination.KYC_PENDING) {
+            view?.showKycPendingDialog()
+        } else {
+            view?.navigateToSignup(destination)
+        }
     }
 
     private fun setTokenAmount(targetTokenType: StrigaOffRampTokenType, amount: BigDecimal) {
@@ -363,13 +368,13 @@ class StrigaOffRampPresenter(
         view?.setTokenAWidgetState(
             swapWidgetMapper.mapByState(
                 StrigaOffRampTokenType.TokenA,
-                StrigaOffRampTokenState.Disabled(usdcBalance)
+                StrigaOffRampTokenState.Disabled(inputAmountA, usdcBalance)
             )
         )
         view?.setTokenBWidgetState(
             swapWidgetMapper.mapByState(
                 StrigaOffRampTokenType.TokenB,
-                StrigaOffRampTokenState.Disabled()
+                StrigaOffRampTokenState.Disabled(inputAmountB)
             )
         )
     }

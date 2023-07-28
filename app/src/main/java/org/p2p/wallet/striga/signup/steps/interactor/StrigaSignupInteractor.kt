@@ -106,6 +106,24 @@ class StrigaSignupInteractor(
     suspend fun getSignupDataFirstStep(): List<StrigaSignupData> = getSignupData(firstStepDataTypes)
     suspend fun getSignupDataSecondStep(): List<StrigaSignupData> = getSignupData(secondStepDataTypes)
 
+    suspend fun getFullName(): String? {
+        val data = getSignupData(
+            setOf(
+                StrigaSignupDataType.FIRST_NAME,
+                StrigaSignupDataType.LAST_NAME,
+            )
+        )
+
+        val firstName = data.find { it.type == StrigaSignupDataType.FIRST_NAME }?.value
+        val lastName = data.find { it.type == StrigaSignupDataType.LAST_NAME }?.value
+
+        return if (firstName.isNullOrBlank() || lastName.isNullOrBlank()) {
+            null
+        } else {
+            "$firstName $lastName"
+        }
+    }
+
     suspend fun getSignupData(fields: Set<StrigaSignupDataType> = emptySet()): List<StrigaSignupData> {
         return when (val data = signupDataRepository.getUserSignupData()) {
             is StrigaDataLayerResult.Success -> {

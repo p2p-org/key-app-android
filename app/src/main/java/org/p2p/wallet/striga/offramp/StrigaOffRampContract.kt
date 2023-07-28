@@ -17,6 +17,7 @@ interface StrigaOffRampContract {
         fun setRatioState(state: TextViewCellModel?)
         fun setButtonState(buttonState: StrigaOffRampButtonState)
         fun setTokenATextColorRes(@ColorRes textColorRes: Int)
+        fun showKycPendingDialog()
         fun navigateToSignup(destination: StrigaUserStatusDestination)
         fun navigateToWithdraw(amountInUsdc: BigDecimal)
     }

@@ -48,12 +48,12 @@
             android:layout_marginHorizontal="12dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="@string/incoming_transfer"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
             app:layout_constraintBottom_toTopOf="@id/textViewTokenTotal"
             app:layout_constraintEnd_toStartOf="@id/buttonClaim"
             app:layout_constraintStart_toEndOf="@id/imageViewToken"
-            app:layout_constraintTop_toTopOf="@id/imageViewToken"
-            tools:text="Wrapped Ethereum" />
+            app:layout_constraintTop_toTopOf="@id/imageViewToken" />
 
         <TextView
             android:id="@+id/textViewTokenTotal"

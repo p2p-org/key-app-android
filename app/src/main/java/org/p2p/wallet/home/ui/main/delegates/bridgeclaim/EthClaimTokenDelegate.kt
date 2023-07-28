@@ -36,7 +36,6 @@ fun ethClaimTokenDelegate(
 fun AdapterDelegateViewBindingViewHolder<EthClaimTokenCellModel, ItemTokenToClaimBinding>.onBind(
     glideManager: GlideManager
 ) = with(binding) {
-    textViewTokenName.text = item.tokenName
     textViewTokenTotal.text = item.formattedTotal
     glideManager.load(
         imageView = binding.imageViewToken,
