@@ -20,7 +20,6 @@ import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.striga.offramp.withdraw.interactor.StrigaWithdrawInteractor
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
-import org.p2p.wallet.striga.sms.interactor.StrigaOtpConfirmInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaNoBankingDetailsProvided
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
@@ -35,7 +34,7 @@ class WalletStrigaHandler(
     private val historyInteractor: HistoryInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val localFeatureFlags: InAppFeatureFlags,
-    private val strigaOtpConfirmInteractor: StrigaOtpConfirmInteractor,
+//    private val strigaOtpConfirmInteractor: StrigaOtpConfirmInteractor,
 ) {
     suspend fun handleBannerClick(view: WalletContract.View?, item: StrigaBanner) {
         with(item.status) {
@@ -69,7 +68,8 @@ class WalletStrigaHandler(
         try {
             view?.showStrigaOnRampProgress(isLoading = true, tokenMint = item.tokenMintAddress)
             val challengeId = strigaOnRampInteractor.onRampToken(item.amountAvailable, item.payload).unwrap()
-            strigaOtpConfirmInteractor.launchInitialTimer()
+            // todo: fixme
+            //       strigaOtpConfirmInteractor.launchInitialTimer()
             view?.navigateToStrigaOnRampConfirmOtp(challengeId, item)
         } catch (e: Throwable) {
             Timber.e(e, "Error on claiming striga token")
@@ -92,7 +92,8 @@ class WalletStrigaHandler(
             }
 
             val challengeId = strigaWithdrawInteractor.withdrawEur(item.amountAvailable)
-            strigaOtpConfirmInteractor.launchInitialTimer()
+            // todo: fixme
+            //       strigaOtpConfirmInteractor.launchInitialTimer()
 
             view?.navigateToStrigaOffRampConfirmOtp(challengeId, item)
         } catch (e: StrigaNoBankingDetailsProvided) {
