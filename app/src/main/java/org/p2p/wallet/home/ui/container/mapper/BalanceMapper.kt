@@ -1,9 +1,8 @@
 package org.p2p.wallet.home.ui.container.mapper
 
 import java.math.BigDecimal
-import org.p2p.core.utils.asUsd
+import java.math.RoundingMode
 import org.p2p.core.utils.formatFiat
-import org.p2p.core.utils.lessThenMinValue
 
 private const val MAX_VALUE_STRING = "$999M+"
 
@@ -15,8 +14,7 @@ class BalanceMapper() {
 
     fun mapBalanceForWallet(balance: BigDecimal): String {
         return when {
-            balance.lessThenMinValue() -> BigDecimal.ZERO.asUsd()
-            balance < thousand -> balance.asUsd()
+            balance < thousand -> "$${balance.setScale(0, RoundingMode.FLOOR).stripTrailingZeros().toPlainString()}"
             balance < million -> {
                 val valueInThousands = balance / thousand
                 "$${valueInThousands.formatFiat()}K"
