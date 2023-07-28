@@ -41,9 +41,11 @@ class SendLinkGenerationResultFragment : BaseFragment(R.layout.fragment_send_lin
         with(binding) {
             renderState()
 
-            imageViewClose.setOnClickListener { popBackStackTo(MainContainerFragment::class) }
+            imageViewClose.setOnClickListener {
+                popBackStackTo(MainContainerFragment::class)
+            }
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                popBackStack()
+                popBackStackTo(MainContainerFragment::class)
             }
         }
     }
