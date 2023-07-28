@@ -49,7 +49,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/incoming_transfer"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
             app:layout_constraintBottom_toTopOf="@id/textViewTokenTotal"
             app:layout_constraintEnd_toStartOf="@id/buttonClaim"
             app:layout_constraintStart_toEndOf="@id/imageViewToken"
