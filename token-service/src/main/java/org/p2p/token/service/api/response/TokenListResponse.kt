@@ -18,7 +18,7 @@ internal data class TokenResponse(
     val name: String,
     @SerializedName("decimals")
     val decimals: Int,
-    @SerializedName("logoURI")
+    @SerializedName("logoUrl")
     val logoUrl: String?,
     @SerializedName("tags")
     val tags: List<String>?,
@@ -34,17 +34,17 @@ internal data class TokenResponse(
 }
 
 internal data class MetadataExtensionResponse(
-    @SerializedName("ruleOfProcessingTokenPriceWs")
+    @SerializedName("ruleOfProcessingTokenPriceWS")
     val ruleOfProcessingTokenPriceWs: String?,
-    @SerializedName("isPositionOnWs")
+    @SerializedName("isPositionOnWS")
     val isPositionOnWs: Boolean?,
-    @SerializedName("isTokenCellVisibleOnWs")
+    @SerializedName("isTokenCellVisibleOnWS")
     val isTokenCellVisibleOnWs: Boolean?,
-    @SerializedName("percentDifferenceToShowByPriceOnWs")
+    @SerializedName("percentDifferenceToShowByPriceOnWS")
     val percentDifferenceToShowByPriceOnWs: Int?,
-    @SerializedName("calculationOfFinalBalanceOnWs")
+    @SerializedName("calculationOfFinalBalanceOnWS")
     val calculationOfFinalBalanceOnWs: Boolean?,
-    @SerializedName("ruleOfFractionalPartOnWs")
+    @SerializedName("ruleOfFractionalPartOnWS")
     val ruleOfFractionalPartOnWs: String?,
     @SerializedName("canBeHidden")
     val canBeHidden: Boolean?
