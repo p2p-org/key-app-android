@@ -26,7 +26,7 @@ import org.p2p.wallet.striga.wallet.interactor.StrigaNoBankingDetailsProvided
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 
-class StrigaHandler(
+class WalletStrigaHandler(
     private val strigaKycUiBannerMapper: StrigaKycUiBannerMapper,
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,

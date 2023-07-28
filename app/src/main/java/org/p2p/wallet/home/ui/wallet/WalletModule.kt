@@ -4,7 +4,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
-import org.p2p.wallet.home.ui.wallet.handlers.StrigaHandler
+import org.p2p.wallet.home.ui.wallet.handlers.WalletStrigaHandler
 import org.p2p.wallet.home.ui.wallet.mapper.StrigaKycUiBannerMapper
 import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
 
@@ -13,7 +13,7 @@ object WalletModule : InjectionModule {
     override fun create() = module {
         factoryOf(::WalletMapper)
         factoryOf(::StrigaKycUiBannerMapper)
-        factoryOf(::StrigaHandler)
+        factoryOf(::WalletStrigaHandler)
         factory {
             WalletPresenter(
                 usernameInteractor = get(),
@@ -23,7 +23,7 @@ object WalletModule : InjectionModule {
                 strigaOnRampInteractor = get(),
                 strigaOffRampInteractor = get(),
                 strigaUserInteractor = get(),
-                strigaHandler = get(),
+                walletStrigaHandler = get(),
                 strigaSignupEnabledFeatureToggle = get(),
                 sellInteractor = get(),
                 mainScreenAnalytics = get(),

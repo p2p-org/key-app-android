@@ -13,7 +13,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.main.delegates.striga.offramp.StrigaOffRampCellModel
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
-import org.p2p.wallet.home.ui.wallet.handlers.StrigaHandler
+import org.p2p.wallet.home.ui.wallet.handlers.WalletStrigaHandler
 import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -36,7 +36,7 @@ class WalletPresenter(
     private val strigaOnRampInteractor: StrigaOnRampInteractor,
     private val strigaOffRampInteractor: StrigaOffRampInteractor,
     private val strigaUserInteractor: StrigaUserInteractor,
-    private val strigaHandler: StrigaHandler,
+    private val walletStrigaHandler: WalletStrigaHandler,
     private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val sellInteractor: SellInteractor,
     private val mainScreenAnalytics: MainScreenAnalytics,
@@ -201,19 +201,19 @@ class WalletPresenter(
     override fun onStrigaOnRampClicked(item: StrigaOnRampCellModel) {
         mainScreenAnalytics.logMainScreenClaimTransferedClick()
         launch {
-            strigaHandler.handleOnRampClick(view, item)
+            walletStrigaHandler.handleOnRampClick(view, item)
         }
     }
 
     override fun onStrigaOffRampClicked(item: StrigaOffRampCellModel) {
         launch {
-            strigaHandler.handleOffRampClick(view, item)
+            walletStrigaHandler.handleOffRampClick(view, item)
         }
     }
 
     override fun onStrigaBannerClicked(item: StrigaBanner) {
         launch {
-            strigaHandler.handleBannerClick(view, item)
+            walletStrigaHandler.handleBannerClick(view, item)
         }
     }
 
@@ -222,13 +222,13 @@ class WalletPresenter(
         token: StrigaOnRampCellModel
     ) {
         launch {
-            strigaHandler.handleOnRampConfirmed(token)
+            walletStrigaHandler.handleOnRampConfirmed(token)
         }
     }
 
     override fun onOffRampConfirmed(challengeId: StrigaWithdrawalChallengeId, token: StrigaOffRampCellModel) {
         launch {
-            strigaHandler.handleOffRampConfirmed(token)
+            walletStrigaHandler.handleOffRampConfirmed(token)
         }
     }
 
