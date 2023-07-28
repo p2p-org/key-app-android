@@ -15,7 +15,7 @@ import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.deeplinks.DeeplinkHandler
-import org.p2p.wallet.home.ui.container.mapper.BalanceMapper
+import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
 import org.p2p.wallet.home.ui.crypto.MyCryptoFragment
 import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
@@ -33,7 +33,7 @@ class MainContainerPresenter(
     private val metadataInteractor: MetadataInteractor,
     private val userInteractor: UserInteractor,
     private val strigaOnRampInteractor: StrigaOnRampInteractor,
-    private val balanceMapper: BalanceMapper,
+    private val balanceMapper: WalletBalanceMapper,
     private val mainScreenAnalytics: MainScreenAnalytics
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
 
@@ -159,16 +159,16 @@ class MainContainerPresenter(
             is UserTokensState.Loading -> Unit
             is UserTokensState.Refreshing -> Unit
             is UserTokensState.Error -> {
-                view?.showWalletBalance(balanceMapper.mapBalanceForWallet(BigDecimal.ZERO))
+                view?.showWalletBalance(balanceMapper.formatBalance(BigDecimal.ZERO))
             }
             is UserTokensState.Empty -> {
                 view?.showCryptoBadgeVisible(isVisible = false)
-                view?.showWalletBalance(balanceMapper.mapBalanceForWallet(BigDecimal.ZERO))
+                view?.showWalletBalance(balanceMapper.formatBalance(BigDecimal.ZERO))
             }
             is UserTokensState.Loaded -> {
                 val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
                 val balance = filteredTokens.sumOf { it.total }
-                view?.showWalletBalance(balanceMapper.mapBalanceForWallet(balance))
+                view?.showWalletBalance(balanceMapper.formatBalance(balance))
                 view?.showCryptoBadgeVisible(isVisible = newState.ethTokens.isNotEmpty())
             }
         }

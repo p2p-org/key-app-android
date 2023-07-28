@@ -10,11 +10,16 @@ private val thousand = BigDecimal(1_000)
 private val million = BigDecimal(1_000_000)
 private val billion = BigDecimal(1_000_000_000)
 
-class BalanceMapper() {
+class WalletBalanceMapper() {
 
-    fun mapBalanceForWallet(balance: BigDecimal): String {
+    fun formatBalance(balance: BigDecimal): String {
         return when {
-            balance < thousand -> "$${balance.setScale(0, RoundingMode.FLOOR).stripTrailingZeros().toPlainString()}"
+            balance < thousand -> {
+                val formattedBalance = balance.setScale(0, RoundingMode.FLOOR)
+                    .stripTrailingZeros()
+                    .toPlainString()
+                "$$formattedBalance"
+            }
             balance < million -> {
                 val valueInThousands = balance / thousand
                 "$${valueInThousands.formatFiat()}K"
