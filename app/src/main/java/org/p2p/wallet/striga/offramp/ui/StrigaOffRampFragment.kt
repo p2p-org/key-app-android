@@ -93,6 +93,10 @@ class StrigaOffRampFragment :
         binding.swapWidgetFrom.setAmountTextColorRes(textColorRes)
     }
 
+    override fun showKycPendingDialog() {
+        strigaFragmentFactory.showPendingBottomSheet(parentFragmentManager)
+    }
+
     override fun navigateToSignup(destination: StrigaUserStatusDestination) {
         strigaFragmentFactory.signupFlowFragment(destination)?.let(::replaceFragment)
     }
