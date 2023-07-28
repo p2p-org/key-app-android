@@ -12,7 +12,7 @@ import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
-import org.p2p.wallet.home.ui.container.mapper.BalanceMapper
+import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.home.ui.topup.TopUpWalletContract
@@ -58,6 +58,6 @@ object MainContainerModule : InjectionModule {
             SelectTokenPresenter(tokens)
         }
         factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
-        factoryOf(::BalanceMapper)
+        factoryOf(::WalletBalanceMapper)
     }
 }
