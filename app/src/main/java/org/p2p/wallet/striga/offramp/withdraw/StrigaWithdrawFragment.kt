@@ -89,13 +89,13 @@ class StrigaWithdrawFragment :
 
     override fun showIbanValidationResult(result: StrigaWithdrawValidationResult) {
         val error = result.errorTextRes?.let(TextContainer::invoke)
-        binding.editTextIban.mutate().setErrorTip(error)
+        binding.editTextIban.mutate().setErrorState(error)
         binding.buttonWithdraw.isEnabled = binding.editTextBic.values.isInErrorState && error != null
     }
 
     override fun showBicValidationResult(result: StrigaWithdrawValidationResult) {
         val error = result.errorTextRes?.let(TextContainer::invoke)
-        binding.editTextBic.mutate().setErrorTip(error)
+        binding.editTextBic.mutate().setErrorState(error)
         binding.buttonWithdraw.isEnabled = !binding.editTextIban.values.isInErrorState && error != null
     }
 
