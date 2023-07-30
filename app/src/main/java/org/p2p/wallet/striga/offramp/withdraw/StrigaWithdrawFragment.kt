@@ -71,7 +71,6 @@ class StrigaWithdrawFragment :
             addOnTextChangedListener { presenter.onBicChanged(it.toString()) }
         }
 
-
         binding.buttonWithdraw.setOnClickListener {
             presenter.withdraw(withdrawType)
         }
