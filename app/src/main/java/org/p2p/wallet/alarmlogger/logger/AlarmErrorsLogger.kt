@@ -9,10 +9,13 @@ import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsServiceApi
+import org.p2p.wallet.alarmlogger.model.AlarmBridgeErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmDeviceShareChangeErrorConverter
+import org.p2p.wallet.alarmlogger.model.AlarmFeatureConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSendErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmStrigaErrorConverter
 import org.p2p.wallet.alarmlogger.model.AlarmSwapErrorConverter
+import org.p2p.wallet.alarmlogger.model.AlarmWeb3ErrorConverter
 import org.p2p.wallet.alarmlogger.model.DeviceShareChangeAlarmError
 import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
 import org.p2p.wallet.alarmlogger.model.SwapAlarmError
@@ -26,12 +29,9 @@ import org.p2p.wallet.utils.retryRequest
 
 class AlarmErrorsLogger(
     private val api: AlarmErrorsServiceApi,
+    private val alarmConverters: List<AlarmFeatureConverter>,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val swapErrorConverter: AlarmSwapErrorConverter,
-    private val sendErrorConverter: AlarmSendErrorConverter,
-    private val deviceShareChangeErrorConverter: AlarmDeviceShareChangeErrorConverter,
-    private val strigaErrorConverter: AlarmStrigaErrorConverter,
-    private val ethereumInteractor: EthereumInteractor,
+    private val ethInteractor: EthereumInteractor,
     private val appScope: AppScope
 ) {
     private class AlarmErrorsError(override val cause: Throwable) : Throwable(cause)
@@ -57,18 +57,19 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toSendErrorRequest(
-                    token = token,
-                    currencyMode = currencyMode,
-                    amount = amount,
-                    feePayerToken = feePayerToken,
-                    accountCreationFee = accountCreationFee,
-                    transactionFee = transactionFee,
-                    relayAccount = relayAccount,
-                    userPublicKey = userPublicKey,
-                    recipientAddress = recipientAddress,
-                    error = error
-                )
+                val request = getConverter<AlarmSendErrorConverter>()
+                    .toSendErrorRequest(
+                        token = token,
+                        currencyMode = currencyMode,
+                        amount = amount,
+                        feePayerToken = feePayerToken,
+                        accountCreationFee = accountCreationFee,
+                        transactionFee = transactionFee,
+                        relayAccount = relayAccount,
+                        userPublicKey = userPublicKey,
+                        recipientAddress = recipientAddress,
+                        error = error
+                    )
                 retryRequest(
                     block = { api.sendAlarm(request) }
                 )
@@ -88,13 +89,14 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toSendViaLinkErrorRequest(
-                    userPublicKey = userPublicKey,
-                    token = token,
-                    lamports = lamports,
-                    currency = currency,
-                    error = error
-                )
+                val request = getConverter<AlarmSendErrorConverter>()
+                    .toSendViaLinkErrorRequest(
+                        userPublicKey = userPublicKey,
+                        token = token,
+                        lamports = lamports,
+                        currency = currency,
+                        error = error
+                    )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
@@ -110,13 +112,14 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toClaimViaLinkErrorRequest(
-                    userPublicKey = userPublicKey,
-                    token = token,
-                    lamports = token.totalInLamports,
-                    currency = token.tokenSymbol,
-                    error = error
-                )
+                val request = getConverter<AlarmSendErrorConverter>()
+                    .toClaimViaLinkErrorRequest(
+                        userPublicKey = userPublicKey,
+                        token = token,
+                        lamports = token.totalInLamports,
+                        currency = token.tokenSymbol,
+                        error = error
+                    )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
@@ -133,12 +136,13 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = swapErrorConverter.toSwapError(
-                    userPublicKey = userPublicKey,
-                    swapState = swapState,
-                    swapError = swapError,
-                    type = swapErrorType
-                )
+                val request = getConverter<AlarmSwapErrorConverter>()
+                    .toSwapError(
+                        userPublicKey = userPublicKey,
+                        swapState = swapState,
+                        swapError = swapError,
+                        type = swapErrorType
+                    )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
@@ -155,13 +159,14 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toBridgeClaimErrorRequest(
-                    userPublicKey = userPublicKey,
-                    userEthAddress = ethereumInteractor.getEthUserAddress().hex,
-                    token = tokenToClaim,
-                    claimAmount = claimAmount,
-                    error = error
-                )
+                val request = getConverter<AlarmBridgeErrorConverter>()
+                    .toBridgeClaimErrorRequest(
+                        userPublicKey = userPublicKey,
+                        userEthAddress = ethInteractor.getEthUserAddress(),
+                        token = tokenToClaim,
+                        claimAmount = claimAmount,
+                        error = error
+                    )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
@@ -181,15 +186,16 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toBridgeSendErrorRequest(
-                    token = token,
-                    userPublicKey = userPublicKey,
-                    currency = currency,
-                    sendAmount = sendAmount,
-                    arbiterFeeAmount = arbiterFeeAmount,
-                    recipientEthPubkey = recipientEthPubkey,
-                    error = error
-                )
+                val request = getConverter<AlarmBridgeErrorConverter>()
+                    .toBridgeSendErrorRequest(
+                        token = token,
+                        userPublicKey = userPublicKey,
+                        currency = currency,
+                        sendAmount = sendAmount,
+                        arbiterFeeAmount = arbiterFeeAmount,
+                        recipientEthPubkey = recipientEthPubkey,
+                        error = error
+                    )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
@@ -205,11 +211,12 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toUsernameErrorRequest(
-                    username = username,
-                    userPublicKey = userPublicKey,
-                    error = error
-                )
+                val request = getConverter<AlarmSendErrorConverter>()
+                    .toUsernameErrorRequest(
+                        username = username,
+                        userPublicKey = userPublicKey,
+                        error = error
+                    )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
@@ -222,7 +229,7 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = sendErrorConverter.toWeb3ErrorRequest(web3Error)
+                val request = getConverter<AlarmWeb3ErrorConverter>().toWeb3ErrorRequest(web3Error)
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
@@ -235,10 +242,11 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = strigaErrorConverter.toStrigaErrorRequest(
-                    userPublicKey = userPublicKey,
-                    error = strigaError
-                )
+                val request = getConverter<AlarmStrigaErrorConverter>()
+                    .toStrigaErrorRequest(
+                        userPublicKey = userPublicKey,
+                        error = strigaError
+                    )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
@@ -251,14 +259,19 @@ class AlarmErrorsLogger(
 
         appScope.launch {
             try {
-                val request = deviceShareChangeErrorConverter.toDeviceShareChangeErrorRequest(
-                    userPublicKey = userPublicKey,
-                    error = deviceShareChangeAlarmError
-                )
+                val request = getConverter<AlarmDeviceShareChangeErrorConverter>()
+                    .toDeviceShareChangeErrorRequest(
+                        userPublicKey = userPublicKey,
+                        error = deviceShareChangeAlarmError
+                    )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
                 Timber.e(AlarmErrorsError(error), "Failed to send alarm")
             }
         }
+    }
+
+    private inline fun <reified T : AlarmFeatureConverter> getConverter(): T {
+        return alarmConverters.filterIsInstance<T>().first()
     }
 }
