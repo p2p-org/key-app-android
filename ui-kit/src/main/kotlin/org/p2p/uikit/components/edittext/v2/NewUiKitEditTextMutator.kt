@@ -73,7 +73,7 @@ class NewUiKitEditTextMutator(
     /**
      * @param errorMessage pass null if you need to hide error
      */
-    fun setError(errorMessage: TextContainer?): NewUiKitEditTextMutator = apply {
+    fun setErrorTip(errorMessage: TextContainer?): NewUiKitEditTextMutator = apply {
         tipStateRenderer.renderState(
             if (errorMessage != null) {
                 NewUiKitEditTextTipState.Error(errorMessage)
@@ -84,7 +84,7 @@ class NewUiKitEditTextMutator(
     }
 
 
-    fun setTipValue(tipMessage: TextContainer?): NewUiKitEditTextMutator = apply {
+    fun setInfoTip(tipMessage: TextContainer?): NewUiKitEditTextMutator = apply {
         tipStateRenderer.renderState(
             if (tipMessage != null) {
                 NewUiKitEditTextTipState.Information(tipMessage)
@@ -94,7 +94,7 @@ class NewUiKitEditTextMutator(
         )
     }
 
-    fun setSuccess(successMessage: TextContainer?): NewUiKitEditTextMutator = apply {
+    fun setSuccessTip(successMessage: TextContainer?): NewUiKitEditTextMutator = apply {
         tipStateRenderer.renderState(
             if (successMessage != null) {
                 NewUiKitEditTextTipState.Success(successMessage)
