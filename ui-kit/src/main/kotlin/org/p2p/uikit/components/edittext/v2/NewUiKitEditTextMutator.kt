@@ -83,7 +83,6 @@ class NewUiKitEditTextMutator(
         )
     }
 
-
     fun setInformationTip(tipMessage: TextContainer?): NewUiKitEditTextMutator = apply {
         tipStateRenderer.renderState(
             if (tipMessage != null) {
