@@ -3,6 +3,7 @@ package org.p2p.uikit.components.edittext.v2
 import androidx.core.view.isVisible
 import android.graphics.drawable.Drawable
 import android.widget.EditText
+import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetUiKitEditTextNewBinding
 
 /**
@@ -19,5 +20,8 @@ class NewUiKitEditTextValues(
     val endDrawable: Drawable? get() = binding.imageViewIconEnd.drawable
     val isEndDrawableVisible: Boolean get() = binding.imageViewIconEnd.isVisible
 
-    val isInErrorState: Boolean get() = binding.textViewError.isVisible
+    // checking for particular is a bad decision, but works for now
+    val isInErrorState: Boolean
+        get() = binding.textViewTip.isVisible &&
+            binding.textViewTip.currentTextColor == R.color.text_rose
 }

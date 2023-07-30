@@ -76,7 +76,7 @@ internal class StrigaWalletCachedRepository(
     ): StrigaDataLayerResult<T> {
         return try {
             val result = cache?.invoke()?.also {
-                timber.i("Getting data from cache")
+                timber.i("Getting data from cache for ${cache.name}")
             } ?: remote().also {
                 timber.i("Update cache from remote")
                 cache?.set(it)

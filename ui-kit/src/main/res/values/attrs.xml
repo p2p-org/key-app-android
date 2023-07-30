@@ -135,12 +135,16 @@
 
     <declare-styleable name="NewUiKitEditText">
         <attr name="labelText" />
+
         <attr name="inputText" format="string" />
         <attr name="inputTextColor" format="color" />
         <attr name="inputHintText" format="string" />
         <attr name="inputEndDrawable" format="reference" />
         <attr name="inputTextAppearance" format="reference" />
         <attr name="inputBackgroundTint" format="color" />
+        
+        <attr name="tipText" format="string"/>
+        <attr name="tipTextColor" format="color" />
 
         <attr name="android:nextFocusDown" />
         <attr name="android:inputType" />
