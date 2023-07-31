@@ -38,8 +38,8 @@ class AmplitudeErrorFacade(
         }
 
         amplitudeTracker.logEvent(
-            EVENT_ERROR_NAME,
-            mapOf(
+            eventName = EVENT_ERROR_NAME,
+            params = mapOf(
                 PARAMS_ERROR_VALUE to error.message.orEmpty(),
                 PARAMS_ERROR_FRAGMENT to analyticsLocalRepository.getCurrentScreenName()
             )
