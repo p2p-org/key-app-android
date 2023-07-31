@@ -32,7 +32,7 @@ class TokenServiceCoordinator(
      * Token Service will be needed in different screens and may have 2 or more collectors.
      * Therefore, we are using SharedFlow
      * */
-    private val tokensState = MutableSharedFlow<UserTokensState>(replay = 0)
+    private val tokensState = MutableSharedFlow<UserTokensState>(replay = 1)
 
     init {
         combine(

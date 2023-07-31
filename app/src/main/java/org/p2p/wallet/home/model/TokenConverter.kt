@@ -7,6 +7,7 @@ import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.solanaj.model.types.Account
 import org.p2p.token.service.model.TokenServicePrice
@@ -121,7 +122,7 @@ object TokenConverter {
             iconUrl = entity.iconUrl,
             totalInUsd = entity.totalInUsd,
             total = entity.total,
-            rate = entity.exchangeRate?.toBigDecimalOrNull(),
+            rate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
             isWrapped = entity.isWrapped,
             tokenServiceAddress = entity.tokenServiceAddress,
