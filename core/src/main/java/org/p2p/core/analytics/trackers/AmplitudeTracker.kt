@@ -1,12 +1,10 @@
-package org.p2p.wallet.common.analytics.trackers
+package org.p2p.core.analytics.trackers
 
 import android.app.Application
 import com.amplitude.api.Amplitude
 import com.amplitude.api.AmplitudeClient
 import com.amplitude.api.Identify
 import org.json.JSONObject
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -14,19 +12,15 @@ private const val MIN_TIME_BETWEEN_SESSIONS_MIN = 30L
 
 class AmplitudeTracker(
     app: Application,
-    tokenKeyProvider: TokenKeyProvider
+    apiKey: String
 ) : AnalyticsTracker {
 
     private val amplitude: AmplitudeClient =
         Amplitude.getInstance()
-            .initialize(app, BuildConfig.amplitudeKey)
+            .initialize(app, apiKey)
             .trackSessionEvents(true)
             .enableForegroundTracking(app)
             .setMinTimeBetweenSessionsMillis(TimeUnit.MINUTES.toMillis(MIN_TIME_BETWEEN_SESSIONS_MIN))
-
-    init {
-        tokenKeyProvider.registerListener(::setUserId)
-    }
 
     override fun setUserProperty(key: String, value: String) {
         val userProperties = JSONObject()

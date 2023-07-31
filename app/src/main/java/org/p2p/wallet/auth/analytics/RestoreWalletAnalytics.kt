@@ -1,6 +1,6 @@
 package org.p2p.wallet.auth.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 
 private const val ONBOARDING_PROPERTY_USER_RESTORE_METHOD = "User_Restore_Method"
 private const val ONBOARDING_RESTORE_WALLET_CONFIRM_PIN = "Restore_Confirm_Pin"

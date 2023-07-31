@@ -1,6 +1,6 @@
 package org.p2p.wallet.push_notifications.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 
 private const val PUSH_PERMISSIONS_ALLOWED = "Push_Allowed"
 private const val PUSH_DELIVERED = "Push_Delivered"

@@ -1,6 +1,6 @@
 package org.p2p.wallet.bridge.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 
 private const val SEND_BRIDGES_SCREEN_OPEN = "Send_Bridges_Screen_Open"

@@ -14,7 +14,7 @@ import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle

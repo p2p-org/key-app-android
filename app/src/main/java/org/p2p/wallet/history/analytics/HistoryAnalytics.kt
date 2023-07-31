@@ -1,7 +1,7 @@
 package org.p2p.wallet.history.analytics
 
 import org.p2p.core.utils.orZero
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus

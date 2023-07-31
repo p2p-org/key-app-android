@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.insets.appleInsetPadding
 import org.p2p.core.utils.insets.consume
@@ -24,7 +25,6 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
-import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
@@ -37,7 +37,6 @@ import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.utils.emptyString
 
 private const val EXTRA_OVERRIDDEN_ENTER_ANIMATION = "EXTRA_OVERRIDDEN_ENTER_ANIMATION"
 private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMATION"
@@ -136,7 +135,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is HistoryFragment -> ScreenNames.Main.MAIN_HISTORY
         is ReceiveSolanaFragment -> ScreenNames.Receive.SOLANA
         is NewSendFragment -> ScreenNames.Send.MAIN
-        else -> emptyString()
+        else -> this.toString()
     }
 
     override fun showToast(message: TextContainer) {

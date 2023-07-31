@@ -1,7 +1,7 @@
 package org.p2p.wallet.svl.analytics
 
 import org.p2p.core.model.CurrencyMode
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.model.TemporaryAccount
 

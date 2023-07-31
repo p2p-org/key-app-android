@@ -1,7 +1,7 @@
 package org.p2p.wallet.bridge.analytics
 
 import java.math.BigDecimal
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 
 private const val CLAIM_BRIDGES_SCREEN_OPEN = "Claim_Bridges_Screen_Open"
 

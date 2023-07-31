@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.analytics.trackers
+package org.p2p.core.analytics.trackers
 
 import timber.log.Timber
 

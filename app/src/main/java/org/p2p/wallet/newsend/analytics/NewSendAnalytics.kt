@@ -2,7 +2,7 @@ package org.p2p.wallet.newsend.analytics
 
 import java.math.BigDecimal
 import org.p2p.core.model.CurrencyMode
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 

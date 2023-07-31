@@ -1,6 +1,4 @@
-package org.p2p.wallet.common.analytics.repository
-
-import org.p2p.wallet.utils.emptyString
+package org.p2p.core.analytics.repository
 
 class AnalyticsInMemoryRepository : AnalyticsLocalRepository {
 
@@ -14,12 +12,8 @@ class AnalyticsInMemoryRepository : AnalyticsLocalRepository {
     }
 
     override fun getCurrentScreenName(): String =
-        openedScreenList.lastOrNull()
-            ?: emptyString()
+        openedScreenList.lastOrNull().orEmpty()
 
     override fun getPreviousScreenName(): String =
-        kotlin.runCatching {
-            openedScreenList[openedScreenList.lastIndex - 1]
-        }
-            .getOrDefault(emptyString())
+        openedScreenList.getOrNull(openedScreenList.lastIndex - 1).orEmpty()
 }

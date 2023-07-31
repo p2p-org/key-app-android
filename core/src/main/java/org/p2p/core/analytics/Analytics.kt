@@ -1,14 +1,16 @@
-package org.p2p.wallet.common.analytics
+package org.p2p.core.analytics
 
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.common.analytics.trackers.AnalyticsTracker
+import org.p2p.core.analytics.trackers.AnalyticsTracker
 
 /**
  * Single entry point that behaves like a proxy for all AnalyticsTracker impl`s
  */
-class Analytics(private val trackers: Set<AnalyticsTracker>) {
+class Analytics(
+    private val trackers: Set<AnalyticsTracker>,
+    isDebugBuild: Boolean
+) {
 
-    private val shouldAddDebugSuffix: Boolean = BuildConfig.DEBUG
+    private val shouldAddDebugSuffix: Boolean = isDebugBuild
 
     fun logEvent(event: String, params: Map<String, Any> = emptyMap()) {
         val modifiedEventName = if (shouldAddDebugSuffix) "${event}_debug" else event

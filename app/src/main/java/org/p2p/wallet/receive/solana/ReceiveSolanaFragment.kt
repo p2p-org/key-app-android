@@ -13,7 +13,7 @@ import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentReceiveSolanaBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics

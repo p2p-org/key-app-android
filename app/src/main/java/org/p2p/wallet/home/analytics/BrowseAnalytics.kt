@@ -1,19 +1,19 @@
 package org.p2p.wallet.home.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_BANNER_BACKUP_PRESSED
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_BANNER_FEEDBACK_PRESSED
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_BANNER_NOTIFICATION_PRESSED
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_BANNER_USERNAME_PRESSED
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_CURRENCY_LIST_SEARCHING
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_NETWORK_ADDING
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_NETWORK_CHANGING
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_NETWORK_SAVED
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_SCREEN_OPENED
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_CHOSEN
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SCROLLED
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SEARCHED
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_VIEWED
+import org.p2p.core.analytics.Analytics
+import org.p2p.core.analytics.constants.EventNames.BROWSE_BANNER_BACKUP_PRESSED
+import org.p2p.core.analytics.constants.EventNames.BROWSE_BANNER_FEEDBACK_PRESSED
+import org.p2p.core.analytics.constants.EventNames.BROWSE_BANNER_NOTIFICATION_PRESSED
+import org.p2p.core.analytics.constants.EventNames.BROWSE_BANNER_USERNAME_PRESSED
+import org.p2p.core.analytics.constants.EventNames.BROWSE_CURRENCY_LIST_SEARCHING
+import org.p2p.core.analytics.constants.EventNames.BROWSE_NETWORK_ADDING
+import org.p2p.core.analytics.constants.EventNames.BROWSE_NETWORK_CHANGING
+import org.p2p.core.analytics.constants.EventNames.BROWSE_NETWORK_SAVED
+import org.p2p.core.analytics.constants.EventNames.BROWSE_SCREEN_OPENED
+import org.p2p.core.analytics.constants.EventNames.BROWSE_TOKEN_CHOSEN
+import org.p2p.core.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SCROLLED
+import org.p2p.core.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SEARCHED
+import org.p2p.core.analytics.constants.EventNames.BROWSE_TOKEN_LIST_VIEWED
 import org.p2p.core.common.di.AppScope
 import kotlinx.coroutines.launch
 

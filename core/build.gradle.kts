@@ -67,7 +67,13 @@ dependencies {
 
     // Firebase
     implementation(platform(Dependencies.firebaseBom))
-    implementation(Dependencies.firebaseCrashlytics)
+    Dependencies.firebaseLibraries.forEach { implementation(it) }
+
+    Dependencies.appsFlyerLibraries.forEach { implementation(it) }
+
+    // analytics
+    implementation(Dependencies.intercom)
+    implementation(Dependencies.amplitude)
 
     // Sentry
     Dependencies.sentryLibraries.forEach { implementation(it) }

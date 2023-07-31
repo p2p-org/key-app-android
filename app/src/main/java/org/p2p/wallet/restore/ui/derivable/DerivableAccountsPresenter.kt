@@ -11,7 +11,7 @@ import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.UsernameRestoreMethod
-import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
