@@ -2,32 +2,24 @@ package org.p2p.wallet.alarmlogger.model
 
 import com.google.gson.Gson
 import java.math.BigInteger
-import java.net.UnknownHostException
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.model.CurrencyMode
+import org.p2p.core.network.data.ServerException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
-import org.p2p.wallet.alarmlogger.api.AlarmErrorsBridgeClaimRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsRequest
-import org.p2p.wallet.alarmlogger.api.AlarmErrorsSendBridgeRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsSendRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsSvlRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsUsernameRequest
-import org.p2p.wallet.alarmlogger.api.AlarmErrorsWeb3Request
 import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
-import org.p2p.wallet.bridge.model.BridgeResult
-import org.p2p.wallet.feerelayer.model.FeeRelayerException
 import org.p2p.wallet.feerelayer.model.RelayAccount
-import org.p2p.core.network.data.ServerException
-import org.p2p.core.network.data.SimulationException
 import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.model.SendTransactionFailed
-import org.p2p.core.crypto.Base58String
-import org.p2p.wallet.utils.emptyString
-import org.p2p.core.crypto.toBase58Instance
 
 class AlarmSendErrorConverter(
-    private val gson: Gson
-) {
+    private val gson: Gson,
+    private val throwableFormatter: AlarmThrowableFormatter
+) : AlarmFeatureConverter {
 
     fun toSendErrorRequest(
         token: Token.Active,
@@ -62,9 +54,9 @@ class AlarmSendErrorConverter(
             userPubkey = userPublicKey,
             recipientPubkey = recipientAddress.address.toBase58Instance(),
             recipientName = (recipientAddress as? SearchResult.UsernameFound)?.username.orEmpty(),
-            simulationError = error.getSimulationError(),
-            feeRelayerError = error.getFeeRelayerError(),
-            blockchainError = error.getBlockchainError()
+            simulationError = throwableFormatter.formatSimulationError(error).orEmpty(),
+            feeRelayerError = throwableFormatter.formatFeeRelayerError(error).orEmpty(),
+            blockchainError = throwableFormatter.formatBlockchainError(error).orEmpty()
         )
 
         return AlarmErrorsRequest(
@@ -115,9 +107,9 @@ class AlarmSendErrorConverter(
             tokenToSend = tokenToSend,
             tokenToClaim = null,
             userPubkey = userPublicKey,
-            simulationError = error.getSimulationError(),
-            feeRelayerError = error.getFeeRelayerError(),
-            blockchainError = error.getBlockchainError(),
+            simulationError = throwableFormatter.formatSimulationError(error).orEmpty(),
+            feeRelayerError = throwableFormatter.formatFeeRelayerError(error).orEmpty(),
+            blockchainError = throwableFormatter.formatBlockchainError(error).orEmpty()
         )
 
         return AlarmErrorsRequest(
@@ -144,72 +136,13 @@ class AlarmSendErrorConverter(
             tokenToSend = null,
             tokenToClaim = tokenToClaim,
             userPubkey = userPublicKey,
-            simulationError = error.getSimulationError(),
-            feeRelayerError = error.getFeeRelayerError(),
-            blockchainError = error.getBlockchainError(),
+            simulationError = throwableFormatter.formatSimulationError(error).orEmpty(),
+            feeRelayerError = throwableFormatter.formatFeeRelayerError(error).orEmpty(),
+            blockchainError = throwableFormatter.formatBlockchainError(error).orEmpty()
         )
 
         return AlarmErrorsRequest(
             logsTitle = "Link Claim Android Alarm",
-            payload = gson.toJson(request)
-        )
-    }
-
-    fun toBridgeClaimErrorRequest(
-        userPublicKey: Base58String,
-        userEthAddress: String,
-        token: Token.Eth,
-        claimAmount: String,
-        error: Throwable
-    ): AlarmErrorsRequest {
-        val tokenToClaim = AlarmErrorsBridgeClaimRequest.TokenToClaim(
-            tokenName = token.tokenName,
-            solanaMint = token.mintAddress.toBase58Instance(),
-            ethMint = token.publicKey,
-            claimAmount = claimAmount,
-        )
-        val request = AlarmErrorsBridgeClaimRequest(
-            tokenToClaim = tokenToClaim,
-            userPubkey = userPublicKey,
-            userEthPubkey = userEthAddress,
-            simulationError = error.getSimulationError(),
-            feeRelayerError = error.getFeeRelayerError(),
-            blockchainError = error.getBlockchainError(),
-        )
-
-        return AlarmErrorsRequest(
-            logsTitle = "Wormhole Claim Android Alarm",
-            payload = gson.toJson(request)
-        )
-    }
-
-    fun toBridgeSendErrorRequest(
-        token: Token.Active,
-        userPublicKey: Base58String,
-        currency: String,
-        sendAmount: String,
-        arbiterFeeAmount: String,
-        recipientEthPubkey: String,
-        error: Throwable
-    ): AlarmErrorsRequest {
-        val tokenToClaim = AlarmErrorsSendBridgeRequest.TokenToSend(
-            tokenName = token.tokenName,
-            mint = token.mintAddress.toBase58Instance(),
-            amount = sendAmount,
-            currency = currency
-        )
-        val request = AlarmErrorsSendBridgeRequest(
-            tokenToSend = tokenToClaim,
-            arbiterFeeAmount = arbiterFeeAmount,
-            userPubkey = userPublicKey,
-            recipientEthPubkey = recipientEthPubkey,
-            simulationError = error.getSimulationError(),
-            feeRelayerError = error.getFeeRelayerError(),
-            blockchainError = error.getBlockchainError(),
-        )
-
-        return AlarmErrorsRequest(
-            logsTitle = "Wormhole Send Android Alarm",
             payload = gson.toJson(request)
         )
     }
@@ -235,36 +168,4 @@ class AlarmSendErrorConverter(
             payload = gson.toJson(request)
         )
     }
-
-    fun toWeb3ErrorRequest(web3Error: String): AlarmErrorsRequest {
-        // no user public key here, because we don't have it at this step
-        val request = AlarmErrorsWeb3Request(
-            web3Error = web3Error
-        )
-
-        return AlarmErrorsRequest(
-            logsTitle = "Web3 Registration Android Alarm",
-            payload = gson.toJson(request)
-        )
-    }
-}
-
-private fun Throwable.getSimulationError(): String = when (this) {
-    is SimulationException -> "Simulation error: ${getDirectMessage().orEmpty()}"
-    else -> emptyString()
-}
-
-private fun Throwable.getFeeRelayerError(): String = when (this) {
-    is FeeRelayerException -> "FeeRelayer error: ${getDirectMessage().orEmpty()}"
-    else -> emptyString()
-}
-
-private fun Throwable.getBlockchainError(): String = when (this) {
-    is ServerException -> "Blockchain error: ${getDirectMessage().orEmpty()}"
-    is UnknownHostException -> "Internet error ${message ?: localizedMessage}"
-    is BridgeResult.Error -> "Bridge error: ${this.javaClass.simpleName}"
-    is FeeRelayerException -> emptyString()
-    is SimulationException -> emptyString()
-    is SendTransactionFailed -> cause.getBlockchainError()
-    else -> "Unknown error: ${message ?: localizedMessage}"
 }

@@ -8,7 +8,7 @@ import org.p2p.wallet.alarmlogger.api.DeviceShareChangeErrorRequest
 
 class AlarmDeviceShareChangeErrorConverter(
     private val gson: Gson
-) {
+) : AlarmFeatureConverter {
 
     fun toDeviceShareChangeErrorRequest(
         userPublicKey: Base58String,
