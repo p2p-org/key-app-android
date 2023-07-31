@@ -1,5 +1,7 @@
 package org.p2p.token.service.repository.configurator
 
+import timber.log.Timber
+import java.lang.Math.abs
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadataExtension
@@ -23,7 +25,8 @@ class PricePercentDifferenceToShow(
         if (percentDifferenceToShow == null || percentDifferenceToShow == 0) {
             return token
         }
-        val acceptableRateDiff = percentDifferenceToShow.toBigDecimal().divideSafe(BigDecimal(100))
+
+        val acceptableRateDiff = percentDifferenceToShow.toBigDecimal()
         if (isStableCoinRateDiffAcceptable(acceptableRateDiff)) {
             return token
         }
@@ -31,7 +34,10 @@ class PricePercentDifferenceToShow(
     }
 
     private fun isStableCoinRateDiffAcceptable(acceptableRateDiff: BigDecimal): Boolean {
-        val delta = token.rate.orZero() - BigDecimal.ONE
+        val total = token.total
+        val rate = token.rate ?: BigDecimal.ONE
+        val fiat = total * rate
+        val delta = BigDecimal(100) - ((total.divideSafe(fiat)) * BigDecimal(100))
         return delta.abs() < acceptableRateDiff
     }
 }
