@@ -15,13 +15,13 @@ import org.p2p.wallet.striga.user.api.response.StrigaUserDetailsResponse
 import org.p2p.wallet.striga.user.api.response.StrigaUserStatusResponse
 
 interface StrigaApi {
-    @POST("v1/user/create")
+    @POST("api/v1/user/create")
     suspend fun createUser(@Body body: StrigaCreateUserRequest): StrigaCreateUserResponse
 
-    @GET("v1/user/{userId}")
+    @GET("striga/api/v1/user/{userId}")
     suspend fun getUserDetails(@Path("userId") userId: String): StrigaUserDetailsResponse
 
-    @GET("v1/user/kyc/{userId}")
+    @GET("striga/api/v1/user/kyc/{userId}")
     suspend fun getUserVerificationStatus(@Path("userId") userId: String): StrigaUserStatusResponse
 
     /**
@@ -30,22 +30,22 @@ interface StrigaApi {
      * 30003 - exceeded verification attempts
      * 30005 - user doesn't exist, critical error
      */
-    @POST("v1/user/verify-mobile")
+    @POST("striga/api/v1/user/verify-mobile")
     suspend fun verifyMobileNumber(@Body body: StrigaVerifyMobileNumberRequest)
 
     /**
      * 31009 - mobile already in use
      * 31008 - exceed resend sms attempts
      */
-    @POST("v1/user/resend-sms")
+    @POST("striga/api/v1/user/resend-sms")
     suspend fun resendSms(@Body body: StrigaResendSmsRequest)
 
-    @POST("v1/user/kyc/start")
+    @POST("striga/api/v1/user/kyc/start")
     suspend fun getAccessToken(@Body body: StrigaStartKycRequest): StrigaStartKycResponse
 
     /**
      * This method allows to simulate only APPROVED AND REJECTED statuses
      */
-    @PATCH("v1/simulate/user/kyc")
+    @PATCH("striga/api/v1/simulate/user/kyc")
     suspend fun simulateUserStatus(@Body body: StrigaSimulateUserStatusRequest)
 }
