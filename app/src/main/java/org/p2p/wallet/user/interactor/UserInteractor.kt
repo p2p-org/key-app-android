@@ -7,9 +7,9 @@ import java.util.Date
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
@@ -23,7 +23,7 @@ val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(Constants.USDC_SYMBOL, Co
 class UserInteractor(
     private val userLocalRepository: UserLocalRepository,
     private val userTokensRepository: UserTokensLocalRepository,
-    private val homeLocalRepository: HomeLocalRepository,
+    private val userTokensInteractor: UserTokensInteractor,
     private val recipientsLocalRepository: RecipientsLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val sharedPreferences: SharedPreferences,
@@ -34,7 +34,8 @@ class UserInteractor(
         val tokenData = userLocalRepository.findTokenData(mintAddress)
         val price = tokenData?.let {
             tokenServiceRepository.findTokenPriceByAddress(
-                tokenAddress = it.mintAddress
+                tokenAddress = it.mintAddress,
+                networkChain = TokenServiceNetwork.SOLANA
             )
         }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
@@ -83,10 +84,10 @@ class UserInteractor(
             .filterNot { it.isZero }
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
-        homeLocalRepository.setTokenHidden(mintAddress, visibility)
+        userTokensInteractor.setTokenHidden(mintAddress, visibility)
 
     suspend fun hasAccount(address: String): Boolean {
-        val userTokens = homeLocalRepository.getUserTokens()
+        val userTokens = userTokensInteractor.getUserTokens()
         return userTokens.any { it.publicKey == address }
     }
 
@@ -97,7 +98,8 @@ class UserInteractor(
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
         val price = tokenData?.let {
             tokenServiceRepository.findTokenPriceByAddress(
-                tokenAddress = it.mintAddress
+                tokenAddress = it.mintAddress,
+                networkChain = TokenServiceNetwork.SOLANA
             )
         }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }

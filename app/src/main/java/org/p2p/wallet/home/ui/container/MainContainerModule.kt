@@ -8,8 +8,6 @@ import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.interactor.RefreshErrorInteractor
-import org.p2p.wallet.home.repository.HomeDatabaseRepository
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
@@ -29,7 +27,6 @@ object MainContainerModule : InjectionModule {
     }
 
     private fun Module.initDataLayer() {
-        factory<HomeLocalRepository> { HomeDatabaseRepository(get()) }
         factoryOf(::RefreshErrorInMemoryRepository) bind RefreshErrorRepository::class
     }
 

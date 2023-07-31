@@ -18,7 +18,7 @@ import org.p2p.token.service.database.entity.TokenServicePriceEntity
 internal abstract class TokenServiceDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
         const val DATABASE_NAME = "p2p.wallet.token_service_price"
     }
 

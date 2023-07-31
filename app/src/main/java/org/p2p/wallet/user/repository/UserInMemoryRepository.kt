@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.Constants
+import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.receive.list.TokenListData
@@ -140,6 +141,7 @@ class UserInMemoryRepository(
         return if (tokenMetadata != null) {
             val price = tokenServiceRepository.findTokenPriceByAddress(
                 tokenAddress = tokenMetadata.mintAddress,
+                networkChain = TokenServiceNetwork.SOLANA
             )
             tokenConverter.fromNetwork(tokenMetadata, price)
         } else {

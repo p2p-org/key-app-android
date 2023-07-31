@@ -36,7 +36,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageMock

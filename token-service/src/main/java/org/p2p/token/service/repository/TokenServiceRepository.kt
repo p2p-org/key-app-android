@@ -13,7 +13,7 @@ interface TokenServiceRepository {
     ): List<TokenServiceMetadata>
 
     suspend fun observeTokenPricesFlow(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>>
-    suspend fun findTokenPriceByAddress(tokenAddress: String): TokenServicePrice?
+    suspend fun findTokenPriceByAddress(tokenAddress: String, networkChain: TokenServiceNetwork): TokenServicePrice?
     suspend fun fetchTokenPriceByAddress(networkChain: TokenServiceNetwork, tokenAddress: String): TokenServicePrice?
     fun findTokenMetadataByAddress(networkChain: TokenServiceNetwork, tokenAddress: String): TokenServiceMetadata?
 }

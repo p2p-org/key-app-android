@@ -20,10 +20,10 @@ internal interface TokenPriceDao {
     suspend fun getAllTokensPrices(): List<TokenServicePriceEntity>
 
     @Query("SELECT * FROM token_price_table")
-    fun getAllTokensPricesFlow(): Flow<TokenServicePriceEntity>
+    fun getAllTokensPricesFlow(): Flow<List<TokenServicePriceEntity>>
 
-    @Query("SELECT * FROM token_price_table WHERE token_address = :tokenAddress")
-    suspend fun getTokenPriceByAddress(tokenAddress: String): TokenServicePriceEntity?
+    @Query("SELECT * FROM token_price_table WHERE token_column_key = :tokenColumnKey")
+    suspend fun getTokenPriceByAddress(tokenColumnKey: String): TokenServicePriceEntity?
 
     @Query("SELECT * FROM token_price_table WHERE token_network_chain = :networkChain")
     suspend fun getTokensRatesByNetwork(networkChain: String): List<TokenServicePriceEntity>

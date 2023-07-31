@@ -4,19 +4,19 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 // not good, better to preinstall tokens by MINT, not symbols
 // todo: change selector to select by mint
 class PreinstallTokensBySymbolSelector(
     private val jupiterTokensRepository: JupiterSwapTokensRepository,
     private val dispatchers: CoroutineDispatchers,
-    private val homeLocalRepository: HomeLocalRepository,
+    private val userTokensInteractor: UserTokensInteractor,
     private val savedSelectedSwapTokenStorage: JupiterSwapStorageContract,
     private val preinstallTokenASymbol: String,
     private val preinstallTokenBSymbol: String,
@@ -24,7 +24,7 @@ class PreinstallTokensBySymbolSelector(
 
     override suspend fun getTokenPair(): Pair<SwapTokenModel, SwapTokenModel> = withContext(dispatchers.io) {
         val jupiterTokensJob = async { jupiterTokensRepository.getTokens() }
-        val userTokensJob = async { homeLocalRepository.getUserTokens() }
+        val userTokensJob = async { userTokensInteractor.getUserTokens() }
         val jupiterTokens: List<JupiterSwapToken> = jupiterTokensJob.await()
         val userTokens: List<Token.Active> = userTokensJob.await()
 

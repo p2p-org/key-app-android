@@ -6,7 +6,7 @@ import org.p2p.token.service.model.TokenServicePrice
 
 internal interface TokenPriceLocalRepository {
     suspend fun saveTokensPrice(prices: List<TokenServicePrice>)
-    suspend fun findTokenPriceByAddress(address: String): TokenServicePrice?
+    suspend fun findTokenPriceByAddress(address: String, networkChain: TokenServiceNetwork): TokenServicePrice?
     fun observeTokenPrices(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>>
     suspend fun getLocalTokenPrices(): List<TokenServicePrice>
 }

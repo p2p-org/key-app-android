@@ -13,7 +13,6 @@ import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -26,6 +25,7 @@ import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_SUPPORT
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_TWITTER
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_USERNAME
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 private const val NETWORK_CHANGE_DELAY = 250L
 
@@ -36,7 +36,7 @@ class SettingsPresenter(
     private val appRestarter: AppRestarter,
     private val analytics: SettingsPresenterAnalytics,
     private val settingsInteractor: SettingsInteractor,
-    private val homeLocalRepository: HomeLocalRepository,
+    private val userTokensInteractor: UserTokensInteractor,
     private val settingsItemMapper: SettingsItemMapper,
     private val metadataInteractor: MetadataInteractor,
     private val authInteractor: AuthInteractor,
@@ -143,7 +143,7 @@ class SettingsPresenter(
             try {
                 environmentManager.chooseEnvironment(newNetworkEnvironment)
 
-                homeLocalRepository.clear()
+                userTokensInteractor.clear()
 
                 analytics.logNetworkChanging(newNetworkEnvironment.name)
                 // Sometimes these operations are completed too quickly

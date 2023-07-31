@@ -26,7 +26,7 @@ object UserModule : InjectionModule {
             UserInteractor(
                 userLocalRepository = get(),
                 userTokensRepository = get(),
-                homeLocalRepository = get(),
+                userTokensInteractor = get(),
                 recipientsLocalRepository = get(),
                 rpcRepository = get(),
                 sharedPreferences = get(),

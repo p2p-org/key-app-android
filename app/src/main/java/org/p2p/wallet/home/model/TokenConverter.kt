@@ -4,9 +4,9 @@ import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokenExtensions
+import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.solanaj.model.types.Account
 import org.p2p.token.service.model.TokenServicePrice
@@ -111,8 +111,8 @@ object TokenConverter {
         )
     }
 
-    fun fromDatabase(entity: TokenEntity): Token.Active =
-        Token.Active(
+    fun fromDatabase(entity: TokenEntity, extensions: TokenMetadataExtension?): Token.Active {
+        val domainToken = Token.Active(
             publicKey = entity.publicKey,
             tokenSymbol = entity.tokenSymbol,
             decimals = entity.decimals,
@@ -121,12 +121,17 @@ object TokenConverter {
             iconUrl = entity.iconUrl,
             totalInUsd = entity.totalInUsd,
             total = entity.total,
-            rate = entity.exchangeRate?.toBigDecimalOrZero(),
+            rate = entity.exchangeRate?.toBigDecimalOrNull(),
             visibility = TokenVisibility.parse(entity.visibility),
             isWrapped = entity.isWrapped,
             tokenServiceAddress = entity.tokenServiceAddress,
             tokenExtensions = fromDatabase(entity.extensions)
         )
+        return TokenExtensionsConfigurator(
+            extensions = extensions ?: TokenMetadataExtension.NONE,
+            token = domainToken
+        ).config()
+    }
 
     fun fromDatabase(entity: TokenExtensionEntity?): TokenExtensions =
         TokenExtensions(

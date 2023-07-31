@@ -53,13 +53,19 @@ class UserTokensDatabaseRepository(
 
     override suspend fun findTokenByMintAddress(mintAddress: Base58String): Token.Active? {
         return tokensDao.findByMintAddress(mintAddress.base58Value)
-            ?.let(tokenConverter::fromDatabase)
+            ?.let { tokenEntity ->
+                val tokenData = userLocalRepository.findTokenData(tokenEntity.mintAddress)
+                tokenConverter.fromDatabase(tokenEntity, tokenData?.extensions)
+            }
     }
 
     override fun observeUserTokens(): Flow<List<Token.Active>> {
         return tokensDao.getTokensFlow()
             .map { tokenEntities ->
-                tokenEntities.map(tokenConverter::fromDatabase)
+                tokenEntities.map { tokenEntity ->
+                    val tokenData = userLocalRepository.findTokenData(tokenEntity.mintAddress)
+                    tokenConverter.fromDatabase(tokenEntity, tokenData?.extensions)
+                }
                     .sortedWith(TokenComparator())
             }
     }
@@ -84,7 +90,10 @@ class UserTokensDatabaseRepository(
 
     override suspend fun getUserTokens(): List<Token.Active> {
         return tokensDao.getTokens()
-            .map(tokenConverter::fromDatabase)
+            .map { tokenEntity ->
+                val tokenData = userLocalRepository.findTokenData(tokenEntity.mintAddress)
+                tokenConverter.fromDatabase(tokenEntity, tokenData?.extensions)
+            }
     }
 
     override suspend fun clear() {
@@ -93,14 +102,18 @@ class UserTokensDatabaseRepository(
 
     override suspend fun saveRatesForTokens(prices: List<TokenServicePrice>) {
         val oldTokens = getUserTokens()
+
         val newTokens = oldTokens.map { token ->
             val newTokenRate = prices.firstOrNull { token.tokenServiceAddress == it.address }
             val oldTokenRate = token.rate
-
             val tokenRate = newTokenRate?.usdRate ?: oldTokenRate
             token.copy(rate = tokenRate, totalInUsd = tokenRate?.let { token.total.times(it) })
         }
         updateTokens(newTokens)
+    }
+
+    override suspend fun setTokenHidden(mintAddress: String, visibility: String) {
+        tokensDao.updateVisibility(mintAddress, visibility)
     }
 
     private fun createUpdatedToken(tokenToUpdate: Token.Active, newBalance: BigInteger): Token.Active {
