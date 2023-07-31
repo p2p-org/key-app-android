@@ -143,3 +143,4 @@ fun Int?.orZero(): Int = this ?: 0
 
 // value is in (0..0.01)
 fun BigDecimal.lessThenMinValue() = !isZero() && isLessThan(AMOUNT_MIN_VALUE.toBigDecimal())
+fun BigDecimal.moreThenMinValue() = isMoreThan(AMOUNT_MIN_VALUE.toBigDecimal())
