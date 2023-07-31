@@ -1,12 +1,14 @@
-package org.p2p.wallet.common.analytics
+package org.p2p.core.analytics.trackers
 
+import android.app.Application
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
-import org.p2p.wallet.common.analytics.trackers.AnalyticsTracker
 
 class FirebaseAnalyticsTracker(
-    private val firebaseAnalytics: FirebaseAnalytics
+    app: Application
 ) : AnalyticsTracker {
+
+    private val firebaseAnalytics = FirebaseAnalytics.getInstance(app)
 
     override fun logEvent(eventName: String, params: Map<String, Any>) {
         firebaseAnalytics.logEvent(eventName) {

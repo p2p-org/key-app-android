@@ -1,6 +1,6 @@
 package org.p2p.wallet.auth.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 
 private const val ONBOARDING_START_BUTTON = "Onboarding_Start_Button"
 private const val ONBOARDING_CREATE_PHONE_SCREEN = "Creation_Phone_Screen"

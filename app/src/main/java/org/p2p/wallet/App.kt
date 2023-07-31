@@ -23,6 +23,7 @@ import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.analytics.AnalyticsPublicKeyObserver
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.lokalise.LokaliseService
@@ -40,6 +41,7 @@ class App : Application(), Configuration.Provider {
     private val usernameInteractor: UsernameInteractor by inject()
     private val networkServicesUrlProvider: NetworkServicesUrlProvider by inject()
     private val userTokenProvider: TokenKeyProvider by inject()
+    private val analyticsPublicKeyObserver: AnalyticsPublicKeyObserver by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -71,6 +73,8 @@ class App : Application(), Configuration.Provider {
             projectId = CoreBuildConfig.lokaliseAppId
         )
         setupWorkManager()
+
+        analyticsPublicKeyObserver.startObserving()
     }
 
     override fun getWorkManagerConfiguration(): Configuration {

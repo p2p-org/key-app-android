@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.analytics.constants
+package org.p2p.core.analytics.constants
 
 object ScreenNames {
 

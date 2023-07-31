@@ -101,7 +101,6 @@ object AppModule {
                 SwapModule.create(),
                 TransactionManagerModule.create(),
                 UserModule.create(),
-                CrashLoggerModule.create(),
                 NetworkCoreModule.create(),
                 UserModule.create(),
                 CrashLoggerModule.create(),

@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.analytics.trackers
+package org.p2p.core.analytics.trackers
 
 import android.content.Context
 import com.appsflyer.AppsFlyerLib
@@ -7,8 +7,9 @@ import timber.log.Timber
 
 class AppsFlyerTracker(
     private val context: Context,
-    private val appsFlyer: AppsFlyerLib
 ) : AnalyticsTracker {
+
+    private val appsFlyer = AppsFlyerLib.getInstance()
 
     private val requestListener = object : AppsFlyerRequestListener {
         override fun onSuccess() {

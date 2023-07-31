@@ -1,7 +1,7 @@
 package org.p2p.wallet.jupiter.analytics
 
 import java.math.BigDecimal
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesValidationEnabledFeatureToggle
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom

@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.common.analytics.constants.EventNames.AUTH_RESET_INVOKED
-import org.p2p.wallet.common.analytics.constants.EventNames.AUTH_RESET_VALIDATED
-import org.p2p.wallet.common.analytics.constants.EventNames.AUTH_VALIDATED
-import org.p2p.wallet.common.analytics.constants.EventNames.AUTH_VIEWED
+import org.p2p.core.analytics.Analytics
+import org.p2p.core.analytics.constants.EventNames.AUTH_RESET_INVOKED
+import org.p2p.core.analytics.constants.EventNames.AUTH_RESET_VALIDATED
+import org.p2p.core.analytics.constants.EventNames.AUTH_VALIDATED
+import org.p2p.core.analytics.constants.EventNames.AUTH_VIEWED
 
 class AuthAnalytics(private val tracker: Analytics) {
 

@@ -5,6 +5,12 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.core.analytics.Analytics
+import org.p2p.core.analytics.repository.AnalyticsInMemoryRepository
+import org.p2p.core.analytics.repository.AnalyticsLocalRepository
+import org.p2p.core.analytics.trackers.AmplitudeTracker
+import org.p2p.core.common.di.InjectionModule
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
@@ -14,9 +20,6 @@ import org.p2p.wallet.auth.analytics.UsernameAnalytics
 import org.p2p.wallet.bridge.analytics.ClaimAnalytics
 import org.p2p.wallet.bridge.analytics.SendBridgesAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.analytics.repository.AnalyticsInMemoryRepository
-import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
-import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.ui.crypto.analytics.CryptoScreenAnalytics
@@ -36,11 +39,15 @@ import org.p2p.wallet.swap.analytics.SwapAnalytics
 object AnalyticsModule : InjectionModule {
     override fun create() = module {
         single {
+            AmplitudeTracker(androidApplication(), BuildConfig.amplitudeKey)
+        }
+
+        single {
             val trackers = TrackersFactory.create(
                 app = androidApplication(),
-                tokenKeyProvider = get()
+                amplitudeTracker = get()
             )
-            Analytics(trackers)
+            Analytics(trackers, BuildConfig.DEBUG)
         }
         factoryOf(::AdminAnalytics)
         factoryOf(::AuthAnalytics)
@@ -67,6 +74,7 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::JupiterSwapMainScreenAnalytics)
         factoryOf(::JupiterSwapSettingsAnalytics)
         factoryOf(::JupiterSwapTransactionDetailsAnalytics)
+        singleOf(::AnalyticsPublicKeyObserver)
 
         singleOf(::AnalyticsInMemoryRepository) bind AnalyticsLocalRepository::class
     }

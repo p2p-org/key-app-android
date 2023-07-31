@@ -3,8 +3,7 @@ package org.p2p.wallet.home.ui.wallet.analytics
 import java.math.BigDecimal
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.utils.isMoreThan
-import org.p2p.core.utils.isNotZero
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 
 private const val MAIN_SCREEN_OPENED = "Main_Screen_Opened"

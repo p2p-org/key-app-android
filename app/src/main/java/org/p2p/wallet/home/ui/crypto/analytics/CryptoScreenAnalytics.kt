@@ -3,7 +3,7 @@ package org.p2p.wallet.home.ui.crypto.analytics
 import java.math.BigDecimal
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.utils.isMoreThan
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 
 private const val CRYPTO_SCREEN_OPENED = "Crypto_Screen_Opened"
 private const val CRYPTO_AMOUNT_CLICK = "Crypto_Amount_Click"

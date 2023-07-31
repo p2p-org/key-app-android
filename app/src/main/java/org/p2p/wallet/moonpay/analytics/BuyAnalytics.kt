@@ -1,17 +1,17 @@
 package org.p2p.wallet.moonpay.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_BUTTON_PRESSED
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_CHOSEN_METHOD_PAYMENT
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_COIN_CHANGED
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_CONTINUING
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_CURRENCY_CHANGED
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_GOING_BACK
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_MOONPAY_WINDOW_OPENED
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_PAYMENT_RESULT_SHOWN
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_SCREEN_OPENED
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_TOKEN_CHOSEN
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_TOTAL_SHOWED
+import org.p2p.core.analytics.Analytics
+import org.p2p.core.analytics.constants.EventNames.BUY_BUTTON_PRESSED
+import org.p2p.core.analytics.constants.EventNames.BUY_CHOSEN_METHOD_PAYMENT
+import org.p2p.core.analytics.constants.EventNames.BUY_COIN_CHANGED
+import org.p2p.core.analytics.constants.EventNames.BUY_CONTINUING
+import org.p2p.core.analytics.constants.EventNames.BUY_CURRENCY_CHANGED
+import org.p2p.core.analytics.constants.EventNames.BUY_GOING_BACK
+import org.p2p.core.analytics.constants.EventNames.BUY_MOONPAY_WINDOW_OPENED
+import org.p2p.core.analytics.constants.EventNames.BUY_PAYMENT_RESULT_SHOWN
+import org.p2p.core.analytics.constants.EventNames.BUY_SCREEN_OPENED
+import org.p2p.core.analytics.constants.EventNames.BUY_TOKEN_CHOSEN
+import org.p2p.core.analytics.constants.EventNames.BUY_TOTAL_SHOWED
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import java.math.BigDecimal
 

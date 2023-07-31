@@ -5,7 +5,7 @@ import io.intercom.android.sdk.Intercom
 import io.intercom.android.sdk.identity.Registration
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import timber.log.Timber
 
