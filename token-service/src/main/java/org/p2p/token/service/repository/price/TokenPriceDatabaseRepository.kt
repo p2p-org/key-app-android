@@ -22,7 +22,7 @@ internal class TokenPriceDatabaseRepository(
         networkChain: TokenServiceNetwork
     ): TokenServicePrice? {
         val tokenColumnKey = "${address}_${networkChain.networkName}"
-        val found = tokenPriceDao.getTokenPriceByAddress(address)
+        val found = tokenPriceDao.getTokenPriceByAddress(tokenColumnKey)
         return found?.let { converter.fromEntity(it) }
     }
 

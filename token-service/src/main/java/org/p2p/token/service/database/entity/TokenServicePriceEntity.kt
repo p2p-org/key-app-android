@@ -2,6 +2,7 @@ package org.p2p.token.service.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.math.BigDecimal
 import org.p2p.token.service.database.entity.TokenServicePriceEntity.Companion.TABLE_NAME
 
@@ -13,6 +14,7 @@ internal data class TokenServicePriceEntity(
     val networkChainName: String,
     @ColumnInfo(name = COLUMN_USD_RATE)
     val usdRate: BigDecimal,
+    @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = COLUMN_TOKEN_KEY)
     val tokenRateKey: String = "${tokenAddress}_$networkChainName",
 ) {
