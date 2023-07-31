@@ -18,7 +18,7 @@ internal data class TokenResponse(
     val name: String,
     @SerializedName("decimals")
     val decimals: Int,
-    @SerializedName("logoUrl")
+    @SerializedName("logoURI")
     val logoUrl: String?,
     @SerializedName("tags")
     val tags: List<String>?,
