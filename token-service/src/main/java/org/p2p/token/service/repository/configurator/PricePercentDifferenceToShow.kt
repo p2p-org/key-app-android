@@ -1,6 +1,5 @@
 package org.p2p.token.service.repository.configurator
 
-import timber.log.Timber
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenExtensions
@@ -35,7 +34,6 @@ class PricePercentDifferenceToShow(
         val rate = token.rate ?: BigDecimal.ONE
         val fiat = total * rate
         val delta = BigDecimal(100) - ((total.divideSafe(fiat)) * BigDecimal(100))
-        Timber.tag("___hidden").d("Rate = $rate, total = $total, c = ${delta.abs()}, acceptable = $acceptableRateDiff")
         return delta.abs() > acceptableRateDiff
     }
 }
