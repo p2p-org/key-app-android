@@ -115,7 +115,8 @@ class StrigaOnRampInteractor(
         }
     }
 
-    private suspend fun getFeesForOnRampToken(@Suppress("UNUSED_PARAMETER") tokenAccount: StrigaUserWalletAccount): StrigaOnchainWithdrawalFees? {
+    @Suppress("UNUSED_PARAMETER")
+    private suspend fun getFeesForOnRampToken(tokenAccount: StrigaUserWalletAccount): StrigaOnchainWithdrawalFees? {
         return StrigaOnchainWithdrawalFees(
             totalFee = BigInteger.ZERO,
             networkFee = BigInteger.ZERO,
