@@ -40,8 +40,7 @@
 
     <string name="alarmErrorsServiceBaseUrl">https://oncall.keyapp.org/</string>
 
-    <string name="strigaProxyServiceBaseUrl">https://payment-rust.keyapp.org/striga/api/</string>
-    <string name="strigaProxyServiceProdBaseUrl">https://payment.key.app/striga/api/</string>
+    <string name="strigaProxyServiceBaseUrl">https://payment-rust.keyapp.org/</string>
 
     <string name="tokenServiceBaseUrl">https://token-service.keyapp.org/</string>
 
