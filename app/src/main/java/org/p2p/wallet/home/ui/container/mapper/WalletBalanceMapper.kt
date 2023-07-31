@@ -16,7 +16,9 @@ class WalletBalanceMapper() {
 
     fun formatBalance(balance: BigDecimal): String {
         return when {
-            balance.moreThenMinValue() && balance.isLessThan(BigDecimal.ONE) -> "$${balance.formatFiat()}"
+            balance.moreThenMinValue() && balance.isLessThan(BigDecimal.ONE) -> {
+                "$${balance.formatFiat()}"
+            }
             balance < thousand -> {
                 val formattedBalance = balance.setScale(0, RoundingMode.FLOOR)
                     .stripTrailingZeros()
