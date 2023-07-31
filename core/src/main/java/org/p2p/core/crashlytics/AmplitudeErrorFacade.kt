@@ -55,16 +55,7 @@ class AmplitudeErrorFacade(
     }
 
     override fun setCustomKey(key: String, value: Any) {
-        with(amplitudeTracker) {
-            when (value) {
-                is Int -> setCustomKey(key, value)
-                is String -> setCustomKey(key, value)
-                is Boolean -> setCustomKey(key, value)
-                is Float -> setCustomKey(key, value)
-                is Double -> setCustomKey(key, value)
-                else -> setCustomKey(key, value.toString())
-            }
-        }
+        // do nothing
     }
 
     private fun isImportantError(throwable: Throwable): Boolean {
