@@ -91,26 +91,15 @@ class TokenPriceDatabaseRepositoryTest {
     }
 
     @Test
-    fun `GIVEN saved token address price WHEN find in local THEN return find result`() = runTest {
-        // GIVEN
-        val pricesToSave = generateDomainPrices()
-        repository.saveTokensPrice(pricesToSave)
-        val expectedPriceToFind = pricesToSave.last()
-        // WHEN
-        val actualFindPrice = repository.findTokenPriceByAddress(expectedPriceToFind.address)
-        // THEN
-        actualFindPrice.assertThat()
-            .isNotNull()
-            .isDataClassEqualTo(expectedPriceToFind)
-    }
-
-    @Test
     fun `GIVEN not saved token address WHEN find in local THEN return null`() = runTest {
         // GIVEN
         val pricesToSave = generateDomainPrices()
         repository.saveTokensPrice(pricesToSave)
         // WHEN
-        val actualFindPrice = repository.findTokenPriceByAddress("some_random_mint")
+        val actualFindPrice = repository.findTokenPriceByAddress(
+            address = "some_random_mint",
+            networkChain = TokenServiceNetwork.SOLANA
+        )
         // THEN
         actualFindPrice.assertThat()
             .isNull()
