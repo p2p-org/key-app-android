@@ -94,8 +94,11 @@ class UserTokensDatabaseRepository(
     override suspend fun saveRatesForTokens(prices: List<TokenServicePrice>) {
         val oldTokens = getUserTokens()
         val newTokens = oldTokens.map { token ->
-            val tokenRate = prices.firstOrNull { token.tokenServiceAddress == it.address }
-            token.copy(rate = tokenRate?.usdRate, totalInUsd = tokenRate?.usdRate?.let { token.total.times(it) })
+            val newTokenRate = prices.firstOrNull { token.tokenServiceAddress == it.address }
+            val oldTokenRate = token.rate
+
+            val tokenRate = newTokenRate?.usdRate ?: oldTokenRate
+            token.copy(rate = tokenRate, totalInUsd = tokenRate?.let { token.total.times(it) })
         }
         updateTokens(newTokens)
     }
