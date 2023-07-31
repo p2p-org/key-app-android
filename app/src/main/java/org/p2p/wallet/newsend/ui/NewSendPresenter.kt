@@ -465,7 +465,7 @@ class NewSendPresenter(
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd?.asNegativeUsdTransaction(),
                     totalFees = total.getFeesCombined(checkFeePayer = false)?.let { listOf(it) },
-                    data = listOf(
+                    transactionDetails = listOf(
                         TitleValue(
                             title = resources.getString(R.string.transaction_send_to_title),
                             value = recipientAddress.nicknameOrAddress()

@@ -24,7 +24,7 @@ import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.transaction.model.progressstate.SendSwapProgressState
+import org.p2p.wallet.transaction.model.progressstate.StrigaOffRampTransactionState
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.toPublicKey
 
@@ -60,7 +60,7 @@ class StrigaWithdrawInteractor(
         val internalTransactionId = UUID.randomUUID().toString()
         try {
             val transactionId = sendUsdcToStriga(userUsdcToken, userStrigaUsdcAddress, amount)
-            val pendingTransaction = addPendingTransaction(
+            addPendingTransaction(
                 transactionId = transactionId,
                 usdcToken = userUsdcToken,
                 amount = amount,
@@ -68,12 +68,12 @@ class StrigaWithdrawInteractor(
             )
             transactionManager.emitTransactionState(
                 transactionId = internalTransactionId,
-                state = SendSwapProgressState.Success(pendingTransaction, userUsdcToken.tokenSymbol)
+                state = StrigaOffRampTransactionState.UsdcWithdrawSuccess
             )
         } catch (error: Throwable) {
             transactionManager.emitTransactionState(
                 transactionId = internalTransactionId,
-                state = SendSwapProgressState.Error(internalTransactionId)
+                state = StrigaOffRampTransactionState.UsdcWithdrawError
             )
             throw error
         }
@@ -145,7 +145,7 @@ class StrigaWithdrawInteractor(
         usdcToken: Token.Active,
         amount: BigDecimal,
         userStrigaUsdcAddress: String
-    ): RpcHistoryTransaction.Transfer {
+    ) {
         val pendingTransaction = buildSendPendingTransaction(
             transactionId = transactionId,
             token = usdcToken,
@@ -157,6 +157,5 @@ class StrigaWithdrawInteractor(
             transaction = pendingTransaction,
             mintAddress = usdcToken.mintAddress.toBase58Instance()
         )
-        return pendingTransaction
     }
 }
