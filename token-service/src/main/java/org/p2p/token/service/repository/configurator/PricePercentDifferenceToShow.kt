@@ -1,12 +1,9 @@
 package org.p2p.token.service.repository.configurator
 
-import timber.log.Timber
-import java.lang.Math.abs
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.utils.divideSafe
-import org.p2p.core.utils.orZero
 
 private const val RULE_BY_COUNT_OF_TOKENS = "byCountOfTokensValue"
 
