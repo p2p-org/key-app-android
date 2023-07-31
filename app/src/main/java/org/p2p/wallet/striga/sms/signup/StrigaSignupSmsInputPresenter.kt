@@ -131,6 +131,10 @@ class StrigaSignupSmsInputPresenter(
             StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT -> {
                 view?.navigateToExceededDailyResendSmsLimit()
             }
+            StrigaApiErrorCode.USER_MOBILE_NUMBER_ALREADY_VERIFIED -> {
+                Timber.e(apiServiceError, "Seems we're trying to verify already verified number")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
             else -> {
                 Timber.e(apiServiceError, "Unknown code met when handling error for sms input")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)

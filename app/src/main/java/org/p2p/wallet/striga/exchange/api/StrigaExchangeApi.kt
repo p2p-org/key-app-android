@@ -5,6 +5,6 @@ import org.p2p.wallet.striga.exchange.api.response.StrigaExchangeRateItemRespons
 
 interface StrigaExchangeApi {
 
-    @POST("v1/trade/rates")
+    @POST("striga/api/v1/trade/rates")
     suspend fun getExchangeRates(): Map<String, StrigaExchangeRateItemResponse>
 }
