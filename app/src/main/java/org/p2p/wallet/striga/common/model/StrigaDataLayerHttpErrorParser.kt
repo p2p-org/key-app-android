@@ -31,6 +31,7 @@ class StrigaDataLayerHttpErrorParser {
         return response.runCatching {
             val errorBody = response.errorBodyOrNull()
             errorBody?.let {
+                Timber.i("Striga returned http error: $it")
                 gson.fromJsonReified<StrigaApiErrorResponse>(it)
             } ?: error("Error body is null")
         }
