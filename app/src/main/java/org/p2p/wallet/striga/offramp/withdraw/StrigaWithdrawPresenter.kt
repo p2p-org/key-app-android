@@ -15,7 +15,7 @@ import org.p2p.wallet.transaction.model.NewShowProgress
 class StrigaWithdrawPresenter(
     private val validator: StrigaBankingDetailsValidator,
     private val interactor: StrigaWithdrawInteractor,
-    private val resources: Resources
+    private val resources: Resources,
 ) : BasePresenter<StrigaWithdrawContract.View>(),
     StrigaWithdrawContract.Presenter {
 
@@ -52,6 +52,7 @@ class StrigaWithdrawPresenter(
                 when (withdrawType) {
                     is StrigaWithdrawFragmentType.ConfirmUsdcWithdraw -> {
                         val (internalTransactionId, usdcToken) = interactor.withdrawUsdc(withdrawType.amountInUsdc)
+
                         view?.navigateToTransactionDetails(
                             transactionId = internalTransactionId,
                             data = buildTransactionDetails(usdcToken, withdrawType.amountInUsdc)
@@ -84,7 +85,7 @@ class StrigaWithdrawPresenter(
             tokenUrl = usdcToken.iconUrl.orEmpty(),
             amountTokens = usdcAmount.toPlainString(),
             amountUsd = null,
-            data = listOf(
+            transactionDetails = listOf(
                 TitleValue(resources.getString(R.string.striga_withdrawal_transaction_iban), enteredIban),
                 TitleValue(resources.getString(R.string.striga_withdrawal_transaction_bic), enteredBic)
             )

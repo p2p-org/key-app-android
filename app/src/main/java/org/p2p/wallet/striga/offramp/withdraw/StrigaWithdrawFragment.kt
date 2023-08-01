@@ -18,7 +18,7 @@ import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
+import org.p2p.wallet.transaction.progresshandler.StrigaOffRampTransactionProgressHandler
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
@@ -103,7 +103,7 @@ class StrigaWithdrawFragment :
         listener?.showTransactionProgress(
             internalTransactionId = transactionId,
             data = data,
-            handlerQualifierName = SendSwapTransactionProgressHandler.QUALIFIER
+            handlerQualifierName = StrigaOffRampTransactionProgressHandler.QUALIFIER
         )
         popBackStackTo(target = MainContainerFragment::class, inclusive = false)
     }

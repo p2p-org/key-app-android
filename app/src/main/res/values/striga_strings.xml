@@ -156,5 +156,8 @@
     <string name="striga_withdrawal_validation_format_error">Incorrect format</string>
 
     <string name="striga_withdrawal_transaction_iban">IBAN</string>
-    <string name="striga_withdrawal_transaction_bic">BIC/SWIFt</string>
+    <string name="striga_withdrawal_transaction_bic">BIC/SWIFT</string>
+    <string name="striga_withdrawal_transaction_details">
+        We will ask you to confirm this operation within a few minutes
+    </string>
 </resources>
