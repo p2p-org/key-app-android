@@ -3,8 +3,6 @@ package org.p2p.token.service.repository.price
 import assertk.all
 import assertk.assertions.hasSize
 import assertk.assertions.index
-import assertk.assertions.isDataClassEqualTo
-import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import org.junit.Before
 import org.junit.Test
