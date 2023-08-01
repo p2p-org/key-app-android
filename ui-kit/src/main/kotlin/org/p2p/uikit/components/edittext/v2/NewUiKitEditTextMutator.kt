@@ -3,18 +3,14 @@ package org.p2p.uikit.components.edittext.v2
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import android.content.res.ColorStateList
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.widget.EditText
 import org.p2p.core.common.TextContainer
-import org.p2p.core.common.bind
 import org.p2p.core.utils.emptyString
-import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetUiKitEditTextNewBinding
 import org.p2p.uikit.utils.SimpleTagTextWatcher
-import org.p2p.uikit.utils.getColor
 
 /**
  * Allows to change state of the view by settings text / listeners and other stuff
@@ -26,6 +22,8 @@ class NewUiKitEditTextMutator(
     private var currentViewTag: Any? = null
 
     private var endDrawableStrategy: NewUiKitEditTextDrawableStrategy = NewUiKitEditTextDrawableStrategy.NONE
+
+    private val tipStateRenderer = NewUiKitEditTextTipStateRenderer(binding)
 
     init {
         binding.editTextField.addTextChangedListener {
@@ -75,17 +73,37 @@ class NewUiKitEditTextMutator(
     /**
      * @param errorMessage pass null if you need to hide error
      */
-    fun setError(errorMessage: TextContainer?): NewUiKitEditTextMutator = apply {
-        with(binding) {
-            textViewError.isVisible = errorMessage != null
-            errorMessage?.let(textViewError::bind)
-            // change stroke color
-            val newStrokeColor = if (errorMessage != null) R.color.bg_rose else R.color.transparent
-            containerInputView.backgroundTintList = ColorStateList.valueOf(getColor(newStrokeColor))
-        }
+    fun setErrorState(errorMessage: TextContainer?): NewUiKitEditTextMutator = apply {
+        tipStateRenderer.renderState(
+            if (errorMessage != null) {
+                NewUiKitEditTextTipState.Error(errorMessage)
+            } else {
+                NewUiKitEditTextTipState.NoTip
+            }
+        )
     }
 
-    fun setText(text: String): NewUiKitEditTextMutator = apply {
+    fun setInformationTip(tipMessage: TextContainer?): NewUiKitEditTextMutator = apply {
+        tipStateRenderer.renderState(
+            if (tipMessage != null) {
+                NewUiKitEditTextTipState.Information(tipMessage)
+            } else {
+                NewUiKitEditTextTipState.NoTip
+            }
+        )
+    }
+
+    fun setSuccessState(successMessage: TextContainer?): NewUiKitEditTextMutator = apply {
+        tipStateRenderer.renderState(
+            if (successMessage != null) {
+                NewUiKitEditTextTipState.Success(successMessage)
+            } else {
+                NewUiKitEditTextTipState.NoTip
+            }
+        )
+    }
+
+    fun setInputText(text: String): NewUiKitEditTextMutator = apply {
         with(binding) {
             root.tag = null
             binding.editTextField.setText(text)

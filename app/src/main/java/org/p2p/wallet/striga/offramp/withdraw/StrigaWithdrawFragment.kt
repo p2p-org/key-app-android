@@ -57,17 +57,19 @@ class StrigaWithdrawFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
 
-        binding.editTextIban.mutate()
-            .setEndDrawableIsVisible(isVisible = false)
-            .setDrawableStrategy(NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT)
-            .setDrawableClickListener(NewUiKitEditTextMutator::clearInput)
-            .addOnTextChangedListener { presenter.onIbanChanged(it.toString()) }
+        binding.editTextIban.mutate {
+            setEndDrawableIsVisible(isVisible = false)
+            setDrawableStrategy(NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT)
+            setDrawableClickListener(NewUiKitEditTextMutator::clearInput)
+            addOnTextChangedListener { presenter.onIbanChanged(it.toString()) }
+        }
 
-        binding.editTextBic.mutate()
-            .setEndDrawableIsVisible(isVisible = false)
-            .setDrawableStrategy(NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT)
-            .setDrawableClickListener(NewUiKitEditTextMutator::clearInput)
-            .addOnTextChangedListener { presenter.onBicChanged(it.toString()) }
+        binding.editTextBic.mutate {
+            setEndDrawableIsVisible(isVisible = false)
+            setDrawableStrategy(NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT)
+            setDrawableClickListener(NewUiKitEditTextMutator::clearInput)
+            addOnTextChangedListener { presenter.onBicChanged(it.toString()) }
+        }
 
         binding.buttonWithdraw.setOnClickListener {
             presenter.withdraw(withdrawType)
@@ -79,20 +81,20 @@ class StrigaWithdrawFragment :
     }
 
     override fun showPrefilledBankingDetails(details: StrigaUserBankingDetails) {
-        details.bankingBic?.also { binding.editTextBic.mutate().setText(it) }
-        details.bankingIban?.also { binding.editTextIban.mutate().setText(it) }
-        binding.editTextReceiver.mutate().setText(details.bankingFullName)
+        details.bankingBic?.also { binding.editTextBic.mutate().setInputText(it) }
+        details.bankingIban?.also { binding.editTextIban.mutate().setInputText(it) }
+        binding.editTextReceiver.mutate().setInputText(details.bankingFullName)
     }
 
     override fun showIbanValidationResult(result: StrigaWithdrawValidationResult) {
         val error = result.errorTextRes?.let(TextContainer::invoke)
-        binding.editTextIban.mutate().setError(error)
+        binding.editTextIban.mutate().setErrorState(error)
         binding.buttonWithdraw.isEnabled = binding.editTextBic.values.isInErrorState && error != null
     }
 
     override fun showBicValidationResult(result: StrigaWithdrawValidationResult) {
         val error = result.errorTextRes?.let(TextContainer::invoke)
-        binding.editTextBic.mutate().setError(error)
+        binding.editTextBic.mutate().setErrorState(error)
         binding.buttonWithdraw.isEnabled = !binding.editTextIban.values.isInErrorState && error != null
     }
 
