@@ -21,12 +21,11 @@ class TransactionAddressInteractor(
 
     suspend fun findSplTokenAddressData(
         destinationAddress: PublicKey,
-        mintAddress: String,
-        useCache: Boolean = true
+        mintAddress: String
     ): TransactionAddressData {
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).i("Searching for SPL token address")
-            findSplTokenAddress(destinationAddress, mintAddress, useCache)
+            findSplTokenAddress(destinationAddress, mintAddress)
         } catch (e: CancellationException) {
             throw e
         } catch (e: IllegalStateException) {
@@ -35,7 +34,10 @@ class TransactionAddressInteractor(
         }
 
         /* If account is not found, create one */
-        val accountInfo = userAccountRepository.getAccountInfo(associatedAddress.toBase58(), useCache)
+        val accountInfo = userAccountRepository.getAccountInfo(
+            account = associatedAddress.toBase58(),
+            useCache = false
+        )
         val value = accountInfo?.value
         val accountExists = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         return TransactionAddressData(
@@ -47,10 +49,12 @@ class TransactionAddressInteractor(
     @Throws(IllegalStateException::class)
     private suspend fun findSplTokenAddress(
         destinationAddress: PublicKey,
-        mintAddress: String,
-        useCache: Boolean
+        mintAddress: String
     ): PublicKey {
-        val accountInfo = userAccountRepository.getAccountInfo(destinationAddress.toBase58(), useCache)
+        val accountInfo = userAccountRepository.getAccountInfo(
+            account = destinationAddress.toBase58(),
+            useCache = false
+        )
 
         // detect if it is a direct token address
         val info = TokenTransaction.decodeAccountInfo(accountInfo)
@@ -83,16 +87,11 @@ class TransactionAddressInteractor(
         throw IllegalStateException("Wallet address is not valid")
     }
 
-    suspend fun getDirectTokenData(address: String, useCache: Boolean = true): TokenMetadata? {
-        val accountInfo = userAccountRepository.getAccountInfo(address, useCache)
+    suspend fun getDirectTokenData(address: String): TokenMetadata? {
+        val accountInfo = userAccountRepository.getAccountInfo(address, useCache = false)
 
         // detect if it is a direct token address
         val info = TokenTransaction.decodeAccountInfo(accountInfo) ?: return null
         return userLocalRepository.findTokenData(info.mint.toBase58())
-    }
-
-    suspend fun isSolAddress(address: String): Boolean {
-        val accountInfo = userAccountRepository.getAccountInfo(address)
-        return accountInfo?.value?.owner == SystemProgram.PROGRAM_ID.toBase58()
     }
 }
