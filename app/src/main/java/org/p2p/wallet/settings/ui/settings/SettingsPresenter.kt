@@ -25,7 +25,7 @@ import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_SUPPORT
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_TWITTER
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_USERNAME
-import org.p2p.wallet.user.interactor.UserTokensInteractor
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 private const val NETWORK_CHANGE_DELAY = 250L
 
@@ -36,7 +36,7 @@ class SettingsPresenter(
     private val appRestarter: AppRestarter,
     private val analytics: SettingsPresenterAnalytics,
     private val settingsInteractor: SettingsInteractor,
-    private val userTokensInteractor: UserTokensInteractor,
+    private val userTokensLocalRepository: UserTokensLocalRepository,
     private val settingsItemMapper: SettingsItemMapper,
     private val metadataInteractor: MetadataInteractor,
     private val authInteractor: AuthInteractor,
@@ -143,7 +143,7 @@ class SettingsPresenter(
             try {
                 environmentManager.chooseEnvironment(newNetworkEnvironment)
 
-                userTokensInteractor.clear()
+                userTokensLocalRepository.clear()
 
                 analytics.logNetworkChanging(newNetworkEnvironment.name)
                 // Sometimes these operations are completed too quickly

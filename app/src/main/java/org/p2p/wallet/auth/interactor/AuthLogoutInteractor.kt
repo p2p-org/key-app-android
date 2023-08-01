@@ -19,7 +19,7 @@ import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
-import org.p2p.wallet.user.interactor.UserTokensInteractor
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 class AuthLogoutInteractor(
     private val context: Context,
@@ -29,7 +29,7 @@ class AuthLogoutInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val sendModeProvider: SendModeProvider,
     private val recipientsLocalRepository: RecipientsLocalRepository,
-    private val userTokensInteractor: UserTokensInteractor,
+    private val userTokensLocalRepository: UserTokensLocalRepository,
     private val updatesManager: SubscriptionUpdatesManager,
     private val transactionDetailsLocalRepository: TransactionDetailsLocalRepository,
     private val pushNotificationsInteractor: PushNotificationsInteractor,
@@ -50,7 +50,7 @@ class AuthLogoutInteractor(
             tokenKeyProvider.clear()
             sendModeProvider.clear()
             secureStorage.clear()
-            userTokensInteractor.clear()
+            userTokensLocalRepository.clear()
             recipientsLocalRepository.clear()
             transactionDetailsLocalRepository.deleteAll()
             jupiterSwapStorage.clear()

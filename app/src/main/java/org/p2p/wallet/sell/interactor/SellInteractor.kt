@@ -82,7 +82,7 @@ class SellInteractor(
     }
 
     fun observeTokenForSell(): Flow<Token.Active> =
-        userTokensInteractor.observeUserTokens(Constants.WRAPPED_SOL_MINT.toBase58Instance())
+        userTokensInteractor.observeUserToken(Constants.WRAPPED_SOL_MINT.toBase58Instance())
 
     suspend fun getSolCurrency(): MoonpayCurrency {
         return currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)

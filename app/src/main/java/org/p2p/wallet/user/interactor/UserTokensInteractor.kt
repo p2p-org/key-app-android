@@ -56,7 +56,7 @@ class UserTokensInteractor(
         return userTokensLocalRepository.observeUserTokens()
     }
 
-    fun observeUserTokens(mintAddress: Base58String): Flow<Token.Active> {
+    fun observeUserToken(mintAddress: Base58String): Flow<Token.Active> {
         return userTokensLocalRepository.observeUserToken(mintAddress)
     }
 
@@ -76,8 +76,4 @@ class UserTokensInteractor(
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         userTokensLocalRepository.setTokenHidden(mintAddress, visibility)
-
-    suspend fun clear() {
-        userTokensLocalRepository.clear()
-    }
 }

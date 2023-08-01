@@ -17,6 +17,7 @@ import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.home.db.TokenDao
+import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 
@@ -53,19 +54,13 @@ class UserTokensDatabaseRepository(
 
     override suspend fun findTokenByMintAddress(mintAddress: Base58String): Token.Active? {
         return tokensDao.findByMintAddress(mintAddress.base58Value)
-            ?.let { tokenEntity ->
-                val tokenData = userLocalRepository.findTokenData(tokenEntity.mintAddress)
-                tokenConverter.fromDatabase(tokenEntity, tokenData?.extensions)
-            }
+            ?.let { fromDatabase(it) }
     }
 
     override fun observeUserTokens(): Flow<List<Token.Active>> {
         return tokensDao.getTokensFlow()
             .map { tokenEntities ->
-                tokenEntities.map { tokenEntity ->
-                    val tokenData = userLocalRepository.findTokenData(tokenEntity.mintAddress)
-                    tokenConverter.fromDatabase(tokenEntity, tokenData?.extensions)
-                }
+                tokenEntities.map { fromDatabase(it) }
                     .sortedWith(TokenComparator())
             }
     }
@@ -90,10 +85,7 @@ class UserTokensDatabaseRepository(
 
     override suspend fun getUserTokens(): List<Token.Active> {
         return tokensDao.getTokens()
-            .map { tokenEntity ->
-                val tokenData = userLocalRepository.findTokenData(tokenEntity.mintAddress)
-                tokenConverter.fromDatabase(tokenEntity, tokenData?.extensions)
-            }
+            .map { fromDatabase(it) }
     }
 
     override suspend fun clear() {
@@ -143,5 +135,10 @@ class UserTokensDatabaseRepository(
             tokenMetadata = tokenData,
             price = null
         )
+    }
+
+    private fun fromDatabase(tokenEntity: TokenEntity): Token.Active {
+        val tokenData = userLocalRepository.findTokenData(tokenEntity.mintAddress)
+        return tokenConverter.fromDatabase(tokenEntity, tokenData?.extensions)
     }
 }
