@@ -1,12 +1,10 @@
 package org.p2p.wallet.history.analytics
 
-import org.p2p.core.utils.orZero
 import org.p2p.core.analytics.Analytics
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 
@@ -21,8 +19,6 @@ private const val HISTORY_TOKEN_SCREEN_CLICK_TRANSACTION = "Token_Screen_Transac
 
 class HistoryAnalytics(
     private val tracker: Analytics,
-    private val sendAnalytics: NewSendAnalytics,
-    private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
 ) {
