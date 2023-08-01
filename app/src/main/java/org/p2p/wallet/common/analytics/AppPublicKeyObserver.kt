@@ -1,21 +1,24 @@
 package org.p2p.wallet.common.analytics
 
 import org.p2p.core.analytics.Analytics
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
-class AnalyticsPublicKeyObserver(
+class AppPublicKeyObserver(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val crashLogger: CrashLogger
 ) {
 
     fun startObserving() {
         tokenKeyProvider.registerListener {
+            crashLogger.setUserId(it)
             analytics.setUserId(it.takeIf(String::isNotBlank))
         }
-        kotlin.runCatching {
-            if (tokenKeyProvider.publicKey.isNotBlank()) {
-                analytics.setUserId(tokenKeyProvider.publicKey)
+        runCatching { tokenKeyProvider.publicKey }
+            .onSuccess {
+                analytics.setUserId(it.takeIf(String::isNotBlank))
+                crashLogger.setUserId(it)
             }
-        }
     }
 }

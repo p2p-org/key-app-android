@@ -23,14 +23,12 @@ import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.common.analytics.AnalyticsPublicKeyObserver
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.common.analytics.AppPublicKeyObserver
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.utils.SolanajTimberLogger
-import org.p2p.wallet.utils.emptyString
 import org.p2p.core.BuildConfig as CoreBuildConfig
 import org.p2p.wallet.BuildConfig as AppBuildConfig
 
@@ -40,8 +38,7 @@ class App : Application(), Configuration.Provider {
     private val appsFlyerService: AppsFlyerService by inject()
     private val usernameInteractor: UsernameInteractor by inject()
     private val networkServicesUrlProvider: NetworkServicesUrlProvider by inject()
-    private val userTokenProvider: TokenKeyProvider by inject()
-    private val analyticsPublicKeyObserver: AnalyticsPublicKeyObserver by inject()
+    private val analyticsPublicKeyObserver: AppPublicKeyObserver by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -141,7 +138,6 @@ class App : Application(), Configuration.Provider {
             .setCrashlyticsCollectionEnabled(CoreBuildConfig.CRASHLYTICS_ENABLED)
 
         crashLogger.apply {
-            setUserId(runCatching { userTokenProvider.publicKey }.getOrDefault(emptyString()))
             setCustomKey("crashlytics_enabled", CoreBuildConfig.CRASHLYTICS_ENABLED)
             setCustomKey("verifier", networkServicesUrlProvider.loadTorusEnvironment().verifier)
             setCustomKey("sub_verifier", networkServicesUrlProvider.loadTorusEnvironment().subVerifier.orEmpty())
