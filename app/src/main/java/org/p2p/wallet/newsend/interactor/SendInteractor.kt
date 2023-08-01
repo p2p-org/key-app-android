@@ -6,6 +6,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isZero
@@ -29,7 +30,6 @@ import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.SendFatalError
 import org.p2p.wallet.newsend.model.SendTransactionFailed
@@ -107,8 +107,7 @@ class SendInteractor(
             val shouldCreateAccount =
                 token.mintAddress != WRAPPED_SOL_MINT && addressInteractor.findSplTokenAddressData(
                     mintAddress = token.mintAddress,
-                    destinationAddress = recipient.toPublicKey(),
-                    useCache = useCache
+                    destinationAddress = recipient.toPublicKey()
                 ).shouldCreateAccount
 
             Timber.tag(TAG).i("Should create account = $shouldCreateAccount")
