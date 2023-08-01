@@ -189,7 +189,7 @@ class StrigaSignUpFirstStepFragment :
             this.isEnabled = isEnabled
             icon = if (isEnabled) {
                 bind(TextContainer(R.string.auth_next))
-                binding.getDrawable(R.drawable.ic_arrow_right)
+                binding.getDrawable(R.drawable.ic_arrow_forward)
             } else {
                 bind(TextContainer(R.string.striga_button_error_check_red_fields))
                 null
