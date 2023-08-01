@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.math.BigDecimal
 import org.p2p.token.service.database.entity.TokenServicePriceEntity.Companion.TABLE_NAME
+import org.p2p.token.service.repository.price.toPriceColumnKey
 
 @Entity(tableName = TABLE_NAME)
 internal data class TokenServicePriceEntity(
@@ -16,7 +17,7 @@ internal data class TokenServicePriceEntity(
     val usdRate: BigDecimal,
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = COLUMN_TOKEN_KEY)
-    val tokenRateKey: String = "${tokenAddress}_$networkChainName",
+    val tokenRateKey: String = tokenAddress.toPriceColumnKey(networkChainName),
 ) {
     companion object {
         const val TABLE_NAME = "token_price_table"
