@@ -13,7 +13,7 @@ data class TokenExtensions(
     val ruleOfProcessingTokenPrice: String? = null,
     val isTokenVisibleOnWalletScreen: Boolean? = null,
     val isTokenCellVisibleOnWalletScreen: Boolean? = null,
-    val tokenPercentDifferenceOnWalletScreen: Int? = null,
+    val tokenPercentDifferenceOnWalletScreen: Double? = null,
     val isCalculateWithTotalBalance: Boolean? = null,
     val numbersAfterDecimalPoint: Int? = null,
     val canTokenBeHidden: Boolean? = null

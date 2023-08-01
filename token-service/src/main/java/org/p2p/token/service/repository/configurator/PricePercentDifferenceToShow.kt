@@ -19,7 +19,7 @@ class PricePercentDifferenceToShow(
         // We assume that this configuration will work only with stable coins
         val percentDifferenceToShow = extensions.tokenPercentDifferenceOnWalletScreen
 
-        if (percentDifferenceToShow == null || percentDifferenceToShow == 0) {
+        if (percentDifferenceToShow == null || percentDifferenceToShow.toBigDecimal() == BigDecimal.ZERO) {
             return token
         }
         val acceptableRateDiff = percentDifferenceToShow.toBigDecimal()
