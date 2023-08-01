@@ -152,8 +152,7 @@ class SendViaLinkInteractor(
     ): PreparedTransaction {
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
             destinationAddress = destinationAddress,
-            mintAddress = mintAddress,
-            useCache = false
+            mintAddress = mintAddress
         )
 
         val instructions = mutableListOf<TransactionInstruction>()
