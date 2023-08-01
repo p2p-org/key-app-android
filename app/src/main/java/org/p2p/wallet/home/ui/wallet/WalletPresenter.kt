@@ -142,9 +142,9 @@ class WalletPresenter(
             is UserTokensState.Loaded -> {
                 val filteredTokens = newState.solTokens
                     .filterTokensForWalletScreen()
-                    .filterTokensForCalculationOfFinalBalance()
 
-                val balanceUsd = filteredTokens.sumOf { it.totalInUsd ?: BigDecimal.ZERO }
+                val balanceUsd =
+                    filteredTokens.filterTokensForCalculationOfFinalBalance().sumOf { it.totalInUsd ?: BigDecimal.ZERO }
                 val tokenForBalance = filteredTokens.find { it.isUSDC }
                 mainScreenAnalytics.logUserAggregateBalanceBase(balanceUsd)
                 view?.showBalance(
