@@ -100,7 +100,8 @@ class ReceiveViaLinkInteractor(
 
     private suspend fun fetchPriceForToken(mintAddress: String): TokenServicePrice? {
         val price = tokenServiceRepository.findTokenPriceByAddress(
-            tokenAddress = mintAddress
+            tokenAddress = mintAddress,
+            networkChain = TokenServiceNetwork.SOLANA
         )
         if (price != null) return price
 

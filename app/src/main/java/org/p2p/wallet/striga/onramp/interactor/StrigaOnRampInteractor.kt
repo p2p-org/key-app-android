@@ -2,6 +2,7 @@ package org.p2p.wallet.striga.onramp.interactor
 
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
@@ -114,7 +115,18 @@ class StrigaOnRampInteractor(
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private suspend fun getFeesForOnRampToken(tokenAccount: StrigaUserWalletAccount): StrigaOnchainWithdrawalFees? {
+        return StrigaOnchainWithdrawalFees(
+            totalFee = BigInteger.ZERO,
+            networkFee = BigInteger.ZERO,
+            ourFee = BigInteger.ZERO,
+            theirFee = BigInteger.ZERO,
+            feeCurrency = StrigaNetworkCurrency.USDC,
+            gasLimit = BigInteger.ZERO,
+            gasPrice = BigDecimal.ZERO,
+        )
+        /* todo: uncomment and remove mock when striga introduced Solana
         return strigaWithdrawalsRepository.getOnchainWithdrawalFees(
             sourceAccountId = tokenAccount.accountId,
             whitelistedAddressId = StrigaWhitelistedAddressId(userTokenKeyProvider.publicKey),
@@ -122,5 +134,6 @@ class StrigaOnRampInteractor(
         )
             .onFailure { Timber.e(it) }
             .successOrNull()
+         */
     }
 }

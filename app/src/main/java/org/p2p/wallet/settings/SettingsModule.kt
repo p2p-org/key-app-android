@@ -43,7 +43,7 @@ object SettingsModule : InjectionModule {
                 appRestarter = get(),
                 analytics = get(),
                 settingsInteractor = get(),
-                homeLocalRepository = get(),
+                userTokensLocalRepository = get(),
                 settingsItemMapper = get(),
                 metadataInteractor = get(),
                 authInteractor = get(),

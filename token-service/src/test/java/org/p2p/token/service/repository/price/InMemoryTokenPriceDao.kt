@@ -33,12 +33,12 @@ internal class InMemoryTokenPriceDao : TokenPriceDao {
         return data
     }
 
-    override fun getAllTokensPricesFlow(): Flow<TokenServicePriceEntity> {
+    override fun getAllTokensPricesFlow(): Flow<List<TokenServicePriceEntity>> {
         return flowOf()
     }
 
-    override suspend fun getTokenPriceByAddress(tokenAddress: String): TokenServicePriceEntity? {
-        return data.find { it.tokenAddress == tokenAddress }
+    override suspend fun getTokenPriceByAddress(tokenColumnKey: String): TokenServicePriceEntity? {
+        return data.find { it.tokenRateKey == tokenColumnKey }
     }
 
     override suspend fun getTokensRatesByNetwork(networkChain: String): List<TokenServicePriceEntity> {

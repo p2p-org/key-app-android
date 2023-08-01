@@ -10,7 +10,7 @@ data class TokenExtensionEntity(
     @ColumnInfo(name = COLUMN_IS_TOKEN_CELL_VISIBLE_ON_WALLET_SCREEN)
     val isTokenCellVisibleOnWalletScreen: Boolean?,
     @ColumnInfo(name = COLUMN_TOKEN_PERCENT_DIFFERENCE_ON_WALLET_SCREEN)
-    val tokenPercentDifferenceOnWalletScreen: Int?,
+    val tokenPercentDifferenceOnWalletScreen: Double? = null,
     @ColumnInfo(name = COLUMN_CALCULATION_WITH_TOTAL_BALANCE)
     val isCalculateWithTotalBalance: Boolean?,
     @ColumnInfo(name = COLUMN_NUMBERS_AFTER_DECIMAL_POINT)

@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
@@ -20,6 +19,7 @@ import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 class AuthLogoutInteractor(
     private val context: Context,
@@ -28,8 +28,8 @@ class AuthLogoutInteractor(
     private val jupiterSwapStorage: JupiterSwapStorageContract,
     private val tokenKeyProvider: TokenKeyProvider,
     private val sendModeProvider: SendModeProvider,
-    private val mainLocalRepository: HomeLocalRepository,
     private val recipientsLocalRepository: RecipientsLocalRepository,
+    private val userTokensLocalRepository: UserTokensLocalRepository,
     private val updatesManager: SubscriptionUpdatesManager,
     private val transactionDetailsLocalRepository: TransactionDetailsLocalRepository,
     private val pushNotificationsInteractor: PushNotificationsInteractor,
@@ -50,7 +50,7 @@ class AuthLogoutInteractor(
             tokenKeyProvider.clear()
             sendModeProvider.clear()
             secureStorage.clear()
-            mainLocalRepository.clear()
+            userTokensLocalRepository.clear()
             recipientsLocalRepository.clear()
             transactionDetailsLocalRepository.deleteAll()
             jupiterSwapStorage.clear()

@@ -4,6 +4,7 @@ import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.p2p.core.token.filterTokensForCalculationOfFinalBalance
 import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -139,8 +140,11 @@ class WalletPresenter(
                 )
             }
             is UserTokensState.Loaded -> {
-                val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
-                val balanceUsd = filteredTokens.sumOf { it.totalInUsd ?: BigDecimal.ZERO }
+                val filteredTokens = newState.solTokens
+                    .filterTokensForWalletScreen()
+
+                val balanceUsd =
+                    filteredTokens.filterTokensForCalculationOfFinalBalance().sumOf { it.totalInUsd ?: BigDecimal.ZERO }
                 val tokenForBalance = filteredTokens.find { it.isUSDC }
                 mainScreenAnalytics.logUserAggregateBalanceBase(balanceUsd)
                 view?.showBalance(

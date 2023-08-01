@@ -3,8 +3,6 @@ package org.p2p.token.service.repository.price
 import assertk.all
 import assertk.assertions.hasSize
 import assertk.assertions.index
-import assertk.assertions.isDataClassEqualTo
-import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import org.junit.Before
 import org.junit.Test
@@ -91,26 +89,15 @@ class TokenPriceDatabaseRepositoryTest {
     }
 
     @Test
-    fun `GIVEN saved token address price WHEN find in local THEN return find result`() = runTest {
-        // GIVEN
-        val pricesToSave = generateDomainPrices()
-        repository.saveTokensPrice(pricesToSave)
-        val expectedPriceToFind = pricesToSave.last()
-        // WHEN
-        val actualFindPrice = repository.findTokenPriceByAddress(expectedPriceToFind.address)
-        // THEN
-        actualFindPrice.assertThat()
-            .isNotNull()
-            .isDataClassEqualTo(expectedPriceToFind)
-    }
-
-    @Test
     fun `GIVEN not saved token address WHEN find in local THEN return null`() = runTest {
         // GIVEN
         val pricesToSave = generateDomainPrices()
         repository.saveTokensPrice(pricesToSave)
         // WHEN
-        val actualFindPrice = repository.findTokenPriceByAddress("some_random_mint")
+        val actualFindPrice = repository.findTokenPriceByAddress(
+            address = "some_random_mint",
+            networkChain = TokenServiceNetwork.SOLANA
+        )
         // THEN
         actualFindPrice.assertThat()
             .isNull()

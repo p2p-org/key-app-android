@@ -3,6 +3,7 @@ package org.p2p.wallet.user.interactor
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.PublicKey
@@ -55,6 +56,10 @@ class UserTokensInteractor(
         return userTokensLocalRepository.observeUserTokens()
     }
 
+    fun observeUserToken(mintAddress: Base58String): Flow<Token.Active> {
+        return userTokensLocalRepository.observeUserToken(mintAddress)
+    }
+
     suspend fun getUserSolToken(): Token.Active? =
         userTokensLocalRepository.getUserTokens().find { it.isSOL }
 
@@ -68,4 +73,7 @@ class UserTokensInteractor(
     suspend fun getUserBalance(): BigDecimal {
         return userTokensLocalRepository.getUserBalance()
     }
+
+    suspend fun setTokenHidden(mintAddress: String, visibility: String) =
+        userTokensLocalRepository.setTokenHidden(mintAddress, visibility)
 }
