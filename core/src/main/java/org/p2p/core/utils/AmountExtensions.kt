@@ -40,20 +40,20 @@ fun BigDecimal.scaleShortOrFirstNotZero(): BigDecimal {
             SCALE_VALUE_SHORT
         }
         // removing zeros, case: 0.02000 -> 0.2
-        setScale(scale, RoundingMode.HALF_EVEN).stripTrailingZeros()
+        setScale(scale, RoundingMode.FLOOR).stripTrailingZeros()
     }
 }
 
 fun BigDecimal.scaleShort(): BigDecimal =
-    this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN)
+    this.setScale(SCALE_VALUE_SHORT, RoundingMode.FLOOR)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigDecimal.scaleMedium(): BigDecimal =
-    if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.HALF_EVEN)
+    if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.FLOOR)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigDecimal.scaleLong(decimals: Int = SCALE_VALUE_LONG): BigDecimal =
-    if (this.isZero()) this else this.setScale(decimals, RoundingMode.HALF_EVEN)
+    if (this.isZero()) this else this.setScale(decimals, RoundingMode.FLOOR)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =
