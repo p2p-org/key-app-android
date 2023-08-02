@@ -44,6 +44,8 @@ internal class TokenMetadataRemoteRepository(
             } else {
                 UpdateTokenMetadataResult.Error(e)
             }
+        } catch (e: Throwable) {
+            return@withContext UpdateTokenMetadataResult.Error(e)
         }
 
         val responseBody = response.body() ?: return@withContext UpdateTokenMetadataResult.NoUpdate
