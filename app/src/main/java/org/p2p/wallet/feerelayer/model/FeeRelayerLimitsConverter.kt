@@ -6,25 +6,23 @@ import org.p2p.wallet.feerelayer.api.TransactionFeeLimitsResponse
 object FeeRelayerLimitsConverter {
 
     fun fromNetwork(response: TransactionFeeLimitsResponse): TransactionFeeLimits {
-
         val limits = response.limits
         val processedFee = response.processedFee
 
         return TransactionFeeLimits(
-            maxFeeCountAllowed = limits.maxFeeCount.orZero(),
-            maxFeeAmountAllowed = limits.maxFeeAmount.orZero(),
-            overallFeeCountUsed = processedFee.feeCount.orZero(),
-            overallFeeAmountUsed = processedFee.totalFeeAmount.orZero(),
-
-            maxTransactionsAllowed = limits.maxCount,
-            maxTransactionsAmountAllowed = limits.maxAmount,
-            transactionsUsed = processedFee.count,
-            totalFeeAmountUsed = processedFee.totalAmount,
-
-            maxAccountCreationCount = limits.maxAccountCreationCount.orZero(),
-            maxAccountCreationAmount = limits.maxAccountCreationAmount.orZero(),
-            accountCreationUsed = processedFee.rentCount.orZero(),
-            accountCreationAmountUsed = processedFee.totalRentAmount.orZero()
+            limits = Limits(
+                maxFeeAmountAllowed = limits.maxFeeAmount.orZero(),
+                maxFeeCountAllowed = limits.maxFeeCount.orZero(),
+                maxAccountCreationAmountAllowed = limits.maxAccountCreationAmount.orZero(),
+                maxAccountCreationCountAllowed = limits.maxAccountCreationCount.orZero()
+            ),
+            processedFee = ProcessedFee(
+                totalFeeAmountUsed = processedFee.totalFeeAmount.orZero(),
+                totalRentAmountUsed = processedFee.totalRentAmount.orZero(),
+                totalFeeCountUsed = processedFee.feeCount.orZero(),
+                totalRentCountUsed = processedFee.rentCount.orZero(),
+                totalAmountUsed = processedFee.totalAmount.orZero()
+            )
         )
     }
 }
