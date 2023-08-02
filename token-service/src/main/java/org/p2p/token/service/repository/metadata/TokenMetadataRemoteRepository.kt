@@ -58,11 +58,10 @@ internal class TokenMetadataRemoteRepository(
     }
 
     private fun handleError(error: Throwable): UpdateTokenMetadataResult {
-        return when {
-            error is HttpException && error.code() == HttpURLConnection.HTTP_NOT_MODIFIED -> {
-                UpdateTokenMetadataResult.NoUpdate
-            }
-            else -> UpdateTokenMetadataResult.Error(error)
+        return if (error is HttpException && error.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+            UpdateTokenMetadataResult.NoUpdate
+        } else {
+            UpdateTokenMetadataResult.Error(error)
         }
     }
 
