@@ -38,15 +38,8 @@ internal class TokenMetadataRemoteRepository(
     ): UpdateTokenMetadataResult = withContext(dispatchers.io) {
         val response = try {
             api.getZipFile("${tokenServiceUrl}get_all_tokens_info", ifModifiedSince)
-        } catch (e: Throwable) {
-            return@withContext when (e) {
-                is HttpException -> if (e.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {
-                    UpdateTokenMetadataResult.NoUpdate
-                } else {
-                    UpdateTokenMetadataResult.Error(e)
-                }
-                else -> UpdateTokenMetadataResult.Error(e)
-            }
+        } catch (error: Throwable) {
+            return@withContext handleError(error)
         }
 
         val responseBody = response.body() ?: return@withContext UpdateTokenMetadataResult.NoUpdate
@@ -62,6 +55,15 @@ internal class TokenMetadataRemoteRepository(
         )
 
         UpdateTokenMetadataResult.NewMetadata(remoteTokensMetadata = metadata)
+    }
+
+    private fun handleError(error: Throwable): UpdateTokenMetadataResult {
+        return when {
+            error is HttpException && error.code() == HttpURLConnection.HTTP_NOT_MODIFIED -> {
+                UpdateTokenMetadataResult.NoUpdate
+            }
+            else -> UpdateTokenMetadataResult.Error(error)
+        }
     }
 
     override suspend fun loadTokensMetadata(
