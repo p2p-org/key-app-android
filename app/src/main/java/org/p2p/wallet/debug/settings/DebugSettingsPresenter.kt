@@ -96,6 +96,11 @@ class DebugSettingsPresenter(
         }
     }
 
+    override fun onClickResetUserCountry() {
+        interactor.resetUserCountry()
+        view?.showUiKitSnackBar(message = "User country has been reset")
+    }
+
     private fun getDeviceInfo(): List<SettingsRow> {
         val deviceValues = buildString {
             val displayMetrics: DisplayMetrics = resources.displayMetrics

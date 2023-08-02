@@ -3,19 +3,20 @@ package org.p2p.wallet.settings.ui.settings
 import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.core.analytics.constants.ScreenNames
+import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.AppRestarter
-import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.core.network.environment.NetworkEnvironment
-import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.model.SettingsItemMapper
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_DISCORD
@@ -53,6 +54,7 @@ class SettingsPresenter(
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
                 isUsernameItemVisible = usernameInteractor.isUsernameItemVisibleInSettings(),
+                countryName = settingsInteractor.userCountryCode?.countryName,
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden(),
@@ -87,6 +89,11 @@ class SettingsPresenter(
             Timber.e(fingerPrintChangeError, "Failed to change biometric login flag")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
+    }
+
+    override fun onCountryChanged(selectedCountryCode: CountryCode) {
+        settingsInteractor.userCountryCode = selectedCountryCode
+        loadSettings()
     }
 
     override fun onPinClicked() {
@@ -130,6 +137,10 @@ class SettingsPresenter(
         if (isUsernameExists) view?.openUsernameScreen() else view?.openReserveUsernameScreen()
         analytics.logSettingsUsernameViewed(isUsernameExists)
         analytics.logSettingItemClicked(SETTING_ITEM_USERNAME)
+    }
+
+    override fun onCountryClicked() {
+        view?.showCountryPicker(settingsInteractor.userCountryCode)
     }
 
     override fun onSecurityClicked() {
