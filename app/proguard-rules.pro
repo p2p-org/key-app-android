@@ -34,6 +34,10 @@
 -keep class org.p2p.solanaj.** { *; }
 -keep class org.p2p.wallet.utils.NavigationExtensionsKt
 
+-keepnames class kotlinx.coroutines.JobCancellationException {*;}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepnames class kotlinx.coroutines.Job {*;}
+
 # Saving class name to detect the problem source in Crashlytics
 -keepnames class * extends org.p2p.wallet.common.mvp.BaseFragment
 -keepnames class * extends org.p2p.wallet.common.mvp.BaseMvpActivity
@@ -72,6 +76,7 @@
 -keep public class * extends java.lang.Throwable  # Optional: Keep custom exceptions.
 
 # Our own classes
+-keep public class kotlin.coroutines.cancellation.CancellationExceptionKt
 -keep public class org.p2p.core.crashlytics.helpers.TimberCrashTree
 -keep public class org.p2p.core.crashlytics.helpers.CrashHttpLoggingInterceptor
 -keep class io.sentry.SentryEvent { *; }

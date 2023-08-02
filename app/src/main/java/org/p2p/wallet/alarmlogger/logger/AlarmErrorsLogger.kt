@@ -2,6 +2,7 @@ package org.p2p.wallet.alarmlogger.logger
 
 import timber.log.Timber
 import java.math.BigInteger
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.crypto.Base58String
@@ -53,7 +54,7 @@ class AlarmErrorsLogger(
         recipientAddress: SearchResult,
         error: Throwable
     ) {
-        if (!isLoggerEnabled) return
+        if (!isLoggerEnabled || error.shouldNotBeLogged) return
 
         appScope.launch {
             try {
@@ -85,7 +86,7 @@ class AlarmErrorsLogger(
         lamports: BigInteger,
         error: Throwable
     ) {
-        if (!isLoggerEnabled) return
+        if (!isLoggerEnabled || error.shouldNotBeLogged) return
 
         appScope.launch {
             try {
@@ -108,7 +109,7 @@ class AlarmErrorsLogger(
         token: Token.Active,
         error: Throwable
     ) {
-        if (!isLoggerEnabled) return
+        if (!isLoggerEnabled || error.shouldNotBeLogged) return
 
         appScope.launch {
             try {
@@ -132,7 +133,7 @@ class AlarmErrorsLogger(
         swapState: SwapState.SwapLoaded,
         swapError: Throwable
     ) {
-        if (!isLoggerEnabled) return
+        if (!isLoggerEnabled || swapError.shouldNotBeLogged) return
 
         appScope.launch {
             try {
@@ -155,7 +156,7 @@ class AlarmErrorsLogger(
         claimAmount: String,
         error: Throwable
     ) {
-        if (!isLoggerEnabled) return
+        if (!isLoggerEnabled || error.shouldNotBeLogged) return
 
         appScope.launch {
             try {
@@ -182,7 +183,7 @@ class AlarmErrorsLogger(
         recipientEthPubkey: String,
         error: Throwable
     ) {
-        if (!isLoggerEnabled) return
+        if (!isLoggerEnabled || error.shouldNotBeLogged) return
 
         appScope.launch {
             try {
@@ -207,7 +208,7 @@ class AlarmErrorsLogger(
         username: String,
         error: Throwable
     ) {
-        if (!isLoggerEnabled) return
+        if (!isLoggerEnabled || error.shouldNotBeLogged) return
 
         appScope.launch {
             try {
@@ -238,7 +239,7 @@ class AlarmErrorsLogger(
     }
 
     fun triggerStrigaAlarm(strigaError: StrigaAlarmError) {
-        if (!isLoggerEnabled) return
+        if (!isLoggerEnabled || strigaError.error.shouldNotBeLogged) return
 
         appScope.launch {
             try {
@@ -254,15 +255,15 @@ class AlarmErrorsLogger(
         }
     }
 
-    fun triggerDeviceShareChangeAlarm(deviceShareChangeAlarmError: DeviceShareChangeAlarmError) {
-        if (!isLoggerEnabled) return
+    fun triggerDeviceShareChangeAlarm(error: DeviceShareChangeAlarmError) {
+        if (!isLoggerEnabled || error.cause.shouldNotBeLogged) return
 
         appScope.launch {
             try {
                 val request = getConverter<AlarmDeviceShareChangeErrorConverter>()
                     .toDeviceShareChangeErrorRequest(
                         userPublicKey = userPublicKey,
-                        error = deviceShareChangeAlarmError
+                        error = error
                     )
                 retryRequest(block = { api.sendAlarm(request) })
             } catch (error: Throwable) {
@@ -274,4 +275,7 @@ class AlarmErrorsLogger(
     private inline fun <reified T : AlarmFeatureConverter> getConverter(): T {
         return alarmConverters.filterIsInstance<T>().first()
     }
+
+    private val Throwable.shouldNotBeLogged: Boolean
+        get() = this is CancellationException || this.cause is CancellationException
 }
