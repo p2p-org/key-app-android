@@ -50,7 +50,7 @@ class AppLoaderFacade(
 
     @Suppress("DeferredResultUnused")
     fun <T : AppLoader> cancel(appLoaderClass: Class<T>) {
-        Timber.d("Canceling AppLoader: ${appLoaderClass.id()}")
+        Timber.d("Cancelling AppLoader: ${appLoaderClass.id()}")
         activeJobs[appLoaderClass.id()]?.cancel()
         activeJobs.remove(appLoaderClass.id())
     }
