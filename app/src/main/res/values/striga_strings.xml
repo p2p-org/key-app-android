@@ -9,21 +9,24 @@
     <string name="crypto_title">Crypto</string>
     <string name="crypto_subtitle">0% fees</string>
 
-    <string name="striga_signup_finish_title">Thank you</string>
+    <string name="striga_signup_finish_title">Verify your identity</string>
     <string name="striga_signup_finish_subtitle">
-        Now you need to go through document and selfie verification.
+        The last step is document and selfie verification.
         This is a one-time procedure to ensure safety of your account.
     </string>
     <string name="striga_onboarding_button_change_country">Change country</string>
     <string name="striga_powered_by">Powered by Striga</string>
+    <string name="striga_terms_and_policy">By pressing the button below you agree to %1$s and %2$s</string>
+    <string name="striga_terms_and_policy_terms_word">Terms</string>
+    <string name="striga_terms_and_policy_privacy_policy_word">Privacy Policy</string>
     <string name="striga_powered_by_url">https://striga.com</string>
     <string name="striga_onboarding_country_subtitle">Your country</string>
     <string name="striga_onboarding_title_available">Open IBAN account for international transfers with zero fees</string>
     <string name="striga_onboarding_title_unavailable">This service is available only for European Economic Area countries</string>
     <string name="striga_onboarding_help_common_text">Check the list of countries %1$s</string>
     <string name="striga_onboarding_help_highlight_text">here</string>
-    <string name="striga_sms_input_title">Enter code from SMS</string>
-    <string name="striga_sms_input_description">To start verification confirm your phone number %1$s</string>
+    <string name="striga_sms_input_title">Enter confirmation code</string>
+    <string name="striga_sms_input_description">We have sent a code\nto %1$s</string>
     <string name="striga_sms_input_toolbar_title">Step 3 of 3</string>
     <string name="striga_exit_sms_input_warning_dialog_title">Do you want to stop registration?</string>
     <string name="striga_exit_sms_input_warning_dialog_message">You can confirm the phone number and finish the registration later</string>
@@ -123,9 +126,6 @@
     <string name="striga_dialog_kyc_pending_title">Your KYC verification is pending</string>
     <string name="striga_dialog_kyc_pending_subtitle">We will update the status once it is finished</string>
 
-    <string name="striga_onramp_sms_input_title">Claim %1$s with code from SMS</string>
-    <string name="striga_onramp_sms_input_description">Check the number %s</string>
-
     <string name="striga_iban_account_iban">IBAN</string>
     <string name="striga_iban_account_currency">Currency</string>
     <string name="striga_iban_account_bic">BIC</string>
@@ -160,4 +160,6 @@
     <string name="striga_withdrawal_transaction_details">
         We will ask you to confirm this operation within a few minutes
     </string>
+    <string name="striga_open_account_title">Open account for instant international transfers</string>
+    <string name="striga_open_account_subtitle">This account acts as an intermediary between Key App and our banking partner, Striga payment provider, which operates with your fiat money.</string>
 </resources>

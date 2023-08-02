@@ -13,7 +13,57 @@ import android.text.style.StyleSpan
 import android.view.View
 import org.p2p.core.utils.emptyString
 
+/**
+ * @param text - text to highlight
+ * @param color - color of the text (integer color, not a resource ID)
+ * @param isUnderlined - underline text or not
+ * @param onClick - action on click
+ */
+data class HighlightingOption(
+    val text: String,
+    @ColorInt val color: Int,
+    val isUnderlined: Boolean = false,
+    val onClick: (View) -> Unit = {},
+)
+
 object SpanUtils {
+
+    fun highlightLinks(
+        commonText: String,
+        highlightedTexts: List<HighlightingOption>,
+    ): SpannableString {
+        val spannable = SpannableString(commonText)
+
+        highlightedTexts.forEach { option ->
+            var startIndex = commonText.indexOf(option.text)
+            while (startIndex != -1) {
+                val endIndex = startIndex + option.text.length
+
+                val clickableSpan = object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        widget.cancelPendingInputEvents()
+                        option.onClick(widget)
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        ds.color = option.color
+                        ds.isUnderlineText = option.isUnderlined
+                    }
+                }
+
+                spannable.setSpan(
+                    clickableSpan,
+                    startIndex,
+                    endIndex,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                )
+
+                startIndex = commonText.indexOf(option.text, startIndex + 1)
+            }
+        }
+
+        return spannable
+    }
 
     fun highlightLinkNoUnderline(
         commonText: String,

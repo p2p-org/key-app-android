@@ -14,7 +14,6 @@ import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.math.BigDecimal
 import org.p2p.core.crypto.Base58String
-import org.p2p.core.utils.asUsd
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.recycler.decoration.GroupedRoundingDecoration
@@ -250,7 +249,6 @@ class WalletFragment :
         token: StrigaOnRampCellModel
     ) {
         val fragment = strigaFragmentFactory.onRampConfirmOtpFragment(
-            titleAmount = token.amountAvailable.asUsd(),
             challengeId = challengeId
         )
         replaceFragmentForResult(fragment, StrigaOtpConfirmFragment.REQUEST_KEY, onResult = { _, bundle ->
@@ -265,7 +263,6 @@ class WalletFragment :
         token: StrigaOffRampCellModel
     ) {
         val fragment = strigaFragmentFactory.onRampConfirmOtpFragment(
-            titleAmount = token.amountAvailable.asUsd(),
             challengeId = challengeId
         )
         replaceFragmentForResult(fragment, StrigaOtpConfirmFragment.REQUEST_KEY, onResult = { _, bundle ->

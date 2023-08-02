@@ -20,6 +20,7 @@ import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTopupWalletBinding
@@ -27,6 +28,7 @@ import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.striga.StrigaFragmentFactory
+import org.p2p.wallet.striga.signup.onboarding.StrigaOpenAccountFragment
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -70,6 +72,13 @@ class TopUpWalletBottomSheet :
         binding.bankTransferView.setOnClickAction { _, _ ->
             if (showProgress) return@setOnClickAction
             presenter.onBankTransferClicked()
+        }
+        // todo: temporary; will be removed when flow is ready
+        if (BuildConfig.DEBUG && isStringEnabled) {
+            binding.bankTransferView.setOnLongClickListener {
+                dismissAndNavigate(StrigaOpenAccountFragment.create())
+                true
+            }
         }
     }
 
