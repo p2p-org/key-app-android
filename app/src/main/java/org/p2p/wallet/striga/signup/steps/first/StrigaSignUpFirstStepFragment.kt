@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.signup.steps.first
 import androidx.activity.addCallback
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import android.os.Bundle
 import android.view.View
@@ -111,7 +112,7 @@ class StrigaSignUpFirstStepFragment :
                 ::onFragmentResult
             )
 
-            editTextEmail.isEnabled = inAppFeatureFlags.strigaEnableEmailFieldFlag.featureValue
+            editTextEmail.isVisible = inAppFeatureFlags.strigaEnableEmailFieldFlag.featureValue
         }
 
         if (scrollToViewId != View.NO_ID) {
