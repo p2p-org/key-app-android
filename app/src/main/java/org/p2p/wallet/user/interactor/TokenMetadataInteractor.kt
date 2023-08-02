@@ -33,9 +33,7 @@ class TokenMetadataInteractor(
             }
             is UpdateTokenMetadataResult.Error -> {
                 handleError(result.throwable)
-                if (!userLocalRepository.areInitialTokensLoaded()) {
-                    updateMemoryCache(metadataFromFile)
-                }
+                updateMemoryCache(metadataFromFile)
             }
         }
     }
