@@ -45,11 +45,14 @@ class AppLoaderFacade(
     fun cancelAll() {
         Timber.d("Cancelling all active AppLoaders")
         activeJobs.values.forEach { it.cancel() }
+        activeJobs.clear()
     }
 
+    @Suppress("DeferredResultUnused")
     fun <T : AppLoader> cancel(appLoaderClass: Class<T>) {
         Timber.d("Canceling AppLoader: ${appLoaderClass.id()}")
         activeJobs[appLoaderClass.id()]?.cancel()
+        activeJobs.remove(appLoaderClass.id())
     }
 
     private suspend fun processLoaders() {
@@ -112,7 +115,7 @@ class AppLoaderFacade(
         return job
     }
 
-    private fun <T : AppLoader> Class<T>.id(): String = name
-
     private fun AppLoader.id(): String = javaClass.id()
+
+    private fun <T : AppLoader> Class<T>.id(): String = name
 }
