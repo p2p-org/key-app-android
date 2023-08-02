@@ -11,6 +11,8 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
+import org.p2p.wallet.home.events.AppLoaderFacade
+import org.p2p.wallet.home.events.StrigaFeatureLoader
 import org.p2p.wallet.home.ui.main.delegates.striga.offramp.StrigaOffRampCellModel
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.wallet.WalletContract
@@ -34,6 +36,7 @@ class WalletStrigaHandler(
     private val historyInteractor: HistoryInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val localFeatureFlags: InAppFeatureFlags,
+    private val appLoaderFacade: AppLoaderFacade,
 //    private val strigaOtpConfirmInteractor: StrigaOtpConfirmInteractor,
 ) {
     suspend fun handleBannerClick(view: WalletContract.View?, item: StrigaBanner) {
@@ -49,6 +52,7 @@ class WalletStrigaHandler(
 
                     if (statusFromKycBanner == StrigaKycStatusBanner.VERIFICATION_DONE) {
                         view?.showStrigaBannerProgress(isLoading = true)
+                        appLoaderFacade.cancel(StrigaFeatureLoader::class.java)
                         strigaWalletInteractor.loadDetailsForStrigaAccounts()
                             .onSuccess { view?.navigateToStrigaByBanner(statusFromKycBanner) }
                             .onFailure { view?.showUiKitSnackBar(messageResId = R.string.error_general_message) }
