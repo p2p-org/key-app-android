@@ -1,5 +1,6 @@
 package org.p2p.wallet.svl.interactor
 
+import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.Account
@@ -108,7 +109,9 @@ class SendViaLinkInteractor(
             )
         }
 
-        return preparedTransaction
+        return preparedTransaction.also {
+            Timber.i("SVL transaction created = \n${it.toFormattedString()}")
+        }
     }
 
     private suspend fun createSolTransaction(
@@ -158,15 +161,23 @@ class SendViaLinkInteractor(
         val instructions = mutableListOf<TransactionInstruction>()
 
         val shouldCreateAccount = splDestinationAddress.shouldCreateAccount
+        Timber.i("SVL ATA account state = $splDestinationAddress")
         if (shouldCreateAccount) {
+            Timber.i(
+                buildString {
+                    append("adding ATA creation instruction: ")
+                    append("spl_address=${splDestinationAddress.destinationAddress}; ")
+                    append("owner=$destinationAddress")
+                }
+            )
             // we should always create associated token account, since the recipient is a new temporary account user
             instructions += TokenProgram.createAssociatedTokenAccountInstruction(
-                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-                TokenProgram.PROGRAM_ID,
-                mintAddress.toPublicKey(),
-                splDestinationAddress.destinationAddress,
-                destinationAddress,
-                feePayer
+                /* associatedProgramId = */ TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                /* tokenProgramId = */ TokenProgram.PROGRAM_ID,
+                /* mint = */ mintAddress.toPublicKey(),
+                /* associatedAccount = */ splDestinationAddress.destinationAddress,
+                /* owner = */ destinationAddress,
+                /* payer = */ feePayer
             )
         }
 

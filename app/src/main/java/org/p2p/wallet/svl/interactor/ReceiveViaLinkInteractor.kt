@@ -122,6 +122,7 @@ class ReceiveViaLinkInteractor(
     ): String {
         val senderAccount = Account(temporaryAccount.keypair)
 
+        Timber.i("receiveTransfer called: ${senderAccount.publicKey}; d_address=$senderAccount")
         return sendViaLinkInteractor.sendTransaction(
             senderAccount = senderAccount,
             destinationAddress = recipient,
