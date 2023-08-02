@@ -38,14 +38,15 @@ internal class TokenMetadataRemoteRepository(
     ): UpdateTokenMetadataResult = withContext(dispatchers.io) {
         val response = try {
             api.getZipFile("${tokenServiceUrl}get_all_tokens_info", ifModifiedSince)
-        } catch (e: HttpException) {
-            return@withContext if (e.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {
-                UpdateTokenMetadataResult.NoUpdate
-            } else {
-                UpdateTokenMetadataResult.Error(e)
-            }
         } catch (e: Throwable) {
-            return@withContext UpdateTokenMetadataResult.Error(e)
+            return@withContext when (e) {
+                is HttpException -> if (e.code() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+                    UpdateTokenMetadataResult.NoUpdate
+                } else {
+                    UpdateTokenMetadataResult.Error(e)
+                }
+                else -> UpdateTokenMetadataResult.Error(e)
+            }
         }
 
         val responseBody = response.body() ?: return@withContext UpdateTokenMetadataResult.NoUpdate
