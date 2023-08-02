@@ -52,6 +52,10 @@ class UserTokensInteractor(
         return userTokensLocalRepository.getUserTokens()
     }
 
+    suspend fun hasUserToken(tokenMintAddress: String): Boolean {
+        return userTokensLocalRepository.getUserTokens().any { it.mintAddress == tokenMintAddress }
+    }
+
     fun observeUserTokens(): Flow<List<Token.Active>> {
         return userTokensLocalRepository.observeUserTokens()
     }
