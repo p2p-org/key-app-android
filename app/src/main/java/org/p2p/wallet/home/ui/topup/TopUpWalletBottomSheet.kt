@@ -53,8 +53,8 @@ class TopUpWalletBottomSheet :
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_RoundedSnow
 
-    override fun showStrigaBankTransferView(showProgress: Boolean, isStringEnabled: Boolean) {
-        val subtitleRes = if (isStringEnabled) {
+    override fun showStrigaBankTransferView(showProgress: Boolean, isStrigaEnabled: Boolean) {
+        val subtitleRes = if (isStrigaEnabled) {
             R.string.bank_transfer_subtitle_zero_fees
         } else {
             R.string.bank_transfer_subtitle_one_percent_fees
@@ -74,7 +74,7 @@ class TopUpWalletBottomSheet :
             presenter.onBankTransferClicked()
         }
         // todo: temporary; will be removed when flow is ready
-        if (BuildConfig.DEBUG && isStringEnabled) {
+        if (BuildConfig.DEBUG && isStrigaEnabled) {
             binding.bankTransferView.setOnLongClickListener {
                 dismissAndNavigate(StrigaOpenAccountFragment.create())
                 true
