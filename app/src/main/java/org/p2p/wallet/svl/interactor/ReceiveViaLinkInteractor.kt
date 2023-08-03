@@ -151,6 +151,7 @@ class ReceiveViaLinkInteractor(
         )
 
         val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
+        Timber.i("receiveTransfer called: ${senderAccount.publicKey}; d_address=$senderAccount")
         val preparedTransaction = createSendTransaction(
             senderAccount = senderAccount,
             destinationAddress = recipient,

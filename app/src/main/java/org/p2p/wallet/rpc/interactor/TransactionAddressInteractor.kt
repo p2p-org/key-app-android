@@ -24,14 +24,15 @@ class TransactionAddressInteractor(
         mintAddress: String
     ): TransactionAddressData {
         val associatedAddress = try {
-            Timber.tag(ADDRESS_TAG).i("Searching for SPL token address")
+            Timber.tag(ADDRESS_TAG).i("Searching SPL token address for ${destinationAddress.toBase58()}")
             findSplTokenAddress(destinationAddress, mintAddress)
         } catch (e: CancellationException) {
             throw e
         } catch (e: IllegalStateException) {
             Timber.tag(ADDRESS_TAG).i("Searching address failed, address is wrong")
-            throw IllegalStateException("Invalid owner address")
+            error("Invalid owner address from findSplTokenAddress")
         }
+        Timber.i("ATA address for ${destinationAddress.toBase58()} mint $mintAddress = $associatedAddress")
 
         /* If account is not found, create one */
         val accountInfo = userAccountRepository.getAccountInfo(
@@ -59,26 +60,26 @@ class TransactionAddressInteractor(
         // detect if it is a direct token address
         val info = TokenTransaction.decodeAccountInfo(accountInfo)
         if (info != null && userLocalRepository.findTokenData(info.mint.toBase58()) != null) {
-            Timber.tag(ADDRESS_TAG).d("Token by mint was found. Continuing with direct address")
+            Timber.tag(ADDRESS_TAG).i("Token by mint was found. Continuing with direct address")
             return destinationAddress
         }
 
         // create associated token address
         val value = accountInfo?.value
         if (value == null || value.data?.get(0).isNullOrEmpty()) {
-            Timber.tag(ADDRESS_TAG).d("No information found, creating associated token address")
+            Timber.tag(ADDRESS_TAG).i("No information found, generating associated token address")
             return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
         }
 
-        // detect if destination address is already a SPLToken address
+        // detect if destination address is already a SPL Token address
         if (info?.mint == destinationAddress) {
-            Timber.tag(ADDRESS_TAG).d("Destination address is already an SPL Token address, returning")
+            Timber.tag(ADDRESS_TAG).i("Destination address is already an SPL Token address, returning")
             return destinationAddress
         }
 
         // detect if destination address is a SOL address
         if (info?.owner?.toBase58() == SystemProgram.PROGRAM_ID.toBase58()) {
-            Timber.tag(ADDRESS_TAG).d("Destination address is SOL address. Getting the associated token address")
+            Timber.tag(ADDRESS_TAG).i("Destination address is SOL address. Getting the associated token address")
 
             // create associated token address
             return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)

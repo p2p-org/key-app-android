@@ -4,8 +4,8 @@ import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.json.JSONObject
-import org.p2p.core.network.data.ErrorCode
 import java.io.IOException
+import org.p2p.core.network.data.ErrorCode
 import org.p2p.wallet.feerelayer.model.FeeRelayerException
 
 class FeeRelayerInterceptor(
@@ -28,19 +28,19 @@ class FeeRelayerInterceptor(
             if (formattedBody.isEmpty()) {
                 return FeeRelayerException(
                     errorCode = ErrorCode.SERVER_ERROR,
-                    fullMessage = "No error body with code: $code",
+                    rawResponseBody = "No error body with code: $code",
                     errorMessage = null
                 )
             }
-            val fullMessage = JSONObject(formattedBody).toString(1)
+            val rawJsonErrorBody = JSONObject(formattedBody).toString(1)
             val serverError = gson.fromJson(formattedBody, FeeRelayerServerError::class.java)
             val error = FeeRelayerErrorMapper.fromFeeRelayer(
-                serverError.code,
-                serverError.data?.clientError?.firstOrNull().orEmpty()
+                code = serverError.code,
+                rawError = serverError.data?.clientError?.firstOrNull().orEmpty()
             )
             return FeeRelayerException(
                 errorCode = ErrorTypeConverter.fromFeeRelayer(error),
-                fullMessage = fullMessage,
+                rawResponseBody = rawJsonErrorBody,
                 errorMessage = error.message ?: serverError.message
             )
         } catch (e: Throwable) {

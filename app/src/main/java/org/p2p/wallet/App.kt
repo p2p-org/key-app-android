@@ -47,6 +47,7 @@ class App : Application(), Configuration.Provider {
         setupTimber()
 
         setupCrashLoggingService()
+        analyticsPublicKeyObserver.startObserving()
 
         IntercomService.setup(
             app = this,
@@ -70,8 +71,6 @@ class App : Application(), Configuration.Provider {
             projectId = CoreBuildConfig.lokaliseAppId
         )
         setupWorkManager()
-
-        analyticsPublicKeyObserver.startObserving()
     }
 
     override fun getWorkManagerConfiguration(): Configuration {

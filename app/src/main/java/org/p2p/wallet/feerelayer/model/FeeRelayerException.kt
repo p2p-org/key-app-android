@@ -6,9 +6,9 @@ import org.p2p.core.network.data.ErrorCode
 
 class FeeRelayerException(
     val errorCode: ErrorCode,
-    fullMessage: String,
+    rawResponseBody: String,
     private val errorMessage: String?
-) : IOException("statusCode: $errorCode, errorMessage: $fullMessage") {
+) : IOException("statusCode: $errorCode, errorMessage: $rawResponseBody") {
 
     fun getErrorMessage(resources: Resources) = if (errorCode.hasSpecifiedMessage) {
         resources.getString(errorCode.messageRes)
@@ -16,5 +16,5 @@ class FeeRelayerException(
         errorMessage
     }
 
-    fun getDirectMessage(): String? = errorMessage
+    fun getDirectMessage(): String? = errorMessage ?: message
 }

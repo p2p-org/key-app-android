@@ -138,7 +138,7 @@ class UpdateDeviceSmsInputPresenter(
     private fun logAlarmError(e: Throwable, source: DeviceShareChangeAlarmErrorSource) {
         val error = DeviceShareChangeAlarmError(
             source = source.sourceName,
-            error = e
+            cause = e
         )
         alarmErrorsLogger.triggerDeviceShareChangeAlarm(error)
     }

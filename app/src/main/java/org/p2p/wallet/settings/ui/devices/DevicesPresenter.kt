@@ -144,9 +144,15 @@ class DevicesPresenter(
     }
 
     private fun logAlarmError(e: Throwable, source: DeviceShareChangeAlarmErrorSource) {
+        if (e is PushServiceError.TooManyRequests ||
+            e is PushServiceError.TooManyOtpRequests ||
+            e is PushServiceError.IncorrectOtpCode
+        ) {
+            return
+        }
         val error = DeviceShareChangeAlarmError(
             source = source.sourceName,
-            error = e
+            cause = e
         )
         alarmErrorsLogger.triggerDeviceShareChangeAlarm(error)
     }
