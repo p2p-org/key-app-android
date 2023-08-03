@@ -106,9 +106,10 @@ class AppLoaderFacade(
         val job: Deferred<Unit> = appScope.async {
             try {
                 that.block()
-                activeJobs.remove(id())
             } catch (_: CancellationException) {
                 Timber.i("AppLoader ${id()} was cancelled")
+            } finally {
+                activeJobs.remove(id())
             }
         }
         activeJobs[id()] = job
