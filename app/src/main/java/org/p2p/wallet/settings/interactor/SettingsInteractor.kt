@@ -53,7 +53,7 @@ class SettingsInteractor(
             rawData?.let(gson::fromJsonReified)
         } catch (e: Throwable) {
             // this try-catch will help if CountryCode structure is changed
-            Timber.e(e, "Unable to decode user country from settings:\n${rawData}")
+            Timber.e(e, "Unable to decode user country from settings:\n$rawData")
             null
         }
 
