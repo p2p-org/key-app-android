@@ -31,19 +31,18 @@ class TopUpWalletPresenter(
     private val isUserAuthByWeb3: Boolean
         get() = seedPhraseProvider.isWeb3AuthUser || appFeatureFlags.strigaSimulateWeb3Flag.featureValue
 
-    private val strigaBankTransferProgress = MutableStateFlow(false)
+    private val isStrigaEnabled: Boolean
+        get() = strigaSignupFeatureToggle.isFeatureEnabled && isUserAuthByWeb3
+
+    private val bankTransferProgress = MutableStateFlow(false)
 
     override fun attach(view: TopUpWalletContract.View) {
         super.attach(view)
 
-        if (strigaSignupFeatureToggle.isFeatureEnabled && isUserAuthByWeb3) {
-            strigaBankTransferProgress.onEach {
-                view.showStrigaBankTransferView(showProgress = it, isStringEnabled = true)
-            }
-                .launchIn(this)
-        } else {
-            view.showStrigaBankTransferView(showProgress = false, isStringEnabled = false)
+        bankTransferProgress.onEach {
+            view.showStrigaBankTransferView(showProgress = it, isStrigaEnabled = isStrigaEnabled)
         }
+            .launchIn(this)
 
         launch {
             val tokenToBuy = userInteractor.getSingleTokenForBuy()
@@ -54,7 +53,6 @@ class TopUpWalletPresenter(
     }
 
     override fun onBankTransferClicked() {
-        val isStrigaEnabled = strigaSignupFeatureToggle.isFeatureEnabled && isUserAuthByWeb3
         if (!isStrigaEnabled) {
             launch {
                 val tokenToBuy = userInteractor.getSingleTokenForBuy()
@@ -72,7 +70,7 @@ class TopUpWalletPresenter(
 
         launch {
             try {
-                strigaBankTransferProgress.emit(true)
+                bankTransferProgress.emit(true)
 
                 strigaSignupDataEnsurerInteractor.ensureNeededDataLoaded()
 
@@ -97,7 +95,7 @@ class TopUpWalletPresenter(
                 Timber.e(strigaDataLoadFailed, "failed to load needed data for bank transfer")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             } finally {
-                strigaBankTransferProgress.emit(false)
+                bankTransferProgress.emit(false)
             }
         }
     }

@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
-import org.p2p.core.utils.asUsd
 import org.p2p.uikit.components.edittext.v2.NewUiKitEditTextDrawableStrategy
 import org.p2p.uikit.components.edittext.v2.NewUiKitEditTextMutator
 import org.p2p.wallet.R
@@ -111,11 +109,9 @@ class StrigaWithdrawFragment :
     }
 
     override fun navigateToOtpConfirm(
-        challengeId: StrigaWithdrawalChallengeId,
-        amountToOffRamp: BigDecimal,
+        challengeId: StrigaWithdrawalChallengeId
     ) {
         val fragment = strigaFragmentFactory.onRampConfirmOtpFragment(
-            titleAmount = amountToOffRamp.asUsd(),
             challengeId = challengeId
         )
         replaceFragment(fragment)

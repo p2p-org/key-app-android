@@ -80,7 +80,7 @@
     <string name="onboarding_sms_input_wrong_sms">Incorrect SMS code \uD83D\uDE2C</string>
     <string name="onboarding_sms_invalid_sms_button_text">Enter the code to continue</string>
     <string name="onboarding_sms_input_resend_sms">Tap to resend</string>
-    <string name="onboarding_sms_input_before_resend_sms">Resend after %1$d sec.</string>
+    <string name="onboarding_sms_input_before_resend_sms">Resend SMS after %1$d sec.</string>
     <string name="onboarding_sms_input_request_overflow">Too many tries, sms validation blocked for %1$d sec.</string>
     <string name="onboarding_sms_input_title">The code from SMS</string>
     <string name="onboarding_sms_input_phone_number_title">Check the number +%1$s</string>
