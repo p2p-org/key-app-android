@@ -1,6 +1,7 @@
 package org.p2p.wallet.tokenservice
 
 import timber.log.Timber
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -9,7 +10,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
+import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
+import org.p2p.core.utils.isConnectionError
 import org.p2p.wallet.home.events.EthereumTokensLoader
 import org.p2p.wallet.home.events.SolanaTokensLoader
 import org.p2p.wallet.tokenservice.model.EthTokenLoadState
@@ -25,8 +28,11 @@ private const val TAG = "TokenServiceCoordinator"
 class TokenServiceCoordinator(
     private val solanaTokensLoader: SolanaTokensLoader,
     private val ethereumTokensLoader: EthereumTokensLoader,
-    private val appScope: AppScope
+    private val connectionManager: ConnectionManager,
+    private val appScope: AppScope,
 ) {
+
+    private var connectionJob: Job? = null
 
     /**
      * Token Service will be needed in different screens and may have 2 or more collectors.
@@ -71,7 +77,12 @@ class TokenServiceCoordinator(
             is SolanaTokenLoadState.Idle -> UserTokensState.Idle
             is SolanaTokenLoadState.Loading -> UserTokensState.Loading
             is SolanaTokenLoadState.Refreshing -> UserTokensState.Refreshing
-            is SolanaTokenLoadState.Error -> UserTokensState.Error(solState.throwable)
+            is SolanaTokenLoadState.Error -> {
+                if (solState.throwable.isConnectionError()) {
+                    subscribeOnInternetConnection()
+                }
+                UserTokensState.Error(solState.throwable)
+            }
             is SolanaTokenLoadState.Loaded -> handleLoadedState(solState, ethState)
         }
 
@@ -90,5 +101,17 @@ class TokenServiceCoordinator(
         }
 
         return UserTokensState.Loaded(solTokens, ethTokens)
+    }
+
+    private fun subscribeOnInternetConnection() {
+        connectionJob?.cancel()
+        connectionJob = appScope.launch {
+            connectionManager.connectionStatus.collect { hasConnection ->
+                if (hasConnection) {
+                    appScope.launch { refresh() }
+                    connectionJob?.cancel()
+                }
+            }
+        }
     }
 }

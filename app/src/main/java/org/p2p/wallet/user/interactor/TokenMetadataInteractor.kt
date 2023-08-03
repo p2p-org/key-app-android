@@ -2,6 +2,10 @@ package org.p2p.wallet.user.interactor
 
 import com.google.gson.Gson
 import timber.log.Timber
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.TokensMetadataInfo
 import org.p2p.token.service.model.UpdateTokenMetadataResult
 import org.p2p.token.service.repository.metadata.TokenMetadataRepository
@@ -15,8 +19,12 @@ class TokenMetadataInteractor(
     private val externalStorageRepository: ExternalStorageRepository,
     private val userLocalRepository: UserLocalRepository,
     private val metadataRepository: TokenMetadataRepository,
-    private val gson: Gson
+    private val gson: Gson,
+    private val connectionManager: ConnectionManager,
+    private val appScope: AppScope,
 ) {
+
+    private var connectionJob: Job? = null
 
     suspend fun loadAllTokensMetadata() {
         val metadataFromFile: TokensMetadataInfo? = readTokensMetadataFromFile()
@@ -34,6 +42,18 @@ class TokenMetadataInteractor(
             is UpdateTokenMetadataResult.Error -> {
                 handleError(result.throwable)
                 updateMemoryCache(metadataFromFile)
+            }
+        }
+    }
+
+    private fun subscribeOnInternetConnection() {
+        connectionJob?.cancel()
+        connectionJob = appScope.launch {
+            connectionManager.connectionStatus.collect { hasConnection ->
+                if (hasConnection) {
+                    appScope.launch { loadAllTokensMetadata() }
+                    connectionJob?.cancel()
+                }
             }
         }
     }
@@ -62,6 +82,7 @@ class TokenMetadataInteractor(
 
         if (tokensMetadata?.tokens == null) {
             Timber.tag(TAG).e("Local file not found!")
+            subscribeOnInternetConnection()
             return
         }
 

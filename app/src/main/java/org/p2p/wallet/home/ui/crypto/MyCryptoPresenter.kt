@@ -1,12 +1,9 @@
 package org.p2p.wallet.home.ui.crypto
 
 import android.content.SharedPreferences
-import timber.log.Timber
 import java.math.BigDecimal
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.token.filterTokensForWalletScreen
@@ -28,7 +25,6 @@ private val MINIMAL_DUST_FOR_BALANCE = BigDecimal(0.01)
 class MyCryptoPresenter(
     private val cryptoInteractor: MyCryptoInteractor,
     private val cryptoMapper: MyCryptoMapper,
-    private val connectionManager: ConnectionManager,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val cryptoScreenAnalytics: CryptoScreenAnalytics,
     private val claimHandler: BridgeClaimBundleClickHandler,
@@ -58,16 +54,7 @@ class MyCryptoPresenter(
     }
 
     override fun refreshTokens() {
-        launchInternetAware(connectionManager) {
-            try {
-                tokenServiceCoordinator.refresh()
-            } catch (cancelled: CancellationException) {
-                Timber.i("Loading tokens job cancelled")
-            } catch (error: Throwable) {
-                Timber.e(error, "Error refreshing user tokens")
-                view?.showErrorMessage(error)
-            }
-        }
+        tokenServiceCoordinator.refresh()
     }
 
     override fun onTokenClicked(token: Token.Active) {

@@ -1,7 +1,9 @@
 package org.p2p.wallet.home.events
 
 import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -9,15 +11,17 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
-import org.p2p.token.service.api.events.manager.TokenServiceUpdate
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventSubscriber
 import org.p2p.token.service.api.events.manager.TokenServiceEventType
+import org.p2p.token.service.api.events.manager.TokenServiceUpdate
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.tokenservice.model.SolanaTokenLoadState
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.toPublicKey
+
+private val RELOAD_DELAY = 5.seconds
 
 class SolanaTokensLoader(
     private val userTokensInteractor: UserTokensInteractor,
@@ -39,11 +43,8 @@ class SolanaTokensLoader(
     suspend fun load() {
         try {
             updateState(SolanaTokenLoadState.Loading)
-
             tokenServiceEventManager.subscribe(SolanaTokensRatesEventSubscriber(::saveTokensRates))
-            val tokens = userTokensInteractor.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
-            userTokensInteractor.saveUserTokens(tokens)
-            userTokensInteractor.loadUserRates(tokens)
+            loadAndSaveUserTokens()
         } catch (e: CancellationException) {
             Timber.d("Loading sol tokens job cancelled")
         } catch (e: Throwable) {
@@ -55,15 +56,24 @@ class SolanaTokensLoader(
     suspend fun refresh() {
         try {
             updateState(SolanaTokenLoadState.Refreshing)
-
-            val tokens = userTokensInteractor.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
-            userTokensInteractor.saveUserTokens(tokens)
-            userTokensInteractor.loadUserRates(tokens)
+            loadAndSaveUserTokens()
         } catch (e: CancellationException) {
             Timber.d("Refreshing sol tokens job cancelled")
         } catch (e: Throwable) {
             Timber.e(e, "Error on refreshing sol tokens")
             updateState(SolanaTokenLoadState.Error(e))
+        }
+    }
+
+    private suspend fun loadAndSaveUserTokens() {
+        val tokens = userTokensInteractor.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
+        if (tokens.isNotEmpty()) {
+            userTokensInteractor.saveUserTokens(tokens)
+            userTokensInteractor.loadUserRates(tokens)
+        } else {
+            // this case only could be if we do not have metadata loaded, so we need to reload tokens with delay
+            delay(RELOAD_DELAY)
+            refresh()
         }
     }
 

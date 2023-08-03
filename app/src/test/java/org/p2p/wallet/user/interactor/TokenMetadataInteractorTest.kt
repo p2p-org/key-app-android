@@ -10,6 +10,9 @@ import org.junit.Test
 import java.io.IOException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.TokensMetadataInfo
 import org.p2p.core.utils.emptyString
 import org.p2p.token.service.model.UpdateTokenMetadataResult
@@ -17,6 +20,8 @@ import org.p2p.token.service.repository.metadata.TokenMetadataRepository
 import org.p2p.wallet.common.storage.ExternalFile
 import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.TestAppScope
+import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.coVerifyNone
 import org.p2p.wallet.utils.coVerifyOnce
 import org.p2p.wallet.utils.verifyOnce
@@ -32,6 +37,12 @@ internal class TokenMetadataInteractorTest {
 
     private val gson: Gson = mockk()
 
+    private val dispatchers: CoroutineDispatchers = UnconfinedTestDispatchers()
+
+    private val appScope: AppScope = TestAppScope(dispatchers.ui)
+
+    private val connectionManager: ConnectionManager = mockk()
+
     private lateinit var tokenMetadataInteractor: TokenMetadataInteractor
 
     private val metadataJson: String = """{
@@ -46,7 +57,9 @@ internal class TokenMetadataInteractorTest {
             externalStorageRepository = externalStorageRepository,
             userLocalRepository = userLocalRepository,
             metadataRepository = metadataRepository,
-            gson = gson
+            gson = gson,
+            connectionManager = connectionManager,
+            appScope = appScope,
         )
     }
 
