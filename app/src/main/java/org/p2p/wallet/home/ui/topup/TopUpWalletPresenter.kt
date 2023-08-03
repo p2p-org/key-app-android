@@ -39,10 +39,10 @@ class TopUpWalletPresenter(
     override fun attach(view: TopUpWalletContract.View) {
         super.attach(view)
 
-        bankTransferProgress
-            .onEach {
-                view.showStrigaBankTransferView(showProgress = it, isStrigaEnabled = isStrigaEnabled)
-            }.launchIn(this)
+        bankTransferProgress.onEach {
+            view.showStrigaBankTransferView(showProgress = it, isStrigaEnabled = isStrigaEnabled)
+        }
+            .launchIn(this)
 
         launch {
             val tokenToBuy = userInteractor.getSingleTokenForBuy()
