@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_smoke"
@@ -14,10 +15,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/menu_onboarding_help"
         app:navigationIcon="@drawable/ic_back"
         app:navigationIconTint="@color/icons_night"
-        app:title="@string/striga_step_first_toolbar_title"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
         app:titleTextColor="@color/text_night" />
 
@@ -34,51 +33,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="48dp">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/containerInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:background="@drawable/bg_rounded_solid_snow_16"
-                android:backgroundTint="@color/light_sea"
-                android:padding="16dp"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/imageViewAlert"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/bg_circle"
-                    android:backgroundTint="@color/bg_sea"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_striga_info"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/textViewTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/striga_enter_personal_data_info"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
-                    android:textColor="@color/text_night"
-                    app:layout_constraintBottom_toBottomOf="@id/imageViewAlert"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/imageViewAlert"
-                    app:layout_constraintTop_toTopOf="@id/imageViewAlert" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            android:paddingBottom="32dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="36dp"
-                android:text="@string/striga_contacts"
+                android:layout_marginTop="16dp"
+                android:text="@string/striga_form_personal_info_label"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
                 app:layout_constraintTop_toBottomOf="@id/imageViewAlert" />
 
@@ -88,39 +50,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="12dp"
-                android:enabled="false"
                 android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"
                 android:nextFocusDown="@id/editTextPhoneNumber"
+                android:visibility="gone"
+                app:hintText="@string/striga_form_input_email_hint"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-                app:hintText="@string/striga_email_hint"
-                app:labelText="@string/striga_email" />
-
-            <org.p2p.wallet.auth.widget.PhoneNumberInputView
-                android:id="@+id/editTextPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:backgroundTint="@color/bg_snow"
-                android:imeOptions="actionNext"
-                android:inputType="number"
-                android:nextFocusDown="@id/editTextFirstName"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-                android:textSize="22sp"
-                app:labelText="@string/striga_phone_number" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="24dp"
-                android:text="@string/striga_credentials"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
-                app:layout_constraintTop_toBottomOf="@id/imageViewAlert" />
-
+                app:labelText="@string/striga_form_input_email_label"
+                tools:visibility="gone" />
 
             <org.p2p.uikit.components.UiKitEditText
+                app:cornerRadius="12dp"
                 android:id="@+id/editTextFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,12 +69,15 @@
                 android:imeOptions="actionNext"
                 android:inputType="textPersonName"
                 android:nextFocusDown="@id/editTextLastname"
+                app:hintText="@string/striga_form_input_first_name_hint"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-                app:hintText="@string/striga_enter_hint"
-                app:labelText="@string/striga_first_name" />
+                app:labelText="@string/striga_form_input_first_name_label"
+                app:tipText="@string/striga_form_input_first_name_tip"
+                />
 
             <org.p2p.uikit.components.UiKitEditText
                 android:id="@+id/editTextLastname"
+                app:cornerRadius="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -142,22 +85,30 @@
                 android:imeOptions="actionNext"
                 android:inputType="textPersonName"
                 android:nextFocusDown="@id/editTextBirthday"
+                app:hintText="@string/striga_form_input_last_name_hint"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-                app:hintText="@string/striga_enter_hint"
-                app:labelText="@string/striga_surname" />
+                app:labelText="@string/striga_form_input_last_name_label"
+                app:tipText="@string/striga_form_input_last_name_tip"
+                />
 
-            <TextView
+            <org.p2p.wallet.auth.widget.PhoneNumberInputView
+                android:id="@+id/editTextPhoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="56dp"
-                android:text="@string/striga_date_of_birth"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
-                app:layout_constraintTop_toBottomOf="@id/imageViewAlert" />
-
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/bg_snow"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:nextFocusDown="@id/editTextFirstName"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+                android:textSize="22sp"
+                app:cornerRadius="12dp"
+                app:labelText="@string/striga_form_input_phone_number_label" />
 
             <org.p2p.uikit.components.UiKitEditText
                 android:id="@+id/editTextBirthday"
+                app:cornerRadius="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -165,20 +116,21 @@
                 android:digits="0123456789."
                 android:imeOptions="actionDone"
                 android:inputType="number"
+                app:hintText="@string/striga_form_input_date_of_birth_hint"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-                app:hintText="@string/striga_date_of_birth_hint"
-                app:labelText="@string/striga_date_of_birth" />
+                app:labelText="@string/striga_form_input_date_of_birth_label" />
 
             <org.p2p.uikit.components.UiKitEditText
                 android:id="@+id/editTextCountry"
+                app:cornerRadius="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-                app:hintText="@string/striga_country_of_birth_hint"
+                app:hintText="@string/striga_form_input_select_from_list_hint"
                 app:isDropdown="true"
-                app:labelText="@string/striga_country_of_birth" />
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+                app:labelText="@string/striga_form_input_country_of_birth_label" />
 
             <org.p2p.uikit.components.UiKitButton
                 android:id="@+id/buttonNext"
@@ -188,7 +140,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="48dp"
                 android:text="@string/auth_next"
-                app:icon="@drawable/ic_arrow_right"
+                app:icon="@drawable/ic_arrow_forward"
                 app:iconGravity="textEnd"
                 app:iconTint="@color/icons_snow" />
 
