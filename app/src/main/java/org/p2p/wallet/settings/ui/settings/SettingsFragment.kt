@@ -79,12 +79,12 @@ class SettingsFragment :
         adapter.setItems(settings)
     }
 
-    override fun showCountryPicker(countryCode: CountryCode?) {
+    override fun showCountryPicker(preselectedCountryCode: CountryCode?) {
         replaceFragmentForResult(
             target = StrigaPresetDataPickerFragment.create(
                 requestKey = REQUEST_COUNTRY_PICKER,
                 resultKey = RESULT_COUNTRY_PICKER,
-                dataToPick = StrigaPresetDataItem.Country(countryCode)
+                dataToPick = StrigaPresetDataItem.Country(preselectedCountryCode)
             ),
             requestKey = REQUEST_COUNTRY_PICKER,
             onResult = { _, result ->

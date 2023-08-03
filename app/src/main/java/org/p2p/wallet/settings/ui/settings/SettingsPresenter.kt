@@ -18,7 +18,7 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.settings.model.SettingsItemMapper
+import org.p2p.wallet.settings.mapper.SettingsItemMapper
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_DISCORD
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_HIDE_BALANCE
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_NETWORK

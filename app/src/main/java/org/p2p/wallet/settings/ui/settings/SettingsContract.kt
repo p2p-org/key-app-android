@@ -10,7 +10,7 @@ import org.p2p.wallet.settings.model.SettingsItem
 interface SettingsContract {
     interface View : MvpView {
         fun showSettings(settings: List<SettingsItem>)
-        fun showCountryPicker(countryCode: CountryCode?)
+        fun showCountryPicker(preselectedCountryCode: CountryCode?)
         fun showSignOutConfirmDialog()
         fun openUsernameScreen()
         fun openSecurityAndPrivacy()
@@ -27,6 +27,7 @@ interface SettingsContract {
     interface Presenter : MvpPresenter<View> {
         fun onUsernameSettingClicked()
         fun onCountryClicked()
+        fun onCountryChanged(selectedCountryCode: CountryCode)
         fun onSecurityClicked()
         fun changeZeroBalanceHiddenFlag(hideValue: Boolean)
         fun onSignOutClicked()
@@ -34,7 +35,6 @@ interface SettingsContract {
         fun onNetworkEnvironmentChanged(newNetworkEnvironment: NetworkEnvironment)
         fun onBiometricSignInSwitchChanged(isSwitched: Boolean)
         fun onBiometricSignInEnableConfirmed(biometricsCipher: EncodeCipher)
-        fun onCountryChanged(selectedCountryCode: CountryCode)
         fun onPinClicked()
         fun onNetworkClicked()
         fun onSupportClicked()

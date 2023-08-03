@@ -1,9 +1,10 @@
-package org.p2p.wallet.settings.model
+package org.p2p.wallet.settings.mapper
 
 import android.content.res.Resources
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.ComplexSettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.SettingsGroupTitleItem
 import org.p2p.wallet.settings.model.SettingsItem.SettingsSpaceSeparatorItem

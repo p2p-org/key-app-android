@@ -8,7 +8,8 @@ import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.interactor.ThemeInteractor
-import org.p2p.wallet.settings.model.SettingsItemMapper
+import org.p2p.wallet.settings.mapper.SettingsEntityMapper
+import org.p2p.wallet.settings.mapper.SettingsItemMapper
 import org.p2p.wallet.settings.ui.devices.DeviceCellMapper
 import org.p2p.wallet.settings.ui.devices.DevicesContract
 import org.p2p.wallet.settings.ui.devices.DevicesPresenter
@@ -62,5 +63,6 @@ object SettingsModule : InjectionModule {
             named(SmsInputFactory.Type.UpdateDevice.name)
         }
         factoryOf(::DeviceCellMapper)
+        factoryOf(::SettingsEntityMapper)
     }
 }
