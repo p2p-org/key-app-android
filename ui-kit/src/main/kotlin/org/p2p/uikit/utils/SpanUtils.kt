@@ -7,10 +7,12 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
+import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
+import android.widget.TextView
 import org.p2p.core.utils.emptyString
 
 /**
@@ -27,6 +29,18 @@ data class HighlightingOption(
 )
 
 object SpanUtils {
+
+    fun TextView.highlightLinks(
+        vararg options: HighlightingOption
+    ) = highlightLinks(options.toList())
+
+    fun TextView.highlightLinks(
+        options: List<HighlightingOption>
+    ) {
+        val spannable = highlightLinks(text.toString(), options)
+        setText(spannable, TextView.BufferType.SPANNABLE)
+        movementMethod = LinkMovementMethod.getInstance()
+    }
 
     fun highlightLinks(
         commonText: String,

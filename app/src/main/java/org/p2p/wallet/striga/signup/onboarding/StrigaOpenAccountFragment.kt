@@ -2,10 +2,9 @@ package org.p2p.wallet.striga.signup.onboarding
 
 import androidx.activity.addCallback
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.View
 import org.p2p.uikit.utils.HighlightingOption
-import org.p2p.uikit.utils.SpanUtils
+import org.p2p.uikit.utils.SpanUtils.highlightLinks
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.mvp.MvpView
@@ -51,8 +50,8 @@ class StrigaOpenAccountFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpView
             R.string.striga_terms_and_policy, termsHighlightedText, policyHighlightedText
         )
 
-        val spannableText = SpanUtils.highlightLinks(
-            termsCommonText,
+        textViewTermsAndPolicy.text = termsCommonText
+        textViewTermsAndPolicy.highlightLinks(
             listOf(
                 HighlightingOption(
                     text = termsHighlightedText,
@@ -66,11 +65,6 @@ class StrigaOpenAccountFragment : BaseMvpFragment<MvpView, NoOpPresenter<MvpView
                 )
             )
         )
-
-        textViewTermsAndPolicy.apply {
-            text = spannableText
-            movementMethod = LinkMovementMethod()
-        }
     }
 
     private fun navigateToTerms() {
