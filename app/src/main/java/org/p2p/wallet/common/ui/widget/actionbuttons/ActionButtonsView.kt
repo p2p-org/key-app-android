@@ -1,6 +1,7 @@
 package org.p2p.wallet.common.ui.widget.actionbuttons
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import android.content.Context
@@ -50,11 +51,39 @@ class ActionButtonsView @JvmOverloads constructor(
     }
 }
 
-enum class ActionButton(@StringRes val textRes: Int, @DrawableRes val iconRes: Int) {
-    BUY_BUTTON(R.string.home_buy, R.drawable.ic_plus),
-    RECEIVE_BUTTON(R.string.home_receive, R.drawable.ic_receive),
-    SEND_BUTTON(R.string.home_send, R.drawable.ic_send_medium),
-    SWAP_BUTTON(R.string.home_swap, R.drawable.ic_swap_medium),
-    SELL_BUTTON(R.string.home_sell, R.drawable.ic_action_sell),
-    TOP_UP_BUTTON(R.string.home_top_up, R.drawable.ic_plus),
+enum class ActionButton(
+    @IdRes val viewId: Int,
+    @StringRes val textRes: Int,
+    @DrawableRes val iconRes: Int
+) {
+    BUY_BUTTON(
+        viewId = R.id.actionButtonBuy,
+        textRes = R.string.home_buy,
+        iconRes = R.drawable.ic_plus
+    ),
+    RECEIVE_BUTTON(
+        viewId = R.id.buttonReceive,
+        textRes = R.string.home_receive,
+        iconRes = R.drawable.ic_receive
+    ),
+    SEND_BUTTON(
+        viewId = R.id.actionButtonSend,
+        textRes = R.string.home_send,
+        iconRes = R.drawable.ic_send_medium
+    ),
+    SWAP_BUTTON(
+        viewId = R.id.actionButtonSwap,
+        textRes = R.string.home_swap,
+        iconRes = R.drawable.ic_swap_medium
+    ),
+    SELL_BUTTON(
+        viewId = R.id.actionButtonSell,
+        textRes = R.string.home_sell,
+        iconRes = R.drawable.ic_action_sell
+    ),
+    TOP_UP_BUTTON(
+        viewId = R.id.actionButtonTopUp,
+        textRes = R.string.home_top_up,
+        iconRes = R.drawable.ic_plus
+    ),
 }
