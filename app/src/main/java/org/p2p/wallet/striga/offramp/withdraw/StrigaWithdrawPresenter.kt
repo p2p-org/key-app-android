@@ -60,10 +60,7 @@ class StrigaWithdrawPresenter(
                     }
                     is StrigaWithdrawFragmentType.ConfirmEurWithdraw -> {
                         val challengeId = interactor.withdrawEur(withdrawType.amountEur)
-                        view?.navigateToOtpConfirm(
-                            challengeId = challengeId,
-                            amountToOffRamp = withdrawType.amountEur
-                        )
+                        view?.navigateToOtpConfirm(challengeId)
                     }
                 }
 
