@@ -1,6 +1,5 @@
 package org.p2p.wallet.svl.interactor
 
-import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.Account
@@ -21,7 +20,6 @@ import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
-import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.toPublicKey
 
 class SendViaLinkInteractor(
@@ -31,13 +29,8 @@ class SendViaLinkInteractor(
     private val addressInteractor: TransactionAddressInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val amountRepository: RpcAmountRepository,
-    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
-    private val userTokensInteractor: UserTokensInteractor
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) {
-
-    companion object {
-        private const val TAG = "SendViaLinkInteractor"
-    }
 
     /*
      * Initialize fee payer token
@@ -164,11 +157,8 @@ class SendViaLinkInteractor(
 
         val instructions = mutableListOf<TransactionInstruction>()
 
-        val hasUserToken = userTokensInteractor.hasUserToken(mintAddress)
-
-        Timber.tag(TAG).d("The user has the same token: $hasUserToken")
-
-        if (!hasUserToken) {
+        val shouldCreateAccount = splDestinationAddress.shouldCreateAccount
+        if (shouldCreateAccount) {
             // we should always create associated token account, since the recipient is a new temporary account user
             instructions += TokenProgram.createAssociatedTokenAccountInstruction(
                 TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
