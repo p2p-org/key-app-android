@@ -36,7 +36,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     val phoneCodeView: TextView by lazy { binding.editTextCountryCode }
     private var viewTag: Any? = null
 
-    private val bgRed = GradientDrawable().apply {
+    private val bgError = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
         cornerRadius = CORNER_RADIUS
         setColor(context.getColor(R.color.bg_rain))
@@ -77,7 +77,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
             bgNormal.setColor(context.getColor(backgroundTint))
             bgNormal.setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
 
-            bgRed.setColor(context.getColor(backgroundTint))
+            bgError.setColor(context.getColor(backgroundTint))
         }
         val textSize = styleAttrs.getDimensionPixelSize(R.styleable.PhoneNumberInputView_android_textSize, -1)
         if (textSize != -1) {
@@ -98,6 +98,13 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         if (styleAttrs.hasValue(R.styleable.PhoneNumberInputView_android_imeOptions)) {
             val imeOptions = styleAttrs.getIntOrThrow(R.styleable.PhoneNumberInputView_android_imeOptions)
             binding.editTextPhoneNumber.imeOptions = imeOptions
+        }
+        if (styleAttrs.hasValue(R.styleable.PhoneNumberInputView_cornerRadius)) {
+            val cornerRadius =
+                styleAttrs.getDimensionPixelSize(R.styleable.PhoneNumberInputView_cornerRadius, 0).toFloat()
+
+            setOf(bgNormal, bgError)
+                .forEach { it.cornerRadius = cornerRadius }
         }
         binding.inputViewContainer.background = bgNormal
         styleAttrs.recycle()
@@ -204,16 +211,16 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     fun showError(text: String?) = with(binding) {
         textViewError.text = text
         textViewError.isVisible = !text.isNullOrEmpty()
-        inputViewContainer.background = if (!text.isNullOrEmpty()) bgRed else bgNormal
+        inputViewContainer.background = if (!text.isNullOrEmpty()) bgError else bgNormal
     }
 
     fun showError(textContainer: TextContainer?) = with(binding) {
         textContainer?.let { textViewError.bind(it) }
         textViewError.isVisible = textContainer != null
-        inputViewContainer.background = if (textContainer != null) bgRed else bgNormal
+        inputViewContainer.background = if (textContainer != null) bgError else bgNormal
     }
 
-    fun onFoundNewCountry(countryCode: CountryCode) {
+    fun onFoundNewCountry(@Suppress("UNUSED_PARAMETER") countryCode: CountryCode) {
         // TODO implement if need find country outside the mask
     }
 

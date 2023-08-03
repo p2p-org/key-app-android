@@ -32,40 +32,34 @@
     <string name="striga_exit_sms_input_warning_dialog_message">You can confirm the phone number and finish the registration later</string>
     <string name="striga_exit_sms_input_warning_dialog_btn_positive">Yes, leave the page</string>
     <string name="striga_exit_sms_input_warning_dialog_btn_negative">No, continue</string>
-    <string name="striga_enter_personal_data_info">Enter your personal data to open an account. Please, use your real credentials.</string>
-    <string name="striga_contacts">Contacts</string>
-    <string name="striga_email_hint">prefilled@gmail.com</string>
-    <string name="striga_email">Email</string>
-    <string name="striga_phone_number">Phone number</string>
-    <string name="striga_phone_number_hint">+*user number w3*</string>
-    <string name="striga_credentials">Credentials</string>
-    <string name="striga_first_name">First name</string>
-    <string name="striga_surname">Surname</string>
-    <string name="striga_enter_hint">Enter</string>
-    <string name="striga_date_of_birth">Date of Birth</string>
-    <string name="striga_date_of_birth_hint">DD.MM.YYYY</string>
-    <string name="striga_country_of_birth">Country of birth</string>
-    <string name="striga_country_of_birth_hint">Select from list</string>
+    <string name="striga_form_personal_info_label">Personal Information</string>
+    <string name="striga_form_current_address_label">Current address</string>
+    <string name="striga_form_source_of_funds_label">Source of funds</string>
+    <string name="striga_form_input_phone_number_label">Phone number</string>
+    <string name="striga_form_input_phone_number_hint">+*user number w3*</string>
+    <string name="striga_form_input_email_label">Email</string>
+    <string name="striga_form_input_email_hint">prefilled@gmail.com</string>
+    <string name="striga_form_input_first_name_label">Full legal first and middle names</string>
+    <string name="striga_form_input_first_name_hint">First name</string>
+    <string name="striga_form_input_last_name_label">Full legal last name(s)</string>
+    <string name="striga_form_input_last_name_hint">Last name</string>
+    <string name="striga_form_input_date_of_birth_label">Date of birth</string>
+    <string name="striga_form_input_date_of_birth_hint">DD.MM.YYYY</string>
+    <string name="striga_form_input_country_of_birth_label">Country of birth</string>
+    <string name="striga_form_input_select_from_list_hint">Select from list</string>
+    <string name="striga_form_input_occupation_industry_label">Jobs industry</string>
+    <string name="striga_form_input_source_of_funds_label">Employment industry</string>
     <string name="striga_select_your_country">Select your country</string>
     <string name="striga_select_your_occupation">Select your industry</string>
     <string name="striga_select_your_source">Select your source</string>
     <string name="striga_chosen_country">Chosen country</string>
     <string name="striga_all_countries">All countries</string>
-    <string name="striga_step_first_toolbar_title">Step 1 of 3</string>
-    <string name="striga_step_second_toolbar_title">Step 2 of 3</string>
-    <string name="striga_source_of_funds">Source of Funds</string>
-    <string name="striga_occupation_industry">Occupation industry</string>
-    <string name="striga_current_address">Current address</string>
     <string name="striga_country">Country</string>
     <string name="striga_city">City</string>
     <string name="striga_address_line">Address line</string>
     <string name="striga_postal_code">Postal code</string>
     <string name="striga_state_or_region">State or region</string>
-    <string name="striga_personal_data_confirm_info">
-        After clicking the \"Continue\", you confirm that you are not a Politically Exposed Person
-    </string>
-    <string name="striga_select_from_list_hint">Select from list</string>
-    <string name="striga_full_city_name_hint">Enter full city name</string>
+    <string name="striga_full_city_name_hint">Full city name</string>
     <string name="striga_postal_code_hint">Your postal code</string>
     <string name="striga_recommended_hint">Recommended</string>
     <string name="striga_address_line_hint">Your street, house and flat</string>
@@ -162,4 +156,7 @@
     </string>
     <string name="striga_open_account_title">Open account for instant international transfers</string>
     <string name="striga_open_account_subtitle">This account acts as an intermediary between Key App and our banking partner, Striga payment provider, which operates with your fiat money.</string>
+    <string name="striga_form_input_first_name_tip">Spell your name exactly as it\'s shown on your passport or ID card.</string>
+    <string name="striga_form_input_last_name_tip">Spell your name exactly as it\'s shown on your passport or ID card.</string>
+    <string name="striga_form_input_source_of_funds_tip">Sometimes additional information may appear during translation processing. Rest assured that our team is working as quickly as possible to review all documents and process suspended transfers</string>
 </resources>

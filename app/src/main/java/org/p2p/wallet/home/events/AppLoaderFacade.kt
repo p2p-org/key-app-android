@@ -1,5 +1,7 @@
 package org.p2p.wallet.home.events
 
+import timber.log.Timber
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import org.p2p.core.common.di.AppScope
@@ -21,6 +23,13 @@ class AppLoaderFacade(
      */
     private val dependencyGraph: Map<AppLoader, List<AppLoader>> = buildDependencyGraph()
 
+    /**
+     * Keep all active jobs to be able to cancel them
+     * String key is a FQ class name of [AppLoader]
+     * @see [AppLoader.id]
+     */
+    private val activeJobs: MutableMap<String, Deferred<Unit>> = HashMap()
+
     suspend fun onLoad() {
         processLoaders()
     }
@@ -28,7 +37,22 @@ class AppLoaderFacade(
     @Suppress("DeferredResultUnused")
     suspend fun onRefresh() {
         appLoaders.filter { it.isEnabled() }
-            .forEach { appScope.async { it.onRefresh() } }
+            .forEach {
+                it.execAsync { onRefresh() }
+            }
+    }
+
+    fun cancelAll() {
+        Timber.d("Cancelling all active AppLoaders")
+        activeJobs.values.forEach { it.cancel() }
+        activeJobs.clear()
+    }
+
+    @Suppress("DeferredResultUnused")
+    fun <T : AppLoader> cancel(appLoaderClass: Class<T>) {
+        Timber.d("Cancelling AppLoader: ${appLoaderClass.id()}")
+        activeJobs[appLoaderClass.id()]?.cancel()
+        activeJobs.remove(appLoaderClass.id())
     }
 
     private suspend fun processLoaders() {
@@ -59,9 +83,7 @@ class AppLoaderFacade(
         }
 
         if (rootLoader.isEnabled()) {
-            processedLoaders[rootLoader.id()] = appScope.async {
-                rootLoader.onLoad()
-            }
+            processedLoaders[rootLoader.id()] = rootLoader.execAsync { onLoad() }
         }
     }
 
@@ -78,5 +100,23 @@ class AppLoaderFacade(
         return dependencyGraph
     }
 
-    private fun AppLoader.id(): String = javaClass.name
+    @Suppress("DeferredResultUnused")
+    private fun AppLoader.execAsync(block: suspend AppLoader.() -> Unit): Deferred<Unit> {
+        val that = this
+        val job: Deferred<Unit> = appScope.async {
+            try {
+                that.block()
+            } catch (_: CancellationException) {
+                Timber.i("AppLoader ${id()} was cancelled")
+            } finally {
+                activeJobs.remove(id())
+            }
+        }
+        activeJobs[id()] = job
+        return job
+    }
+
+    private fun AppLoader.id(): String = javaClass.id()
+
+    private fun <T : AppLoader> Class<T>.id(): String = name
 }

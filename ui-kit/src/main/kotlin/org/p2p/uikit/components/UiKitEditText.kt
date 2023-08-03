@@ -1,6 +1,7 @@
 package org.p2p.uikit.components
 
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.getDimensionPixelSizeOrThrow
 import androidx.core.content.res.getIntOrThrow
 import androidx.core.content.res.getResourceIdOrThrow
 import androidx.core.view.isVisible
@@ -42,7 +43,7 @@ class UiKitEditText @JvmOverloads constructor(
 
     private var viewTag: Any? = null
 
-    private val bgRed = GradientDrawable().apply {
+    private val bgError = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
         cornerRadius = CORNER_RADIUS
         setColor(context.getColor(R.color.bg_snow))
@@ -81,15 +82,21 @@ class UiKitEditText @JvmOverloads constructor(
     init {
         val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitEditText, 0, 0)
         val labelText = styleAttrs.getString(R.styleable.UiKitEditText_labelText).orEmpty()
-        if (labelText.isNotEmpty()) {
-            binding.textViewLabel.text = labelText
-            binding.textViewLabel.isVisible = true
-        }
+        binding.textViewLabel.text = labelText
+        binding.textViewLabel.isVisible = labelText.isNotEmpty()
+
         val hintText = styleAttrs.getString(R.styleable.UiKitEditText_hintText).orEmpty()
-        if (hintText.isNotEmpty()) {
-            binding.editTextField.hint = hintText
-            binding.textViewHint.isVisible = true
+        binding.editTextField.hint = hintText
+
+        val tipText = styleAttrs.getString(R.styleable.UiKitEditText_tipText).orEmpty()
+        binding.textViewTip.text = tipText
+        binding.textViewTip.isVisible = tipText.isNotEmpty()
+
+        val tipTextColor = styleAttrs.getColor(R.styleable.UiKitEditText_tipTextColor, -1)
+        if (tipTextColor != -1) {
+            binding.textViewTip.setTextColor(tipTextColor)
         }
+
         val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitEditText_android_textAppearance, -1)
         if (textAppearance != -1) {
             binding.editTextField.setTextAppearance(textAppearance)
@@ -125,6 +132,14 @@ class UiKitEditText @JvmOverloads constructor(
         if (styleAttrs.hasValue(R.styleable.UiKitEditText_android_imeOptions)) {
             val imeOptions = styleAttrs.getIntOrThrow(R.styleable.UiKitEditText_android_imeOptions)
             binding.editTextField.imeOptions = imeOptions
+        }
+        if (styleAttrs.hasValue(R.styleable.UiKitEditText_cornerRadius)) {
+            val cornerRadius = styleAttrs
+                .getDimensionPixelSizeOrThrow(R.styleable.UiKitEditText_cornerRadius)
+                .toFloat()
+
+            setOf(bgNormal, bgDisabled, bgError)
+                .forEach { it.cornerRadius = cornerRadius }
         }
 
         styleAttrs.recycle()
@@ -180,8 +195,9 @@ class UiKitEditText @JvmOverloads constructor(
     fun bindError(errorMessage: TextContainer?) {
         with(binding) {
             textViewError.isVisible = errorMessage != null
+            textViewTip.isVisible = errorMessage == null
             errorMessage?.let { textViewError.bind(it) }
-            containerInputView.background = if (errorMessage != null) bgRed else bgNormal
+            containerInputView.background = if (errorMessage != null) bgError else bgNormal
         }
     }
 
