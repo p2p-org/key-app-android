@@ -3,6 +3,7 @@ package org.p2p.wallet.settings
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.named
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
@@ -31,7 +32,7 @@ import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputPresenter
 object SettingsModule : InjectionModule {
 
     override fun create() = module {
-        factoryOf(::SettingsInteractor)
+        singleOf(::SettingsInteractor)
         factoryOf(::ThemeInteractor)
 
         factoryOf(::SettingsItemMapper)
