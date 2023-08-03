@@ -107,6 +107,24 @@ class ConnectionManager(
         }
     }
 
+    fun launchOnInternetAvailable(
+        lastJob: Job?,
+        launchScope: CoroutineScope = scope,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job {
+        var connectionJob: Job? = null
+        lastJob?.cancel()
+        connectionJob = launchScope.launch {
+            connectionStatus.collect { hasConnection ->
+                if (hasConnection) {
+                    block()
+                    connectionJob?.cancel()
+                }
+            }
+        }
+        return connectionJob
+    }
+
     /**
      * Check if there is a real connection to the internet (checking google dns).
      */

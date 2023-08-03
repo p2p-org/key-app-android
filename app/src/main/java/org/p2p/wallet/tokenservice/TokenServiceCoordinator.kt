@@ -104,14 +104,8 @@ class TokenServiceCoordinator(
     }
 
     private fun subscribeOnInternetConnection() {
-        connectionJob?.cancel()
-        connectionJob = appScope.launch {
-            connectionManager.connectionStatus.collect { hasConnection ->
-                if (hasConnection) {
-                    appScope.launch { refresh() }
-                    connectionJob?.cancel()
-                }
-            }
+        connectionJob = connectionManager.launchOnInternetAvailable(connectionJob) {
+            appScope.launch { refresh() }
         }
     }
 }
