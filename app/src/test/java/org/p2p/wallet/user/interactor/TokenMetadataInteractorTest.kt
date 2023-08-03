@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.test.runTest
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.dispatchers.CoroutineDispatchers
@@ -101,6 +102,7 @@ internal class TokenMetadataInteractorTest {
     @Test
     fun `GIVEN Error from remote WHEN loadAllTokensData THEN nothing happens`() = runTest {
         // GIVEN
+        coEvery { connectionManager.launchOnInternetAvailable(any(), any(), any()) }.returns(Job())
         coEvery { externalStorageRepository.readJsonFile(any()) }.returns(null)
         coEvery { metadataRepository.loadSolTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.Error(Throwable()))
 
