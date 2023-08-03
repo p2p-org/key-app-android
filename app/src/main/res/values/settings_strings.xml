@@ -4,6 +4,7 @@
     <string name="debug_settings_deeplinks_title">Deeplinks</string>
     <string name="debug_settings_logs_title">Logs</string>
     <string name="debug_settings_feature_toggles_title">Feature Toggles</string>
+    <string name="debug_settings_reset_user_country_title">Reset User country</string>
     <string name="debug_settings_logs_subtitle">Tap to show Logs</string>
     <string name="debug_settings_device_info">Device Info</string>
     <string name="debug_settings_ci_info">CI Info</string>
@@ -22,6 +23,7 @@
     <string name="debug_settings_kyc_set_rejected_title">KYC Simulate rejected</string>
     <string name="debug_settings_striga_detach_user_id_title">Detach striga from web3 user</string>
     <string name="debug_settings_ui_kit">UiKit examples</string>
+    <string name="debug_settings_tools_title">Other tools</string>
 
     <!-- Debug Settings -> Notifications -->
     <string name="debug_notifications_title">Debug Notifications</string>
@@ -40,8 +42,10 @@
 
     <string name="settings_item_group_title_profile">Profile</string>
     <string name="settings_item_title_username">Username</string>
+    <string name="settings_item_title_country">Country</string>
     <string name="settings_item_title_support">Support</string>
     <string name="settings_item_username_not_reserved">Not reserved</string>
+    <string name="settings_item_country_not_selected">Select</string>
     <string name="settings_item_sign_out_button_title">Log out</string>
 
     <string name="settings_item_group_title_security">Security</string>
