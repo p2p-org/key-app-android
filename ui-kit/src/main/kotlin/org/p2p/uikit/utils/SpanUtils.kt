@@ -2,6 +2,7 @@ package org.p2p.uikit.utils
 
 import androidx.annotation.ColorInt
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
@@ -39,6 +40,7 @@ object SpanUtils {
     ) {
         val spannable = highlightLinks(text.toString(), options)
         setText(spannable, TextView.BufferType.SPANNABLE)
+        highlightColor = Color.TRANSPARENT
         movementMethod = LinkMovementMethod.getInstance()
     }
 
