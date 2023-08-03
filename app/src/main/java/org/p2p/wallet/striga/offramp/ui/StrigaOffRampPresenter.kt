@@ -93,7 +93,7 @@ class StrigaOffRampPresenter(
     }
 
     private fun observeRateChanges() {
-        launch {
+        launchInternetAware(connectionManager) {
             interactor.observeExchangeRateState()
                 .collect(::handleRateChange)
         }
