@@ -33,6 +33,7 @@ class TokenMetadataInteractor(
             }
             is UpdateTokenMetadataResult.Error -> {
                 handleError(result.throwable)
+                updateMemoryCache(metadataFromFile)
             }
         }
     }
