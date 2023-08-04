@@ -12,7 +12,6 @@ import org.p2p.uikit.databinding.WidgetIconWrapperTwoBinding
 import org.p2p.uikit.utils.image.bind
 import org.p2p.uikit.utils.image.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
-import org.p2p.uikit.utils.toPx
 import org.p2p.uikit.utils.viewpool.ComponentViewPool
 
 class UiKitIconWrapper @JvmOverloads constructor(
@@ -63,11 +62,11 @@ class UiKitIconWrapper @JvmOverloads constructor(
         this.imageViewIcon.isVisible = true
         this.imageViewIcon.bind(model.icon)
 
-        if (model.sizeDp != null) {
+        if (model.sizePx != null) {
             val layoutParams = root.layoutParams as LayoutParams
             root.layoutParams = layoutParams.apply {
-                width = model.sizeDp.toPx()
-                height = model.sizeDp.toPx()
+                width = model.sizePx
+                height = model.sizePx
                 verticalBias = 0.5f
             }
         }
