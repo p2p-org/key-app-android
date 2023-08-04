@@ -18,7 +18,9 @@ import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.striga.common.StrigaIpAddressProvider
+import org.p2p.wallet.striga.onramp.iban.StrigaIbanImportantNotesContract
 import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsContract
+import org.p2p.wallet.striga.onramp.iban.presenter.StrigaIbanImportantNotesDialogPresenter
 import org.p2p.wallet.striga.onramp.iban.presenter.StrigaUserIbanDetailsPresenter
 import org.p2p.wallet.striga.onramp.iban.presenter.StrigaUserIbanUiMapper
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
@@ -115,5 +117,6 @@ object StrigaOnRampModule : InjectionModule {
     private fun Module.initIban() {
         factoryOf(::StrigaUserIbanDetailsPresenter) bind StrigaUserIbanDetailsContract.Presenter::class
         factoryOf(::StrigaUserIbanUiMapper)
+        factoryOf(::StrigaIbanImportantNotesDialogPresenter) bind StrigaIbanImportantNotesContract.Presenter::class
     }
 }

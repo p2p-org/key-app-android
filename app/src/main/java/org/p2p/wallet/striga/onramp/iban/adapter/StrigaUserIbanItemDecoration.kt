@@ -7,7 +7,11 @@ import android.graphics.drawable.Drawable
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.getDrawableCompat
 
-class StrigaUserIbanItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
+class StrigaUserIbanItemDecoration(
+    context: Context,
+    private val leftMarginPx: Int = 50,
+    private val rightMarginPx: Int = 50
+) : RecyclerView.ItemDecoration() {
 
     private val divider: Drawable =
         context.getDrawableCompat(R.drawable.list_divider)!!
@@ -15,8 +19,8 @@ class StrigaUserIbanItemDecoration(context: Context) : RecyclerView.ItemDecorati
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDraw(canvas, parent, state)
 
-        val drawCoordinateLeft = 50
-        val drawCoordinateRight = parent.width - 50
+        val drawCoordinateLeft = leftMarginPx
+        val drawCoordinateRight = parent.width - rightMarginPx
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
             if (parent.getChildAdapterPosition(child) == 0) {

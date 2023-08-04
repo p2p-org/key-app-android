@@ -1,6 +1,7 @@
 package org.p2p.wallet.striga.user.storage
 
 import org.p2p.core.utils.MillisSinceEpoch
+import org.p2p.wallet.common.BooleanEncryptedPreference
 import org.p2p.wallet.common.EncryptedSharedPreferences
 import org.p2p.wallet.common.LongPreference
 import org.p2p.wallet.common.ObjectEncryptedPreference
@@ -27,6 +28,8 @@ private const val KEY_USER_BANNER_IS_HIDDEN =
     "KEY_USER_BANNER_IS_HIDDEN"
 private const val KEY_USER_BANKING_DETAILS =
     "KEY_USER_BANKING_DETAILS"
+private const val KEY_IS_IBAN_NOTES_HIDDEN =
+    "KEY_IS_IBAN_NOTES_HIDDEN"
 
 class StrigaStorage(
     private val encryptedPrefs: EncryptedSharedPreferences,
@@ -77,6 +80,12 @@ class StrigaStorage(
         preferences = encryptedPrefs,
         keyProvider = { KEY_SMS_EXCEEDED_RESEND_ATTEMPTS_MILLIS },
         defaultValue = 0
+    )
+
+    override var isIbanNotesHidden: Boolean by BooleanEncryptedPreference(
+        preferences = encryptedPrefs,
+        keyProvider = { KEY_IS_IBAN_NOTES_HIDDEN },
+        defaultValue = false
     )
 
     private val hiddenBannersIds: List<Int>

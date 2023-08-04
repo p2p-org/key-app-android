@@ -1,12 +1,20 @@
 package org.p2p.uikit.components
 
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.Drawable
 import android.text.method.LinkMovementMethod
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.View
 import android.widget.FrameLayout
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
@@ -55,8 +63,12 @@ class UiKitInformerView @JvmOverloads constructor(
                 style.getResourceId(R.styleable.UiKitInformerView_leftIconTint, R.color.icons_mountain)
             val title: String? =
                 style.getString(R.styleable.UiKitInformerView_title)
+            val titleTextColorResId = style.getColor(R.styleable.UiKitInformerView_titleTextColor, -1)
+                .takeIf { it != -1 }
             val caption: String? =
                 style.getString(R.styleable.UiKitInformerView_caption)
+            val captionTextColorResId = style.getResourceId(R.styleable.UiKitInformerView_captionTextColor, -1)
+                .takeIf { it != -1 }
             val infoLine: String? =
                 style.getString(R.styleable.UiKitInformerView_infoLine)
             val infoLinePosition =
@@ -70,11 +82,26 @@ class UiKitInformerView @JvmOverloads constructor(
                 DrawableContainer(iconRes = leftIconRes),
                 iconTint = leftIconTint
             )
+            val background = style.getDrawable(R.styleable.UiKitInformerView_android_background)
+            val backgroundTint = style.getColor(R.styleable.UiKitInformerView_android_backgroundTint, -1)
+                .takeIf { it != -1 }
 
             InformerViewCellModel(
+                backgroundDrawable = background,
+                backgroundTintColor = backgroundTint,
                 leftIcon = leftIconParams,
-                title = title?.let { InformerViewCellModel.TitleParams(TextContainer(it)) },
-                caption = caption?.let { TextContainer(it) },
+                title = title?.let {
+                    InformerViewCellModel.TitleParams(
+                        value = TextContainer(it),
+                        textColorRes = titleTextColorResId
+                    )
+                },
+                caption = caption?.let {
+                    InformerViewCellModel.CaptionParams(
+                        value = TextContainer(it),
+                        textColorRes = captionTextColorResId
+                    )
+                },
                 infoLine = infoLine?.let {
                     InformerViewCellModel.InfoLineParams(
                         TextContainer(text = it),
@@ -90,6 +117,13 @@ class UiKitInformerView @JvmOverloads constructor(
     fun bind(model: InformerViewCellModel) = with(binding) {
         renderedCellModel = model
 
+        root.setBackgroundProperties(
+            drawableRes = model.backgroundDrawableRes,
+            drawable = model.backgroundDrawable,
+            tintRes = model.backgroundTintRes,
+            tintColor = model.backgroundTintColor
+        )
+
         imageViewLeftIcon.bind(model.leftIcon.iconCellModel())
         textViewTitle.bindOrGone(model.title?.titleCellModel())
         textViewCaption.bindOrGone(model.captionCellModel())
@@ -97,6 +131,25 @@ class UiKitInformerView @JvmOverloads constructor(
 
         model.onViewClicked?.also { listener ->
             setOnClickListener { listener(model) }
+        }
+    }
+
+    private fun View.setBackgroundProperties(
+        @DrawableRes drawableRes: Int? = null,
+        drawable: Drawable? = null,
+        @ColorRes tintRes: Int? = null,
+        @ColorInt tintColor: Int? = null
+    ) {
+        background = when {
+            drawableRes != null -> ContextCompat.getDrawable(context, drawableRes)
+            drawable != null -> drawable
+            else -> background
+        }
+
+        background?.colorFilter = when {
+            tintRes != null -> PorterDuffColorFilter(ContextCompat.getColor(context, tintRes), PorterDuff.Mode.SRC_IN)
+            tintColor != null -> PorterDuffColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
+            else -> null
         }
     }
 
@@ -138,7 +191,7 @@ class UiKitInformerView @JvmOverloads constructor(
         return TextViewCellModel.Raw(
             text = value,
             textAppearance = R.style.UiKit_TextAppearance_SemiBold_Text1,
-            textColor = R.color.text_night,
+            textColor = textColorRes,
             drawable = titleIcon,
             drawableTint = titleIconTint,
             drawableGravity = Gravity.RIGHT
@@ -148,22 +201,22 @@ class UiKitInformerView @JvmOverloads constructor(
     private fun InformerViewCellModel.captionCellModel(): TextViewCellModel.Raw? {
         return caption?.let {
             TextViewCellModel.Raw(
-                text = it,
+                text = it.value,
                 textAppearance = R.style.UiKit_TextAppearance_Regular_Text4,
-                textColor = R.color.text_night,
+                textColor = it.textColorRes ?: R.color.text_night,
             )
         }
     }
 
     private fun captionPlusInfoLineCellModel(
-        caption: TextContainer,
+        caption: InformerViewCellModel.CaptionParams,
         infoLineParams: InformerViewCellModel.InfoLineParams
     ): TextViewCellModel.Raw {
         val resultCaption = buildCaptionPlusInfoLine(caption, infoLineParams)
         return TextViewCellModel.Raw(
             text = TextContainer(resultCaption),
             textAppearance = R.style.UiKit_TextAppearance_Regular_Text4,
-            textColor = R.color.text_night,
+            textColor = caption.textColorRes ?: R.color.text_night,
         )
     }
 
@@ -171,11 +224,11 @@ class UiKitInformerView @JvmOverloads constructor(
      * In case of info line position in line with caption - add concatenate both texts
      */
     private fun buildCaptionPlusInfoLine(
-        caption: TextContainer,
+        caption: InformerViewCellModel.CaptionParams,
         infoLineParams: InformerViewCellModel.InfoLineParams
     ): CharSequence {
         val infoLineText = infoLineParams.value.getString(context)
-        val captionText = caption.getString(context)
+        val captionText = caption.value.getString(context)
         val fullCaptionText = "$captionText $infoLineText"
         return SpanUtils.highlightLinkNoUnderline(
             commonText = fullCaptionText,

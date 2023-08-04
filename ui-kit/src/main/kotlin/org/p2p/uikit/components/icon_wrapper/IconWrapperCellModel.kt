@@ -4,8 +4,12 @@ import org.p2p.uikit.utils.image.ImageViewCellModel
 
 sealed interface IconWrapperCellModel {
 
+    /**
+     * @param sizeDp fixed icon size in dp
+     */
     data class SingleIcon(
         val icon: ImageViewCellModel,
+        val sizeDp: Int? = null
     ) : IconWrapperCellModel
 
     data class SingleEmoji(
