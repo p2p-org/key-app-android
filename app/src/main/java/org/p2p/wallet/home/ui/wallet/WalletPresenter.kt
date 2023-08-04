@@ -4,6 +4,7 @@ import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -22,6 +23,7 @@ import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.striga.offramp.interactor.StrigaOffRampInteractor
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
@@ -29,10 +31,12 @@ import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.unsafeLazy
 
 class WalletPresenter(
+    private val dispatchers: CoroutineDispatchers,
     private val usernameInteractor: UsernameInteractor,
     private val walletMapper: WalletMapper,
     tokenKeyProvider: TokenKeyProvider,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
+    private val strigaWalletInteractor: StrigaWalletInteractor,
     private val strigaOnRampInteractor: StrigaOnRampInteractor,
     private val strigaOffRampInteractor: StrigaOffRampInteractor,
     private val strigaUserInteractor: StrigaUserInteractor,
@@ -40,19 +44,13 @@ class WalletPresenter(
     private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val sellInteractor: SellInteractor,
     private val mainScreenAnalytics: MainScreenAnalytics,
-) : BasePresenter<WalletContract.View>(), WalletContract.Presenter {
+) : BasePresenter<WalletContract.View>(dispatchers.ui), WalletContract.Presenter {
 
     private var username: Username? = null
 
     private val viewStateFlow = MutableStateFlow(WalletViewState())
 
     private val userPublicKey: String by unsafeLazy { tokenKeyProvider.publicKey }
-
-    override fun firstAttach() {
-        super.firstAttach()
-        loadStrigaOnRampTokens()
-        loadStrigaOffRampTokens()
-    }
 
     override fun attach(view: WalletContract.View) {
         super.attach(view)
@@ -68,6 +66,10 @@ class WalletPresenter(
         }
     }
 
+    override fun onResume() {
+        loadStrigaData()
+    }
+
     private fun observeUsdc() {
         launch {
             tokenServiceCoordinator.observeUserTokens()
@@ -75,20 +77,17 @@ class WalletPresenter(
         }
     }
 
-    private fun loadStrigaOnRampTokens() {
-        launch {
+    private fun loadStrigaData() {
+        if (!strigaSignupEnabledFeatureToggle.isFeatureEnabled || !strigaUserInteractor.canLoadAccounts) return
+        launch(dispatchers.io) {
+            strigaWalletInteractor.loadDetailsForStrigaAccounts(force = true)
             val strigaOnRampTokens = strigaOnRampInteractor.getOnRampTokens().successOrNull().orEmpty()
-            viewStateFlow.emit(
-                viewStateFlow.value.copy(strigaOnRampTokens = strigaOnRampTokens)
-            )
-        }
-    }
-
-    private fun loadStrigaOffRampTokens() {
-        launch {
             val strigaOffRampTokens = strigaOffRampInteractor.getOffRampTokens().successOrNull().orEmpty()
             viewStateFlow.emit(
-                viewStateFlow.value.copy(strigaOffRampTokens = strigaOffRampTokens)
+                viewStateFlow.value.copy(
+                    strigaOnRampTokens = strigaOnRampTokens,
+                    strigaOffRampTokens = strigaOffRampTokens,
+                )
             )
         }
     }

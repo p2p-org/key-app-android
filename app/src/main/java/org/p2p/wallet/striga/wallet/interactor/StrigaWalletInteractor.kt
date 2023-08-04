@@ -30,7 +30,10 @@ class StrigaWalletInteractor(
     private class StrigaEuroAccountNotFound : Throwable()
     private class StrigaUsdcAccountNotFound : Throwable()
 
-    suspend fun loadDetailsForStrigaAccounts(): Result<Unit> = kotlin.runCatching {
+    suspend fun loadDetailsForStrigaAccounts(force: Boolean = false): Result<Unit> = kotlin.runCatching {
+        // 1. loading user wallet
+        walletRepository.getUserWallet(force)
+        // 2. use preloaded wallet data in the following methods
         getFiatAccountDetails()
         getCryptoAccountDetails()
         Unit
@@ -39,8 +42,8 @@ class StrigaWalletInteractor(
     }
 
     @Throws(StrigaEuroAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
-    suspend fun getFiatAccountDetails(): StrigaFiatAccountDetails {
-        val eurAccountId = walletRepository.getUserWallet()
+    suspend fun getFiatAccountDetails(force: Boolean = false): StrigaFiatAccountDetails {
+        val eurAccountId = walletRepository.getUserWallet(force)
             .map { it.eurAccount?.accountId }
             .successOrNull()
             ?: throw StrigaEuroAccountNotFound()
@@ -56,8 +59,8 @@ class StrigaWalletInteractor(
     }
 
     @Throws(StrigaUsdcAccountNotFound::class, StrigaDataLayerError::class, Throwable::class)
-    suspend fun getCryptoAccountDetails(): StrigaCryptoAccountDetails {
-        val usdcAccountId = walletRepository.getUserWallet()
+    suspend fun getCryptoAccountDetails(force: Boolean = false): StrigaCryptoAccountDetails {
+        val usdcAccountId = walletRepository.getUserWallet(force)
             .map { it.usdcAccount?.accountId }
             .successOrNull()
             ?: throw StrigaUsdcAccountNotFound()
