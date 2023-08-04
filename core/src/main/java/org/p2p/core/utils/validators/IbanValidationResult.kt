@@ -10,4 +10,3 @@ sealed interface IbanValidationResult {
         object IbanIsNotValid : Error
     }
 }
-

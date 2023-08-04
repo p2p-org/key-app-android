@@ -58,7 +58,7 @@ class StrigaWithdrawFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
 
-        val ibanMaskFormatter = SimpleMaskFormatter(mask = "## ## #### ##### ##### #### #### ##")
+        val ibanMaskFormatter = SimpleMaskFormatter(mask = "#### #### ##### ##### #### #### ##")
 
         binding.editTextIban.mutate {
             setEndDrawableIsVisible(isVisible = false)
