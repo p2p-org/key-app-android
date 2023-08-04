@@ -10,14 +10,14 @@ internal sealed class NewUiKitEditTextTipState(
     val tipText: TextContainer?
 ) {
     data class Success(val successMessage: TextContainer) : NewUiKitEditTextTipState(
-        inputColor = R.color.text_rose,
-        tipColorRes = R.color.bg_rose,
+        inputColor = R.color.text_mint,
+        tipColorRes = R.color.bg_mint,
         tipText = successMessage
     )
 
     data class Error(val errorMessage: TextContainer) : NewUiKitEditTextTipState(
-        inputColor = R.color.text_mint,
-        tipColorRes = R.color.bg_mint,
+        inputColor = R.color.text_rose,
+        tipColorRes = R.color.bg_rose,
         tipText = errorMessage
     )
 

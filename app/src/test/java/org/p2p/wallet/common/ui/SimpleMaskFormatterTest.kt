@@ -2,6 +2,7 @@ package org.p2p.wallet.common.ui
 
 import org.junit.Test
 import kotlin.test.assertEquals
+import org.p2p.uikit.utils.SimpleMaskFormatter
 
 class SimpleMaskFormatterTest {
 
@@ -20,7 +21,7 @@ class SimpleMaskFormatterTest {
     @Test
     fun `GIVEN phone number with placeholders WHEN format THEN format input with stable placeholders`() {
         // given
-        val formatter = SimpleMaskFormatter("(###) ###-####", stablePlaceholders = true)
+        val formatter = SimpleMaskFormatter("(###) ###-####", showStablePlaceholders = true)
 
         // when
         val result = formatter.format("123")
@@ -32,7 +33,7 @@ class SimpleMaskFormatterTest {
     @Test
     fun `GIVEN phone number with custom placeholders WHEN format THEN check input with custom placeholders`() {
         // given
-        val formatter = SimpleMaskFormatter("(###) ### ####", stablePlaceholders = true, stablePlaceholderChar = '-')
+        val formatter = SimpleMaskFormatter("(###) ### ####", showStablePlaceholders = true, stablePlaceholderChar = '-')
 
         // when
         val result = formatter.format("123")
@@ -68,7 +69,7 @@ class SimpleMaskFormatterTest {
     @Test
     fun `GIVEN phone number WHEN input is not standard THEN input with extra chars using mask and placeholders`() {
         // given
-        val formatter = SimpleMaskFormatter("(###) ###-####", stablePlaceholders = true)
+        val formatter = SimpleMaskFormatter("(###) ###-####", showStablePlaceholders = true)
 
         // when
         val result = formatter.format("1234567890 ext. 123")
@@ -80,7 +81,7 @@ class SimpleMaskFormatterTest {
     @Test
     fun `GIVEN empty phone WHEN format THEN should format empty input using mask with stable placeholders`() {
         // given
-        val formatter = SimpleMaskFormatter("(###) ###-####", stablePlaceholders = true)
+        val formatter = SimpleMaskFormatter("(###) ###-####", showStablePlaceholders = true)
 
         // when
         val result = formatter.format("")

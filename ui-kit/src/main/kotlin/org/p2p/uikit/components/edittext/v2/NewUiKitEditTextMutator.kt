@@ -10,6 +10,7 @@ import android.widget.EditText
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.emptyString
 import org.p2p.uikit.databinding.WidgetUiKitEditTextNewBinding
+import org.p2p.uikit.utils.SimpleMaskFormatter
 import org.p2p.uikit.utils.SimpleTagTextWatcher
 
 /**
@@ -50,7 +51,7 @@ class NewUiKitEditTextMutator(
         binding.editTextField.keyListener = DigitsKeyListener.getInstance(digits)
     }
 
-    fun addOnTextChangedListener(block: (Editable) -> Unit): NewUiKitEditTextMutator = apply {
+    fun addTagOnTextChangedListener(block: (Editable) -> Unit): NewUiKitEditTextMutator = apply {
         val tag = currentViewTag ?: return this
         val editTextWatcher = object : SimpleTagTextWatcher(tag) {
             override fun afterTextChanged(tag: Any, text: Editable) {
@@ -60,6 +61,10 @@ class NewUiKitEditTextMutator(
             }
         }
         binding.editTextField.addTextChangedListener(editTextWatcher)
+    }
+
+    fun addOnTextChangedListener(block: (Editable) -> Unit): NewUiKitEditTextMutator = apply {
+        binding.editTextField.addTextChangedListener { it?.also(block) }
     }
 
     fun addTextWatcher(textWatcher: (EditText) -> TextWatcher): NewUiKitEditTextMutator = apply {
@@ -129,6 +134,10 @@ class NewUiKitEditTextMutator(
 
     fun setDrawableClickListener(listener: NewUiKitEditTextMutator.() -> Unit): NewUiKitEditTextMutator = apply {
         binding.imageViewIconEnd.setOnClickListener { listener.invoke(this) }
+    }
+
+    fun setMaskFormatter(maskFormatter: SimpleMaskFormatter): NewUiKitEditTextMutator = apply {
+        binding.editTextField.addTextChangedListener(maskFormatter.putTextWatcherOn(binding.editTextField))
     }
 
     fun clearInput() {
