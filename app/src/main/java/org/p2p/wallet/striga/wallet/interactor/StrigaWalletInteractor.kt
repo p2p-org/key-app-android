@@ -30,9 +30,9 @@ class StrigaWalletInteractor(
     private class StrigaEuroAccountNotFound : Throwable()
     private class StrigaUsdcAccountNotFound : Throwable()
 
-    suspend fun loadDetailsForStrigaAccounts(force: Boolean = false): Result<Unit> = kotlin.runCatching {
+    suspend fun loadDetailsForStrigaAccounts(ignoreCache: Boolean = false): Result<Unit> = kotlin.runCatching {
         // 1. loading user wallet
-        walletRepository.getUserWallet(force)
+        walletRepository.getUserWallet(ignoreCache)
         // 2. use preloaded wallet data in the following methods
         getFiatAccountDetails()
         getCryptoAccountDetails()

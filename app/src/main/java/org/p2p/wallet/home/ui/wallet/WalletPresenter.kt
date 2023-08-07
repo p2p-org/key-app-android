@@ -80,7 +80,7 @@ class WalletPresenter(
     private fun loadStrigaData() {
         if (!strigaSignupEnabledFeatureToggle.isFeatureEnabled || !strigaUserInteractor.canLoadAccounts) return
         launch(dispatchers.io) {
-            strigaWalletInteractor.loadDetailsForStrigaAccounts(force = true)
+            strigaWalletInteractor.loadDetailsForStrigaAccounts(ignoreCache = true)
             val strigaOnRampTokens = strigaOnRampInteractor.getOnRampTokens().successOrNull().orEmpty()
             val strigaOffRampTokens = strigaOffRampInteractor.getOffRampTokens().successOrNull().orEmpty()
             viewStateFlow.emit(
