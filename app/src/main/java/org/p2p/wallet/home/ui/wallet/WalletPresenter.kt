@@ -53,6 +53,7 @@ class WalletPresenter(
 
         loadInitialData()
         observeUsdc()
+        observeStrigaOnOffRampTokens()
         observeStrigaKycBanner()
 
         view.setWithdrawButtonIsVisible(strigaSignupEnabledFeatureToggle.isFeatureEnabled)
@@ -62,33 +63,36 @@ class WalletPresenter(
     }
 
     override fun onResume() {
-        loadStrigaData()
+        launch {
+            walletStrigaInteractor.loadOnOffRampTokens()
+        }
     }
 
     private fun observeUsdc() {
         launch {
             tokenServiceCoordinator.observeUserTokens()
-                .collect { handleTokenState(it) }
+                .collect(::handleTokenState)
         }
     }
 
-    private fun loadStrigaData() {
-        launch(dispatchers.io) {
-            val onOffRampTokens = walletStrigaInteractor.getOnOffRampTokens()
-            viewStateFlow.emit(
-                viewStateFlow.value.copy(
-                    strigaOnRampTokens = onOffRampTokens.onRampTokens,
-                    strigaOffRampTokens = onOffRampTokens.offRampTokens,
-                )
-            )
+    private fun observeStrigaOnOffRampTokens() {
+        launch {
+            walletStrigaInteractor.observeOnOffRampTokens()
+                .map {
+                    viewStateFlow.value.copy(
+                        strigaOnRampTokens = it.onRampTokens,
+                        strigaOffRampTokens = it.offRampTokens
+                    )
+                }
+                .collect(viewStateFlow::emit)
         }
     }
 
     private fun observeStrigaKycBanner() {
         launch {
-            walletStrigaInteractor.observeStrigaKycBanner()
+            walletStrigaInteractor.observeKycBanner()
                 .map { viewStateFlow.value.copy(strigaBanner = it) }
-                .collect { viewStateFlow.emit(it) }
+                .collect(viewStateFlow::emit)
         }
     }
 
