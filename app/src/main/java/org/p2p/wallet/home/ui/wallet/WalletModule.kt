@@ -6,6 +6,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.home.ui.wallet.handlers.WalletStrigaHandler
+import org.p2p.wallet.home.ui.wallet.interactor.WalletStrigaInteractor
 import org.p2p.wallet.home.ui.wallet.mapper.StrigaKycUiBannerMapper
 import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
 import org.p2p.wallet.striga.onramp.StrigaOnRampModule
@@ -43,5 +44,7 @@ object WalletModule : InjectionModule {
                 mainScreenAnalytics = get(),
             )
         } bind WalletContract.Presenter::class
+
+        factoryOf(::WalletStrigaInteractor)
     }
 }
