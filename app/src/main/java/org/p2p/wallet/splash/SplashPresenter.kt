@@ -12,7 +12,7 @@ class SplashPresenter(
     private val authInteractor: AuthInteractor,
     private val onboardingAnalytics: OnboardingAnalytics,
     private val tokenMetadataInteractor: TokenMetadataInteractor,
-    private val appLoader: AppLoaderFacade,
+    private val appLoaderFacade: AppLoaderFacade,
 ) : BasePresenter<SplashContract.View>(), SplashContract.Presenter {
 
     override fun attach(view: SplashContract.View) {
@@ -48,6 +48,6 @@ class SplashPresenter(
     }
 
     private suspend fun launchAppLoaders() {
-        appLoader.onLoad()
+        appLoaderFacade.load()
     }
 }

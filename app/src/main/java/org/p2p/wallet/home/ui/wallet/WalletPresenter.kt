@@ -15,15 +15,12 @@ import org.p2p.wallet.home.ui.main.delegates.striga.offramp.StrigaOffRampCellMod
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
 import org.p2p.wallet.home.ui.wallet.handlers.WalletStrigaHandler
+import org.p2p.wallet.home.ui.wallet.interactor.WalletStrigaInteractor
 import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.sell.interactor.SellInteractor
-import org.p2p.wallet.striga.offramp.interactor.StrigaOffRampInteractor
-import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
-import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
-import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
@@ -36,10 +33,7 @@ class WalletPresenter(
     private val walletMapper: WalletMapper,
     tokenKeyProvider: TokenKeyProvider,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
-    private val strigaWalletInteractor: StrigaWalletInteractor,
-    private val strigaOnRampInteractor: StrigaOnRampInteractor,
-    private val strigaOffRampInteractor: StrigaOffRampInteractor,
-    private val strigaUserInteractor: StrigaUserInteractor,
+    private val walletStrigaInteractor: WalletStrigaInteractor,
     private val walletStrigaHandler: WalletStrigaHandler,
     private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val sellInteractor: SellInteractor,
@@ -58,7 +52,7 @@ class WalletPresenter(
 
         loadInitialData()
         observeUsdc()
-        observeStrigaKycBanners()
+        observeStrigaKycBanner()
 
         view.setWithdrawButtonIsVisible(strigaSignupEnabledFeatureToggle.isFeatureEnabled)
         launch {
@@ -78,23 +72,20 @@ class WalletPresenter(
     }
 
     private fun loadStrigaData() {
-        if (!strigaSignupEnabledFeatureToggle.isFeatureEnabled || !strigaUserInteractor.canLoadAccounts) return
         launch(dispatchers.io) {
-            strigaWalletInteractor.loadDetailsForStrigaAccounts(ignoreCache = true)
-            val strigaOnRampTokens = strigaOnRampInteractor.getOnRampTokens().successOrNull().orEmpty()
-            val strigaOffRampTokens = strigaOffRampInteractor.getOffRampTokens().successOrNull().orEmpty()
+            val onOffRampTokens = walletStrigaInteractor.getOnOffRampTokens()
             viewStateFlow.emit(
                 viewStateFlow.value.copy(
-                    strigaOnRampTokens = strigaOnRampTokens,
-                    strigaOffRampTokens = strigaOffRampTokens,
+                    strigaOnRampTokens = onOffRampTokens.onRampTokens,
+                    strigaOffRampTokens = onOffRampTokens.offRampTokens,
                 )
             )
         }
     }
 
-    private fun observeStrigaKycBanners() {
+    private fun observeStrigaKycBanner() {
         launch {
-            strigaUserInteractor.getUserStatusBannerFlow()
+            walletStrigaInteractor.observeStrigaKycBanner()
                 .map { viewStateFlow.value.copy(strigaBanner = it) }
                 .collect { viewStateFlow.emit(it) }
         }
