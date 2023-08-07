@@ -158,5 +158,4 @@
     <string name="striga_open_account_subtitle">This account acts as an intermediary between Key App and our banking partner, Striga payment provider, which operates with your fiat money.</string>
     <string name="striga_form_input_first_name_tip">Spell your name exactly as it\'s shown on your passport or ID card.</string>
     <string name="striga_form_input_last_name_tip">Spell your name exactly as it\'s shown on your passport or ID card.</string>
-    <string name="striga_form_input_source_of_funds_tip">Sometimes additional information may appear during translation processing. Rest assured that our team is working as quickly as possible to review all documents and process suspended transfers</string>
 </resources>

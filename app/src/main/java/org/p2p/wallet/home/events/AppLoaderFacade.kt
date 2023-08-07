@@ -30,12 +30,12 @@ class AppLoaderFacade(
      */
     private val activeJobs: MutableMap<String, Deferred<Unit>> = HashMap()
 
-    suspend fun onLoad() {
+    suspend fun load() {
         processLoaders()
     }
 
     @Suppress("DeferredResultUnused")
-    suspend fun onRefresh() {
+    suspend fun refresh() {
         appLoaders.filter { it.isEnabled() }
             .forEach {
                 it.execAsync { onRefresh() }
@@ -53,6 +53,23 @@ class AppLoaderFacade(
         Timber.d("Cancelling AppLoader: ${appLoaderClass.id()}")
         activeJobs[appLoaderClass.id()]?.cancel()
         activeJobs.remove(appLoaderClass.id())
+    }
+
+    /**
+     * Await specified [AppLoader] to be finished
+     * Does nothing if [AppLoader] is not active
+     */
+    suspend fun <T : AppLoader> await(appLoaderClass: Class<T>) {
+        Timber.d("Awaiting AppLoader: ${appLoaderClass.id()}")
+        activeJobs[appLoaderClass.id()]?.await()
+    }
+
+    /**
+     * Await all active [AppLoader]s to be finished
+     */
+    suspend fun awaitAll() {
+        Timber.d("Awaiting all active AppLoaders")
+        activeJobs.values.forEach { it.await() }
     }
 
     private suspend fun processLoaders() {
