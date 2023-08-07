@@ -78,8 +78,4 @@ class CrashHttpLoggingInterceptor : Interceptor {
         append("content-type=${response.request.body?.contentType()}")
         append("}")
     }
-
-    private fun String.toJsonObject(): JSONObject? {
-        return kotlin.runCatching { JSONObject(this) }.getOrNull()
-    }
 }
