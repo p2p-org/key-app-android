@@ -33,7 +33,7 @@ class AuthInteractor(
     private val biometricManager: BiometricManager,
     private val pbkdf2Hash: Pbkdf2HashGenerator,
     private val pushNotificationsInteractor: PushNotificationsInteractor,
-    private val appLoader: AppLoaderFacade,
+    private val appLoaderFacade: AppLoaderFacade,
     private val dispatchers: CoroutineDispatchers,
     private val appScope: AppScope
 ) {
@@ -154,7 +154,7 @@ class AuthInteractor(
     }
 
     private suspend fun launchAppLoaders() = withContext(appScope.coroutineContext) {
-        appLoader.onLoad()
+        appLoaderFacade.load()
     }
 
     private fun updateDeviceToken() {
