@@ -1,18 +1,25 @@
-package org.p2p.wallet.common.ui
+package org.p2p.uikit.utils
 
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import java.lang.ref.WeakReference
 
+/**
+ * @param mask the mask to use, invisible array of symbols that will be replaced when typing
+ * see examples to get more info
+ * @param maskChar the mask char to use
+ * @param showStablePlaceholders - show placeholders in input if it is not yet filled
+ * @param stablePlaceholderChar - symbol to use and show when the mask is not yet filled
+ */
 class SimpleMaskFormatter(
     val mask: String,
     val maskChar: Char = '#',
-    val stablePlaceholders: Boolean = false,
+    val showStablePlaceholders: Boolean = false,
     val stablePlaceholderChar: Char = '_'
 ) {
     /**
-     * This variable just keeps last value of format() method
+     * This variable just keeps last value that passed inside format() method
      * @return is not empty only after formatting.
      */
     var rawText: String = ""
@@ -59,24 +66,22 @@ class SimpleMaskFormatter(
         }
     }
 
-    fun textWatcher(input: EditText): TextWatcher {
-        return MaskTextWatcher(this, input)
-    }
+    fun putTextWatcherOn(input: EditText): TextWatcher = MaskTextWatcher(this, input)
 
     fun format(input: String): String {
         // save source input
         rawText = input
 
-        // if used stablePlaceholder and input is empty, just return mask with stablePlaceholderChars
-        if (stablePlaceholders && input.isEmpty()) {
-            return mask.replace(maskChar, stablePlaceholderChar)
+        // if used stablePlaceholder and input is empty, just return mask with filled with stablePlaceholderChars
+        if (showStablePlaceholders && input.isEmpty()) {
+            return mask.replace(oldChar = maskChar, newChar = stablePlaceholderChar)
         }
 
         val result = StringBuilder()
         // offset for source string to match mask
         var offset = 0
 
-        // any characters in mask that are not a {@link #maskChar} with theirs indices in mask
+        // any characters in mask that are not a maskChar with theirs indices in mask
         val placeholders = HashMap<Int, Char>(mask.length)
         for (m in mask.indices) {
             if (mask[m] != maskChar) placeholders[m] = mask[m]
@@ -94,7 +99,7 @@ class SimpleMaskFormatter(
             val inputPos = i - offset
 
             // if input length is smaller than mask and we don't have to add stablePlaceholders - break and return
-            if (!stablePlaceholders && inputPos >= inputLocal.length) break
+            if (!showStablePlaceholders && inputPos >= inputLocal.length) break
 
             // we haven't found a placeholder in the mask, so we add the character from the input to the result
             if (placeholder == null) {
