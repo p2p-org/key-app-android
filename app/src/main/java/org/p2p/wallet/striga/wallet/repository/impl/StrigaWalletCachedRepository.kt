@@ -23,8 +23,8 @@ internal class StrigaWalletCachedRepository(
 
     private val timber: Timber.Tree = Timber.tag("StrigaWalletCachedRepository")
 
-    override suspend fun getUserWallet(): StrigaDataLayerResult<StrigaUserWallet> {
-        return withCache(cache::userWallet) {
+    override suspend fun getUserWallet(ignoreCache: Boolean): StrigaDataLayerResult<StrigaUserWallet> {
+        return withCache(ignoreCache = ignoreCache, cache = cache::userWallet) {
             remoteRepository.getUserWallet()
         }
     }
@@ -72,11 +72,13 @@ internal class StrigaWalletCachedRepository(
 
     private suspend fun <T> withCache(
         cache: KMutableProperty0<T?>? = null,
+        ignoreCache: Boolean = false,
         remote: suspend () -> T,
     ): StrigaDataLayerResult<T> {
         return try {
-            val result = cache?.invoke()?.also {
-                timber.i("Getting data from cache for ${cache.name}")
+            val cachePropertyRef = if (ignoreCache) null else cache
+            val result = cachePropertyRef?.invoke()?.also {
+                timber.i("Getting data from cache for ${cache?.name}")
             } ?: remote().also {
                 timber.i("Update cache from remote")
                 cache?.set(it)
