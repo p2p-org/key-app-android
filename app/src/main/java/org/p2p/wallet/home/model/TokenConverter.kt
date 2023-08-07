@@ -48,7 +48,7 @@ object TokenConverter {
         return TokenExtensionsConfigurator(
             extensions = tokenMetadata.extensions,
             token = token
-        ).config()
+        ).config() as Token.Active
     }
 
     fun fromNetwork(
@@ -69,18 +69,24 @@ object TokenConverter {
     }
 
     fun fromNetwork(
-        data: TokenMetadata,
+        tokenMetadata: TokenMetadata,
         price: TokenServicePrice?
-    ): Token.Other =
-        Token.Other(
-            tokenName = data.name,
-            tokenSymbol = data.symbol,
-            decimals = data.decimals,
-            mintAddress = data.mintAddress,
-            iconUrl = data.iconUrl,
-            isWrapped = data.isWrapped,
-            rate = price?.rate?.usd
+    ): Token.Other {
+        val token = Token.Other(
+            tokenName = tokenMetadata.name,
+            tokenSymbol = tokenMetadata.symbol,
+            decimals = tokenMetadata.decimals,
+            mintAddress = tokenMetadata.mintAddress,
+            iconUrl = tokenMetadata.iconUrl,
+            isWrapped = tokenMetadata.isWrapped,
+            rate = price?.rate?.usd,
+            tokenExtensions = TokenExtensions.NONE
         )
+        return TokenExtensionsConfigurator(
+            extensions = tokenMetadata.extensions,
+            token = token
+        ).config() as Token.Other
+    }
 
     fun toDatabase(token: Token.Active): TokenEntity =
         TokenEntity(

@@ -162,7 +162,7 @@ class NewSendPresenter(
             calculationMode.updateToken(token)
             checkTokenRatesAndSetSwitchAmountState(token)
 
-            val userTokens = userInteractor.getNonZeroUserTokens()
+            val userTokens = getNonZeroUserTokens()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
@@ -174,7 +174,7 @@ class NewSendPresenter(
     private fun setupInitialToken(view: NewSendContract.View) {
         launch {
             // We should find SOL anyway because SOL is needed for Selection Mechanism
-            val userNonZeroTokens = userInteractor.getNonZeroUserTokens()
+            val userNonZeroTokens = getNonZeroUserTokens()
             if (userNonZeroTokens.isEmpty()) {
                 Timber.tag(TAG).e(SendFatalError("User non-zero tokens can't be empty!"))
                 // we cannot proceed if user tokens are not loaded
@@ -190,7 +190,7 @@ class NewSendPresenter(
 
             checkTokenRatesAndSetSwitchAmountState(initialToken)
 
-            val solToken = if (initialToken.isSOL) initialToken else userTokensInteractor.getUserSolToken()
+            val solToken = if (initialToken.isSOL) initialToken else tokenServiceCoordinator.getUserSolToken()
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
@@ -203,6 +203,10 @@ class NewSendPresenter(
                 setupDefaultFields(inputAmount)
             }
         }
+    }
+
+    private suspend fun getNonZeroUserTokens(): List<Token.Active> {
+        return tokenServiceCoordinator.getUserTokens().filterNot { it.isZero }
     }
 
     private fun setupDefaultFields(inputAmount: BigDecimal) {

@@ -9,10 +9,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
-import org.p2p.token.service.api.events.manager.TokenServiceUpdate
+import org.p2p.core.token.filterTokensByAvailability
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventSubscriber
 import org.p2p.token.service.api.events.manager.TokenServiceEventType
+import org.p2p.token.service.api.events.manager.TokenServiceUpdate
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.tokenservice.model.SolanaTokenLoadState
@@ -30,7 +31,7 @@ class SolanaTokensLoader(
 
     init {
         userTokensInteractor.observeUserTokens()
-            .onEach { updateState(SolanaTokenLoadState.Loaded(it)) }
+            .onEach { updateState(SolanaTokenLoadState.Loaded(it.filterTokensByAvailability())) }
             .launchIn(appScope)
     }
 
@@ -68,7 +69,7 @@ class SolanaTokensLoader(
     }
 
     suspend fun getUserTokens(): List<Token.Active> {
-        return userTokensInteractor.getUserTokens()
+        return userTokensInteractor.getUserTokens().filterTokensByAvailability()
     }
 
     private fun saveTokensRates(list: List<TokenServicePrice>) {

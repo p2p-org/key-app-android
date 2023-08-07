@@ -66,6 +66,8 @@ class TokenServiceCoordinator(
         return solanaTokensLoader.getUserTokens()
     }
 
+    suspend fun getUserSolToken(): Token.Active? = getUserTokens().find { it.isSOL }
+
     private fun mapTokenState(solState: SolanaTokenLoadState, ethState: EthTokenLoadState): UserTokensState =
         when (solState) {
             is SolanaTokenLoadState.Idle -> UserTokensState.Idle

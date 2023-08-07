@@ -1,15 +1,15 @@
 package org.p2p.token.service.repository.configurator
 
-import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenExtensions
+import org.p2p.core.token.TokenMetadataExtension
 
 class TokenExtensionsConfigurator(
     private val extensions: TokenMetadataExtension,
-    private val token: Token.Active
-) : TokenConfigurator<Token.Active> {
+    private val token: Token
+) : TokenConfigurator<Token> {
 
-    override fun config(): Token.Active {
+    override fun config(): Token {
         var tokenExtensions = TokenExtensions()
         /**
          * Setup [Token.canBeHidden] configuration
@@ -35,11 +35,19 @@ class TokenExtensionsConfigurator(
          * Setup [Token.numbersAfterDecimalPoint] setup count of numbers after decimal point
          */
         tokenExtensions = RuleOfFractionalPartConfigurator(extensions, tokenExtensions).config()
+
         /**
          * Setup [Token.setupPercentDifferenceToShowByPrice] configuration
          */
-        val newToken = PricePercentDifferenceToShow(extensions, token).config()
-
-        return newToken.copy(tokenExtensions = tokenExtensions)
+        return when (token) {
+            is Token.Active -> {
+                val newToken = PricePercentDifferenceToShow(extensions, token).config()
+                newToken.copy(tokenExtensions = tokenExtensions)
+            }
+            is Token.Other -> {
+                token.copy(tokenExtensions = tokenExtensions)
+            }
+            is Token.Eth -> token
+        }
     }
 }
