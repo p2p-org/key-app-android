@@ -9,7 +9,7 @@ interface StrigaUserIbanDetailsContract {
     interface View : MvpView {
         fun showIbanDetails(details: List<AnyCellItem>)
         fun showImportantNotesInformer(model: InformerViewCellModel)
-        fun showImportantNotes(checkBoxIsChecked: Boolean)
+        fun showImportantNotes()
         fun navigateBack()
     }
 

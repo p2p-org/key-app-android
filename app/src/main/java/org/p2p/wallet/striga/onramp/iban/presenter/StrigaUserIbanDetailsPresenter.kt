@@ -20,7 +20,7 @@ class StrigaUserIbanDetailsPresenter(
     override fun firstAttach() {
         super.firstAttach()
         if (!interactor.isIbanNotesHidden) {
-            view?.showImportantNotes(checkBoxIsChecked = false)
+            view?.showImportantNotes()
         }
     }
 
@@ -43,6 +43,6 @@ class StrigaUserIbanDetailsPresenter(
     }
 
     override fun onImportantNotesInformerClick() {
-        view?.showImportantNotes(checkBoxIsChecked = interactor.isIbanNotesHidden)
+        view?.showImportantNotes()
     }
 }

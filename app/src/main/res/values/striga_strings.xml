@@ -165,4 +165,6 @@
     <string name="striga_iban_account_dialog_important_notes_checkbox">Don\'t show me again</string>
     <string name="striga_iban_account_dialog_note_first">Use this IBAN to send money from your personal accounts</string>
     <string name="striga_iban_account_dialog_note_second">Your bank account name must match the name of your Key App account</string>
+    <string name="striga_iban_account_informer_first_caption">This is your personal IBAN. Use this details to make transfers through your banking app</string>
+    <string name="striga_iban_account_informer_second_caption">We use SEPA Instant for bank transfers, and typically, money will appear in your account in less than a minute</string>
 </resources>

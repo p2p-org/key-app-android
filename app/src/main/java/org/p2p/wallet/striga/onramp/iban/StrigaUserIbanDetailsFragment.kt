@@ -69,11 +69,8 @@ class StrigaUserIbanDetailsFragment :
         binding.informerAttention.setOnClickListener { presenter.onImportantNotesInformerClick() }
     }
 
-    override fun showImportantNotes(checkBoxIsChecked: Boolean) {
-        StrigaIbanImportantNotesDialog.show(
-            checkBoxIsChecked = checkBoxIsChecked,
-            fm = childFragmentManager
-        )
+    override fun showImportantNotes() {
+        StrigaIbanImportantNotesDialog.show(childFragmentManager)
     }
 
     private fun onCopyIconClicked(value: String) {

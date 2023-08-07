@@ -63,12 +63,16 @@ class UiKitInformerView @JvmOverloads constructor(
                 style.getResourceId(R.styleable.UiKitInformerView_leftIconTint, R.color.icons_mountain)
             val title: String? =
                 style.getString(R.styleable.UiKitInformerView_title)
-            val titleTextColorResId = style.getColor(R.styleable.UiKitInformerView_titleTextColor, -1)
-                .takeIf { it != -1 }
+            val titleTextColorResId = style.getResourceId(
+                R.styleable.UiKitInformerView_titleTextColor,
+                R.color.text_night
+            )
             val caption: String? =
                 style.getString(R.styleable.UiKitInformerView_caption)
-            val captionTextColorResId = style.getResourceId(R.styleable.UiKitInformerView_captionTextColor, -1)
-                .takeIf { it != -1 }
+            val captionTextColorResId = style.getResourceId(
+                R.styleable.UiKitInformerView_captionTextColor,
+                R.color.text_night
+            )
             val infoLine: String? =
                 style.getString(R.styleable.UiKitInformerView_infoLine)
             val infoLinePosition =

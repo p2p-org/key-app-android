@@ -7,7 +7,7 @@ import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 
 class StrigaIbanImportantNotesDialogPresenter(
     private val onRampInteractor: StrigaOnRampInteractor,
-    private val mapper: StrigaUserIbanUiMapper,
+    mapper: StrigaUserIbanUiMapper,
 ) : BasePresenter<StrigaIbanImportantNotesContract.View>(),
     StrigaIbanImportantNotesContract.Presenter {
 
@@ -25,6 +25,7 @@ class StrigaIbanImportantNotesDialogPresenter(
     override fun attach(view: StrigaIbanImportantNotesContract.View) {
         super.attach(view)
         view.showNotes(notes)
+        view.setDontShowAgainIsChecked(onRampInteractor.isIbanNotesHidden)
     }
 
     override fun onDontShowAgainChecked(isChecked: Boolean) {

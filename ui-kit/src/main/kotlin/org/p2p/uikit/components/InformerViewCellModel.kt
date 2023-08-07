@@ -31,7 +31,7 @@ class InformerViewCellModel(
 
     class TitleParams(
         val value: TextContainer,
-        @ColorRes val textColorRes: Int? = R.color.text_night,
+        @ColorRes val textColorRes: Int = R.color.text_night,
         val titleIcon: DrawableContainer.Res? = null,
         @ColorRes val titleIconTint: Int = R.color.icons_night
     ) {
@@ -40,7 +40,7 @@ class InformerViewCellModel(
 
     class CaptionParams(
         val value: TextContainer,
-        @ColorRes val textColorRes: Int? = R.color.text_night,
+        @ColorRes val textColorRes: Int = R.color.text_night
     )
 
     class InfoLineParams(

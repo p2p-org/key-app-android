@@ -10,11 +10,11 @@ import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.SimpleMaskFormatter
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 
 class StrigaUserIbanUiMapper {

@@ -7,6 +7,7 @@ import org.p2p.wallet.common.mvp.MvpView
 interface StrigaIbanImportantNotesContract {
     interface View : MvpView {
         fun showNotes(details: List<AnyCellItem>)
+        fun setDontShowAgainIsChecked(isChecked: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

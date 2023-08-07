@@ -1,6 +1,5 @@
 package org.p2p.wallet.striga.onramp.iban
 
-import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import android.os.Bundle
 import android.view.View
@@ -15,10 +14,7 @@ import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogStrigaIbanImportantNotesBinding
 import org.p2p.wallet.striga.onramp.iban.adapter.StrigaUserIbanItemDecoration
-import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
-
-private const val ARG_CHECK_BOX_IS_CHECKED = "ARG_CHECK_BOX_IS_CHECKED"
 
 class StrigaIbanImportantNotesDialog :
     BaseMvpBottomSheet<StrigaIbanImportantNotesContract.View, StrigaIbanImportantNotesContract.Presenter>(
@@ -26,25 +22,16 @@ class StrigaIbanImportantNotesDialog :
     ),
     StrigaIbanImportantNotesContract.View {
     companion object {
-        fun show(checkBoxIsChecked: Boolean, fm: FragmentManager) {
+        fun show(fm: FragmentManager) {
             val tag = StrigaIbanImportantNotesDialog::javaClass.name
             if (fm.findFragmentByTag(tag) != null) return
-
-            StrigaIbanImportantNotesDialog()
-                .apply {
-                    arguments = bundleOf(
-                        ARG_CHECK_BOX_IS_CHECKED to checkBoxIsChecked
-                    )
-                }
-                .show(fm, tag)
+            StrigaIbanImportantNotesDialog().show(fm, tag)
         }
     }
 
     private val binding: DialogStrigaIbanImportantNotesBinding by viewBinding()
 
     override val presenter: StrigaIbanImportantNotesContract.Presenter by inject()
-
-    private val checkBoxIsChecked: Boolean by args(ARG_CHECK_BOX_IS_CHECKED)
 
     private val adapter = CommonAnyCellAdapter(
         mainCellDelegate()
@@ -56,7 +43,6 @@ class StrigaIbanImportantNotesDialog :
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            checkBoxDontShowAgain.isChecked = checkBoxIsChecked
             checkBoxDontShowAgain.setOnCheckedChangeListener { _, isChecked ->
                 presenter.onDontShowAgainChecked(isChecked)
             }
@@ -78,5 +64,9 @@ class StrigaIbanImportantNotesDialog :
 
     override fun showNotes(details: List<AnyCellItem>) {
         adapter.items = details
+    }
+
+    override fun setDontShowAgainIsChecked(isChecked: Boolean) {
+        binding.checkBoxDontShowAgain.isChecked = isChecked
     }
 }
