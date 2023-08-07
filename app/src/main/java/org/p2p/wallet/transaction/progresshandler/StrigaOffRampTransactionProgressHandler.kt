@@ -16,7 +16,7 @@ class StrigaOffRampTransactionProgressHandler(
 
     override fun handleInitState(showProgressData: NewShowProgress) {
         super.handleInitState(showProgressData)
-        binding.progressStateTransaction.setDescriptionText(R.string.striga_withdrawal_transaction_details)
+        binding.progressStateTransaction.setDescriptionText(R.string.striga_withdraw_transaction_details)
     }
 
     override fun handleState(state: TransactionState) {
@@ -25,7 +25,7 @@ class StrigaOffRampTransactionProgressHandler(
             is StrigaOffRampTransactionState.UsdcWithdrawSuccess -> {
                 setSuccessState()
                 // rewrite description text
-                binding.progressStateTransaction.setDescriptionText(R.string.striga_withdrawal_transaction_details)
+                binding.progressStateTransaction.setDescriptionText(R.string.striga_withdraw_transaction_details)
             }
             is StrigaOffRampTransactionState.UsdcWithdrawError -> {
                 setErrorState()
