@@ -13,10 +13,10 @@ import org.p2p.wallet.striga.common.StrigaUserIdProvider
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.common.model.toSuccessResult
-import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
+import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 
 private const val TAG = "StrigaUserStatusRepository"
 
