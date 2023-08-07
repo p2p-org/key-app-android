@@ -3,15 +3,15 @@ package org.p2p.wallet.auth.repository
 import com.google.gson.JsonObject
 import timber.log.Timber
 import kotlin.time.Duration.Companion.minutes
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.emptyString
-import org.p2p.core.crypto.toBase58Instance
 
 private const val TAG = "RestoreFlowDataLocalRepository"
 
@@ -101,7 +101,10 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     }
 
     fun isTorusKeyValid(): Boolean {
-        return DateTimeUtils.getCurrentTimestampInSeconds() - torusKeyTimestamp < 15.minutes.inWholeSeconds
+        val currentTime = DateTimeUtils.getCurrentTimestampInSeconds()
+        val fifteenMinutes = 15.minutes.inWholeSeconds
+        Timber.i("Checking isTorusKeyValid $currentTime; $torusKeyTimestamp; $fifteenMinutes")
+        return currentTime - torusKeyTimestamp < fifteenMinutes
     }
 
     fun resetTorusTimestamp() {
