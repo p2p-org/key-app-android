@@ -57,6 +57,8 @@ class StrigaOtpConfirmInteractorTest {
         override var bankingDetails: StrigaUserBankingDetails? = null
         override var smsExceededVerificationAttemptsMillis: MillisSinceEpoch = 0
         override var smsExceededResendAttemptsMillis: MillisSinceEpoch = 0
+        override var isIbanNotesHidden: Boolean = false
+
         override fun hideBanner(banner: StrigaKycStatusBanner) = Unit
         override fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean = false
         override fun clear() = Unit
