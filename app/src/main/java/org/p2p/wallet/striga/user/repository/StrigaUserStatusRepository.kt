@@ -40,8 +40,7 @@ class StrigaUserStatusRepository(
             ?.let { StrigaKycStatusBanner.valueOf(it) }
 
     init {
-//        mapUserStatusToFlows(strigaStorage.userStatus)
-        strigaStorage.userStatus = null
+        mapUserStatusToFlows(strigaStorage.userStatus)
     }
 
     fun getBannerFlow(): StateFlow<StrigaKycStatusBanner?> {
