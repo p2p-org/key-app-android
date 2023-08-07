@@ -1,24 +1,68 @@
 package org.p2p.wallet.striga.onramp.iban.presenter
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
+import org.p2p.uikit.components.InformerViewCellModel
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
 import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.SimpleMaskFormatter
 import org.p2p.uikit.utils.image.ImageViewCellModel
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
 
 class StrigaUserIbanUiMapper {
 
+    private val ibanMaskFormatter = SimpleMaskFormatter("#### #### #### #### #### #### #### #### #### ##")
+
     fun mapToCellModels(details: StrigaFiatAccountDetails): List<AnyCellItem> = buildList {
-        this += ibanInfoModel(details.iban)
+        this += ibanInfoModel(ibanMaskFormatter.format(details.iban))
         this += fiatCurrencyModel(details.currency)
         this += bicInfoModel(details.bic)
         this += ownerNameModel(details.bankAccountHolderName)
     }
+
+    fun mapImportantNotesInformerModel(
+        details: StrigaFiatAccountDetails
+    ): InformerViewCellModel = InformerViewCellModel(
+        leftIcon = InformerViewCellModel.LeftIconParams(
+            icon = DrawableContainer(R.drawable.ic_alert),
+            iconTint = R.color.night,
+        ),
+        caption = InformerViewCellModel.CaptionParams(
+            value = TextContainer(R.string.striga_iban_informer_attention_caption, details.bankAccountHolderName),
+            textColorRes = R.color.text_snow,
+        ),
+        backgroundDrawableRes = R.drawable.bg_rain_rounded_16,
+        backgroundTintRes = R.color.bg_night,
+    )
+
+    fun mapImportantNotesCellModel(
+        @StringRes textRes: Int,
+        @DrawableRes iconRes: Int
+    ): MainCellModel = MainCellModel(
+        leftSideCellModel = LeftSideCellModel.IconWithText(
+            icon = IconWrapperCellModel.SingleIcon(
+                sizePx = 24.toPx(),
+                icon = ImageViewCellModel(
+                    icon = DrawableContainer(iconRes),
+                    iconTint = R.color.night,
+                )
+            ),
+            firstLineText = TextViewCellModel.Raw(
+                text = TextContainer(textRes),
+                textAppearance = R.style.UiKit_TextAppearance_Regular_Text3,
+                maxLines = 100,
+                ellipsize = null,
+            ),
+        )
+    )
 
     private fun copyIconModel(): RightSideCellModel.IconWrapper =
         IconWrapperCellModel.SingleIcon(

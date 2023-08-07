@@ -160,10 +160,14 @@
     <!--    can be extended if there is need -->
     <!--    you can add icon to title, background tint etc-->
     <declare-styleable name="UiKitInformerView">
+        <attr name="android:background" />
+        <attr name="android:backgroundTint" />
         <attr name="leftIcon" />
         <attr name="leftIconTint" format="color" />
         <attr name="title" format="string" />
+        <attr name="titleTextColor" />
         <attr name="caption" format="string" />
+        <attr name="captionTextColor" format="color" />
         <attr name="infoLine" format="string" />
         <attr name="infoLineColor" format="color" />
         <attr name="infoLinePosition" format="enum">
