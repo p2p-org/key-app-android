@@ -60,6 +60,14 @@ class NetworkServicesUrlProvider(
         }
     }
 
+    fun toggleTokenServiceEnvironment(isProdSelected: Boolean) {
+        if (isProdSelected) {
+            saveNameServiceEnvironment(context.getString(R.string.tokenServiceBaseUrl))
+        } else {
+            saveNameServiceEnvironment(context.getString(R.string.tokenServiceTestBaseUrl))
+        }
+    }
+
     private fun saveNameServiceEnvironment(newUrl: String) {
         storage.putString(KEY_NAME_SERVICE_BASE_URL, newUrl)
     }

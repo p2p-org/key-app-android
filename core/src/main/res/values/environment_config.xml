@@ -42,7 +42,8 @@
 
     <string name="strigaProxyServiceBaseUrl">https://payment-rust.keyapp.org/</string>
 
-    <string name="tokenServiceBaseUrl">https://token-service.keyapp.org/</string>
+    <string name="tokenServiceTestBaseUrl">https://token-service.keyapp.org/</string>
+    <string name="tokenServiceBaseUrl">https://token-service.key.app/</string>
 
     <!--TODO PWN-4266 migrate googleClientId to CI for secure-->
 </resources>

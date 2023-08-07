@@ -64,6 +64,10 @@ class DebugSettingsPresenter(
         appRestarter.restartApp()
     }
 
+    override fun switchTokenServiceUrl(isProdSelected: Boolean) {
+        networkServicesUrlProvider.toggleTokenServiceEnvironment(isProdSelected)
+        appRestarter.restartApp()
+    }
     override fun onSettingsPopupMenuClicked(selectedValue: String) {
         if (selectedValue != "-") {
             inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = selectedValue

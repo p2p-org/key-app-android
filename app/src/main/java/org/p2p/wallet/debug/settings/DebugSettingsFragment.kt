@@ -133,6 +133,9 @@ class DebugSettingsFragment :
             R.string.debug_settings_name_service -> {
                 presenter.switchNameServiceUrl(isProdSelected = isChecked)
             }
+            R.string.debug_settings_token_service -> {
+                presenter.switchTokenServiceUrl(isProdSelected = isChecked)
+            }
         }
     }
 
