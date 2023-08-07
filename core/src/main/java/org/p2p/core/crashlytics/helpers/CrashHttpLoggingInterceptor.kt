@@ -31,8 +31,8 @@ class CrashHttpLoggingInterceptor : Interceptor {
 
         val responseBody = response.bodyAsString()
         val responseBodySize = responseBody.length
-        if (responseBodySize < 10_000) {
-            if (!response.isSuccessful) {
+        if (responseBodySize < 7_000) {
+            if (!response.isSuccessful || responseBody.contains("error")) {
                 // log to crash facades !200 error bodies
                 Timber.tag(TAG).i(responseBody)
             } else {
@@ -77,5 +77,9 @@ class CrashHttpLoggingInterceptor : Interceptor {
         append(" ")
         append("content-type=${response.request.body?.contentType()}")
         append("}")
+    }
+
+    private fun String.toJsonObject(): JSONObject? {
+        return kotlin.runCatching { JSONObject(this) }.getOrNull()
     }
 }

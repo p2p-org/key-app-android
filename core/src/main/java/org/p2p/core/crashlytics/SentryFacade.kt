@@ -57,7 +57,7 @@ class SentryFacade : CrashLoggingFacade {
     }
 
     override fun setCustomKey(key: String, value: Any) {
-        if (key.contentEquals("username")) {
+        if (key.contentEquals("username") || key.contentEquals("is_web_3_auth")) {
             // for search purposes
             if (value is String && value.isNotBlank()) {
                 Sentry.setTag(key, value.toString())
