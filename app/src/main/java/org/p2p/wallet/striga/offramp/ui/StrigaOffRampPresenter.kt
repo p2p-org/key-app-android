@@ -174,6 +174,7 @@ class StrigaOffRampPresenter(
         } else {
             navigateToSignupFlow()
         }
+        setButtonState(StrigaOffRampButtonState.Enabled)
     }
 
     private fun navigateToWithdrawFlow() {
