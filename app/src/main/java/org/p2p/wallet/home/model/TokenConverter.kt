@@ -48,7 +48,7 @@ object TokenConverter {
         return TokenExtensionsConfigurator(
             extensions = tokenMetadata.extensions,
             token = token
-        ).config() as Token.Active
+        ).config()
     }
 
     fun fromNetwork(
@@ -85,7 +85,7 @@ object TokenConverter {
         return TokenExtensionsConfigurator(
             extensions = tokenMetadata.extensions,
             token = token
-        ).config() as Token.Other
+        ).config()
     }
 
     fun toDatabase(token: Token.Active): TokenEntity =

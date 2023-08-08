@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -310,8 +311,9 @@ class SwapStateManager(
     private fun observeUserTokens() {
         tokenServiceCoordinator.observeUserTokens()
             .filterIsInstance<UserTokensState.Loaded>()
-            .onEach { userTokensState ->
-                state.value = userTokensChangeHandler.handleUserTokensChange(state.value, userTokensState.solTokens)
+            .mapLatest { userTokensChangeHandler.handleUserTokensChange(state.value, it.solTokens) }
+            .onEach { newState ->
+                state.value = newState
             }
             .flowOn(dispatchers.io)
             .launchIn(this)

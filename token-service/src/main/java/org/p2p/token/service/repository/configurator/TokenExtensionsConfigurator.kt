@@ -4,12 +4,13 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenMetadataExtension
 
-class TokenExtensionsConfigurator(
+@Suppress("UNCHECKED_CAST")
+class TokenExtensionsConfigurator<T : Token>(
     private val extensions: TokenMetadataExtension,
-    private val token: Token
-) : TokenConfigurator<Token> {
+    private val token: T
+) : TokenConfigurator<T> {
 
-    override fun config(): Token {
+    override fun config(): T {
         var tokenExtensions = TokenExtensions()
         /**
          * Setup [Token.canBeHidden] configuration
@@ -48,6 +49,7 @@ class TokenExtensionsConfigurator(
                 token.copy(tokenExtensions = tokenExtensions)
             }
             is Token.Eth -> token
-        }
+            else -> token
+        } as T
     }
 }
