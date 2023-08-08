@@ -15,7 +15,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentSendNewBinding
+import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
@@ -52,7 +52,7 @@ private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
 class NewSendFragment :
-    BaseMvpFragment<NewSendContract.View, NewSendContract.Presenter>(R.layout.fragment_send_new),
+    BaseMvpFragment<NewSendContract.View, NewSendContract.Presenter>(R.layout.fragment_send),
     NewSendContract.View {
 
     companion object {
@@ -75,7 +75,7 @@ class NewSendFragment :
     private val inputAmount: BigDecimal? by args(ARG_INPUT_AMOUNT)
     private val openedFromFlow: SendOpenedFrom by args(ARG_OPENED_FROM_FLOW)
 
-    private val binding: FragmentSendNewBinding by viewBinding()
+    private val binding: FragmentSendBinding by viewBinding()
 
     override val presenter: NewSendContract.Presenter by inject { parametersOf(recipient, openedFromFlow) }
 
@@ -202,8 +202,8 @@ class NewSendFragment :
         binding.widgetSendDetails.disableInputs()
     }
 
-    override fun showAroundValue(value: String) {
-        binding.widgetSendDetails.setAroundValue(value)
+    override fun showApproximateAmount(approximateAmount: String) {
+        binding.widgetSendDetails.setApproximateAmount(approximateAmount)
     }
 
     override fun setTokenContainerEnabled(isEnabled: Boolean) {
@@ -218,7 +218,7 @@ class NewSendFragment :
         binding.widgetSendDetails.showDelayedFeeViewLoading(isLoading)
     }
 
-    override fun showFeeViewVisible(isVisible: Boolean) {
+    override fun showFeeVisible(isVisible: Boolean) {
         binding.widgetSendDetails.showFeeVisible(isVisible = isVisible)
     }
 
@@ -288,14 +288,6 @@ class NewSendFragment :
         fee: SendSolanaFee,
         alternativeFeePayerTokens: List<Token.Active>
     ) {
-        val target = SendNoAccountFragment.create(
-            tokenSymbol = fee.feePayerSymbol,
-            approximateFeeUsd = fee.getApproxAccountCreationFeeUsd(withBraces = false).orEmpty(),
-            alternativeFeePayerTokens = alternativeFeePayerTokens,
-            requestKey = KEY_REQUEST_SEND,
-            resultKey = KEY_RESULT_NEW_FEE_PAYER
-        )
-        replaceFragment(target)
     }
 
     private fun UiKitToolbar.setupToolbar() {

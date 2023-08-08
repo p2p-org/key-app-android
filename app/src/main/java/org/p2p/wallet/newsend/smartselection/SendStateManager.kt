@@ -198,7 +198,7 @@ class SendStateManager(
     private suspend fun initializeScreen(userTokens: List<Token.Active>) {
         try {
             sourceToken = initialData.selectInitialToken(userTokens)
-            solToken = initialData.findSolToken(sourceToken, userInteractor.getUserSolToken())
+//            solToken = initialData.findSolToken(sourceToken, userInteractor.getUserSolToken())
 
             feeLimitInfo = sendInteractor.getFreeTransactionsInfo(useCache = false)
             sendInteractor.getMinRelayRentExemption().also { inputCalculator.saveMinRentExemption(it) }
@@ -266,21 +266,21 @@ class SendStateManager(
     }
 
     private fun handleFeeClicked() {
-        if (smartSelectionCoordinator.isFreeAndInputEmpty()) {
-            updateState(SendState.ShowFreeTransactionDetails)
-        } else {
-            updateState(SendState.ShowTransactionDetails(createFeeTotal()))
-        }
+//        if (smartSelectionCoordinator.isFreeAndInputEmpty()) {
+//            updateState(SendState.ShowFreeTransactionDetails)
+//        } else {
+//            updateState(SendState.ShowTransactionDetails(createFeeTotal()))
+//        }
     }
 
     private fun observeTokenUpdates(token: Token.Active) {
-        observeTokensJob?.cancel()
-        userInteractor.getUserTokensFlow()
-            .map { it.findByMintAddress(token.mintAddress) }
-            .filterNotNull()
-            .onEach { updateToken(updatedToken = it) }
-            .launchIn(this)
-            .also { observeTokensJob = it }
+//        observeTokensJob?.cancel()
+//        userInteractor.getUserTokensFlow()
+//            .map { it.findByMintAddress(token.mintAddress) }
+//            .filterNotNull()
+//            .onEach { updateToken(updatedToken = it) }
+//            .launchIn(this)
+//            .also { observeTokensJob = it }
     }
 
     private fun validateCurrencySwitch() {
@@ -334,9 +334,10 @@ class SendStateManager(
     }
 
     private fun createFeeTotal(): SendFeeTotal {
-        val solanaFee = smartSelectionCoordinator.getFeeData()?.let {
-            SendSolanaFee(it.first, it.second, sourceToken)
-        }
+//        val solanaFee = smartSelectionCoordinator.getFeeData()?.let {
+//            SendSolanaFee(it.first, it.second, sourceToken)
+//        }
+        val solanaFee = null
 
         val currentAmount = inputCalculator.getCurrentAmount()
         return SendFeeTotal(

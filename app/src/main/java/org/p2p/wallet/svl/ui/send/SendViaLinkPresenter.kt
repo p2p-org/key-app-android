@@ -88,7 +88,7 @@ class SendViaLinkPresenter(
     }
 
     private fun initialize(view: SendViaLinkContract.View) {
-        calculationMode.onCalculationCompleted = { view.showAroundValue(it) }
+        calculationMode.onCalculationCompleted = { view.showApproximateAmount(it) }
         calculationMode.onInputFractionUpdated = { view.updateInputFraction(it) }
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
             view.setSwitchLabel(switchSymbol)

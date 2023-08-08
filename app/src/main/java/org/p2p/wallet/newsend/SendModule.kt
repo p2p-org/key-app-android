@@ -18,13 +18,9 @@ import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
 import org.p2p.wallet.newsend.interactor.SendServiceInteractor
-import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.repository.SendServiceRemoteRepository
-import org.p2p.wallet.newsend.ui.NewSendContract
-import org.p2p.wallet.newsend.ui.NewSendPresenter
-import org.p2p.wallet.newsend.ui.SendOpenedFrom
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
@@ -66,25 +62,6 @@ object SendModule : InjectionModule {
                 selectableTokens = selectableTokens
             )
         } bind NewSelectTokenContract.Presenter::class
-        factory { (recipient: SearchResult, openedFrom: SendOpenedFrom) ->
-            NewSendPresenter(
-                recipientAddress = recipient,
-                openedFrom = openedFrom,
-                userInteractor = get(),
-                sendInteractor = get(),
-                resources = get(),
-                tokenKeyProvider = get(),
-                transactionManager = get(),
-                connectionStateProvider = get(),
-                newSendAnalytics = get(),
-                appScope = get(),
-                sendModeProvider = get(),
-                alertErrorsLogger = get(),
-                historyInteractor = get(),
-                userTokensInteractor = get(),
-                tokenServiceCoordinator = get()
-            )
-        } bind NewSendContract.Presenter::class
         factoryOf(::NewSendDetailsPresenter) bind NewSendDetailsContract.Presenter::class
 
         factoryOf(::SendLinkGenerationPresenter) bind SendLinkGenerationContract.Presenter::class

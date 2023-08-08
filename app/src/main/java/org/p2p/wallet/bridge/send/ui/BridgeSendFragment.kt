@@ -46,7 +46,7 @@ private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
 class BridgeSendFragment :
-    BaseMvpFragment<BridgeSendContract.View, BridgeSendContract.Presenter>(R.layout.fragment_send_new),
+    BaseMvpFragment<BridgeSendContract.View, BridgeSendContract.Presenter>(R.layout.fragment_send),
     BridgeSendContract.View {
 
     companion object {
@@ -180,8 +180,8 @@ class BridgeSendFragment :
         binding.widgetSendDetails.disableInputs()
     }
 
-    override fun showAroundValue(value: String) {
-        binding.widgetSendDetails.setAroundValue(value)
+    override fun showApproximateAmount(approximateAmount: String) {
+        binding.widgetSendDetails.setAroundValue(approximateAmount)
     }
 
     override fun setTokenContainerEnabled(isEnabled: Boolean) {
@@ -196,7 +196,7 @@ class BridgeSendFragment :
         binding.widgetSendDetails.showDelayedFeeViewLoading(isLoading)
     }
 
-    override fun showFeeViewVisible(isVisible: Boolean) {
+    override fun showFeeVisible(isVisible: Boolean) {
         binding.widgetSendDetails.showFeeVisible(isVisible = isVisible)
     }
 

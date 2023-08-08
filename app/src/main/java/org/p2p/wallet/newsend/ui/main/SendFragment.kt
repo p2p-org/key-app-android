@@ -1,11 +1,13 @@
-package org.p2p.wallet.svl.ui.send
+package org.p2p.wallet.newsend.ui.main
 
 import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import java.math.BigInteger
+import org.koin.core.parameter.parametersOf
+import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
@@ -13,49 +15,75 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentSendNewBinding
+import org.p2p.wallet.databinding.FragmentSendBinding
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SendFeeTotal
+import org.p2p.wallet.newsend.model.SendInitialData
+import org.p2p.wallet.newsend.model.SendPromptData
+import org.p2p.wallet.newsend.model.SendSolanaFee
+import org.p2p.wallet.newsend.ui.SendOpenedFrom
+import org.p2p.wallet.newsend.ui.details.NewSendDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
-import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
-import org.p2p.wallet.svl.ui.linkgeneration.SendLinkGenerationFragment
+import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
+import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler.Companion.QUALIFIER
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getParcelableArrayListCompat
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 
-private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
+private const val ARG_INITIAL_DATA = "ARG_INITIAL_DATA"
 
+private const val KEY_RESULT_FEE = "KEY_RESULT_FEE"
+private const val KEY_RESULT_FEE_PAYER_TOKENS = "KEY_RESULT_FEE_PAYER_TOKENS"
+private const val KEY_RESULT_NEW_FEE_PAYER = "KEY_RESULT_APPROXIMATE_FEE_USD"
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
-class SendViaLinkFragment :
-    BaseMvpFragment<SendViaLinkContract.View, SendViaLinkContract.Presenter>(R.layout.fragment_send),
-    SendViaLinkContract.View {
+class SendFragment :
+    BaseMvpFragment<SendContract.View, SendContract.Presenter>(R.layout.fragment_send),
+    SendContract.View {
 
     companion object {
+
         fun create(
+            recipient: SearchResult,
             initialToken: Token.Active? = null,
-        ): SendViaLinkFragment =
-            SendViaLinkFragment()
-                .withArgs(ARG_INITIAL_TOKEN to initialToken)
+            inputAmount: BigDecimal? = null,
+            openedFromFlow: SendOpenedFrom = SendOpenedFrom.MAIN_FLOW,
+        ): SendFragment = SendFragment()
+            .withArgs(
+                ARG_INITIAL_DATA to SendInitialData(
+                    recipient = recipient,
+                    openedFrom = openedFromFlow,
+                    initialToken = initialToken,
+                    inputAmount = inputAmount
+                )
+            )
     }
 
-    private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
-    private val svlAnalytics: SendViaLinkAnalytics by inject()
+    private val initialData: SendInitialData by args(ARG_INITIAL_DATA)
 
-    private val binding: FragmentSendNewBinding by viewBinding()
+    private val binding: FragmentSendBinding by viewBinding()
 
-    override val presenter: SendViaLinkContract.Presenter by inject()
+    override val presenter: SendContract.Presenter by inject { parametersOf(initialData) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        presenter.setInitialData(initialToken)
+    private var listener: RootListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = context as? RootListener
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,19 +95,33 @@ class SendViaLinkFragment :
             maxButtonClickListener = presenter::onMaxButtonClicked
             switchListener = presenter::switchCurrencyMode
             feeButtonClickListener = presenter::onFeeInfoClicked
-            focusAndShowKeyboard()
+            if (initialData.inputAmount == null) {
+                focusAndShowKeyboard()
+            }
         }
         binding.sliderSend.onSlideCompleteListener = { presenter.checkInternetConnection() }
-        binding.sliderSend.onSlideCollapseCompleted = { presenter.generateLink() }
+        binding.sliderSend.onSlideCollapseCompleted = { presenter.send() }
 
-        binding.switchDebug.isVisible = BuildConfig.DEBUG
         binding.textViewDebug.isVisible = BuildConfig.DEBUG
-        binding.textViewMessage.isVisible = true
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SEND,
             viewLifecycleOwner
         ) { _, result -> handleSupportFragmentResult(result) }
+
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SEND,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(KEY_RESULT_FEE) && result.containsKey(KEY_RESULT_FEE_PAYER_TOKENS) -> {
+                    val fee = result.getParcelableCompat<SendSolanaFee>(KEY_RESULT_FEE)
+                    val feePayerTokens = result.getParcelableArrayListCompat<Token.Active>(KEY_RESULT_FEE_PAYER_TOKENS)
+                    if (fee == null || feePayerTokens.isEmpty()) return@setFragmentResultListener
+                    showAccountCreationFeeInfo(fee, feePayerTokens)
+                }
+            }
+        }
     }
 
     private fun handleSupportFragmentResult(result: Bundle) {
@@ -89,30 +131,25 @@ class SendViaLinkFragment :
                 val token = result.getParcelableCompat<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
                 presenter.updateToken(token)
             }
+            result.containsKey(KEY_RESULT_NEW_FEE_PAYER) -> {
+                val newFeePayer = result.getParcelableCompat<Token.Active>(KEY_RESULT_NEW_FEE_PAYER)!!
+                presenter.updateFeePayerToken(newFeePayer)
+            }
         }
     }
 
-    override fun showFreeTransactionsInfo() {
-        svlAnalytics.logFreeTransactionsClicked()
-        SendFreeTransactionsDetailsBottomSheet.show(childFragmentManager, openedFrom = OpenedFrom.SEND_VIA_LINK)
+    override fun showTransactionDetails(sendFeeTotal: SendFeeTotal) {
+        NewSendDetailsBottomSheet.show(
+            fm = childFragmentManager,
+            totalFee = sendFeeTotal,
+            requestKey = KEY_REQUEST_SEND,
+            feeResultKey = KEY_RESULT_FEE,
+            feePayerTokensResultKey = KEY_RESULT_FEE_PAYER_TOKENS
+        )
     }
 
-    override fun navigateToLinkGeneration(
-        account: TemporaryAccount,
-        token: Token.Active,
-        lamports: BigInteger,
-        currencyModeSymbol: String
-    ) {
-        val isSimulationEnabled = binding.switchDebug.isChecked
-        replaceFragment(
-            SendLinkGenerationFragment.create(
-                recipient = account,
-                token = token,
-                lamports = lamports,
-                isSimulation = isSimulationEnabled,
-                currencyModeSymbol = currencyModeSymbol
-            )
-        )
+    override fun showFreeTransactionsInfo() {
+        SendFreeTransactionsDetailsBottomSheet.show(childFragmentManager, openedFrom = OpenedFrom.SEND)
     }
 
     override fun updateInputValue(textValue: String, forced: Boolean) {
@@ -161,7 +198,7 @@ class SendViaLinkFragment :
     }
 
     override fun showApproximateAmount(approximateAmount: String) {
-        binding.widgetSendDetails.setAroundValue(approximateAmount)
+        binding.widgetSendDetails.setApproximateAmount(approximateAmount)
     }
 
     override fun setTokenContainerEnabled(isEnabled: Boolean) {
@@ -212,10 +249,9 @@ class SendViaLinkFragment :
         binding.textViewDebug.text = text
     }
 
-    override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
+    override fun showTokenSelection(selectedToken: Token.Active) {
         addFragment(
             target = NewSelectTokenFragment.create(
-                tokensToSelectFrom = tokens,
                 selectedToken = selectedToken,
                 requestKey = KEY_REQUEST_SEND,
                 resultKey = KEY_RESULT_TOKEN_TO_SEND
@@ -227,6 +263,14 @@ class SendViaLinkFragment :
         )
     }
 
+    override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
+        listener?.showTransactionProgress(internalTransactionId, data, QUALIFIER)
+        when (initialData.openedFrom) {
+            SendOpenedFrom.SELL_FLOW -> popBackStackTo(target = MainContainerFragment::class, inclusive = false)
+            SendOpenedFrom.MAIN_FLOW -> popBackStackTo(target = NewSearchFragment::class, inclusive = true)
+        }
+    }
+
     override fun showSliderCompleteAnimation() {
         binding.sliderSend.showCompleteAnimation()
     }
@@ -235,8 +279,29 @@ class SendViaLinkFragment :
         binding.sliderSend.restoreSlider()
     }
 
+    private fun showAccountCreationFeeInfo(
+        fee: SendSolanaFee,
+        alternativeFeePayerTokens: List<Token.Active>
+    ) {
+        val promptData = SendPromptData(
+            feePayerToken = fee.feePayerToken,
+            approximateFeeUsd = fee.getApproxAccountCreationFeeUsd(withBraces = false).orEmpty(),
+            alternativeFeePayerTokens = alternativeFeePayerTokens,
+        )
+        val target = SendNoAccountFragment.create(
+            promptData = promptData,
+            requestKey = KEY_REQUEST_SEND,
+            resultKey = KEY_RESULT_NEW_FEE_PAYER
+        )
+        replaceFragment(target)
+    }
+
     private fun UiKitToolbar.setupToolbar() {
-        setTitle(R.string.send_via_link_title_main)
+        val toolbarTitle = when (val recipient = initialData.recipient) {
+            is SearchResult.UsernameFound -> recipient.formattedUsername
+            else -> recipient.formattedAddress
+        }
+        title = toolbarTitle
         setNavigationOnClickListener { popBackStack() }
     }
 }
