@@ -83,7 +83,7 @@ class SendFeeRelayerManager(
     private suspend fun initializeWithToken(initialToken: Token.Active) {
         Timber.tag(TAG).i("initialize for SendFeeRelayerManager with token ${initialToken.mintAddress}")
         minRentExemption = sendInteractor.getMinRelayRentExemption()
-        feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
+        feeLimitInfo = sendInteractor.getFreeTransactionsInfo(useCache = false)
         sendInteractor.initialize(initialToken)
     }
 

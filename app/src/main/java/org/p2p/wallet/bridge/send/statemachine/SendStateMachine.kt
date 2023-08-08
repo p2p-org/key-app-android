@@ -29,13 +29,13 @@ class SendStateMachine(
     }
 
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
-    private val state = MutableStateFlow<SendState>(SendState.Static.Empty)
+    private val state = MutableStateFlow<BridgeSendState>(BridgeSendState.Static.Empty)
 
     private var refreshFeeTimer: Job? = null
     private var actionHandleJob: Job? = null
     private var lastAction: SendFeatureAction = SendFeatureAction.InitFeature
 
-    fun observe(): StateFlow<SendState> = state.asStateFlow()
+    fun observe(): StateFlow<BridgeSendState> = state.asStateFlow()
 
     init {
         newAction(SendFeatureAction.InitFeature)
@@ -59,7 +59,7 @@ class SendStateMachine(
             .launchIn(this)
     }
 
-    private suspend fun catchException(throwable: Throwable, flowCollector: FlowCollector<SendState>) {
+    private suspend fun catchException(throwable: Throwable, flowCollector: FlowCollector<BridgeSendState>) {
         when (throwable) {
             is CancellationException -> Timber.i(throwable)
             is SendFeatureException -> {
@@ -68,7 +68,7 @@ class SendStateMachine(
                     startFeeReloadTimer()
                 }
                 val lastStaticState = state.value.lastStaticState
-                val wrappedState = SendState.Exception.Feature(
+                val wrappedState = BridgeSendState.Exception.Feature(
                     lastStaticState,
                     throwable,
                 )
@@ -76,7 +76,7 @@ class SendStateMachine(
             }
             else -> {
                 val lastStaticState = state.value.lastStaticState
-                val wrappedState = SendState.Exception.Other(
+                val wrappedState = BridgeSendState.Exception.Other(
                     lastStaticState,
                     throwable,
                 )
@@ -85,17 +85,17 @@ class SendStateMachine(
         }
     }
 
-    private fun startFeeTimerIfNeed(newState: SendState) {
+    private fun startFeeTimerIfNeed(newState: BridgeSendState) {
         val needStart = when (newState) {
-            SendState.Static.Empty -> false
-            is SendState.Loading.Fee -> {
+            BridgeSendState.Static.Empty -> false
+            is BridgeSendState.Loading.Fee -> {
                 refreshFeeTimer?.cancel()
                 false
             }
-            is SendState.Exception,
-            is SendState.Static.ReadyToSend,
-            is SendState.Static.TokenNotZero,
-            is SendState.Static.TokenZero -> true
+            is BridgeSendState.Exception,
+            is BridgeSendState.Static.ReadyToSend,
+            is BridgeSendState.Static.TokenNotZero,
+            is BridgeSendState.Static.TokenZero -> true
         }
         if (needStart) startFeeReloadTimer()
     }
@@ -105,7 +105,7 @@ class SendStateMachine(
         refreshFeeTimer = launch {
             delay(delay)
             val lastState = state.value
-            val lastAmount = if (lastState is SendState.Exception.Feature) {
+            val lastAmount = if (lastState is BridgeSendState.Exception.Feature) {
                 lastState.featureException.amount
             } else {
                 lastState.lastStaticState.inputAmount

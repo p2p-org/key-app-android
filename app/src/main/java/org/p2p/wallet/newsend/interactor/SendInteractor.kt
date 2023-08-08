@@ -225,8 +225,8 @@ class SendInteractor(
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 
-    suspend fun getFreeTransactionsInfo(): TransactionFeeLimits =
-        feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+    suspend fun getFreeTransactionsInfo(useCache: Boolean): TransactionFeeLimits =
+        feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache)
 
     suspend fun sendTransaction(
         destinationAddress: PublicKey,

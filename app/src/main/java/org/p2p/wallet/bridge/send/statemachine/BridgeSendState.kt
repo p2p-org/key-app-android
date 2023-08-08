@@ -7,15 +7,15 @@ import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 
 sealed interface SendBridgeState
 
-sealed interface SendState {
+sealed interface BridgeSendState {
 
-    sealed interface Loading : SendState, SendBridgeState {
+    sealed interface Loading : BridgeSendState, SendBridgeState {
         val lastStaticState: Static
 
         data class Fee(override val lastStaticState: Static) : Loading
     }
 
-    sealed interface Exception : SendState, SendBridgeState {
+    sealed interface Exception : BridgeSendState, SendBridgeState {
         val lastStaticState: Static
 
         data class Other(
@@ -29,7 +29,7 @@ sealed interface SendState {
         ) : Exception
     }
 
-    sealed interface Static : SendState {
+    sealed interface Static : BridgeSendState {
 
         object Empty : Static, SendBridgeState
 

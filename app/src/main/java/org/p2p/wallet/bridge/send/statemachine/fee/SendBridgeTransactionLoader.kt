@@ -13,13 +13,13 @@ import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
 import org.p2p.wallet.bridge.send.model.getFeeList
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
-import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
-import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
+import org.p2p.wallet.bridge.send.statemachine.model.BridgeSendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
@@ -27,7 +27,7 @@ import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class SendBridgeTransactionLoader constructor(
-    private val initialData: SendInitialData.Bridge,
+    private val initialData: BridgeSendInitialData.Bridge,
     private val mapper: SendBridgeStaticStateMapper,
     private val validator: SendBridgeValidator,
     private val bridgeSendInteractor: BridgeSendInteractor,
@@ -38,13 +38,13 @@ class SendBridgeTransactionLoader constructor(
     private var freeTransactionFeeLimits: TransactionFeeLimits? = null
 
     fun prepareTransaction(
-        lastStaticState: SendState.Static,
+        lastStaticState: BridgeSendState.Static,
         lastAmount: BigDecimal? = null
-    ): Flow<SendState> = flow {
+    ): Flow<BridgeSendState> = flow {
 
         val token = lastStaticState.bridgeToken ?: return@flow
 
-        emit(SendState.Loading.Fee(lastStaticState))
+        emit(BridgeSendState.Loading.Fee(lastStaticState))
         val lastFeeInToken = getFeeTotalInToken(lastStaticState)
         val currentAmount = lastAmount ?: lastStaticState.inputAmount.orZero()
         val fee = loadFee(token, currentAmount)
@@ -56,14 +56,14 @@ class SendBridgeTransactionLoader constructor(
             validator.validateIsFeeMoreThanTotal(token, fee, inputAmount)
             validator.validateIsFeeMoreThanAmount(fee, inputAmount, amountWithFee)
             val sendTransaction = createTransaction(token.token, inputLamports)
-            emit(SendState.Static.ReadyToSend(token, fee, inputAmount, sendTransaction))
+            emit(BridgeSendState.Static.ReadyToSend(token, fee, inputAmount, sendTransaction))
         } else {
-            emit(SendState.Static.TokenZero(token, fee))
+            emit(BridgeSendState.Static.TokenZero(token, fee))
             validator.validateIsFeeMoreThanTotal(token, fee, currentAmount)
         }
     }
 
-    private fun getFeeTotalInToken(lastStaticState: SendState.Static): BigDecimal {
+    private fun getFeeTotalInToken(lastStaticState: BridgeSendState.Static): BigDecimal {
         return lastStaticState.bridgeFee?.fee.getFeeList().sumOf { it.amountInToken }
     }
 

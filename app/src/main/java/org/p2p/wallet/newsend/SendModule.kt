@@ -3,9 +3,13 @@ package org.p2p.wallet.newsend
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import retrofit2.Retrofit
 import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.network.NetworkCoreModule.getRetrofit
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.token.Token
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
@@ -13,9 +17,11 @@ import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
+import org.p2p.wallet.newsend.interactor.SendServiceInteractor
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
+import org.p2p.wallet.newsend.repository.SendServiceRemoteRepository
 import org.p2p.wallet.newsend.ui.NewSendContract
 import org.p2p.wallet.newsend.ui.NewSendPresenter
 import org.p2p.wallet.newsend.ui.SendOpenedFrom
@@ -34,6 +40,9 @@ import org.p2p.wallet.svl.ui.send.SendViaLinkContract
 import org.p2p.wallet.svl.ui.send.SendViaLinkPresenter
 
 object SendModule : InjectionModule {
+
+    private const val SEND_SERVICE_RETROFIT_QUALIFIER = "SEND_SERVICE_RETROFIT_QUALIFIER"
+
     override fun create() = module {
         initDataLayer()
         singleOf(::SendModeProvider)
@@ -90,5 +99,17 @@ object SendModule : InjectionModule {
         factoryOf(::FeeRelayerViaLinkInteractor)
         factoryOf(::SendViaLinkInteractor)
         factoryOf(::UserSendLinksDatabaseRepository) bind UserSendLinksLocalRepository::class
+
+        factoryOf(::SendServiceInteractor)
+        singleOf(::SendServiceRemoteRepository)
+
+        single(named(SEND_SERVICE_RETROFIT_QUALIFIER)) {
+            val url = get<NetworkServicesUrlProvider>()
+            getRetrofit(
+                baseUrl = url.loadSendServiceEnvironment().baseServiceUrl,
+                tag = "SendService",
+                interceptor = null
+            )
+        }
     }
 }

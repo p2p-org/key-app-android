@@ -6,11 +6,11 @@ interface SendActionHandler {
 
     fun canHandle(
         newEvent: SendFeatureAction,
-        staticState: SendState.Static,
+        staticState: BridgeSendState.Static,
     ): Boolean
 
     fun handle(
-        currentState: SendState,
+        currentState: BridgeSendState,
         newAction: SendFeatureAction,
-    ): Flow<SendState>
+    ): Flow<BridgeSendState>
 }

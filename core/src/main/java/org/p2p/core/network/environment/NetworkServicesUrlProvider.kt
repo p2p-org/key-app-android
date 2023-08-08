@@ -18,6 +18,7 @@ private const val KEY_MOONPAY_SERVER_SIDE_BASE_URL = "KEY_MOONPAY_SERVER_SIDE_BA
 private const val KEY_BRIDGES_SERVICE_BASE_URL = "KEY_BRIDGES_SERVICE_BASE_URL"
 private const val KEY_GATEWAY_BASE_URL = "KEY_GATEWAY_BASE_URL"
 private const val KEY_TOKEN_SERVICE_BASE_URL = "KEY_TOKEN_SERVICE_BASE_URL"
+private const val KEY_SEND_SERVICE_BASE_URL = "KEY_SEND_SERVICE_BASE_URL"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
@@ -192,6 +193,16 @@ class NetworkServicesUrlProvider(
 
         crashLogger.setCustomKey(KEY_TOKEN_SERVICE_BASE_URL, url)
         return TokenServiceEnvironment(url)
+    }
+
+    fun loadSendServiceEnvironment(): SendServiceEnvironment {
+        val url = storage.getString(
+            KEY_SEND_SERVICE_BASE_URL,
+            context.getString(R.string.sendServiceBaseUrl)
+        ).orEmpty()
+
+        crashLogger.setCustomKey(KEY_SEND_SERVICE_BASE_URL, url)
+        return SendServiceEnvironment(url)
     }
 
     private fun saveMoonpayEnvironment(newServerSideUrl: String) {

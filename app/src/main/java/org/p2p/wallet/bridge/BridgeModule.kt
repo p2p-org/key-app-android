@@ -15,6 +15,10 @@ import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.rpc.RPC_JSON_QUALIFIER
 
 object BridgeModule : InjectionModule {
+    @Deprecated(
+        message = "Retrofit is not needed here, since it's a JSONRPC and you're passing the URL directly",
+        replaceWith = ReplaceWith("Please remove this qualifier and just inject the existing [RpcApi]"),
+    )
     const val BRIDGE_RETROFIT_QUALIFIER = "BRIDGE_RETROFIT_QUALIFIER"
 
     override fun create(): Module = module {

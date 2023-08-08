@@ -8,7 +8,7 @@ import org.p2p.core.utils.isZero
 import org.p2p.wallet.bridge.send.model.getFeeList
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
-import org.p2p.wallet.bridge.send.statemachine.SendState
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendState
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.fee
@@ -23,15 +23,15 @@ class AmountChangeActionHandler(
     private val transactionLoader: SendBridgeTransactionLoader,
 ) : SendActionHandler {
 
-    override fun canHandle(newEvent: SendFeatureAction, staticState: SendState.Static): Boolean =
+    override fun canHandle(newEvent: SendFeatureAction, staticState: BridgeSendState.Static): Boolean =
         newEvent is SendFeatureAction.AmountChange ||
             newEvent is SendFeatureAction.MaxAmount ||
             newEvent is SendFeatureAction.ZeroAmount
 
     override fun handle(
-        currentState: SendState,
+        currentState: BridgeSendState,
         newAction: SendFeatureAction
-    ): Flow<SendState> = flow {
+    ): Flow<BridgeSendState> = flow {
         val lastStaticState = currentState.lastStaticState
         val token = lastStaticState.bridgeToken ?: return@flow
         val feeTotalAmount = getFeeTotalInToken(lastStaticState)
@@ -45,14 +45,14 @@ class AmountChangeActionHandler(
         }
 
         val newState = if (newAmount.isZero()) {
-            SendState.Static.TokenZero(token, lastStaticState.fee)
+            BridgeSendState.Static.TokenZero(token, lastStaticState.fee)
         } else {
             validator.validateInputAmount(token, newAmount = newAmount, newAmountWithFee = newAmount + feeTotalAmount)
             mapper.updateInputAmount(lastStaticState, newAmount)
         }
         emit(newState)
-        if (newState is SendState.Static.TokenNotZero) {
-            emit(SendState.Loading.Fee(newState))
+        if (newState is BridgeSendState.Static.TokenNotZero) {
+            emit(BridgeSendState.Loading.Fee(newState))
             delay(500)
         }
         transactionLoader.prepareTransaction(newState).collect {
@@ -60,7 +60,7 @@ class AmountChangeActionHandler(
         }
     }
 
-    private fun getFeeTotalInToken(lastStaticState: SendState.Static): BigDecimal {
+    private fun getFeeTotalInToken(lastStaticState: BridgeSendState.Static): BigDecimal {
         return lastStaticState.bridgeFee?.fee.getFeeList().sumOf { it.amountInToken }
     }
 }

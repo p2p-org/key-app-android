@@ -18,7 +18,7 @@ import org.p2p.wallet.bridge.send.statemachine.handler.bridge.InitFeatureActionH
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.NewTokenActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.RefreshFeeActionHandler
 import org.p2p.wallet.bridge.send.statemachine.mapper.SendBridgeStaticStateMapper
-import org.p2p.wallet.bridge.send.statemachine.model.SendInitialData
+import org.p2p.wallet.bridge.send.statemachine.model.BridgeSendInitialData
 import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.statemachine.validator.SendBridgeValidator
 import org.p2p.wallet.bridge.send.ui.BridgeSendContract
@@ -50,7 +50,7 @@ object BridgeSendModule : InjectionModule {
         factory { (recipientAddress: SearchResult, initialToken: Token.Active?, inputAmount: BigDecimal?) ->
             val initialBridgeToken = initialToken?.let { SendToken.Bridge(it) }
             val recipient = EthAddress(recipientAddress.address)
-            val initialData = SendInitialData.Bridge(
+            val initialData = BridgeSendInitialData.Bridge(
                 initialToken = initialBridgeToken,
                 initialAmount = inputAmount,
                 recipient = recipient
