@@ -13,7 +13,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentSendNewBinding
+import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.TemporaryAccount
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
@@ -49,7 +49,7 @@ class SendViaLinkFragment :
     private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
     private val svlAnalytics: SendViaLinkAnalytics by inject()
 
-    private val binding: FragmentSendNewBinding by viewBinding()
+    private val binding: FragmentSendBinding by viewBinding()
 
     override val presenter: SendViaLinkContract.Presenter by inject()
 
@@ -161,7 +161,7 @@ class SendViaLinkFragment :
     }
 
     override fun showApproximateAmount(approximateAmount: String) {
-        binding.widgetSendDetails.setAroundValue(approximateAmount)
+        binding.widgetSendDetails.setApproximateAmount(approximateAmount)
     }
 
     override fun setTokenContainerEnabled(isEnabled: Boolean) {

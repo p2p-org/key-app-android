@@ -203,7 +203,10 @@ class SendViaLinkPresenter(
 
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
-        newSendAnalytics.logSwitchCurrencyModeClicked(newMode, NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK)
+        newSendAnalytics.logSwitchCurrencyModeClicked(
+            isCryptoMode = !newMode.isFiat(),
+            flow = NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK
+        )
     }
 
     override fun updateInputAmount(amount: String) {
@@ -264,7 +267,7 @@ class SendViaLinkPresenter(
             account = recipient,
             token = token,
             lamports = lamports,
-            currencyModeSymbol = calculationMode.getCurrencyMode().getCurrencyModeSymbol()
+            currencyModeSymbol = calculationMode.getCurrencyMode().getTypedSymbol()
         )
     }
 

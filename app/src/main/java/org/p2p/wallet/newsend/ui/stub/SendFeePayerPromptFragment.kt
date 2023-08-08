@@ -102,21 +102,21 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
     }
 
     private fun showFeePayerSelection() {
-        lifecycleScope.launch {
-            val currentFeePayerToken = sendInteractor.getFeePayerToken()
-            replaceFragment(
-                target = NewSelectTokenFragment.create(
-                    tokensToSelectFrom = promptData.alternativeFeePayerTokens,
-                    selectedToken = currentFeePayerToken,
-                    requestKey = requestKey,
-                    resultKey = resultKey,
-                    title = getString(R.string.send_pick_fee_token_title)
-                ),
-                enter = R.anim.slide_up,
-                exit = 0,
-                popExit = R.anim.slide_down,
-                popEnter = 0
-            )
-        }
+//        lifecycleScope.launch {
+//            val currentFeePayerToken = sendInteractor.getFeePayerToken()
+//            replaceFragment(
+//                target = NewSelectTokenFragment.create(
+//                    tokensToSelectFrom = promptData.alternativeFeePayerTokens,
+//                    selectedToken = currentFeePayerToken,
+//                    requestKey = requestKey,
+//                    resultKey = resultKey,
+//                    title = getString(R.string.send_pick_fee_token_title)
+//                ),
+//                enter = R.anim.slide_up,
+//                exit = 0,
+//                popExit = R.anim.slide_down,
+//                popEnter = 0
+//            )
+//        }
     }
 }
