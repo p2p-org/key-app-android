@@ -28,6 +28,8 @@ class ReserveUsernamePresenter(
     }
 
     override fun onUsernameInputChanged(newUsername: String) {
+        checkUsernameJob?.cancel()
+
         this.currentUsernameEntered = newUsername
         if (!usernameValidator.isUsernameValid(currentUsernameEntered)) {
             view?.showUsernameInvalid()
