@@ -9,6 +9,7 @@ import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -21,7 +22,8 @@ class HistoryPresenter(
     private val claimUiMapper: ClaimUiMapper,
     private val bridgeSendUiMapper: BridgeSendUiMapper,
     private val transactionManager: TransactionManager,
-    private val userRepository: UserLocalRepository
+    private val userRepository: UserLocalRepository,
+    private val historyAnalytics: HistoryAnalytics
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     override fun onBuyClicked() {
@@ -33,6 +35,7 @@ class HistoryPresenter(
     }
 
     override fun onTransactionClicked(transactionId: String) {
+        historyAnalytics.logTokenTransactionClicked(transactionId)
         view?.openTransactionDetailsScreen(transactionId)
     }
 
