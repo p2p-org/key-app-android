@@ -34,13 +34,11 @@ class StrigaFragmentFactory {
      * </pre>
      */
     fun onRampConfirmOtpFragment(
-        titleAmount: String,
         challengeId: StrigaWithdrawalChallengeId
     ): Fragment {
         return SmsInputFactory.create<Fragment>(
             type = SmsInputFactory.Type.StrigaOnRamp,
             args = bundleOf(
-                StrigaOtpConfirmFragment.ARG_TITLE_AMOUNT to titleAmount,
                 StrigaOtpConfirmFragment.ARG_CHALLENGE_ID to challengeId
             )
         )

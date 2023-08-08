@@ -62,7 +62,7 @@ class ReceiveTokensPresenter(
     }
 
     private suspend fun preparePinedWormholeTokens(): List<TokenMetadata> {
-        return ERC20Tokens.values()
+        return ERC20Tokens.valuesWithout(ERC20Tokens.MATIC)
             .mapNotNull { erc20Token ->
                 interactor.findTokenDataByAddress(erc20Token.mintAddress)?.let { token ->
                     TokenMetadata(

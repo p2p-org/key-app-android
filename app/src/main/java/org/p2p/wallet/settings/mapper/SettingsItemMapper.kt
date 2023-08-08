@@ -1,9 +1,10 @@
-package org.p2p.wallet.settings.model
+package org.p2p.wallet.settings.mapper
 
 import android.content.res.Resources
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.ComplexSettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.SettingsGroupTitleItem
 import org.p2p.wallet.settings.model.SettingsItem.SettingsSpaceSeparatorItem
@@ -17,6 +18,7 @@ class SettingsItemMapper(
     fun createItems(
         username: Username?,
         isUsernameItemVisible: Boolean,
+        countryName: String?,
         isBiometricLoginEnabled: Boolean,
         isZeroBalanceTokenHidden: Boolean,
         isBiometricLoginAvailable: Boolean,
@@ -24,7 +26,8 @@ class SettingsItemMapper(
     ): List<SettingsItem> = buildList {
         this += profileBlock(
             username = username,
-            isUsernameItemVisible = isUsernameItemVisible
+            isUsernameItemVisible = isUsernameItemVisible,
+            countryName = countryName
         )
         this += securityBlock(
             isBiometricLoginEnabled = isBiometricLoginEnabled,
@@ -38,6 +41,7 @@ class SettingsItemMapper(
 
     private fun profileBlock(
         username: Username?,
+        countryName: String?,
         isUsernameItemVisible: Boolean
     ): List<SettingsItem> = buildList {
         add(SettingsSpaceSeparatorItem)
@@ -45,6 +49,7 @@ class SettingsItemMapper(
         if (isUsernameItemVisible) {
             addUsernameItem(username)
         }
+        addCountrySelectorItem(countryName)
         add(
             ComplexSettingsItem(
                 nameRes = R.string.settings_item_title_support,
@@ -63,6 +68,17 @@ class SettingsItemMapper(
                 iconRes = R.drawable.ic_settings_user,
                 additionalText = username?.fullUsername
                     ?: resources.getString(R.string.settings_item_username_not_reserved),
+                hasSeparator = true
+            )
+        )
+    }
+
+    private fun MutableList<SettingsItem>.addCountrySelectorItem(countryName: String?) {
+        add(
+            ComplexSettingsItem(
+                nameRes = R.string.settings_item_title_country,
+                iconRes = R.drawable.ic_settings_country,
+                additionalText = countryName ?: resources.getString(R.string.settings_item_country_not_selected),
                 hasSeparator = true
             )
         )

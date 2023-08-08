@@ -57,4 +57,9 @@
         <item name="android:windowIsFloating">false</item>
         <item name="enableEdgeToEdge">true</item>
     </style>
+
+    <style name="WalletTheme.CheckboxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:buttonTint">@color/night</item>
+        <item name="android:textAppearance">@style/UiKit.TextAppearance.Regular.Text3</item>
+    </style>
 </resources>

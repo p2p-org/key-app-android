@@ -25,7 +25,7 @@ class DebugInformerViewBuilder {
                 value = "Account creation fee".wrap(),
                 titleIcon = R.drawable.ic_info_solid.wrap()
             ),
-            caption = "0.028813 USDC".wrap(),
+            caption = "0.028813 USDC".wrapCaption(),
             infoLine = InformerViewCellModel.InfoLineParams(
                 value = "Info line".wrap(),
                 position = InformerViewCellModel.InfoLineParams.InfoLinePosition.BOTTOM,
@@ -38,10 +38,10 @@ class DebugInformerViewBuilder {
                 iconTint = R.color.icons_night
             ),
             title = InformerViewCellModel.TitleParams(
-                "Account creation fee".wrap(),
-                R.drawable.ic_info_solid.wrap()
+                value = "Account creation fee".wrap(),
+                titleIcon = R.drawable.ic_info_solid.wrap()
             ),
-            caption = "0.028813 USDC".wrap(),
+            caption = "0.028813 USDC".wrapCaption(),
             infoLine = InformerViewCellModel.InfoLineParams(
                 value = "(\$0.03)".wrap(),
                 position = InformerViewCellModel.InfoLineParams.InfoLinePosition.CAPTION_LINE,
@@ -55,10 +55,10 @@ class DebugInformerViewBuilder {
                 iconTint = R.color.icons_night
             ),
             title = InformerViewCellModel.TitleParams(
-                "Account creation fee".wrap(),
-                R.drawable.ic_info_solid.wrap()
+                value = "Account creation fee".wrap(),
+                titleIcon = R.drawable.ic_info_solid.wrap()
             ),
-            caption = "0.028813 USDC".wrap(),
+            caption = "0.028813 USDC".wrapCaption(),
         )
     ) +
 
@@ -75,7 +75,7 @@ class DebugInformerViewBuilder {
                 title = InformerViewCellModel.TitleParams(
                     value = "Account creation fee".wrap(),
                 ),
-                caption = "0.028813 USDC".wrap(),
+                caption = "0.028813 USDC".wrapCaption(),
                 infoLine = InformerViewCellModel.InfoLineParams(
                     value = "Info line".wrap(),
                     position = InformerViewCellModel.InfoLineParams.InfoLinePosition.BOTTOM,
@@ -90,7 +90,7 @@ class DebugInformerViewBuilder {
                 title = InformerViewCellModel.TitleParams(
                     value = "Account creation fee".wrap(),
                 ),
-                caption = "0.028813 USDC".wrap(),
+                caption = "0.028813 USDC".wrapCaption(),
                 infoLine = InformerViewCellModel.InfoLineParams(
                     value = "(\$0.03)".wrap(),
                     position = InformerViewCellModel.InfoLineParams.InfoLinePosition.CAPTION_LINE,
@@ -106,7 +106,7 @@ class DebugInformerViewBuilder {
                 title = InformerViewCellModel.TitleParams(
                     value = "Account creation fee".wrap(),
                 ),
-                caption = "0.028813 USDC".wrap(),
+                caption = "0.028813 USDC".wrapCaption(),
             ),
         ) +
 
@@ -120,7 +120,7 @@ class DebugInformerViewBuilder {
                     icon = R.drawable.ic_checkbox_checked.wrap(),
                     iconTint = R.color.icons_night
                 ),
-                caption = "0.028813 USDC".wrap(),
+                caption = "0.028813 USDC".wrapCaption(),
                 infoLine = InformerViewCellModel.InfoLineParams(
                     value = "Info line".wrap(),
                     position = InformerViewCellModel.InfoLineParams.InfoLinePosition.BOTTOM,
@@ -132,7 +132,7 @@ class DebugInformerViewBuilder {
                     icon = R.drawable.ic_checkbox_checked.wrap(),
                     iconTint = R.color.icons_night
                 ),
-                caption = "The minimum amount you will receive. If the price slips any further ".wrap(),
+                caption = "The minimum amount you will receive. If the price slips any further ".wrapCaption(),
                 infoLine = InformerViewCellModel.InfoLineParams(
                     value = "(\$0.03)".wrap(),
                     position = InformerViewCellModel.InfoLineParams.InfoLinePosition.CAPTION_LINE,
@@ -148,7 +148,7 @@ class DebugInformerViewBuilder {
                 caption = buildString {
                     append("The minimum amount you will receive. ")
                     append("If the price slips any further, your transaction will revert.")
-                }.wrap(),
+                }.wrapCaption(),
             ),
         )
 
@@ -157,4 +157,7 @@ class DebugInformerViewBuilder {
 
     private fun String.wrap(): TextContainer.Raw =
         TextContainer.Raw(this)
+
+    private fun String.wrapCaption(): InformerViewCellModel.CaptionParams =
+        InformerViewCellModel.CaptionParams(TextContainer.Raw(this))
 }

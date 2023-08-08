@@ -119,6 +119,9 @@ class DebugSettingsFragment :
             R.string.debug_settings_ui_kit -> {
                 replaceFragment(DebugUiKitFragment())
             }
+            R.string.debug_settings_reset_user_country_title -> {
+                presenter.onClickResetUserCountry()
+            }
         }
     }
 

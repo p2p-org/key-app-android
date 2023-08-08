@@ -122,7 +122,7 @@ internal class EthereumKitRepository(
     private suspend fun loadTokensMetadata(): List<EthTokenMetadata> {
         val publicKey = tokenKeyProvider?.publicKey ?: throwInitError()
         // Map erc 20 tokens to hex string addresses list
-        val erc20TokensAddresses = ERC20Tokens.values().map { it.contractAddress }
+        val erc20TokensAddresses = ERC20Tokens.valuesWithout(ERC20Tokens.MATIC).map { it.contractAddress }
         // Load balances for ERC 20 tokens
 
         // Create list with [native] token, to receive tokens metadata, from token service

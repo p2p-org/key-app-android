@@ -40,7 +40,7 @@ fun plantStubTimber() {
     Timber.plant(object : Timber.DebugTree() {})
 }
 
-private fun plantTimberToStdout(
+fun plantTimberToStdout(
     defaultTag: String,
     excludeMessages: List<String> = emptyList(),
     excludeStacktraceForMessages: List<String> = emptyList()

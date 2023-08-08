@@ -24,7 +24,6 @@ import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.transaction.model.progressstate.StrigaOffRampTransactionState
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.toPublicKey
 
@@ -55,29 +54,31 @@ class StrigaWithdrawInteractor(
 
         val userUsdcToken = userTokensInteractor.findUserToken(Constants.USDC_MINT)
             ?: throw StrigaWithdrawError.StrigaSendUsdcFailed("USDC token not found")
-        val userStrigaUsdcAddress = strigaWalletInteractor.getCryptoAccountDetails().depositAddress
 
-        val internalTransactionId = UUID.randomUUID().toString()
-        try {
-            val transactionId = sendUsdcToStriga(userUsdcToken, userStrigaUsdcAddress, amount)
-            addPendingTransaction(
-                transactionId = transactionId,
-                usdcToken = userUsdcToken,
-                amount = amount,
-                userStrigaUsdcAddress = userStrigaUsdcAddress
-            )
-            transactionManager.emitTransactionState(
-                transactionId = internalTransactionId,
-                state = StrigaOffRampTransactionState.UsdcWithdrawSuccess
-            )
-        } catch (error: Throwable) {
-            transactionManager.emitTransactionState(
-                transactionId = internalTransactionId,
-                state = StrigaOffRampTransactionState.UsdcWithdrawError
-            )
-            throw error
-        }
-        return internalTransactionId to userUsdcToken
+        return UUID.randomUUID().toString() to userUsdcToken
+//        val userStrigaUsdcAddress = strigaWalletInteractor.getCryptoAccountDetails().depositAddress
+//
+//        val internalTransactionId = UUID.randomUUID().toString()
+//        try {
+//            val transactionId = sendUsdcToStriga(userUsdcToken, userStrigaUsdcAddress, amount)
+//            val pendingTransaction = addPendingTransaction(
+//                transactionId = transactionId,
+//                usdcToken = userUsdcToken,
+//                amount = amount,
+//                userStrigaUsdcAddress = userStrigaUsdcAddress
+//            )
+//            transactionManager.emitTransactionState(
+//                transactionId = internalTransactionId,
+//                state = SendSwapProgressState.Success(pendingTransaction, userUsdcToken.tokenSymbol)
+//            )
+//        } catch (error: Throwable) {
+//            transactionManager.emitTransactionState(
+//                transactionId = internalTransactionId,
+//                state = SendSwapProgressState.Error(internalTransactionId)
+//            )
+//            throw error
+//        }
+//        return internalTransactionId to userUsdcToken
     }
 
     @Throws(StrigaWithdrawError.StrigaSendUsdcFailed::class)
@@ -145,7 +146,7 @@ class StrigaWithdrawInteractor(
         usdcToken: Token.Active,
         amount: BigDecimal,
         userStrigaUsdcAddress: String
-    ) {
+    ): RpcHistoryTransaction.Transfer {
         val pendingTransaction = buildSendPendingTransaction(
             transactionId = transactionId,
             token = usdcToken,
@@ -157,5 +158,6 @@ class StrigaWithdrawInteractor(
             transaction = pendingTransaction,
             mintAddress = usdcToken.mintAddress.toBase58Instance()
         )
+        return pendingTransaction
     }
 }

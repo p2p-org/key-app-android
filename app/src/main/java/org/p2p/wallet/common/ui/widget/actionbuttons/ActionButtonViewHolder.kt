@@ -12,6 +12,8 @@ class ActionButtonViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun onBind(actionButton: ActionButton) {
+        binding.root.id = actionButton.viewId // for UI testing
+
         binding.textViewTitle.setText(actionButton.textRes)
         binding.imageButtonAction.setImageResource(actionButton.iconRes)
         binding.imageButtonAction.setOnClickListener { onButtonClicked.invoke(actionButton) }

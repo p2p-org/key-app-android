@@ -15,11 +15,11 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.striga.signup.finish.StrigaSignupFinishFragment
 import org.p2p.wallet.striga.signup.presetpicker.StrigaPresetDataPickerFragment
-import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaOccupation
-import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupFieldState
+import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaSourceOfFunds
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupFieldState
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -126,8 +126,8 @@ class StrigaSignUpSecondStepFragment :
         with(binding.buttonNext) {
             this.isEnabled = isEnabled
             icon = if (isEnabled) {
-                bind(TextContainer(R.string.auth_next))
-                binding.getDrawable(R.drawable.ic_arrow_right)
+                bind(TextContainer(R.string.common_confirm))
+                binding.getDrawable(R.drawable.ic_arrow_forward)
             } else {
                 bind(TextContainer(R.string.striga_button_error_check_red_fields))
                 null

@@ -24,7 +24,10 @@ interface StrigaWalletRepository {
         accountId: StrigaAccountId
     ): StrigaDataLayerResult<StrigaCryptoAccountDetails>
 
-    suspend fun getUserWallet(): StrigaDataLayerResult<StrigaUserWallet>
+    /**
+     * @param ignoreCache - ignore cache and fetch fresh data
+     */
+    suspend fun getUserWallet(ignoreCache: Boolean = false): StrigaDataLayerResult<StrigaUserWallet>
 
     suspend fun getUserBankingDetails(
         accountId: StrigaAccountId,

@@ -11,6 +11,8 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
+import org.p2p.wallet.home.events.AppLoaderFacade
+import org.p2p.wallet.home.events.StrigaFeatureLoader
 import org.p2p.wallet.home.ui.main.delegates.striga.offramp.StrigaOffRampCellModel
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.wallet.WalletContract
@@ -18,11 +20,13 @@ import org.p2p.wallet.home.ui.wallet.mapper.StrigaKycUiBannerMapper
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.striga.offramp.withdraw.interactor.StrigaWithdrawInteractor
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaNoBankingDetailsProvided
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 
 class WalletStrigaHandler(
@@ -34,8 +38,14 @@ class WalletStrigaHandler(
     private val historyInteractor: HistoryInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val localFeatureFlags: InAppFeatureFlags,
-//    private val strigaOtpConfirmInteractor: StrigaOtpConfirmInteractor,
+    private val appLoaderFacade: AppLoaderFacade,
+    private val strigaSmsInputTimer: SmsInputTimer,
 ) {
+    // todo: this logic still hasn't described, but it helps to reuse otp timers
+    //       and avoid getting new challengeId every button click
+    private var onRampChallengeId: StrigaWithdrawalChallengeId? = null
+    private var offRampChallengeId: StrigaWithdrawalChallengeId? = null
+
     suspend fun handleBannerClick(view: WalletContract.View?, item: StrigaBanner) {
         with(item.status) {
             val statusFromKycBanner = strigaKycUiBannerMapper.getKycStatusBannerFromTitle(bannerTitleResId)
@@ -49,6 +59,7 @@ class WalletStrigaHandler(
 
                     if (statusFromKycBanner == StrigaKycStatusBanner.VERIFICATION_DONE) {
                         view?.showStrigaBannerProgress(isLoading = true)
+                        appLoaderFacade.cancel(StrigaFeatureLoader::class.java)
                         strigaWalletInteractor.loadDetailsForStrigaAccounts()
                             .onSuccess { view?.navigateToStrigaByBanner(statusFromKycBanner) }
                             .onFailure { view?.showUiKitSnackBar(messageResId = R.string.error_general_message) }
@@ -67,9 +78,14 @@ class WalletStrigaHandler(
     suspend fun handleOnRampClick(view: WalletContract.View?, item: StrigaOnRampCellModel) {
         try {
             view?.showStrigaOnRampProgress(isLoading = true, tokenMint = item.tokenMintAddress)
-            val challengeId = strigaOnRampInteractor.onRampToken(item.amountAvailable, item.payload).unwrap()
-            // todo: fixme
-            //       strigaOtpConfirmInteractor.launchInitialTimer()
+            val challengeId = onRampChallengeId
+                ?: strigaOnRampInteractor.onRampToken(item.amountAvailable, item.payload).unwrap()
+
+            if (onRampChallengeId == null) {
+                strigaSmsInputTimer.startSmsInputTimerFlow()
+            }
+            onRampChallengeId = challengeId
+
             view?.navigateToStrigaOnRampConfirmOtp(challengeId, item)
         } catch (e: Throwable) {
             Timber.e(e, "Error on claiming striga token")
@@ -91,9 +107,14 @@ class WalletStrigaHandler(
                 throw StrigaNoBankingDetailsProvided()
             }
 
-            val challengeId = strigaWithdrawInteractor.withdrawEur(item.amountAvailable)
-            // todo: fixme
-            //       strigaOtpConfirmInteractor.launchInitialTimer()
+            val challengeId = offRampChallengeId
+                ?: strigaWithdrawInteractor.withdrawEur(item.amountAvailable)
+
+            // if there's no challenge id - start initial timer
+            if (offRampChallengeId == null) {
+                strigaSmsInputTimer.startSmsInputTimerFlow()
+            }
+            offRampChallengeId = challengeId
 
             view?.navigateToStrigaOffRampConfirmOtp(challengeId, item)
         } catch (e: StrigaNoBankingDetailsProvided) {
