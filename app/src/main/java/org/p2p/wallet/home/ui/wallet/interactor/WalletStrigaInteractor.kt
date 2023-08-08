@@ -10,7 +10,7 @@ class WalletStrigaInteractor(
     private val onOffRampTokensRepository: WalletStrigaOnOffRampTokensRepository,
     private val strigaUserInteractor: StrigaUserInteractor,
 ) {
-    suspend fun loadOnOffRampTokens() = onOffRampTokensRepository.load()
+    suspend fun loadOnOffRampTokens(): Unit = onOffRampTokensRepository.load()
     fun observeOnOffRampTokens(): StateFlow<WalletStrigaOnOffRampTokens> = onOffRampTokensRepository.observeTokens()
     fun observeKycBanner(): StateFlow<StrigaKycStatusBanner?> = strigaUserInteractor.getUserStatusBannerFlow()
 }
