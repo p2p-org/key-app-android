@@ -3,7 +3,6 @@ package org.p2p.wallet.auth.ui.generalerror.timer
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import java.io.File
 
 interface OnboardingGeneralErrorTimerContract {
     interface View : MvpView {
@@ -14,7 +13,7 @@ interface OnboardingGeneralErrorTimerContract {
         )
 
         fun navigateToStartingScreen()
-        fun showFile(file: File)
+        fun showBrowserTab(url: String)
     }
 
     interface Presenter : MvpPresenter<View> {
