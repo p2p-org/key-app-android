@@ -25,7 +25,6 @@ import org.p2p.wallet.newsend.ui.details.NewSendDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
-import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
@@ -35,7 +34,6 @@ import org.p2p.wallet.utils.getParcelableArrayListCompat
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone

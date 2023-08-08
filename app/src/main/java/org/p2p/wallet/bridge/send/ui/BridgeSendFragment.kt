@@ -17,7 +17,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.bridge.send.ui.dialog.BridgeSendFeeBottomSheet
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentSendNewBinding
+import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
@@ -69,7 +69,7 @@ class BridgeSendFragment :
     private val inputAmount: BigDecimal? by args(ARG_INPUT_AMOUNT)
     private val openedFrom: SendOpenedFrom by args(ARG_OPENED_FROM)
 
-    private val binding: FragmentSendNewBinding by viewBinding()
+    private val binding: FragmentSendBinding by viewBinding()
 
     override val presenter: BridgeSendContract.Presenter by inject {
         parametersOf(recipient, initialToken, inputAmount)
@@ -181,7 +181,7 @@ class BridgeSendFragment :
     }
 
     override fun showApproximateAmount(approximateAmount: String) {
-        binding.widgetSendDetails.setAroundValue(approximateAmount)
+        binding.widgetSendDetails.setApproximateAmount(approximateAmount)
     }
 
     override fun setTokenContainerEnabled(isEnabled: Boolean) {

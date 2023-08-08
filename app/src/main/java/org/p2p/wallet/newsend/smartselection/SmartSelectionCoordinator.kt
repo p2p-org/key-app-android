@@ -21,9 +21,8 @@ class SmartSelectionCoordinator(
     fun onNewTrigger(newTrigger: SmartSelectionTrigger) {
     }
 
-    fun requireFeePayer() : Token.Active = feePayer
+    fun requireFeePayer(): Token.Active = feePayer
 
     fun release() {
-
     }
 }

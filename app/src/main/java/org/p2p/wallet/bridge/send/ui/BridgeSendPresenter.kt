@@ -495,7 +495,7 @@ class BridgeSendPresenter(
         val arbiterFeeAmount = lastStaticState.bridgeFee?.fee?.arbiterFee?.amountInToken?.toPlainString()
         alarmErrorsLogger.triggerBridgeSendAlarm(
             token = token,
-            currency = calculationMode.getCurrencyMode().getCurrencyModeSymbol(),
+            currency = calculationMode.getCurrencyMode().getTypedSymbol(),
             sendAmount = calculationMode.getCurrentAmount().toPlainString(),
             arbiterFeeAmount = arbiterFeeAmount.orEmpty(),
             recipientEthPubkey = recipientAddress.address,
