@@ -81,11 +81,16 @@ sealed class Token constructor(
         val isHidden: Boolean
             get() = visibility == TokenVisibility.HIDDEN
 
+        @IgnoredOnParcel
+        val canTokenBeHidden: Boolean
+            get() = tokenExtensions.canTokenBeHidden != false
+
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN ||
                 isZerosHidden &&
                 isZero &&
-                visibility == TokenVisibility.DEFAULT
+                visibility == TokenVisibility.DEFAULT &&
+                canTokenBeHidden
 
         fun getFormattedUsdTotal(includeSymbol: Boolean = true): String? {
             return if (includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
