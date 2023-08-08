@@ -132,14 +132,14 @@ class WalletStrigaHandler(
      * If user confirmed claim using OTP - we add claim transaction as pending
      */
     suspend fun handleOnRampConfirmed(claimedToken: StrigaOnRampCellModel) {
+        onRampChallengeId = null
         kotlin.runCatching {
             addOnRampPendingTransaction(claimedToken)
         }.onFailure { Timber.e(it, "Failed to add pending transaction on onramp") }
     }
 
     fun handleOffRampConfirmed(token: StrigaOffRampCellModel) {
-        // todo: I guess we need somehow flush StrigaUserWallet cache here
-        // and update Wallet screen with new data, but it needs to make some flows for on/off ramp tokens
+        offRampChallengeId = null
     }
 
     private suspend fun addOnRampPendingTransaction(onRampTokenItem: StrigaOnRampCellModel) {
