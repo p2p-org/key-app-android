@@ -90,6 +90,15 @@ class DebugSettingsMapper(
             isDivider = true
         )
 
+        val tokenServiceEnvironment = networkUrlProvider.loadTokenServiceEnvironment()
+        this += SettingsRow.Switcher(
+            titleResId = R.string.debug_settings_token_service,
+            iconRes = R.drawable.ic_network,
+            isDivider = false,
+            subtitle = tokenServiceEnvironment.baseServiceUrl,
+            isSelected = true
+        )
+
         val nameServiceEnvironment = networkUrlProvider.loadNameServiceEnvironment()
         this += SettingsRow.Switcher(
             titleResId = R.string.debug_settings_name_service,

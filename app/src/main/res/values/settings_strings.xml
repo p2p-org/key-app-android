@@ -10,6 +10,7 @@
     <string name="debug_settings_ci_info">CI Info</string>
     <string name="debug_settings_app_info">App Info</string>
     <string name="debug_settings_fee_relayer">Fee Relayer Environment</string>
+    <string name="debug_settings_token_service">Token Service Environment</string>
     <string name="debug_settings_name_service">Name Service Environment</string>
     <string name="debug_settings_torus">Torus Environment</string>
     <string name="debug_settings_notification_service">Notification Service Environment</string>
