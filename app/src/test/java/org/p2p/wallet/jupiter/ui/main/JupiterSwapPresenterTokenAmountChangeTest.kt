@@ -183,7 +183,7 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
 
     @Test
     fun `GIVEN swap screen WHEN onAllAmountClick() clicked THEN check swap button disabled and message enter amount`() = runTest {
-        val firstToken = JupiterSwapTestHelpers.createUSDCToken(BigDecimal("10.28"))
+        val firstToken = JupiterSwapTestHelpers.createUSDCToken(BigDecimal("10.30"))
         val secondToken = JupiterSwapTestHelpers.createSOLToken(
             amount = BigDecimal("26.48"),
             rateToUsd = BigDecimal("20.74")
@@ -225,7 +225,7 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
         // 10.28 / 20.74
         // ≈ 0.495660559
         val expectedOutAmount = firstToken.total.setScale(firstToken.decimals)
-            .divide(secondToken.rate!!, secondToken.decimals, RoundingMode.HALF_EVEN)
+            .divide(secondToken.rate!!, secondToken.decimals, RoundingMode.DOWN)
             .toString()
 
         checkButtonStateIsDisabledEnterAmount(buttonStates.front())
