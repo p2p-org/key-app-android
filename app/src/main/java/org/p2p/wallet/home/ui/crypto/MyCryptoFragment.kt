@@ -109,7 +109,7 @@ class MyCryptoFragment :
     }
 
     private fun showTokenVisibilityStateChangeDialog(item: TokenCellModel) {
-        if (item.isDefinitelyHidden || item.payload.canTokenBeHidden) {
+        if (item.payload.canTokenBeHidden) {
             TokenVisibilityChangeBottomSheet.show(
                 fm = childFragmentManager,
                 token = item.payload,
