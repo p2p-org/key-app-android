@@ -29,5 +29,5 @@ fun List<Token.Active>.filterTokensForWalletScreen(): List<Token.Active> {
 }
 
 fun List<Token.Active>.filterTokensByAvailability(): List<Token.Active> {
-    return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen == true }
+    return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen != false }
 }

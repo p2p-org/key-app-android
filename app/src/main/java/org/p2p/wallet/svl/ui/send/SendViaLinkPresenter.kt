@@ -6,6 +6,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -29,16 +30,17 @@ import org.p2p.wallet.newsend.model.toSearchResult
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 import org.p2p.wallet.svl.model.SendLinkGenerator
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.unsafeLazy
 
 private const val ACCEPTABLE_RATE_DIFF = 0.02
 
 class SendViaLinkPresenter(
     private val userInteractor: UserInteractor,
-    private val userTokensInteractor: UserTokensInteractor,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val sendInteractor: SendInteractor,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
     private val resources: Resources,
@@ -76,8 +78,9 @@ class SendViaLinkPresenter(
     }
 
     private fun subscribeToSelectedTokenUpdates() {
-        userTokensInteractor.observeUserTokens()
-            .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
+        tokenServiceCoordinator.observeUserTokens()
+            .filterIsInstance<UserTokensState.Loaded>()
+            .map { it.solTokens.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
             .filterNotNull()
             .onEach { token = it }
             .launchIn(this)
@@ -147,7 +150,7 @@ class SendViaLinkPresenter(
 
             checkTokenRatesAndSetSwitchAmountState(initialToken)
 
-            val solToken = if (initialToken.isSOL) initialToken else userTokensInteractor.getUserSolToken()
+            val solToken = if (initialToken.isSOL) initialToken else tokenServiceCoordinator.getUserSolToken()
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
@@ -169,7 +172,7 @@ class SendViaLinkPresenter(
     override fun onTokenClicked() {
         newSendAnalytics.logTokenSelectionClicked(NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK)
         launch {
-            val tokens = userTokensInteractor.getUserTokens()
+            val tokens = tokenServiceCoordinator.getUserTokens()
             val result = tokens.filterNot(Token.Active::isZero)
             svlAnalytics.logTokenChangeClicked(token?.tokenSymbol.orEmpty())
             view?.showTokenSelection(tokens = result, selectedToken = token)

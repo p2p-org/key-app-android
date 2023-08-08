@@ -32,7 +32,8 @@ sealed class Token constructor(
     open val iconUrl: String?,
     open val isWrapped: Boolean,
     open var rate: BigDecimal?,
-    open var currency: String = Constants.USD_READABLE_SYMBOL
+    open var currency: String = Constants.USD_READABLE_SYMBOL,
+    open val tokenExtensions: TokenExtensions,
 ) : Parcelable {
 
     @Parcelize
@@ -42,7 +43,7 @@ sealed class Token constructor(
         val total: BigDecimal,
         val visibility: TokenVisibility,
         val tokenServiceAddress: String,
-        val tokenExtensions: TokenExtensions,
+        override val tokenExtensions: TokenExtensions,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -60,7 +61,8 @@ sealed class Token constructor(
         iconUrl = iconUrl,
         isWrapped = isWrapped,
         rate = rate,
-        currency = currency
+        currency = currency,
+        tokenExtensions = tokenExtensions,
     ) {
 
         @IgnoredOnParcel
@@ -121,7 +123,8 @@ sealed class Token constructor(
         iconUrl = iconUrl,
         isWrapped = false,
         rate = rate,
-        currency = currency
+        currency = currency,
+        tokenExtensions = TokenExtensions.NONE
     ) {
 
         @IgnoredOnParcel
@@ -164,7 +167,8 @@ sealed class Token constructor(
         override val iconUrl: String?,
         override val isWrapped: Boolean,
         override var rate: BigDecimal?,
-        override var currency: String = Constants.USD_READABLE_SYMBOL
+        override var currency: String = Constants.USD_READABLE_SYMBOL,
+        override val tokenExtensions: TokenExtensions,
     ) : Token(
         publicKey = null,
         tokenSymbol = tokenSymbol,
@@ -174,7 +178,8 @@ sealed class Token constructor(
         iconUrl = iconUrl,
         isWrapped = isWrapped,
         rate = rate,
-        currency = currency
+        currency = currency,
+        tokenExtensions = tokenExtensions
     )
 
     @IgnoredOnParcel
