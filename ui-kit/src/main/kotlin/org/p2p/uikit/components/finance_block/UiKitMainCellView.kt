@@ -74,7 +74,6 @@ class UiKitMainCellView @JvmOverloads constructor(
         setMargins(left = model.horizontalMargins, right = model.horizontalMargins)
         isEnabled = model.accessibility.isEnabled
         isClickable = model.accessibility.isClickable
-        isFocusable = true
         model.background?.applyBackground(this.root)
         model.foreground.applyForeground(this.root)
         leftSideView.isVisible = model.leftSideCellModel != null
