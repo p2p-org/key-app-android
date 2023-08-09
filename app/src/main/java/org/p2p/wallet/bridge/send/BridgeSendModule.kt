@@ -39,6 +39,7 @@ object BridgeSendModule : InjectionModule {
                 ethereumSendRepository = get(),
                 ethereumRepository = get(),
                 userInteractor = get(),
+                tokenServiceCoordinator = get(),
                 tokenKeyProvider = get(),
                 relaySdkFacade = get(),
                 dispatchers = get(),

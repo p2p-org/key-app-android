@@ -28,6 +28,8 @@ class NewUiKitEditText @JvmOverloads constructor(
 
     fun mutate(): NewUiKitEditTextMutator = mutator
 
+    fun mutate(action: NewUiKitEditTextMutator.() -> Unit) = action(mutator)
+
     fun focusAndShowKeyboard() {
         binding.editTextField.focusAndShowKeyboard()
     }
@@ -40,7 +42,7 @@ class NewUiKitEditText @JvmOverloads constructor(
     override fun onRestoreInstanceState(state: Parcelable?) {
         if (state is UiKitEditTextSavedState) {
             super.onRestoreInstanceState(state.superState)
-            mutator.setText(state.text.orEmpty())
+            mutator.setInputText(state.text.orEmpty())
         } else {
             super.onRestoreInstanceState(state)
         }

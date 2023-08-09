@@ -17,12 +17,17 @@ import org.p2p.uikit.utils.withTextOrGone
 internal class NewUiKitEditTextStyleAttrsApplier {
     private companion object {
         private val ATTR_LABEL_TEXT = R.styleable.NewUiKitEditText_labelText
-        private val ATTR_HINT_TEXT = R.styleable.NewUiKitEditText_inputHintText
-        private val ATTR_INPUT_TEXT = R.styleable.NewUiKitEditText_inputText
-        private val ATTR_END_DRAWABLE = R.styleable.NewUiKitEditText_inputEndDrawable
 
+        private val ATTR_HINT_TEXT = R.styleable.NewUiKitEditText_inputHintText
+
+        private val ATTR_INPUT_TEXT = R.styleable.NewUiKitEditText_inputText
         private val ATTR_INPUT_TEXT_COLOR = R.styleable.NewUiKitEditText_inputTextColor
         private val ATTR_INPUT_TEXT_STYLE = R.styleable.NewUiKitEditText_inputTextAppearance
+
+        private val ATTR_TIP_TEXT = R.styleable.NewUiKitEditText_tipText
+        private val ATTR_TIP_TEXT_COLOR = R.styleable.NewUiKitEditText_tipTextColor
+
+        private val ATTR_END_DRAWABLE = R.styleable.NewUiKitEditText_inputEndDrawable
         private val ATTR_INPUT_BACKGROUND_TINT = R.styleable.NewUiKitEditText_inputBackgroundTint
 
         private val ATTR_IS_INPUT_ENABLED = R.styleable.NewUiKitEditText_android_enabled
@@ -39,17 +44,21 @@ internal class NewUiKitEditTextStyleAttrsApplier {
     fun applyToView(attrs: TypedArray, binding: WidgetUiKitEditTextNewBinding) = with(binding) {
         // input values
         attrs.getString(ATTR_LABEL_TEXT, ifExists = textViewLabel::withTextOrGone)
+
         attrs.getString(ATTR_HINT_TEXT, editTextField::setHint)
         attrs.getString(ATTR_INPUT_TEXT, editTextField::setText)
-        attrs.getResourceId(ATTR_END_DRAWABLE, imageViewIconEnd::withImageOrGone)
-        attrs.getString(ATTR_INPUT_DIGITS) { editTextField.keyListener = DigitsKeyListener.getInstance(it) }
-
-        // styling
         // firstly set textAppearance, because we want to override it by using inputTextColor
         attrs.getResourceId(ATTR_INPUT_TEXT_STYLE, editTextField::setTextAppearance)
         attrs.getColor(ATTR_INPUT_TEXT_COLOR, editTextField::setTextColor)
+
+        attrs.getResourceId(ATTR_END_DRAWABLE, imageViewIconEnd::withImageOrGone)
+
+        attrs.getString(ATTR_TIP_TEXT, textViewTip::setText)
+        attrs.getColor(ATTR_TIP_TEXT_COLOR, textViewTip::setTextColor)
+
         attrs.getColorStateList(ATTR_INPUT_BACKGROUND_TINT, containerInputView::setBackgroundTintList)
 
+        attrs.getString(ATTR_INPUT_DIGITS) { editTextField.keyListener = DigitsKeyListener.getInstance(it) }
         attrs.getBoolean(ATTR_IS_INPUT_ENABLED, true).also {
             root.isEnabled = it
             editTextField.isClickable = it

@@ -61,6 +61,15 @@ class UiKitIconWrapper @JvmOverloads constructor(
         this.emojiViewIcon.isVisible = false
         this.imageViewIcon.isVisible = true
         this.imageViewIcon.bind(model.icon)
+
+        if (model.sizePx != null) {
+            val layoutParams = root.layoutParams as LayoutParams
+            root.layoutParams = layoutParams.apply {
+                width = model.sizePx
+                height = model.sizePx
+                verticalBias = 0.5f
+            }
+        }
     }
 
     private fun WidgetIconWrapperTwoBinding.bind(model: IconWrapperCellModel.TwoIcon) {

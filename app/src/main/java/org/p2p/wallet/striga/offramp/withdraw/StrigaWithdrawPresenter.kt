@@ -15,12 +15,14 @@ import org.p2p.wallet.transaction.model.NewShowProgress
 class StrigaWithdrawPresenter(
     private val validator: StrigaBankingDetailsValidator,
     private val interactor: StrigaWithdrawInteractor,
-    private val resources: Resources
+    private val resources: Resources,
 ) : BasePresenter<StrigaWithdrawContract.View>(),
     StrigaWithdrawContract.Presenter {
 
     private var enteredIban: String = ""
     private var enteredBic: String = ""
+
+    private var isValidationValid: Boolean = false
 
     override fun attach(view: StrigaWithdrawContract.View) {
         super.attach(view)
@@ -35,23 +37,33 @@ class StrigaWithdrawPresenter(
     }
 
     override fun onIbanChanged(newIban: String) {
-        enteredIban = newIban
-        view?.showIbanValidationResult(validator.validateIban(newIban))
+        enteredIban = newIban.replace(" ", "")
+
+        val validationResult = validator.validateIban(enteredIban)
+        isValidationValid = validationResult == StrigaWithdrawValidationResult.VALUE_IS_VALID
+        view?.showIbanValidationResult(validationResult)
     }
 
     override fun onBicChanged(newBic: String) {
         enteredBic = newBic
-        view?.showBicValidationResult(validator.validateBic(newBic))
+
+        val validationResult = validator.validateBic(newBic)
+        isValidationValid = validationResult == StrigaWithdrawValidationResult.VALUE_IS_VALID
+        view?.showBicValidationResult(validationResult)
     }
 
     override fun withdraw(withdrawType: StrigaWithdrawFragmentType) {
+        if (!areFieldValidToWithdraw()) return
+
         launch {
             try {
                 view?.showLoading(isLoading = true)
 
                 when (withdrawType) {
                     is StrigaWithdrawFragmentType.ConfirmUsdcWithdraw -> {
-                        val (internalTransactionId, usdcToken) = interactor.withdrawUsdc(withdrawType.amountInUsdc)
+                        val (internalTransactionId, usdcToken) =
+                            interactor.withdrawUsdc(withdrawType.amountInUsdc)
+
                         view?.navigateToTransactionDetails(
                             transactionId = internalTransactionId,
                             data = buildTransactionDetails(usdcToken, withdrawType.amountInUsdc)
@@ -59,10 +71,7 @@ class StrigaWithdrawPresenter(
                     }
                     is StrigaWithdrawFragmentType.ConfirmEurWithdraw -> {
                         val challengeId = interactor.withdrawEur(withdrawType.amountEur)
-                        view?.navigateToOtpConfirm(
-                            challengeId = challengeId,
-                            amountToOffRamp = withdrawType.amountEur
-                        )
+                        view?.navigateToOtpConfirm(challengeId)
                     }
                 }
 
@@ -75,6 +84,20 @@ class StrigaWithdrawPresenter(
         }
     }
 
+    private fun areFieldValidToWithdraw(): Boolean {
+        val areFieldsValid: Boolean = listOf(
+            validator.validateBic(enteredBic),
+            validator.validateIban(enteredIban)
+        )
+            .all { it == StrigaWithdrawValidationResult.VALUE_IS_VALID }
+        if (!areFieldsValid) {
+            // trigger field change to show error
+            onIbanChanged(enteredIban)
+            onBicChanged(enteredBic)
+        }
+        return areFieldsValid
+    }
+
     private fun buildTransactionDetails(
         usdcToken: Token.Active,
         usdcAmount: BigDecimal,
@@ -84,9 +107,9 @@ class StrigaWithdrawPresenter(
             tokenUrl = usdcToken.iconUrl.orEmpty(),
             amountTokens = usdcAmount.toPlainString(),
             amountUsd = null,
-            data = listOf(
-                TitleValue(resources.getString(R.string.striga_withdrawal_transaction_iban), enteredIban),
-                TitleValue(resources.getString(R.string.striga_withdrawal_transaction_bic), enteredBic)
+            transactionDetails = listOf(
+                TitleValue(resources.getString(R.string.striga_withdraw_transaction_iban), enteredIban),
+                TitleValue(resources.getString(R.string.striga_withdraw_transaction_bic), enteredBic)
             )
         )
     }

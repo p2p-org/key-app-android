@@ -43,7 +43,7 @@ class TokenKeyProvider(
             val base58String = secureStorage.getString(keyName).orEmpty()
             Base58Utils.decodeToString(base58String)
         } catch (e: Throwable) {
-            Timber.tag(TAG).e(e)
+            Timber.tag(TAG).e(e, "Error getting user public key")
             throw e
         }
     }

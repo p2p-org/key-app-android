@@ -13,15 +13,15 @@ import org.p2p.ethereumkit.internal.models.Signature
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.bridge.claim.interactor.EthBridgeClaimInteractor
 import org.p2p.wallet.bridge.model.BridgeBundle
-import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
+import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class EthereumInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val claimInteractor: EthBridgeClaimInteractor,
     private val ethereumRepository: EthereumRepository,
-    private val bridgeSendInteractor: BridgeSendInteractor
+    private val ethereumSendRepository: EthereumSendRepository,
 ) {
 
     fun setup(userSeedPhrase: List<String>) {
@@ -50,7 +50,7 @@ class EthereumInteractor(
     }
 
     suspend fun loadSendTransactionDetails() {
-        bridgeSendInteractor.getSendTransactionDetails(SolAddress(tokenKeyProvider.publicKey))
+        ethereumSendRepository.getSendTransactionsDetail(SolAddress(tokenKeyProvider.publicKey))
     }
 
     fun observeTokensFlow(): Flow<List<Token.Eth>> {

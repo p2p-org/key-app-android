@@ -1,6 +1,5 @@
 package org.p2p.wallet.striga.offramp.withdraw
 
-import java.math.BigDecimal
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
@@ -16,7 +15,7 @@ interface StrigaWithdrawContract {
         fun showIbanValidationResult(result: StrigaWithdrawValidationResult)
         fun showBicValidationResult(result: StrigaWithdrawValidationResult)
         fun navigateToTransactionDetails(transactionId: String, data: NewShowProgress)
-        fun navigateToOtpConfirm(challengeId: StrigaWithdrawalChallengeId, amountToOffRamp: BigDecimal)
+        fun navigateToOtpConfirm(challengeId: StrigaWithdrawalChallengeId)
     }
 
     interface Presenter : MvpPresenter<View> {

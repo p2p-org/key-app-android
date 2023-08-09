@@ -2,18 +2,84 @@ package org.p2p.uikit.utils
 
 import androidx.annotation.ColorInt
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
+import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
+import android.widget.TextView
 import org.p2p.core.utils.emptyString
 
+/**
+ * @param text - text to highlight
+ * @param color - color of the text (integer color, not a resource ID)
+ * @param isUnderlined - underline text or not
+ * @param onClick - action on click
+ */
+data class HighlightingOption(
+    val text: String,
+    @ColorInt val color: Int,
+    val isUnderlined: Boolean = false,
+    val onClick: (View) -> Unit = {},
+)
+
 object SpanUtils {
+
+    fun TextView.highlightLinks(
+        vararg options: HighlightingOption
+    ) = highlightLinks(options.toList())
+
+    fun TextView.highlightLinks(
+        options: List<HighlightingOption>
+    ) {
+        val spannable = highlightLinks(text.toString(), options)
+        setText(spannable, TextView.BufferType.SPANNABLE)
+        highlightColor = Color.TRANSPARENT
+        movementMethod = LinkMovementMethod.getInstance()
+    }
+
+    fun highlightLinks(
+        commonText: String,
+        highlightedTexts: List<HighlightingOption>,
+    ): SpannableString {
+        val spannable = SpannableString(commonText)
+
+        highlightedTexts.forEach { option ->
+            var startIndex = commonText.indexOf(option.text)
+            while (startIndex != -1) {
+                val endIndex = startIndex + option.text.length
+
+                val clickableSpan = object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        widget.cancelPendingInputEvents()
+                        option.onClick(widget)
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        ds.color = option.color
+                        ds.isUnderlineText = option.isUnderlined
+                    }
+                }
+
+                spannable.setSpan(
+                    clickableSpan,
+                    startIndex,
+                    endIndex,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                )
+
+                startIndex = commonText.indexOf(option.text, startIndex + 1)
+            }
+        }
+
+        return spannable
+    }
 
     fun highlightLinkNoUnderline(
         commonText: String,

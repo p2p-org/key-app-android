@@ -1,6 +1,7 @@
 package org.p2p.core.common
 
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import android.content.Context
 import android.os.Parcelable
 import android.widget.TextView
@@ -41,9 +42,16 @@ sealed class TextContainer {
 
 fun TextView.bind(textContainer: TextContainer) {
     when (textContainer) {
-        is TextContainer.Raw -> text = textContainer.text
-        is TextContainer.Res -> setText(textContainer.textRes)
+        is TextContainer.Raw ->
+            text = textContainer.text
+        is TextContainer.Res ->
+            setText(textContainer.textRes)
         is TextContainer.ResParams ->
             text = context.getString(textContainer.textRes, *textContainer.args.toTypedArray())
     }
+}
+
+fun TextView.bindOrGone(textContainer: TextContainer?) {
+    isVisible = textContainer != null
+    textContainer?.also(::bind)
 }

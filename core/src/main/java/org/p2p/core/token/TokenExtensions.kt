@@ -33,5 +33,5 @@ fun List<Token.Active>.filterTokensForCalculationOfFinalBalance(): List<Token.Ac
 }
 
 fun List<Token.Active>.filterTokensByAvailability(): List<Token.Active> {
-    return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen == true }
+    return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen != false }
 }

@@ -64,6 +64,10 @@ class DebugSettingsPresenter(
         appRestarter.restartApp()
     }
 
+    override fun switchTokenServiceUrl(isProdSelected: Boolean) {
+        networkServicesUrlProvider.toggleTokenServiceEnvironment(isProdSelected)
+        appRestarter.restartApp()
+    }
     override fun onSettingsPopupMenuClicked(selectedValue: String) {
         if (selectedValue != "-") {
             inAppFeatureFlags.strigaKycBannerMockFlag.featureValueString = selectedValue
@@ -94,6 +98,11 @@ class DebugSettingsPresenter(
                 view?.showUiKitSnackBar("Metadata is not loaded. Unable to proceed.")
             }
         }
+    }
+
+    override fun onClickResetUserCountry() {
+        interactor.resetUserCountry()
+        view?.showUiKitSnackBar(message = "User country has been reset")
     }
 
     private fun getDeviceInfo(): List<SettingsRow> {

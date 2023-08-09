@@ -26,7 +26,7 @@ object ReceiveTokensMapper {
         solTokenUrl: String,
         ethTokenUrl: String
     ): AnyCellItem {
-        val isErc20Token = ERC20Tokens.findTokenByMint(mintAddress) != null
+        val isErc20Token = ERC20Tokens.findTokenByMint(mintAddress, ERC20Tokens.MATIC) != null
         val isSol = symbol == Constants.SOL_SYMBOL
         val replacedName = if (isSol) Constants.SOL_NAME else name
         return MainCellModel(

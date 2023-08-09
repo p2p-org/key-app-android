@@ -4,11 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
-import org.p2p.core.utils.asUsd
 import org.p2p.uikit.components.edittext.v2.NewUiKitEditTextDrawableStrategy
 import org.p2p.uikit.components.edittext.v2.NewUiKitEditTextMutator
+import org.p2p.uikit.utils.SimpleMaskFormatter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOffRampWithdrawBinding
@@ -18,7 +17,7 @@ import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
+import org.p2p.wallet.transaction.progresshandler.StrigaOffRampTransactionProgressHandler
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
@@ -48,6 +47,8 @@ class StrigaWithdrawFragment :
     private val strigaFragmentFactory: StrigaFragmentFactory by inject()
     private var listener: RootListener? = null
 
+    private var isButtonOnceClicked: Boolean = false
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as? RootListener
@@ -57,19 +58,25 @@ class StrigaWithdrawFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
 
-        binding.editTextIban.mutate()
-            .setEndDrawableIsVisible(isVisible = false)
-            .setDrawableStrategy(NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT)
-            .setDrawableClickListener(NewUiKitEditTextMutator::clearInput)
-            .addOnTextChangedListener { presenter.onIbanChanged(it.toString()) }
+        val ibanMaskFormatter = SimpleMaskFormatter(mask = "#### #### ##### ##### #### #### ##")
 
-        binding.editTextBic.mutate()
-            .setEndDrawableIsVisible(isVisible = false)
-            .setDrawableStrategy(NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT)
-            .setDrawableClickListener(NewUiKitEditTextMutator::clearInput)
-            .addOnTextChangedListener { presenter.onBicChanged(it.toString()) }
+        binding.editTextIban.mutate {
+            setEndDrawableIsVisible(isVisible = false)
+            setDrawableStrategy(NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT)
+            setDrawableClickListener(NewUiKitEditTextMutator::clearInput)
+            setMaskFormatter(ibanMaskFormatter)
+            addOnTextChangedListener { presenter.onIbanChanged(it.toString()) }
+        }
+
+        binding.editTextBic.mutate {
+            setEndDrawableIsVisible(isVisible = false)
+            setDrawableStrategy(NewUiKitEditTextDrawableStrategy.SHOW_ON_TEXT)
+            setDrawableClickListener(NewUiKitEditTextMutator::clearInput)
+            addOnTextChangedListener { presenter.onBicChanged(it.toString()) }
+        }
 
         binding.buttonWithdraw.setOnClickListener {
+            isButtonOnceClicked = true
             presenter.withdraw(withdrawType)
         }
     }
@@ -79,21 +86,25 @@ class StrigaWithdrawFragment :
     }
 
     override fun showPrefilledBankingDetails(details: StrigaUserBankingDetails) {
-        details.bankingBic?.also { binding.editTextBic.mutate().setText(it) }
-        details.bankingIban?.also { binding.editTextIban.mutate().setText(it) }
-        binding.editTextReceiver.mutate().setText(details.bankingFullName)
+        details.bankingBic?.also { binding.editTextBic.mutate().setInputText(it) }
+        details.bankingIban?.also { binding.editTextIban.mutate().setInputText(it) }
+        binding.editTextReceiver.mutate().setInputText(details.bankingFullName)
     }
 
     override fun showIbanValidationResult(result: StrigaWithdrawValidationResult) {
-        val error = result.errorTextRes?.let(TextContainer::invoke)
-        binding.editTextIban.mutate().setError(error)
-        binding.buttonWithdraw.isEnabled = binding.editTextBic.values.isInErrorState && error != null
+        if (isButtonOnceClicked) {
+            val error = result.errorTextRes?.let(TextContainer::invoke)
+            binding.editTextIban.mutate().setErrorState(error)
+            binding.buttonWithdraw.isEnabled = binding.editTextBic.values.isInErrorState && error != null
+        }
     }
 
     override fun showBicValidationResult(result: StrigaWithdrawValidationResult) {
-        val error = result.errorTextRes?.let(TextContainer::invoke)
-        binding.editTextBic.mutate().setError(error)
-        binding.buttonWithdraw.isEnabled = !binding.editTextIban.values.isInErrorState && error != null
+        if (isButtonOnceClicked) {
+            val error = result.errorTextRes?.let(TextContainer::invoke)
+            binding.editTextBic.mutate().setErrorState(error)
+            binding.buttonWithdraw.isEnabled = !binding.editTextIban.values.isInErrorState && error != null
+        }
     }
 
     override fun navigateToTransactionDetails(
@@ -103,17 +114,15 @@ class StrigaWithdrawFragment :
         listener?.showTransactionProgress(
             internalTransactionId = transactionId,
             data = data,
-            handlerQualifierName = SendSwapTransactionProgressHandler.QUALIFIER
+            handlerQualifierName = StrigaOffRampTransactionProgressHandler.QUALIFIER
         )
         popBackStackTo(target = MainContainerFragment::class, inclusive = false)
     }
 
     override fun navigateToOtpConfirm(
-        challengeId: StrigaWithdrawalChallengeId,
-        amountToOffRamp: BigDecimal,
+        challengeId: StrigaWithdrawalChallengeId
     ) {
         val fragment = strigaFragmentFactory.onRampConfirmOtpFragment(
-            titleAmount = amountToOffRamp.asUsd(),
             challengeId = challengeId
         )
         replaceFragment(fragment)

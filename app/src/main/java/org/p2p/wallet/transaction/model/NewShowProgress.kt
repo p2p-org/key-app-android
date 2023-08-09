@@ -13,7 +13,7 @@ class NewShowProgress(
     val tokenUrl: String,
     val amountTokens: String,
     val amountUsd: String?,
-    val data: List<TitleValue>? = null,
+    val transactionDetails: List<TitleValue> = emptyList(),
     val totalFees: List<TextHighlighting>? = null,
     @ColorRes val amountColor: Int? = null
 ) : Parcelable

@@ -21,7 +21,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.p2p.core.common.TextContainer
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.Base64String
@@ -78,7 +78,6 @@ import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
-import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.CoroutineExtension
@@ -103,7 +102,7 @@ open class JupiterSwapPresenterBaseTest {
     lateinit var historyInteractor: HistoryInteractor
 
     @MockK
-    lateinit var userTokensInteractor: UserTokensInteractor
+    lateinit var homeLocalRepository: TokenServiceCoordinator
 
     @MockK
     lateinit var jupiterSwapRoutesRepository: JupiterSwapRoutesRepository
@@ -301,7 +300,7 @@ open class JupiterSwapPresenterBaseTest {
                 PreinstallTokensBySymbolSelector(
                     jupiterTokensRepository = jupiterSwapTokensRepository,
                     dispatchers = dispatchers,
-                    userTokensInteractor = userTokensInteractor,
+                    tokenServiceCoordinator = homeLocalRepository,
                     savedSelectedSwapTokenStorage = jupiterSwapStorage,
                     preinstallTokenASymbol = tokenASymbol,
                     preinstallTokenBSymbol = tokenBSymbol,
@@ -312,7 +311,7 @@ open class JupiterSwapPresenterBaseTest {
                 PreinstallTokenASelector(
                     jupiterTokensRepository = jupiterSwapTokensRepository,
                     dispatchers = dispatchers,
-                    userTokensInteractor = userTokensInteractor,
+                    tokenServiceCoordinator = homeLocalRepository,
                     savedSelectedSwapTokenStorage = jupiterSwapStorage,
                     preinstallTokenA = preinstallTokenA,
                 )
@@ -321,7 +320,7 @@ open class JupiterSwapPresenterBaseTest {
             else -> {
                 CommonSwapTokenSelector(
                     jupiterTokensRepository = jupiterSwapTokensRepository,
-                    userTokensInteractor = userTokensInteractor,
+                    tokenServiceCoordinator = homeLocalRepository,
                     dispatchers = dispatchers,
                     selectedSwapTokenStorage = jupiterSwapStorage
                 )
@@ -403,12 +402,12 @@ open class JupiterSwapPresenterBaseTest {
         userTokens: List<Token.Active>
     ) {
         every {
-            userTokensInteractor.observeUserTokens()
+            homeLocalRepository.observeUserTokens()
         } answers {
-            MutableStateFlow(allTokens)
+            MutableSharedFlow(replay = 1)
         }
         coEvery {
-            userTokensInteractor.getUserTokens()
+            homeLocalRepository.getUserTokens()
         } answers {
             userTokens
         }
@@ -428,7 +427,7 @@ open class JupiterSwapPresenterBaseTest {
             tokenServiceRepository = tokenServiceRepository,
             swapValidator = SwapValidator(),
             analytics = analytics,
-            userTokensInteractor = userTokensInteractor,
+            tokenServiceCoordinator = homeLocalRepository,
             userTokensChangeHandler = SwapUserTokensChangeHandler(
                 jupiterSwapInteractor,
                 jupiterSwapTokensRepository
