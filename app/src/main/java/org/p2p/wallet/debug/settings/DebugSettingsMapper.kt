@@ -32,12 +32,14 @@ class DebugSettingsMapper(
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_logs_title,
             subtitleRes = R.string.debug_settings_logs_subtitle,
-            iconRes = R.drawable.ic_settings_cloud
+            iconRes = R.drawable.ic_settings_cloud,
+            isDivider = true
         )
         if (seedPhraseProvider.isWeb3AuthUser) {
             this += SettingsRow.Section(
                 titleResId = R.string.debug_settings_web3,
-                iconRes = R.drawable.ic_settings_contacts
+                iconRes = R.drawable.ic_settings_contacts,
+                isDivider = true
             )
         }
 
@@ -63,31 +65,34 @@ class DebugSettingsMapper(
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_network,
             subtitle = networkName,
-            iconRes = R.drawable.ic_settings_network
-        )
-
-        val feeRelayerUrl = networkUrlProvider.loadFeeRelayerEnvironment().baseUrl
-        this += SettingsRow.Section(
-            titleResId = R.string.debug_settings_fee_relayer,
-            subtitle = feeRelayerUrl,
-            iconRes = R.drawable.ic_network
+            iconRes = R.drawable.ic_settings_network,
         )
 
         val torusSubtitle = networkUrlProvider.loadTorusEnvironment().run {
             "$baseUrl\n$verifier $subVerifier"
         }
+
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_torus,
             subtitle = torusSubtitle,
             iconRes = R.drawable.ic_network
         )
-
-        val notificationServiceUrl = networkUrlProvider.loadNotificationServiceEnvironment().baseUrl
-        this += SettingsRow.Section(
-            titleResId = R.string.debug_settings_notification_service,
-            subtitle = notificationServiceUrl,
+        val feeRelayerUrl = networkUrlProvider.loadFeeRelayerEnvironment().baseUrl
+        this += SettingsRow.Switcher(
+            titleResId = R.string.debug_settings_fee_relayer,
             iconRes = R.drawable.ic_network,
-            isDivider = true
+            isDivider = false,
+            subtitle = feeRelayerUrl,
+            isSelected = true
+        )
+
+        val notificationServiceEnvironment = networkUrlProvider.loadNotificationServiceEnvironment()
+        this += SettingsRow.Switcher(
+            titleResId = R.string.debug_settings_notification_service,
+            iconRes = R.drawable.ic_network,
+            isDivider = false,
+            subtitle = notificationServiceEnvironment.baseUrl,
+            isSelected = notificationServiceEnvironment.isProdSelected
         )
 
         val tokenServiceEnvironment = networkUrlProvider.loadTokenServiceEnvironment()
@@ -96,7 +101,7 @@ class DebugSettingsMapper(
             iconRes = R.drawable.ic_network,
             isDivider = false,
             subtitle = tokenServiceEnvironment.baseServiceUrl,
-            isSelected = true
+            isSelected = tokenServiceEnvironment.isProdSelected
         )
 
         val nameServiceEnvironment = networkUrlProvider.loadNameServiceEnvironment()

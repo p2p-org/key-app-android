@@ -6,6 +6,10 @@ import timber.log.Timber
 import java.net.URI
 import kotlin.time.DurationUnit
 import kotlinx.coroutines.withContext
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.rpc.JsonRpc
 import org.p2p.core.rpc.RpcApi
 import org.p2p.wallet.auth.gateway.api.GatewayServiceApi
@@ -24,10 +28,6 @@ import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.gateway.repository.model.RestoreWalletPublicKeyError
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.core.common.di.AppScope
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.core.network.environment.NetworkServicesUrlProvider
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.FlowDurationTimer
 
 private const val TAG = "GatewayServiceRemoteRepository"
@@ -36,7 +36,7 @@ class GatewayServiceRemoteRepository(
     private val api: GatewayServiceApi,
     private val rpcApi: RpcApi,
     private val gson: Gson,
-    urlProvider: NetworkServicesUrlProvider,
+    private val urlProvider: NetworkServicesUrlProvider,
     private val createWalletMapper: GatewayServiceCreateWalletMapper,
     private val restoreWalletMapper: GatewayServiceRestoreWalletMapper,
     private val getOnboardingMetadataMapper: GatewayServiceGetOnboardingMetadataMapper,
@@ -46,7 +46,8 @@ class GatewayServiceRemoteRepository(
     private val appScope: AppScope,
 ) : GatewayServiceRepository {
 
-    private val gatewayUrl = URI(urlProvider.loadGatewayServiceEnvironment().baseUrl)
+    private val gatewayUrl: URI
+        get() = urlProvider.loadGatewayServiceEnvironment().baseUrlUri
 
     private val resetTemporaryPublicKeyTimer =
         FlowDurationTimer(startValue = 10, DurationUnit.MINUTES)
