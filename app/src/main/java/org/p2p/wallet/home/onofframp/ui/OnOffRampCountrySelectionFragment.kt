@@ -23,7 +23,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.NavigationDestination
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentAddMoneyOnboardingBinding
+import org.p2p.wallet.databinding.FragmentOnOffRampCountrySelectionBinding
 import org.p2p.wallet.home.onofframp.OnOffRampCountrySelectionContract
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.striga.signup.presetpicker.StrigaPresetDataPickerFragment
@@ -36,7 +36,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class OnOffRampCountrySelectionFragment :
     BaseMvpFragment<OnOffRampCountrySelectionContract.View, OnOffRampCountrySelectionContract.Presenter>(
-        R.layout.fragment_add_money_onboarding
+        R.layout.fragment_on_off_ramp_country_selection
     ),
     OnOffRampCountrySelectionContract.View {
 
@@ -57,7 +57,7 @@ class OnOffRampCountrySelectionFragment :
 
     override val presenter: OnOffRampCountrySelectionContract.Presenter by inject()
 
-    private val binding: FragmentAddMoneyOnboardingBinding by viewBinding()
+    private val binding: FragmentOnOffRampCountrySelectionBinding by viewBinding()
 
     private val navigationDestination: NavigationDestination by args(NavigationDestination.ARG_KEY)
 
