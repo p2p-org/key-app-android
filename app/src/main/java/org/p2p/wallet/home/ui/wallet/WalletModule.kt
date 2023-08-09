@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.ui.wallet
 
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -9,6 +10,7 @@ import org.p2p.wallet.home.ui.wallet.handlers.WalletStrigaHandler
 import org.p2p.wallet.home.ui.wallet.interactor.WalletStrigaInteractor
 import org.p2p.wallet.home.ui.wallet.mapper.StrigaKycUiBannerMapper
 import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
+import org.p2p.wallet.home.ui.wallet.repository.WalletStrigaOnOffRampTokensRepository
 import org.p2p.wallet.striga.onramp.StrigaOnRampModule
 
 object WalletModule : InjectionModule {
@@ -46,5 +48,6 @@ object WalletModule : InjectionModule {
         } bind WalletContract.Presenter::class
 
         factoryOf(::WalletStrigaInteractor)
+        singleOf(::WalletStrigaOnOffRampTokensRepository)
     }
 }
