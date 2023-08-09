@@ -1,5 +1,6 @@
 package org.p2p.wallet.infrastructure
 
+import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -9,6 +10,7 @@ import org.p2p.core.crypto.Pbkdf2HashGenerator
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.dispatchers.DefaultDispatchers
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.utils.namedByEnum
 import org.p2p.core.utils.validators.BankingBicValidator
 import org.p2p.core.utils.validators.BankingIbanValidator
 import org.p2p.wallet.appsflyer.AppsFlyerService
@@ -19,6 +21,13 @@ import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.solana.SolanaNetworkObserver
+import org.p2p.wallet.striga.signup.presetpicker.DefaultSelectItemSearcher
+import org.p2p.wallet.striga.signup.presetpicker.SelectCountryProvider
+import org.p2p.wallet.striga.signup.presetpicker.SelectItemContract
+import org.p2p.wallet.striga.signup.presetpicker.SelectItemPresenter
+import org.p2p.wallet.striga.signup.presetpicker.SelectItemPresenterCellMapper
+import org.p2p.wallet.striga.signup.presetpicker.SelectItemProvider
+import org.p2p.wallet.striga.signup.presetpicker.SelectItemProviderType
 import org.p2p.wallet.updates.SocketUpdatesManager
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
 import org.p2p.wallet.updates.handler.SolanaAccountUpdateHandler
@@ -67,6 +76,21 @@ object InfrastructureModule : InjectionModule {
         singleOf(::UsernameFormatter)
         factoryOf(::BankingIbanValidator)
         factoryOf(::BankingBicValidator)
+
+        factoryOf(::DefaultSelectItemSearcher)
+        factoryOf(::SelectItemPresenterCellMapper)
+        factory { (provider: SelectItemProvider, selectedItemId: String?) ->
+            SelectItemPresenter(
+                provider = provider,
+                cellMapper = get(),
+                selectedItemId = selectedItemId,
+                dispatchers = get()
+            )
+        } bind SelectItemContract.Presenter::class
+        factoryOf(::SelectCountryProvider) {
+            namedByEnum(SelectItemProviderType.SELECT_COUNTRY)
+            bind<SelectItemProvider>()
+        }
 
         includes(StorageModule.create(), RoomModule.create())
     }

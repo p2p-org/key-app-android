@@ -114,6 +114,10 @@ class AnimatedSearchView @JvmOverloads constructor(
         binding.editTextSearch.hint = binding.getString(titleResId)
     }
 
+    fun setHint(title: CharSequence) {
+        binding.editTextSearch.hint = title
+    }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         if (animator != null) animator!!.cancel()

@@ -8,6 +8,8 @@ import com.google.gson.stream.JsonReader
 import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
+import org.koin.core.definition.BeanDefinition
+import org.koin.core.qualifier.qualifier
 import org.koin.ext.getFullName
 import timber.log.Timber
 import java.lang.reflect.Type
@@ -74,3 +76,7 @@ fun Request.bodyAsString(): String = kotlin.runCatching {
     .getOrDefault("")
 
 fun Response.bodyAsString(): String = peekBody(Long.MAX_VALUE).string()
+
+fun <E : Enum<E>> BeanDefinition<*>.namedByEnum(name: Enum<E>) {
+    qualifier = name.qualifier
+}

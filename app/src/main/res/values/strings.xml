@@ -474,4 +474,10 @@
 
     <string name="send_no_token_title">Sending tokens has\nnever been EASIER</string>
     <string name="send_buy_crypto">Buy crypto</string>
+
+    <!-- select item screen-->
+    <string name="select_item_list_all">All %s</string>
+    <string name="select_item_list_chosen">Chosen %s</string>
+
+    <string name="select_country_toolbar_title">Select your country</string>
 </resources>

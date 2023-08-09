@@ -7,4 +7,11 @@
         <item quantity="many">%d transactions</item>
         <item quantity="other">%d transactions</item>
     </plurals>
+
+    <plurals name="plural_country">
+        <item quantity="one">country</item>
+        <item quantity="few">countries</item>
+        <item quantity="many">countries</item>
+        <item quantity="other">countries</item>
+    </plurals>
 </resources>
