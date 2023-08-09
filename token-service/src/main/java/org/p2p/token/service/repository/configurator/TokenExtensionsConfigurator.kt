@@ -10,7 +10,7 @@ class TokenExtensionsConfigurator<T : Token>(
     private val token: T
 ) : TokenConfigurator<T> {
 
-    override fun config(): Token.Active {
+    override fun config(): T {
         var tokenExtensions =
             TokenExtensions(tokenPercentDifferenceOnWalletScreen = extensions.percentDifferenceToShowByPriceOnWs)
         /**
@@ -41,8 +41,6 @@ class TokenExtensionsConfigurator<T : Token>(
         /**
          * Setup [Token.setupPercentDifferenceToShowByPrice] configuration
          */
-        val newToken = PricePercentDifferenceToShow(tokenExtensions, token).config()
-
         return when (token) {
             is Token.Active -> {
                 val newToken = PricePercentDifferenceToShow(extensions, token).config()

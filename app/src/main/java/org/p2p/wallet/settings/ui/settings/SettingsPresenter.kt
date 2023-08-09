@@ -16,9 +16,6 @@ import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.core.network.environment.NetworkEnvironment
-import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.mapper.SettingsItemMapper
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_DISCORD
