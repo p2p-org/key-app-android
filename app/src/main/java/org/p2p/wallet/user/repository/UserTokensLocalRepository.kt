@@ -27,5 +27,7 @@ interface UserTokensLocalRepository {
 
     suspend fun saveRatesForTokens(prices: List<TokenServicePrice>)
 
+    suspend fun setTokenHidden(mintAddress: String, visibility: String)
+
     suspend fun clear()
 }

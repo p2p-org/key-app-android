@@ -9,7 +9,6 @@ import android.text.method.LinkMovementMethod
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import java.io.File
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
@@ -23,7 +22,7 @@ import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.OnboardingSpanUtils
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.openFile
+import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.View as ContractView
@@ -106,7 +105,7 @@ class OnboardingGeneralErrorTimerFragment :
         navigationStrategy.navigateNext(this, nextDestinationClass)
     }
 
-    override fun showFile(file: File) {
-        openFile(file)
+    override fun showBrowserTab(url: String) {
+        showUrlInCustomTabs(url)
     }
 }

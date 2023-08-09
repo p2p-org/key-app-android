@@ -21,7 +21,6 @@ import org.p2p.wallet.moonpay.repository.sell.SellRepository
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.user.interactor.UserTokensInteractor
-import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 private const val TAG = "SellInteractor"
 private const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_DIALOG_KEY"
@@ -31,8 +30,7 @@ class SellInteractor(
     private val currencyRepository: MoonpayCurrenciesRepository,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val userInteractor: UserTokensInteractor,
-    private val userTokensRepository: UserTokensLocalRepository,
+    private val userTokensInteractor: UserTokensInteractor,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val sharedPreferences: SharedPreferences,
@@ -78,7 +76,7 @@ class SellInteractor(
     }
 
     suspend fun getSellQuoteForSol(solAmount: BigDecimal, fiat: SellTransactionFiatCurrency): MoonpaySellTokenQuote {
-        val solToken = requireNotNull(userInteractor.getUserSolToken()) {
+        val solToken = requireNotNull(userTokensInteractor.getUserSolToken()) {
             "SOL token is not found for current user, can't sell"
         }
 
@@ -86,7 +84,7 @@ class SellInteractor(
     }
 
     fun observeTokenForSell(): Flow<Token.Active> =
-        userTokensRepository.observeUserToken(Constants.WRAPPED_SOL_MINT.toBase58Instance())
+        userTokensInteractor.observeUserToken(Constants.WRAPPED_SOL_MINT.toBase58Instance())
 
     suspend fun getSolCurrency(): MoonpayCurrency {
         return currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)

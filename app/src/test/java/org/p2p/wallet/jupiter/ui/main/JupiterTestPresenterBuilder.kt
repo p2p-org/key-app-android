@@ -3,7 +3,6 @@ package org.p2p.wallet.jupiter.ui.main
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.crypto.Base64String
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom

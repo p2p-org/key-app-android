@@ -18,9 +18,11 @@ internal class TokenPriceDatabaseRepository(
     }
 
     override suspend fun findTokenPriceByAddress(
-        address: String
+        address: String,
+        networkChain: TokenServiceNetwork
     ): TokenServicePrice? {
-        val found = tokenPriceDao.getTokenPriceByAddress(address)
+        val columnKey = address.toPriceColumnKey(networkChain.networkName)
+        val found = tokenPriceDao.getTokenPriceByAddress(columnKey)
         return found?.let { converter.fromEntity(it) }
     }
 
@@ -33,4 +35,8 @@ internal class TokenPriceDatabaseRepository(
         return tokenPriceDao.getAllTokensPrices()
             .map(converter::fromEntity)
     }
+}
+
+internal fun String.toPriceColumnKey(networkChainName: String): String {
+    return "${this}_$networkChainName"
 }

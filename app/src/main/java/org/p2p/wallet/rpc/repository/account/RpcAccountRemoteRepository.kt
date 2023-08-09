@@ -1,5 +1,7 @@
 package org.p2p.wallet.rpc.repository.account
 
+import timber.log.Timber
+import org.p2p.core.network.data.EmptyDataException
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
@@ -11,15 +13,14 @@ import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.core.network.data.EmptyDataException
 import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcAccountApi
-import timber.log.Timber
 
 class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRepository {
 
     override suspend fun getAccountInfo(account: String): AccountInfo? =
         try {
+
             val params = listOf(
                 account,
                 RequestConfiguration(encoding = Encoding.BASE64.encoding)
@@ -27,7 +28,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
             val rpcRequest = RpcRequest("getAccountInfo", params)
             api.getAccountInfo(rpcRequest).result
         } catch (e: EmptyDataException) {
-            Timber.w("`getAccountInfo` responded with empty data, returning null")
+            Timber.i("`getAccountInfo` responded with empty data, returning null")
             null
         }
 

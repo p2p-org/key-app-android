@@ -11,7 +11,8 @@ class TokenExtensionsConfigurator<T : Token>(
 ) : TokenConfigurator<T> {
 
     override fun config(): T {
-        var tokenExtensions = TokenExtensions()
+        var tokenExtensions =
+            TokenExtensions(tokenPercentDifferenceOnWalletScreen = extensions.percentDifferenceToShowByPriceOnWs)
         /**
          * Setup [Token.canBeHidden] configuration
          */
