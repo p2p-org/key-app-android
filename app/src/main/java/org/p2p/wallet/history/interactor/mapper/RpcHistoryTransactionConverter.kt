@@ -245,7 +245,7 @@ class RpcHistoryTransactionConverter(
         )
         val isClaimFree = bundle?.compensationDeclineReason?.isEmpty() ?: false
         val fees = if (isClaimFree) {
-            null
+            emptyList()
         } else {
             bundleFees.parseBridgeFees() ?: transaction.fees.parseFees()
         }
