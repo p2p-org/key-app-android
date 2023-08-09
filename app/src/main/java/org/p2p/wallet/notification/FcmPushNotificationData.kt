@@ -11,7 +11,7 @@ class FcmPushNotificationData(
 
 enum class NotificationType(val type: String) {
     DEFAULT(emptyString()),
-    RECEIVE("receive");
+    RECEIVE("Received");
 
     companion object {
         fun fromValue(value: String): NotificationType = NotificationType::type.find(value) ?: DEFAULT
