@@ -7,14 +7,16 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.token.Token
+import org.p2p.wallet.home.addmoney.AddMoneyDialogContract
+import org.p2p.wallet.home.addmoney.interactor.AddMoneyDialogInteractor
+import org.p2p.wallet.home.addmoney.repository.AddMoneyCellsRepository
+import org.p2p.wallet.home.addmoney.ui.AddMoneyDialogPresenter
 import org.p2p.wallet.home.interactor.RefreshErrorInteractor
 import org.p2p.wallet.home.repository.RefreshErrorInMemoryRepository
 import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
-import org.p2p.wallet.home.ui.topup.TopUpWalletContract
-import org.p2p.wallet.home.ui.topup.TopUpWalletPresenter
 import org.p2p.wallet.newsend.interactor.SearchInteractor
 import org.p2p.wallet.newsend.interactor.SendInteractor
 
@@ -28,6 +30,7 @@ object MainContainerModule : InjectionModule {
 
     private fun Module.initDataLayer() {
         factoryOf(::RefreshErrorInMemoryRepository) bind RefreshErrorRepository::class
+        factoryOf(::AddMoneyCellsRepository)
     }
 
     private fun Module.initDomainLayer() {
@@ -46,6 +49,7 @@ object MainContainerModule : InjectionModule {
         }
         factoryOf(::SearchInteractor)
         singleOf(::RefreshErrorInteractor)
+        factoryOf(::AddMoneyDialogInteractor)
     }
 
     private fun Module.initPresentationLayer() {
@@ -54,7 +58,18 @@ object MainContainerModule : InjectionModule {
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
-        factoryOf(::TopUpWalletPresenter) bind TopUpWalletContract.Presenter::class
+        factory {
+            AddMoneyDialogPresenter(
+                appFeatureFlags = get(),
+                interactor = get(),
+                userInteractor = get(),
+                strigaSignupFeatureToggle = get(),
+                seedPhraseProvider = get(),
+                strigaUserInteractor = get(),
+                strigaWalletInteractor = get(),
+                strigaSignupDataEnsurerInteractor = get(),
+            )
+        } bind AddMoneyDialogContract.Presenter::class
         factoryOf(::WalletBalanceMapper)
     }
 }

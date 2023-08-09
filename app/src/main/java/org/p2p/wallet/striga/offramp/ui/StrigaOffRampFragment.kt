@@ -1,5 +1,6 @@
 package org.p2p.wallet.striga.offramp.ui
 
+import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
@@ -14,12 +15,13 @@ import org.p2p.uikit.utils.text.bindOrInvisible
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentStrigaOffRampBinding
+import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.offramp.StrigaOffRampContract
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampButtonState
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
-import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getDrawable
@@ -136,8 +138,12 @@ class StrigaOffRampFragment :
     private fun FragmentStrigaOffRampBinding.setupView() {
         setupWidgetActions()
         toolbar.setNavigationOnClickListener {
-            popBackStack()
+            returnToMain()
         }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            returnToMain()
+        }
+
         buttonNext.setOnClickListener {
             presenter.onSubmit()
         }
@@ -151,5 +157,9 @@ class StrigaOffRampFragment :
             swapWidgetFrom.onAllAmountClick = presenter::onAllAmountClick
             swapWidgetTo.onAmountChanged = presenter::onTokenBAmountChange
         }
+    }
+
+    private fun returnToMain() {
+        popBackStackTo(MainContainerFragment::class)
     }
 }

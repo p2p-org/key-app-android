@@ -26,7 +26,6 @@ import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.signup.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaOccupation
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaSourceOfFunds
@@ -63,9 +62,6 @@ class StrigaSignupSecondStepPresenterTest {
     @MockK(relaxed = true)
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
 
-    @MockK
-    lateinit var onboardingInteractor: StrigaOnboardingInteractor
-
     @MockK(relaxed = true)
     lateinit var userInteractor: StrigaUserInteractor
 
@@ -99,7 +95,6 @@ class StrigaSignupSecondStepPresenterTest {
         return StrigaSignUpSecondStepPresenter(
             dispatchers = dispatchers,
             interactor = interactor,
-            onboardingInteractor = onboardingInteractor,
             strigaItemCellMapper = strigaItemCellMapper,
             alarmErrorsLogger = alarmErrorsLogger,
         )
@@ -128,7 +123,8 @@ class StrigaSignupSecondStepPresenterTest {
                 userInteractor = userInteractor,
                 metadataInteractor = metadataInteractor,
                 strigaOtpConfirmInteractor = mockk(relaxed = true),
-                strigaUserStatusRepository = mockk(relaxed = true)
+                strigaUserStatusRepository = mockk(relaxed = true),
+                strigaPresetDataLocalRepository = mockk(relaxed = true),
             )
         )
     }
@@ -296,7 +292,7 @@ class StrigaSignupSecondStepPresenterTest {
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.SOURCE_OF_FUNDS, sourceOfFunds.sourceName)
         )
-        coEvery { onboardingInteractor.getSourcesOfFundsByName(sourceOfFunds.sourceName) } returns sourceOfFunds
+        coEvery { interactor.getSourcesOfFundsByName(sourceOfFunds.sourceName) } returns sourceOfFunds
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
         coEvery { countryCodeRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
 
@@ -318,7 +314,7 @@ class StrigaSignupSecondStepPresenterTest {
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.OCCUPATION, occupation.occupationName)
         )
-        coEvery { onboardingInteractor.getOccupationByName(occupation.occupationName) } returns occupation
+        coEvery { interactor.getOccupationByName(occupation.occupationName) } returns occupation
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
         coEvery { countryCodeRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
 

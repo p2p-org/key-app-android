@@ -21,9 +21,8 @@
     <string name="striga_terms_and_policy_privacy_policy_word">Privacy Policy</string>
     <string name="striga_powered_by_url">https://striga.com</string>
     <string name="striga_onboarding_country_subtitle">Your country</string>
-    <string name="striga_onboarding_title_available">Open IBAN account for international transfers with zero fees</string>
-    <string name="striga_onboarding_title_unavailable">This service is available only for European Economic Area countries</string>
-    <string name="striga_onboarding_help_common_text">Check the list of countries %1$s</string>
+    <string name="add_money_onboarding_title">Select your country of residence</string>
+    <string name="add_money_onboarding_help_common_text">We suggest payment options\nbased on your choice</string>
     <string name="striga_onboarding_help_highlight_text">here</string>
     <string name="striga_sms_input_title">Enter confirmation code</string>
     <string name="striga_sms_input_description">We have sent a code\nto %1$s</string>

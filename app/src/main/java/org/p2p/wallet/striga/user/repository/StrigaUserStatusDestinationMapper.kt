@@ -12,7 +12,7 @@ class StrigaUserStatusDestinationMapper {
         return when {
             // if user is not created
             userStatus == null -> {
-                StrigaUserStatusDestination.ONBOARDING
+                StrigaUserStatusDestination.SIGNUP_FORM
             }
             !userStatus.isMobileVerified -> {
                 StrigaUserStatusDestination.SMS_VERIFICATION

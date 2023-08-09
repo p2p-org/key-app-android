@@ -15,6 +15,9 @@ import org.p2p.wallet.striga.common.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError
 import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.common.model.map
+import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaOccupation
+import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaSourceOfFunds
+import org.p2p.wallet.striga.signup.presetpicker.repository.StrigaPresetDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
@@ -38,6 +41,7 @@ class StrigaSignupInteractor(
     private val metadataInteractor: MetadataInteractor,
     private val strigaOtpConfirmInteractor: StrigaOtpConfirmInteractor,
     private val strigaUserStatusRepository: StrigaUserStatusRepository,
+    private val strigaPresetDataLocalRepository: StrigaPresetDataLocalRepository,
 ) {
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
         setOf(
@@ -218,6 +222,18 @@ class StrigaSignupInteractor(
 
         // 5. if phone number is not either detected or cached, then it will be an empty string
         return PhoneNumberWithCode(phoneCode, selectedPhoneNumber.orEmpty())
+    }
+
+    fun checkCountryIsSupported(country: CountryCode): Boolean {
+        return strigaPresetDataLocalRepository.checkIsCountrySupported(country)
+    }
+
+    fun getOccupationByName(name: String): StrigaOccupation? {
+        return strigaPresetDataLocalRepository.getOccupationValuesList().firstOrNull { it.occupationName == name }
+    }
+
+    fun getSourcesOfFundsByName(name: String): StrigaSourceOfFunds? {
+        return strigaPresetDataLocalRepository.getSourceOfFundsList().firstOrNull { it.sourceName == name }
     }
 
     private fun validateStep(
