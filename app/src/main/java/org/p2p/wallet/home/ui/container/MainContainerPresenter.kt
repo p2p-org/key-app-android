@@ -3,6 +3,7 @@ package org.p2p.wallet.home.ui.container
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
@@ -19,8 +20,8 @@ import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
 import org.p2p.wallet.home.ui.crypto.MyCryptoFragment
 import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
+import org.p2p.wallet.home.ui.wallet.interactor.WalletStrigaInteractor
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -32,7 +33,7 @@ class MainContainerPresenter(
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val metadataInteractor: MetadataInteractor,
     private val userInteractor: UserInteractor,
-    private val strigaOnRampInteractor: StrigaOnRampInteractor,
+    private val walletStrigaInteractor: WalletStrigaInteractor,
     private val balanceMapper: WalletBalanceMapper,
     private val mainScreenAnalytics: MainScreenAnalytics
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
@@ -148,8 +149,11 @@ class MainContainerPresenter(
 
     private fun checkIncomeTransfers() {
         launch {
-            val strigaOnRampTokens = strigaOnRampInteractor.getOnRampTokens().successOrNull().orEmpty()
-            view?.showWalletBadgeVisible(isVisible = strigaOnRampTokens.isNotEmpty())
+            walletStrigaInteractor.observeOnOffRampTokens()
+                .map { it.hasTokens }
+                .collect {
+                    view?.showWalletBadgeVisible(isVisible = it)
+                }
         }
     }
 

@@ -46,7 +46,7 @@ data class GatewayOnboardingMetadata(
 
     data class StrigaMetadata(
         @SerializedName("user_id")
-        val userId: String,
+        val userId: String?,
         @SerializedName("user_id_timestamp")
         val userIdTimestamp: Long
     )
