@@ -61,10 +61,18 @@ class Web3AuthClientMapper(private val gson: Gson) {
     }
 
     fun fromNetworkGetUserData(responseJson: String): Result<GatewayOnboardingMetadata> = try {
-        Result.success(gson.fromJsonReified<GatewayOnboardingMetadata>(responseJson)!!)
+        Result.success(gson.fromJsonReified<GatewayOnboardingMetadata>(replaceStringWrapIfNeeded(responseJson))!!)
     } catch (mappingError: Throwable) {
         Timber.i(mappingError)
         Timber.i(responseJson)
         Result.failure(Web3AuthSdkInternalError(INTERNAL_ERROR_MESSAGE, mappingError))
+    }
+
+    private fun replaceStringWrapIfNeeded(jsonString: String): String {
+        return if (jsonString.startsWith("\"")) {
+            jsonString.replace("\"{", "{").replace("}\"", "}")
+        } else {
+            jsonString
+        }
     }
 }
