@@ -20,6 +20,7 @@ import org.p2p.wallet.newsend.interactor.SendServiceInteractor
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.repository.SendServiceRemoteRepository
+import org.p2p.wallet.newsend.repository.SendServiceRepository
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsPresenter
 import org.p2p.wallet.newsend.ui.search.NewSearchContract
@@ -77,7 +78,7 @@ object SendModule : InjectionModule {
         factoryOf(::UserSendLinksDatabaseRepository) bind UserSendLinksLocalRepository::class
 
         factoryOf(::SendServiceInteractor)
-        singleOf(::SendServiceRemoteRepository)
+        factoryOf(::SendServiceRemoteRepository) bind SendServiceRepository::class
 
         single(named(SEND_SERVICE_RETROFIT_QUALIFIER)) {
             val url = get<NetworkServicesUrlProvider>()

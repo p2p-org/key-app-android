@@ -44,7 +44,7 @@ import org.p2p.wallet.newsend.model.SendState
 import org.p2p.wallet.newsend.model.SendState.GeneralError
 import org.p2p.wallet.newsend.model.SendState.Loading
 import org.p2p.wallet.newsend.model.WidgetState
-import org.p2p.wallet.newsend.model.nicknameOrAddress
+import org.p2p.wallet.newsend.model.usernameOrAddress
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -133,7 +133,7 @@ class SendStateManager(
             transactionDetails = listOf(
                 TitleValue(
                     title = resources.getString(R.string.transaction_send_to_title),
-                    value = initialData.recipient.nicknameOrAddress()
+                    value = initialData.recipient.usernameOrAddress()
                 )
             )
         )
@@ -358,7 +358,7 @@ class SendStateManager(
             senderAddress = tokenKeyProvider.publicKey,
             amount = RpcHistoryAmount(inputCalculator.getCurrentAmount(), inputCalculator.getCurrentAmountUsd()),
             destination = initialData.recipient.address,
-            counterPartyUsername = initialData.recipient.nicknameOrAddress(),
+            counterPartyUsername = initialData.recipient.usernameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
             iconUrl = sourceToken.iconUrl,

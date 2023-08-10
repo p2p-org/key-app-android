@@ -59,7 +59,7 @@ sealed class SearchResult(open val address: String) : Parcelable {
 fun TemporaryAccount.toSearchResult(): SearchResult =
     SearchResult.AddressFound(address)
 
-fun SearchResult.nicknameOrAddress(): String {
+fun SearchResult.usernameOrAddress(): String {
     return if (this is SearchResult.UsernameFound) formattedUsername
     else address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
 }
