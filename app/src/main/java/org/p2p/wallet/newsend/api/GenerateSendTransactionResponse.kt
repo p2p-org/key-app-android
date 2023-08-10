@@ -3,14 +3,16 @@ package org.p2p.wallet.newsend.api
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 import java.math.BigInteger
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.utils.MillisSinceEpoch
 
-data class GenerateTransactionResponse(
+data class GenerateSendTransactionResponse(
     @SerializedName("transaction")
-    val transaction: String,
+    val transaction: Base64String,
     @SerializedName("blockhash")
     val blockhash: String,
-    @SerializedName("expiresAt")
-    val expiresAt: Long,
+    @SerializedName("expires_at")
+    val expiresAt: MillisSinceEpoch,
     @SerializedName("signature")
     val signature: String,
     @SerializedName("recipient_gets_amount")
@@ -27,23 +29,23 @@ data class NetworkFeeResponse(
     @SerializedName("source")
     val source: String,
     @SerializedName("amount")
-    val usd_amount: AmountResponse
+    val usdAmount: AmountResponse
 )
 
 data class TokenAccountRentResponse(
     @SerializedName("source")
     val source: String,
     @SerializedName("amount")
-    val usd_amount: AmountResponse
+    val usdAmount: AmountResponse
 )
 
 data class AmountResponse(
     @SerializedName("amount")
     val amount: BigInteger,
     @SerializedName("usd_amount")
-    val usd_amount: BigDecimal,
+    val usdAmount: BigDecimal,
     @SerializedName("mint")
-    val mint: String,
+    val tokenMint: String,
     @SerializedName("symbol")
     val symbol: String,
     @SerializedName("name")

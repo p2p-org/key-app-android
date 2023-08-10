@@ -6,12 +6,12 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isZero
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
-import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
@@ -24,15 +24,10 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
-import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
-import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.newsend.model.SendFatalError
-import org.p2p.wallet.newsend.model.SendTransactionFailed
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
@@ -54,32 +49,11 @@ class SendInteractor(
 ) {
 
     /*
-    * If transaction will need to create a new account,
-    * then the fee for account creation will be paid via this token
-    * */
-    private lateinit var feePayerToken: Token.Active
-
-    /*
     * Initialize fee payer token
     * */
-    suspend fun initialize(token: Token.Active) {
-        feePayerToken = token
+    suspend fun initialize() {
         feeRelayerInteractor.load()
         orcaInfoInteractor.load()
-    }
-
-    fun setFeePayerToken(newToken: Token.Active) {
-        if (!::feePayerToken.isInitialized) throw SendFatalError("FeePayerToken is not initialized")
-        if (newToken.publicKey == feePayerToken.publicKey) return
-
-        feePayerToken = newToken
-        Timber.tag(TAG).i("Fee payer token switched: ${newToken.mintAddress}")
-    }
-
-    fun getFeePayerToken(): Token.Active = feePayerToken
-
-    fun switchFeePayerToSol(solToken: Token.Active?) {
-        solToken?.let(::setFeePayerToken)
     }
 
     // Fees calculator
@@ -228,50 +202,6 @@ class SendInteractor(
     suspend fun getFreeTransactionsInfo(useCache: Boolean): TransactionFeeLimits =
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache)
 
-    suspend fun sendTransaction(
-        destinationAddress: PublicKey,
-        token: Token.Active,
-        lamports: BigInteger
-    ): String = withContext(dispatchers.io) {
-        Timber.tag(TAG).i("Start sendTransaction")
-
-        val preparedTransaction = prepareForSending(
-            token = token,
-            receiver = destinationAddress.toBase58(),
-            amount = lamports
-        )
-
-        val transactionPublicKey = preparedTransaction.transaction.signature?.publicKey?.toBase58()
-        Timber.tag(TAG).i("Send transaction prepared: $transactionPublicKey")
-
-        try {
-            if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
-                Timber.tag(TAG).i("Using native swap")
-                // send normally, paid by SOL
-                transactionInteractor.serializeAndSend(
-                    transaction = preparedTransaction.transaction,
-                    isSimulation = false
-                )
-            } else {
-                Timber.tag(TAG).i("Using FeeRelayer for send")
-                // use fee relayer
-                val statistics = FeeRelayerStatistics(
-                    operationType = OperationType.TRANSFER,
-                    currency = token.mintAddress
-                )
-                feeRelayerInteractor.topUpAndRelayTransaction(
-                    preparedTransaction = preparedTransaction,
-                    payingFeeToken = TokenAccount(feePayerToken.publicKey, feePayerToken.mintAddress),
-                    additionalPaybackFee = BigInteger.ZERO,
-                    statistics = statistics
-                )
-            }
-        } catch (error: Throwable) {
-            Timber.tag(TAG).i(error, "Failed sending transaction")
-            throw SendTransactionFailed(transactionPublicKey.orEmpty(), error)
-        }
-    }
-
     suspend fun getMinRelayRentExemption(): BigInteger =
         feeRelayerAccountInteractor.getRelayInfo().minimumRelayAccountRent
 
@@ -324,53 +254,6 @@ class SendInteractor(
             feeInSOL = FeeAmount(transaction = transactionFeeInSOL, accountBalances = accountCreationFeeInSOL),
             payingFeeTokenMint = feePayerToken.mintAddress
         )
-    }
-
-    private suspend fun prepareForSending(
-        token: Token.Active,
-        receiver: String,
-        amount: BigInteger,
-        recentBlockhash: String? = null,
-        lamportsPerSignature: BigInteger? = null,
-        minRentExemption: BigInteger? = null
-    ): PreparedTransaction {
-        val sender = token.publicKey
-
-        if (sender == receiver) {
-            error("You can not send tokens to yourself")
-        }
-
-        val (feePayer, useFeeRelayer) = if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
-            null to false
-        } else {
-            val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
-            feePayer to true
-        }
-
-        Timber.tag(TAG).i("feePayer = $feePayer; useFeeRelayer=$useFeeRelayer")
-
-        return if (token.isSOL) {
-            prepareNativeSol(
-                destinationAddress = receiver.toPublicKey(),
-                lamports = amount,
-                feePayerPublicKey = feePayer,
-                recentBlockhash = recentBlockhash,
-                lamportsPerSignature = lamportsPerSignature
-            )
-        } else {
-            prepareSplToken(
-                mintAddress = token.mintAddress,
-                decimals = token.decimals,
-                fromPublicKey = sender,
-                destinationAddress = receiver,
-                amount = amount,
-                feePayerPublicKey = feePayer,
-                transferChecked = useFeeRelayer, // create transferChecked instruction when using fee relayer
-                recentBlockhash = recentBlockhash,
-                lamportsPerSignature = lamportsPerSignature,
-                minBalanceForRentExemption = minRentExemption
-            ).first
-        }
     }
 
     private suspend fun prepareNativeSol(

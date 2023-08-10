@@ -18,4 +18,11 @@ class SmartSelectionCoordinator(
         this.feePayer = newFeePayer
     }
 
+    fun onNewTrigger(newTrigger: SmartSelectionTrigger) {
+    }
+
+    fun requireFeePayer(): Token.Active = feePayer
+
+    fun release() {
+    }
 }

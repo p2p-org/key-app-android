@@ -17,6 +17,7 @@ import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toLamports
@@ -95,6 +96,23 @@ sealed class Token constructor(
             } else {
                 total.formatToken(decimals)
             }
+
+        /**
+         * We disable switching the currency mode if the following happens:
+         *
+         * 1. If we have no rates for the token
+         * 2. If the token is stable and its fiat rate is equal or almost equal
+         * */
+        fun isCurrencyDisabled(): Boolean {
+            val isStableCoin = isUSDC || isUSDT
+
+            val delta = rate.orZero() - BigDecimal.ONE
+            // FIXME: Use extension value
+            val ACCEPTABLE_RATE_DIFF = 0.02
+            val isRateAcceptable = delta.abs() < BigDecimal(ACCEPTABLE_RATE_DIFF)
+
+            return rate == null || isStableCoin && isRateAcceptable
+        }
     }
 
     @Parcelize

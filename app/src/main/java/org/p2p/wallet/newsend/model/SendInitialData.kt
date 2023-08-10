@@ -34,7 +34,8 @@ data class SendInitialData(
         return userTokens.first()
     }
 
-    fun findSolToken(sourceToken: Token.Active, solToken: Token.Active?): Token.Active {
+    @Throws(SendFatalError::class)
+    fun getSolTokenOrThrow(sourceToken: Token.Active, solToken: Token.Active?): Token.Active {
         return if (sourceToken.isSOL) {
             sourceToken
         } else {

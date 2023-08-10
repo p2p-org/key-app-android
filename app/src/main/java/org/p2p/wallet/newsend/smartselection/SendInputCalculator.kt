@@ -18,7 +18,6 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
-import org.p2p.core.utils.toUsd
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.newsend.model.CalculationEvent
 

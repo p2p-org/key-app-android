@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.ui
+package org.p2p.wallet.newsend.ui.main
 
 import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
@@ -20,28 +20,30 @@ import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendFeeTotal
+import org.p2p.wallet.newsend.model.SendInitialData
+import org.p2p.wallet.newsend.model.SendPromptData
 import org.p2p.wallet.newsend.model.SendSolanaFee
+import org.p2p.wallet.newsend.ui.SendOpenedFrom
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
+import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler.Companion.QUALIFIER
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getParcelableArrayListCompat
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 
-private const val ARG_RECIPIENT = "ARG_RECIPIENT"
-private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
-private const val ARG_INPUT_AMOUNT = "ARG_INPUT_AMOUNT"
-private const val ARG_OPENED_FROM_FLOW = "ARG_OPENED_FROM_FLOW"
+private const val ARG_INITIAL_DATA = "ARG_INITIAL_DATA"
 
 private const val KEY_RESULT_FEE = "KEY_RESULT_FEE"
 private const val KEY_RESULT_FEE_PAYER_TOKENS = "KEY_RESULT_FEE_PAYER_TOKENS"
@@ -49,44 +51,39 @@ private const val KEY_RESULT_NEW_FEE_PAYER = "KEY_RESULT_APPROXIMATE_FEE_USD"
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
-class NewSendFragment :
-    BaseMvpFragment<NewSendContract.View, NewSendContract.Presenter>(R.layout.fragment_send),
-    NewSendContract.View {
+class SendFragment :
+    BaseMvpFragment<SendContract.View, SendContract.Presenter>(R.layout.fragment_send),
+    SendContract.View {
 
     companion object {
+
         fun create(
             recipient: SearchResult,
             initialToken: Token.Active? = null,
             inputAmount: BigDecimal? = null,
             openedFromFlow: SendOpenedFrom = SendOpenedFrom.MAIN_FLOW,
-        ): NewSendFragment = NewSendFragment()
+        ): SendFragment = SendFragment()
             .withArgs(
-                ARG_RECIPIENT to recipient,
-                ARG_INITIAL_TOKEN to initialToken,
-                ARG_INPUT_AMOUNT to inputAmount,
-                ARG_OPENED_FROM_FLOW to openedFromFlow,
+                ARG_INITIAL_DATA to SendInitialData(
+                    recipient = recipient,
+                    openedFrom = openedFromFlow,
+                    initialToken = initialToken,
+                    inputAmount = inputAmount
+                )
             )
     }
 
-    private val recipient: SearchResult by args(ARG_RECIPIENT)
-    private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
-    private val inputAmount: BigDecimal? by args(ARG_INPUT_AMOUNT)
-    private val openedFromFlow: SendOpenedFrom by args(ARG_OPENED_FROM_FLOW)
+    private val initialData: SendInitialData by args(ARG_INITIAL_DATA)
 
     private val binding: FragmentSendBinding by viewBinding()
 
-    override val presenter: NewSendContract.Presenter by inject { parametersOf(recipient, openedFromFlow) }
+    override val presenter: SendContract.Presenter by inject { parametersOf(initialData) }
 
     private var listener: RootListener? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = context as? RootListener
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        presenter.setInitialData(initialToken, inputAmount)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -98,7 +95,7 @@ class NewSendFragment :
             maxButtonClickListener = presenter::onMaxButtonClicked
             switchListener = presenter::switchCurrencyMode
             feeButtonClickListener = presenter::onFeeInfoClicked
-            if (inputAmount == null) {
+            if (initialData.inputAmount == null) {
                 focusAndShowKeyboard()
             }
         }
@@ -252,7 +249,7 @@ class NewSendFragment :
         binding.textViewDebug.text = text
     }
 
-    override fun showTokenSelection(selectedToken: Token.Active?) {
+    override fun showTokenSelection(selectedToken: Token.Active) {
         addFragment(
             target = NewSelectTokenFragment.create(
                 selectedToken = selectedToken,
@@ -267,8 +264,8 @@ class NewSendFragment :
     }
 
     override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
-        listener?.showTransactionProgress(internalTransactionId, data, SendSwapTransactionProgressHandler.QUALIFIER)
-        when (openedFromFlow) {
+        listener?.showTransactionProgress(internalTransactionId, data, QUALIFIER)
+        when (initialData.openedFrom) {
             SendOpenedFrom.SELL_FLOW -> popBackStackTo(target = MainContainerFragment::class, inclusive = false)
             SendOpenedFrom.MAIN_FLOW -> popBackStackTo(target = NewSearchFragment::class, inclusive = true)
         }
@@ -286,10 +283,21 @@ class NewSendFragment :
         fee: SendSolanaFee,
         alternativeFeePayerTokens: List<Token.Active>
     ) {
+        val promptData = SendPromptData(
+            feePayerToken = fee.feePayerToken,
+            approximateFeeUsd = fee.getApproxAccountCreationFeeUsd(withBraces = false).orEmpty(),
+            alternativeFeePayerTokens = alternativeFeePayerTokens,
+        )
+        val target = SendNoAccountFragment.create(
+            promptData = promptData,
+            requestKey = KEY_REQUEST_SEND,
+            resultKey = KEY_RESULT_NEW_FEE_PAYER
+        )
+        replaceFragment(target)
     }
 
     private fun UiKitToolbar.setupToolbar() {
-        val toolbarTitle = when (val recipient = recipient) {
+        val toolbarTitle = when (val recipient = initialData.recipient) {
             is SearchResult.UsernameFound -> recipient.formattedUsername
             else -> recipient.formattedAddress
         }

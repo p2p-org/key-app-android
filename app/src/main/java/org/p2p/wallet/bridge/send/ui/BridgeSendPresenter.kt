@@ -137,7 +137,7 @@ class BridgeSendPresenter(
             }
         }
         view?.apply {
-            showFeeViewVisible(isVisible = true)
+            showFeeVisible(isVisible = true)
             showFeeViewLoading(isLoading = false)
             setInputColor(R.color.text_night)
         }
@@ -148,7 +148,7 @@ class BridgeSendPresenter(
         view?.apply {
             when (state) {
                 is BridgeSendState.Loading.Fee -> {
-                    showFeeViewVisible(isVisible = true)
+                    showFeeVisible(isVisible = true)
                     showFeeViewLoading(isLoading = true)
                     showBottomFeeValue(bridgeSendUiMapper.getFeeTextSkeleton())
                     updateButtons(
@@ -171,7 +171,7 @@ class BridgeSendPresenter(
                     handleUpdateTotal(state.lastStaticState.bridgeFee)
                     when (state.featureException) {
                         is SendFeatureException.FeeLoadingError -> {
-                            showFeeViewVisible(isVisible = false)
+                            showFeeVisible(isVisible = false)
                             showBottomFeeValue(TextViewCellModel.Raw(TextContainer(emptyString())))
                             updateButtons(
                                 errorButton = TextContainer.Res(R.string.send_cant_calculate_fees_error),
@@ -207,7 +207,7 @@ class BridgeSendPresenter(
     override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) = Unit
 
     private fun initialize(view: BridgeSendContract.View) {
-        calculationMode.onCalculationCompleted = { view.showAroundValue(it) }
+        calculationMode.onCalculationCompleted = { view.showApproximateAmount(it) }
         calculationMode.onInputFractionUpdated = { view.updateInputFraction(it) }
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
             view.setSwitchLabel(switchSymbol)
@@ -495,7 +495,7 @@ class BridgeSendPresenter(
         val arbiterFeeAmount = lastStaticState.bridgeFee?.fee?.arbiterFee?.amountInToken?.toPlainString()
         alarmErrorsLogger.triggerBridgeSendAlarm(
             token = token,
-            currency = calculationMode.getCurrencyMode().getCurrencyModeSymbol(),
+            currency = calculationMode.getCurrencyMode().getTypedSymbol(),
             sendAmount = calculationMode.getCurrentAmount().toPlainString(),
             arbiterFeeAmount = arbiterFeeAmount.orEmpty(),
             recipientEthPubkey = recipientAddress.address,

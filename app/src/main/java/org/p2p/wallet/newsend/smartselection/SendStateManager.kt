@@ -3,7 +3,6 @@ package org.p2p.wallet.newsend.smartselection
 import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
-import java.util.Date
 import java.util.UUID
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
@@ -12,17 +11,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
-import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.model.TitleValue
 import org.p2p.core.token.Token
-import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isNotZero
@@ -30,7 +25,6 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
-import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -50,13 +44,10 @@ import org.p2p.wallet.newsend.model.SendState
 import org.p2p.wallet.newsend.model.SendState.GeneralError
 import org.p2p.wallet.newsend.model.SendState.Loading
 import org.p2p.wallet.newsend.model.WidgetState
-import org.p2p.wallet.newsend.model.nicknameOrAddress
+import org.p2p.wallet.newsend.model.usernameOrAddress
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.transaction.model.progressstate.SendSwapProgressState
-import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.toPublicKey
 
 private const val TAG = "SendFeeRelayerManager"
 
@@ -142,7 +133,7 @@ class SendStateManager(
             transactionDetails = listOf(
                 TitleValue(
                     title = resources.getString(R.string.transaction_send_to_title),
-                    value = initialData.recipient.nicknameOrAddress()
+                    value = initialData.recipient.usernameOrAddress()
                 )
             )
         )
@@ -198,11 +189,10 @@ class SendStateManager(
     private suspend fun initializeScreen(userTokens: List<Token.Active>) {
         try {
             sourceToken = initialData.selectInitialToken(userTokens)
-            solToken = initialData.findSolToken(sourceToken, userInteractor.getUserSolToken())
+//            solToken = initialData.findSolToken(sourceToken, userInteractor.getUserSolToken())
 
             feeLimitInfo = sendInteractor.getFreeTransactionsInfo(useCache = false)
             sendInteractor.getMinRelayRentExemption().also { inputCalculator.saveMinRentExemption(it) }
-            sendInteractor.initialize()
 
             updateToken(sourceToken)
         } catch (e: Throwable) {
@@ -266,21 +256,21 @@ class SendStateManager(
     }
 
     private fun handleFeeClicked() {
-        if (smartSelectionCoordinator.isFreeAndInputEmpty()) {
-            updateState(SendState.ShowFreeTransactionDetails)
-        } else {
-            updateState(SendState.ShowTransactionDetails(createFeeTotal()))
-        }
+//        if (smartSelectionCoordinator.isFreeAndInputEmpty()) {
+//            updateState(SendState.ShowFreeTransactionDetails)
+//        } else {
+//            updateState(SendState.ShowTransactionDetails(createFeeTotal()))
+//        }
     }
 
     private fun observeTokenUpdates(token: Token.Active) {
-        observeTokensJob?.cancel()
-        userInteractor.getUserTokensFlow()
-            .map { it.findByMintAddress(token.mintAddress) }
-            .filterNotNull()
-            .onEach { updateToken(updatedToken = it) }
-            .launchIn(this)
-            .also { observeTokensJob = it }
+//        observeTokensJob?.cancel()
+//        userInteractor.getUserTokensFlow()
+//            .map { it.findByMintAddress(token.mintAddress) }
+//            .filterNotNull()
+//            .onEach { updateToken(updatedToken = it) }
+//            .launchIn(this)
+//            .also { observeTokensJob = it }
     }
 
     private fun validateCurrencySwitch() {
@@ -334,9 +324,10 @@ class SendStateManager(
     }
 
     private fun createFeeTotal(): SendFeeTotal {
-        val solanaFee = smartSelectionCoordinator.getFeeData()?.let {
-            SendSolanaFee(it.first, it.second, sourceToken)
-        }
+//        val solanaFee = smartSelectionCoordinator.getFeeData()?.let {
+//            SendSolanaFee(it.first, it.second, sourceToken)
+//        }
+        val solanaFee = null
 
         val currentAmount = inputCalculator.getCurrentAmount()
         return SendFeeTotal(
@@ -367,7 +358,7 @@ class SendStateManager(
             senderAddress = tokenKeyProvider.publicKey,
             amount = RpcHistoryAmount(inputCalculator.getCurrentAmount(), inputCalculator.getCurrentAmountUsd()),
             destination = initialData.recipient.address,
-            counterPartyUsername = initialData.recipient.nicknameOrAddress(),
+            counterPartyUsername = initialData.recipient.usernameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
             iconUrl = sourceToken.iconUrl,
