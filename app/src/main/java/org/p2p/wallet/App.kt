@@ -26,11 +26,13 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
+import org.p2p.wallet.utils.CrashLoggerInitializer
 import org.p2p.wallet.utils.SolanajTimberLogger
 import org.p2p.core.BuildConfig as CoreBuildConfig
 import org.p2p.wallet.BuildConfig as AppBuildConfig
 
 class App : Application(), Configuration.Provider {
+    private val crashLoggerInitializer: CrashLoggerInitializer by inject()
     private val crashLogger: CrashLogger by inject()
     private val appCreatedAction: AppCreatedAction by inject()
     private val appsFlyerService: AppsFlyerService by inject()
@@ -131,5 +133,7 @@ class App : Application(), Configuration.Provider {
         FirebaseCrashlytics
             .getInstance()
             .setCrashlyticsCollectionEnabled(CoreBuildConfig.CRASHLYTICS_ENABLED)
+
+        crashLoggerInitializer.init()
     }
 }
