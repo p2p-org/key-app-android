@@ -193,7 +193,7 @@ class WalletPresenter(
 
     override fun onAddMoneyClicked() {
         mainScreenAnalytics.logMainScreenAddMoneyClick()
-        view?.showTopupWalletDialog()
+        view?.showAddMoneyDialog()
     }
 
     override fun onStrigaOnRampClicked(item: StrigaOnRampCellModel) {

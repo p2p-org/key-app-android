@@ -69,7 +69,7 @@ class WalletStrigaHandler(
                     }
                 }
                 else -> {
-                    view?.showTopupWalletDialog()
+                    view?.showAddMoneyDialog()
                 }
             }
         }

@@ -1,4 +1,4 @@
-package org.p2p.wallet.home.ui.topup
+package org.p2p.wallet.home.addmoney.ui
 
 import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,63 +7,75 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
+import org.p2p.wallet.home.addmoney.AddMoneyContract
+import org.p2p.wallet.home.addmoney.interactor.AddMoneyInteractor
+import org.p2p.wallet.home.addmoney.mapper.AddMoneyUiMapper
+import org.p2p.wallet.home.addmoney.model.AddMoneyButton
+import org.p2p.wallet.home.addmoney.model.AddMoneyButtonType
+import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.striga.user.interactor.StrigaSignupDataEnsurerInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 
-class TopUpWalletPresenter(
+class AddMoneyPresenter(
     private val appFeatureFlags: InAppFeatureFlags,
+    private val interactor: AddMoneyInteractor,
     private val userInteractor: UserInteractor,
-    private val strigaSignupFeatureToggle: StrigaSignupEnabledFeatureToggle,
-    private val seedPhraseProvider: SeedPhraseProvider,
     private val strigaUserInteractor: StrigaUserInteractor,
     private val strigaWalletInteractor: StrigaWalletInteractor,
     private val strigaSignupDataEnsurerInteractor: StrigaSignupDataEnsurerInteractor,
-    private val inAppFeatureFlags: InAppFeatureFlags,
-) : BasePresenter<TopUpWalletContract.View>(),
-    TopUpWalletContract.Presenter {
-
-    private val isUserAuthByWeb3: Boolean
-        get() = seedPhraseProvider.isWeb3AuthUser || appFeatureFlags.strigaSimulateWeb3Flag.featureValue
-
-    private val isStrigaEnabled: Boolean
-        get() = strigaSignupFeatureToggle.isFeatureEnabled && isUserAuthByWeb3
+    private val addMoneyMapper: AddMoneyUiMapper,
+) : BasePresenter<AddMoneyContract.View>(),
+    AddMoneyContract.Presenter {
 
     private val bankTransferProgress = MutableStateFlow(false)
 
-    override fun attach(view: TopUpWalletContract.View) {
-        super.attach(view)
-
-        bankTransferProgress.onEach {
-            view.showStrigaBankTransferView(showProgress = it, isStrigaEnabled = isStrigaEnabled)
+    override fun onButtonClick(button: AddMoneyButton) {
+        when (button.type) {
+            AddMoneyButtonType.BANK_TRANSFER_MOONPAY -> onBankTransferMoonpayClicked()
+            AddMoneyButtonType.BANK_TRANSFER_STRIGA -> onBankTransferStrigaClicked()
+            AddMoneyButtonType.BANK_CARD -> onBankCardClicked()
+            AddMoneyButtonType.CRYPTO -> onCryptoClicked()
         }
-            .launchIn(this)
-
-        launch {
-            val tokenToBuy = userInteractor.getSingleTokenForBuy()
-            tokenToBuy?.let(view::showBankCardView) ?: view.hideBankCardView()
-        }
-
-        view.showCryptoReceiveView()
     }
 
-    override fun onBankTransferClicked() {
-        if (!isStrigaEnabled) {
-            launch {
-                val tokenToBuy = userInteractor.getSingleTokenForBuy()
-                tokenToBuy?.let {
-                    view?.navigateToBuyWithTransfer(it)
-                }
+    override fun attach(view: AddMoneyContract.View) {
+        super.attach(view)
+        view.setCellItems(
+            interactor.getAddMoneyButtons().map(addMoneyMapper::mapToCellItem)
+        )
+
+        bankTransferProgress
+            .onEach { isLoading ->
+                val buttons = interactor.getAddMoneyButtons()
+                    .map {
+                        addMoneyMapper.mapButtonIsLoading(
+                            button = it,
+                            ifType = AddMoneyButtonType.BANK_TRANSFER_STRIGA,
+                            isLoading = isLoading
+                        )
+                    }
+
+                view.setCellItems(buttons)
             }
-            return
+            .launchIn(this)
+    }
+
+    private fun onBankTransferMoonpayClicked() {
+        launch {
+            val tokenToBuy = userInteractor.getSingleTokenForBuy()
+            tokenToBuy?.let {
+                view?.navigateToBankCard(it, PaymentMethod.MethodType.BANK_TRANSFER)
+            }
         }
+    }
+
+    private fun onBankTransferStrigaClicked() {
         // in case of simulation web3 user, we don't need to check metadata
-        if (inAppFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
+        if (appFeatureFlags.strigaSimulateWeb3Flag.featureValue) {
             view?.navigateToBankTransferTarget(StrigaUserStatusDestination.ONBOARDING)
             return
         }
@@ -98,5 +110,21 @@ class TopUpWalletPresenter(
                 bankTransferProgress.emit(false)
             }
         }
+    }
+
+    private fun onBankCardClicked() {
+        launch {
+            try {
+                val tokenToBuy = userInteractor.getSingleTokenForBuy() ?: error("No token to buy")
+                view?.navigateToBankCard(tokenToBuy, PaymentMethod.MethodType.CARD)
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to get token to buy")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+        }
+    }
+
+    private fun onCryptoClicked() {
+        view?.navigateToCrypto()
     }
 }
