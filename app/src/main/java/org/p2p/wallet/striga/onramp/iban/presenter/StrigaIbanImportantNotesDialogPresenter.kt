@@ -14,7 +14,7 @@ class StrigaIbanImportantNotesDialogPresenter(
     private val notes = listOf(
         mapper.mapImportantNotesCellModel(
             textRes = R.string.striga_iban_account_dialog_note_first,
-            iconRes = R.drawable.ic_user
+            iconRes = R.drawable.ic_user_v2
         ),
         mapper.mapImportantNotesCellModel(
             textRes = R.string.striga_iban_account_dialog_note_second,

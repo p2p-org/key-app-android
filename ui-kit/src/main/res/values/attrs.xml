@@ -164,6 +164,7 @@
         <attr name="android:backgroundTint" />
         <attr name="leftIcon" />
         <attr name="leftIconTint" format="color" />
+        <attr name="leftIconBackgroundTint" format="color" />
         <attr name="title" format="string" />
         <attr name="titleTextColor" />
         <attr name="caption" format="string" />
