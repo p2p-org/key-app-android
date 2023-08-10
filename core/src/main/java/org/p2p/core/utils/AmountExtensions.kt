@@ -40,20 +40,20 @@ fun BigDecimal.scaleShortOrFirstNotZero(): BigDecimal {
             SCALE_VALUE_SHORT
         }
         // removing zeros, case: 0.02000 -> 0.2
-        setScale(scale, RoundingMode.HALF_EVEN).stripTrailingZeros()
+        setScale(scale, RoundingMode.DOWN).stripTrailingZeros()
     }
 }
 
 fun BigDecimal.scaleShort(): BigDecimal =
-    this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN)
+    this.setScale(SCALE_VALUE_SHORT, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigDecimal.scaleMedium(): BigDecimal =
-    if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.HALF_EVEN)
+    if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigDecimal.scaleLong(decimals: Int = SCALE_VALUE_LONG): BigDecimal =
-    if (this.isZero()) this else this.setScale(decimals, RoundingMode.HALF_EVEN)
+    if (this.isZero()) this else this.setScale(decimals, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =
@@ -143,3 +143,4 @@ fun Int?.orZero(): Int = this ?: 0
 
 // value is in (0..0.01)
 fun BigDecimal.lessThenMinValue() = !isZero() && isLessThan(AMOUNT_MIN_VALUE.toBigDecimal())
+fun BigDecimal.moreThenMinValue() = isMoreThan(AMOUNT_MIN_VALUE.toBigDecimal())

@@ -17,6 +17,7 @@ import org.p2p.wallet.striga.common.model.map
 import org.p2p.wallet.striga.common.model.toFailureResult
 import org.p2p.wallet.striga.common.model.toSuccessResult
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
+import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
 import org.p2p.wallet.striga.wallet.models.StrigaOnchainWithdrawalFees
@@ -38,7 +39,15 @@ class StrigaOnRampInteractor(
     private val strigaFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val userTokenKeyProvider: TokenKeyProvider,
     private val userInteractor: StrigaUserInteractor,
+    private val storage: StrigaStorageContract,
 ) {
+
+    var isIbanNotesHidden: Boolean
+        get() = storage.isIbanNotesHidden
+        set(value) {
+            storage.isIbanNotesHidden = value
+        }
+
     private val isOnRampDisabled: Boolean
         get() = !strigaFeatureToggle.isFeatureEnabled || !userInteractor.isKycApproved
 

@@ -11,6 +11,11 @@ class NetworkEnvironmentManager(
     private val networksFromRemoteConfig: List<NetworkEnvironment>
 ) {
 
+    companion object {
+        const val URL_PRIVACY_POLICY = "https://key.app/privacypolicy"
+        const val URL_TERMS_OF_USE = "https://key.app/termsofservice"
+    }
+
     fun interface EnvironmentManagerListener {
         fun onEnvironmentChanged(newEnvironment: NetworkEnvironment)
     }

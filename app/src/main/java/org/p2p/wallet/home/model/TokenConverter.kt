@@ -4,6 +4,7 @@ import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokenExtensions
+import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -69,18 +70,24 @@ object TokenConverter {
     }
 
     fun fromNetwork(
-        data: TokenMetadata,
+        tokenMetadata: TokenMetadata,
         price: TokenServicePrice?
-    ): Token.Other =
-        Token.Other(
-            tokenName = data.name,
-            tokenSymbol = data.symbol,
-            decimals = data.decimals,
-            mintAddress = data.mintAddress,
-            iconUrl = data.iconUrl,
-            isWrapped = data.isWrapped,
-            rate = price?.rate?.usd
+    ): Token.Other {
+        val token = Token.Other(
+            tokenName = tokenMetadata.name,
+            tokenSymbol = tokenMetadata.symbol,
+            decimals = tokenMetadata.decimals,
+            mintAddress = tokenMetadata.mintAddress,
+            iconUrl = tokenMetadata.iconUrl,
+            isWrapped = tokenMetadata.isWrapped,
+            rate = price?.rate?.usd,
+            tokenExtensions = TokenExtensions.NONE
         )
+        return TokenExtensionsConfigurator(
+            extensions = tokenMetadata.extensions,
+            token = token
+        ).config()
+    }
 
     fun toDatabase(token: Token.Active): TokenEntity =
         TokenEntity(
@@ -111,8 +118,8 @@ object TokenConverter {
         )
     }
 
-    fun fromDatabase(entity: TokenEntity): Token.Active =
-        Token.Active(
+    fun fromDatabase(entity: TokenEntity, extensions: TokenMetadataExtension?): Token.Active {
+        val domainToken = Token.Active(
             publicKey = entity.publicKey,
             tokenSymbol = entity.tokenSymbol,
             decimals = entity.decimals,
@@ -127,6 +134,11 @@ object TokenConverter {
             tokenServiceAddress = entity.tokenServiceAddress,
             tokenExtensions = fromDatabase(entity.extensions)
         )
+        return TokenExtensionsConfigurator(
+            extensions = extensions ?: TokenMetadataExtension.NONE,
+            token = domainToken
+        ).config()
+    }
 
     fun fromDatabase(entity: TokenExtensionEntity?): TokenExtensions =
         TokenExtensions(

@@ -3,8 +3,9 @@ package org.p2p.wallet.auth.ui.onboarding
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import org.p2p.core.network.environment.NetworkEnvironmentManager.Companion.URL_PRIVACY_POLICY
+import org.p2p.core.network.environment.NetworkEnvironmentManager.Companion.URL_TERMS_OF_USE
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.FileInteractor
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
@@ -13,8 +14,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 class NewOnboardingPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
-    private val torusKeyRestoreInteractor: TorusKeyInteractor,
-    private val fileInteractor: FileInteractor
+    private val torusKeyRestoreInteractor: TorusKeyInteractor
 ) : BasePresenter<NewOnboardingContract.View>(), NewOnboardingContract.Presenter {
 
     override fun onSignUpButtonClicked() {
@@ -55,12 +55,10 @@ class NewOnboardingPresenter(
     }
 
     override fun onTermsClick() {
-        val file = fileInteractor.getTermsOfUseFile()
-        view?.showFile(file)
+        view?.showBrowserTab(URL_TERMS_OF_USE)
     }
 
     override fun onPolicyClick() {
-        val file = fileInteractor.getPrivacyPolicyFile()
-        view?.showFile(file)
+        view?.showBrowserTab(URL_PRIVACY_POLICY)
     }
 }

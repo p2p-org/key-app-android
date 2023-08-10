@@ -42,9 +42,10 @@ internal class TokenServiceRepositoryImpl(
         priceLocalRepository.observeTokenPrices(networkChain)
 
     override suspend fun findTokenPriceByAddress(
-        tokenAddress: String
+        tokenAddress: String,
+        networkChain: TokenServiceNetwork
     ): TokenServicePrice? {
-        return priceLocalRepository.findTokenPriceByAddress(address = tokenAddress)
+        return priceLocalRepository.findTokenPriceByAddress(address = tokenAddress, networkChain = networkChain)
     }
 
     override suspend fun fetchTokenPriceByAddress(
@@ -52,7 +53,7 @@ internal class TokenServiceRepositoryImpl(
         tokenAddress: String
     ): TokenServicePrice? {
         loadPriceForTokens(chain = networkChain, tokenAddresses = listOf(tokenAddress))
-        return findTokenPriceByAddress(tokenAddress = tokenAddress)
+        return findTokenPriceByAddress(tokenAddress = tokenAddress, networkChain = networkChain)
     }
 
     override fun findTokenMetadataByAddress(

@@ -19,7 +19,7 @@ object SwapInitialTokenSelectorFactory {
                     PreinstallTokensBySymbolSelector(
                         jupiterTokensRepository = get(),
                         dispatchers = get(),
-                        homeLocalRepository = get(),
+                        tokenServiceCoordinator = get(),
                         savedSelectedSwapTokenStorage = get(),
                         preinstallTokenASymbol = initialSwapData.tokenASymbol,
                         preinstallTokenBSymbol = initialSwapData.tokenBSymbol,
@@ -29,7 +29,7 @@ object SwapInitialTokenSelectorFactory {
                     PreinstallTokenASelector(
                         jupiterTokensRepository = get(),
                         dispatchers = get(),
-                        homeLocalRepository = get(),
+                        tokenServiceCoordinator = get(),
                         savedSelectedSwapTokenStorage = get(),
                         preinstallTokenA = initialSwapData.token,
                     )

@@ -16,6 +16,7 @@ interface StrigaStorageContract {
     var bankingDetails: StrigaUserBankingDetails?
     var smsExceededVerificationAttemptsMillis: MillisSinceEpoch
     var smsExceededResendAttemptsMillis: MillisSinceEpoch
+    var isIbanNotesHidden: Boolean
 
     fun hideBanner(banner: StrigaKycStatusBanner)
     fun isBannerHidden(banner: StrigaKycStatusBanner): Boolean

@@ -177,6 +177,11 @@ class WalletFragment :
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        presenter.onResume()
+    }
+
     override fun navigateToOffRamp() {
         replaceFragment(
             strigaFragmentFactory.offRampFragment()

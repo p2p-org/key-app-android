@@ -5,10 +5,10 @@ import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.smsinput.SmsInputTimer
 
 class CreateWalletInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
@@ -108,7 +108,6 @@ class CreateWalletInteractor(
         signUpFlowDataRepository.userAccount?.also {
             tokenKeyProvider.keyPair = it.keypair
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
-            crashLogger.setUserId(tokenKeyProvider.publicKey)
         } ?: throw CreateWalletFailure("User account is null, creating a user is failed")
 
         signUpFlowDataRepository.clear()

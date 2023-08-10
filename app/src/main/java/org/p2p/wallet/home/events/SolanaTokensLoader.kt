@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
-import org.p2p.token.service.api.events.manager.TokenServiceUpdate
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventSubscriber
 import org.p2p.token.service.api.events.manager.TokenServiceEventType
+import org.p2p.token.service.api.events.manager.TokenServiceUpdate
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.tokenservice.model.SolanaTokenLoadState

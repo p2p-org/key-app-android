@@ -90,7 +90,7 @@ class SettingsEmailConfirmPresenter(
     private fun logAlarmError(e: Throwable) {
         val error = DeviceShareChangeAlarmError(
             source = DeviceShareChangeAlarmErrorSource.TORUS.sourceName,
-            error = e
+            cause = e
         )
         alarmErrorsLogger.triggerDeviceShareChangeAlarm(error)
     }

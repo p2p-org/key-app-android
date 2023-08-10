@@ -8,5 +8,5 @@ enum class DeviceShareChangeAlarmErrorSource(val sourceName: String) {
 
 data class DeviceShareChangeAlarmError(
     val source: String,
-    val error: Throwable
+    val cause: Throwable
 )

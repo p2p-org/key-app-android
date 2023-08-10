@@ -20,6 +20,7 @@ import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.utils.divideSafe
+import org.p2p.token.service.model.TokenServiceNetwork
 
 private const val TAG = "SwapRateTickerManager"
 
@@ -121,7 +122,8 @@ class SwapRateTickerManager(
     private suspend fun findJupiterTokenRate(to: SwapTokenModel.JupiterToken): BigDecimal? {
         val tokenData = userLocalRepository.findTokenData(to.mintAddress.base58Value) ?: return null
         val cachedPrice = tokenServiceRepository.findTokenPriceByAddress(
-            tokenAddress = tokenData.mintAddress
+            tokenAddress = tokenData.mintAddress,
+            networkChain = TokenServiceNetwork.SOLANA
         )
         return cachedPrice?.usdRate
     }

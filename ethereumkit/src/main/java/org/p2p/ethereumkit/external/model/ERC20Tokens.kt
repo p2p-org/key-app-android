@@ -65,7 +65,8 @@ enum class ERC20Tokens(
         mintAddress = "C7NNPWuZCNjZBfW5p6JvGsR8pUdsRpEdP1ZAhnoDwj7h",
         tokenIconUrl = "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png?1624446912",
         replaceTokenName = "Polygon",
-        replaceTokenSymbol = "MATIC"
+        replaceTokenSymbol = "MATIC",
+        receiveFromTokens = emptyList()
     ),
     CRV(
         contractAddress = "0xd533a949740bb3306d119cc777fa900ba034cd52",
@@ -83,8 +84,16 @@ enum class ERC20Tokens(
             return values().firstOrNull { contractAddress.equals(it.contractAddress, ignoreCase = true) } ?: ETH
         }
 
-        fun findTokenByMint(mintAddress: String): ERC20Tokens? {
-            return values().firstOrNull { mintAddress.contains(it.mintAddress, ignoreCase = true) }
+        fun findTokenByMint(
+            mintAddress: String,
+            vararg excludedTokens: ERC20Tokens = emptyArray()
+        ): ERC20Tokens? {
+            return valuesWithout(*excludedTokens)
+                .firstOrNull { mintAddress.contains(it.mintAddress, ignoreCase = true) }
+        }
+
+        fun valuesWithout(vararg excludedTokens: ERC20Tokens): Array<ERC20Tokens> {
+            return values().filter { it !in excludedTokens }.toTypedArray()
         }
     }
 }

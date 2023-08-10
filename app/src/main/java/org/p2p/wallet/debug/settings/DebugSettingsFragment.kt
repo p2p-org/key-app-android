@@ -10,11 +10,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesFragment
-import org.p2p.wallet.debug.feerelayer.DebugFeeRelayerFragment
 import org.p2p.wallet.debug.logs.CustomLogDialog
 import org.p2p.wallet.debug.publickey.DebugPublicKeyFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
-import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
 import org.p2p.wallet.debug.pushservice.DebugWeb3Fragment
 import org.p2p.wallet.debug.settings.adapter.DebugSettingsRowAdapter
 import org.p2p.wallet.debug.settings.adapter.settingsRowInfoItemDelegate
@@ -52,7 +50,7 @@ class DebugSettingsFragment :
         settingsRowSectionItemDelegate(::onSettingsRowClicked),
         settingsRowLogoutItemDelegate(::onSettingsRowClicked),
         settingsRowInfoItemDelegate(::onSettingsRowClicked),
-        settingsRowSwtichItemDelegate(::onSettingsSwitchClicked),
+        settingsRowSwtichItemDelegate(presenter::onSettingsSwitchClicked),
         settingsRowPopupMenuItemDelegate(presenter::onSettingsPopupMenuClicked)
     )
 
@@ -87,13 +85,11 @@ class DebugSettingsFragment :
                 replaceFragment(PushNotificationsFragment.create())
             }
             R.string.debug_settings_network -> {
-                SettingsNetworkBottomSheet.show(childFragmentManager, REQUEST_KEY, BUNDLE_KEY_NEW_NETWORK_NAME)
-            }
-            R.string.debug_settings_fee_relayer -> {
-                replaceFragment(DebugFeeRelayerFragment.create())
-            }
-            R.string.debug_settings_notification_service -> {
-                replaceFragment(DebugPushServiceFragment.create())
+                SettingsNetworkBottomSheet.show(
+                    fm = childFragmentManager,
+                    requestKey = REQUEST_KEY,
+                    resultKey = BUNDLE_KEY_NEW_NETWORK_NAME
+                )
             }
             R.string.debug_settings_torus -> {
                 replaceFragment(DebugTorusFragment.create())
@@ -121,17 +117,6 @@ class DebugSettingsFragment :
             }
             R.string.debug_settings_reset_user_country_title -> {
                 presenter.onClickResetUserCountry()
-            }
-        }
-    }
-
-    private fun onSettingsSwitchClicked(@StringRes titleResId: Int, isChecked: Boolean) {
-        when (titleResId) {
-            R.string.debug_settings_moonpay_sandbox -> {
-                presenter.switchMoonpayUrl(isSandboxSelected = isChecked)
-            }
-            R.string.debug_settings_name_service -> {
-                presenter.switchNameServiceUrl(isProdSelected = isChecked)
             }
         }
     }

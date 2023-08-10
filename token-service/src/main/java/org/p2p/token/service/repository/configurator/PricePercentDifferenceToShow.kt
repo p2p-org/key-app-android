@@ -19,10 +19,9 @@ class PricePercentDifferenceToShow(
         // We assume that this configuration will work only with stable coins
         val percentDifferenceToShow = extensions.percentDifferenceToShowByPriceOnWs
 
-        if (percentDifferenceToShow == null || percentDifferenceToShow == 0) {
+        if (percentDifferenceToShow == null || percentDifferenceToShow.toBigDecimal() == BigDecimal.ZERO) {
             return token
         }
-
         val acceptableRateDiff = percentDifferenceToShow.toBigDecimal()
         if (isStableCoinRateDiffAcceptable(acceptableRateDiff)) {
             return token
@@ -35,6 +34,6 @@ class PricePercentDifferenceToShow(
         val rate = token.rate ?: BigDecimal.ONE
         val fiat = total * rate
         val delta = BigDecimal(100) - ((total.divideSafe(fiat)) * BigDecimal(100))
-        return delta.abs() < acceptableRateDiff
+        return delta.abs() > acceptableRateDiff
     }
 }

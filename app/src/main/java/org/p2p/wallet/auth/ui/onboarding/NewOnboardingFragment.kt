@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
 import org.koin.android.ext.android.inject
-import java.io.File
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.natives.UiKitSnackbarStyle
@@ -33,9 +32,9 @@ import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.OnboardingSpanUtils
-import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class NewOnboardingFragment :
@@ -193,8 +192,8 @@ class NewOnboardingFragment :
         showUiKitSnackBar(messageResId = R.string.onboarding_google_services_error)
     }
 
-    override fun showFile(file: File) {
-        openFile(file)
+    override fun showBrowserTab(url: String) {
+        showUrlInCustomTabs(url)
     }
 
     override fun navigateToContinueCreateWallet() {

@@ -57,7 +57,7 @@ object SendModule : InjectionModule {
         }
         factory { (selectedTokenMintAddress: String?, selectableTokens: List<Token.Active>?) ->
             NewSelectTokenPresenter(
-                userTokensRepository = get(),
+                tokenServiceCoordinator = get(),
                 selectedTokenMintAddress = selectedTokenMintAddress,
                 selectableTokens = selectableTokens
             )

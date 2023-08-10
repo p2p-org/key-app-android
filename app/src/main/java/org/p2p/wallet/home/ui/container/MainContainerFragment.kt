@@ -16,6 +16,8 @@ import org.p2p.core.utils.insets.systemBars
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.permissions.PermissionState
+import org.p2p.wallet.common.permissions.new.requestPermissionNotification
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.DeeplinkData
@@ -28,7 +30,8 @@ import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
-import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.notification.AppNotificationManager
+import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
@@ -47,12 +50,12 @@ class MainContainerFragment :
 
     private val binding: FragmentMainBinding by viewBinding()
 
-    private val sellInteractor: SellInteractor by inject()
-
     private var lastSelectedItemId = R.id.walletItem
 
     private lateinit var mainContainerAdapter: BaseFragmentAdapter
     private lateinit var fragmentsMap: Map<ScreenTab, KClass<out Fragment>>
+
+    private val analytics: AnalyticsPushChannel by inject()
 
     companion object {
         fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainContainerFragment =
@@ -90,6 +93,13 @@ class MainContainerFragment :
 
         presenter.initializeDeeplinks()
         presenter.observeUserTokens()
+
+        requestPermissionNotification { permissionState ->
+            if (permissionState == PermissionState.GRANTED) {
+                analytics.pushPermissionsAllowed()
+                AppNotificationManager.createNotificationChannels(requireContext())
+            }
+        }
     }
 
     override fun applyWindowInsets(rootView: View) {

@@ -30,7 +30,7 @@ allprojects {
     }
 }
 
-tasks.register("clean", Delete::class) {
+tasks.register("cleanAll", Delete::class) {
     delete(rootProject.buildDir)
 }
 
@@ -53,3 +53,9 @@ gradle.projectsEvaluated {
         dependsOn("installGitHook")
     }
 }
+
+// uncomment if you meet OPTIMIZED OUT in debugger
+//val compileKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
+//compileKotlin.compilerOptions {
+//    freeCompilerArgs.add("-Xdebug")
+//}

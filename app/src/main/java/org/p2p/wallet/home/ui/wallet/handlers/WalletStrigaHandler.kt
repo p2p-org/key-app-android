@@ -20,11 +20,13 @@ import org.p2p.wallet.home.ui.wallet.mapper.StrigaKycUiBannerMapper
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.striga.offramp.withdraw.interactor.StrigaWithdrawInteractor
 import org.p2p.wallet.striga.onramp.interactor.StrigaOnRampInteractor
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.striga.wallet.interactor.StrigaNoBankingDetailsProvided
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 
 class WalletStrigaHandler(
@@ -37,8 +39,13 @@ class WalletStrigaHandler(
     private val tokenKeyProvider: TokenKeyProvider,
     private val localFeatureFlags: InAppFeatureFlags,
     private val appLoaderFacade: AppLoaderFacade,
-//    private val strigaOtpConfirmInteractor: StrigaOtpConfirmInteractor,
+    private val strigaSmsInputTimer: SmsInputTimer,
 ) {
+    // todo: this logic still hasn't described, but it helps to reuse otp timers
+    //       and avoid getting new challengeId every button click
+    private var onRampChallengeId: StrigaWithdrawalChallengeId? = null
+    private var offRampChallengeId: StrigaWithdrawalChallengeId? = null
+
     suspend fun handleBannerClick(view: WalletContract.View?, item: StrigaBanner) {
         with(item.status) {
             val statusFromKycBanner = strigaKycUiBannerMapper.getKycStatusBannerFromTitle(bannerTitleResId)
@@ -71,9 +78,14 @@ class WalletStrigaHandler(
     suspend fun handleOnRampClick(view: WalletContract.View?, item: StrigaOnRampCellModel) {
         try {
             view?.showStrigaOnRampProgress(isLoading = true, tokenMint = item.tokenMintAddress)
-            val challengeId = strigaOnRampInteractor.onRampToken(item.amountAvailable, item.payload).unwrap()
-            // todo: fixme
-            //       strigaOtpConfirmInteractor.launchInitialTimer()
+            val challengeId = onRampChallengeId
+                ?: strigaOnRampInteractor.onRampToken(item.amountAvailable, item.payload).unwrap()
+
+            if (onRampChallengeId == null) {
+                strigaSmsInputTimer.startSmsInputTimerFlow()
+            }
+            onRampChallengeId = challengeId
+
             view?.navigateToStrigaOnRampConfirmOtp(challengeId, item)
         } catch (e: Throwable) {
             Timber.e(e, "Error on claiming striga token")
@@ -95,9 +107,14 @@ class WalletStrigaHandler(
                 throw StrigaNoBankingDetailsProvided()
             }
 
-            val challengeId = strigaWithdrawInteractor.withdrawEur(item.amountAvailable)
-            // todo: fixme
-            //       strigaOtpConfirmInteractor.launchInitialTimer()
+            val challengeId = offRampChallengeId
+                ?: strigaWithdrawInteractor.withdrawEur(item.amountAvailable)
+
+            // if there's no challenge id - start initial timer
+            if (offRampChallengeId == null) {
+                strigaSmsInputTimer.startSmsInputTimerFlow()
+            }
+            offRampChallengeId = challengeId
 
             view?.navigateToStrigaOffRampConfirmOtp(challengeId, item)
         } catch (e: StrigaNoBankingDetailsProvided) {
@@ -115,14 +132,14 @@ class WalletStrigaHandler(
      * If user confirmed claim using OTP - we add claim transaction as pending
      */
     suspend fun handleOnRampConfirmed(claimedToken: StrigaOnRampCellModel) {
+        onRampChallengeId = null
         kotlin.runCatching {
             addOnRampPendingTransaction(claimedToken)
         }.onFailure { Timber.e(it, "Failed to add pending transaction on onramp") }
     }
 
     fun handleOffRampConfirmed(token: StrigaOffRampCellModel) {
-        // todo: I guess we need somehow flush StrigaUserWallet cache here
-        // and update Wallet screen with new data, but it needs to make some flows for on/off ramp tokens
+        offRampChallengeId = null
     }
 
     private suspend fun addOnRampPendingTransaction(onRampTokenItem: StrigaOnRampCellModel) {
