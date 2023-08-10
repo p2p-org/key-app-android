@@ -18,7 +18,7 @@
     <string name="debug_settings_web3">Web3 User Data 🤑</string>
     <string name="debug_settings_moonpay_sandbox">Moonpay sandbox</string>
     <string name="debug_settings_title">Settings</string>
-    <string name="debug_settings_network">Network</string>
+    <string name="debug_settings_network">Solana blockchain network</string>
     <string name="debug_settings_striga_title">Striga</string>
     <string name="debug_settings_kyc_mock_title">KYC Banner mock</string>
     <string name="debug_settings_kyc_set_rejected_title">KYC Simulate rejected</string>

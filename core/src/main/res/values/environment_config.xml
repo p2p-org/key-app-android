@@ -32,9 +32,9 @@
     <string name="bridgesServiceTestBaseUrl">https://bridge-service.keyapp.org/</string>
 
     <string name="web3AuthServiceBaseUrl">https://web3-auth.keyapp.org/</string>
+
     <string name="registerUsernameServiceTestUrl">https://name-register.keyapp.org/</string>
-    <string name="registerUsernameServiceProductionUrl">https://name-register.key.app/</string>
-    <string name="registerUsernameServiceBaseUrl">@string/registerUsernameServiceProductionUrl</string>
+    <string name="registerUsernameServiceBaseUrl">https://name-register.key.app/</string>
 
     <string name="webClientGoogleId">553127941597-j88bgo2invnpiefq2j1fhq8duju6o2tq.apps.googleusercontent.com</string>
 

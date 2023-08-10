@@ -9,6 +9,7 @@ import org.p2p.wallet.debug.featuretoggles.FeatureTogglesPresenter
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsContract
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsPresenter
 import org.p2p.wallet.debug.settings.DebugSettingsContract
+import org.p2p.wallet.debug.settings.DebugSettingsDeviceInfoMapper
 import org.p2p.wallet.debug.settings.DebugSettingsInteractor
 import org.p2p.wallet.debug.settings.DebugSettingsMapper
 import org.p2p.wallet.debug.settings.DebugSettingsPresenter
@@ -21,6 +22,7 @@ object DebugSettingsModule : InjectionModule {
         factoryOf(::SettingsInteractor)
         factoryOf(::ThemeInteractor)
         factoryOf(::DebugSettingsMapper)
+        factoryOf(::DebugSettingsDeviceInfoMapper)
         factoryOf(::DebugSettingsInteractor)
         factoryOf(::DebugSettingsPresenter) bind DebugSettingsContract.Presenter::class
         factoryOf(::FeatureTogglesPresenter) bind FeatureTogglesContract.Presenter::class
