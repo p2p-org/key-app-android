@@ -266,7 +266,7 @@ class JupiterSwapPresenterInitialStateTest : JupiterSwapPresenterBaseTest() {
      */
     @Test
     fun `GIVEN swap screen WHEN has set initialAmountA THEN check setFirstTokenWidget state has this value`() = runTest {
-        val firstToken = JupiterSwapTestHelpers.createUSDCToken(BigDecimal("10.28"))
+        val firstToken = JupiterSwapTestHelpers.createUSDCToken(BigDecimal("10.30"))
         val secondToken = JupiterSwapTestHelpers.createSOLToken(
             amount = BigDecimal("26.48"),
             rateToUsd = BigDecimal("22.14")

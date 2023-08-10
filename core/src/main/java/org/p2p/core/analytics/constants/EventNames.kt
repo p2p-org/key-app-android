@@ -26,7 +26,7 @@ object EventNames {
     const val ADMIN_PUSH_RECEIVED = "Push_Received"
     const val ADMIN_SNACKBAR_RECEIVED = "Snackbar_Received"
     const val ADMIN_SIGN_OUT = "Sign_Out"
-    const val ADMIN_SIGNED_OUT = "Signed_Out"
+    const val ADMIN_SIGNED_OUT = "Settings_Log_Out"
     const val ADMIN_PIN_CREATED = "Pin_Created"
     const val ADMIN_PIN_REJECTED = "Pin_Rejected"
     const val ADMIN_PASSWORD_CREATED = "Password_Created"

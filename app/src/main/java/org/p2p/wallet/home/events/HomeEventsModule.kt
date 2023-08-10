@@ -26,7 +26,6 @@ object HomeEventsModule : InjectionModule {
                 strigaSignupEnabledFeatureToggle = get(),
                 strigaUserInteractor = get(),
                 strigaSignupInteractor = get(),
-                strigaWalletInteractor = get()
             ).apply {
                 dependsOn(get<OnboardingMetadataLoader>())
             }

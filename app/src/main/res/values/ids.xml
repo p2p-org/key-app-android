@@ -8,4 +8,10 @@
     <item name="coin_gecko_enabled" type="id" />
     <item name="phone_watcher_tag_id" type="id" />
 
+    <item name="actionButtonSwap" type="id" />
+    <item name="actionButtonReceive" type="id" />
+    <item name="actionButtonBuy" type="id" />
+    <item name="actionButtonSend" type="id" />
+    <item name="actionButtonSell" type="id" />
+    <item name="actionButtonTopUp" type="id" />
 </resources>

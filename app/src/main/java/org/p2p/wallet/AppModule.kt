@@ -7,8 +7,11 @@ import org.koin.dsl.module
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.common.di.ServiceScope
 import org.p2p.core.crashlytics.CrashLoggerModule
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.network.NetworkCoreModule
+import org.p2p.ethereumkit.external.EthereumModule
+import org.p2p.token.service.TokenServiceModule
 import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
@@ -20,20 +23,17 @@ import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
-import org.p2p.wallet.home.ui.container.MainContainerModule
-import org.p2p.wallet.infrastructure.InfrastructureModule
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.ethereumkit.external.EthereumModule
-import org.p2p.token.service.TokenServiceModule
 import org.p2p.wallet.home.events.HomeEventsModule
+import org.p2p.wallet.home.ui.container.MainContainerModule
 import org.p2p.wallet.home.ui.crypto.CryptoModule
 import org.p2p.wallet.home.ui.wallet.WalletModule
+import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
 import org.p2p.wallet.moonpay.MoonpayModule
 import org.p2p.wallet.moonpay.ui.BuyModule
-import org.p2p.wallet.newsend.SendModule
+import org.p2p.wallet.send.SendModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.ReceiveModule
@@ -77,6 +77,13 @@ object AppModule {
                 NetworkModule.create(),
                 RpcModule.create(),
                 TransactionModule.create(),
+                TransactionManagerModule.create(),
+                UserModule.create(),
+                NetworkCoreModule.create(),
+                CrashLoggerModule.create(),
+                TokenServiceModule.create(),
+                HomeEventsModule.create(),
+                EthereumModule.create(),
                 // feature screens
                 AuthModule.create(),
                 BridgeModule.create(),
@@ -99,15 +106,6 @@ object AppModule {
                 SettingsModule.create(),
                 StrigaModule.create(),
                 SwapModule.create(),
-                TransactionManagerModule.create(),
-                UserModule.create(),
-                NetworkCoreModule.create(),
-                UserModule.create(),
-                CrashLoggerModule.create(),
-                NetworkCoreModule.create(),
-                TokenServiceModule.create(),
-                HomeEventsModule.create(),
-                EthereumModule.create()
             )
         )
     }

@@ -29,11 +29,13 @@ import org.p2p.core.token.TokenExtensions
 import org.p2p.core.utils.Constants
 import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
 class BridgeSendInteractor(
     private val ethereumSendRepository: EthereumSendRepository,
     private val ethereumRepository: EthereumRepository,
     private val userInteractor: UserInteractor,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val tokenKeyProvider: TokenKeyProvider,
     private val relaySdkFacade: RelaySdkFacade,
     private val dispatchers: CoroutineDispatchers,
@@ -52,8 +54,8 @@ class BridgeSendInteractor(
 
     suspend fun supportedSendTokens(): List<Token.Active> {
         val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
-        return userInteractor.getNonZeroUserTokens()
-            .filter { it.mintAddress in supportedTokensMints }
+        return tokenServiceCoordinator.getUserTokens()
+            .filter { !it.isZero && it.mintAddress in supportedTokensMints }
             .sortedWith(BridgeTokenComparator())
             .ifEmpty {
                 // TODO PWN-7613 also block button as we can't send we do not have funds

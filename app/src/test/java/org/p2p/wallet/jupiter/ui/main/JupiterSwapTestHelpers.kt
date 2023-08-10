@@ -8,6 +8,7 @@ import java.math.RoundingMode
 import org.p2p.core.common.TextContainer
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.utils.Constants
@@ -31,7 +32,8 @@ object JupiterSwapTestHelpers {
         logoUri = "https://raw.githubusercontent.com/p2p-org/solana-token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
         tokenName = "Wrapped SOL",
         tokenSymbol = "SOL",
-        tags = listOf("solana", "sol", "wrapped-sol", "wrapped-solana")
+        tags = listOf("solana", "sol", "wrapped-sol", "wrapped-solana"),
+        tokenExtensions = TokenExtensions.NONE
     )
 
     val JUPITER_USDC_TOKEN = JupiterSwapToken(
@@ -42,7 +44,8 @@ object JupiterSwapTestHelpers {
         logoUri = "https://raw.githubusercontent.com/p2p-org/solana-token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
         tokenName = "USD Coin",
         tokenSymbol = "USDC",
-        tags = listOf("solana", "sol", "usdc", "usd-coin")
+        tags = listOf("solana", "sol", "usdc", "usd-coin"),
+        tokenExtensions = TokenExtensions.NONE
     )
     val DEFAULT_SWAPPABLE_TOKENS = listOf(
         JUPITER_SOL_TOKEN.tokenMint,

@@ -8,7 +8,7 @@ import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 interface TopUpWalletContract {
 
     interface View : MvpView {
-        fun showStrigaBankTransferView(showProgress: Boolean = false, isStringEnabled: Boolean)
+        fun showStrigaBankTransferView(showProgress: Boolean = false, isStrigaEnabled: Boolean)
         fun hideStrigaBankTransferView()
         fun navigateToBankTransferTarget(target: StrigaUserStatusDestination)
         fun navigateToBuyWithTransfer(tokenToBuy: Token)

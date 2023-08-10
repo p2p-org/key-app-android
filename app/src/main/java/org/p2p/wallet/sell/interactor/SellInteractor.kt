@@ -5,7 +5,9 @@ import android.content.SharedPreferences
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -17,8 +19,7 @@ import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
 import org.p2p.wallet.moonpay.repository.sell.SellRepository
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.core.utils.Constants
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 private const val TAG = "SellInteractor"
@@ -27,8 +28,9 @@ private const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_
 class SellInteractor(
     private val sellRepository: SellRepository,
     private val currencyRepository: MoonpayCurrenciesRepository,
-    private val userTokensInteractor: UserTokensInteractor,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val userTokensInteractor: UserTokensInteractor,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val sharedPreferences: SharedPreferences,
@@ -62,7 +64,7 @@ class SellInteractor(
 
     private suspend fun isUserBalancePositive(): Boolean {
         return try {
-            userTokensInteractor.getUserTokens().any { it.total.isNotZero() }
+            tokenServiceCoordinator.getUserTokens().any { it.total.isNotZero() }
         } catch (error: Throwable) {
             Timber.tag(TAG).e(error, "Cant get user balance")
             false

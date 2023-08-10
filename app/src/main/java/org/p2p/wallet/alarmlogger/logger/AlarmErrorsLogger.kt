@@ -25,7 +25,7 @@ import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.statemanager.SwapState
-import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.AppBuildType
 import org.p2p.wallet.utils.retryRequest
 

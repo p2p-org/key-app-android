@@ -16,9 +16,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSendTransactionDetailsBinding
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
-import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.ui.NewSendFragment
-import org.p2p.wallet.newsend.ui.SendOpenedFrom
+import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.ui.NewSendFragment
+import org.p2p.wallet.send.ui.SendOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getColorStateListCompat

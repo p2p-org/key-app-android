@@ -12,6 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -19,11 +20,13 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.orZero
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
 import org.p2p.wallet.infrastructure.coroutines.hasTestScheduler
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
@@ -32,9 +35,8 @@ import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.core.crypto.Base58String
-import org.p2p.token.service.repository.TokenServiceRepository
-import org.p2p.wallet.user.interactor.UserTokensInteractor
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.tokenservice.UserTokensState
 
 private const val TAG = "SwapStateManager"
 
@@ -45,9 +47,9 @@ class SwapStateManager(
     private val tokenServiceRepository: TokenServiceRepository,
     private val swapValidator: SwapValidator,
     private val analytics: JupiterSwapMainScreenAnalytics,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val userTokensChangeHandler: SwapUserTokensChangeHandler,
     private val swapRoutesRefreshFeatureToggle: SwapRoutesRefreshFeatureToggle,
-    private val userTokensInteractor: UserTokensInteractor
 ) : CoroutineScope {
 
     companion object {
@@ -300,11 +302,12 @@ class SwapStateManager(
     }
 
     private fun observeUserTokens() {
-        userTokensInteractor.observeUserTokens()
-            .mapLatest { userTokens ->
-                userTokensChangeHandler.handleUserTokensChange(state.value, userTokens)
+        tokenServiceCoordinator.observeUserTokens()
+            .filterIsInstance<UserTokensState.Loaded>()
+            .mapLatest { userTokensChangeHandler.handleUserTokensChange(state.value, it.solTokens) }
+            .onEach { newState ->
+                state.value = newState
             }
-            .onEach { newState -> state.value = newState }
             .flowOn(dispatchers.io)
             .launchIn(this)
     }

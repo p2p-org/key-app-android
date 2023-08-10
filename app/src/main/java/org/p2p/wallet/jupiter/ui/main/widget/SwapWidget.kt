@@ -133,12 +133,8 @@ class SwapWidget @JvmOverloads constructor(
         } else {
             bindInput(model, model.amount)
         }
-        if (textViewBalance.isVisible) {
-            textViewBalance.bindOrGone(model.balance)
-        }
-        if (textViewFiatAmount.isVisible) {
-            textViewFiatAmount.bindOrGone(model.fiatAmount)
-        }
+        textViewBalance.bindOrGone(model.balance)
+        textViewFiatAmount.bindOrGone(model.fiatAmount)
     }
 
     private fun bindInput(model: SwapWidgetModel.Content, newAmount: TextViewCellModel) = with(binding) {

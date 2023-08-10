@@ -8,7 +8,7 @@ private const val RULE_DROP_AFTER_HUNDREDTH_PART = "droppingAfterHundredthPart"
 class RuleOfFractionalPartConfigurator(
     private val extensions: TokenMetadataExtension,
     private val tokenExtensions: TokenExtensions
-) : TokenConfigurator<TokenExtensions> {
+) : TokenConfigurator {
 
     override fun config(): TokenExtensions {
         val ruleOfFractionalPart = extensions.ruleOfFractionalPartOnWs

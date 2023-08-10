@@ -11,7 +11,7 @@ import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
-import org.p2p.wallet.newsend.model.FeePayerState
+import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import java.math.BigDecimal
 import java.math.BigInteger

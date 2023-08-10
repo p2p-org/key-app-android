@@ -3,6 +3,7 @@ package org.p2p.wallet.striga.signup.steps.first
 import androidx.activity.addCallback
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import android.os.Bundle
 import android.view.View
@@ -11,13 +12,13 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.UiKitEditText
+import org.p2p.uikit.utils.SimpleMaskFormatter
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
 import org.p2p.wallet.auth.widget.PhoneNumberInputView
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.SimpleMaskFormatter
 import org.p2p.wallet.databinding.FragmentStrigaSignUpFirstStepBinding
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.intercom.IntercomService
@@ -98,7 +99,7 @@ class StrigaSignUpFirstStepFragment :
             }
 
             binding.editTextBirthday.input.addTextChangedListener(
-                birthdayMaskFormatter.textWatcher(
+                birthdayMaskFormatter.putTextWatcherOn(
                     binding.editTextBirthday.input
                 )
             )
@@ -111,7 +112,7 @@ class StrigaSignUpFirstStepFragment :
                 ::onFragmentResult
             )
 
-            editTextEmail.isEnabled = inAppFeatureFlags.strigaEnableEmailFieldFlag.featureValue
+            editTextEmail.isVisible = inAppFeatureFlags.strigaEnableEmailFieldFlag.featureValue
         }
 
         if (scrollToViewId != View.NO_ID) {
@@ -189,7 +190,7 @@ class StrigaSignUpFirstStepFragment :
             this.isEnabled = isEnabled
             icon = if (isEnabled) {
                 bind(TextContainer(R.string.auth_next))
-                binding.getDrawable(R.drawable.ic_arrow_right)
+                binding.getDrawable(R.drawable.ic_arrow_forward)
             } else {
                 bind(TextContainer(R.string.striga_button_error_check_red_fields))
                 null
