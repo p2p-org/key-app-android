@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="16dp"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_silver"
         app:layout_constraintBottom_toBottomOf="@id/imageViewSettingsIcon"
         app:layout_constraintEnd_toStartOf="@+id/switchChangeSettings"

@@ -14,12 +14,10 @@ interface DebugSettingsContract {
     interface Presenter : MvpPresenter<View> {
         fun loadData()
         fun onNetworkChanged(newNetworkEnvironment: NetworkEnvironment)
-        fun switchMoonpayUrl(isSandboxSelected: Boolean)
-        fun switchNameServiceUrl(isProdSelected: Boolean)
-        fun switchTokenServiceUrl(isProdSelected: Boolean)
         fun onSettingsPopupMenuClicked(selectedValue: String)
         fun onClickSetKycRejected()
         fun onClickDetachStrigaUser()
         fun onClickResetUserCountry()
+        fun onSettingsSwitchClicked(titleResId: Int, isChecked: Boolean)
     }
 }
